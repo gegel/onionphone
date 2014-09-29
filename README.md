@@ -56,7 +56,7 @@ Usage:
 Alternatively use Up, Down, left and Right arrows for navigation in menu for quick applies most usable commands.
   
 Detail description of OninPhone modes, commands, cryptography etc. see at document 'oph.pdf':
-http://torfone.org/downloads/oph.pdf
+http://torfone.org/download/oph.pdf
 
 Project homepage: http://torfone.org/onionphone/
 
