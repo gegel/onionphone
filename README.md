@@ -1,4 +1,4 @@
-onionphone
+OnionPhone
 ==========
 
 VOIP tool for calling over Tor
