@@ -42,10 +42,14 @@ the easiest way to use OnionOhine as a VOIP plugin for TorChat :
 
 • Step 1: Put the OnionPhone folder on the hard disk, removable media or TrueCrypt container (preferred).
 
-• Step 2: Edit the TorChat configuration file '/torchat/bin/Tor/torrc.txt': immediately following the line 
+• Step 2: Edit the TorChat configuration file '/torchat/bin/Tor/torrc.txt': immediately following the line
+
 	HiddenServicePort 11009 127.0.0.1:11009
+	
 add the a new line
-	HiddenServicePort 17447 127.0.0.1:17447 
+
+	HiddenServicePort 17447 127.0.0.1:17447
+	
 then run the TorChat. 
 
 • Step 3: Right click on 'myself' icon of TorChat contacts list and copy ID to clipboard. Edit the OnionPhone configuration file 'conf.txt': specify our onion address using copied ID, for example: 
@@ -78,14 +82,21 @@ Usage:
 Alternatively use Up, Down, left and Right arrows for navigation in menu for quick applies most usable commands.
   
 Detail description of OninPhone modes, commands, cryptography etc. see at document 'oph.pdf':
+
 http://torfone.org/download/oph.pdf
 
 Project homepage: http://torfone.org/onionphone/
 
 Also you can always ask directly the author (Van Gegel): torfone@ukr.net or gegelcopy@ukr.net
-My TorChat ID: gegelcy5fw7dsnsn. 
-My PGP key available at: https://pgp.mit.edu/pks/lookup?search=gegelcopy%40ukr.net&op=index 
+
+My TorChat ID: gegelcy5fw7dsnsn.
+
+My PGP key available at: 
+
+https://pgp.mit.edu/pks/lookup?search=gegelcopy%40ukr.net&op=index
+
 http://pool.sks-keyservers.net:11371/pks/lookup?search=0xB5FA66FFEFDE1F49&fingerprint=on&hash=on&op=vindex
+
 https://www.pgpru.com/proekt/poljzovateli?profile=gegel&getkey=8C23C721D54B3AF21EF119FBB5FA66FFEFDE1F49
 
 Note: Alpha version is presented "as is" and has not yet been checked by anyone except the developer. Do not use in "life or death" cases.
