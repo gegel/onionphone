@@ -1078,9 +1078,9 @@ void reconecttor(void)
  //check for onion connection type,
  //incoming connection is exist
  // and doubling permissed
- fflush(stdout);
- printf("Rcvd -Wonion sock=%d, rc_level=%d, rc_cnt=%d, u_cnt=%d\r\n",
-        tcp_insock_flag, rc_level, rc_cnt, u_cnt);
+ //fflush(stdout);
+ //printf("Rcvd -Wonion sock=%d, rc_level=%d, rc_cnt=%d, u_cnt=%d\r\n",
+ //       tcp_insock_flag, rc_level, rc_cnt, u_cnt);
  if( onion_flag && (tcp_insock_flag==SOCK_INUSE) && (rc_level>=0) && (rc_cnt<=5) && (!u_cnt))
  {
   fflush(stdout);
