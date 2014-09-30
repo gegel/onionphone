@@ -1,0 +1,27 @@
+#320*16
+plughw:0,0
+plughw:0,0
+default
+Capture
+PCM
+
+#Alsa configuration parameter *in first 6 strings with specified order* of 'alsacf':
+#- chunk size in samples * chunks in buffer
+#- AudioInputDeviceName
+#- AudioOutputDeviceName
+#- AudioControlDeviceName
+#- capture_mixer_elem
+#- playback_mixer_elem
+
+#Alsa buffers size settings can be different for some OS and can cause error
+#In this case comment first line by # for test. Default settings will be applied and
+#correspondent parameters will be showed. Next play with this parameters.
+
+#Notes: 
+#- Buffer MUST containt at least 2 chunks.
+#- Chunk size determines internal Jitter compensation. Recomended Jitter compensation value #for Tor TCP connection is 500-1000 mS. 8bit mu-low mono 8000Hz uses. So 1 byte of buffer #size equal to 125 microsecons of audio. Recomended chunk size value is 4800
+#- Recomended total buffer size is for at least 3 TCP packets. Each packet contains 10 frames#(codec independenly) and this is 1600 samples (200 mS audio).
+
+#For using pulse audio sets both  AudioInputDeviceName and AudioInputDeviceName as        
+
+

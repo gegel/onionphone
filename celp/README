@@ -1,0 +1,115 @@
+							
+Release Version 3.2 (PC release) 
+
+This responds to your request for our 4800 bps Code Excited Linear Predictive
+(CELP) voice coder (version 3.2) that complies with Federal Standard
+1016 [1].  Restrictions on this package and its contents are described below.
+
+This release is being provided on PC diskette in a DOS format (translated
+from UNIX based on the command unixtodos.  The original filenames have
+been truncated to DOS filename limitations, otherwise the code is exactly
+the same as was used on Sun Sparcstations for the development of this code.
+It is suggested that this code be run on a Sun Workstation.  If the code is
+run on a PC, some changes (between UNIX and DOS formats) will be needed.  
+The U.S. Government is not prepared to make these changes and will not 
+support these changes.
+
+The CELP source code contained in this release was developed by the
+U.S. Government in conjunction with a contract to AT&T Bell Laboratories
+Acoustics Research Department and with the help of many others cited in 
+[2, 3, 4].
+Except where noted, all other code included in this package was developed
+strictly by and is the property of the U.S. Government.   Additional code in 
+the package is provided as a courtesy to aid your development and the U.S. 
+Government is under no obligation to support it.
+
+An earlier version of the coder (1.33r) achieved the results reported in
+[2] under the "Phase 3 CELP V.33 scores, December 1988".  
+
+INSTALLATION
+------------
+Since this package was developed under BSD UNIX, it is highly recommended
+that it be installed on a machine supporting the BSD UNIX environment
+(e.g., Sun, Alliant, or Convex).  For installation of specific programs,
+follow the directions in README files located in the directories listed
+below.
+
+CONTENTS
+--------
+This release subdirectory structure is described below.  Please refer
+to README files in these directories for further information.  (Note,
+celp3_2 and celp3_2c are only programs and are not to be confused with the 
+actual Federal Standard 1016!)
+
+  subdirectory	description
+  ------------	-----------
+  celp3_2/	A FORTRAN implementation of Federal Standard 1016
+  celp3_2c/	C language translation of above FORTRAN
+  speech/	Input speech for "processed/" (.swp files byte swapped)
+  processed/	Processed speech, bit stream and log files (Sun Sparc)
+  diskio/	Utilities to generate analysis files for Sungraph
+  tools/	Utilities to aid in development
+
+
+REFERENCES
+----------
+[1]	Fenichel, R., "Federal Standard 1016", National Communications
+	System, Office of Technology and Standards, Washington, 
+	DC 20305-2010, 14 February 1991 (printed by GSA).
+
+[2]	Kemp, David, P., Retha A. Sueda and Thomas E. Tremain, "An
+	Evaluation of 4800 bps Voice Coders", Proceedings of the IEEE
+	International Conference on Acoustics, Speech and Signal Processing
+	(ICASSP), 1989, p. 200-203.
+
+[3]	Campbell, Joseph P. Jr., Vanoy C. Welch and Thomas E. Tremain,
+	"The New 4800 bps Voice Coding Standard", Military and Government 
+	Speech Tech, 1989.
+
+[4]	Welch, Vanoy C., Thomas E. Tremain and Joseph P. Campbell, Jr.,
+	"A Comparison of U.S. Government Standard Voice Coders",
+	IEEE Military Communications Conference (MILCOM) Conference Record,
+	1989, p. 269-273.
+
+	Campbell, Joseph P. Jr., Vanoy C. Welch and Thomas E. Tremain,
+	"An Expandable Error-Protected 4800 bps CELP Coder (U.S. Federal
+	Standard 4800 bps Voice Coder)", Proceedings of ICASSP, 1989, p. 735-8.
+	(and Proceedings of Speech Tech, 1989, p. 338-341.)
+
+	Tremain, Thomas E., Joseph P. Campbell, Jr and Vanoy C. Welch,
+	"A 4.8 kbps Code Excited Linear Predictive Coder", Proceedings
+	of the Mobile Satellite Conference, 3-5 May 1988, p. 491-496.
+
+	Tremain, Thomas E., Joseph P. Campbell, Jr, Vanoy C. Welch,
+	James R. Goble and Mary A. Kohler, "DoD 4.8 kbps Standard (Proposed
+	Federal Standard 1016 Voice Coder)", Program and Abstracts of the
+	IEEE Workshop on Speech Coding for Telecommunications, 1989, p. 4.
+
+        Rahikka, Douglas J., Thomas E. Tremain, Vanoy C. Welch and Joseph P.
+        Campbell, Jr, "CELP Coding for Land Mobile Radio Applications,"
+        ICASSP, 1990, p. 465.
+
+	Joseph P. Campbell, Jr., Thomas E. Tremain and Vanoy C. Welch,
+	"The DoD 4.8 kbps Standard (Proposed Federal Standard 1016)",
+	"Advances in Speech Coding", Chaper 4.1, Kluwer Academic Publishers,
+	1990.
+
+	Joseph P. Campbell, Jr., Thomas E. Tremain and Vanoy C. Welch,
+	"The Federal Standard 1016 4800 bps CELP Voice Coder", "Digital
+	Signal Processing, A Review Journal," Volume 1, Number 3, Academic
+	Press, July 1991.
+
+   Tutorials:
+	Fallside, Frank and William Woods, Computer Speech Processing,
+	Prentice Hall International, 1985, Chapter 4 (by Bishnu Atal).
+
+	Atal, Bishnu, Peter Kroon, et. al., Report on Low Rate Speech Coding
+	Research, Speech Processing Research Contract MDA904-84-C-6010,
+	20 May 1987, "Code-Excited Linear Predictive (CELP) Coding at
+	4.8-7.2 kb/s", (by Peter Kroon).
+
+DOCUMENTATION
+-------------
+
+	Soon to be released: NCS Technical Information Bulletin on 
+	FS 1016. (note reference [1] above).  (early 1992 ??)

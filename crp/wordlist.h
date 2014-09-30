@@ -1,0 +1,2 @@
+char* getword(short b);
+

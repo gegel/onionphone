@@ -1,0 +1,20 @@
+
+Fri Jan 29 19:02:12 1993  Jutta Degener  (jutta at kraftbus)
+	
+	* Release 1.0 Patchlevel 2
+	fixed L_add(0,-1) in src/add.c and inc/private.h,
+	thanks to Raphael Trommer at AT&T Bell Laboratories
+
+	* ANSI C compatibility details
+
+Fri Oct 30 17:58:54 1992  Jutta Degener  (jutta at kraftbus)
+
+	* Release 1.0 Patchlevel 1
+	Switched uid/gid in toast's [f]chown calls.
+
+Wed Oct 28 14:12:35 1992  Carsten Bormann  (cabo at kubus)
+
+	* Release 1.0: released
+	Copyright 1992 by Jutta Degener and Carsten Bormann, Technische
+	Universitaet Berlin.  See the accompanying file "COPYRIGHT" for
+	details.  THERE IS ABSOLUTELY NO WARRANTY FOR THIS SOFTWARE.

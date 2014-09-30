@@ -1,0 +1,62 @@
+3 August 1993
+
+CELP 3.2a Release
+
+Dear CELPers,
+
+We have placed an updated version of the FS-1016 CELP 3.2 code in the
+anonymous FTP area on super.org (192.31.192.1).  It's in:
+
+  /pub/celp_3.2a.tar.Z (please be sure to do the ftp in binary mode).
+
+This is essentially the PC release that was on fumar, except that we
+started directly from the PC disks.  The value added is that we have
+made over 69 corrections and fixes.  Most of these were necessary
+because of the 8 character file name limit on DOS, but there are some
+others, as well.
+
+The code (C, FORTRAN, diskio) all has been built and tested on a Sun4
+under SunOS4.1.3.  If you want to run it somewhere else, then you may
+have to do a bit of work.  (A Solaris 2.x-compatible release is
+planned soon.)
+
+[One note to PCers.  The files:
+[
+[       cbsearch.F celp.F csub.F mexcite.F psearch.F
+[
+[are meant to be passed through the C preprocessor (cpp).
+[We gather that DOS (or whatever it's called) can't distinguish 
+[the .F from a .f.  Be careful!
+
+Very limited support is available from the authors (Joe, et al.).
+Please do not send questions or suggestions without first reading the
+documentation (README files, the Technical Information Bulletin, etc.).
+The authors would enjoy hearing from you, but they have limited time
+for support and would like to use it as efficiently as possible.  They
+welcome bug reports, but, again, please read the documentation first.
+All users of FS-1016 CELP software are strongly encouraged to acquire
+the latest release (version 3.2a as of this writing).
+
+We do not know how long we will be able to leave the software on this
+site, but it should be _at_least_ through 1 October 1993 (if you find
+it missing, please drop me (Craig) a note).  Please try to get the
+software during off hours (8 p.m. - 7 a.m. Eastern Standard time) or
+folks here might complain and we'll have to get rid of the code (if
+that happens, we'll try to pass it on to someone else, who can put it
+on the net).  We would be more than happy for someone to copy it and
+make it available elsewhere.
+
+Good Luck,
+
+Craig F. Reese  (cfreese@super.org)
+IDA/Supercomputing Research Center
+
+Joe Campbell (jpcampb@afterlife.ncsc.mil)
+Department of Defense
+
+P.S.  Just so you all know, I (Craig) am not actually involved in
+CELP work.  I mainly got with Joe to help make the software available
+on the Internet.  In the course of doing so, I cleaned up much of it,
+but I am not, by any stretch, a CELP expert and will most likely
+be unable to answer any technical questions concerning it. ;^)
+
