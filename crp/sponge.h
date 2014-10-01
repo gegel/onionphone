@@ -12,17 +12,17 @@
 //
 // * LGPL 3.0 <http://www.gnu.org/licenses/lgpl.html>
 //
-// You�re free to copy, distribute and make commercial use
+// You’re free to copy, distribute and make commercial use
 // of this software under the following conditions:
 //
 // * You have to cite the author (and copyright owner): Van Gegel
-// * You have to provide a link to the author�s Homepage: <http://torfone.org>
+// * You have to provide a link to the author’s Homepage: <http://torfone.org>
 //
 ///////////////////////////////////////////////
 
 /*
 The Keccak sponge function, designed by Guido Bertoni, Joan Daemen,
-Michaël Peeters and Gilles Van Assche. For more information, feedback or
+MichaÃ«l Peeters and Gilles Van Assche. For more information, feedback or
 questions, please refer to our website: http://keccak.noekeon.org/
 
 Implementation by Ronny Van Keer,
@@ -58,10 +58,12 @@ extern int Sponge_data(KECCAK512_DATA *keccak, const BYTE *buffer, int len, BYTE
 extern void Sponge_finalize(KECCAK512_DATA *keccak, BYTE *tag, int taglen);
 
 //EXAMPLES
+/*
 extern void sponge_hash_512(BYTE *hash, const BYTE *in, int inlen );
 extern void sponge_hmac_128(BYTE *tag, const BYTE *key, int keylen, const BYTE *in, int inlen );
 extern void sponge_kdf(BYTE *key, int keylen, const unsigned char *salt, int saltlen, const unsigned char *pass, int passlen, int iteration );
 extern void sponge_ctr(BYTE *out, const unsigned char *key, int keylen, const unsigned char *iv, int ivlen, const unsigned char *in, int inlen );
 extern void sponge_enc(unsigned char *out, unsigned char *tag, int taglen, const unsigned char *key, int keylen, const unsigned char *header, int hlen, const unsigned char *in, int inlen );
 extern void sponge_dec(unsigned char *out, unsigned char *tag, int taglen, const unsigned char *key, int keylen, const unsigned char *header, int hlen, const unsigned char *in, int inlen );
+*/
 #endif
