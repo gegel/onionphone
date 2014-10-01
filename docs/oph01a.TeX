@@ -41,13 +41,13 @@ Since OnionPhone uses advanced cryptographic primitives and protocols it is not 
 \end{quotation}
 \pagebreak
 \texttt{\section{General description}}
-OnionPhone is a VOIP tool for calling over Tor network and can be used as a VOIP plugin for TorChat\cite{Kreuss12} . Call is  targeted to the Onion address of the recipient (it's hidden service HS). The recipient can install a reverse Onion connection to the originator's HS and use a faster channel periodically resetting the slower channel to reduce overall latency.
+OnionPhone is a VOIP tool for calling over Tor network which can be used as a VOIP plugin for TorChat\cite{Kreuss12} . Call is  targeted by the Onion address of the recipient (its hidden service HS). The recipient can initialize a reverse Onion connection to the originator's HS and use a faster channel periodically resetting the slower channel to reduce overall latency.
 
-Also  provides the ability to switch to a direct UDP connection (with NAT traversal) after the connection is established over Tor (Tor instead SIP without one specific server, the registration and collection of metadata). And also OnionPhone can establish a direct UDP or TCP connection to the specified port on IP-address or host.
+The ability to switch to a direct UDP connection (with NAT traversal) after the connection is established over Tor (Tor instead of SIP without a specialized server, any registration or metadata collection) is also provided. In addition, OnionPhone can establish a direct UDP or TCP connection to the specified port on IP-address or host.
 
-OnionPhone uses a proprietary protocol (not RTP)  with only one byte unencrypted header that  can provide some obfuscation of the DPI.
+OnionPhone uses a custom protocol (not RTP)  with only one byte unencrypted header that  can provide some obfuscation against DPI.
 
-OnionPhone provides independent level of p2p encryption and authentication that is uses modern cryptographic primitives: Diffie-Hellmann key exchange on \texttt{Elliptic Curve 25519} and \texttt{Keccak Sponge Duplexing} encryption. In the case of a call to the Onion address Tor protects against MitM attacks. Also the recipient can verify identity of  the originator's Onion address (only with the permission of the sender) similar the TorChat authentication.  Otherwise possible multifactors authentication:
+OnionPhone provides independent level of p2p encryption and authentication that uses modern cryptographic primitives: Diffie-Hellmann key exchange with \texttt{Elliptic Curve 25519} and \texttt{Keccak Sponge Duplexing} encryption. In the case of a call to the Onion address Tor protects against MitM attacks. Also the recipient can verify identity of  the originator's Onion address (only with the permission of the sender) similarly to the TorChat authentication.  Other possible ways of multifactor authentication are:
 \begin{itemize}
 \item voice (biometrics);
 \item using previously shared password (with the possibility of hidden notification of coercion);
@@ -55,17 +55,17 @@ OnionPhone provides independent level of p2p encryption and authentication that 
 \end{itemize}
 Onion Phone provides \texttt{Perfect Forward Secrecy} (uses a fresh key for each call) and \linebreak \texttt{Full  Deniability} for using long-term public keys of participants (as a fact and a content of the conversation): like a deniable SKEME \cite{RGK06} protocol uses for initial key exchange.
 
- OnionPhone can use a wide range of in-build voice codec (C source includes) from ultra low-bitrates up to high quality.  The full list is:
+ OnionPhone can use a wide range of built-in voice codecs (C source included) from ultra low-bitrates up to high quality.  The full list is:
  MELPE-1200, MELP-2400, CODEC2-1300, CODEC2-3200, LPC10-2400, CELP4800, AMR-4750/12200+DTX,
  LPC-5600+VOCODER, G723-6400, G729-8000, GSM-HR-5600, GSM-FR-13200, GSM-EFR-12400, ILBC-13333, BV16-16000, OPUS-6000VBR, SILK-10000VBR, SPEEX-15200VBR+R.
 Some of them are free, some require a license (check regional laws).
-Implemented noise suppressors (NPP7 and SPEEX) of environment sounds and automatic mike gain control. Built-in LPC vocoder \cite{BZ11}  with the possibility of irreversible change of voice (robot, breathy etc.). Specially designed dynamic adaptive buffer useful for smart compensate of jitter in high latency Onion environment. Available the radio mode (Push to Talk)  and voice control (Voice Active Detector)  with generation a short signal when transmission is completed.
+Additional features: Implemented noise suppressors (NPP7 and SPEEX) of environment sounds and automatic mic gain control. Built-in LPC vocoder \cite{BZ11}  featuring irreversible voice chage (robot, breathy etc.). Specially designed dynamic adaptive buffer useful for smart jitter compensation in high latency Onion environment. Radio mode (Push to Talk)  and voice control mode (Voice Active Detector with generation a short signal when transmission is completed) are available.
 
 The OnionPhone source (available on $github$:\cite{Gegel141}):
 \begin{itemize}
-\item is a console style, does not require installation and can be run from removable disk or TrueCrypt container;
+\item uses command-line style, does not require installation and can be run from removable disk or TrueCrypt container;
 \item is fully open source, developed on pure C at the possible lowest  level and carefully commented;
-\item statically linked, does not require additional third-party libraries and uses a minimum of system functions;
+\item is statically linked, does not require additional third-party libraries and uses a minimum of system functions;
 \item can be compiled under Linux OS (Debian, Ubuntu etc.) using GCC or under Win32 OS (from Windows 98 up to 8) using MinGW.
 \end{itemize}
 
