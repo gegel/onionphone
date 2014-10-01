@@ -50,7 +50,7 @@ http://creativecommons.org/publicdomain/zero/1.0/
 #define SP_NOABS 0x40
 
  //Original Keccak hashing (512bit hash)
-extern int crypto_hash(BYTE *out, const BYTE *in, QWORD inlen );
+//extern int crypto_hash(BYTE *out, const BYTE *in, QWORD inlen );
 
 //Duplex Sponge
 extern void Sponge_init(KECCAK512_DATA *keccak, const BYTE *key, int klen, const BYTE *header, int hlen);
