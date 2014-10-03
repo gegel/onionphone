@@ -277,62 +277,62 @@ Normally OnionPhone establishes a connection over Tor network. Despite the use o
 \item SPRNG is Keccak Sponge Duplexing RNG \cite{BDPA10, BDPA111} with Havege reseeding.
 \item Hashing, MAC, KDF are Keccak in 576/1600 mode\cite{BDPA11} ;
 \end{itemize}
-We don't use special MAC and KDF functions  i.e. Keccak is RO-PRF and can be directly uses  for this purpose.
+We don't use special MAC and KDF functions  i.e. Keccak is RO-PRF and can be directly used  for this purpose.
 \subsection{Symmetric encryption}
-Uses stream cipher based on Keccak.  Both parties maintain synchronized counters $ctr$ separately for sent and received packets. TCP transport is lossless and provides synchronization of counters by himself. For UDP each packet's header contains last 7 bit of sender's outgoing counter value for synchronization incoming counter on receiver’s side.
+Stream cipher based on Keccak is used.  Both parties maintain synchronized counters $ctr$ separately for sent and received packets. TCP transport is lossless and provides synchronization of counters by himself. For UDP each packet's header contains last 7 bit of sender's outgoing counter value for synchronization incoming counter on receiver’s side.
 For each packet Keccak Sponge initiates and absorbs 128-bits session key $s$, 32-bits counter $ctr$ and 8-bits flag $O$ is $0$ for an originator and $1$ for an acceptor of the call,  then squeezes gamma $g=H(s | ctr | O)$.
 
-Gamma XOR-ed with plainest $p$ (packet's bytes except first byte as a header $h$) provides ciphertext: $c=g \oplus p$.
-After packet was encrypted 32-bits MAC computed: $mac=H(s | ctr | O | h | c)$,
-After this counter increments by 1. There is no way to return counter back.
+Gamma XOR-ed with plainest $p$ (packet bytes except first byte as a header $h$) provides ciphertext: $c=g \oplus p$.
+After packet was encrypted 32-bits MAC is computed: $mac=H(s | ctr | O | h | c)$,
+After this counter is incremented by 1. There is no way to rewind the counter.
 
 Encrypted packet is $h, p, mac$. Decryption is similar to encryption.
 
 \subsection{Key formats}
-OnionPhone uses ECDH25519 256 bits private keys and 256 bits Montgomery public keys providing about 128 bit security level.
+OnionPhone uses ECDH25519 256 bits private keys and 256 bits Montgomery public keys providing approximately 128 bit security level.
 
-\textbf{Public key }is a text file contains: \textbf{Info}, \textbf{Key}, \textbf{Sig}(Info, Key), where:
+\textbf{Public key }is a text file containing: \textbf{Info}, \textbf{Key}, \textbf{Sig}(Info, Key), where:
 \begin{itemize}
-\item \textbf{Info} string with first symbol ``\#", name and options.
-Name is up to 31 characters string and option is symbol ``-",  followed by option type (capital letter),  followed by  string of parameters. Options separated by spaces. All options passes to address book for further processing by application.
+\item \textbf{Info} string begins with ``\#" symbol, folowed by name and options.
+Name is a string up to 31 characters and options is symbol ``-",  followed by option type (capital letter),  followed by  string of parameters. Options are separated by spaces. All options are passed to address book for further processing by application.
 
 Some other strings are optional comments etc.
 \item \textbf{Key} string is base64 representation of ECDH25519 public key (in figure brackets).
 \item \textbf{Sig} is a PGP signature as a part of key file: info-string and key string must be signed by PGP.
 \end{itemize}
-Key stamp ($ID$) is a first 128 bits of Keccak hash of  public key file. After public key was generated  and signed anyone can't modify it  but can optionally rename the file. Owner must add own public key to address book before using. All other parties also must add this key before using.
+Key stamp ($ID$) consists of the first 128 bits of Keccak hash of  public key file. After public key was generated  and signed noone can modify it  but it's possible to rename the file. Owner must add their own public key to address book before using it. All other parties also must add this key before using.
 
-\emph{Note:} public key is not self-signed. An attacker could re-sign someone else's key submit it as their own thereby trying to mount an UKS attack. This can be prevented including $ID$ in the authentication process. Implemented initial key exchange protocol completely solved this problem.
+\emph{Note:} public key is not self-signed. An attacker could re-sign someone else's key submit it as their own thereby trying to mount an UKS attack. This can be prevented including $ID$ in the authentication process. Implementing initial key exchange protocol completely solved this problem.
 
-\textbf{Private key} is a binary file contains 256 bits ECDH25519 secret. Private key can be saved unencrypted (32 bytes) or encrypted by password (64 bytes). Both formats are acceptable but encrypted format requires the use of command \textbf{-Yaccess} when working with the OnionPhone.
-For encryption of private key uses symmetric key derived from the password: initiates a Keccak Sponge, then once absorbs  the $salt$ string ``\$OnionPhone\_salt", then absorbs $password$ string 32768 times in a row, and then squeezes a 16-bytes key:
+\textbf{Private key} is a binary file containing 256 bits ECDH25519 secret. Private key can be saved unencrypted (32 bytes) or encrypted with password (64 bytes). Both formats are acceptable but encrypted format requires the use of command \textbf{-Yaccess} when working with the OnionPhone.
+Symmetric key derived from the password is used for private key encryption: a Keccak Sponge is initialised, which then absorbs  the $salt$ string ``\$OnionPhone\_salt", then absorbs $password$ string 32768 times in a row, and then squeezes a 16-bytes key:
 $s=H(salt | password | password | \ldots | password)$.
 
-To perform encryption Keccak Sponge initiates and absorbs key $s$ and randomly generated 16-bytes $nonce$, then squeezes a 32-bytes gamma: $g=H(s | nonce)$.
-Gamma XOR-ed  with private key’s body $x$ to produce encrypted data: $c=g \oplus x$.
-After packet was encrypted  16-bytes MAC computes: $mac=H(c | s | nonce)$.
+To perform encryption Keccak Sponge is initialized, then absorbs key $s$ and randomly generates 16-bytes $nonce$, then squeezes a 32-bytes gamma: $g=H(s | nonce)$.
+Gamma is XOR-ed  with private key body $x$ to produce encrypted data: $c=g \oplus x$.
+After packet was encrypted  16-bytes MAC is computed: $mac=H(c | s | nonce)$.
 Encrypted private key is $c, nonce, mac$.
 
-\textbf{Key pair ``guest"}  is a private key as a 32 bytes binary representation of string ``Guest secret http://torfone.org" and corresponding public key. This keys included by default and can be used for performing primary unauthenticated connection with an unknown receiver.
+\textbf{Key pair ``guest"}  is a private key as a 32 bytes binary representation of string ``Guest secret http://torfone.org" and corresponding public key. These keys are included by default and can be used for performing primary unauthenticated connection with an unknown receiver.
 
 \subsection{Deniability authenticated Key agreement}
 The core of implemented protocol is \texttt{SKEME}. The shared secret is derived only using the Diffie - Hellman exchange. Public parameters are signed by another key outputted by another protocol performed in parallel. The original \texttt{SKEME} \cite{Krawczyk96} uses the \texttt{Abadi} protocol \cite{AF03} as auxiliary. For this purpose we use a slightly modified \texttt{KEA+} protocol\cite{LM06} . This modification is known as the \texttt{TripleDH} and is used, for example, as a initial key exchange (IKE) in the \texttt{Axolotl} protocol\cite{TM13} .
 
-OnionPhone's IKE provides key agreement (produces fresh session key for each run achieving Prefect Forward Secrecy) and fully deniable authentication using long-term ECDH public keys signed by PGP.  If the parties can deny having exchanged a key with the other party then the rest of the communication can also be denied.
+OnionPhone's IKE provides key agreement (produces fresh session key for each run achieving Prefect Forward Secrecy) and fully deniable authentication using long-term ECDH public keys signed with PGP.  If the parties can deny having exchanged a key with the other party then the rest of the communication can also be denied.
 
-Proposed IKE intuitively view as deniable in both Deng at all \cite{DLZ01} (full deniability) and Raimondo and Gennaro (forward deniability) \cite{RG09} scenario even with a cooperating judge: while a dishonest party cooperate with judge before protocol running (but not during IKE) it still will not be able to convince the judge after IKE will be completed that the other party is really participated in the protocol. The initiator's view of the protocol can be simulated by an simulator that does not know the secret key of the acceptor and vice versa. The value of the session key also can be part of the output of the simulation so all subsequent session messages can also be simulated. Furthermore provides the ability of revealing of auxiliary MAC key after completing the IKE. This is a not a standard cryptographic way that's why this is optionally.
+Proposed IKE is intuitively viewed as deniable in both Deng at all \cite{DLZ01} (full deniability) and Raimondo and Gennaro (forward deniability) \cite{RG09} scenario even with a cooperating judge: while the dishonest party cooperates with judge before protocol running (but not during IKE) it is still will not be possible to convince the judge after IKE will be completed that the other party had really participated in the protocol. The initiator's view of the protocol can be simulated by an simulator that does not know the secret key of the acceptor and vice versa. The value of the session key also can be part of the output of the simulation so all subsequent session messages can also be simulated. Furthermore provided is the ability to reveal the auxiliary MAC key after completing the IKE. This is a not a standard cryptographic way, thus this feature is optional.
 
-The IKE looks like resistance to UKS and wPFS attacks. Note that full deniability property conflicts with KCI resistance. Therefore after the leak of  user's private key the attacker can impersonate anybody to him. In our case the attack can be mounted only when the victim never been in contact with the impersonated party and does not have his real public key yet. Fortunately the IKE is sensitive only to the leak of ECDH private key but not to the leak of  PGP private key used to sign.
+The IKE looks resistant to UKS and wPFS attacks. Note that full deniability property conflicts with KCI resistance. Therefore after the leak of  user's private key the attacker can impersonate anybody to him. In our case the attack can be mounted only when the victim had never been in contact with the impersonated party and does not have their real public key yet. Fortunately the IKE is sensitive only to the leak of ECDH private key but not to the leak of  PGP private key used to sign.
 
  \medskip
-\textbf{Protocol:} let $p$,$q$ are two large primes satisfying $q|(p-1)$, $G_1$ is an additive group of order $q$ on an elliptic curve 25519.  Public key $T = g^t$, where $t$ $\in$ $Z_q$ is the private key and $g=9$ is the base point of $G_1$. $H$ is a one-way hash function with RO-PRF property (SHA3 Keccak Sponge).
+\textbf{Protocol:} let $p$,$q$ be two large primes satisfying $q|(p-1)$, $G_1$ an additive group of order $q$ on an elliptic curve 25519.  Public key $T = g^t$, where $t$ $\in$ $Z_q$ is the private key and $g=9$ is the base point of $G_1$. $H$ is a one-way hash function with RO-PRF property (SHA3 Keccak Sponge).
 
 When Alice wants to exchange session key $s$ with Bob, they cooperatively perform the following
-steps. Here, Alice’s and Bob’s identities, public and private keys are $id_A$, $A$, $a$ and $id_B$, $B$, $b$ respectively. Both participants randomly picks nonce $N_A$ and $N_B$, two ephemeral secret keys $x$, $v$  and $y$, $w$ and computes public keys $X$, $V$ and $Y$, $W$  respectively.
+steps. Here, Alice’s and Bob’s identities, public and private keys are $id_A$, $A$, $a$ and $id_B$, $B$, $b$ respectively. Both participants randomly pick nonces $N_A$ and $N_B$, two ephemeral secret keys $x$, $v$  and $y$, $w$ and compute public keys $X$, $V$ and $Y$, $W$  respectively.
 
-The first Alice and then Bob computes and send each other their  randomly-looking hidden identifiers $D_A=H(id_A | B^v )$  and $ D_B=H(id_B | V^w )$, session public keys and nonce. Note that Alice the first commits her $X$, $N_A$ values and opens they only after receiving $Y$, $N_B$ from Bob.
+First Alice and then Bob computes and send each other their randomly-looking hidden identifiers $D_A=H(id_A | B^v )$  and $ D_B=H(id_B | V^w )$, session public keys and nonce. Note that Alice the first commits her $X$, $N_A$ values and opens them only after receiving $Y$, $N_B$ from Bob.
 
-Then participants shares the common auxiliary key $K=H(W^a | B^v | W^v)=H(A^w | V^b | V^w)$ and computes authenticators signing the public session parameters:  $M_A=H(K | V | W | X | Y | N_A | N_B)$ and $M_B=H(K | W | V | Y | X | N_B | N_A)$. After an exchange of authenticators and check them both participants can be assured of the identity of each other. Finally  participants shares the session key $s=H(X^y) \oplus N_A \oplus N_B = H(Y^x) \oplus N_A \oplus N_B$ and optionally reveals $K$.
+Then participants share the common auxiliary key $K=H(W^a | B^v | W^v)=H(A^w | V^b | V^w)$ and compute authenticators signing the public session parameters:  $M_A=H(K | V | W | X | Y | N_A | N_B)$ and $M_B=H(K | W | V | Y | X | N_B | N_A)$. After the exchange and checking of authenticators both participants can be assured of the identity of each other. Finally  participants share the session key $s=H(X^y) \oplus N_A \oplus N_B = H(Y^x) \oplus N_A \oplus N_B$ and optionally reveal $K$.
 
  \pagebreak
 Thus, to establish a session key parties $A$ and $B$ shall exchange the following messages:
@@ -348,7 +348,7 @@ $A \rightarrow B: $\hspace*{10mm}$ D_A,V, C$
 \bigskip
 \item $B$:
 
-searches contact in $id$-list matched $D_A$
+searches contact in $id$-list matching $D_A$
 
 $D_B=H(id_B | V^w), W=g^w, Y=g^y$, where $w$ $\in$ $Z_q$, $y$ $\in$ $Z_q$ at random
 
@@ -393,7 +393,7 @@ $A \rightarrow B: $\hspace*{2mm}$K$ (optionally reveals auxiliary key)
 \end{center}
 \newpage
 \subsection{Voice authentication}
-Voice (biometric) authentication is similar to SAS authentication in ZRTP \cite{Zimmermann10} and is useful to prevention the MitM attack if the participants know each other by voice. Participants must read each other a list $L$ of words based at the shared secret $s$. Since uses short authenticators (only 32 bits for the list of four words of the 256 available) commitment is needed to prevent the dishonest party influence of the shared secret to obtain the same SAS during the MitM attack:
+Voice (biometric) authentication is similar to SAS authentication in ZRTP \cite{Zimmermann10} and can prevent a MitM attack if the participants know each other by voice. Participants must read each other a list $L$ of words based on the shared secret $s$. Since uses short authenticators (only 32 bits for the list of four words of the 256 available) commitment is needed to prevent the dishonest party influence of the shared secret to obtain the same SAS during the MitM attack:
 \begin{enumerate}
 \item $A \rightarrow B: $\hspace*{10mm} $C=H(N_1)$, where $N_1$ at random
 \item $B \rightarrow A: $\hspace*{10mm} $N_2$ at random
@@ -402,7 +402,7 @@ Voice (biometric) authentication is similar to SAS authentication in ZRTP \cite{
 \end{enumerate}
 
 \subsection{Optional authentication using pre-shared password}
-This authentication can be performed for the detection of MitM attack after the key agreed and the shared secret derived. Password must be identical in both parties except last two chars: one of the parties swaps them with each other. Lets  Alice's password is $pass|p|q$ and Bob's password is $pass|q|p$. The participant under pressing must change last char of own password on any other. Authentication will look like correct from his side but other party will be notified. Each party can initiate authentication independently. For example, Alice is the originator of call and initiates authentication using pre-shared password:
+This authentication can be performed to detection a MitM attack after the key is agreed on and the shared secret is derived. Password must be identical in both parties except last two characters: one of the parties swaps their places. Let  Alice's password be $pass|p|q$ and Bob's password be $pass|q|p$. The participant under enforcement must change the last character of their password with any other. Authentication will look like correct from their side but the other party will be notified. Each party can initiate authentication independently. For example, Alice is the originator of the call and initiates authentication using pre-shared password:
 \begin{enumerate}
 \item $A \rightarrow B: $\hspace*{10mm} $U1_A=H( O | s | pass )$
 
@@ -420,9 +420,9 @@ $A \rightarrow B: $\hspace*{10mm} $U2_A=H( O | s | pass | q )$
 \end{enumerate}
 \newpage
 \subsection{Optional Originator's onion address verification}
-After originator was connects to acceptor's Hidden Service (HS) he is sure of acceptor's Onion address (while he trust Tor). But acceptor can't know initiator's Onion address: initiator must present it to acceptor. Acceptor can trust it only after it's verification.
+After originator has connected to the acceptor's Hidden Service (HS) he is sure of acceptor's Onion address (while he trust Tor). But acceptor can't know initiator's Onion address: initiator must present it to acceptor. Acceptor can trust it only after its verification.
 
-Lets Alice is originator and Bob accepts the connection to its HS, $s$ is shared secret, $O$ is byte $0$ for originator and $1$  for acceptor of the call:
+Let Alice be the originator and Bob accepts the connection to his HS, $s$ is shared secret, $O$ is byte $0$ for originator and $1$  for acceptor of the call:
 \begin{enumerate}
 \item $A: $ Connects to Bob's HS using their Onion address.
 
@@ -444,7 +444,7 @@ $A \Rightarrow B: $\hspace*{10mm} $I_S=H( O+4 | s )$
 Now Bob can be sure that remote Onion address matches submitted by Alice.
 \end{enumerate}
 
-For prevents unwanted verification  originator can't specified our Onion address in configuration file. So, the recipient does not know the Onion address of the originator and the originator remains completely anonymous.
+To prevent unwanted verification  originator can skip specifying their Onion address in the configuration file. Thus the recipient cannot know the Onion address of the originator and the originator remains completely anonymous.
 
 \newpage
 \begin{thebibliography}{4}
