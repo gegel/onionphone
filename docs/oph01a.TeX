@@ -59,7 +59,7 @@ Onion Phone provides \texttt{Perfect Forward Secrecy} (uses a fresh key for each
  MELPE-1200, MELP-2400, CODEC2-1300, CODEC2-3200, LPC10-2400, CELP4800, AMR-4750/12200+DTX,
  LPC-5600+VOCODER, G723-6400, G729-8000, GSM-HR-5600, GSM-FR-13200, GSM-EFR-12400, ILBC-13333, BV16-16000, OPUS-6000VBR, SILK-10000VBR, SPEEX-15200VBR+R.
 Some of them are free, some require a license (check regional laws).
-Additional features: Implemented noise suppressors (NPP7 and SPEEX) of environment sounds and automatic mic gain control. Built-in LPC vocoder \cite{BZ11}  featuring irreversible voice chage (robot, breathy etc.). Specially designed dynamic adaptive buffer useful for smart jitter compensation in high latency Onion environment. Radio mode (Push to Talk)  and voice control mode (Voice Active Detector with generation a short signal when transmission is completed) are available.
+Additional features: Implemented noise suppressors (NPP7 and SPEEX) of environment sounds and automatic mic gain control. Built-in LPC vocoder \cite{BZ11}  featuring irreversible voice chage (robot, whisper etc.). Specially designed dynamic adaptive buffer useful for smart jitter compensation in high latency Onion environment. Radio mode (Push to Talk)  and voice control mode (Voice Active Detector with generation a short signal when transmission is completed) are available.
 
 The OnionPhone source (available on $github$:\cite{Gegel141}):
 \begin{itemize}
@@ -99,7 +99,7 @@ Once started the OnionPhone is ready to receive incoming and make outgoing calls
 \item To make an outgoing call as a guest to guest (without use of personal public keys) type command:  \textbf{-Oremote\_onion\_address} and press $Enter$ then wait 10-30 sec for connection over Tor to be established.
 \item To toggle continuous voice transmission press $Enter$. Hold down / release the $Tab$  for Push-to-Talk mode.
 \item To apply the voice codec from 1 to 18 use the command  \textbf{-Ccodec\_number}. Smaller numbers correspond to low bitrate codecs, greater ones are for high quality. Numbers from 16 to 18 correspond to the variable bit rate codecs.
-\item To enable security vocoder use the command \textbf{-Qmode}, where $mode=3$ corresponds to  ``breathy"  voice (recommended), modes 6-255 correspond to ``robot" etc. To deactivate the vocoder use the command \textbf{-Q-3}.
+\item To enable security vocoder use the command \textbf{-Qmode}, where $mode=3$ corresponds to  ``whisper"  voice (recommended), modes 6-255 correspond to ``robot" etc. To deactivate the vocoder use the command \textbf{-Q-3}.
 \item To use the chat feature  type a message and send it by pressing $Enter$.
 \item To switch to direct UDP connection use the command \textbf{-S} (both parties must do this).
 \item To return into Tor from direct UDP connection use the command  \textbf{-O}.
@@ -160,57 +160,57 @@ Console menu allows to quickly enter commands which are most often performed by 
 \item \textbf{Others} - setup the backup counter Onion connection, reset application etc.
 \end{enumerate}
 \section{Commands}
-The command should start with a ``\textbf{-}" symbol followed capital letter followed optional parameter. No spaces can be between letter and parameter. Some commands can contain several subcommands separated by spaces. After typing the commands press $Enter$ for processing. While typing use $Back$ for correction of typed characters and $Del$ for canceling and cleaning the command string.
+The command should start with a ``\textbf{-}" symbol followed by a capital letter followed by an optional parameter. No spaces can be inserted between letter and parameter. Some commands can contain several subcommands separated by spaces. After typing the commands press $Enter$ for processing. While typing use $Back$ to correct the typed characters or $Del$ to cancel and clear the command string.
 \subsection{Address book management}
 
-\textbf{-V[filter] }displays all the entries of the address book containing the substring $filter$. If the parameter to be omitted displays all uncommented entries.
+\textbf{-V[filter] }displays all the entries of the address book containing the substring $filter$. Displays all uncommented entries if the parameter is omitted.
 
-\noindent \textbf{-E[name]} outputs the command for call to the subscriber $name$ defined in the address book. If parameter to be omitted outputs the most recently used call command (redialling).
+\noindent \textbf{-E[name]} outputs the command to call to the subscriber $name$ defined in the address book. Outputs the most recently used call command (redials) if the parameter is omitted.
 
 \subsection{Application and Connection management}
-\textbf{-H} graceful terminated the call.
+\textbf{-H} graceful terminates the call.
 
-\noindent  \textbf{-X} graceful shutdown the program.
+\noindent  \textbf{-X} gracefully shuts down the program.
 \subsection{Sound management}
 
-\textbf{-C[codec] }sets the codec for outgoing voice stream. Parameter $codec$ is codec number from 1 to 18. If the parameter is ``?", the commands shows the number of the current codec. If omitted, the default codec applies.
+\textbf{-C[codec] }sets the codec for outgoing voice stream. Parameter $codec$ is codec number from 1 to 18. If the parameter is ``?", the commands shows the number of the current codec. If omitted, the default codec is applied.
 
-\noindent \textbf{-J[jitter]} sets a fixed size of buffer to compensate transport jitter. Parameter $jitter$ is average buffering delay in milliseconds. If you use the parameter=``?" the current value displays.  If ``-1" the minimal buffering applies (lower latency but bad resistance to jitter).  If the parameter is omitted the automatic buffering adaptation to the communication channel will use (default).
+\noindent \textbf{-J[jitter]} sets a fixed size of buffer to compensate transport jitter. Parameter $jitter$ is average buffering delay in milliseconds. If you use the parameter=``?" the current value is displayed.  If it's ``-1" the minimal buffering is applied (lower latency but bad resistance to jitter).  If the parameter is omitted the automatic buffering adaptation to the communication channel will be used (default).
 
-\noindent \textbf{-Q[voice]} sets the style of  voice preprocessing. Parameter $voice$ is:  ``0"-no automatic microphone gain control (AGC) and no noise suppressing (NPP), ``1"-applies AGC, ``2"-applies NPP, ``3" - applies a vocoder in ``breathy" mode, ``4" - in ``high" mode, ``5"- in ``deep" mode,  ``6"-``255" -  in ``robot" mode with different pitch, ``-1"-disables AGC, ``-2"-disables NPP, ``-3"  - disables the  vocoder (unchanged voice will be sent), ``?" - show current state of voice processing.
+\noindent \textbf{-Q[voice]} sets the style of  voice preprocessing. Parameter $voice$ is:  ``0"-no automatic microphone gain control (AGC) and no noise suppressing (NPP), ``1"-applies AGC, ``2"-applies NPP, ``3" - applies a vocoder in ``whisper" mode, ``4" - in ``high" mode, ``5"- in ``deep" mode,  ``6"-``255" -  in ``robot" mode with different pitch, ``-1"-disables AGC, ``-2"-disables NPP, ``-3"  - disables the  vocoder (unchanged voice will be sent), ``?" - show current state of voice processing.
 
 \subsection{Key sharing}
 
-\textbf{-K[name]} sent specified public key $name$ from the our phone book to remote side. This command is only possible if the connection is active. If parameter omitted sent own public key specified in the configuration file. The keys are receives and automatically adds to the address book with option \textbf{-L}  without parameter (untrusted). Later user can view the address book and check out all the untrusted keys (check the PGP signature into key file) and edit the trust level to that key.
+\textbf{-K[name]} sends specified public key $name$ from the our phone book to remote side. This command is only possible if the connection is active. If parameter is omitted own public key specified in the configuration file is sent. The keys are received and automatically added to the address book with option \textbf{-L}  without parameter (untrusted). The user can view the address book and check out all the untrusted keys later (check the PGP signature into key file) and edit the trust level to that key.
 \subsection{Authentication}
 
 
-\textbf{-Yaccess} specifies password for private key correspondent for $our\_name$ used for processing all incoming and default outgoing calls. If private key is in encrypted format then this option must be applied immediately after OnionPhone runs otherwise you can not accept incoming calls.  If parameter is space applied  key access will be cleared. If parameter omitted applied key access will be checked for validity for specified secret key correspond our default name.
+\textbf{-Yaccess} specifies password for private key correspondent for $our\_name$ used for processing all incoming and default outgoing calls. If private key is in encrypted format then this option must be applied immediately after OnionPhone is started otherwise you can not accept incoming calls.  If the parameter is space applied  key access will be cleared. If the parameter is omitted applied key access will be checked for validity for specified secret key corresponding to our default name.
 
-The alternative way to introduce access is specify password as $Our\_secret\_access$ parameter in configuration file. In this case it is recommended to store OnionPhone folder  in a protected place (TrueCrypt container etc.). The access also can be temporarily applied to the current outgoing call using \textbf{-Yaccess} into the  call extended command \textbf{-N} (see below).
+The alternative way to introduce access is to specify the password as $Our\_secret\_access$ parameter in the configuration file. In this case it is recommended to store OnionPhone folder  in a protected place (TrueCrypt container etc.). The access also can be temporarily applied to the current outgoing call using \textbf{-Yaccess} into the  call extended command \textbf{-N} (see below).
 
 \noindent \textbf{-P[password]} applies a common password for authentication and initiates it. Passwords can contain from 3 to 31 characters and must be the same for both parties except for the last two characters: one of the participants swaps their places. The password can be used both during the established connection and when dialing (see the extended command for calls ), as well as defined for each user in the address book (in this case it will be applied automatically when an incoming call from that person occurred). If parameter omitted applied password will be cleared.
 
-In the case of manually entering a password (preferably for safety) provides the ability to hidden alerts the other side  being  under duress: user can changes the last character of the password on any other. In this case the authentication on his side will look as usual but on the opposite side participant receive a warning. An attacker can not verify in any way the correctness of the last letter of the password  even when analyzing dumps of previous sessions, controlling current session, as well as with the active ``fishing"  by creating test sessions to both parties, both before and after.
+In the case of manually entering the password (preferably for safety) it is possible to alert the other side to being under duress: user can change the last character of the password to any other. In this case the authentication on their side will look as usual but the participant on the opposite side will receive a warning. An attacker can not verify the correctness of the last letter of the password in any way, even when analyzing dumps of previous sessions, controlling current session, as well as with the active ``fishing"  by creating test sessions to both parties, both before and after.
 
-\noindent \textbf{-W[interval]} sets the interval to reconnect the slower of the two Onion connections (to reduce the overall latency of the connection). If parameter omitted the default value is used. If the parameter is ‘0’, the counter connection is not uses for data exchanging  and breaks immediately after verifying the Onion address. If  ``-1"  the counter connection is not established (also Onion address verification is not possible). If the parameter is too large  (e.g., ``1000000000"), the counter connection is used but never reconnected.
+\noindent \textbf{-W[interval]} sets the interval of how frequently to reconnect the slower of the two Onion connections (to reduce the overall latency of the connection). If parameter is omitted the default value is used. If the parameter is ‘0’, the counter connection is not used for data exchanging  and is closed immediately after verifying the Onion address. If  the parameter is ``-1"  the counter connection is not established (also Onion address verification is not possible). If the parameter is too large  (e.g., ``1000000000"), the counter connection is used but never reconnected.
 
-\noindent \textbf{-WI} command initiates verification originator's Onion address  by re-creating reverse connection to the declared hidden service and exchanging of verifiers (like TorChat authentication procedure). Command can be used only if the Tor connection to Onion address used and originator allowed verification. If the originator specified Onion address in configuration file and under the above conditions verification is performed automatically after the key agreement. Manually execution of this command is useful if the process was frozen.
+\noindent \textbf{-WI} command initiates the verification of originator's Onion address  by re-creating reverse connection to the declared hidden service and exchanging the verifiers (like TorChat authentication procedure). The command can be used only if the Tor connection to Onion address is used and verification is allowed by originator. If the originator specified Onion address in configuration file and under the above conditions verification is performed automatically after the key agreement. Manually executing this command is useful if the process was frozen.
 
-\noindent \textbf{-WR} command gracefully restored doubling process by sending the other side invite with a request to restart  their outgoing connection.
+\noindent \textbf{-WR} command gracefully restores the doubling process by sending the other side an invitation with a request to restart  their outgoing connection.
 
 \subsection{Switch to direct connection}
 
-\textbf{-S[stun] }Initiates switching from Onion connection to direct UDP connection using specifies STUN-server for the NAT traversal. If parameter omitted the default STUN specified in configuration file will be used. If  ``0",  NAT traversal attempts are not performed (in this case the direct connection is only possible if both parties are on the same subnet or if at least one of the parties has the ``real" IP-address on the interface of computer running OnionPhone.
+\textbf{-S[stun] }Initiates switching from Onion connection to direct UDP connection using specified STUN-server for the NAT traversal. If the parameter is omitted the default STUN server specified in configuration file will be used. If  the parameter is ``0",  NAT traversal attempts are not performed (in this case the direct connection is only possible if both parties are on the same subnet or if at least one of the parties has the ``real" IP-address on the interface of computer running OnionPhone.
 
-Command can be executed only if the Onion connection is already established. Both parties must executes this command to start process. If both parties are behind the full-cone NATs, or both are in a common subnet with the local IP (for example, home internet provider), and then each behind own router, the NAT traversal can fail. In this case users will be able to continue communication over Tor.
+The command can be executed only if the Onion connection is already established. Both parties must execute this command to start the process. If both parties are behind full-cone NATs, or both are in a common subnet with a ``gray'' IP address (for example, home internet provider), and then each of them behind a router, the NAT traversal can fail. In this case users will be able to continue communication over Tor.
 After a successful switch to direct UDP-connection the Onion connection is still available but not actually used for communication . At any time any user can stop the direct connection and return to the use of the Onion connection. To do this at least one of the participants must execute command \textbf{-O} with no parameter.
 
 \subsection{Extended call command}
 
-\textbf{-N[name] destination\_subcommad [options\_subcommands]} initiates a connection with the subscriber $name$ (the subscriber’s public key must be added  to address book). If the name is omitted the default $guest$ will be used. Public and private keys for the guest included in the OnionPhone by default and are available for each user (and also for the attacker). The authentication using $guest$ key is not performed  and there is a danger MitM-attack in the case of installation of direct connection. In the case of  connection over Tor the key agreement is going on inside Tor so MitM like impossible (while you trust Tor).
+\textbf{-N[name] destination\_subcommad [options\_subcommands]} initiates a connection with the subscriber $name$ (the subscriber’s public key must be added  to the address book). If the name is omitted the default $guest$ will be used. Public and private keys for the guest included in the OnionPhone by default and are available for each user (and also for the attacker). The authentication using $guest$ key is not performed  and the danger of a MitM-attack is present in the case of initiation of direct connection. In the case of  connection over Tor the key agreement is going on inside Tor so MitM is likely impossible (while you trust Tor).
 
-Parameter $destination\_commad$ specifies the type of transport (UDP, TCP, Onion) and the address of the recipient (IP or hostname and optionally port number separated by ``:"), for example:
+Parameter $destination\_command$ specifies the type of transport (UDP, TCP, Onion) and the address of the recipient (IP or hostname and optionally port number separated by ``:"), for example:
 \begin{verbatim}
 -U178.95.218.29:17447
 \end{verbatim}
@@ -222,15 +222,15 @@ Parameter $destination\_commad$ specifies the type of transport (UDP, TCP, Onion
 \end{verbatim}
 Connection type \textbf{-U} initiates direct UDP-connection, \textbf{-T} for direct TCP-connection, \textbf{-O} for TCP-connection over Tor. Address can be specified as a string IP, domain name or Onion address  with or without the suffix $.onion$. The port can be specified after the address separated by a colon. If no port is specified the default port  17447 will be used.
 
-Further separates by spaces can follow subcommands  \textbf{-P[password]} (see above) and \textbf{-I[our\_name]}:
-$our\_name$ parameter specifies the name of the originator appears to the recipient. If this option is completely omitted the proper name is defaults as defined in the configuration file. If \textbf{-I }option is used without a parameter the default name $guest$ will be uses (see above). If parameter is specified will use the specified name as proper name for current session. In this case the initiator should have files of both public and private keys for this name. In addition this public key must be added to the address book. Of course the recipient also must  have a public key for this name and this key must be added in his address book otherwise the connection will not be established.
+Subcommands  \textbf{-P[password]} (see above) and \textbf{-I[our\_name]} can follow, separated by spaces:
+$our\_name$ parameter specifies how the name of the originator should appear to the recipient. If this option is omitted $Our_name$ from the configuration file is sent instead. If \textbf{-I }option is used without a parameter the default name $guest$ will be used (see above). If the parameter is specified it will be used as a name for the current session. In this case the initiator should have files of both public and private keys for this name. In addition this public key must be added to the address book. Of course the recipient also must  have a public key for this name and this key must be added in their address book otherwise the connection will not be established.
 
-Option \textbf{-Yaccess} can  follow specifying the password to the secret key $our\_name$. Note this password temporary (only for this call) overwrites  access to default private key used for incoming calls.
-If subscribers are connected first with each other they can be assured only in the presence of guest key on both sides. Thus the first connection must be initiated as untrusted $guest \rightarrow guest$:
+Option \textbf{-Yaccess} can  follow specifying the password for the secret key $our\_name$. Note that this password temporary (only for this call) overwrites  access to default private key used for incoming calls.
+If both parties connect for the first time, the only key they have in common is probably the guest key. Thus the first connection must be initiated as untrusted $guest \rightarrow guest$:
 \begin{verbatim}
 -N -I -Oonion_address
 \end{verbatim}
-Such this connection is still encrypted with the session key but be resistant to MitM just so so you trust Tor. Also the parties can't be sure of the authenticity of each other (except for the possible verification Onion addresses similar to TorChat). Preinstalled untrusted connection can share PGP-signed long-term public keys using \textbf{-K} command (this is denied because keys are public and attacker can't be sure that customers really declare own key: user can also send multiple keys of other various users) . Received keys will be automatically added to the address books and marked as untrusted. After manually checking of the PGP signatures users can set the desired level of trust by editing contacts entries in the address book file. Later user can re-install already trusted connection, for example:
+This connection is still encrypted with the session key but its resistance to MitM depends fully on Tor. Also the parties can't be sure of the authenticity of each other (except for the possible verification Onion addresses similar to TorChat). Preinstalled untrusted connection can share PGP-signed long-term public keys using \textbf{-K} command (this is denied because keys are public and attacker can't be sure that customers really declare own key: user can also send multiple keys of other various users) . Received keys will be automatically added to the address books and marked as untrusted. After manually checking the PGP signatures users can set the desired level of trust by editing contacts entries in the address book file. Later user can re-initialize the connection to be fully trusted, for example:
 \begin{verbatim}
 -Nalice -Or4kxspnzpnsel4fu -Ibob
 \end{verbatim}
