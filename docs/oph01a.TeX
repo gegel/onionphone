@@ -235,13 +235,13 @@ This connection is still encrypted with the session key but its resistance to Mi
 -Nalice -Or4kxspnzpnsel4fu -Ibob
 \end{verbatim}
 \section{Key management}
-OnionPhone uses public keys to authenticate the subscribers to each other using PGP. Also the keys in this format will be used in other projects in the future (audio chat group, encryption radio and over-GSM-audio channels, etc.).   Console utility $addkey$ useful for key management:
+OnionPhone uses public keys to authenticate the subscribers to each other using PGP. Also keys in this format will be used in other projects in the future (audio chat group, encryption radio and over-GSM-audio channels, etc.).   Console utility $addkey$ is useful for key management:
 
-\hspace*{2mm}\emph{Step 1}: To generate a new key pair use:
+\hspace*{2mm}\emph{Step 1}: To generate a new key pair run:
 \begin{verbatim}
 ./addkey -Gname [-Yaccess] [options]
 \end{verbatim}
-where $name$ is your identifier, $access$ is password that will be encrypted private key and options will be passed to other participants. If \textbf{-Y}  is omitted the private key will be stored unencrypted. In this case it is recommended to store OnionPhone folder  in a protected place (TrueCrypt container etc.).
+where $name$ is your identifier, $access$ is password that will be used to encrypt your private key and options will be passed to other participants. If \textbf{-Y}  is omitted the private key will be stored unencrypted. In this case it is recommended to store OnionPhone folder in a protected place (TrueCrypt container etc.).
 
 The most common use is option \textbf{-Oour\_onion\_address} to present own address. Upon receipt of your key this option  will be automatically copied in address books of other participants. For example, after the command
 \begin{verbatim}
@@ -249,7 +249,7 @@ The most common use is option \textbf{-Oour\_onion\_address} to present own addr
 \end{verbatim}
 files $alice.sec$ (the private key encrypted  using password $1234$) and $alice$ (the public key) will be created in the folder $keys$.
 
-\hspace*{2mm}\emph{Step 2}: To sign the public key open it as a text and sign their content using PGP. Signature must be added  to the key file. Once the key has been signed further edition  is not allowed (rename still possible).
+\hspace*{2mm}\emph{Step 2}: To sign the public key open it as a text and sign their content using PGP. Signature must be added  to the key file. Once the key has been signed further edition  is not allowed (renaming is still possible).
 
 \hspace*{2mm}\emph{Step 3}: Before using the key you must add it to your address book:
 \begin{verbatim}
@@ -257,8 +257,8 @@ files $alice.sec$ (the private key encrypted  using password $1234$) and $alice$
 \end{verbatim}
 To use this key as its own default edit the OnionPhone configuration file $conf.txt$ specifying the key's name: $Our\_name=alice$
 
-\hspace*{2mm}\emph{Step 4}: Now you can send the key to other users. For transmission of the key establish  un-authenticated call $guest \rightarrow guest$ with the other party (see above) and execute
-\textbf{-Kalice} (or \textbf{-K} without parameter if this key is assigned as your own default). Key will be automatically added to the remote address book with the lower level of trust. After manual checking of PGP signature in the key file other parties can set the desired trust level  by editing \textbf{-L} parameter to the corresponding entries in the address book file $keys / contacts.txt$, for example:
+\hspace*{2mm}\emph{Step 4}: Now you can send the key to other users. For transmission of the key establish an un-authenticated call $guest \rightarrow guest$ with the other party (see above) and execute
+\textbf{-Kalice} (or \textbf{-K} without parameter if this key is assigned as your own default). Key will be automatically added to the remote address book with the lowest possible level of trust. After manual PGP signature check of the the key file other parties can set the desired trust level  by editing \textbf{-L} parameter to the corresponding entries in the address book file $keys / contacts.txt$, for example:
 \begin{verbatim}
 [alice] {FNrjEjGmlZtvKXzBQkNIDA ==} #alice -Or4kxspnzpnsel4fu -L1
 \end{verbatim}
@@ -269,7 +269,7 @@ You can also pass the key in any other way (for example, by email). The recipien
 
 \newpage
 \section{Cryptography design}
-Normally OnionPhone establishes a connection over Tor network. Despite the use of  Tor as a secure transport OnionPhone provides own layes of a p2p encryption and multifactors authentication. This allows  to use OnionPhone for direct connections out of  Tor.
+Normally OnionPhone establishes a connection over Tor network. Despite the use of  Tor as a secure transport OnionPhone provides own layes of a p2p encryption and multifactor authentication. This makes it possible to use OnionPhone for direct connections outside Tor.
 \subsection{Cryptograhic Primitives}
 \begin{itemize}
 \item Asymmetric cryptography is Diffie - Hellmann on EC25519  \cite{Bernstein06} used curve25519\_donna C-code\cite{Langley11} ;
