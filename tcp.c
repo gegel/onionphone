@@ -912,7 +912,7 @@ int connecttor(char* toraddr)
  if(their_onion[0]) strcpy(msgbuf, their_onion);
  else
  {
-  printf("Onion address not specified!\r\n");
+  printf("Onion address is not specified!\r\n");
   return 0;
  }
  //scan address string for port
@@ -1537,7 +1537,7 @@ int readtcpout(unsigned char* pkt)
      //Tor not pass socket closing immediately, we must notify other side first
      i=0;
      send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
-     printf("Key not agree!\r\n");
+     printf("No key agreement!\r\n");
      sock_close(0);
     }
    }
@@ -1657,7 +1657,7 @@ int readtcpout(unsigned char* pkt)
     //Tor not pass socket closing immediately, we must notify other side first
     i=0;
     send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
-    printf("Connecting closed because doubling not permitted in config\r\n");
+    printf("Connection closed because doubling is not permitted in config\r\n");
     sock_close(0);
    }
   }
@@ -1798,7 +1798,7 @@ int readtcpin(unsigned char* pkt)
     i=0;
     send(tcp_insock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
     sock_close(1);
-    printf("Connecting closed because doubling not permitted in config\r\n");
+    printf("Connecting closed because doubling is not permitted in config\r\n");
    }
   }
   return 0;
@@ -1907,7 +1907,7 @@ int do_read(unsigned char* pkt)
  }
  else if(bad_mac>64)
  {
-  printf("Lost of crypto synchronization, try restore...\r\n");
+  printf("Lost crypto synchronization, trying to restore...\r\n");
   bad_mac=60; //a little decrease bad counter for next
   in_ctr+=128; //move input counter out of synchro window
   pkt[0]=0x98; //emulate received syn request packet type:
@@ -2042,7 +2042,7 @@ void do_stun(char* cmd)
  //check for STUN server was specified in command or ini-file
  if(!msgbuf[0])
  {
-  printf("STUN server not specified!\r\n");
+  printf("STUN server is not specified!\r\n");
   return;
  }
   //determines STUN IP and port from string
@@ -2052,7 +2052,7 @@ void do_stun(char* cmd)
   if(naddrSTUN==INADDR_NONE) //if IP invalid, try resolve domain name
   {
    struct hostent *hh;
-   fprintf(stdout, "Resolving STUN, pleas wait...");
+   fprintf(stdout, "Resolving STUN, please wait...");
    fflush(stdout);
    hh = gethostbyname(msgbuf); //resolve domain name
    if (hh == 0) //no DNS reported
@@ -2118,7 +2118,7 @@ void do_nat(char* cmd)
   //check for STUN server was specified in command or ini-file
   if(!msgbuf[0])
   {
-   printf("STUN server not specified!\r\n");
+   printf("STUN server is not specified!\r\n");
    return;
   }
   else if(msgbuf!='0') //check for STUN disabled
@@ -2130,7 +2130,7 @@ void do_nat(char* cmd)
    if(naddrSTUN==INADDR_NONE) //if IP invalid, try resolve domain name
    {
     struct hostent *hh;
-    fprintf(stdout, "Resolving STUN, pleas wait...");
+    fprintf(stdout, "Resolving STUN, please wait...");
     fflush(stdout);
     hh = gethostbyname(msgbuf); //resolve domain name
     if (hh == 0) //no DNS reported
