@@ -60,7 +60,7 @@
 #include "./speex/speex/speex_resampler.h"
 
 
-//in interf_enc.h was commented stdint.h - not founed in win32
+//in interf_enc.h was commented stdint.h - not found in win32
 #define Word16 short
 #define UWord8 unsigned char
 
@@ -1562,8 +1562,8 @@ int do_snd(unsigned char *pkt)
   //check for cmdptr is null
   if(!cmdptr) //no users console input now, we can print notify
   {
-   if(etx_flag==TX_VAD) printf("\r     \rSPEEK "); //VAD activity detected in VOX mode
-   else if(etx_flag==TX_PTT) printf("\r     \rPUSH "); //user holded PTT button
+   if(etx_flag==TX_VAD) printf("\r     \rSPEAK "); //VAD activity detected in VOX mode
+   else if(etx_flag==TX_PTT) printf("\r     \rPUSH "); //user is holding PTT button
    else printf("\r     \rTALK "); //continious transmittion started
    fflush(stdout);
   }
