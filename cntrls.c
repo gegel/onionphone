@@ -290,7 +290,7 @@ int doaddr(void)
   fl=fopen(buf, "rt"); //try to open addressbook file
   if(!fl)
   {
-   printf("Contacts list not found\r\n");
+   printf("Contact list not found\r\n");
    return 0;
   }
   l=strlen(cmdbuf+2); //length of name
@@ -351,7 +351,7 @@ void showaddr(void)
  fl=fopen(buf, "rt"); //try to open addressbook file
  if(!fl)
  {
-  printf("Contacts list not found\r\n");
+  printf("Contact list not found\r\n");
   return;
  }
 
@@ -410,7 +410,7 @@ void sendkey(char* keyname)
   bb[0]=0;  //next do_key will be generates subsequent packets of this key
  }
  while(t==500); //while a not last packet
- if(t==504) printf("Key '%s' sended\r\n", keyname);
+ if(t==504) printf("Key '%s' sent\r\n", keyname);
  else printf("Error sending key\r\n");
 }
 
@@ -456,7 +456,7 @@ int dolist(int c)
  fl=fopen(buf, "rt"); //try to open addressbook file
  if(!fl)
  {
-  printf("Contacts list not found\r\n");
+  printf("Contact list not found\r\n");
   return 0;
  }
  i=-1; //line counter
@@ -710,7 +710,7 @@ int parsecmd(void)
    printf("3tone signal level is %d%\r\n", vad_level*10/128);
    printf("Noise signal level is %d%\r\n", vad_signal*10);
    if(sp_jit>0) printf("Current Jitter compensation=%d mS\r\n", sp_jit/8);
-   else if(!sp_jit) printf("Curren Jitter compensation is auto\r\n");
+   else if(!sp_jit) printf("Current Jitter compensation is automatic\r\n");
    else printf("Jitter buffer not used\r\n");
    get_jitter();
    printf("Current AGC=%d, NPP=%d, VOC=%d\r\n", sp_agc, sp_npp, sp_voc);
@@ -902,7 +902,7 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
   {
    if(!sp_agc)
    {
-    printf("Automatic gane control activated!\r\n");
+    printf("Automatic gain control activated!\r\n");
     sp_agc=1;
    }
    if(!sp_npp)
@@ -920,7 +920,7 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
   {
    if(sp_agc)
    {
-    printf("Automatic gane control deactivated!\r\n");
+    printf("Automatic gain control deactivated!\r\n");
     sp_agc=0;
    }
    if(sp_npp)
@@ -934,7 +934,7 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
 
   if((i==1)&&(!sp_agc))
   {
-   printf("Automatic gane control activated!\r\n");
+   printf("Automatic gain control activated!\r\n");
    sp_agc=1;
    speex_p(sp_npp,sp_agc); //set denoise and agc
   }
@@ -946,7 +946,7 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
   }
   else if((i==-1)&&(sp_agc))
   {
-   printf("Automatic gane control deactivated!\r\n");
+   printf("Automatic gain control deactivated!\r\n");
    sp_agc=0;
    speex_p(sp_npp,sp_agc); //set denoise and agc
   }
@@ -991,7 +991,7 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
    if(i>0)
    {
     rc_level=i;
-    printf("Apply Onion doubling chamge interval %d Sec\r\n", rc_level);
+    printf("Apply Onion doubling change interval %d Sec\r\n", rc_level);
    }
    else if(cmdbuf[2]=='?')
    {
@@ -1015,7 +1015,7 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
    if( parseconf(cmdbuf+2)<=0) cmdbuf[2]=0;
    else cmdptr=strlen(cmdbuf);  
   }
-  if(!cmdbuf[2]) printf("Key's name must be specified!\r\n");
+  if(!cmdbuf[2]) printf("Key name must be specified!\r\n");
   else sendkey(cmdbuf);
  }
 
