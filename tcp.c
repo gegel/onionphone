@@ -392,7 +392,7 @@ int get_sockstatus(void)
  if(udp_outsock!=INVALID_SOCKET)
  {
   sst+=2;
-  printf("UDP socket now binded on port %d\r\n", Our_portUDPint);
+  printf("UDP socket now bound on port %d\r\n", Our_portUDPint);
   //External  UDP outgoing IP:port reported by STUN
   if((Our_naddrUDPext!=INADDR_NONE)&&Our_portUDPext)
   {
@@ -499,7 +499,7 @@ int disconnect(void)
   else if(tcp_outsock_flag==SOCK_WAIT_HELLO)
   printf("No SOCKS5 on specified Tor interface\r\n");
   else if(tcp_outsock_flag==SOCK_WAIT_HS)
-  printf("Hidden Service anavaliable\r\n");
+  printf("Hidden Service unavaliable\r\n");
   else if(tcp_outsock_flag==SOCK_WAIT_HOST)
   printf("Host service unavaliable\r\n");
   else if(tcp_outsock_flag==SOCK_INUSE) //if socket in use
@@ -540,7 +540,7 @@ int disconnect(void)
  //Notify traffic
  if(bytes_sended | bytes_received)
  {
-  printf("Last session traffic: %0.3f MB sended, %0.3f MB received\r\n",
+  printf("Last session traffic: %0.3f MB sent, %0.3f MB received\r\n",
          (float)bytes_sended/1000000, (float)bytes_received/1000000);
   bytes_sended=0;
   bytes_received=0;
@@ -663,7 +663,7 @@ int connectudp(char* udpaddr)
    naddrTCP=inet_addr(msgbuf); //check for IP-address
    if(naddrTCP==INADDR_NONE) //if IP invalid, try resolve domain name
    {
-    fprintf(stdout, "Resolving, pleas wait...");
+    fprintf(stdout, "Resolving, please wait...");
     fflush(stdout);
     hh = gethostbyname(msgbuf); //resolve domain name
     if (hh == 0) //no DNS reported
@@ -813,7 +813,7 @@ int connecttcp(char* tcpaddr)
    naddrTCP=inet_addr(msgbuf); //check for IP-address
    if(naddrTCP==INADDR_NONE) //if IP invalid, try resolve domain name
    {
-    fprintf(stdout, "Resolving, pleas wait...");
+    fprintf(stdout, "Resolving, please wait...");
     fflush(stdout);
     hh = gethostbyname(msgbuf); //resolve domain name
     if (hh == 0) //no DNS reported
@@ -863,7 +863,7 @@ int connecttcp(char* tcpaddr)
  tcp_outsock_flag=SOCK_WAIT_HOST; //set soccket status
  settimeout(TCPTIMEOUT);  //set timeout for waiting connection
  strcpy(msgbuf, tcpaddr); //store command for do request after connection
- fprintf(stdout, "Connecting over TCP, pleas wait...\r\n");
+ fprintf(stdout, "Connecting over TCP, please wait...\r\n");
  fflush(stdout);
  return 0;
 }
@@ -912,7 +912,7 @@ int connecttor(char* toraddr)
  if(their_onion[0]) strcpy(msgbuf, their_onion);
  else
  {
-  printf("Onion address not specified!\r\n");
+  printf("Onion address is not specified!\r\n");
   return 0;
  }
  //scan address string for port
@@ -987,7 +987,7 @@ int connecttor(char* toraddr)
  if(toraddr)
  {  //for initial connection, not for doubling reconections
   strcpy(msgbuf, toraddr); //store command for do request after connection
-  printf("Connecting over Tor, pleas wait...\r\n");
+  printf("Connecting over Tor, please wait...\r\n");
   fflush (stdout);
  }
  return 0;
@@ -1007,9 +1007,9 @@ void reset_dbl(void)
  if((crp_state<3)||(!onion_flag))
  printf("No onion connection, command impossible\r\n");
  else if(rc_level<=0)
- printf("Doubling not permissed, set interval first\r\n");
+ printf("Doubling not permitted, set interval first\r\n");
  else if(!our_onion[0])
- printf("Our onion adress not specified in config file!\r\n");
+ printf("Our onion adress is not specified in config file!\r\n");
  else if((tcp_outsock_flag!=SOCK_INUSE)||(tcp_outsock==INVALID_SOCKET))
  {
   printf("Impossible: outgoing connection inactive now\r\n");
@@ -1022,7 +1022,7 @@ void reset_dbl(void)
    close(tcp_insock);
    tcp_insock=INVALID_SOCKET;
    tcp_insock_flag=0;
-   printf("Incoming socket already exist, destroyed\r\n");
+   printf("Incoming socket already exists, destroyed\r\n");
   }
   printf("Doubling request sended to remote party\r\n");
   rc_in=0; //reset packets counters for new measurement
@@ -1050,7 +1050,7 @@ void init_dbl(void)
  if((crp_state<3)||(!onion_flag))
  printf("No onion connection, command impossible\r\n");
  else if(rc_level<=0)
- printf("Doubling not permissed, set interval first\r\n");
+ printf("Doubling not permitted, set interval first\r\n");
  else if(!their_onion[0])
  printf("Our onion adress not received yet!\r\n");
  else if((tcp_insock_flag!=SOCK_INUSE)||(tcp_insock==INVALID_SOCKET))
@@ -1245,7 +1245,7 @@ int readudpin(unsigned char* pkt)
     close(udp_insock);
     udp_insock=INVALID_SOCKET;
     udp_insock_flag=0;
-    printf("udp_in socket error %d\r\nPlease restarts for continue UDP listening!\r\n", i);
+    printf("udp_in socket error %d\r\nPlease restart to continue UDP listening!\r\n", i);
    }
   }
   return -2; //error
@@ -1537,7 +1537,7 @@ int readtcpout(unsigned char* pkt)
      //Tor not pass socket closing immediately, we must notify other side first
      i=0;
      send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
-     printf("Key not agree!\r\n");
+     printf("No key agreement!\r\n");
      sock_close(0);
     }
    }
@@ -1657,7 +1657,7 @@ int readtcpout(unsigned char* pkt)
     //Tor not pass socket closing immediately, we must notify other side first
     i=0;
     send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
-    printf("Connecting closed because doubling not permissed in config\r\n");
+    printf("Connection closed because doubling is not permitted in config\r\n");
     sock_close(0);
    }
   }
@@ -1798,7 +1798,7 @@ int readtcpin(unsigned char* pkt)
     i=0;
     send(tcp_insock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
     sock_close(1);
-    printf("Connecting closed because doubling not permissed in config\r\n");
+    printf("Connecting closed because doubling is not permitted in config\r\n");
    }
   }
   return 0;
@@ -1907,7 +1907,7 @@ int do_read(unsigned char* pkt)
  }
  else if(bad_mac>64)
  {
-  printf("Lost of crypto synchronization, try restore...\r\n");
+  printf("Lost crypto synchronization, trying to restore...\r\n");
   bad_mac=60; //a little decrease bad counter for next
   in_ctr+=128; //move input counter out of synchro window
   pkt[0]=0x98; //emulate received syn request packet type:
@@ -2013,7 +2013,7 @@ void settimeout(int sec)
 //and send onion invite to remote using chat for initiate remote reconect
 void checkdouble(void)
 {
- //check for onion connection established, doubling permissed and our onion specified
+ //check for onion connection established, doubling permitted and our onion specified
  if( onion_flag && (rc_level>0) && our_onion[0])
  {
   rc_cnt=rc_state; //set counter by current state after data were readed
@@ -2042,7 +2042,7 @@ void do_stun(char* cmd)
  //check for STUN server was specified in command or ini-file
  if(!msgbuf[0])
  {
-  printf("STUN server not specified!\r\n");
+  printf("STUN server is not specified!\r\n");
   return;
  }
   //determines STUN IP and port from string
@@ -2052,7 +2052,7 @@ void do_stun(char* cmd)
   if(naddrSTUN==INADDR_NONE) //if IP invalid, try resolve domain name
   {
    struct hostent *hh;
-   fprintf(stdout, "Resolving STUN, pleas wait...");
+   fprintf(stdout, "Resolving STUN, please wait...");
    fflush(stdout);
    hh = gethostbyname(msgbuf); //resolve domain name
    if (hh == 0) //no DNS reported
@@ -2118,7 +2118,7 @@ void do_nat(char* cmd)
   //check for STUN server was specified in command or ini-file
   if(!msgbuf[0])
   {
-   printf("STUN server not specified!\r\n");
+   printf("STUN server is not specified!\r\n");
    return;
   }
   else if(msgbuf!='0') //check for STUN disabled
@@ -2130,7 +2130,7 @@ void do_nat(char* cmd)
    if(naddrSTUN==INADDR_NONE) //if IP invalid, try resolve domain name
    {
     struct hostent *hh;
-    fprintf(stdout, "Resolving STUN, pleas wait...");
+    fprintf(stdout, "Resolving STUN, please wait...");
     fflush(stdout);
     hh = gethostbyname(msgbuf); //resolve domain name
     if (hh == 0) //no DNS reported

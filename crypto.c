@@ -771,7 +771,7 @@ long getsec(void)
   str[0]='L';
   i=get_opt(bookstr, str);
   if(i<1) printf("Warning! Untrusted contact!\r\n");
-  else if(i>0) printf("Contact's trast level: %s\r\n", str);
+  else if(i>0) printf("Contact's trust level: %s\r\n", str);
 
    //find key owner's nickname from book
   i=get_nickname(bookstr, str); //find #nickname from contacts key
@@ -900,12 +900,12 @@ long getsec(void)
 
   //notify call
   strcpy(their_name, contact);
-  printf("Outgoing call from '%s' to '%s', wait to answer...\n", ourname, contact);
+  printf("Outgoing call from '%s' to '%s', waiting for answer...\n", ourname, contact);
 
   //check access to used secret key
   if(!check_access())
   {
-   printf("Call terminates\r\n");
+   printf("Call is terminated\r\n");
    disconnect();
    return 0;
   }
@@ -1057,7 +1057,7 @@ long getsec(void)
   i=get_seckey(ourname, our_pkeys+32); //b
   if(i!=32)
   {
-   printf("Secret keyfile '%s' not found or not valid!\r\n", ourname);
+   printf("Secret keyfile '%s' not found or invalid!\r\n", ourname);
    disconnect();
    return 0;
   }
@@ -1257,7 +1257,7 @@ long getsec(void)
   Sponge_finalize(&spng, TMP+32, 16); //aux_key
   if(memcmp(PREF, TMP+32, 16))
   {
-   printf("Answer from unknown, call terminates\r\n");
+   printf("Answer from unknown, terminating call\r\n");
    disconnect();
    return 0;
   }
@@ -1512,7 +1512,7 @@ long getsec(void)
    //check aux_key revealing
    if(memcmp(buf, aux_key, 16))
    {
-    printf("Revealed MAC key not matches!\r\n");
+    printf("Revealed MAC key does not match!\r\n");
     fflush(stdout);
    }
    else
@@ -1548,7 +1548,7 @@ long getsec(void)
   //check for status and set originator flag
   if(crp_state<2)
   {
-   printf("Doing authentication impossible: connection not established!\r\n");
+   printf("Authentication impossible: connection is not established!\r\n");
    return 0;
   }
   else if(crp_state==3) org=(!org); //set originator flag
@@ -1578,7 +1578,7 @@ long getsec(void)
   //check for packet type
   if(pkt[0]!=(TYPE_AUREQ|0x80))
   {
-   printf("Received packet is not a autentification request type!\r\n");
+   printf("Received packet is not an autentification request type!\r\n");
    return 0;
   }
   //check password minimum 3 chars
@@ -1589,7 +1589,7 @@ long getsec(void)
   //check for status and set originator flag
   if(crp_state<2)
   {
-   printf("Going authentication impossible: connection not established!\r\n");
+   printf("Authentication is impossible: connection is not established!\r\n");
    return 0;
   }
   else if(crp_state==3) org=(!org);
@@ -1642,7 +1642,7 @@ long getsec(void)
   //check for packet type
   if(pkt[0]!=(TYPE_AUANS|0x80))
   {
-   printf("Received packet is not a autentification answer type!\r\n");
+   printf("Received packet is not an autentification answer type!\r\n");
    return 0;
   }
   //check password minimum 3 chars
@@ -1651,7 +1651,7 @@ long getsec(void)
   //check for status and set originator flag
   if(crp_state<2)
   {
-   printf("Going authentication answer impossible: connection not established!\r\n");
+   printf("Sending authentication answer is impossible: connection is not established!\r\n");
    return 0;
   }
   else if(crp_state==3) org=(!org);
@@ -2068,7 +2068,7 @@ long getsec(void)
     sprintf(str, "%s%s", KEYDIR, "temp"); //add path
     if(!(F1 = fopen(str, "w+b" ))) //open specified keyfile
     {
-     printf("Error acception key!\r\n", str);
+     printf("Error accepting key!\r\n", str);
      return 0;
     }
    }
@@ -2119,7 +2119,7 @@ long getsec(void)
     { //compare last id with current
      if(!memcmp(keyid, lastid,16))
      {
-      printf("Key received: '%s', already exist\r\n", str1); //notification
+      printf("Key received: '%s', already exists\r\n", str1); //notification
       fflush(stdout);
       //delete temp file
       sprintf(str, "%s%s", KEYDIR, "temp"); //add path
@@ -2134,7 +2134,7 @@ long getsec(void)
    //open address book for append
    if(!(F1 = fopen(str2, "at" ))) //open specified bookfile
    {
-    printf("Error acception key!\r\n", str);
+    printf("Error accepting key!\r\n", str);
     return 0;
    }
    //add key string for adressbook

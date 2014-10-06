@@ -99,7 +99,7 @@ int rdcfg(void)
  fpp = fopen("audiocfg", "rt");  //try open config file
  if (fpp == NULL)
  {
-  printf("Cannot open wave config file, use defaut in/out devices 0\r\n");
+  printf("Cannot open wave config file, using defaut in/out devices 0\r\n");
   return -1;
  }
  else
@@ -132,7 +132,7 @@ int rdcfg(void)
     p=strchr(buf, ':');  //search separator
     if(p) DevOutN=atoi(++p); //string to integer from next char after it
    }
-   printf("In/out wave devices %d/%d will be uses\r\n", DevInN, DevOutN);
+   printf("In/out wave devices %d/%d will be used\r\n", DevInN, DevOutN);
    fclose(fpp);
   }
   return 0;
@@ -539,7 +539,7 @@ int dlg_start(void)
     {  //if no inputs
      CloseDevices ();
      IsSound=0;
-     printf("Start of audio input is failure\r\n");
+     printf("Starting audio input failed\r\n");
     }
    }
    return Success;

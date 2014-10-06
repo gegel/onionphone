@@ -89,7 +89,7 @@
      //check old key
     if(!oldpas)
     {
-     printf("Access to secret key must be specified!\r\n");
+     printf("Secret key passphrase must be specified!\r\n");
      return 0;
     }
      set_access(oldpas, aukey);  //computes temporary access to key
@@ -102,7 +102,7 @@
     //check mac
     if(memcmp(aukey+32, aukey+48, 16))
     {
-     printf("Wrong access to secret key!\r\n");
+     printf("Wrong secret key passphrase!\r\n");
      return 0;
     }
 
@@ -202,27 +202,27 @@ int main(int argc, char **argv)
  //no args: output help info
  if(argc<2)
  {
-  printf("OnionPhone keys manager: creates new keypairs\r\n");
+  printf("OnionPhone key manager: creates new keypairs\r\n");
   printf(" and adds users public keys to address book\r\n\r\n");
-  printf("For generation new keypair:\r\n");
+  printf("To generate a new keypair:\r\n");
   printf("addkey -Gname [-Yaccess] [other option]\r\n");
   printf("Pubkey 'name' and seckey 'name.sec' will be created\r\n");
   printf("Seckey will be protected with password 'access'\r\n");
-  printf("After new keypair will be generates you must sign content of pubkey\r\n");
-  printf("using your long-term PGP key ant put signature at the end of pubkey,\r\n");
+  printf("After the new keypair is generated you must sign the contents of pubkey\r\n");
+  printf("using your long-term PGP key ant put the signature at the end of pubkey,\r\n");
   printf("then add pubkey to your address book using addkey in -A mode\r\n\r\n");
-  printf("For adding public key to your address book:\r\n");
+  printf("To add a public key to your address book:\r\n");
   printf("addkey -Aname [-Bbookfile] [other option]\r\n");
   printf("default bookfile is 'contacts'\r\n\r\n");
-  printf("Other options pass to adressbook depend of application\r\n");
+  printf("Other options pass to adressbook depend on the application\r\n");
   printf("The most common option is:\r\n:");
-  printf("-U|-T|-Oadress:port for contact (UDP, TCP, OnionHS)\r\n");
-  printf("-L mark untrusted contact, -LX for ignore incoming from it\r\n");
+  printf("-U|-T|-Oadress:port for a contact (UDP, TCP, OnionHS)\r\n");
+  printf("-L mark the contact untrusted, -LX to ignore incoming messages from it\r\n");
   printf("-I hide own identity (use 'guest') for this contact\r\n");
   printf("-Ppass common passphrase for this contact\r\n\r\n");
   printf("Later your can edit options in book file manually\r\n");
-  printf("but can't edit key file after signing (renames only)\r\n"); 
-  printf("For encrypts, re-encrypts or decrypts seckey:\r\n");
+  printf("but can't edit key file after signing (rename only)\r\n"); 
+  printf("To encrypt, re-encrypt or decrypts the private key:\r\n");
   printf("addkey -Rname [-Yaccess]\r\n");
   return 0;
  }
@@ -279,7 +279,7 @@ int main(int argc, char **argv)
   printf("Type new name for secret key '%s' or Enter to overwrite:\r\n", name);
   gets(newname);
   if(newname[0]) name=newname;
-  printf("Type new password or Enter to saving unencrypted:\r\n");
+  printf("Type new password or Enter to save unencrypted:\r\n");
   gets(newpass);
   if(newpass[0]) pass=newpass; else pass=0;
   //save secret key
@@ -298,7 +298,7 @@ int main(int argc, char **argv)
   F=0;
   if(F = fopen(str, "rb" ))
   {
-   printf("Specified secret file already exist!\r\n");
+   printf("Specified secret file already exists!\r\n");
    fclose(F);
    return 0;
   }
@@ -306,7 +306,7 @@ int main(int argc, char **argv)
   sprintf(str, "%s%s", KEYDIR, name);
   if(F = fopen(str, "rb" ))
   {
-   printf("Specified key file already exist!\r\n");
+   printf("Specified key file already exists!\r\n");
    fclose(F);
    return 0;
   }
@@ -314,7 +314,7 @@ int main(int argc, char **argv)
   randInit(0, 0);
   randFetch(secret, 32);
 
- //generation of 'quest' dymmy keypair for project:
+ //generation of 'guest' dymmy keypair for project:
  //strcpy(secret, "Guest secret http://torfone.org");
  //pass=0;
 
@@ -371,10 +371,10 @@ int main(int argc, char **argv)
   }
   fclose(F);
   
-  printf("\r\nKeypair comletely creates. Now you have to sign the content\r\n");
+  printf("\r\nKeypair comletely created. Now you have to sign the content\r\n");
   printf("of the file '%s%s' (put PGP signature after the text).\r\n", KEYDIR, name);
   printf("Then you have to add it to your contacts book as own public key.\r\n");
-  printf("Pass this key to remote contacts any way. Don't change this key later!\r\n");
+  printf("Pass this key to remote contacts in any way. Don't change this key later!\r\n");
  }
  else
  {
@@ -435,7 +435,7 @@ int main(int argc, char **argv)
    fgets(str, sizeof(str), F);
    if(strstr(str, (char*)key))
    {
-    printf("Contact name already exist in adressbook!\r\n");
+    printf("Contact name already exists in adressbook!\r\n");
     return 0;
    }
   }

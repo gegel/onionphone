@@ -76,7 +76,7 @@ int main(int argc, char **argv)
   if(i) break; //break command
  }
  
- printf("By!!!\r\n");
+ printf("Bye!!!\r\n");
  fflush(stdout);
  tty_normode(); //back to normal terminal mode
  disconnect(); //terminate all network connections
