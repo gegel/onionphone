@@ -53,12 +53,12 @@ VAD=VAD1
 #
 # compiler flags (for normal, DEBUG compilation)
 #
-CFLAGS_NORM  = -O4
+CFLAGS_NORM  = -O3
 # -DETSI
 CFLAGS_DEBUG = -g -DDEBUG
 # -DETSI
 
-CFLAGS = -Wall  -I. $(CFLAGS_$(MODE)) -D$(VAD)
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -I. $(CFLAGS_$(MODE)) -D$(VAD)
 CFLAGSDEPEND = -MM $(CFLAGS)                    # for make depend
 
 
