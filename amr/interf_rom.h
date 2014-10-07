@@ -63,7 +63,7 @@ static const UWord8 block_size[16]={ 13, 14, 16, 18, 19, 21, 26, 31,
 #endif
 
 /* Subjective importance of the speech encoded bits */
-Word16 order_MR475[] =
+static Word16 order_MR475[] =
 {
    0, 0x80,
    0, 0x40,
@@ -161,7 +161,7 @@ Word16 order_MR475[] =
    11, 0x40,
    15, 0x40
 };
-Word16 order_MR515[] =
+static Word16 order_MR515[] =
 {
    0, 0x1,
    0, 0x2,
@@ -267,7 +267,7 @@ Word16 order_MR515[] =
    12, 0x8,
    16, 0x8
 };
-Word16 order_MR59[] =
+static Word16 order_MR59[] =
 {
    0, 0x80,
    0, 0x40,
@@ -388,7 +388,7 @@ Word16 order_MR59[] =
    12, 0x20,
    16, 0x20
 };
-Word16 order_MR67[] =
+static Word16 order_MR67[] =
 {
    0, 0x80,
    0, 0x40,
@@ -525,7 +525,7 @@ Word16 order_MR67[] =
    12, 0x100,
    16, 0x100
 };
-Word16 order_MR74[] =
+static Word16 order_MR74[] =
 {
    0, 0x80,
    0, 0x40,
@@ -676,7 +676,7 @@ Word16 order_MR74[] =
    12, 0x40,
    16, 0x40
 };
-Word16 order_MR795[] =
+static Word16 order_MR795[] =
 {
    0, 0x1,
    0, 0x2,
@@ -997,7 +997,7 @@ Word16 order_MR795[] =
    14, 0x200,
    19, 0x200
 };
-Word16 order_MR102[] =
+static Word16 order_MR102[] =
 {
    0, 0x1,
    0, 0x2,
@@ -1204,7 +1204,7 @@ Word16 order_MR102[] =
    9, 0x4,
    9, 0x2
 };
-Word16 order_MR122[] =
+static Word16 order_MR122[] =
 {
    0, 0x40,
    0, 0x20,
@@ -1451,7 +1451,7 @@ Word16 order_MR122[] =
    18, 0x1,
    44, 0x1
 };
-Word16 order_MRDTX[] =
+static Word16 order_MRDTX[] =
 {
    0, 0x4,
    0, 0x2,
