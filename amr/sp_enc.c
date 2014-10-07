@@ -10469,9 +10469,6 @@ static void cod_amr( cod_amrState *st, enum Mode mode, Float32 new_speech[],
    Word16 compute_sid_flag;
    Word16 vad_flag;
 
-   Word16 ttt;
-
-
    memcpy( st->new_speech, new_speech, L_FRAME <<2 );
 
    if ( st->dtx ) {
