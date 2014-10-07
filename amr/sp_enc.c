@@ -5201,6 +5201,7 @@ static void code_3i40_14bits( Float32 x[], Float32 h[], Word32 T0, Float32
    Word32 codvec[3];
    Word32 i;
 
+   bzero(codvec, 3);
 
    if ( ( T0 < L_CODE ) && ( pitch_sharp != 0 ) ) {
       for ( i = T0; i < L_CODE; i++ ) {
@@ -6237,6 +6238,8 @@ static void code_8i40_31bits( Float32 x[], Float32 cn[], Float32 h[],
    Word32 ipos[8], pos_max[NB_TRACK_MR102], codvec[8], linear_signs[
       NB_TRACK_MR102], linear_codewords[8];
    Word32 i;
+
+   bzero(ipos, 8);
 
    if ( pitch_sharp > 1.0F )
       pitch_sharp = 1.0F;
