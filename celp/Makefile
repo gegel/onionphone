@@ -3,7 +3,7 @@
 # -DPOSTFIL2	if present, uses postfilter style 2 (simpler)
 #
 
-CFLAGS = -Wall -fomit-frame-pointer -ffast-math -funroll-loops -O4
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -fomit-frame-pointer -ffast-math -funroll-loops -O3
 
 all:	celp.o
 	
