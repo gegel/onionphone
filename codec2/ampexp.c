@@ -299,7 +299,7 @@ static void add_quant_noise(struct AEXP *aexp, MODEL *model, int start, int end,
  */
 
 
-static void print_sparse_pred_error(struct AEXP *aexp, MODEL *model, float mag_thresh)
+/*static void print_sparse_pred_error(struct AEXP *aexp, MODEL *model, float mag_thresh)
 {
     int    m, index;
     float  mag, error;
@@ -325,14 +325,13 @@ static void print_sparse_pred_error(struct AEXP *aexp, MODEL *model, float mag_t
 	    sparse_pe[index] = error;
 	}
 
-	/* dump sparse amp vector */
+	// dump sparse amp vector
 
 	for(m=0; m<MAX_AMP; m++)
 	    printf("%f ", sparse_pe[m]);
 	printf("\n");
     }
-}
-
+}*/
 
 static float frame_energy(MODEL *model, float *enormdB) {
     int   m;
@@ -454,7 +453,7 @@ static int split_vq(float sparse_pe_out[], struct AEXP *aexp, struct codebook *v
 }
 
 
-static void sparse_vq_pred_error(struct AEXP *aexp, 
+/*static void sparse_vq_pred_error(struct AEXP *aexp,
 				 MODEL       *model 
 )
 {
@@ -481,7 +480,7 @@ static void sparse_vq_pred_error(struct AEXP *aexp,
 	weights[index] = model->A[m];
     }
 
-    /* vector quantise */
+    // vector quantise
         
     for(m=0; m<MAX_AMP; m++) {
 	sparse_pe_out[m] = sparse_pe_in[m];
@@ -507,7 +506,7 @@ static void sparse_vq_pred_error(struct AEXP *aexp,
 		aexp->vq_var += pow(sparse_pe_out[m] - sparse_pe_in[m], 2.0);
 	}
     
-    /* transform quantised amps back */
+    // transform quantised amps back
 
     for(m=1; m<=model->L; m++) {
 	index = MAX_AMP*m*model->Wo/PI;
@@ -518,10 +517,9 @@ static void sparse_vq_pred_error(struct AEXP *aexp,
 	model->A[m] = pow(10.0, amp_dB/20.0);
     }
     //exit(0);
-}
+}*/
 
-
-static void split_error(struct AEXP *aexp, struct codebook *vq, float sparse_pe_in[], int ind)
+/*static void split_error(struct AEXP *aexp, struct codebook *vq, float sparse_pe_in[], int ind)
 {
     (void)aexp;
 
@@ -532,8 +530,7 @@ static void split_error(struct AEXP *aexp, struct codebook *vq, float sparse_pe_
 	    sparse_pe_in[j] -= vq->cb[vq->k * ind + i];
 	}
     }
-}
-
+}*/
 
 static void sparse_vq_amp(struct AEXP *aexp, MODEL *model)
 {
