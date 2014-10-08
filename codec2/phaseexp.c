@@ -752,6 +752,8 @@ static float refine_Wo(struct PEXP     *pexp,
     int i;
     float Wo_est, best_var, Wo, var, pred, error, best_Wo;
 
+    best_Wo = 0;
+
     /* test variance over a range of Wo values */
 
     Wo_est = (model->Wo + pexp->Wo_prev)/2.0;
@@ -1034,6 +1036,7 @@ void smooth_phase3(struct PEXP *pexp, MODEL *model) {
 
     nbins = sizeof(bins)/sizeof(float);
     best_Wo = refine_Wo(pexp, model, 1, model->L);
+    b = 0;
 
     /* clear all bins */
 
@@ -1109,6 +1112,7 @@ void cb_phase1(struct PEXP *pexp, MODEL *model) {
 
     nbins = sizeof(bins)/sizeof(float);
     best_Wo = refine_Wo(pexp, model, 1, model->L);
+    b = 0;
 
     for(i=0; i<nbins; i++)
 	max_val[i] = 0.0;

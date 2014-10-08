@@ -967,6 +967,7 @@ void smooth_amp(struct AEXP *aexp, MODEL *model) {
     int    nav[MAX_BINS];
 
     nbins = sizeof(bins)/sizeof(float);
+    b = 0;
 
     /* clear all bins */
 
