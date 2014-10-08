@@ -569,7 +569,7 @@ int opus_i(void)
 //opus encode 480 samples (60mS) to 25-61 bytes
 int opus_e(unsigned char* buf, short* speech)
 {	
- return (opus_encode(enc, speech, 480, buf, 100));
+ return (opus_encode(enc, speech, 480, buf, 60));
 }
 //*****************************************************************************
 //opus decode len bytes to 480 samples

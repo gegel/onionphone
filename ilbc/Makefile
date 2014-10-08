@@ -6,9 +6,9 @@ AR = $(CROSS)ar
 
 CC_OPT=-fomit-frame-pointer -ffast-math -funroll-loops -O4
 
-#CFLAGS   = -Wall -pg -g -O2
+CFLAGS   = -Wall -O2
 
-CFLAGS = -Wall -fomit-frame-pointer -ffast-math -funroll-loops -O4
+#CFLAGS = -Wall -fomit-frame-pointer -ffast-math -funroll-loops -O4
 
 ARFLAGS  := rc
 

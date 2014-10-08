@@ -194,13 +194,41 @@ int main(int argc, char **argv)
  char* pass=0; //acess to secret file
  char* book=BOOK; //-B  adrressbook file name
  char* p;
- int i,t=0;
+ int i;
  char into=0;
  unsigned char c;
  FILE* F=0;
 
+
+ //parse args
+ for(i=1;i<argc;i++)
+ {
+  if(strlen(argv[i])<2) continue; //-X must be
+  if(argv[i][0]!='-') continue;
+  else if(argv[i][1]=='B') book=2+argv[i]; //address book file
+  else if(argv[i][1]=='A') name=2+argv[i]; //add key file = contact name in addressbook
+  else if(argv[i][1]=='G') //generate new keypair
+  {
+   newkey=1; //new key flag
+   name=2+argv[i]; //new name
+   if((i+1)<argc) pass=argv[i+1];
+  }
+ //-------------------------------------
+  else if(argv[i][1]=='R') //re-encode private key
+  {
+   newkey=-1; //re-encode key flag
+   name=2+argv[i]; //name
+   if((i+1)<argc) if(argv[i+1][0]!='-') pass=argv[i+1];
+  }
+  else if(argv[i][1]=='Y')
+  {
+   pass=2+argv[i];
+  }
+ }
+ //-----------------------------------------
+
  //no args: output help info
- if(argc<2)
+ if(!name)
  {
   printf("OnionPhone key manager: creates new keypairs\r\n");
   printf(" and adds users public keys to address book\r\n\r\n");
@@ -221,33 +249,12 @@ int main(int argc, char **argv)
   printf("-I hide own identity (use 'guest') for this contact\r\n");
   printf("-Ppass common passphrase for this contact\r\n\r\n");
   printf("Later your can edit options in book file manually\r\n");
-  printf("but can't edit key file after signing (rename only)\r\n"); 
+  printf("but can't edit key file after signing (rename only)\r\n");
   printf("To encrypt, re-encrypt or decrypts the private key:\r\n");
   printf("addkey -Rname [-Yaccess]\r\n");
   return 0;
  }
- //parse args
- for(i=1;i<argc;i++)
- {
-  if(strlen(argv[i])<2) continue; //-X must be
-  if(argv[i][0]!='-') continue;
-  else if(argv[i][1]=='B') book=2+argv[i]; //address book file
-  else if(argv[i][1]=='A') name=2+argv[i]; //add key file = contact name in addressbook
-  else if(argv[i][1]=='G') //generate new keypair
-  {
-   newkey=1; //new key flag
-   name=2+argv[i]; //new name
-   if((i+1)<argc) pass=argv[i+1];
-  }
- //-------------------------------------
-  else if(argv[i][1]=='R') //re-encode private key
-  {
-   newkey=-1; //re-encode key flag
-   name=2+argv[i]; //name
-   if((i+1)<argc) pass=argv[i+1];
-  }
- }
- //-----------------------------------------
+
  //check length of name (max) and book(max)
  i=strlen(name);
  if((!i)||(i>MAX_NAME))
@@ -342,7 +349,7 @@ int main(int argc, char **argv)
   {
    if( (strlen(argv[i])<2)  || (strlen(argv[i])>31) ) continue;
    if(argv[i][0]!='-')continue; //only valid args, skip args of addkey
-   if( (argv[i][1]=='A') || (argv[i][1]=='G') || (argv[i][1]=='B')) continue;
+   if( (argv[i][1]=='A') || (argv[i][1]=='G') || (argv[i][1]=='B') || (argv[i][1]=='Y') ) continue;
    sprintf(str+strlen(str), " %s", argv[i]);
   }
   sprintf(str+strlen(str), "\n");
@@ -391,37 +398,36 @@ int main(int argc, char **argv)
   while(!feof(F)) //process file byte-by-byte
   {
    c = getc(F);  //next char from keyfile
-   if(!feof(F))
-   {
-    Sponge_data(&spng, &c, 1, 0, SP_NORMAL);  //absorbing all file data
-   }
-   if(c=='#') //first char of info string
-   {
-    p=buf;  //set pointer to start of info
-    into=1; //enter into info area now
-    i=0;
-   }
-   //check for end of string, space or length restriction
-   if((c==0x0D)||(c==0x0A)||(c==' ')||((p-buf)>MAXINFO))
-   {
-    into=0; //out from info area
-   }
-   if(into) //if keyfile's info area  processed now
-   {
-    p[i]=c; //add char to info string
-    i++;
-   }
+   if(!feof(F)) Sponge_data(&spng, &c, 1, 0, SP_NORMAL);  //absorbing all file data
   }
   fclose(F);
-  if(i>128) //info too long
-  {
-   i=128; //truncates
-   t=1;  //set flag
-  }
-  if(i) p[i]=0; //terminate info string
   Sponge_finalize(&spng, key, 16); //get 16 bytes key stamp
   b64estr(key, 16, (char*)secret); //code it in b64
   sprintf((char*)key, "[%s]", name); //specified file/contact name
+
+ //Load info string
+  if(!(F = fopen(str, "rt" )))
+  {
+   printf("Key file not found!\r\n");
+   return 0;
+  }
+  buf[0]=0;
+  while(!feof(F))
+  {
+   fgets(buf, sizeof(buf), F);
+   if(buf[0]=='#') break;
+  }
+  fclose(F);
+  //check is found
+  if(buf[0]!='#')
+  {
+   printf("Info string not found into key!\r\n");
+   return 0;
+  }
+  //eliminate \r\n
+  for(i=0;i<strlen(buf);i++)
+  if( (buf[i]==0x0D)||(buf[i]==0x0A) ) buf[i]=0;
+
   //open book file
   sprintf(str, "%s%s", KEYDIR, book);
   if(!(F = fopen(str, "r+t" )))
@@ -450,11 +456,12 @@ int main(int argc, char **argv)
     sprintf(str+strlen(str), " %s", argv[i]);
   }
   //form contacts field in book
-  fprintf(F, "%s %s %s %s\n", (char*)key, (char*)secret, buf, str);
+  fprintf(F, "%s %s %s%s\n", (char*)key, (char*)secret, buf, str);
   fclose(F);
   //notification
-  printf("Added key from '%s' as %s", p, (char*)key);
-  if(t) printf(" (some info truncated)");
+  for(i=0;i<strlen(buf);i++)
+  if( (buf[i]==' ')||(buf[i]==0x0D)||(buf[i]==0x0A) ) buf[i]=0;
+  printf("Added key from '%s' as %s", buf+1, (char*)key);
   printf("\r\n");
  }
  return 0;
