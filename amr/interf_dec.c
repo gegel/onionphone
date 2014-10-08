@@ -982,16 +982,11 @@ void AMR_decode(void *st, UWord8 mode, UWord8 *serial, Word16 *synth, int bfi)
  const Word16 *bitno_m[8]={bitno_MR475, bitno_MR515, bitno_MR59,
  	bitno_MR67, bitno_MR74, bitno_MR795, bitno_MR102, bitno_MR122};
  
- //Encodec blocks length in byte for each mode	
- UWord8 bl_size_m[8]={12,13,15,17,19,20,26,31};
- 
 //Set variables for current mode   
  UWord8 homing_size=homing_size_m[mode];
  const Word16 *dhf=dhf_m[mode];
  UWord8 prmno=prmno_m[mode];
  const Word16 *bitno=bitno_m[mode];
- UWord8 bl_size=bl_size_m[mode];
-
 
  enum Mode speech_mode = mode;   /* speech mode */
  enum RXFrameType frame_type=RX_SPEECH_GOOD;   /* frame type */

@@ -14329,7 +14329,7 @@ static const Float32 corrweight[251] =
 };
 
 
-const struct
+static const struct
 {
    Word8 max_frac_lag; /* lag up to which fractional lags are used */
    Word8 flag3; /* enable 1/3 instead of 1/6 fract. resolution */
@@ -14341,7 +14341,7 @@ const struct
    Word8 delta_frc_range; /* fractional range around T0 */
    Word8 pit_min; /* minimum pitch */
 
-} static mode_dep_parm[8] =
+} mode_dep_parm[8] =
 {
    /*
     * MR475
