@@ -79,6 +79,9 @@ static void smoothcbgain(float *cbgain, int twoerror, float syndavg,
   float avg, var, abscbgain, vector[4];
   static float oldcbgain[CBGAINHISTORY];
 
+  for (i = 0; i < 4; i++)
+    vector[i] = 0;
+
   abscbgain = fabs(*cbgain);
   if (subframe != 4)
     enable = TRUE;

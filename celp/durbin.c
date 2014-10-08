@@ -55,6 +55,9 @@ static void durbin(float c0, float *c, float *a, int n)
   int i, j;
   float alpha, beta, rc[MAXNO], tmp[MAXNO];
 
+  for (i = 0; i < MAXNO; i++)
+    tmp[i] = 0;
+
   /* If zero energy, set rc's to zero & return  */
 
   if (c0 <= 0.0) 
