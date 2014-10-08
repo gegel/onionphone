@@ -54,8 +54,8 @@ LINK32_OBJS_ENCODER= \
 "$(OUTDIR)\encoder.exe" : "$(OUTDIR)" $(LINK32_OBJS_ENCODER)
     $(LINK32) $(ENCODER) $(LINK32_FLAGS_ENCODER) $(LINK32_OBJS_ENCODER)
 
-SOURCE=.\amr_speech_importance.obj
-"$(INTDIR)\decoder.obj" : $(SOURCE) "$(INTDIR)"
+SOURCE=.\amr_speech_importance.c
+"$(INTDIR)\amr_speech_importance.obj" : $(SOURCE) "$(INTDIR)"
 	$(CPP) $(CPP_PROJ) $(OPT_PROJ) $(SOURCE)
 
 SOURCE=.\decoder.c
