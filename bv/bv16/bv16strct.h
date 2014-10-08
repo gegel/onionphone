@@ -67,8 +67,8 @@ Word16 x[XOFF];                  /* Signal memory */
 Word16 xwd[XDOFF];               /* Memory of DECF:1 decimated version of xw() */
 Word16 xwd_exp;                  /* or block floating-point in coarptch.c */
 Word16 dq[XOFF];                 /* Q0 - Quantized short-term pred error */
-Word16 dfm_h[DFO];               /* Decimated xwd() filter memory */
-Word16 dfm_l[DFO];
+Word16 dfm_h[DFO+FRSZ];          /* Decimated xwd() filter memory */
+Word16 dfm_l[DFO+FRSZ];
 Word16 stwpm[LPCO];             /* Q0 - Short-term weighting all-pole filter memory */
 Word16 stsym[LPCO];             /* Q0 - Short-term synthesis filter memory */
 Word16 stnfz[NSTORDER];          /* Q0 - Short-term noise feedback filter memory - zero section */
