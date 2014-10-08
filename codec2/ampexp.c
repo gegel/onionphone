@@ -523,6 +523,8 @@ static void sparse_vq_pred_error(struct AEXP *aexp,
 
 static void split_error(struct AEXP *aexp, struct codebook *vq, float sparse_pe_in[], int ind)
 {
+    (void)aexp;
+
     int i, j;
 
     for(i=0, j=vq->offset; i<vq->k; i++,j++) {
@@ -955,6 +957,8 @@ static float bins[] = {
     3000.0, 3400.0, 3600.0, 4000.0};
 
 void smooth_amp(struct AEXP *aexp, MODEL *model) {
+    (void)aexp;
+
     int    m, i;
     int    nbins;
     int    b;

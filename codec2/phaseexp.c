@@ -489,6 +489,11 @@ static void sub_linear(MODEL *model, int start, int end, float phi1_est)
 
 static void top_amp(struct PEXP *pexp, MODEL *model, int start, int end, int n_harm, int pred)
 {
+#define ALTTOP
+#ifdef ALTTOP
+    (void)pred;
+#endif
+
     int removed = 0, not_removed = 0;
     int top, i, j;
     struct AMPINDEX sorted[MAX_AMP];
@@ -518,7 +523,6 @@ static void top_amp(struct PEXP *pexp, MODEL *model, int start, int end, int n_h
 	    }
 	}
 	
-	#define ALTTOP
 	#ifdef ALTTOP
 	model->phi[i] = 0.0; /* make sure */
 	if (top) {
@@ -573,6 +577,8 @@ static void limit_prediction_error(struct PEXP *pexp, MODEL *model, int start, i
 
 static void quant_prediction_error(struct PEXP *pexp, MODEL *model, int start, int end, float limit) 
 {
+    (void)limit;
+
     int   i;
     float pred, pred_error;
 
@@ -1156,7 +1162,8 @@ void cb_phase1(struct PEXP *pexp, MODEL *model) {
 
 void cb_phase2(struct PEXP *pexp, MODEL *model) {
     int   st, m, i, a, b, step;
-    float diff,w,c,s,phi1_;
+    float diff,w,c,s;
+    // float phi1_; // keep commented according to commented code
     float A[MAX_AMP];
 
     for(m=1; m<=model->L; m++) {
@@ -1182,7 +1189,7 @@ void cb_phase2(struct PEXP *pexp, MODEL *model) {
 	    w = 1.0;
 	    c += w*cos(diff); s += w*sin(diff);
 	}
-	phi1_ = atan2(s,c);
+	// phi1_ = atan2(s,c); // keep commented according to commented code
 	printf("replacing: ");
 	for(i=a; i<b; i++) {
 	    //model->phi[i] = i*phi1_;
