@@ -8,6 +8,7 @@ INTDIR=.\Codec
 CODER : "$(OUTDIR)\encoder.exe" "$(OUTDIR)\decoder.exe"
 
 CLEAN :
+	-@erase "$(INTDIR)\amr_speech_importance.obj"
 	-@erase "$(INTDIR)\encoder.obj"
 	-@erase "$(INTDIR)\interf_enc.obj"
 	-@erase "$(INTDIR)\sp_enc.obj"
@@ -37,11 +38,13 @@ LINK32_FLAGS_ENCODER=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib
 LINK32_FLAGS_DECODER=kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:console /incremental:no /machine:I386 /out:"$(OUTDIR)\decoder.exe" 
 
 LINK32_OBJS_DECODER= \
+	"$(INTDIR)\amr_speech_importance.obj" \
 	"$(INTDIR)\decoder.obj" \
 	"$(INTDIR)\interf_dec.obj" \
 	"$(INTDIR)\sp_dec.obj"
 
 LINK32_OBJS_ENCODER= \
+	"$(INTDIR)\amr_speech_importance.obj" \
 	"$(INTDIR)\encoder.obj" \
 	"$(INTDIR)\interf_enc.obj" \
 	"$(INTDIR)\sp_enc.obj" 
@@ -50,6 +53,10 @@ LINK32_OBJS_ENCODER= \
     $(LINK32) $(DECODER) $(LINK32_FLAGS_DECODER) $(LINK32_OBJS_DECODER)
 "$(OUTDIR)\encoder.exe" : "$(OUTDIR)" $(LINK32_OBJS_ENCODER)
     $(LINK32) $(ENCODER) $(LINK32_FLAGS_ENCODER) $(LINK32_OBJS_ENCODER)
+
+SOURCE=.\amr_speech_importance.obj
+"$(INTDIR)\decoder.obj" : $(SOURCE) "$(INTDIR)"
+	$(CPP) $(CPP_PROJ) $(OPT_PROJ) $(SOURCE)
 
 SOURCE=.\decoder.c
 "$(INTDIR)\decoder.obj" : $(SOURCE) "$(INTDIR)"
@@ -74,12 +81,4 @@ SOURCE=.\interf_enc.c
 SOURCE=.\sp_enc.c
 "$(INTDIR)\sp_enc.obj" : $(SOURCE) "$(INTDIR)"
 	$(CPP) $(CPP_PROJ) $(OPT_PROJ) $(SOURCE)
-	
-
-	
-
-
-
-
-
 
