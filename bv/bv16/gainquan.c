@@ -33,6 +33,7 @@
 #include "bv16externs.h"
 #include "basop32.h"
 #include "mathutil.h"
+#include "../itug729ilib/oper_32b.h"
 
 Word16 gainquan(
                 Word32  *gainq,   /* Q18 */ 

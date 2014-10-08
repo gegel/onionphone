@@ -32,6 +32,7 @@
 #include "bv16externs.h"
 #include "basop32.h"
 #include "mathutil.h"
+#include "../itug729ilib/oper_32b.h"
 
 Word32 gaindec(   /* Q18 */
                Word32   *lgq,    /* Q25 */

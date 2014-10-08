@@ -28,6 +28,7 @@
 #include "typedef.h"
 #include "bv16cnst.h"
 #include "basop32.h"
+#include "../itug729ilib/oper_32b.h"
 
 Word32   estlevel(
                   Word32   lg,

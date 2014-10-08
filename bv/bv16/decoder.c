@@ -34,6 +34,7 @@
 #include "utility.h"
 #include "mathutil.h"
 #include "postfilt.h"
+#include "../itug729ilib/oper_32b.h"
 
 void Reset_BV16_Decoder(struct BV16_Decoder_State *c)
 {

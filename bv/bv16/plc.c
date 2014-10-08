@@ -34,7 +34,7 @@
 #include "mathutil.h"
 #include "bv16externs.h"
 #include "postfilt.h"
-
+#include "../itug729ilib/oper_32b.h"
 
 void BV16_PLC(
               struct  BV16_Decoder_State   *ds,
