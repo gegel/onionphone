@@ -2,7 +2,7 @@
 
 #CFLAGS=-fomit-frame-pointer -ffast-math -funroll-loops
 
-CFLAGS = -Wall -fomit-frame-pointer -ffast-math -funroll-loops -O4
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -fomit-frame-pointer -ffast-math -funroll-loops -O3
 
 PROGRAM = c2demo
 
