@@ -440,7 +440,7 @@ static int split_vq(float sparse_pe_out[], struct AEXP *aexp, struct codebook *v
     printf("\n offset %d k %d m %d vq_ind %d j: ", vq->offset, vq->k, vq->m, vq_ind);
     
     non_zero = 0;
-    for(i=0, j=vq->offset; i<vq->k; i++,j++) {
+    for(i=0, j=vq->offset; (unsigned int)i<vq->k; i++,j++) {
 	if (sparse_pe_in[j] != 0.0) {
 	    printf("%d ", j);
 	    sparse_pe_in[j]  -= vq->cb[vq->k * vq_ind + i];
@@ -683,7 +683,7 @@ static void gain_shape_split_vq(float sparse_pe_out[], struct AEXP *aexp, struct
     //printf("\n offset %d k %d m %d vq_ind %d gain: %4.2f j: ", vq->offset, vq->k, vq->m, vq_ind, *best_gain);
   
     non_zero = 0;
-    for(i=0, j=vq->offset; i<vq->k; i++,j++) {
+    for(i=0, j=vq->offset; (unsigned int)i<vq->k; i++,j++) {
 	if (sparse_pe_in[j] != 0.0) {
 	    //printf("%d ", j);
 	    sparse_pe_out[j] = vq->cb[vq->k * vq_ind + i] + *best_gain;
@@ -749,7 +749,7 @@ static void interp_split_vq(float sparse_pe_out[], struct AEXP *aexp, struct cod
     int   i, j;
     float amp_dB;
   
-    for(i=0, j=vq->offset; i<vq->k; i++,j++) {
+    for(i=0, j=vq->offset; (unsigned int)i<vq->k; i++,j++) {
 	if (sparse_pe_in[j] != 0.0) {
 	    amp_dB  = 0.5*(aexp->mag[0] + vq->cb[vq->k * aexp->indexes[ind][0] + i]);
 	    amp_dB += 0.5*(aexp->mag[2] + vq->cb[vq->k * aexp->indexes[ind][2] + i]);

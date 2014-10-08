@@ -786,7 +786,7 @@ static void split_vq(COMP sparse_pe_out[], struct PEXP *pexp, struct codebook *v
     vq_ind = vq_phase(vq->cb, &sparse_pe_in[vq->offset], &weights[vq->offset], vq->k, vq->m, &pexp->vq_var);
   
     non_zero = 0;
-    for(i=0, j=vq->offset; i<vq->k; i++,j++) {
+    for(i=0, j=vq->offset; (unsigned int)i<vq->k; i++,j++) {
 	//printf("%f ", atan2(sparse_pe[i].imag, sparse_pe[i].real));
 	if ((sparse_pe_in[j].real != 0.0) && (sparse_pe_in[j].imag != 0.0)) {
 	    //printf("%d ", j);
