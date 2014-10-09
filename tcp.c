@@ -199,6 +199,7 @@ int fndport(char* buf)
 int sock_init(void)
 {
    unsigned long opt = 1; //for ioctl
+   int flag=1; //for setsockopt
    int ret = 0; //error code
    unsigned long naddrTCP=0; //temporary IP adress
    unsigned short port=0;      //temporary port
@@ -272,7 +273,7 @@ int sock_init(void)
        {  //create tcp socket
         if ((tcp_listener = socket(AF_INET, SOCK_STREAM, 0)) <0)
         {
-         perror("TcpListener");
+         perror("Error TcpListener");
          tcp_listener=INVALID_SOCKET;
         }
         else
@@ -288,10 +289,10 @@ int sock_init(void)
 
          portTCPlistener = port;
          naddrTCPlistener = naddrTCP;
-
+         setsockopt(tcp_listener, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, sizeof(flag));
          if (bind(tcp_listener, (struct sockaddr*)&saddrTCP, sizeof(saddrTCP)) < 0)
          {
-          perror("bind TCP");
+          perror("Error bind TCP");
           close(tcp_listener);
           tcp_listener=INVALID_SOCKET;
          }
@@ -323,7 +324,7 @@ tryudp:
        {  //create udp socket
         if ((udp_insock = socket(AF_INET, SOCK_DGRAM, 0)) <0)
         {
-         perror("UdpListener");
+         perror("Error UdpListener");
          udp_insock=INVALID_SOCKET;
         }
         else
@@ -339,10 +340,10 @@ tryudp:
 
          portUDPlistener = port;
          naddrUDPlistener = naddrTCP;
-
+         setsockopt(udp_insock, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, sizeof(flag));
          if (bind(udp_insock, (struct sockaddr*)&saddrTCP, sizeof(saddrTCP)) < 0)
          {
-          perror("bind UDP");
+          perror("Error bind UDP");
           close(udp_insock);
           udp_insock=INVALID_SOCKET;
          }
