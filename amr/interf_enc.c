@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <memory.h>
+#include "amr_speech_importance.h"
 #include "sp_enc.h"
 #include "interf_rom.h"
 

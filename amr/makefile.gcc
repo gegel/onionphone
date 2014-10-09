@@ -53,10 +53,10 @@ VAD=VAD1
 #
 # compiler flags (for normal, DEBUG compilation)
 #
-CFLAGS_NORM  = -O4 -DETSI
+CFLAGS_NORM  = -O3 -DETSI
 CFLAGS_DEBUG = -g -DDEBUG -DETSI
 
-CFLAGS = -Wall  -I. $(CFLAGS_$(MODE)) -D$(VAD)
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -I. $(CFLAGS_$(MODE)) -D$(VAD)
 CFLAGSDEPEND = -MM $(CFLAGS)                    # for make depend
 
 
@@ -67,8 +67,8 @@ TMP2=$(TMP:DEBUG=_debug)
 #
 # source/object files
 #
-ENCODER_SRCS=encoder.c sp_enc.c interf_enc.c
-DECODER_SRCS=decoder.c sp_dec.c interf_dec.c
+ENCODER_SRCS=encoder.c sp_enc.c interf_enc.c amr_speech_importance.c
+DECODER_SRCS=decoder.c sp_dec.c interf_dec.c amr_speech_importance.c
 
 ENCODER_OBJS=$(ENCODER_SRCS:.c=.o) 
 DECODER_OBJS=$(DECODER_SRCS:.c=.o)
@@ -119,7 +119,7 @@ clean_all: clean
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 encoder.o: encoder.c typedef.h interf_enc.h sp_enc.h
 sp_enc.o: sp_enc.c sp_enc.h typedef.h rom_enc.h
-interf_enc.o: interf_enc.c sp_enc.h typedef.h interf_rom.h rom_dec.h
+interf_enc.o: interf_enc.c amr_speech_importance.h sp_enc.h typedef.h interf_rom.h rom_dec.h
 decoder.o: decoder.c interf_dec.h typedef.h
 sp_dec.o: sp_dec.c sp_dec.h rom_dec.h typedef.h
-interf_dec.o: interf_dec.c typedef.h sp_dec.h interf_rom.h rom_dec.h
+interf_dec.o: interf_dec.c amr_speech_importance.h typedef.h sp_dec.h interf_rom.h rom_dec.h
