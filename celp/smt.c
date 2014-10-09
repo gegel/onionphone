@@ -81,6 +81,9 @@ static void smoothtau(float *tau, int twoerror, float syndavg,
   float avg, var, vector[4];
   static float oldtau[TAUHISTORY];
 
+  for (i = 0; i < 4; i++)
+    vector[i] = 0;
+
   if (subframe != 4)
     enable = TRUE;
   if ((twoerror || syndavg > SYNDLIMIT) && enable)

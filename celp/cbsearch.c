@@ -103,7 +103,6 @@ static void cbsearch(int l, float v[])
 {
   int i, codeword;
   float emax, gain[MAXNCSIZE], err[MAXNCSIZE];
-  float oldgain;
 
   /*		*find gain and -error term for each code word		*/
   /*		*and search for best code word (max -error term)	*/
@@ -136,8 +135,6 @@ static void cbsearch(int l, float v[])
   /*		*given best code word, recompute its gain to		*/
   /*		*correct any accumulated errors in recursions		*/
   gain[cbindex-1] = cgain(&x[codeword], l, TRUE, l, &err[cbindex-1]);
-
-  oldgain = gain[cbindex - 1];
 
   /* *constrained excitation						*/
   if (mxsw) 

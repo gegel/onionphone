@@ -85,6 +85,9 @@ static void smoothpgain(float *pgain, int twoerror, float syndavg,
   float abspgain, avg, var, sum1, sum2, vector[4];
   static float oldpgain[PGAINHISTORY];
 
+  for (i = 0; i < 4; i++)
+    vector[i] = 0;
+
   abspgain = fabs(*pgain);
   if (subframe != 4)
     enable = TRUE;

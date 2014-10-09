@@ -60,8 +60,12 @@
 static void intsynth(float lspnew[], int nn, float lsp[][MAXNO],
     int twoerror, float syndavg)
 {
+#ifndef CELPDIAG
+  (void)twoerror;
+  (void)syndavg;
+#endif
   int i, j, nonmono;
-  float temp[MAXNO+1], rc[MAXNO], dlsp[MAXNO + 1];
+  float temp[MAXNO+1], rc[MAXNO];
   static const float w[2][4] =   
   {
     { 0.875, 0.625, 0.375, 0.125 },  
@@ -120,11 +124,6 @@ static void intsynth(float lspnew[], int nn, float lsp[][MAXNO],
 
   lsptopc(lspnew, temp);
   pctorc(temp, rc, no);
-  for (i = 1; i < no; i++)
-  {
-    dlsp[i] = lspnew[i] - lspnew[i - 1];
-  }
-  dlsp[no] = 0.5 - lspnew[no - 1];
 
   /* *interpolate lsp's                                          */
   for (i = 0; i < nn; i++)

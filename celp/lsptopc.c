@@ -55,7 +55,10 @@
 
 static void lsptopc(float f[], float pc[])
 {
-  int i, j, k, noh, lspflag;
+  int i, j, k, noh;
+#ifdef CELPDIAG
+  int lspflag;
+#endif
   float freq[MAXNO], p[MAXNO / 2], q[MAXNO / 2];
   float a[MAXNO / 2 + 1], a1[MAXNO / 2 + 1], a2[MAXNO / 2 + 1];
   float b[MAXNO / 2 + 1], b1[MAXNO / 2 + 1], b2[MAXNO / 2 + 1];
