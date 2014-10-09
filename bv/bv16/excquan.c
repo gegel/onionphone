@@ -335,9 +335,8 @@ void excquan(
    Word16 *sp3;
    Word16 sign=1;
    Word16 m, n, jmin, iv;
-   Word16 gexpm1, gexpm3;
+   Word16 gexpm3;
    
-   gexpm1 = bv_sub(gain_exp, 1);
    gexpm3 = bv_sub(gain_exp, 3);
    
    /* COPY FILTER MEMORY TO BEGINNING PART OF TEMPORARY BUFFER */

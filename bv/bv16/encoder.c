@@ -32,6 +32,7 @@
 #include "bv16externs.h"
 #include "basop32.h"
 #include "utility.h"
+#include "../itug729ilib/oper_32b.h"
 
 void Reset_BV16_Encoder(struct BV16_Encoder_State *c)
 {

@@ -48,6 +48,7 @@ Word16 *allocWord16(long nl, long nh)
 /* from numerical recipes in C 2nd edition, page 946        */
 void deallocWord16(Word16 *v, long nl, long nh)
 {
+   (void)nh;
    
    free((char *)(v+nl));
    
@@ -73,6 +74,7 @@ Word32 *allocWord32(long nl, long nh)
 /* from numerical recipes in C 2nd edition, page 946        */
 void deallocWord32(Word32 *v, long nl, long nh)
 {
+   (void)nh;
    
    free((char *)(v+nl));
    

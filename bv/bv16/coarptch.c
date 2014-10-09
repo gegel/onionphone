@@ -31,6 +31,7 @@
 #include "bv16strct.h"
 #include "bv16externs.h"
 #include "basop32.h"
+#include "../itug729ilib/oper_32b.h"
 
 
 Word16 coarsepitch(
