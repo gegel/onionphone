@@ -789,6 +789,11 @@ void force_min_lsp_dist(float lsp[], int lpc_order)
 void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL *model, COMP Pw[], float ak[], 
                      int order, int dump, float beta, float gamma, int bass_boost)
 {
+    (void)model;
+#ifndef DUMP
+    (void)dump;
+#endif
+
     int   i;
     COMP  x[FFT_ENC];   /* input to FFTs                */
     COMP  Aw[FFT_ENC];  /* LPC analysis filter spectrum */	
@@ -1777,6 +1782,8 @@ static float ge_coeff[2] = {0.8, 0.9};
 
 void compute_weights2(const float *x, const float *xp, float *w, int ndim)
 {
+  (void)ndim;
+
   w[0] = 30;
   w[1] = 1;
   if (x[1]<0)

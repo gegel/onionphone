@@ -228,6 +228,10 @@ float nlp(
   float *prev_Wo
 )
 {
+#ifndef POST_PROCESS_MBE
+    (void)Sw;
+    (void)W;
+#endif
     NLP   *nlp;
     float  notch;		    /* current notch filter output    */
     COMP   fw[PE_FFT_SIZE];	    /* DFT of squared signal (input)  */
@@ -368,6 +372,8 @@ float post_process_sub_multiples(COMP Fw[],
 				 int pmin, int pmax, float gmax, int gmax_bin,
 				 float *prev_Wo)
 {
+    (void)pmin;
+
     int   min_bin, cmax_bin;
     int   mult;
     float thresh, best_f0;

@@ -394,6 +394,8 @@ float est_voicing_mbe(
     COMP   Ew[],          /* DFT of error                          */
     float prev_Wo)
 {
+    (void)prev_Wo;
+
     int   i,l,al,bl,m;    /* loop variables */
     COMP  Am;             /* amplitude sample for this band */
     int   offset;         /* centers Hw[] about current harmonic */

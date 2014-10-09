@@ -216,6 +216,7 @@ struct AMPINDEX {
     int   index;
 };
 
+#if defined(REAS_CAND1) || defined(REAS_CAND2)
 static void bubbleSort(struct AMPINDEX numbers[], int array_size)
 {
     int i, j;
@@ -235,9 +236,9 @@ static void bubbleSort(struct AMPINDEX numbers[], int array_size)
     }
   }
 }
+#endif
 
-
-static void print_pred_error(struct PEXP *pexp, MODEL *model, int start, int end, float mag_thresh) {
+/*static void print_pred_error(struct PEXP *pexp, MODEL *model, int start, int end, float mag_thresh) {
     int   i;
     float mag;
 
@@ -256,8 +257,7 @@ static void print_pred_error(struct PEXP *pexp, MODEL *model, int start, int end
 	//printf("\n");
     }
   
-}
-
+}*/
 
 static void predict_phases(struct PEXP *pexp, MODEL *model, int start, int end) {
     int i;
@@ -343,6 +343,7 @@ static void predict_phases2(struct PEXP *pexp, MODEL *model, int start, int end)
    
 }
 
+#if defined(REAS_CAND1) || defined(REAS_CAND2)
 static void rand_phases(MODEL *model, int start, int end) {
     int i;
 
@@ -350,6 +351,7 @@ static void rand_phases(MODEL *model, int start, int end) {
 	model->phi[i] = PI*(1.0 - 2.0*(float)rand()/RAND_MAX);
    
 }
+#endif
 
 static void quant_phase(float *phase, float min, float max, int bits) {
     int   levels = 1 << bits; 
@@ -376,6 +378,7 @@ static void quant_phases(MODEL *model, int start, int end, int bits) {
     }
 }
 
+#ifdef REAS_CAND3
 static void fixed_bits_per_frame(struct PEXP *pexp, MODEL *model, int m, int budget) {
     int res, finished;
 
@@ -397,11 +400,12 @@ static void fixed_bits_per_frame(struct PEXP *pexp, MODEL *model, int m, int bud
     predict_phases(pexp, model, m, model->L);
     //rand_phases(model, m, model->L);
 }
+#endif
 
 /* used to plot histogram of quantisation error, for 3 bits, 8 levels,
    should be uniform between +/- PI/8 */
 
-static void check_phase_quant(MODEL *model, float tol)
+/*static void check_phase_quant(MODEL *model, float tol)
 {
     int m;
     float phi_before[MAX_AMP];
@@ -417,10 +421,9 @@ static void check_phase_quant(MODEL *model, float tol)
 	if (fabs(err) > tol)
 	    exit(0);
     }
-}
+}*/
 
-
-static float est_phi1(MODEL *model, int start, int end)
+/*static float est_phi1(MODEL *model, int start, int end)
 {
     int m;
     float delta, s, c, phi1_est;
@@ -438,9 +441,9 @@ static float est_phi1(MODEL *model, int start, int end)
     phi1_est = atan2(s,c);
     
     return phi1_est;
-}
+}*/
 
-static void print_phi1_pred_error(MODEL *model, int start, int end)
+/*static void print_phi1_pred_error(MODEL *model, int start, int end)
 {
     int m;
     float phi1_est;
@@ -452,10 +455,9 @@ static void print_phi1_pred_error(MODEL *model, int start, int end)
 	err = atan2(sin(err),cos(err));
 	printf("%f\n", err);
     }
-}
+}*/
 
-
-static void first_order_band(MODEL *model, int start, int end, float phi1_est)
+/*static void first_order_band(MODEL *model, int start, int end, float phi1_est)
 {
     int   m;
     float pred_err, av_pred_err;
@@ -474,21 +476,25 @@ static void first_order_band(MODEL *model, int start, int end, float phi1_est)
 	model->phi[m] = atan2(sin(model->phi[m]), cos(model->phi[m]));
     }
 
-}
+}*/
 
-
-static void sub_linear(MODEL *model, int start, int end, float phi1_est)
+/*static void sub_linear(MODEL *model, int start, int end, float phi1_est)
 {
     int   m;
 
     for(m=start; m<end; m++) {
 	model->phi[m] = m*phi1_est;
     }
-}
+}*/
 
-
+#if defined(REAS_CAND1) || defined(REAS_CAND2)
 static void top_amp(struct PEXP *pexp, MODEL *model, int start, int end, int n_harm, int pred)
 {
+#define ALTTOP
+#ifdef ALTTOP
+    (void)pred;
+#endif
+
     int removed = 0, not_removed = 0;
     int top, i, j;
     struct AMPINDEX sorted[MAX_AMP];
@@ -518,7 +524,6 @@ static void top_amp(struct PEXP *pexp, MODEL *model, int start, int end, int n_h
 	    }
 	}
 	
-	#define ALTTOP
 	#ifdef ALTTOP
 	model->phi[i] = 0.0; /* make sure */
 	if (top) {
@@ -550,9 +555,9 @@ static void top_amp(struct PEXP *pexp, MODEL *model, int start, int end, int n_h
     printf("dim: %d rem %d not_rem %d\n", end-start, removed, not_removed);
 	    
 }
-
+#endif
     
-static void limit_prediction_error(struct PEXP *pexp, MODEL *model, int start, int end, float limit) 
+/*static void limit_prediction_error(struct PEXP *pexp, MODEL *model, int start, int end, float limit)
 {
     int   i;
     float pred, pred_error, error;
@@ -568,11 +573,12 @@ static void limit_prediction_error(struct PEXP *pexp, MODEL *model, int start, i
 	printf("%f\n", pred_error);
 	model->phi[i] = pred - pred_error;
     }
-}
+}*/
 
-
-static void quant_prediction_error(struct PEXP *pexp, MODEL *model, int start, int end, float limit) 
+/*static void quant_prediction_error(struct PEXP *pexp, MODEL *model, int start, int end, float limit)
 {
+    (void)limit;
+
     int   i;
     float pred, pred_error;
 
@@ -584,10 +590,9 @@ static void quant_prediction_error(struct PEXP *pexp, MODEL *model, int start, i
 	printf("%f\n", pred_error);
 	model->phi[i] = pred - pred_error;
     }
-}
+}*/
 
-
-static void print_sparse_pred_error(struct PEXP *pexp, MODEL *model, int start, int end, float mag_thresh)
+/*static void print_sparse_pred_error(struct PEXP *pexp, MODEL *model, int start, int end, float mag_thresh)
 {
     int    i, index;
     float  mag, pred, error;
@@ -613,14 +618,13 @@ static void print_sparse_pred_error(struct PEXP *pexp, MODEL *model, int start, 
 	    sparse_pe[index] = error;
 	}
 
-	/* dump spare phase vector in polar format */
+	// dump spare phase vector in polar format
 
 	for(i=0; i<MAX_AMP; i++)
 	    printf("%f ", sparse_pe[i]);
 	printf("\n");
     }
-}
-
+}*/
 
 static void update_snr_calc(struct PEXP *pexp, MODEL *model, float before[])
 {
@@ -746,6 +750,8 @@ static float refine_Wo(struct PEXP     *pexp,
     int i;
     float Wo_est, best_var, Wo, var, pred, error, best_Wo;
 
+    best_Wo = 0;
+
     /* test variance over a range of Wo values */
 
     Wo_est = (model->Wo + pexp->Wo_prev)/2.0;
@@ -780,7 +786,7 @@ static void split_vq(COMP sparse_pe_out[], struct PEXP *pexp, struct codebook *v
     vq_ind = vq_phase(vq->cb, &sparse_pe_in[vq->offset], &weights[vq->offset], vq->k, vq->m, &pexp->vq_var);
   
     non_zero = 0;
-    for(i=0, j=vq->offset; i<vq->k; i++,j++) {
+    for(i=0, j=vq->offset; (unsigned int)i<vq->k; i++,j++) {
 	//printf("%f ", atan2(sparse_pe[i].imag, sparse_pe[i].real));
 	if ((sparse_pe_in[j].real != 0.0) && (sparse_pe_in[j].imag != 0.0)) {
 	    //printf("%d ", j);
@@ -851,7 +857,7 @@ static void sparse_vq_pred_error(struct PEXP     *pexp,
 }
 
 
-static void predict_phases1(struct PEXP *pexp, MODEL *model, int start, int end) {
+/*static void predict_phases1(struct PEXP *pexp, MODEL *model, int start, int end) {
     int i;
     float best_Wo;
 
@@ -860,8 +866,7 @@ static void predict_phases1(struct PEXP *pexp, MODEL *model, int start, int end)
     for(i=start; i<=end; i++) {
 	model->phi[i] = pexp->phi_prev[i] + N*i*best_Wo;
     }
-}
-
+}*/
 
 /*
   This functions tests theory that some bands can be combined together
@@ -1028,6 +1033,7 @@ void smooth_phase3(struct PEXP *pexp, MODEL *model) {
 
     nbins = sizeof(bins)/sizeof(float);
     best_Wo = refine_Wo(pexp, model, 1, model->L);
+    b = 0;
 
     /* clear all bins */
 
@@ -1103,6 +1109,7 @@ void cb_phase1(struct PEXP *pexp, MODEL *model) {
 
     nbins = sizeof(bins)/sizeof(float);
     best_Wo = refine_Wo(pexp, model, 1, model->L);
+    b = 0;
 
     for(i=0; i<nbins; i++)
 	max_val[i] = 0.0;
@@ -1156,7 +1163,8 @@ void cb_phase1(struct PEXP *pexp, MODEL *model) {
 
 void cb_phase2(struct PEXP *pexp, MODEL *model) {
     int   st, m, i, a, b, step;
-    float diff,w,c,s,phi1_;
+    float diff,w,c,s;
+    // float phi1_; // keep commented according to commented code
     float A[MAX_AMP];
 
     for(m=1; m<=model->L; m++) {
@@ -1182,7 +1190,7 @@ void cb_phase2(struct PEXP *pexp, MODEL *model) {
 	    w = 1.0;
 	    c += w*cos(diff); s += w*sin(diff);
 	}
-	phi1_ = atan2(s,c);
+	// phi1_ = atan2(s,c); // keep commented according to commented code
 	printf("replacing: ");
 	for(i=a; i<b; i++) {
 	    //model->phi[i] = i*phi1_;
