@@ -259,9 +259,9 @@ gsmhr_encode(struct gsmhr *state, unsigned char *rb, const short *pcm)
         Shortword hr_params[20];
 	int i;
         
-	char a=0; //param's bytes counter
-        char b=0; //param's bits counter
-        char c; //output's bits counter
+	int a=0; //param's bytes counter
+        int b=0; //param's bits counter
+        int c; //output's bits counter
 
 	memcpy(pcm_b, pcm, F_LEN*sizeof(int16_t));
 
@@ -307,9 +307,9 @@ gsmhr_decode(struct gsmhr *state, short *pcm, const unsigned char *rb)
 #define TO_FIRST_SUBFRAME	 9
 
 	int dec_reset_flg;
-	char a=0; //param's bytes counter
-        char b=0; //param's bits counter
-        char c; //output's bits counter
+	int a=0; //param's bytes counter
+        int b=0; //param's bits counter
+        int c; //output's bits counter
 	Shortword hr_params[22];
 	Shortword hr_params_b[22];
 	Shortword *hr_eflags=hr_params+18;  //BFI, UFI, BCI
