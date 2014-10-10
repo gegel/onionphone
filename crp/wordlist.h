@@ -1,2 +1,2 @@
-char* getword(short b);
+const char* getword(short b);
 
