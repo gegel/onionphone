@@ -211,8 +211,8 @@ void w_Coder_12k2 (
     /* Scalars */
 
     Word16 i, j, k, i_w_subfr;
-    Word16 T_op, T0, T0_min, T0_max, T0_frac;
-    Word16 gain_pit, gain_code, pit_flag, pit_sharp;
+    Word16 T_op, T0 = 0, T0_min = 0, T0_max = 0, T0_frac = 0;
+    Word16 gain_pit, gain_code, pit_flag, pit_sharp = 0;
     Word16 temp;
     Word32 L_temp;
 

@@ -179,7 +179,7 @@ void w_set_sign (
 )
 {
     Word16 i, j;
-    Word16 val, cor, k_cn, k_dn, max, max_of_all, pos;
+    Word16 val, cor, k_cn, k_dn, max, max_of_all, pos = 0;
     Word16 en[L_CODE];                  /* correlation vector */
     Word32 s;
 
