@@ -272,6 +272,8 @@ void test_havege(void)
 
   int
 main(int argc, char **argv) {
+	(void)argc;
+	(void)argv;
 
 	printf("Tiny Crypto Library for OnionPhone\r\n");
 	printf("    http://torfone.org\r\n");
