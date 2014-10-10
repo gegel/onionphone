@@ -455,6 +455,7 @@ void Gsm_RPE_Encoding P5((S,e,xmaxc,Mc,xMc),
 	word	* Mc,		/* 			  	OUT */
 	word	* xMc)		/* [0..12]			OUT */
 {
+	(void)S;
 	word	x[40];
 	word	xM[13], xMp[13];
 	word	mant, exp;
@@ -478,6 +479,7 @@ void Gsm_RPE_Decoding P5((S, xmaxcr, Mcr, xMcr, erp),
 	word		* erp	 /* [0..39]			OUT 	*/
 )
 {
+	(void)S;
 	word	exp, mant;
 	word	xMp[ 13 ];
 

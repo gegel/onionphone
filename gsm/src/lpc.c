@@ -324,6 +324,9 @@ void Gsm_LPC_Analysis P3((S, s,LARc),
 	word 		 * s,		/* 0..159 signals	IN/OUT	*/
         word 		 * LARc)	/* 0..7   LARc's	OUT	*/
 {
+#if !defined(USE_FLOAT_MUL) && !defined(FAST)
+	(void)S;
+#endif
 	longword	L_ACF[9];
 
 #if defined(USE_FLOAT_MUL) && defined(FAST)
