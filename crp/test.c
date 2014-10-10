@@ -46,9 +46,9 @@ void test_memeq_hex(char* step, unsigned char* digest, const char* hex) {
 //Source from: https://github.com/nightcracker/ed25519
 //Vectors from: http://cr.yp.to/highspeed/naclcrypto-20090310.pdf
 void ec25519_test(void) {
-        unsigned char alicepk_edwards[32];
+        //unsigned char alicepk_edwards[32];
         unsigned char alicepk_montgomery[32];
-        unsigned char bobpk_edwards[32];
+        //unsigned char bobpk_edwards[32];
         unsigned char bobpk_montgomery[32];
         unsigned char alice_secret[32];
         unsigned char bob_secret[32];
