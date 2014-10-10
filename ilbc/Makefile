@@ -4,9 +4,9 @@ CC = $(CROSS)cc
 AS = $(CC)
 AR = $(CROSS)ar
 
-CC_OPT=-fomit-frame-pointer -ffast-math -funroll-loops -O4
+CC_OPT=-fomit-frame-pointer -ffast-math -funroll-loops -O2
 
-CFLAGS   = -Wall -O2
+CFLAGS   = -std=c99 -Wall -Wextra -pedantic
 
 #CFLAGS = -Wall -fomit-frame-pointer -ffast-math -funroll-loops -O4
 
@@ -126,7 +126,7 @@ LIBILBC_OBJS = $(LIBILBC_SRC:.c=.o)
 .SUFFIXES: .c .o
 
 .c.o:
-	$(AS) $(CC_OPT) -c -o $@ $^
+	$(AS) $(CC_OPT) $(CFLAGS) -c -o $@ $^
 %.a:
 	$(AR) $(ARFLAGS) $@ $^
 
