@@ -8,7 +8,7 @@ MODE=NORM
 
 CFLAGS_NORM  = 
 CFLAGS_DEBUG = -g -DDEBUG
-CFLAGS = -Wall  -I. $(CFLAGS_$(MODE))
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -I. $(CFLAGS_$(MODE))
 CFLAGSDEPEND = -MM $(CFLAGS)                    # for make depend
 
 TMP=$(MODE:NORM=)
