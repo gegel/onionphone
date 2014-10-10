@@ -294,7 +294,7 @@ void vad(
             MeanSZC = COEFZC*MeanSZC+((F)1.0- COEFZC)*ZC;
         }
         
-        if((frm_count >128) && ( (  MeanSE < Min ) && ( SD<(F)0.002532959)) || ( MeanSE > Min +(F)10.0 )){
+        if(((frm_count >128) && ( (  MeanSE < Min ) && ( SD<(F)0.002532959))) || ( MeanSE > Min +(F)10.0 )){
             MeanSE = Min;
             count_update = 0;
         }
