@@ -4,9 +4,9 @@ CC = $(CROSS)cc
 AS = $(CC)
 AR = $(CROSS)ar
 
-CC_OPT=-fomit-frame-pointer -ffast-math -funroll-loops -O4
+CC_OPT=-fomit-frame-pointer -ffast-math -funroll-loops -O3
 
-CFLAGS   = -Wall -pg -g -O4
+CFLAGS   = -std=c99 -Wall -Wextra -pedantic -pg -g -O3
 
 
 ARFLAGS  := rc
