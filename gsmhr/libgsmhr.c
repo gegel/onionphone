@@ -252,6 +252,8 @@ gsmhr_exit(struct gsmhr *state)
 EXPORT int
 gsmhr_encode(struct gsmhr *state, unsigned char *rb, const short *pcm)
 {
+	(void)state;
+
 	int enc_reset_flg;
 	Shortword pcm_b[F_LEN];
         Shortword hr_params[20];
