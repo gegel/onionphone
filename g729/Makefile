@@ -40,7 +40,7 @@ libg729.a: $(LOBJECTS)
 
 # Generation of the executable
 
-codercp : $(OBJETCS)
+codercp : $(OBJECTS)
 	cc $(CFLAGS) -o codercp $(OBJECTS) -lm
 
 clean:
