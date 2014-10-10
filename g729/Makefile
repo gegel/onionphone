@@ -1,7 +1,8 @@
   
 # Define compiler options 
 
-CC_OPT=-fomit-frame-pointer -ffast-math -funroll-loops -O4 
+CC_OPT=-fomit-frame-pointer -ffast-math -funroll-loops -O3
+CFLAGS = -std=c99 -Wall -Wextra -pedantic
 
 # Targets 
 
@@ -39,8 +40,8 @@ libg729.a: $(LOBJECTS)
 
 # Generation of the executable
 
-codercp : $(OBJETS)
-	cc -o codercp $(OBJETS) -lm
+codercp : $(OBJETCS)
+	cc $(CFLAGS) -o codercp $(OBJECTS) -lm
 
 clean:
 	rm -f $(PROGRAM) $(LOBJECTS) $(ARCH) core *.bak *.a *.o codercp.* codercp
@@ -52,152 +53,152 @@ clean:
 
 mus_dtct.o : mus_dtct.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h vad.h
-	cc -c $(CC_OPT) mus_dtct.c
+	cc $(CFLAGS) -c $(CC_OPT) mus_dtct.c
 
 codercp.o : codercp.c typedef.h ld8k.h ld8cp.h\
     dtx.h octet.h
-	cc -c $(CC_OPT) codercp.c
+	cc $(CFLAGS) -c $(CC_OPT) codercp.c
 
 codld8cp.o : codld8cp.c typedef.h ld8k.h ld8cp.h\
     tab_ld8k.h vad.h dtx.h sid.h
-	cc -c $(CC_OPT) codld8cp.c
+	cc $(CFLAGS) -c $(CC_OPT) codld8cp.c
 
 q_gaincp.o : q_gaincp.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h tabld8cp.h
-	cc -c $(CC_OPT) q_gaincp.c
+	cc $(CFLAGS) -c $(CC_OPT) q_gaincp.c
 
 tabld8cp.o : tabld8cp.c typedef.h ld8k.h ld8cp.h\
     tabld8cp.h
-	cc -c $(CC_OPT) tabld8cp.c
+	cc $(CFLAGS) -c $(CC_OPT) tabld8cp.c
 
 lpfunccp.o : lpfunccp.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h
-	cc -c $(CC_OPT) lpfunccp.c
+	cc $(CFLAGS) -c $(CC_OPT) lpfunccp.c
 
 dtx.o : dtx.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h vad.h dtx.h tab_dtx.h sid.h
-	cc -c $(CC_OPT) dtx.c
+	cc $(CFLAGS) -c $(CC_OPT) dtx.c
 
 pre_proc.o : pre_proc.c typedef.h ld8k.h tab_ld8k.h
-	cc -c $(CC_OPT) pre_proc.c
+	cc $(CFLAGS) -c $(CC_OPT) pre_proc.c
 
 bitscp.o : bitscp.c typedef.h ld8k.h ld8cp.h\
     tab_ld8k.h tabld8cp.h vad.h dtx.h tab_dtx.h\
     octet.h
-	cc -c $(CC_OPT) bitscp.c
+	cc $(CFLAGS) -c $(CC_OPT) bitscp.c
 
 lpccp.o : lpccp.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h tabld8cp.h
-	cc -c $(CC_OPT) lpccp.c
+	cc $(CFLAGS) -c $(CC_OPT) lpccp.c
 
 acelp_cp.o : acelp_cp.c typedef.h ld8k.h ld8cp.h\
     tabld8cp.h
-	cc -c $(CC_OPT) acelp_cp.c
+	cc $(CFLAGS) -c $(CC_OPT) acelp_cp.c
 
 bwfw.o : bwfw.c typedef.h ld8k.h ld8cp.h\
     tabld8cp.h
-	cc -c $(CC_OPT) bwfw.c
+	cc $(CFLAGS) -c $(CC_OPT) bwfw.c
 
 bwfwfunc.o : bwfwfunc.c typedef.h ld8k.h ld8cp.h\
     tabld8cp.h
-	cc -c $(CC_OPT) bwfwfunc.c
+	cc $(CFLAGS) -c $(CC_OPT) bwfwfunc.c
 
 cor_func.o : cor_func.c typedef.h ld8k.h
-	cc -c $(CC_OPT) cor_func.c
+	cc $(CFLAGS) -c $(CC_OPT) cor_func.c
 
 filtere.o : filtere.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) filtere.c
+	cc $(CFLAGS) -c $(CC_OPT) filtere.c
 
 gainpred.o : gainpred.c typedef.h ld8k.h tab_ld8k.h
-	cc -c $(CC_OPT) gainpred.c
+	cc $(CFLAGS) -c $(CC_OPT) gainpred.c
 
 lspgetqe.o : lspgetqe.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) lspgetqe.c
+	cc $(CFLAGS) -c $(CC_OPT) lspgetqe.c
 
 pitchcp.o : pitchcp.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h
-	cc -c $(CC_OPT) pitchcp.c
+	cc $(CFLAGS) -c $(CC_OPT) pitchcp.c
 
 pred_lt3.o : pred_lt3.c typedef.h ld8k.h tab_ld8k.h
-	cc -c $(CC_OPT) pred_lt3.c
+	cc $(CFLAGS) -c $(CC_OPT) pred_lt3.c
 
 pwf.o : pwf.c typedef.h ld8k.h
-	cc -c $(CC_OPT) pwf.c
+	cc $(CFLAGS) -c $(CC_OPT) pwf.c
 
 pwfe.o : pwfe.c typedef.h
-	cc -c $(CC_OPT) pwfe.c
+	cc $(CFLAGS) -c $(CC_OPT) pwfe.c
 
 p_parity.o : p_parity.c typedef.h ld8k.h
-	cc -c $(CC_OPT) p_parity.c
+	cc $(CFLAGS) -c $(CC_OPT) p_parity.c
 
 qsidgain.o : qsidgain.c typedef.h ld8k.h vad.h\
     dtx.h sid.h tab_dtx.h
-	cc -c $(CC_OPT) qsidgain.c
+	cc $(CFLAGS) -c $(CC_OPT) qsidgain.c
 
 qsidlsf.o : qsidlsf.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h sid.h vad.h dtx.h tab_dtx.h
-	cc -c $(CC_OPT) qsidlsf.c
+	cc $(CFLAGS) -c $(CC_OPT) qsidlsf.c
 
 qua_lspe.o : qua_lspe.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h tabld8cp.h
-	cc -c $(CC_OPT) qua_lspe.c
+	cc $(CFLAGS) -c $(CC_OPT) qua_lspe.c
 
 tab_dtx.o : tab_dtx.c typedef.h ld8k.h vad.h\
     dtx.h tab_dtx.h
-	cc -c $(CC_OPT) tab_dtx.c
+	cc $(CFLAGS) -c $(CC_OPT) tab_dtx.c
 
 tab_ld8k.o : tab_ld8k.c typedef.h ld8k.h
-	cc -c $(CC_OPT) tab_ld8k.c
+	cc $(CFLAGS) -c $(CC_OPT) tab_ld8k.c
 
 taming.o : taming.c typedef.h ld8k.h
-	cc -c $(CC_OPT) taming.c
+	cc $(CFLAGS) -c $(CC_OPT) taming.c
 
 utilcp.o : utilcp.c typedef.h ld8k.h
-	cc -c $(CC_OPT) utilcp.c
+	cc $(CFLAGS) -c $(CC_OPT) utilcp.c
 
 vad.o : vad.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h vad.h dtx.h tab_dtx.h
-	cc -c $(CC_OPT) vad.c
+	cc $(CFLAGS) -c $(CC_OPT) vad.c
 
 calcexc.o : calcexc.c typedef.h ld8k.h ld8cp.h\
     dtx.h
-	cc -c $(CC_OPT) calcexc.c
+	cc $(CFLAGS) -c $(CC_OPT) calcexc.c
 
 dec_sid.o : dec_sid.c typedef.h ld8k.h tab_ld8k.h\
     ld8cp.h tabld8cp.h vad.h dtx.h sid.h\
     tab_dtx.h
-	cc -c $(CC_OPT) dec_sid.c
+	cc $(CFLAGS) -c $(CC_OPT) dec_sid.c
 
 phdisp.o : phdisp.c typedef.h ld8k.h ld8cp.h\
     tabld8cp.h
-	cc -c $(CC_OPT) phdisp.c
+	cc $(CFLAGS) -c $(CC_OPT) phdisp.c
 
 dacelpcp.o : dacelpcp.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) dacelpcp.c
+	cc $(CFLAGS) -c $(CC_OPT) dacelpcp.c
 
 declagcp.o : declagcp.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) declagcp.c
+	cc $(CFLAGS) -c $(CC_OPT) declagcp.c
 
 decld8cp.o : decld8cp.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) decld8cp.c
+	cc $(CFLAGS) -c $(CC_OPT) decld8cp.c
 
 degaincp.o : degaincp.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) degaincp.c
+	cc $(CFLAGS) -c $(CC_OPT) degaincp.c
 
 lspdece.o : lspdece.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) lspdece.c
+	cc $(CFLAGS) -c $(CC_OPT) lspdece.c
 
 pstcp.o : pstcp.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) pstcp.c
+	cc $(CFLAGS) -c $(CC_OPT) pstcp.c
 
 track_pi.o : track_pi.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) track_pi.c
+	cc $(CFLAGS) -c $(CC_OPT) track_pi.c
 
 post_pro.o : post_pro.c typedef.h ld8k.h ld8cp.h
-	cc -c $(CC_OPT) post_pro.c
+	cc $(CFLAGS) -c $(CC_OPT) post_pro.c
 
 libg729.o : libg729.c typedef.h ld8k.h ld8cp.h\
     dtx.h octet.h
-	cc -c $(CC_OPT) libg729.c
+	cc $(CFLAGS) -c $(CC_OPT) libg729.c
 
 
