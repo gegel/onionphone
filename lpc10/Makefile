@@ -1,4 +1,4 @@
-CFLAGS = -Wall -fomit-frame-pointer -ffast-math -funroll-loops -O4
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -fomit-frame-pointer -ffast-math -funroll-loops -O3
 
 PROGRAM = lpc2400
 
