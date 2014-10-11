@@ -516,7 +516,7 @@ static void		smoothed_periodogram(Shortword YY_av, Shortword yy_shift)
 	Shortword	smoothed_av, alphacorr_new, alpha_N_min_1, alpha_num;
 	Shortword	smav_shift, shift, temp, temp1, tmpns, tmpalpha;
 	Shortword	noise__shift, temp_shift, tmpns_shift, max_shift;
-	Longword	L_sum, L_max, L_tmp;
+	Longword	L_sum, L_tmp;
 
 
 	/* ---- compute smoothed_av ---- */
@@ -606,7 +606,6 @@ static void		smoothed_periodogram(Shortword YY_av, Shortword yy_shift)
 	alpha_num = mult(ALPHA_N_MAX, alphacorr);
 
 	/* -- compute smoothed spectrum -- */
-	L_max = 0;
 	for (i = 0; i < ENH_VEC_LENF; i++){
 		tmpns = noisespect[i];
 
