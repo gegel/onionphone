@@ -324,6 +324,9 @@ float mf_vq_ms4(float *cb, float *u, float *u_est, int *levels, int ma, int stag
 
 float *mf_vq_msd2(float *cb, float *u, float *u_est, float *a, int *indices, int *levels, int stages, int p, int conversion)
 {
+    (void)a;
+    (void)conversion;
+
     float *u_hat,*cb_currentstage;
     int i;
 
