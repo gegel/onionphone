@@ -41,8 +41,6 @@
 //initialize SILK codec 
 //sets number of 20mS(160 samples) frames per packet (1-5)
 void SILK8_open (int fpp) {
-	int ret;
-   
        //set number of 20 mS (160 samoles) frames per packet (1-5)
     if((fpp<=MAX_INPUT_FRAMES)&&(fpp>0)) skp_frames_pp=fpp;
     packetSize_ms = skp_frames_pp * 20;
@@ -51,18 +49,18 @@ void SILK8_open (int fpp) {
     DecControl.sampleRate = 8000;
 		
    // Create decoder 
-    ret = SKP_Silk_SDK_Get_Decoder_Size( &decSizeBytes );
+    SKP_Silk_SDK_Get_Decoder_Size( &decSizeBytes );
     psDec = malloc( decSizeBytes );
 
     // Reset decoder 
-    ret = SKP_Silk_SDK_InitDecoder( psDec );
+    SKP_Silk_SDK_InitDecoder( psDec );
 
     // Create Encoder 
-    ret = SKP_Silk_SDK_Get_Encoder_Size( &encSizeBytes );	
+    SKP_Silk_SDK_Get_Encoder_Size( &encSizeBytes );
     psEnc = malloc( encSizeBytes );
     
     // Reset Encoder 
-    ret = SKP_Silk_SDK_InitEncoder( psEnc, &encControl );
+    SKP_Silk_SDK_InitEncoder( psEnc, &encControl );
     
     // Set Encoder parameters 
     encControl.sampleRate           = 8000;
@@ -80,14 +78,14 @@ void SILK8_open (int fpp) {
 int SILK8_encode
     (short *in, unsigned char *enc_payload) {	
 	
-	int ret,i,frsz=MAX_FRAME;
+	int i,frsz=MAX_FRAME;
 	SKP_int16 nBytes;
 	unsigned int lin_pos = 0;
        
 	for (i = 0; i < skp_frames_pp; i++) {
         // max payload size 
         nBytes = MAX_BYTES_ENC_PER_FRAME * skp_frames_pp;
-        ret = SKP_Silk_SDK_Encode( psEnc, &encControl, in+i*frsz, (SKP_int16)frsz, (SKP_uint8 *)(enc_payload+lin_pos), &nBytes );	
+        SKP_Silk_SDK_Encode( psEnc, &encControl, in+i*frsz, (SKP_int16)frsz, (SKP_uint8 *)(enc_payload+lin_pos), &nBytes );
 		lin_pos += nBytes;
 	}
 	
@@ -100,14 +98,13 @@ int SILK8_encode
 int SILK8_decode
     (short* output_buffer, unsigned char* buffer, int size) {
 
-	int ret;
 	SKP_int16 len;
 	SKP_int16	*outPtr;
 
     outPtr = output_buffer;
 
 	do {
-		ret = SKP_Silk_SDK_Decode( psDec, &DecControl, 0,(SKP_uint8 *) buffer, size, outPtr ,&len );		
+		SKP_Silk_SDK_Decode( psDec, &DecControl, 0,(SKP_uint8 *) buffer, size, outPtr ,&len );
         outPtr  += len;	
 	} while( DecControl.moreInternalDecoderFrames );
 

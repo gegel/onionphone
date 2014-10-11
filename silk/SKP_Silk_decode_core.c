@@ -37,7 +37,7 @@ void SKP_Silk_decode_core(
     const SKP_int               q[ MAX_FRAME_LENGTH ]               /* I    Pulse signal                */
 )
 {
-    SKP_int     i, k, lag = 0, start_idx, NLSF_interpolation_flag, sigtype, LTP_scale_Q14;
+    SKP_int     i, k, lag = 0, start_idx, NLSF_interpolation_flag, sigtype;
     SKP_int16   *A_Q12, *B_Q14, *pxq, A_Q12_tmp[ MAX_LPC_ORDER ];
     SKP_int16   sLTP[ MAX_FRAME_LENGTH ];
     SKP_int32   Gain_Q16, *pred_lag_ptr, *pexc_Q10, *pres_Q10, LTP_pred_Q14, LPC_pred_Q10;
@@ -81,7 +81,6 @@ void SKP_Silk_decode_core(
         SKP_memcpy( A_Q12_tmp, A_Q12, psDec->LPC_order * sizeof( SKP_int16 ) ); 
         B_Q14         = &psDecCtrl->LTPCoef_Q14[ k * LTP_ORDER ];
         Gain_Q16      = psDecCtrl->Gains_Q16[ k ];
-        LTP_scale_Q14 = psDecCtrl->LTP_scale_Q14;
         sigtype       = psDecCtrl->sigtype;
 
         inv_gain_Q16  = SKP_DIV32( SKP_int32_MAX, SKP_RSHIFT( Gain_Q16, 1 ) );
@@ -102,7 +101,6 @@ void SKP_Silk_decode_core(
         
             sigtype = SIG_TYPE_VOICED;
             psDecCtrl->pitchL[ k ] = psDec->lagPrev;
-            LTP_scale_Q14 = ( SKP_int )1 << 14;
         }
         if( sigtype == SIG_TYPE_VOICED ) {
             /* Voiced */

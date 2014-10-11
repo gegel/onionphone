@@ -67,7 +67,7 @@ SKP_int SKP_Silk_VAD_Init(                              /* O    Return value, 0 
 }
 
 /* Weighting factors for tilt measure */
-const static SKP_int32 tiltWeights[ VAD_N_BANDS ] = { 30000, 6000, -12000, -12000 };
+static const SKP_int32 tiltWeights[ VAD_N_BANDS ] = { 30000, 6000, -12000, -12000 };
 
 /***************************************/
 /* Get the speech activity level in Q8 */

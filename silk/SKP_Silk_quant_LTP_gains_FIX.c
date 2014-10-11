@@ -37,7 +37,6 @@ void SKP_Silk_quant_LTP_gains_FIX(
 )
 {
     SKP_int             j, k, temp_idx[ NB_SUBFR ], cbk_size;
-    const SKP_uint16    *cdf_ptr;
     const SKP_int16     *cl_ptr;
     const SKP_int16     *cbk_ptr_Q14;
     const SKP_int16     *b_Q14_ptr;
@@ -52,7 +51,6 @@ void SKP_Silk_quant_LTP_gains_FIX(
     /***************************************************/
     min_rate_dist = SKP_int32_MAX;
     for( k = 0; k < 3; k++ ) {
-        cdf_ptr     = SKP_Silk_LTP_gain_CDF_ptrs[     k ];
         cl_ptr      = SKP_Silk_LTP_gain_BITS_Q6_ptrs[ k ];
         cbk_ptr_Q14 = SKP_Silk_LTP_vq_ptrs_Q14[       k ];
         cbk_size    = SKP_Silk_LTP_vq_sizes[          k ];
