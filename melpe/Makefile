@@ -1,6 +1,6 @@
 PROGRAM = sc1200
 
-CFLAGS = -Wall -O4
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -O3
 
 OBJECTS = classify.o coeff.o dsp_sub.o fec_code.o fft_lib.o \
        fs_lib.o fsvq_cb.o global.o harm.o lpc_lib.o mathdp31.o \
