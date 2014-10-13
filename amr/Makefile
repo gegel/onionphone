@@ -1,6 +1,6 @@
-PROG = libamr.a
+BLOB = builtin.o
 CC ?= cc
-AR ?= ar
+LD ?= ld
 
 # NORMAL DEBUG
 MODE ?= NORMAL
@@ -23,19 +23,20 @@ LDADD ?= -lm
 
 all: build
 
-build: $(PROG)
+build: $(BLOB)
 
-$(PROG): $(OBJ)
-	$(AR) cr $(PROG) $(OBJ)
+$(BLOB): $(OBJ)
+	$(LD) -r $(OBJ) -o $(BLOB)
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCADD) -c $<
 
 clean:
-	rm -f $(OBJ) $(PROG)
+	rm -f $(OBJ) $(BLOB)
 
 test:
 	cppcheck --enable=all .
 	scan-build $(MAKE)
 
 .PHONY: all clean test
+
