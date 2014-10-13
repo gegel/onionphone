@@ -13,8 +13,6 @@ EXTRADEFS = -DVAD1
 CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = amr_speech_importance.o \
-      decoder.o \
-      encoder.o \
       interf_dec.o \
       interf_enc.o \
       sp_dec.o \
