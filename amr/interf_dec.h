@@ -23,8 +23,6 @@
 #ifndef _interf_dec_h_
 #define _interf_dec_h_
 
-#include <typedef.h>
-
 /*
  * Function prototypes
  */

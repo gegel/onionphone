@@ -36,12 +36,12 @@ KEYOBJS = addkey.o
 ifdef SYSTEMROOT
 #Win32    
 oph: $(SPKROBJS) celplib.o lpc10lib.o gsmlib.o melpelib.o melplib.o cd2lib.o lpclib.o gsmhrlib.o g729lib.o g723lib.o ilbclib.o bv16lib.o gsmerlib.o silklib.o amrlib.o crplib.o speexlib.o opuslib.o
-	$(CC) $(SPKROBJS)  speex/libspeex.a speex/libspeexdsp.a celp/celp.o lpc10/liblpc10.a gsm/lib/libgsm.a melpe/libmelpe.a melp/libmelp.a opus/libopus.a lpc/lpc.o  gsmhr/libgsmhr.a g729/libg729.a g723/libg723.a ilbc/libilbc.a bv/libbv16.a gsmer/libgsme.a codec2/libcd2.a silk/libsilk.a amr/builtin.o crp/libcrp.a $(LFLAGS) -lcomctl32 -lwinmm -lws2_32 -o oph
+	$(CC) $(SPKROBJS)  speex/libspeex.a speex/libspeexdsp.a celp/celp.o lpc10/liblpc10.a gsm/lib/libgsm.a melpe/libmelpe.a melp/libmelp.a opus/libopus.a lpc/lpc.o  gsmhr/libgsmhr.a g729/libg729.a g723/libg723.a ilbc/libilbc.a bv/libbv16.a gsmer/libgsme.a codec2/libcd2.a silk/libsilk.a amr/libamr.a crp/libcrp.a $(LFLAGS) -lcomctl32 -lwinmm -lws2_32 -o oph
 else
    ifeq ($(shell uname), Linux)
 #Linux      
 oph: $(SPKROBJS) celplib.o lpc10lib.o gsmlib.o melpelib.o melplib.o cd2lib.o lpclib.o gsmhrlib.o g729lib.o g723lib.o ilbclib.o bv16lib.o gsmerlib.o silklib.o amrlib.o crplib.o speexlib.o opuslib.o
-	$(CC) $(SPKROBJS)  speex/libspeex.a speex/libspeexdsp.a celp/celp.o lpc10/liblpc10.a gsm/lib/libgsm.a melpe/libmelpe.a melp/libmelp.a opus/libopus.a lpc/lpc.o  gsmhr/libgsmhr.a g729/libg729.a g723/libg723.a ilbc/libilbc.a bv/libbv16.a gsmer/libgsme.a codec2/libcd2.a silk/libsilk.a amr/builtin.o crp/libcrp.a $(LFLAGS) $(SOUNDLIB) -o oph
+	$(CC) $(SPKROBJS)  speex/libspeex.a speex/libspeexdsp.a celp/celp.o lpc10/liblpc10.a gsm/lib/libgsm.a melpe/libmelpe.a melp/libmelp.a opus/libopus.a lpc/lpc.o  gsmhr/libgsmhr.a g729/libg729.a g723/libg723.a ilbc/libilbc.a bv/libbv16.a gsmer/libgsme.a codec2/libcd2.a silk/libsilk.a amr/libamr.a crp/libcrp.a $(LFLAGS) $(SOUNDLIB) -o oph
    endif
 endif
 

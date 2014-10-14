@@ -53,10 +53,8 @@ VAD=VAD1
 #
 # compiler flags (for normal, DEBUG compilation)
 #
-CFLAGS_NORM  = -O3
-# -DETSI
-CFLAGS_DEBUG = -g -DDEBUG
-# -DETSI
+CFLAGS_NORM  = -O3 -DETSI
+CFLAGS_DEBUG = -g -DDEBUG -DETSI
 
 CFLAGS = -std=c99 -Wall -Wextra -pedantic -I. $(CFLAGS_$(MODE)) -D$(VAD)
 CFLAGSDEPEND = -MM $(CFLAGS)                    # for make depend
@@ -71,19 +69,16 @@ TMP2=$(TMP:DEBUG=_debug)
 #
 ENCODER_SRCS=encoder.c sp_enc.c interf_enc.c amr_speech_importance.c
 DECODER_SRCS=decoder.c sp_dec.c interf_dec.c amr_speech_importance.c
-LIBAMR_SRCS=sp_enc.c interf_enc.c sp_dec.c interf_dec.c amr_speech_importance.c
 
 ENCODER_OBJS=$(ENCODER_SRCS:.c=.o) 
 DECODER_OBJS=$(DECODER_SRCS:.c=.o)
-LIBAMR_OBJS=$(LIBAMR_SRCS:.c=.o)
 
 ALL_SRCS=$(ENCODER_SRCS) $(DECODER_SRCS)
 
 #
 # default target: build standalone speech encoder and decoder
 #
-#default: clean_all encoder decoder
-default: libamr.a
+default: clean_all encoder decoder
 
 
 encoder: $(ENCODER_OBJS)
@@ -91,13 +86,6 @@ encoder: $(ENCODER_OBJS)
 
 decoder: $(DECODER_OBJS)
 	$(CC) -o decoder $(CFLAGS) $(DECODER_OBJS) $(LDFLAGS)
-
-libamr.a: $(LIBAMR_OBJS)
-	/bin/rm -f libamr.a
-	ar cr libamr.a $(LIBAMR_OBJS)
-	-if test -s /bin/ranlib; then /bin/ranlib libamr.a; \
-	else if test -s /usr/bin/ranlib; then /usr/bin/ranlib libamr.a; \
-	else exit 0; fi; fi
 
 #
 # how to compile a .c file into a .o
@@ -123,10 +111,10 @@ clean_depend:
 # remove object/executable files
 #
 clean:
-	rm -f *.o core encoder decoder libamr.a
+	rm -f *.o core
 
 clean_all: clean
-	rm -f encoder decoder libamr.a
+	rm -f encoder decoder
 
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 encoder.o: encoder.c typedef.h interf_enc.h sp_enc.h
