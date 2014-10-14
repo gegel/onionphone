@@ -586,7 +586,7 @@ Shortword gsQuant(Longword L_GsIn, Shortword swVoicingMode)
 */
 
   Shortword swGsIndex,
-         swBestGs;
+         swBestGs = 0;
   Longword L_diff,
          L_min = LW_MAX;
 
@@ -745,14 +745,12 @@ void   lpcCorrQntz(Longword pL_CorrelSeq[],
         *pswVBar,
          pswPBar[NP_AFLAT],
          pswVBarSpace[2 * NP_AFLAT - 1],
-         pswFlatsRc[NP],               /* Unquantized Rc's computed by FLAT */
          pswRc[NP + 1];                /* Temp list for the converted RC's */
   Longword *pL_VBarFull,
          pL_PBarFull[NP],
          pL_VBarFullSpace[2 * NP - 1];
 
-  int    i,
-         iVec,
+  int    iVec,
          iSeg,
          iCnt;                         /* Loop counter */
   struct QuantList quantList,          /* A list of vectors */

@@ -552,9 +552,9 @@ Shortword g_quant_vl(Shortword swUVCode,
   Shortword swShift;
   struct NormSw ErrorTerm[6];
   Shortword i,
-         siCode,
-         siNormShift,
-         siNormMin;
+         siCode = 0,
+         siNormShift = 0,
+         siNormMin = 0;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1430,9 +1430,9 @@ void   sfrmAnalysis(Shortword *pswWSpeech,
          siCode,
          siIntPitch,
          siRemainder;
-  short  siHnwOffset,
-         siHnwNum,
-         siNumBasisVecs;
+  short  siHnwOffset = 0,
+         siHnwNum = 0,
+         siNumBasisVecs = 0;
 
   Shortword swLag,
          swPnEnergy,
