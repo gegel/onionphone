@@ -4,9 +4,9 @@ CC = $(CROSS)cc
 AS = $(CC)
 AR = $(CROSS)ar
 
-CC_OPT=-fomit-frame-pointer -ffast-math -funroll-loops -O3
+CC_OPT=-fomit-frame-pointer -ffast-math -funroll-loops -O4
 
-CFLAGS   = -std=c99 -Wall -Wextra -pedantic
+CFLAGS   = -Wall -pg -g -O4
 
 
 ARFLAGS  := rc
@@ -40,7 +40,7 @@ LIBG723_OBJS = $(LIBG723_SRC:.c=.o)
 .SUFFIXES: .c .o
 
 .c.o:
-	$(AS) $(CFLAGS) $(CC_OPT) -c -o $@ $^
+	$(AS) $(CC_OPT) -c -o $@ $^
 %.a:
 	$(AR) $(ARFLAGS) $@ $^
 
