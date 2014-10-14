@@ -542,6 +542,9 @@ void Gsm_Long_Term_Predictor P7((S,d,dp,e,dpp,Nc,bc), 	/* 4x for 160 samples */
 	word	* bc	/* gain factor			OUT	*/
 )
 {
+#if !defined(FAST) && !defined(USE_FLOAT_MUL)
+	(void)S;
+#endif
 	assert( d  ); assert( dp ); assert( e  );
 	assert( dpp); assert( Nc ); assert( bc );
 

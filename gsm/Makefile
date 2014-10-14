@@ -31,7 +31,7 @@ FAST	=
 # static limits regarding the number of subexpressions in a statement.
 
 CC	      = cc
-CCFLAGS       = -c -Wall -fomit-frame-pointer -ffast-math -funroll-loops -O4
+CCFLAGS       = -c -std=c99 -Wall -Wextra -pedantic -fomit-frame-pointer -ffast-math -funroll-loops -O3
 
 # CC		= /usr/lang/acc
 # CCFLAGS	= -c -O
