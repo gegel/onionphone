@@ -1,5 +1,5 @@
 
-CFLAGS = -Wall -O4 -fomit-frame-pointer -ffast-math -funroll-loops -Iinclude -Icelt -Isilk -Isilk/float -DHAVE_CONFIG_H
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -O3 -fomit-frame-pointer -ffast-math -funroll-loops -Iinclude -Icelt -Isilk -Isilk/float -DHAVE_CONFIG_H
 
 #CFLAGS=-fomit-frame-pointer -ffast-math -funroll-loops
 

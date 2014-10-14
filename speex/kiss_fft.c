@@ -364,7 +364,9 @@ void kf_work(
         int m2
         )
 {
-   int i;
+    (void)s2; /* void due to if 0 and commented code below */
+
+    int i;
     kiss_fft_cpx * Fout_beg=Fout;
     const int p=*factors++; /* the radix  */
     const int m=*factors++; /* stage's fft length/p */

@@ -633,6 +633,8 @@ SKP_INLINE void SKP_Silk_nsq_del_dec_scale_states(
     const SKP_int       pitchL[ NB_SUBFR ]      /* I    Pitch lag                           */
 )
 {
+    (void)smpl_buf_idx;
+
     SKP_int            i, k, scale_length, lag;
     SKP_int32          inv_gain_Q16, gain_adj_Q16, inv_gain_Q32;
     NSQ_del_dec_struct *psDD;

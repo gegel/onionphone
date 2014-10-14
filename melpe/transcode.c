@@ -87,10 +87,6 @@ void transcode_up()
 {
 	register Shortword	frame;
 	Shortword	lpc[LPC_ORD + 1], weights[LPC_ORD];
-	Shortword	num_frames;
-
-
-	num_frames = NF;
 
 	/* Read and decode channel input buffer. */
 	low_rate_chn_read(&quant_par, &melp_par[0], &prev_par);

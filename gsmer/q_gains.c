@@ -68,7 +68,7 @@ Word16 w_q_gain_code (    /* Return quantization index                  */
     Word16 i_w_subfr
 )
 {
-    Word16 i, index;
+    Word16 i, index = 0;
     Word16 gcode0, err, err_min, exp, frac;
     Word32 ener, ener_code;
     Word16 aver_gain;

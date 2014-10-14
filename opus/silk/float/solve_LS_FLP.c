@@ -32,6 +32,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main_FLP.h"
 #include "tuning_parameters.h"
 
+#define memzero(A, B)	memset(A, 0, B)
+
 /**********************************************************************
  * LDL Factorisation. Finds the upper triangular matrix L and the diagonal
  * Matrix D (only the diagonal elements returned in a vector)such that
@@ -164,6 +166,8 @@ static OPUS_INLINE void silk_LDL_FLP(
     silk_float *ptr1, *ptr2;
     double temp, diag_min_value;
     silk_float v[ MAX_MATRIX_SIZE ], D[ MAX_MATRIX_SIZE ]; /* temp arrays*/
+
+    memzero(v, MAX_MATRIX_SIZE);
 
     silk_assert( M <= MAX_MATRIX_SIZE );
 

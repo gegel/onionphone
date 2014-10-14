@@ -273,6 +273,8 @@ static const spx_word16_t balance_bounds[31] = {18, 23, 30, 38, 49, 63,  81, 104
 
  int speex_std_stereo_request_handler(SpeexBits *bits, void *state, void *data)
 {
+   (void)state;
+
    RealSpeexStereoState *stereo;
    spx_word16_t sign=1, dexp;
    int tmp;

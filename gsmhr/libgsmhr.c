@@ -67,11 +67,11 @@ static Shortword swSidDetection(Shortword pswParameters[],
                                 Shortword pswErrorFlag[])   
 {   
   static Shortword ppswIBit[2][18] = {   
-        5, 11,9,8, 1, 2, 7,7,5, 7,7,5, 7,7,5, 7,7,5,  /* unvoiced */   
-        5, 11,9,8, 1, 2, 8,9,5, 4,9,5, 4,9,5, 4,9,5}; /* voiced */   
+	{5, 11,9,8, 1, 2, 7,7,5, 7,7,5, 7,7,5, 7,7,5},  /* unvoiced */
+	{5, 11,9,8, 1, 2, 8,9,5, 4,9,5, 4,9,5, 4,9,5}}; /* voiced */
    
   static Shortword ppswCL1pCL2[2][18] = {   
-                              0x0001, /* R0      */  /* unvoiced */   
+	                     {0x0001, /* R0      */  /* unvoiced */
                               0x00ef, /* LPC1    */   
 
                               0x003e, /* LPC2    */   
@@ -90,9 +90,9 @@ static Shortword swSidDetection(Shortword pswParameters[],
                               0x0008, /* GSP0_3  */   
                               0x007f, /* Code1_4 */   
                               0x007f, /* Code2_4 */   
-                              0x000c, /* GSP0_4  */   
+                              0x000c},/* GSP0_4  */
                                  
-                              0x0000, /* R0      */  /* voiced */   
+			     {0x0000, /* R0      */  /* voiced */
                               0x0000, /* LPC1    */   
                               0x0000, /* LPC2    */   
                               0x0000, /* LPC3    */   
@@ -109,10 +109,10 @@ static Shortword swSidDetection(Shortword pswParameters[],
                               0x001f, /* GSP0_3  */   
                               0x000f, /* Lag_4   */   
                               0x01ff, /* Code_4  */   
-                              0x001f}; /* GSP0_4 */   
+                              0x001f}};/* GSP0_4 */
    
   static Shortword ppswCL2[2][18] = {   
-                              0x0000, /* R0      */ /* unvoiced */   
+	                     {0x0000, /* R0      */ /* unvoiced */
                               0x0000, /* LPC1    */   
                               0x0000, /* LPC2    */   
                               0x0000, /* LPC3    */   
@@ -129,9 +129,9 @@ static Shortword swSidDetection(Shortword pswParameters[],
                               0x0000, /* GSP0_3  */   
                               0x007f, /* Code1_4 */  /* 7 bits */   
                               0x007f, /* Code2_4 */  /* 7 bits */   
-                              0x0000, /* GSP0_4  */   
+                              0x0000}, /* GSP0_4  */
    
-                              0x0000, /* R0      */  /* voiced */   
+			     {0x0000, /* R0      */  /* voiced */
                               0x0000, /* LPC1    */   
                               0x0000, /* LPC2    */   
                               0x0000, /* LPC3    */   
@@ -148,7 +148,7 @@ static Shortword swSidDetection(Shortword pswParameters[],
                               0x0000, /* GSP0_3  */   
                               0x0000, /* Lag_4   */   
                               0x01ff, /* Code_4  */  /* 9 bits */   
-                              0x0000}; /* GSP0_4 */     
+                              0x0000}};/* GSP0_4 */
    
   Shortword swMode, swBitMask;   
   Shortword swSidN1, swSidN2, swSidN1pN2;   
@@ -252,14 +252,16 @@ gsmhr_exit(struct gsmhr *state)
 EXPORT int
 gsmhr_encode(struct gsmhr *state, unsigned char *rb, const short *pcm)
 {
+	(void)state;
+
 	int enc_reset_flg;
 	Shortword pcm_b[F_LEN];
         Shortword hr_params[20];
 	int i;
         
-	char a=0; //param's bytes counter
-        char b=0; //param's bits counter
-        char c; //output's bits counter
+	int a=0; //param's bytes counter
+        int b=0; //param's bits counter
+        int c; //output's bits counter
 
 	memcpy(pcm_b, pcm, F_LEN*sizeof(int16_t));
 
@@ -305,9 +307,9 @@ gsmhr_decode(struct gsmhr *state, short *pcm, const unsigned char *rb)
 #define TO_FIRST_SUBFRAME	 9
 
 	int dec_reset_flg;
-	char a=0; //param's bytes counter
-        char b=0; //param's bits counter
-        char c; //output's bits counter
+	int a=0; //param's bytes counter
+        int b=0; //param's bits counter
+        int c; //output's bits counter
 	Shortword hr_params[22];
 	Shortword hr_params_b[22];
 	Shortword *hr_eflags=hr_params+18;  //BFI, UFI, BCI

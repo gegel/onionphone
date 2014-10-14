@@ -165,7 +165,7 @@ static Word16 w_Lag_max ( /* output: lag found                               */
     Word16 *p, *p1;
     Word32 max, t0;
     Word16 max_h, max_l, ener_h, ener_l;
-    Word16 p_max;
+    Word16 p_max = 0;
 
     max = MIN_32;                 
 

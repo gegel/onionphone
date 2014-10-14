@@ -1504,8 +1504,8 @@ short  compResidEnergy(Shortword pswSpeech[],
          siOverflowPossible,
          siInterpDecision;
   Shortword swMinShift,
-         swShiftFactor,
-         swSample,
+         swShiftFactor = 0,
+         swSample = 0,
         *pswCoef;
   Shortword pswTempState[NP];
   Shortword pswResidual[S_LEN];

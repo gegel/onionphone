@@ -77,6 +77,9 @@ void SKP_Silk_PLC_update(
     SKP_int                     length
 )
 {
+    (void)signal;
+    (void)length;
+
     SKP_int32 LTP_Gain_Q14, temp_LTP_Gain_Q14;
     SKP_int   i, j;
     SKP_Silk_PLC_struct *psPLC;
@@ -148,6 +151,8 @@ void SKP_Silk_PLC_conceal(
     SKP_int                     length              /* I length of residual */
 )
 {
+    (void)length;
+
     SKP_int   i, j, k;
     SKP_int16 *B_Q14, exc_buf[ MAX_FRAME_LENGTH ], *exc_buf_ptr;
     SKP_int16 rand_scale_Q14, A_Q12_tmp[ MAX_LPC_ORDER ];
@@ -339,6 +344,8 @@ void SKP_Silk_PLC_glue_frames(
     SKP_int                     length              /* I length of residual */
 )
 {
+    (void)psDecCtrl;
+
     SKP_int   i, energy_shift;
     SKP_int32 energy;
     SKP_Silk_PLC_struct *psPLC;

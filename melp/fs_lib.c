@@ -115,7 +115,7 @@ void mf_fft(float *datam1,int nn,int isign)
 {
 	int	n,mmax,m,j,istep,i;
 	double	wtemp,wr,wpr,wpi,wi,theta;
-	float register	tempr,tempi;
+	register float tempr,tempi;
 	float	*data;
 
 	/*  Use pointer indexed from 1 instead of 0	*/
@@ -168,8 +168,8 @@ void mf_fft(float *datam1,int nn,int isign)
 int 	mf_findmax(float input[], int npts)
 
 {
-int register	i, maxloc;
-float register  maxval, *p_in;
+register int	i, maxloc;
+register float  maxval, *p_in;
 
 	p_in = &input[0];
 	maxloc = 0;

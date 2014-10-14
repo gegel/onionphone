@@ -35,6 +35,8 @@ void SKP_Silk_decode_parameters_v4(
     const SKP_int               fullDecoding                            /* I    Flag to tell if only arithmetic decoding */
 )
 {
+    (void)fullDecoding;
+
     SKP_int   i, k, Ix, nBytesUsed;
     SKP_int   pNLSF_Q15[ MAX_LPC_ORDER ], pNLSF0_Q15[ MAX_LPC_ORDER ];
     const SKP_int16 *cbk_ptr_Q14;

@@ -13,6 +13,7 @@
 
 void gsm_implode P3((s, source, c), gsm s, gsm_signal * source, gsm_byte * c)
 {
+	(void)s;
 	/*	variable	size	index
 
 		GSM_MAGIC	4	-

@@ -38,7 +38,7 @@
 #define X44_Q11			9011                               /* 4.4 * (1 << 11) */
 #define X88_Q11			18022                              /* 8.8 * (1 << 11) */
 
-const static Shortword	sqrt_tukey_256_180[ENH_WINLEN] = {             /* Q15 */
+static const Shortword	sqrt_tukey_256_180[ENH_WINLEN] = {             /* Q15 */
 	  677,	1354,  2030,  2705,  3380,  4053,  4724,  5393,
 	 6060,  6724,  7385,  8044,  8698,  9349,  9996, 10639,
 	11277, 11911, 12539, 13162, 13780, 14391, 14996, 15595,
@@ -488,7 +488,7 @@ static Shortword	ksi_min_adapt(BOOLEAN n_flag, Shortword ksi_min,
 static void		smoothing_win(Shortword initial_noise[])
 {
 	register Shortword	i;
-	const static Shortword	wtr_front[WTR_FRONT_LEN] = {               /* Q15 */
+	static const Shortword	wtr_front[WTR_FRONT_LEN] = {               /* Q15 */
 		32767, 32582, 32048, 31202, 30080, 28718, 27152, 25418,
 		23552, 21590, 19568, 17522, 15488, 13502, 11600,  9818,
 		 8192,  6750,  5488,  4394,  3456,  2662,  2000,  1458,
@@ -516,7 +516,7 @@ static void		smoothed_periodogram(Shortword YY_av, Shortword yy_shift)
 	Shortword	smoothed_av, alphacorr_new, alpha_N_min_1, alpha_num;
 	Shortword	smav_shift, shift, temp, temp1, tmpns, tmpalpha;
 	Shortword	noise__shift, temp_shift, tmpns_shift, max_shift;
-	Longword	L_sum, L_max, L_tmp;
+	Longword	L_sum, L_tmp;
 
 
 	/* ---- compute smoothed_av ---- */
@@ -606,7 +606,6 @@ static void		smoothed_periodogram(Shortword YY_av, Shortword yy_shift)
 	alpha_num = mult(ALPHA_N_MAX, alphacorr);
 
 	/* -- compute smoothed spectrum -- */
-	L_max = 0;
 	for (i = 0; i < ENH_VEC_LENF; i++){
 		tmpns = noisespect[i];
 

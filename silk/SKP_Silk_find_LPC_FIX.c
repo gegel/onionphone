@@ -47,8 +47,8 @@ void SKP_Silk_find_LPC_FIX(
     SKP_int     rshift0, rshift1; 
 
     /* Used only for LSF interpolation */
-    SKP_int32   a_tmp_Q16[ MAX_LPC_ORDER ], res_nrg_interp, res_nrg, res_tmp_nrg, res_nrg_2nd;
-    SKP_int     res_nrg_interp_Q, res_nrg_Q, res_tmp_nrg_Q, res_nrg_2nd_Q;
+    SKP_int32   a_tmp_Q16[ MAX_LPC_ORDER ], res_nrg_interp, res_nrg, res_tmp_nrg;
+    SKP_int     res_nrg_interp_Q, res_nrg_Q, res_tmp_nrg_Q;
     SKP_int16   a_tmp_Q12[ MAX_LPC_ORDER ];
     SKP_int     NLSF0_Q15[ MAX_LPC_ORDER ];
     SKP_int16   LPC_res[ ( MAX_FRAME_LENGTH + NB_SUBFR * MAX_LPC_ORDER ) / 2 ];
@@ -82,7 +82,6 @@ void SKP_Silk_find_LPC_FIX(
         SKP_Silk_A2NLSF( NLSF_Q15, a_tmp_Q16, LPC_order );
 
         /* Search over interpolation indices to find the one with lowest residual energy */
-        res_nrg_2nd = SKP_int32_MAX;
         for( k = 3; k >= 0; k-- ) {
             /* Interpolate NLSFs for first half */
             SKP_Silk_interpolate( NLSF0_Q15, prev_NLSFq_Q15, NLSF_Q15, k, LPC_order );
@@ -135,8 +134,6 @@ void SKP_Silk_find_LPC_FIX(
                 res_nrg_Q = res_nrg_interp_Q;
                 *interpIndex = k;
             }
-            res_nrg_2nd   = res_nrg_interp;
-            res_nrg_2nd_Q = res_nrg_interp_Q;
         }
     }
 

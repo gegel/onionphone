@@ -11,7 +11,7 @@ LFLAG =
 
 #CFLAGS=-fomit-frame-pointer -ffast-math -funroll-loops
 
-CFLAGS = -Wall -fomit-frame-pointer -ffast-math -funroll-loops -O4
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -fomit-frame-pointer -ffast-math -funroll-loops -O3
 
 # Objects
 OBJ =  coder.o cod_12k2.o az_lsp.o autocorr.o convolve.o c1035pf.o basicop2.o \

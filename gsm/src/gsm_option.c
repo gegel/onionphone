@@ -13,6 +13,10 @@
 
 int gsm_option P3((r, opt, val), gsm r, int opt, int * val)
 {
+#if defined(NDEBUG) || !(defined (FAST) && defined(USE_FLOAT_MUL))
+	(void)r;
+	(void)val;
+#endif
 	int 	result = -1;
 
 	switch (opt) {

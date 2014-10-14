@@ -4661,12 +4661,12 @@ void   speechDecoder(Shortword pswParameters[],
 
   short int i,
          j,
-         siLagCode,
-         siGsp0Code,
+         siLagCode = 0,
+         siGsp0Code = 0,
          psiVselpCw[2],
-         siVselpCw,
-         siNumBits,
-         siCodeBook;
+         siVselpCw = 0,
+         siNumBits = 0,
+         siCodeBook = 0;
 
   Shortword pswFrmKs[NP],
          pswFrmAs[NP],
