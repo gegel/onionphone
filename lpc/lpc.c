@@ -5,12 +5,19 @@
 #include <string.h>
 #include <math.h>
 #include <sys/types.h>
+#ifdef __linux__
+#include <arpa/inet.h>
+#endif
 //#include <netinet/in.h>
 
 #include "lpc.h"
 
-#if defined(Solaris) || defined(HEWLETT_PACKARD) || defined(__FreeBSD__) || defined(__WIN32)
+#if defined(Solaris) || defined(HEWLETT_PACKARD) || defined(__FreeBSD__) || defined(__WIN32) || defined(__linux__)
 #define bcopy(a, b, n)	  memmove(b, a, n)
+#endif
+
+#ifndef M_PI
+#define M_PI 3.14159265358979323846
 #endif
 
 #define MAXWINDOW	1000	/* Max analysis window length */
