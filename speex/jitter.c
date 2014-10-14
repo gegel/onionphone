@@ -466,7 +466,6 @@ static void shift_timings(JitterBuffer *jitter, spx_int16_t amount)
 {
    int i;
    unsigned int j;
-   int incomplete = 0;
    spx_int16_t opt;
    
    if (start_offset != NULL)
@@ -571,7 +570,6 @@ static void shift_timings(JitterBuffer *jitter, spx_int16_t amount)
       if (found)
       {
          i=besti;
-         incomplete = 1;
          /*fprintf (stderr, "incomplete: %d %d %d %d\n", jitter->packets[i].timestamp, jitter->pointer_timestamp, chunk_size, jitter->packets[i].span);*/
       }
    }
@@ -715,6 +713,9 @@ static void shift_timings(JitterBuffer *jitter, spx_int16_t amount)
 /* Let the jitter buffer know it's the right time to adjust the buffering delay to the network conditions */
 static int _jitter_buffer_update_delay(JitterBuffer *jitter, JitterBufferPacket *packet, spx_int32_t *start_offset)
 {
+   (void)packet;
+   (void)start_offset;
+
    spx_int16_t opt = compute_opt_delay(jitter);
    /*fprintf(stderr, "opt adjustment is %d ", opt);*/
    

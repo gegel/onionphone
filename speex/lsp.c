@@ -176,6 +176,8 @@ static inline spx_word32_t cheb_poly_eva(
 
 static float cheb_poly_eva(spx_word32_t *coef, spx_word16_t x, int m, char *stack)
 {
+   (void)stack;
+
    int k;
    float b0, b1, tmp;
 

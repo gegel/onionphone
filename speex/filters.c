@@ -318,6 +318,8 @@ spx_word16_t compute_rms16(const spx_word16_t *x, int len)
 #ifndef OVERRIDE_FILTER_MEM16
 void filter_mem16(const spx_word16_t *x, const spx_coef_t *num, const spx_coef_t *den, spx_word16_t *y, int N, int ord, spx_mem_t *mem, char *stack)
 {
+   (void)stack;
+
    int i,j;
    spx_word16_t xi,yi,nyi;
    for (i=0;i<N;i++)
@@ -338,6 +340,8 @@ void filter_mem16(const spx_word16_t *x, const spx_coef_t *num, const spx_coef_t
 #ifndef OVERRIDE_IIR_MEM16
 void iir_mem16(const spx_word16_t *x, const spx_coef_t *den, spx_word16_t *y, int N, int ord, spx_mem_t *mem, char *stack)
 {
+   (void)stack;
+
    int i,j;
    spx_word16_t yi,nyi;
 
@@ -358,6 +362,8 @@ void iir_mem16(const spx_word16_t *x, const spx_coef_t *den, spx_word16_t *y, in
 #ifndef OVERRIDE_FIR_MEM16
 void fir_mem16(const spx_word16_t *x, const spx_coef_t *num, spx_word16_t *y, int N, int ord, spx_mem_t *mem, char *stack)
 {
+   (void)stack;
+
    int i,j;
    spx_word16_t xi,yi;
 
@@ -662,6 +668,9 @@ spx_word16_t  comb_gain,    /*gain of comb filter*/
 char *stack
 )
 {
+   (void)ak;
+   (void)p;
+
    int i; 
    VARDECL(spx_word16_t *iexc);
    spx_word16_t old_ener, new_ener;

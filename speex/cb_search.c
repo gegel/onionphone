@@ -52,6 +52,8 @@
 #ifndef OVERRIDE_COMPUTE_WEIGHTED_CODEBOOK
 static void compute_weighted_codebook(const signed char *shape_cb, const spx_word16_t *r, spx_word16_t *resp, spx_word16_t *resp2, spx_word32_t *E, int shape_cb_size, int subvect_size, char *stack)
 {
+   (void)resp2;
+
    int i, j, k;
    VARDECL(spx_word16_t *shape);
    ALLOC(shape, subvect_size, spx_word16_t);
@@ -520,18 +522,20 @@ char *stack,
 spx_int32_t *seed
 )
 {
+   (void)nsf;
+   (void)seed;
+
    int i,j;
    VARDECL(int *ind);
    VARDECL(int *signs);
    const signed char *shape_cb;
-   int shape_cb_size, subvect_size, nb_subvect;
+   int subvect_size, nb_subvect;
    const split_cb_params *params;
    int have_sign;
 
    params = (const split_cb_params *) par;
    subvect_size = params->subvect_size;
    nb_subvect = params->nb_subvect;
-   shape_cb_size = 1<<params->shape_bits;
    shape_cb = params->shape_cb;
    have_sign = params->have_sign;
 
@@ -585,6 +589,12 @@ int   complexity,
 int   update_target
 )
 {
+   (void)par;
+   (void)r;
+   (void)bits;
+   (void)complexity;
+   (void)update_target;
+
    int i;
    VARDECL(spx_word16_t *tmp);
    ALLOC(tmp, nsf, spx_word16_t);
@@ -605,6 +615,10 @@ char *stack,
 spx_int32_t *seed
 )
 {
+   (void)par;
+   (void)bits;
+   (void)stack;
+
    int i;
    /* FIXME: This is bad, but I don't think the function ever gets called anyway */
    for (i=0;i<nsf;i++)

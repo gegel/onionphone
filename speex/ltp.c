@@ -141,6 +141,8 @@ void pitch_xcorr(const spx_word16_t *_x, const spx_word16_t *_y, spx_word32_t *c
 #else
 void pitch_xcorr(const spx_word16_t *_x, const spx_word16_t *_y, spx_word32_t *corr, int len, int nb_pitch, char *stack)
 {
+   (void)stack;
+
    int i;
    for (i=0;i<nb_pitch;i++)
    {
@@ -367,6 +369,9 @@ spx_word32_t cumul_gain,
 int scaledown
 )
 {
+   (void)bits;
+   (void)scaledown;
+
    int i,j;
    VARDECL(spx_word16_t *tmp1);
    VARDECL(spx_word16_t *e);
@@ -548,6 +553,8 @@ int plc_tuning,
 spx_word32_t *cumul_gain
 )
 {
+   (void)pitch_coef;
+
    int i;
    int cdbk_index, pitch=0, best_gain_index=0;
    VARDECL(spx_sig_t *best_exc);
@@ -670,6 +677,10 @@ spx_word16_t last_pitch_gain,
 int cdbk_offset
 )
 {
+   (void)end;
+   (void)pitch_coef;
+   (void)stack;
+
    int i;
    int pitch;
    int gain_index;
@@ -775,6 +786,16 @@ int plc_tuning,
 spx_word32_t *cumul_gain
 )
 {
+   (void)sw;
+   (void)par;
+   (void)end;
+   (void)bits;
+   (void)r;
+   (void)complexity;
+   (void)cdbk_offset;
+   (void)plc_tuning;
+   (void)cumul_gain;
+
    int i;
    VARDECL(spx_word16_t *res);
    ALLOC(res, nsf, spx_word16_t);
@@ -820,6 +841,15 @@ spx_word16_t last_pitch_gain,
 int cdbk_offset
 )
 {
+   (void)end;
+   (void)par;
+   (void)bits;
+   (void)stack;
+   (void)count_lost;
+   (void)subframe_offset;
+   (void)last_pitch_gain;
+   (void)cdbk_offset;
+
    int i;
 #ifdef FIXED_POINT
    if (pitch_coef>63)

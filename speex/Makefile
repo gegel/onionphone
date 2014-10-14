@@ -1,6 +1,6 @@
 #CFLAGS = -Wall -fomit-frame-pointer -ffast-math -funroll-loops -O4 -DFLOATING_POINT
 
-CFLAGS = -Wall -O4 -DFLOATING_POINT
+CFLAGS = -std=c99 -Wall -Wextra -pedantic -O3 -DFLOATING_POINT
 
 #CFLAGS=-fomit-frame-pointer -ffast-math -funroll-loops
 
