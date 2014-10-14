@@ -27,7 +27,7 @@ void dyptrk(float amdf[], int minptr, int voice, int *pitch, int *midx)
 {
 float sbar, minsc, maxsc, alpha;
 int depth=2;
-int pbar, i, j, iptr, path[2];
+int pbar, i, j, iptr;
 static float alphax, ipoint=0.0;
 
 
@@ -121,7 +121,6 @@ j = (int) ipoint;
 for(i=1;i<=depth;i++)	{
 	j = j%depth+1;
 	*pitch = p[*pitch-1][j-1];
-	path[i-1] = *pitch;
 }
 ipoint = (float) (((int)(ipoint)+depth-1)%depth);
 
