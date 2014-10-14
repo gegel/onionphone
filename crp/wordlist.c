@@ -556,7 +556,7 @@ const char hashWordListEven[256][10] = {
 	};
 
 
-    char* getword(short b)
+    const char* getword(short b)
     {
      if(b>>8) return hashWordListEven[b&0xFF];
      else return hashWordListOdd[b&0xFF];  

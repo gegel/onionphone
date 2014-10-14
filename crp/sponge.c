@@ -312,7 +312,7 @@ int Sponge_data(KECCAK512_DATA *keccak, const BYTE *buffer, int len, BYTE *outpu
 {
         const BYTE * src; //source for absorbing
         int rate; //block size
-        unsigned char c; //temporary output
+        unsigned char c = 0; //temporary output
         
         //check for Final
         if (keccak->bytesInQueue < 0) return keccak->bytesInQueue; // Final() already called
