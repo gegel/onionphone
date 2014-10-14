@@ -32,7 +32,7 @@ void SKP_Silk_decode_indices_v4(
     SKP_Silk_decoder_state      *psDec            /* I/O    State                              */
 )
 {
-    SKP_int   i, k, Ix, fs_kHz_dec, FrameIndex = 0, FrameTermination;
+    SKP_int   i, k, Ix, fs_kHz_dec, FrameIndex = 0, FrameTermination = 0;
     SKP_int   sigtype, QuantOffsetType, seed_int, nBytesUsed;
     SKP_int   decode_absolute_lagIndex, delta_lagIndex, prev_lagIndex = 0;
     const SKP_Silk_NLSF_CB_struct *psNLSF_CB = NULL;

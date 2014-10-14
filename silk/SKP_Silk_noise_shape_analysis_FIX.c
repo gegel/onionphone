@@ -50,8 +50,6 @@ void SKP_Silk_noise_shape_analysis_FIX(
     SKP_int16   x_windowed[    SHAPE_LPC_WIN_MAX ];
     const SKP_int16 *x_ptr, *pitch_res_ptr;
 
-    SKP_int32   sqrt_nrg[ NB_SUBFR ], Qnrg_vec[ NB_SUBFR ];
-
     /* Point to start of first LPC analysis block */
     x_ptr = x + psEnc->sCmn.la_shape - SKP_SMULBB( SHAPE_LPC_WIN_MS, psEnc->sCmn.fs_kHz ) + psEnc->sCmn.frame_length / NB_SUBFR;
 
@@ -199,9 +197,6 @@ void SKP_Silk_noise_shape_analysis_FIX(
 
         tmp32 = SKP_Silk_SQRT_APPROX( nrg );
         Qnrg >>= 1;             // range: -6...15
-
-        sqrt_nrg[ k ] = tmp32;
-        Qnrg_vec[ k ] = Qnrg;
 
         psEncCtrl->Gains_Q16[ k ] = SKP_LSHIFT_SAT32( tmp32, 16 - Qnrg );
         /* Ratio of prediction gains, in energy domain */
