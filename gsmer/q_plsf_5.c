@@ -238,7 +238,7 @@ Word16 Vq_w_subvec (      /* output: return quantization index     */
     Word16 dico_size    /* input : size of quantization codebook */
 )
 {
-    Word16 i, index, temp;
+    Word16 i, index = 0, temp = 0;
     const Word16 *p_dico;
     Word32 dist_min, dist;
 
@@ -293,7 +293,7 @@ Word16 Vq_w_subvec_s (    /* output: return quantization index     */
     Word16 *wf2,        /* input : 2nd LSF weighting factors     */
     Word16 dico_size)   /* input : size of quantization codebook */
 {
-    Word16 i, index, sign, temp;
+    Word16 i, index = 0, sign = 0, temp = 0;
     const Word16 *p_dico;
     Word32 dist_min, dist;
 
