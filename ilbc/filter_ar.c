@@ -29,6 +29,9 @@ int WebRtcSpl_FilterAR(G_CONST WebRtc_Word16* a,
                        WebRtc_Word16* filtered_low,
                        int filtered_low_length)
 {
+    (void)state_low_length;
+    (void)filtered_low_length;
+
     WebRtc_Word32 o;
     WebRtc_Word32 oLOW;
     int i, j, stop;
