@@ -211,7 +211,7 @@ int main(int argc, char **argv)
   {
    newkey=1; //new key flag
    name=2+argv[i]; //new name
-   if((i+1)<argc) pass=argv[i+1];
+   if((i+1)<argc) if(argv[i+1][0]!='-') pass=argv[i+1];
   }
  //-------------------------------------
   else if(argv[i][1]=='R') //re-encode private key
@@ -284,11 +284,20 @@ int main(int argc, char **argv)
   }
   //input new filename and access
   printf("Type new name for secret key '%s' or Enter to overwrite:\r\n", name);
-  gets(newname);
-  if(newname[0]) name=newname;
-  printf("Type new password or Enter to save unencrypted:\r\n");
-  gets(newpass);
-  if(newpass[0]) pass=newpass; else pass=0;
+  fgets(newname, sizeof(newname), stdin);
+  if(newname[0]>32)
+  {
+   for(i=0;i<strlen(newname);i++) if(newname[i]<32) newname[i]=0;
+   name=newname;
+  }
+  printf("Type new password or Enter to saving unencrypted:\r\n");
+  fgets(newpass, sizeof(newpass), stdin);
+  if(newpass[0]>32)
+  {
+   for(i=0;i<strlen(newpass);i++) if(newpass[i]<32) newpass[i]=0;
+   pass=newpass;
+  }
+  else pass=0;
   //save secret key
   if(!save_seckey(name, pass, secret))
   {
