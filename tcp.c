@@ -16,6 +16,7 @@
 ///////////////////////////////////////////////
 #define MAXTCPSIZE 512   //size of internet packet
 #define DEFPORT 17447       //listening port
+#define DEFWEBPORT 8000        //control port
 #define SOCKS5_INTERFACE "127.0.0.1:9051"  //Tor intrface
 
 #define CONTIMEOUT 10  //timeout in iddle state, sec
@@ -96,7 +97,11 @@ char sock_buf[32768];   //WSA sockets buffer
 #include "tcp.h"
 #include "cntrls.h"
 #include "codecs.h"
+#include "sha1.h"
 
+int web_listener=INVALID_SOCKET; //web listening socket
+int web_sock=INVALID_SOCKET;   //web control socket
+char web_sock_flag=0; //status of websocket connection
 int tcp_listener=INVALID_SOCKET; //tcp listening socket
 int tcp_insock=INVALID_SOCKET;  //tcp accepting socket (incoming)
 int tcp_outsock=INVALID_SOCKET; //tcp connected socket (outgoing)
@@ -135,6 +140,7 @@ int tr_in=0, pr_in=0;		//Current packet: bytes too read, bytes readed
 unsigned char torbuf[48]; //socks5 request for Tor
 short torbuflen=0; //length of stored request
 char msgbuf[264]; //work buffer
+char webmsgbuf[512]; //web message buffer
 
 unsigned long naddrUDPlistener=INADDR_NONE; //UDP listener if
 unsigned short portUDPlistener=0;
@@ -360,6 +366,49 @@ tryudp:
   }
   
   disconnect(); //reset all connections state
+
+     //look interface for ctrl-listener
+  strcpy(msgbuf, "WEB_interface");
+  if( parseconf(msgbuf)>0 ) //search in conf-file
+  {
+       port=fndport(msgbuf);  //check for port specified
+       if(!port) port=DEFWEBPORT; //if not use default
+       naddrTCP=inet_addr(msgbuf); //check for IP-address
+       if(naddrTCP!=INADDR_NONE) //if address is valid IP
+       {  //create tcp socket
+        if ((web_listener = socket(AF_INET, SOCK_STREAM, 0)) <0)
+        {
+         perror("Error WebListener");
+         web_listener=INVALID_SOCKET;
+        }
+        else
+        {
+         //unblock socket
+         opt=1;
+         ioctl(web_listener, FIONBIO, &opt);
+         //bind socket to interface
+         memset(&saddrTCP, 0, sizeof(saddrTCP));
+	 saddrTCP.sin_family = AF_INET;
+	 saddrTCP.sin_port = htons(port);
+         saddrTCP.sin_addr.s_addr=naddrTCP;
+
+         setsockopt(web_listener, SOL_SOCKET, SO_REUSEADDR, (char*)&flag, sizeof(flag));
+         if (bind(web_listener, (struct sockaddr*)&saddrTCP, sizeof(saddrTCP)) < 0)
+         {
+          perror("Error bind WEB");
+          close(web_listener);
+          web_listener=INVALID_SOCKET;
+         }
+         else
+         { //set socket to listening mode
+          listen(web_listener, 2);
+          printf("WEB listen on %s:%d\r\n", inet_ntoa(saddrTCP.sin_addr), port);
+          fflush(stdout);
+         }
+       }
+      }
+  }
+
   return ret; //listeners
 }
 
@@ -367,9 +416,9 @@ tryudp:
 //*****************************************************************************
 int get_ipif(unsigned int ip, unsigned short port)
 {
- printf("%d.%d.%d.%d", ip&0xFF, (ip>>8)&0xFF,
+ web_printf("%d.%d.%d.%d", ip&0xFF, (ip>>8)&0xFF,
         (ip>>16)&0xFF, ip>>24);
- if(port) printf(":%d", (int)port);
+ if(port) web_printf(":%d", (int)port);
  printf("\r\n");
  fflush(stdout);
 }
@@ -380,31 +429,31 @@ int get_sockstatus(void)
 {
  int sst=0; //status flags
  //local IP interface
- printf("Local IP if is ");
+ web_printf("Local IP if is ");
  get_ipif(Our_naddrUDPloc, 0);
  //UDP listener
  if(udp_insock!=INVALID_SOCKET)
  {
   sst+=1;
-  printf("UDP listening IF is ");
+  web_printf("UDP listening IF is ");
   get_ipif(naddrUDPlistener, portUDPlistener);
  }
  //UDP outgoing socket
  if(udp_outsock!=INVALID_SOCKET)
  {
   sst+=2;
-  printf("UDP socket now bound on port %d\r\n", Our_portUDPint);
+  web_printf("UDP socket now bound on port %d\r\n", Our_portUDPint);
   //External  UDP outgoing IP:port reported by STUN
   if((Our_naddrUDPext!=INADDR_NONE)&&Our_portUDPext)
   {
-   printf("UDP external IF is ");
+   web_printf("UDP external IF is ");
    get_ipif(Our_naddrUDPext, Our_portUDPext);
   }
  }
  //TCP listenet
  if(tcp_listener!=INVALID_SOCKET)
  {
-  printf("TCP listening IF is ");
+  web_printf("TCP listening IF is ");
   get_ipif(naddrTCPlistener, portTCPlistener);
  }
 
@@ -435,7 +484,7 @@ int disconnect(void)
     do_inv(msgbuf); //terminate unecrypted
     sendto(udp_insock, msgbuf, 13, 0, &saddrUDPTo, sizeof(saddrUDPTo));
    }
-   printf("Incoming UDP connection terminated\r\n");
+   web_printf("! Incoming UDP connection terminated\r\n");
    fflush(stdout);
   }
   udp_insock_flag=SOCK_READY; //set flag for listening socket
@@ -459,7 +508,7 @@ int disconnect(void)
     do_inv(msgbuf); //terminate unecrypted
     sendto(udp_outsock, msgbuf, 13, 0, &saddrUDPTo, sizeof(saddrUDPTo));
    }
-   printf("Outgoing UDP connection terminated\r\n");
+   web_printf("! Outgoing UDP connection terminated\r\n");
    fflush(stdout);
   }
   close(udp_outsock);
@@ -484,7 +533,7 @@ int disconnect(void)
     do_inv(msgbuf); //terminate unecrypted
     send(tcp_insock, msgbuf, 13, 0);
    }
-   printf("Incoming connection terminated\r\n");
+   web_printf("! Incoming connection terminated\r\n");
    fflush(stdout);
   }
   close(tcp_insock);
@@ -496,13 +545,13 @@ int disconnect(void)
  if(tcp_outsock!=INVALID_SOCKET) //if socket exist
  {
   if(tcp_outsock_flag==SOCK_WAIT_TOR)
-  printf("Failed attempt to connect to Tor\r\n");
+  web_printf("! Failed attempt to connect to Tor\r\n");
   else if(tcp_outsock_flag==SOCK_WAIT_HELLO)
-  printf("No SOCKS5 on specified Tor interface\r\n");
+  web_printf("! No SOCKS5 on specified Tor interface\r\n");
   else if(tcp_outsock_flag==SOCK_WAIT_HS)
-  printf("Hidden Service unavaliable\r\n");
+  web_printf("! Hidden Service unavaliable\r\n");
   else if(tcp_outsock_flag==SOCK_WAIT_HOST)
-  printf("Host service unavaliable\r\n");
+  web_printf("! Host service unavaliable\r\n");
   else if(tcp_outsock_flag==SOCK_INUSE) //if socket in use
   {
    if(crp_state>2)  //if connection was completely established
@@ -517,7 +566,7 @@ int disconnect(void)
     do_inv(msgbuf); //terminate unecrypted
     send(tcp_outsock, msgbuf, 13, 0);
    }
-   printf("Outgoing connection terminated\r\n");
+   web_printf("! Outgoing connection terminated\r\n");
    fflush(stdout);
   }
   close(tcp_outsock);
@@ -541,7 +590,7 @@ int disconnect(void)
  //Notify traffic
  if(bytes_sended | bytes_received)
  {
-  printf("Last session traffic: %0.3f MB sent, %0.3f MB received\r\n",
+  web_printf("Last session traffic: %0.3f MB sent, %0.3f MB received\r\n",
          (float)bytes_sended/1000000, (float)bytes_received/1000000);
   bytes_sended=0;
   bytes_received=0;
@@ -664,12 +713,12 @@ int connectudp(char* udpaddr)
    naddrTCP=inet_addr(msgbuf); //check for IP-address
    if(naddrTCP==INADDR_NONE) //if IP invalid, try resolve domain name
    {
-    fprintf(stdout, "Resolving, please wait...");
+    web_printf("Resolving, please wait...");
     fflush(stdout);
     hh = gethostbyname(msgbuf); //resolve domain name
     if (hh == 0) //no DNS reported
     {
-     fprintf(stderr, "%s: unknown host\r\n", msgbuf);
+     web_printf("! %s: unknown host\r\n", msgbuf);
      fflush(stderr);
      return -3;
     }
@@ -677,7 +726,7 @@ int connectudp(char* udpaddr)
     memcpy((char *) &naddrTCP, (char *) hh->h_addr, sizeof naddrTCP);
     //bcopy((char *) hh->h_addr, (char *) &naddrTCP, sizeof naddrTCP);
     saddrTCP.sin_addr.s_addr=naddrTCP;
-    printf(" %s\r\n", inet_ntoa(saddrTCP.sin_addr));
+    web_printf(" %s\r\n", inet_ntoa(saddrTCP.sin_addr));
     fflush(stdout);
    }
   }
@@ -719,7 +768,7 @@ int connectudp(char* udpaddr)
     naddrTCP=inet_addr(msgbuf); //check for IP-address
     if(naddrTCP==INADDR_NONE) //invalid IP specified in config
     {
-     printf("Invalid UDP_interface config!\r\n");
+     web_printf("! Invalid UDP_interface config!\r\n");
      fflush(stdout);
      return -2; //if IP valid
     }
@@ -766,7 +815,7 @@ int connectudp(char* udpaddr)
   {
    //for initial UDP connection set socket state as work (read and send)
    udp_outsock_flag=SOCK_INUSE; //set socket state for now
-   printf("Connect over UDP\r\n");
+   web_printf("Connect over UDP\r\n");
    //send initial connection request to remote
    strcpy(msgbuf, udpaddr); //use initial connection command with -Nname specified
    i=do_req(msgbuf); //send request
@@ -814,19 +863,18 @@ int connecttcp(char* tcpaddr)
    naddrTCP=inet_addr(msgbuf); //check for IP-address
    if(naddrTCP==INADDR_NONE) //if IP invalid, try resolve domain name
    {
-    fprintf(stdout, "Resolving, please wait...");
+    web_printf("Resolving, please wait...");
     fflush(stdout);
     hh = gethostbyname(msgbuf); //resolve domain name
     if (hh == 0) //no DNS reported
     {
-     fprintf(stderr, "%s: unknown host\r\n", msgbuf);
-     fflush(stderr);
+     web_printf("! %s: unknown host\r\n", msgbuf);
      return -3;
     }
     //notify
     memcpy((char *) &naddrTCP, (char *) hh->h_addr, sizeof naddrTCP);
     saddrTCP.sin_addr.s_addr=naddrTCP;
-    printf(" %s\r\n", inet_ntoa(saddrTCP.sin_addr));
+    web_printf(" %s\r\n", inet_ntoa(saddrTCP.sin_addr));
     fflush(stdout);
    }
   }
@@ -864,7 +912,7 @@ int connecttcp(char* tcpaddr)
  tcp_outsock_flag=SOCK_WAIT_HOST; //set soccket status
  settimeout(TCPTIMEOUT);  //set timeout for waiting connection
  strcpy(msgbuf, tcpaddr); //store command for do request after connection
- fprintf(stdout, "Connecting over TCP, please wait...\r\n");
+ web_printf("Connecting over TCP, please wait...\r\n");
  fflush(stdout);
  return 0;
 }
@@ -884,7 +932,7 @@ int connecttor(char* toraddr)
  //Check for Tor interface exist (loded fron conf in sock_init
  if((naddrTor==INADDR_NONE)||(!portTor))
  {
-  printf("Tor interface was not specified!\r\n");
+  web_printf("! Tor interface was not specified!\r\n");
   return 0;
  }
 
@@ -895,7 +943,7 @@ int connecttor(char* toraddr)
   i=get_opt(toraddr, msgbuf); //find -Oonion option
   if(i<=0) //if no addreses for onion in command string
   {
-   printf("Onion address must be specified!\r\n");
+   web_printf("! Onion address must be specified!\r\n");
    return 0;
   }
   else
@@ -903,7 +951,7 @@ int connecttor(char* toraddr)
    if(strlen(msgbuf)<31) strcpy(their_onion, msgbuf);
    else
    {
-    printf("Onion address too long (max 31 chars)!\r\n");
+    web_printf("! Onion address too long (max 31 chars)!\r\n");
     return 0;
    }
   }
@@ -913,7 +961,7 @@ int connecttor(char* toraddr)
  if(their_onion[0]) strcpy(msgbuf, their_onion);
  else
  {
-  printf("Onion address is not specified!\r\n");
+  web_printf("! Onion address is not specified!\r\n");
   return 0;
  }
  //scan address string for port
@@ -923,7 +971,7 @@ int connecttor(char* toraddr)
  if(!strchr(msgbuf,'.')) strcpy(msgbuf+strlen(msgbuf), ".onion");
  if(strlen(msgbuf)>31)
  {
-  printf("Address too long (must be less then 31 chars)\r\n");
+  web_printf("! Address too long (must be less then 31 chars)\r\n");
   return 0;
  }
  //Make socks5 request in torbuf
@@ -988,7 +1036,7 @@ int connecttor(char* toraddr)
  if(toraddr)
  {  //for initial connection, not for doubling reconections
   strcpy(msgbuf, toraddr); //store command for do request after connection
-  printf("Connecting over Tor, please wait...\r\n");
+  web_printf("Connecting over Tor, please wait...\r\n");
   fflush (stdout);
  }
  return 0;
@@ -1006,15 +1054,15 @@ void reset_dbl(void)
  char c;
 
  if((crp_state<3)||(!onion_flag))
- printf("No onion connection, command impossible\r\n");
+ web_printf("! No onion connection, command impossible\r\n");
  else if(rc_level<=0)
- printf("Doubling not permitted, set interval first\r\n");
+ web_printf("! Doubling not permitted, set interval first\r\n");
  else if(!our_onion[0])
- printf("Our onion adress is not specified in config file!\r\n");
+ web_printf("! Our onion adress is not specified in config file!\r\n");
  else if((tcp_outsock_flag!=SOCK_INUSE)||(tcp_outsock==INVALID_SOCKET))
  {
-  printf("Impossible: outgoing connection inactive now\r\n");
-  printf("Ask the remote party to perform this command\r\n");
+  web_printf("! Impossible: outgoing connection inactive now\r\n");
+  web_printf("Ask the remote party to perform this command\r\n");
  }
  else
  {
@@ -1023,9 +1071,9 @@ void reset_dbl(void)
    close(tcp_insock);
    tcp_insock=INVALID_SOCKET;
    tcp_insock_flag=0;
-   printf("Incoming socket already exists, destroyed\r\n");
+   web_printf("Incoming socket already exists, destroyed\r\n");
   }
-  printf("Doubling request sended to remote party\r\n");
+  web_printf("Doubling request sended to remote party\r\n");
   rc_in=0; //reset packets counters for new measurement
   rc_out=0;
   rc_cnt=0;
@@ -1049,19 +1097,19 @@ void reset_dbl(void)
 void init_dbl(void)
 {
  if((crp_state<3)||(!onion_flag))
- printf("No onion connection, command impossible\r\n");
+ web_printf("! No onion connection, command impossible\r\n");
  else if(rc_level<=0)
- printf("Doubling not permitted, set interval first\r\n");
+ web_printf("! Doubling not permitted, set interval first\r\n");
  else if(!their_onion[0])
- printf("Our onion adress not received yet!\r\n");
+ web_printf("! Our onion adress not received yet!\r\n");
  else if((tcp_insock_flag!=SOCK_INUSE)||(tcp_insock==INVALID_SOCKET))
  {
-  printf("Impossible: incoming connection inactive now\r\n");
-  printf("Ask the remote party to perform this command\r\n");
+  web_printf("! Impossible: incoming connection inactive now\r\n");
+  web_printf("Ask the remote party to perform this command\r\n");
  }
  else
  {
-  printf("Tries to reconnect outgoing connection\r\n");
+  web_printf("Tries to reconnect outgoing connection\r\n");
   connecttor(0); //close old connection and established new
   rc_cnt=0;
   rc_in=0;
@@ -1079,9 +1127,6 @@ void reconecttor(void)
  //check for onion connection type,
  //incoming connection is exist
  // and doubling permissed
- //fflush(stdout);
- //printf("Rcvd -Wonion sock=%d, rc_level=%d, rc_cnt=%d, u_cnt=%d\r\n",
- //       tcp_insock_flag, rc_level, rc_cnt, u_cnt);
  if( onion_flag && (tcp_insock_flag==SOCK_INUSE) && (rc_level>=0) && (rc_cnt<=5) && (!u_cnt))
  {
   fflush(stdout);
@@ -1114,12 +1159,12 @@ int tcpaccept(void)
  if(saddrTCP.sin_addr.s_addr==0x0100007F) //if incoming from localhost (Tor)
  {
   if(!crp_state) //only for initial incoming, not for doubling reconection
-  fprintf(stdout, "\r\nAccepted incoming from Tor\r\n");
+  web_printf("\r\nAccepted incoming from Tor\r\n");
   oflag=1; //set temporary onion flag
  }
  else //external incoming
  {
-  fprintf(stdout, "\r\nAccepted TCP from %s\r\n", inet_ntoa(saddrTCP.sin_addr));
+  web_printf("\r\nAccepted TCP from %s\r\n", inet_ntoa(saddrTCP.sin_addr));
   fflush(stdout);
  }
 
@@ -1152,8 +1197,7 @@ if(ll) //send busy notification and close
   //setsockopt(sTemp, SOL_SOCKET, SO_LINGER, (char*) &ling, sizeof(ling));
   close(sTemp);
 
-  fprintf(stderr, "Reject incoming: busy\r\n");
-  fflush(stderr);
+  web_printf("! Reject incoming: busy\r\n");
   return 1;
  }
 
@@ -1239,14 +1283,14 @@ int readudpin(unsigned char* pkt)
   i=getsockerr();  //get error code
   if(i!=EWOULDBLOCK) //any socket erron except blocking
   {
-   if(i==ECONNRESET) printf("No remote services\r\n");
+   if(i==ECONNRESET) web_printf("! No remote services\r\n");
    else
    {
     //close socket
     close(udp_insock);
     udp_insock=INVALID_SOCKET;
     udp_insock_flag=0;
-    printf("udp_in socket error %d\r\nPlease restart to continue UDP listening!\r\n", i);
+    web_printf("! udp_in socket error %d\r\nPlease restart to continue UDP listening!\r\n", i);
    }
   }
   return -2; //error
@@ -1263,10 +1307,10 @@ int readudpin(unsigned char* pkt)
     Our_portUDP=htons(*(unsigned short*)(pkt+26)); //our external PORT reported by STUN
     Our_naddrUDP=(*(unsigned long*)(pkt+28)); //our external IP reported by STUN
     saddrTCP.sin_addr.s_addr=Our_naddrUDP; //for convertion IP to strin
-    printf("STUN  report: UDP listener on %s:%d\r\n",
+    web_printf("STUN  report: UDP listener on %s:%d\r\n",
     inet_ntoa(saddrTCP.sin_addr), Our_portUDP);
     saddrTCP.sin_addr.s_addr=Our_naddrUDPloc; //our local IP discovered
-    printf("Local report: UDP listener on %s:%d\r\n",
+    web_printf("Local report: UDP listener on %s:%d\r\n",
     inet_ntoa(saddrTCP.sin_addr), Our_portUDPloc);
     fflush(stdout);
     return -1;
@@ -1311,7 +1355,7 @@ int readudpin(unsigned char* pkt)
   if(l==-1)
   {
    if(crp_state<3) disconnect(); //remote terminates his call request
-   printf("Remote is busy\r\n"); //notify only
+   web_printf("! Remote is busy\r\n"); //notify only
    return -1;
   }
  }
@@ -1321,7 +1365,7 @@ int readudpin(unsigned char* pkt)
  {
 
   if(0<go_syn(pkt)) sendto(udp_insock, pkt, 9, 0, &saddrTCP, sizeof(saddrTCP));
-  else printf(" ping on UDP incoming\r\n");
+  else web_printf(" ping on UDP incoming\r\n");
   return -1;
  }
  bytes_received+=(i+28);
@@ -1348,10 +1392,10 @@ int readudpout(unsigned char* pkt)
   i=getsockerr();  //get error code
   if(i!=EWOULDBLOCK) //any socket erron except blocking
   { //close socket
-   if(i==ECONNRESET) printf("No remote services\r\n");
+   if(i==ECONNRESET) web_printf("! No remote services\r\n");
    else
    {  //fatal errors
-    printf("udp_out socket error %d\r\n", i);
+    web_printf("! udp_out socket error %d\r\n", i);
     sock_close(-1);
    }
   }
@@ -1415,13 +1459,13 @@ int readudpout(unsigned char* pkt)
      Their_portUDPint=0;  //clear their ports
      Their_portUDPext=0;
      udp_outsock_flag=SOCK_INUSE; //set socket status for regullar sending over it
-     printf("UDP socket in use now\r\n");
+     web_printf("! UDP socket in use now\r\n");
     } //if(0<=go_syn(pkt))
    } //if(u_cnt)
    else
    {  //!u_cnt: send SYN to answer
     if(0<go_syn(pkt)) sendto(udp_outsock, pkt, 9, 0, &saddrTCP, sizeof(saddrTCP));
-    else printf(" ping on UDP outgoing\r\n");
+    else web_printf(" ping on UDP outgoing\r\n");
    } //!u_cnt
    return 0;
   } //if(i==9)
@@ -1460,7 +1504,7 @@ int readtcpout(unsigned char* pkt)
 
   if(!i)  //no data but recv event
   {  //socket remotely closed (like eof)
-   printf("TCP outgoing connection closed remotely\r\n");
+   web_printf("! TCP outgoing connection closed remotely\r\n");
    sock_close(0);
    return 0;
   }
@@ -1473,7 +1517,7 @@ int readtcpout(unsigned char* pkt)
    //ckeck for other fatal errors
    if(i!=EWOULDBLOCK)
    {
-    printf("TCP outgoing connection terminated remotely\r\n");
+    web_printf("! TCP outgoing connection terminated remotely\r\n");
     sock_close(0);
    }
 
@@ -1538,7 +1582,7 @@ int readtcpout(unsigned char* pkt)
      //Tor not pass socket closing immediately, we must notify other side first
      i=0;
      send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
-     printf("No key agreement!\r\n");
+     web_printf("! No key agreement!\r\n");
      sock_close(0);
     }
    }
@@ -1553,7 +1597,7 @@ int readtcpout(unsigned char* pkt)
   i=recv(tcp_outsock, br_out, 1, 0); //read first byte
   if(!i) //socket remotely closed (like eof)
   {
-   printf("TCP outgoing connection closed remotely\r\n");
+   web_printf("! TCP outgoing connection closed remotely\r\n");
    sock_close(0);
    return 0;
   }
@@ -1564,7 +1608,7 @@ int readtcpout(unsigned char* pkt)
    //ckeck for other fatal errors
    if(i!=EWOULDBLOCK)
    {
-    printf("TCP outgoing connection terminated remotely\r\n");
+    web_printf("! TCP outgoing connection terminated remotely\r\n");
     sock_close(0);
    }
    return 0;
@@ -1574,7 +1618,7 @@ int readtcpout(unsigned char* pkt)
   //Check for !br[0] and close socket for onion doubling
   if(!br_out[0])
   {
-    printf("TCP outgoing closed remotely\r\n");
+    web_printf("! TCP outgoing closed remotely\r\n");
     sock_close(0);
     return 0;
   }
@@ -1590,7 +1634,7 @@ int readtcpout(unsigned char* pkt)
   i=recv(tcp_outsock, br_out+pr_out, tr_out, 0); //read up to all expected bytes of packet
   if(!i) //socket remotely closed (like eof)
   {
-   printf("TCP outgoing connection closed remotely\r\n");
+   web_printf("! TCP outgoing connection closed remotely\r\n");
    sock_close(0);
    return 0;
   }
@@ -1601,7 +1645,7 @@ int readtcpout(unsigned char* pkt)
    //ckeck for other fatal errors
    if(i!=EWOULDBLOCK)
    {
-    printf("TCP outgoing connection terminated remotely\r\n");
+    web_printf("! TCP outgoing connection terminated remotely\r\n");
     sock_close(0);
    }
    return 0;
@@ -1621,7 +1665,7 @@ int readtcpout(unsigned char* pkt)
  if((i==9)&&(crp_state>2))
  {
   if(0<go_syn(br_out)) send(tcp_outsock, br_out, 9, 0);
-  else printf(" ping on TCP outgoing\r\n");
+  else web_printf(" ping on TCP outgoing\r\n");
   return 0;
  }
 
@@ -1631,7 +1675,7 @@ int readtcpout(unsigned char* pkt)
   i=go_inv(br_out); //check invite validity
   if(i==-1) //this is busy notify
   {
-   printf("Remote is busy\r\n");
+   web_printf("! Remote is busy\r\n");
    sock_close(0);
   }
   else if(i) //valid invite
@@ -1641,7 +1685,7 @@ int readtcpout(unsigned char* pkt)
    if((onion_flag==1)&&(crp_state==4))
    {
     onion_flag=2;
-    printf("Remote onion address'%s' verified\r\n", their_onion);
+    web_printf("Remote onion address'%s' verified\r\n", their_onion);
     fflush(stdout);
    }
 
@@ -1651,14 +1695,14 @@ int readtcpout(unsigned char* pkt)
    if(rc_level>0)
    {
     tcp_outsock_flag=SOCK_INUSE;
-    printf(">>\r\n");  //note renew onion outgoing
+    web_printf(">>\r\n");  //note renew onion outgoing
    }
    else
    {
     //Tor not pass socket closing immediately, we must notify other side first
     i=0;
     send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
-    printf("Connection closed because doubling is not permitted in config\r\n");
+    web_printf("! Connection closed because doubling is not permitted in config\r\n");
     sock_close(0);
    }
   }
@@ -1692,7 +1736,7 @@ int readtcpin(unsigned char* pkt)
   i=recv(tcp_insock, br_in, 1, 0); //read first byte
   if(!i) //socket remotely closed (like eof)
   {
-   printf("TCP incoming connection closed remotely\r\n");
+   web_printf("! TCP incoming connection closed remotely\r\n");
    sock_close(1);
    return 0;
   }
@@ -1704,7 +1748,7 @@ int readtcpin(unsigned char* pkt)
    if(i!=EWOULDBLOCK)
    {
     sock_close(1);
-    printf("TCP incoming connection terminated remotely\r\n");
+    web_printf("! TCP incoming connection terminated remotely\r\n");
    }
    return 0;
   }
@@ -1729,7 +1773,7 @@ int readtcpin(unsigned char* pkt)
   if(!i) //socket remotely closed (like eof)
   {
    sock_close(1);
-   printf("TCP incoming connection closed remotely\r\n");
+   web_printf("! TCP incoming connection closed remotely\r\n");
    return 0;
   }
   //process error code
@@ -1740,7 +1784,7 @@ int readtcpin(unsigned char* pkt)
    if(i!=EWOULDBLOCK)
    {
     sock_close(1);
-    printf("TCP incoming connection terminated remotely\r\n");
+    web_printf("! TCP incoming connection terminated remotely\r\n");
    }
    return 0;
   }
@@ -1758,7 +1802,7 @@ int readtcpin(unsigned char* pkt)
  if((i==9)&&(crp_state>2))
  {
   if(0<go_syn(br_in)) send(tcp_insock, br_in, 9, 0);
-  else printf(" ping on TCP incoming\r\n");
+  else web_printf(" ping on TCP incoming\r\n");
   return 0;
  }
 
@@ -1769,7 +1813,7 @@ int readtcpin(unsigned char* pkt)
   if(i==-1) //this is busy notify
   {
    sock_close(1);
-   printf("Remote is busy\r\n");
+   web_printf("! Remote is busy\r\n");
   }
   else if(i && onion_flag) //valid invite
   {
@@ -1790,7 +1834,7 @@ int readtcpin(unsigned char* pkt)
    //if no, fclose
    if(rc_level>0)
    {
-    printf("<<\r\n");  //note renew onion incoming
+    web_printf("<<\r\n");  //note renew onion incoming
     tcp_insock_flag=SOCK_INUSE;
    }
    else
@@ -1799,7 +1843,7 @@ int readtcpin(unsigned char* pkt)
     i=0;
     send(tcp_insock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
     sock_close(1);
-    printf("Connecting closed because doubling is not permitted in config\r\n");
+    web_printf("! Connecting closed because doubling is not permitted in config\r\n");
    }
   }
   return 0;
@@ -1908,7 +1952,7 @@ int do_read(unsigned char* pkt)
  }
  else if(bad_mac>64)
  {
-  printf("Lost crypto synchronization, trying to restore...\r\n");
+  web_printf("! Lost crypto synchronization, trying to restore...\r\n");
   bad_mac=60; //a little decrease bad counter for next
   in_ctr+=128; //move input counter out of synchro window
   pkt[0]=0x98; //emulate received syn request packet type:
@@ -1943,7 +1987,7 @@ int do_read(unsigned char* pkt)
    close(tcp_insock);
    tcp_insock=INVALID_SOCKET;
    tcp_insock_flag=0;
-   printf("Incoming socket is frozen, destroyed\r\n");
+   web_printf("! Incoming socket is frozen, destroyed\r\n");
   }
 
   rc_in=0; //reset packets counters for new measurement
@@ -1995,6 +2039,11 @@ int do_read(unsigned char* pkt)
   i=readtcpin(pkt);
   if(i>0) return i;
  }
+
+ //int do_read(unsigned char* pkt)
+ if(web_listener!=INVALID_SOCKET) webaccept();
+ if(web_sock!=INVALID_SOCKET) readweb();
+
  return -1;
 }
 
@@ -2029,7 +2078,7 @@ void do_stun(char* cmd)
 
  if(udp_insock==INVALID_SOCKET)
  {
-  printf("Unavaliable: UDP listener disabled by config!\r\n");
+  web_printf("! Unavaliable: UDP listener disabled by config!\r\n");
   return;
  }
  strcpy(msgbuf, cmd);
@@ -2043,7 +2092,7 @@ void do_stun(char* cmd)
  //check for STUN server was specified in command or ini-file
  if(!msgbuf[0])
  {
-  printf("STUN server is not specified!\r\n");
+  web_printf("! STUN server is not specified!\r\n");
   return;
  }
   //determines STUN IP and port from string
@@ -2053,19 +2102,18 @@ void do_stun(char* cmd)
   if(naddrSTUN==INADDR_NONE) //if IP invalid, try resolve domain name
   {
    struct hostent *hh;
-   fprintf(stdout, "Resolving STUN, please wait...");
+   web_printf("Resolving STUN, please wait...");
    fflush(stdout);
    hh = gethostbyname(msgbuf); //resolve domain name
    if (hh == 0) //no DNS reported
    {
-    fprintf(stderr, "%s: unknown STUN\r\n", msgbuf);
-    fflush(stderr);
+    web_printf("! %s: unknown STUN\r\n", msgbuf);
    }
    else  //IP finded
    {
     memcpy((char *) &naddrSTUN, (char *) hh->h_addr, sizeof naddrSTUN);
     saddrTCP.sin_addr.s_addr=naddrSTUN; //STUN IP
-    printf(" %s\r\n", inet_ntoa(saddrTCP.sin_addr));
+    web_printf(" %s\r\n", inet_ntoa(saddrTCP.sin_addr));
     fflush(stdout);
    }
   } //if(naddrTCP==INADDR_NONE)
@@ -2119,7 +2167,7 @@ void do_nat(char* cmd)
   //check for STUN server was specified in command or ini-file
   if(!msgbuf[0])
   {
-   printf("STUN server is not specified!\r\n");
+   web_printf("! STUN server is not specified!\r\n");
    return;
   }
   else if(msgbuf!='0') //check for STUN disabled
@@ -2131,19 +2179,19 @@ void do_nat(char* cmd)
    if(naddrSTUN==INADDR_NONE) //if IP invalid, try resolve domain name
    {
     struct hostent *hh;
-    fprintf(stdout, "Resolving STUN, please wait...");
+    web_printf("Resolving STUN, please wait...");
     fflush(stdout);
     hh = gethostbyname(msgbuf); //resolve domain name
     if (hh == 0) //no DNS reported
     {
-     fprintf(stderr, "%s: unknown STUN\r\n", msgbuf);
+     web_printf("! %s: unknown STUN\r\n", msgbuf);
      fflush(stderr);
     }
     else  //IP finded
     {
      memcpy((char *) &naddrSTUN, (char *) hh->h_addr, sizeof naddrSTUN);
      saddrTCP.sin_addr.s_addr=naddrSTUN; //STUN IP
-     printf(" %s\r\n", inet_ntoa(saddrTCP.sin_addr));
+     web_printf(" %s\r\n", inet_ntoa(saddrTCP.sin_addr));
      fflush(stdout);
     }
    } //if(naddrTCP==INADDR_NONE)
@@ -2173,7 +2221,7 @@ void do_nat(char* cmd)
   }
 
   //make chat packet contains string -Uudpaddr:udpport
-  memset(msgbuf, 0, 256); //clear for safe
+  xmemset(msgbuf, 0, 256); //clear for safe
   (*(unsigned char*)msgbuf)=TYPE_CHAT|0x80; //chat header
   saddrTCP.sin_addr.s_addr=Our_naddrUDPint; //our local UDP interfaces IP address
   sprintf((char*)(msgbuf+1), "-U%s:%d", inet_ntoa(saddrTCP.sin_addr), Our_portUDPint);
@@ -2250,7 +2298,7 @@ void stopudp(void)
   if(i>0) i=do_data(msgbuf, &c);
   //send first TCP after UDP: this is a SYN
   if(i>0) do_send(msgbuf, i, c); 
-  printf("    Stop UDP");
+  web_printf("    Stop UDP");
  }
 }
 
@@ -2285,7 +2333,7 @@ unsigned long get_local_if(void)
       paddr->sin_addr.s_addr=*(unsigned long*)hh->h_addr_list[i++];
       our_ip=paddr->sin_addr.s_addr; //for inet_ntoa only
       saddrTCP.sin_addr.s_addr=our_ip;
-      printf("Local interface: %s\r\n", inet_ntoa(saddrTCP.sin_addr) ); //notify
+      web_printf("Local interface: %s\r\n", inet_ntoa(saddrTCP.sin_addr) ); //notify
      }     
     }
    }
@@ -2301,7 +2349,7 @@ unsigned long get_local_if(void)
      {
       paddr=(struct sockaddr_in *)tmp->ifa_addr;
       our_ip=paddr->sin_addr.s_addr;
-      printf("%s: %s\r\n", tmp->ifa_name, inet_ntoa(paddr->sin_addr));
+      web_printf("%s: %s\r\n", tmp->ifa_name, inet_ntoa(paddr->sin_addr));
      }
      tmp=tmp->ifa_next;   
     }
@@ -2311,3 +2359,195 @@ unsigned long get_local_if(void)
  }
  return our_ip;
 }
+
+  //***************************************************************************
+//Poll web listener and accepts incoming WEBSOCKET connections
+int webaccept(void)
+{
+ int flag=1;
+ int ll;
+ int sTemp=INVALID_SOCKET; //accepted socket
+ unsigned long opt=1;
+ //struct linger ling;
+
+ if(web_listener==INVALID_SOCKET) return 0;
+ ll = sizeof(saddrTCP);
+ //try accept incoming asynchronosly
+ sTemp  = accept(web_listener, (struct sockaddr *) &saddrTCP, &ll);
+ if(sTemp<=0) return -1; //no incoming connections accepted
+ if(saddrTCP.sin_addr.s_addr!=0x0100007F) //if incoming not from localhost (Tor)
+ {
+  printf("\r\nWarning: external control\r\n");
+  //close(sTemp);
+  //return -1;
+ }
+ else printf("\r\nAccepted control\r\n");
+
+ //disable nagle on sTemp ->Err
+ if (setsockopt(sTemp, IPPROTO_TCP, TCP_NODELAY, (char*)&flag, sizeof(flag)) < 0)
+ {
+  perror( "Error disabling Nagle for accepted control" );
+  close(sTemp);
+  return -2;
+ }
+
+ //unblock socket
+ opt=1;
+ ioctl(sTemp, FIONBIO, &opt);
+
+ //close old control connection
+ if(web_sock!=INVALID_SOCKET)
+ {
+  close(web_sock);
+  printf("Existed control closed\r\n");
+ }
+
+ //set new control connection
+ web_sock=sTemp;
+ web_sock_flag=0; //clear ready flag: no protocol defined
+ return 1;
+}
+
+
+
+//*****************************************************************************
+//poll unblocked tcp_out socket, returns compleet packet length or 0
+int readweb(void)
+{
+ int l; //data length or error code
+ char* p=0;
+ //check socket status, read all data if socket not ready
+ if(web_sock==INVALID_SOCKET) return 0; //invalid socket
+
+  l=recv(web_sock, webmsgbuf, sizeof(webmsgbuf)-1, 0); //read all bytes
+  if(!l) //socket remotely closed (like eof)
+  {
+   printf("Web control closed remotely\r\n");
+   close(web_sock);
+   web_sock=INVALID_SOCKET;
+   web_sock_flag=0;
+   return 0;
+  }
+  //process error code
+  if(l==SOCKET_ERROR) //error/no data
+  {
+   l=getsockerr();  //get error code
+   //ckeck for other fatal errors
+   if(l!=EWOULDBLOCK)
+   {
+    close(web_sock);
+    web_sock=INVALID_SOCKET;
+    web_sock_flag=0;
+    printf("web control terminated remotely\r\n");
+   }
+   return 0;
+  }
+  //terminate string
+  webmsgbuf[l]=0;
+  //check for handshake
+  if(!web_sock_flag) //if protocol not specified yet
+  {
+   if((webmsgbuf[0]=='-')||(webmsgbuf[0]=='#')) web_sock_flag=SOCK_INUSE; //set telnet mode
+   else p=strstr(webmsgbuf, "Sec-WebSocket-Key: "); //search for websock handshake
+   if(p) //prepare answer for websock handshake
+   {
+    unsigned char h[20];
+    strcpy(p+43, "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"); //UID
+    sha1((const unsigned char*)(p+19), 60, h ); //sha1(key | UID)
+    //doing answer: add http header
+    strcpy(webmsgbuf, "HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept:");
+    //add accept data (sha in base64 format)
+    p=webmsgbuf+strlen(webmsgbuf);
+    b64estr(h, 20, p);
+    p[0]=32;  //skip bracket {
+    //skip barcket }, add extra: header's tail
+    strcpy(webmsgbuf+strlen(webmsgbuf)-1, "\r\nSec-WebSocket-Protocol: chat\r\n\r\n");
+    send(web_sock, webmsgbuf, strlen(webmsgbuf), 0); //send answer
+    web_sock_flag=SOCK_READY; //set websocket mode
+   }
+  }
+  else if(web_sock_flag==SOCK_INUSE) //parse telnet command
+  {
+   setcmd(webmsgbuf); //apply remote command
+  }
+  else if(l>1)//parse websock command
+  {
+   int i, j;
+   p=webmsgbuf+2; //data pointer for short packet
+   i=0x7F&webmsgbuf[1];  //data length for short packet
+   if(i>125) //this is a long packet
+   {
+    i=webmsgbuf[3]<<8+webmsgbuf[4]; //data length for long packet
+    p+=2; //skip 2 byte length
+   }
+   if(0x80&webmsgbuf[1]) //check for mask
+   {
+    p+=4; //skip 4 mask bytes
+    for(j=0;j<i;j++) p[j]^=*(p-4+(j%4));  //demask
+   }
+   if(l!=(p-webmsgbuf+i)) return 0; //check for actual length is correct
+   if((unsigned char)(webmsgbuf[0])==0x88) //check for close packet
+   {
+    webmsgbuf[1]=0;  //for our close packet to answer
+    send(web_sock, webmsgbuf, 2, 0); //send close
+    close(web_sock);   //close control socket
+    web_sock=INVALID_SOCKET;
+    web_sock_flag=0;
+    printf("web control gracefully closed by remote\r\n");
+   }
+   else if(((unsigned char)(webmsgbuf[0])==0x89)&&(i<126)) //check for ping packet
+   {  //only short ping precessed
+    webmsgbuf[0]=0x8A; //set pong type
+    webmsgbuf[1]=0x80+i; //set data length
+    for(j=0;j<i;j++) webmsgbuf[2+j]=p[j]; //copy data from ping
+    send(web_sock, webmsgbuf, i+2, 0); //send pong to answer
+   }
+   else if((unsigned char)(webmsgbuf[0])==0x81) //check for text packet
+   {
+    p[i]=0; //terminate string
+    setcmd(p); //apply remote command
+   }
+  }
+ return 0;
+}
+
+//*****************************************************************************
+//send data over control socket
+int sendweb(char* str)
+{
+ int l;
+ //check for socket exist
+ if(web_sock==INVALID_SOCKET) return -1;
+ //check max data length
+ l=strlen(str);
+ if(l>(sizeof(webmsgbuf)-5)) return -2;
+ //websock protocol
+ if(web_sock_flag==SOCK_READY)
+ {
+  webmsgbuf[0]=0x81; //header for final (one frame) text data packet
+  if(l<126) //short packet
+  {
+   webmsgbuf[1]=l; //7 bits length
+   strcpy(webmsgbuf+2, str); //payload
+   l+=2;
+  }
+  else  //long packet
+  {
+   webmsgbuf[1]=126;  //flag of long packet
+   webmsgbuf[2]=l>>8;
+   webmsgbuf[3]=l&0xFF; //16 bits length
+   strcpy(webmsgbuf+4, str); //payload
+   l+=4;
+  }
+  send(web_sock, webmsgbuf, l, 0); //send packet to websocket
+  return 0;
+ }
+ else if(web_sock_flag==SOCK_INUSE) //telnet mode
+ {
+  send(web_sock, str, l, 0);  //send raw data string
+  return 0;
+ }
+ return -3; //there was no handshake
+}
+
+

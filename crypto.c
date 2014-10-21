@@ -84,6 +84,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 #include "tcp.h"
 #include "codecs.h"
 #include "cntrls.h"
+#include "sha1.h"
 #include "crypto.h"
 
 
@@ -197,12 +198,12 @@ long getsec(void)
  //outputs to screen our name and onion address
  void get_names(void)
  {
-  printf("Default our name is '%s'\r\n", our_name);
-  printf("Our onion address is '%s'\r\n", our_onion);
+  web_printf("Default our name is '%s'\r\n", our_name);
+  web_printf("Our onion address is '%s'\r\n", our_onion);
   if(crp_state>2)
   {
-   printf("Connected to '%s'\r\n", their_name);
-   if(onion_flag) printf("Remote onion address is '%s'\r\n", their_onion);
+   web_printf("Connected to '%s'\r\n", their_name);
+   if(onion_flag) web_printf("Remote onion address is '%s'\r\n", their_onion);
   }
  }
 //*****************************************************************************
@@ -329,7 +330,7 @@ long getsec(void)
   sprintf(str, "%s%s", KEYDIR, keyname); //add path
   if(!(fl = fopen(str, "rt" ))) //open keyfile
   {
-   printf("Key file '%s' not found!\r\n", str);
+   web_printf("! Key file '%s' not found!\r\n", str);
    return -1;
   }
   str[0]=0;
@@ -359,7 +360,7 @@ long getsec(void)
   sprintf(str, "%s%s", KEYDIR, keyname); //add path
   if(!(fl = fopen(str, "rt" ))) //open keyfile
   {
-   printf("Key file '%s' not found!\r\n", str);
+   web_printf("! Key file '%s' not found!\r\n", str);
    return 0;
   }
   str[0]=0;
@@ -398,7 +399,7 @@ long getsec(void)
   sprintf(str, "%s%s", KEYDIR, book); //add path
   if(!(fl = fopen(str, "rt" ))) //open addressbook
   {
-   printf("Address book '%s' not found!\r\n", str);
+   web_printf("! Address book '%s' not found!\r\n", str);
    return -1;
   }
   str[0]=0;
@@ -434,8 +435,8 @@ long getsec(void)
   if(!keybody) keybody=key_access; //use degault destination for acces key
   if(!pas[0]) //clear access key if password string empty
   {
-   memset(keybody, 0, 16);
-   printf("Key access cleared\r\n");
+   xmemset(keybody, 0, 16);
+   web_printf("Key access cleared\r\n");
   }
   else  //derives key from password
   {
@@ -446,7 +447,7 @@ long getsec(void)
    for(i=0; i<PKDFCOUNT; i++)
    Sponge_data(&spng, pas, strlen(pas), 0, SP_NORMAL);
    Sponge_finalize(&spng, keybody, 16); //squize key
-   printf("Key access applied\r\n");
+   web_printf("Key access applied\r\n");
   }
  }
  //*****************************************************************************
@@ -458,12 +459,12 @@ long getsec(void)
   {  //try decrypt secret key file
    if(32==get_seckey(our_name, 0)) //or use default our name from config
    {
-    printf("Access to secret key '%s' is OK\r\n", our_name);
+    web_printf("Access to secret key '%s' is OK\r\n", our_name);
     return 1;
    }
-   else printf("No access to secret key '%s' now!\r\n", our_name);
+   else web_printf("! No access to secret key '%s' now!\r\n", our_name);
   }
-  else printf("Our name for secret key not specified!\r\n");
+  else web_printf("! Our name for secret key not specified!\r\n");
   return 0;
  }
 
@@ -538,17 +539,17 @@ long getsec(void)
     //check MAC
     if(memcmp(aukey+32, aukey+48, 16))
     {
-     printf("Wrong access to our secret key!\r\n");
+     web_printf("! Wrong access to our secret key!\r\n");
      return 0;
     }
 
     //decrypt secret key's body
     Sponge_init(&spng, aukey, 32, 0, 0); //absorb access|nonce
     Sponge_data(&spng, seckey, 32, seckey, SP_NOABS); //decrypt secret key in duplex mode
-    memset(aukey, 0, 64);
+    xmemset(aukey, 0, 64);
     Sponge_finalize(&spng, 0, 0);
    }
-   if(seckey==tmpkey) memset(seckey, 0, 32);
+   if(seckey==tmpkey) xmemset(seckey, 0, 32);
    return 32; //key bytes
  }
 //*****************************************************************************
@@ -595,7 +596,7 @@ long getsec(void)
    sprintf(res, "%s%s", KEYDIR, book); //add path
    if(!(fl = fopen(res, "rt" )))
    {
-    printf("Address book '%s' not found!\r\n", res);
+    web_printf("! Address book '%s' not found!\r\n", res);
     return -1; //if specified addressbook not found return error code -1
    }
 
@@ -660,26 +661,26 @@ long getsec(void)
  void reset_crp(void)
  {
   char str[256];
-  memset(their_name, 0,32);
-  memset(their_id, 0, 32);
-  memset(our_id, 0, 32);
-  memset(their_stamp, 0, 16);
-  memset(our_stamp, 0, 16);
+  xmemset(their_name, 0,32);
+  xmemset(their_id, 0, 32);
+  xmemset(our_id, 0, 32);
+  xmemset(their_stamp, 0, 16);
+  xmemset(our_stamp, 0, 16);
   strcpy(str, "Our_name");
   if( parseconf(str)>0 )  //search interface address in conf-file
   {
    if( strlen(str) <31 ) strcpy(our_name, str);
   }
 
-  memset(password, 0,32);
-  memset(session_key, 0, sizeof(session_key)); //clear session keys
-  memset(au_data, 0, 32);   //clear autentification data
-  memset(aux_key, 0, 16); //clear aux_key
-  memset(nonce, 0, 64); //clear nonce
-  memset(our_pkeys, 0, 64);
-  memset(their_pkeys, 0, 64); //clear session public keys
-  memset(&spng, 0, sizeof(spng));
-  memset(&TM, 0, sizeof(TM));
+  xmemset(password, 0,32);
+  xmemset(session_key, 0, sizeof(session_key)); //clear session keys
+  xmemset(au_data, 0, 32);   //clear autentification data
+  xmemset(aux_key, 0, 16); //clear aux_key
+  xmemset(nonce, 0, 64); //clear nonce
+  xmemset(our_pkeys, 0, 64);
+  xmemset(their_pkeys, 0, 64); //clear session public keys
+  xmemset(&spng, 0, sizeof(spng));
+  xmemset(&TM, 0, sizeof(TM));
   crp_state=0;          //set initial state
   in_ctr=0;            //clear counter of incoming packets
   out_ctr=0;           //clear counter of outgoing packets
@@ -730,7 +731,7 @@ long getsec(void)
   i=get_opt(command_str, str);
   if(i<0)
   {
-   printf("Contact name not specified for connection!\r\n");
+   web_printf("! Contact name not specified for connection!\r\n");
    disconnect();
    return 0; //no name specified: command not for connect
   }
@@ -741,7 +742,7 @@ long getsec(void)
   else if(i<64) sprintf(contact, "%s", str ); //use specified contact name
   else
   {
-   printf("Contact name too long!\r\n");
+   web_printf("! Contact name too long!\r\n");
    disconnect();
    return 0; //no name specified: command not for connect
   }
@@ -753,7 +754,7 @@ long getsec(void)
   else if(i<64) sprintf(bookname, "%s", str );
   else
   {
-   printf("Address book name too long!\r\n");
+   web_printf("! Address book name too long!\r\n");
    disconnect();
    return 0; //no name specified: command not for connect
   }
@@ -762,7 +763,7 @@ long getsec(void)
   i=get_bookstr(bookname, contact, bookstr);
   if(i<1)
   {
-    printf("Contact '%s' not found in adressbook '%s'\r\n", contact, bookname);
+    web_printf("! Contact '%s' not found in adressbook '%s'\r\n", contact, bookname);
     disconnect();
     return 0;
   }
@@ -770,15 +771,15 @@ long getsec(void)
   //parse book string for trust option
   str[0]='L';
   i=get_opt(bookstr, str);
-  if(i<1) printf("Warning! Untrusted contact!\r\n");
-  else if(i>0) printf("Contact's trust level: %s\r\n", str);
+  if(i<1) web_printf("! Warning! Untrusted contact!\r\n");
+  else if(i>0) web_printf("Contact's trust level: %s\r\n", str);
 
    //find key owner's nickname from book
   i=get_nickname(bookstr, str); //find #nickname from contacts key
   if((i>0)&&(i<32)) strcpy(their_id, str); //acceptors id (for originator)
   else
   {
-   printf("Nickname for their key not found in adressbook!\r\n");
+   web_printf("! Nickname for their key not found in adressbook!\r\n");
    disconnect();
    return 0;
   }
@@ -787,7 +788,7 @@ long getsec(void)
   i=get_keystamp(bookstr, their_stamp); //extract {b64_stamp} as bytes from  book string
   if(i!=16)
   {
-   printf("Stamp of their key not found / not correct in adressbook!\r\n");
+   web_printf("! Stamp of their key not found / not correct in adressbook!\r\n");
    disconnect();
    return 0;
   }
@@ -823,7 +824,7 @@ long getsec(void)
    i=get_key(str, their_pkeys); //B temporary store their pubKey (B)
    if(i!=32)
    {
-    printf("Key '%s'(%s) not found!\r\n", contact, their_id);
+    web_printf("! Key '%s'(%s) not found!\r\n", contact, their_id);
     disconnect();
     return 0;
    }
@@ -832,7 +833,7 @@ long getsec(void)
   i=get_bookstr(bookname, ourname, bookstr);
   if(i<1)
   {
-    printf("Our key '%s' not found in adressbook!\r\n", ourname);
+    web_printf("! Our key '%s' not found in adressbook!\r\n", ourname);
     disconnect();
     return 0;
   }
@@ -841,7 +842,7 @@ long getsec(void)
   if((i>0)&&(i<32)) strcpy(our_id, str);  //originators id (for originator)
   else
   {
-   printf("Nickname for our key not found in adressbook!\r\n");
+   web_printf("! Nickname for our key not found in adressbook!\r\n");
    disconnect();
    return 0;
   }
@@ -850,7 +851,7 @@ long getsec(void)
   i=get_keystamp(bookstr, our_stamp); //extract {b64_stamp} as bytes from  book string
   if(i!=16)
   {
-   printf("Stamp of our key not found / not correct in adressbook!\r\n");
+   web_printf("! Stamp of our key not found / not correct in adressbook!\r\n");
    disconnect();
    return 0;
   }
@@ -900,12 +901,12 @@ long getsec(void)
 
   //notify call
   strcpy(their_name, contact);
-  printf("Outgoing call from '%s' to '%s', waiting for answer...\n", ourname, contact);
+  web_printf("Outgoing call from '%s' to '%s', waiting for answer...\n", ourname, contact);
 
   //check access to used secret key
   if(!check_access())
   {
-   printf("Call is terminated\r\n");
+   web_printf("! Call is terminated\r\n");
    disconnect();
    return 0;
   }
@@ -956,7 +957,7 @@ long getsec(void)
   //check for packet type
   if(pkt[0]!=(TYPE_REQ|0x80))
   {
-   printf("Received packet is not a connection request type!\r\n");
+   web_printf("! Received packet is not a connection request type!\r\n");
    disconnect();
    return 0;
   }
@@ -964,7 +965,7 @@ long getsec(void)
   //check for iddle state
   if(crp_state)
   {
-   printf("Unexpected connection request received!\r\n");
+   web_printf("! Unexpected connection request received!\r\n");
    disconnect();
    return 0; //check for initial state only
   }
@@ -977,7 +978,7 @@ long getsec(void)
   i=search_bookstr(bookfile, ourname, buf, bookstr);
   if(i<1)
   {
-   printf("Incoming call from/to unknown, rejected\r\n");
+   web_printf("! Incoming call from/to unknown, rejected\r\n");
    disconnect();
    return 0; //sender not finded: not in book!
   }
@@ -987,7 +988,7 @@ long getsec(void)
   if(i>0) strcpy(their_id, str); //originator'd id (for acceptor)
   else
   {
-   printf("Nickname for their key not found in adressbook!\r\n");
+   web_printf("! Nickname for their key not found in adressbook!\r\n");
    disconnect();
    return 0;
   }
@@ -996,7 +997,7 @@ long getsec(void)
   i=get_keystamp(bookstr, their_stamp); //extract {b64_stamp} as bytes from  book string
   if(i!=16)
   {
-   printf("Stamp of their key not found / not correct in adressbook!\r\n");
+   web_printf("! Stamp of their key not found / not correct in adressbook!\r\n");
    disconnect();
    return 0;
   }
@@ -1006,13 +1007,13 @@ long getsec(void)
   if((i>0)&&(i<64)) strcpy(keyname, str);
   else
   {
-   printf("Adressbook error!\r\n");
+   web_printf("! Adressbook error!\r\n");
    disconnect();
    return 0;
   }
 
   //notification
-  printf("Incoming call to '%s' from '%s' ( '%s' )", ourname, keyname, their_id);
+  web_printf("Incoming call to '%s' from '%s' ( '%s' )", ourname, keyname, their_id);
   //time notification
 #ifdef _WIN32
   time(&ltime);
@@ -1020,20 +1021,20 @@ long getsec(void)
   ltime=getsec(); //get mktime
 #endif
   ttime=localtime(&ltime); // convert to localtime
-  if(ttime) printf(" at %02d:%02d", ttime->tm_hour, ttime->tm_min);
+  if(ttime) web_printf(" at %02d:%02d", ttime->tm_hour, ttime->tm_min);
 
   //check trust level option -L for this contact
   str[0]='L'; //ignore option
   i=get_opt(bookstr, str);
-  if(i<0) printf("\r\n");
-  else printf(", TrustLevel: ");
-  if(!i) printf("-\r\n");
-  else if(i>0) printf("%s\r\n", str);
-  printf("Press ENTER to answer\r");
+  if(i<0) web_printf("\r\n");
+  else web_printf(", TrustLevel: ");
+  if(!i) web_printf("-\r\n");
+  else if(i>0) web_printf("%s\r\n", str);
+  web_printf("Press ENTER to answer\r");
   fflush(stdout);
   if((!str[1])&& (str[0]=='X'))
   {
-   printf("Rejected by trust level (ignored)\r\n");
+   web_printf("! Rejected by trust level (ignored)\r\n");
    disconnect();
    return 0;
   }
@@ -1048,7 +1049,7 @@ long getsec(void)
   i=get_key(keyname, their_pkeys+32); //A
   if(i!=32)
   {
-   printf("Contact's keyfile '%s' not found!\r\n", keyname);
+   web_printf("! Contact's keyfile '%s' not found!\r\n", keyname);
    disconnect();
    return 0;
   }
@@ -1057,7 +1058,7 @@ long getsec(void)
   i=get_seckey(ourname, our_pkeys+32); //b
   if(i!=32)
   {
-   printf("Secret keyfile '%s' not found or invalid!\r\n", ourname);
+   web_printf("! Secret keyfile '%s' not found or invalid!\r\n", ourname);
    disconnect();
    return 0;
   }
@@ -1067,7 +1068,7 @@ long getsec(void)
   i=get_bookstr(bookfile, ourname, bookstr);
   if(i<=0)
   {
-   printf("Our key not found in adressbook!\r\n");
+   web_printf("! Our key not found in adressbook!\r\n");
    disconnect();
    return 0;
   }
@@ -1077,7 +1078,7 @@ long getsec(void)
   if(i>0) strcpy(our_id, str); //acceptors'd id (for acceptor)
   else
   {
-   printf("Nickname for our key not found in adressbook!\r\n");
+   web_printf("! Nickname for our key not found in adressbook!\r\n");
    disconnect();
    return 0;
   }
@@ -1086,7 +1087,7 @@ long getsec(void)
   i=get_keystamp(bookstr, our_stamp); //extract {b64_stamp} as bytes from  book string
   if(i!=16)
   {
-   printf("Stamp of our key not found / not correct in adressbook!\r\n");
+   web_printf("! Stamp of our key not found / not correct in adressbook!\r\n");
    disconnect();
    return 0;
   }
@@ -1167,13 +1168,13 @@ long getsec(void)
   int i;
   if((crp_state!=-2)||(!answer[0]))
   {
-   printf("Unexpected answer command!\r\n");
+   web_printf("! Unexpected answer command!\r\n");
    return;
   }
   i=do_data(answer, &c); //encrypt answer, returns pkt len
   if(i>0) do_send(answer, i, c); //send answer
   answer[0]=0;
-  printf("Incoming connection accepted\r");
+  web_printf("Incoming connection accepted\r");
  }
 //*****************************************************************************
 
@@ -1206,7 +1207,7 @@ long getsec(void)
   //check for packet type
   if(pkt[0]!=(TYPE_ANS|0x80))
   {
-   printf("Received packet is not a connection answer type!\r\n");
+   web_printf("! Received packet is not a connection answer type!\r\n");
    disconnect();
    return 0;
   }
@@ -1214,7 +1215,7 @@ long getsec(void)
   //check for state
   if(crp_state!=-1)
   {
-   printf("Unexpected connection answer received!\r\n");
+   web_printf("! Unexpected connection answer received!\r\n");
    disconnect();
    return 0; //check for state sweetable for ans
   }
@@ -1223,7 +1224,7 @@ long getsec(void)
   i=get_seckey(our_name, our_sec); //a
   if(i!=32)
   {
-   printf("Secret keyfile '%s' not found!", our_name);
+   web_printf("! Secret keyfile '%s' not found!", our_name);
    disconnect();
    return 0;
   }
@@ -1232,7 +1233,7 @@ long getsec(void)
   i=get_key(their_name, their_pub); //B
   if(i!=32)
   {
-   printf("Contact's keyfile '%s' not found!", their_name);
+   web_printf("! Contact's keyfile '%s' not found!", their_name);
    disconnect();
    return 0;
   }
@@ -1257,7 +1258,7 @@ long getsec(void)
   Sponge_finalize(&spng, TMP+32, 16); //aux_key
   if(memcmp(PREF, TMP+32, 16))
   {
-   printf("Answer from unknown, terminating call\r\n");
+   web_printf("! Answer from unknown, terminating call\r\n");
    disconnect();
    return 0;
   }
@@ -1296,7 +1297,7 @@ long getsec(void)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //K
   Sponge_finalize(&spng, au_data, 4);  //h
-  printf("Control words: ' %s - %s - %s - %s '\r\n",
+  web_printf("Control words: ' %s - %s - %s - %s '\r\n",
    (getword(au_data[0])), (getword(256+au_data[1])),
    (getword(au_data[2])), (getword(256+au_data[3]))
   );
@@ -1343,7 +1344,7 @@ long getsec(void)
   //check for packet type
   if(pkt[0]!=(TYPE_ACK|0x80))
   {
-   printf("Received packet is not a connection ACK type!\r\n");
+   web_printf("! Received packet is not a connection ACK type!\r\n");
    disconnect();
    return 0;
   }
@@ -1351,7 +1352,7 @@ long getsec(void)
   //check for state
   if(crp_state!=-2)
   {
-   printf("Unexpected connection ACK received!\r\n");
+   web_printf("! Unexpected connection ACK received!\r\n");
    disconnect();
    return 0; //check for state sweetable for ans
   }
@@ -1363,7 +1364,7 @@ long getsec(void)
   Sponge_finalize(&spng, TMP, 16);  //C'
   if(memcmp(nonce, TMP, 16))
   {
-   printf("Commitment failure!\r\n");
+   web_printf("! Commitment failure!\r\n");
    disconnect();
    return 0;
   }
@@ -1395,7 +1396,7 @@ long getsec(void)
   Sponge_finalize(&spng, OUT_M, 16); //their expected authentificator
   if(memcmp(OUT_M, IN_M, 16))
   {
-   printf("Identification failure\r\n");
+   web_printf("! Identification failure\r\n");
    disconnect();
    return 0;
   }
@@ -1415,7 +1416,7 @@ long getsec(void)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //Ka (second part of shared secret)
   Sponge_finalize(&spng, au_data, 4);  //h
-  printf("Control words: ' %s - %s - %s - %s '\r\n",
+  web_printf("Control words: ' %s - %s - %s - %s '\r\n",
    (getword(au_data[0])), (getword(256+au_data[1])),
    (getword(au_data[2])), (getword(256+au_data[3]))
   );
@@ -1445,7 +1446,7 @@ long getsec(void)
 
   //init onion verification
   if ((!onion_flag) || (rc_level==-1)) return 0; //check conditions
-  memset(pkt, 0, 256); //clear buffer
+  xmemset(pkt, 0, 256); //clear buffer
   pkt[0]=TYPE_CHAT|0x80;  //prepare chat packet type
   pkt[1]='-';
   pkt[2]='W'; //command for request remote onion address
@@ -1468,7 +1469,7 @@ long getsec(void)
   //check for packet type
   if(pkt[0]!=(TYPE_AGR|0x80))
   {
-   printf("Received packet is not a connection AGR type!\r\n");
+   web_printf("! Received packet is not a connection AGR type!\r\n");
    disconnect();
    return 0;
   }
@@ -1488,7 +1489,7 @@ long getsec(void)
    Sponge_finalize(&spng, TMP, 16); //their expected authentificator
    if(memcmp(IN_M, TMP, 16))
    {
-    printf("Identification failure\r\n");
+    web_printf("! Identification failure\r\n");
     disconnect();
    }
    else
@@ -1499,9 +1500,9 @@ long getsec(void)
     if(str[0]!='1') return 0;
     memcpy(buf, aux_key, 16); //Reveal aux_key
     randFetch(buf+16, 4); //extra bytes (total 20 bytes in agr packet data) 
-    memset(aux_key, 0, 16); //clear aux_key
+    xmemset(aux_key, 0, 16); //clear aux_key
     pkt[0]=TYPE_AGR|0x80;
-    printf("MAC key revealed\r\n");
+    web_printf("MAC key revealed\r\n");
     return (lenbytype(TYPE_AGR));
    }
   }
@@ -1512,17 +1513,17 @@ long getsec(void)
    //check aux_key revealing
    if(memcmp(buf, aux_key, 16))
    {
-    printf("Revealed MAC key does not match!\r\n");
+    web_printf("! Revealed MAC key does not match!\r\n");
     fflush(stdout);
    }
    else
    {
     crp_state=4; //set compleet state
-    printf("MAC key revealed by remote side\r\n");
-    memset(aux_key, 0, 16); //clear aux_key
+    web_printf("MAC key revealed by remote side\r\n");
+    xmemset(aux_key, 0, 16); //clear aux_key
    }
   }
-  else printf("Unexpected connection AGR received!\r\n");
+  else web_printf("! Unexpected connection AGR received!\r\n");
 
   return 0;
  }
@@ -1548,7 +1549,7 @@ long getsec(void)
   //check for status and set originator flag
   if(crp_state<2)
   {
-   printf("Authentication impossible: connection is not established!\r\n");
+   web_printf("! Authentication impossible: connection is not established!\r\n");
    return 0;
   }
   else if(crp_state==3) org=(!org); //set originator flag
@@ -1578,7 +1579,7 @@ long getsec(void)
   //check for packet type
   if(pkt[0]!=(TYPE_AUREQ|0x80))
   {
-   printf("Received packet is not an autentification request type!\r\n");
+   web_printf("! Received packet is not an autentification request type!\r\n");
    return 0;
   }
   //check password minimum 3 chars
@@ -1589,7 +1590,7 @@ long getsec(void)
   //check for status and set originator flag
   if(crp_state<2)
   {
-   printf("Authentication is impossible: connection is not established!\r\n");
+   web_printf("! Authentication is impossible: connection is not established!\r\n");
    return 0;
   }
   else if(crp_state==3) org=(!org);
@@ -1602,7 +1603,7 @@ long getsec(void)
   Sponge_finalize(&spng, work, 16);
   if(memcmp(buf, work, 16))
   {
-   printf("Authentication failure!\n");
+   web_printf("! Authentication failure!\n");
    fflush(stdout);
    return 0;
   }
@@ -1642,7 +1643,7 @@ long getsec(void)
   //check for packet type
   if(pkt[0]!=(TYPE_AUANS|0x80))
   {
-   printf("Received packet is not an autentification answer type!\r\n");
+   web_printf("! Received packet is not an autentification answer type!\r\n");
    return 0;
   }
   //check password minimum 3 chars
@@ -1651,7 +1652,7 @@ long getsec(void)
   //check for status and set originator flag
   if(crp_state<2)
   {
-   printf("Sending authentication answer is impossible: connection is not established!\r\n");
+   web_printf("! Sending authentication answer is impossible: connection is not established!\r\n");
    return 0;
   }
   else if(crp_state==3) org=(!org);
@@ -1665,7 +1666,7 @@ long getsec(void)
   Sponge_finalize(&spng, work, 16);
   if(memcmp(buf, work, 16))
   {
-   printf("Authentication failure!\n");
+   web_printf("! Authentication failure!\n");
    fflush(stdout);
    return 0;
   }
@@ -1676,8 +1677,8 @@ long getsec(void)
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
   Sponge_data(&spng, password, strlen(password)-1, 0, SP_NORMAL); //without last char
   Sponge_finalize(&spng, work, 6);
-  if(memcmp(buf+16, work, 6)) printf("Authentication UNDER PRESSING!\r\n");
-  else printf("Authentication OK\r\n");
+  if(memcmp(buf+16, work, 6)) web_printf("! Authentication UNDER PRESSING!\r\n");
+  else web_printf("Authentication OK\r\n");
   fflush(stdout);
   org-=16;
 
@@ -1710,13 +1711,13 @@ long getsec(void)
   //check for packet type
   if(pkt[0]!=(TYPE_AUACK|0x80))
   {
-   printf("Received packet is not a autentification ACK type!\r\n");
+   web_printf("! Received packet is not a autentification ACK type!\r\n");
    return 0;
   }
   //check password minimum 3 chars
   if(strlen(password)<3)
   {
-   printf("Going authentication ACK impossible: connection not established!\r\n");
+   web_printf("! Going authentication ACK impossible: connection not established!\r\n");
    return 0;
   }
   //check for status and set originator flag
@@ -1729,8 +1730,8 @@ long getsec(void)
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
   Sponge_data(&spng, password, strlen(password)-1, 0, SP_NORMAL); //without last char
   Sponge_finalize(&spng, work, 6);
-  if(memcmp(buf, work, 6)) printf("Authentication UNDER PRESSING!\r\n");
-  else printf("Authentication OK\r\n");
+  if(memcmp(buf, work, 6)) web_printf("! Authentication UNDER PRESSING!\r\n");
+  else web_printf("Authentication OK\r\n");
   fflush(stdout);
   pkt[0]=0;
   return 0;
@@ -1760,14 +1761,14 @@ long getsec(void)
    {
     //Switch UDP->TCP
     stopudp();
-    printf(" by remote command\r\n");
+    web_printf(" by remote command\r\n");
    }
    else if(pkt[2]=='W') //onion invites
    {
     if(!pkt[3]) //empty onion invite: originator must send answer
     {
      if((crp_state!=3)||(!onion_flag)||(rc_level==-1)) return 0; //processed by originator only
-     memset(pkt, 0, 256);
+     xmemset(pkt, 0, 256);
      pkt[0]=TYPE_CHAT|0x80;
      sprintf((char*)(pkt+1), "-W%s", our_onion);
      return (lenbytype(TYPE_CHAT)); //send chat type packet with our onion adress (invite)
@@ -1783,7 +1784,7 @@ long getsec(void)
     }
    }
   }
-  else printf("<%s\r\n", pkt+1); //text mesage
+  else web_printf(">%s\r\n", pkt+1); //text mesage
   return 0;
  }
 
@@ -2003,13 +2004,13 @@ long getsec(void)
    sprintf(str1, "%s%s", KEYDIR, str); //add path
    if(!(F = fopen(str1, "rb" ))) //open specified keyfile
    {
-    printf("Key '%s' not found!\r\n", str1);
+    web_printf("! Key '%s' not found!\r\n", str1);
     return 0;
    }
   }
   else if(!F) //file not specified but not opened early
   {
-   printf("Input error\r\n", str1);
+   web_printf("! Input error\r\n", str1);
    return 0;
   }
 
@@ -2068,7 +2069,7 @@ long getsec(void)
     sprintf(str, "%s%s", KEYDIR, "temp"); //add path
     if(!(F1 = fopen(str, "w+b" ))) //open specified keyfile
     {
-     printf("Error accepting key!\r\n", str);
+     web_printf("! Error accepting key!\r\n", str);
      return 0;
     }
    }
@@ -2119,7 +2120,7 @@ long getsec(void)
     { //compare last id with current
      if(!memcmp(keyid, lastid,16))
      {
-      printf("Key received: '%s', already exists\r\n", str1); //notification
+      web_printf("! Key received: '%s', already exists\r\n", str1); //notification
       fflush(stdout);
       //delete temp file
       sprintf(str, "%s%s", KEYDIR, "temp"); //add path
@@ -2134,7 +2135,7 @@ long getsec(void)
    //open address book for append
    if(!(F1 = fopen(str2, "at" ))) //open specified bookfile
    {
-    printf("Error accepting key!\r\n", str);
+    web_printf("! Error accepting key!\r\n", str);
     return 0;
    }
    //add key string for adressbook
@@ -2149,7 +2150,7 @@ long getsec(void)
    i=rename(str, str2);
    if(!i) //if new name applied
    {
-    printf("Key received from '%s'\r\n", str1); //notification
+    web_printf("Key received from '%s'\r\n", str1); //notification
     fflush(stdout);
    }
    else remove(str);
@@ -2251,7 +2252,7 @@ long getsec(void)
    t/=1000; //to milliseconds
    t+=(1000*(time1.tv_sec-TM.tv_sec)); //add seconds
    t/=2; //one-way latency is a half of two-way
-   printf("Latency is %d mS ", t);
+   web_printf("Latency is %d mS ", t);
    fflush(stdout);
    return 0; //no answer
   }
@@ -2265,7 +2266,7 @@ long getsec(void)
  //pkt[0]=0 for 'busy' inv
  int do_inv(unsigned char* pkt)
  {
-  if(!pkt[0]) memset(pkt+1, 0, 12); //clear for 'busy' inv
+  if(!pkt[0]) xmemset(pkt+1, 0, 12); //clear for 'busy' inv
   else
   {
    if(crp_state<3) return 0; //check for crypto ready
@@ -2285,7 +2286,7 @@ long getsec(void)
   int i;
 
   if(pkt[0]!=(TYPE_INV|0x80)) return 0; //check for pkt type
-  memset(work, 0, 12);  //for checking zeroed inv
+  xmemset(work, 0, 12);  //for checking zeroed inv
   if(!memcmp(pkt+1, work, 12)) return -1; //remote is 'busy'
   if(crp_state<3) return 0; //encryption not ready
   if(crp_state==3) i=memcmp(pkt+1, au_data+16, 12);
@@ -2324,4 +2325,7 @@ long getsec(void)
   if(type==TYPE_AGR) return(go_agr(pkt));  //key agreement finalize
   return 0; //not sweetable type
  }
+
+
+
 

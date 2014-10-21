@@ -24,6 +24,8 @@
 #include "codecs.h"
 #include "tcp.h"
 
+#include <stdarg.h>
+
 #define RINGTIME 30  //time in sec for wait answer
 #define BOOK "contacts.txt" //default addressbook filename
 
@@ -63,6 +65,7 @@ char menustr[10][10][64]; //menu iteams
 unsigned long esc_time=0; //time after asc char detected
 unsigned long esc_key=0;  //chars getted after esc during some time
 char old_char=0;        //last char for flush keyboard while TAB holded
+char next_char=0;       //nrext char emulated by remote
 #define DEFCONF "conf.txt"  //configuration filename
 char confname[32]=DEFCONF; //name of current configuration flag
 
@@ -193,7 +196,7 @@ void parsecmdline(int argc, char **argv)
   else if(argv[j][1]=='F')
   {
    strcpy(confname, argv[j]+2); //config file name
-   printf("Configuration file '%s' will be used\r\n", confname);
+   web_printf("Configuration file '%s' will be used\r\n", confname);
   }
  }
  memset(str, 0, 256);
@@ -290,7 +293,7 @@ int doaddr(void)
   fl=fopen(buf, "rt"); //try to open addressbook file
   if(!fl)
   {
-   printf("Contact list not found\r\n");
+   web_printf("! Contact list not found\r\n");
    return 0;
   }
   l=strlen(cmdbuf+2); //length of name
@@ -308,7 +311,7 @@ int doaddr(void)
 
  if(!k) //no results
  {
-  printf("Not found\r\n");
+  web_printf("Not found\r\n");
   doclr();
   return 0;
  }
@@ -326,13 +329,13 @@ int doaddr(void)
   buf[0]=0;
 
   sprintf(cmdbuf, "-N%s %s", buf+1, p);  //use resut as a command for call
-  printf((char*)cmdbuf); //print to screen
+  web_printf((char*)cmdbuf); //print to screen
   cmdptr=strlen(cmdbuf); //set length: now address ready for call by press Enter
  }
  else
  {
   sprintf(cmdbuf, "%s", p);  //use resut as a command for call
-  printf((char*)cmdbuf); //print to screen
+  web_printf((char*)cmdbuf); //print to screen
   cmdptr=strlen(cmdbuf); //set length: now address ready for call by press Enter
  }
  return k;
@@ -351,7 +354,7 @@ void showaddr(void)
  fl=fopen(buf, "rt"); //try to open addressbook file
  if(!fl)
  {
-  printf("Contact list not found\r\n");
+  web_printf("! Contact list not found\r\n");
   return;
  }
 
@@ -366,10 +369,10 @@ void showaddr(void)
   {
    if(!strstr(buf, cmdbuf+2)) continue; //find pattern
   }
-  printf("%s\r\n", buf); //show string with matched pattern
+  web_printf("%s\r\n", buf); //show string with matched pattern
   k++; //counter
  }
- if(!k) printf("Names not found\r\n"); //no one
+ if(!k) web_printf("! Names not found\r\n"); //no one
  fclose(fl); //close addressbook file
  doclr(); //clear work field on screen
 }
@@ -386,12 +389,12 @@ void doptt(int c)
    sound_loop=0;
    off_tx();
    do_ans();
-   return 0;
+   return;
   }
   else switch_tx();
  }
  else if(c==KEY_STAB) go_vad();//vad activation: shift+tab
- return 0;
+ return;
 }
 
 //*****************************************************************************
@@ -410,8 +413,8 @@ void sendkey(char* keyname)
   bb[0]=0;  //next do_key will be generates subsequent packets of this key
  }
  while(t==500); //while a not last packet
- if(t==504) printf("Key '%s' sent\r\n", keyname);
- else printf("Error sending key\r\n");
+ if(t==504) web_printf("Key '%s' sent\r\n", keyname);
+ else web_printf("! Error sending key\r\n");
 }
 
 //*****************************************************************************
@@ -428,7 +431,7 @@ void dochat(void)
   strcpy((char*)(bb+1), cmdbuf); //message body
   l=do_data(bb, &c);     //encrypt
   if(l>0) do_send(bb, l, c);  //send to remote
-  printf("\r>%s\r\n", cmdbuf); //otput to local terminal
+  printf("\r<%s\r\n", cmdbuf); //otput to local terminal
  }
  doclr();  //clear command string
 }
@@ -456,7 +459,7 @@ int dolist(int c)
  fl=fopen(buf, "rt"); //try to open addressbook file
  if(!fl)
  {
-  printf("Contact list not found\r\n");
+  web_printf("! Contact list not found\r\n");
   return 0;
  }
  i=-1; //line counter
@@ -491,7 +494,7 @@ int dolist(int c)
  //output menu iteam + command
  sprintf((char*)cmdbuf, "%s/use#%d:-%s", menuhdr[menu], n, buf);
  cmdptr=strlen((char*)cmdbuf); //set buffer pointer to end of string
- printf((char*)cmdbuf); //add menu string to screen
+ web_printf((char*)cmdbuf); //add menu string to screen
  return 1;
 }
 
@@ -536,7 +539,7 @@ void domenu(int c)
  sprintf((char*)cmdbuf, menuhdr[menu]); //add menu string to buffer
  sprintf((char*)cmdbuf+strlen(cmdbuf), menustr[menu][menuitem]); //add iteam to buffer
  cmdptr=strlen((char*)cmdbuf); //set buffer pointer to end of string
- printf((char*)cmdbuf); //add menu string to screen
+ web_printf((char*)cmdbuf); //add menu string to screen
 }
 
 //*****************************************************************************
@@ -643,7 +646,7 @@ int parsecmd(void)
   if(!cmdbuf[2]) //clear last call command including secret data in it
   {
    memset(command_str, 0, 256); //clear command string
-   printf("Call history cleared\r\n"); 
+   web_printf("Call history cleared\r\n"); 
   }
   else
   {
@@ -693,56 +696,56 @@ int parsecmd(void)
    {
     sound_loop=0;
     sound_test=0;
-    printf("Voice test canceled\r\n");
+    web_printf("Voice test canceled\r\n");
    }
   }
   else if(cmdbuf[2]=='V') //voice test
   {
    sound_loop=1;
-   printf("Voice test running\r\n");
+   web_printf("Voice test running\r\n");
   }
   else if(cmdbuf[2]=='I')
   {
    set_encoder(sp_enc);
    get_decoder(0);
-   if(vox_level) printf("VOX level is %d%\r\n", vox_level);
-   else printf("VOX uses SPEEX VAD detector\r\n");
-   printf("3tone signal level is %d%\r\n", vad_level*10/128);
-   printf("Noise signal level is %d%\r\n", vad_signal*10);
-   if(sp_jit>0) printf("Current Jitter compensation=%d mS\r\n", sp_jit/8);
-   else if(!sp_jit) printf("Current Jitter compensation is automatic\r\n");
-   else printf("Jitter buffer not used\r\n");
+   if(vox_level) web_printf("VOX level is %d%\r\n", vox_level);
+   else web_printf("VOX uses SPEEX VAD detector\r\n");
+   web_printf("3tone signal level is %d%\r\n", vad_level*10/128);
+   web_printf("Noise signal level is %d%\r\n", vad_signal*10);
+   if(sp_jit>0) web_printf("Current Jitter compensation=%d mS\r\n", sp_jit/8);
+   else if(!sp_jit) web_printf("Current Jitter compensation is automatic\r\n");
+   else web_printf("Jitter buffer not used\r\n");
    get_jitter();
-   printf("Current AGC=%d, NPP=%d, VOC=%d\r\n", sp_agc, sp_npp, sp_voc);
-   printf("Vocoder in ");
-   if(!sp_voc) printf("inactive");
-   else if(sp_voc==1) printf("unvoiced");
-   else if(sp_voc==2) printf("hight");
-   else if(sp_voc==3) printf("deep");
-   else printf("robot %d", sp_voc+2);
-   printf(" mode \r\n");
-   if(rc_level>0) printf("Current Onion doubling change interval is %d Sec\r\n", rc_level);
-   else printf("Onion doubling is disabling now\r\n");
+   web_printf("Current AGC=%d, NPP=%d, VOC=%d\r\n", sp_agc, sp_npp, sp_voc);
+   web_printf("Vocoder in ");
+   if(!sp_voc) web_printf("inactive");
+   else if(sp_voc==1) web_printf("unvoiced");
+   else if(sp_voc==2) web_printf("hight");
+   else if(sp_voc==3) web_printf("deep");
+   else web_printf("robot %d", sp_voc+2);
+   web_printf(" mode \r\n");
+   if(rc_level>0) web_printf("Current Onion doubling change interval is %d Sec\r\n", rc_level);
+   else web_printf("Onion doubling is disabling now\r\n");
    get_names();
    i=get_sockstatus();
 
-   if(!crp_state) printf("No connection now\r\n");
+   if(!crp_state) web_printf("No connection now\r\n");
    else
    {
-    if(crp_state&1) printf("Outgoing ");
-    else printf("Incoming ");
-    printf(" connection ");
-    if(crp_state>2) printf("established");
-    else printf("initialized");
-    if(onion_flag) printf(" over Tor");
-    else if((i==1)||(i==2)) printf(" over UDP");
-    else printf(" over TCP");
-    if(onion_flag>1) printf(" (onion verified OK)");
-    if((i&4)&&(i&&8)) printf(" Doubling active now");
-    if((i&0xC)&&(i&2)) printf(" Switched to UDP");
+    if(crp_state&1) web_printf("Outgoing ");
+    else web_printf("Incoming ");
+    web_printf(" connection ");
+    if(crp_state>2) web_printf("established");
+    else web_printf("initialized");
+    if(onion_flag) web_printf(" over Tor");
+    else if((i==1)||(i==2)) web_printf(" over UDP");
+    else web_printf(" over TCP");
+    if(onion_flag>1) web_printf(" (onion verified OK)");
+    if((i&4)&&(i&&8)) web_printf(" Doubling active now");
+    if((i&0xC)&&(i&2)) web_printf(" Switched to UDP");
     printf("\r\n");
    }
-   printf("Up: %0.3f MB (%0.1f kbit/s). Down: %0.3f MB (%0.1f kbit/s)\r\n",
+   web_printf("Up: %0.3f MB (%0.1f kbit/s). Down: %0.3f MB (%0.1f kbit/s)\r\n",
              (float)bytes_sended/1000000, up_bitrate,
              (float)bytes_received/1000000, down_bitrate);
   }
@@ -754,16 +757,28 @@ int parsecmd(void)
     i=do_syn(str);
     c=str[0]; //udp=tcp
     if(i>0) if(i>0) do_send(str, 9, c); //send ping  currently used channel
-    printf("Ping remote...\r\n");
+    web_printf("Ping remote...\r\n");
    }
   }
   else if(cmdbuf[2]=='S')
   { //stun request over udp listener for info about it's external interface
     do_stun(cmdbuf+3);
   }
-  else if(cmdbuf[2]=='B')
-  { //enable notification of bufferig status
-    sound_test=1;
+  //enable notification of bufferig status (debug mode)
+  else if(cmdbuf[2]=='B') sound_test=1;
+  //VAD mode
+  else if(cmdbuf[2]=='A') go_vad();
+  //voice transmission control
+  else if(cmdbuf[2]=='T') switch_tx(); //off
+  else if(cmdbuf[2]=='0')
+  {
+   push_ptt();  //temporary on
+   switch_tx(); //continiosly off
+  }
+  else if(cmdbuf[2]=='1') //on
+  {
+   off_tx(); //temporary off
+   switch_tx(); //continiosly on
   }
  }
  else if(cmdbuf[1]=='V') showaddr(); //view addrressbook
@@ -776,8 +791,8 @@ int parsecmd(void)
   {
    memset(password, 0, 32);
    strcpy(password, cmdbuf+2);
-   if(!password[0]) printf("Password cleared\r\n");
-   else if(crp_state<3) printf("Store password: '%s'\r\n", password);
+   if(!password[0]) web_printf("Password cleared\r\n");
+   else if(crp_state<3) web_printf("Store password: '%s'\r\n", password);
    else
    { //send au1
     str[0]=0;
@@ -810,7 +825,7 @@ int parsecmd(void)
     set_encoder(sp_enc);
    }
    else if(cmdbuf[2]=='I') get_decoder(0);
-   else printf("Current encoder: %d. Avaliable are 1-18\r\n", sp_enc);
+   else web_printf("Current encoder: %d. Avaliable are 1-18\r\n", sp_enc);
   }
   else
   {
@@ -830,36 +845,36 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
    if(vox_level<=0)
    {
     vox_level=0;
-    printf("Voice active detector enabled\r\n", vox_level);
+    web_printf("Voice active detector enabled\r\n", vox_level);
    }
-   else printf("Vox level set to %d%\r\n", vox_level);
+   else web_printf("Vox level set to %d%\r\n", vox_level);
   }
-  else if(vox_level) printf("Vox level is %d%\r\n", vox_level);
-  else printf("Vox uses voice active detector\r\n", vox_level);
+  else if(vox_level) web_printf("Vox level is %d%\r\n", vox_level);
+  else web_printf("Vox uses voice active detector\r\n", vox_level);
  }
  else if(cmdbuf[1]=='M') //-Mvad signal level (0-9)
  {
   if(!cmdbuf[2])
   {
    vad_signal=0;
-   printf("Noise signal disabled \r\n");
+   web_printf("Noise signal disabled \r\n");
   }
   else if(cmdbuf[2]=='?')
   {
-   printf("3tone signal level is %d%\r\n", vad_level*10/128);
-   printf("Noise signal level is %d%\r\n", vad_signal*10);
+   web_printf("3tone signal level is %d%\r\n", vad_level*10/128);
+   web_printf("Noise signal level is %d%\r\n", vad_signal*10);
   }
   else
   {
    if((cmdbuf[2]>=0x30)&&(cmdbuf[2]<=0x39))
    {
     vad_level=128*(cmdbuf[2]-0x30);
-    printf("3tone signal level set to %d%\r\n", vad_level*10/128);
+    web_printf("3tone signal level set to %d%\r\n", vad_level*10/128);
    }
    if((cmdbuf[3]>=0x30)&&(cmdbuf[3]<=0x39))
    {
     vad_signal=cmdbuf[3]-0x30;
-    printf("Noise signal level set to %d%\r\n", vad_signal*10);
+    web_printf("Noise signal level set to %d%\r\n", vad_signal*10);
    }
   }
  }
@@ -867,7 +882,7 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
  {
   if(!cmdbuf[2])
   {
-   if(sp_jit) printf("Jitter compensation set to auto\r\n");
+   if(sp_jit) web_printf("Jitter compensation set to auto\r\n");
    sp_jit=0;
   }
   else
@@ -876,18 +891,18 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
    if(i==-1)
    {
     sp_jit=-1;
-    printf("Jitter buffer disabled!\r\n");
+    web_printf("Jitter buffer disabled!\r\n");
    }
    else if(i)
    {
     sp_jit=i*8;
-    printf("Apply Jitter compensation %d mS\r\n", sp_jit/8);
+    web_printf("Apply Jitter compensation %d mS\r\n", sp_jit/8);
    }
    else
    {
-    if(sp_jit>0) printf("Current Jitter compensation=%d mS\r\n", sp_jit/8);
-    else if(!sp_jit) printf("Curren Jitter compensation is auto\r\n");
-    else printf("Jitter buffer not used\r\n");
+    if(sp_jit>0) web_printf("Current Jitter compensation=%d mS\r\n", sp_jit/8);
+    else if(!sp_jit) web_printf("Curren Jitter compensation is auto\r\n");
+    else web_printf("Jitter buffer not used\r\n");
    }
   }
  }
@@ -902,30 +917,30 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
   {
    if(!sp_agc)
    {
-    printf("Automatic gain control activated!\r\n");
+    web_printf("Automatic gain control activated!\r\n");
     sp_agc=1;
    }
    if(!sp_npp)
    {
-    printf("Noise supressing activated!\r\n");
+    web_printf("Noise supressing activated!\r\n");
     sp_npp=1;
    }
    speex_p(sp_npp,sp_agc); //set denoise and agc
   }
   else if(cmdbuf[2]=='?')
   {
-   printf("Current AGC=%d, NPP=%d, VOC=%d\r\n", sp_agc, sp_npp, sp_voc);
+   web_printf("Current AGC=%d, NPP=%d, VOC=%d\r\n", sp_agc, sp_npp, sp_voc);
   }
   else if(cmdbuf[2]=='0')
   {
    if(sp_agc)
    {
-    printf("Automatic gain control deactivated!\r\n");
+    web_printf("Automatic gain control deactivated!\r\n");
     sp_agc=0;
    }
    if(sp_npp)
    {
-    printf("Noise supressing deactivated!\r\n");
+    web_printf("Noise supressing deactivated!\r\n");
     sp_npp=0;
    }
    speex_p(sp_npp,sp_agc); //set denoise and agc
@@ -934,42 +949,42 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
 
   if((i==1)&&(!sp_agc))
   {
-   printf("Automatic gain control activated!\r\n");
+   web_printf("Automatic gain control activated!\r\n");
    sp_agc=1;
    speex_p(sp_npp,sp_agc); //set denoise and agc
   }
   else if((i==2)&&(!sp_npp))
   {
-   printf("Noise supressing activated!\r\n");
+   web_printf("Noise supressing activated!\r\n");
    sp_npp=1;
    speex_p(sp_npp,sp_agc); //set denoise and agc
   }
   else if((i==-1)&&(sp_agc))
   {
-   printf("Automatic gain control deactivated!\r\n");
+   web_printf("Automatic gain control deactivated!\r\n");
    sp_agc=0;
    speex_p(sp_npp,sp_agc); //set denoise and agc
   }
   else if((i==-2)&&(sp_npp))
   {
-   printf("Noise supressing deactivated!\r\n");
+   web_printf("Noise supressing deactivated!\r\n");
    sp_npp=0;
    speex_p(sp_npp,sp_agc); //set denoise and agc
   }
   else if(i<-2)
   {
-   printf("Vocoder deactivated!\r\n");
+   web_printf("Vocoder deactivated!\r\n");
    sp_voc=0;
   }
   else if((i>2)&&(i<255))
   {
    sp_voc=i-2;
-   printf("Vocoder activated: ");
-   if(sp_voc==1) printf("unvoiced");
-   else if(sp_voc==2) printf("hight");
-   else if(sp_voc==3) printf("deep");
-   else printf("robot %d", sp_voc+2);
-   printf(" mode \r\n");
+   web_printf("Vocoder activated: ");
+   if(sp_voc==1) web_printf("unvoiced");
+   else if(sp_voc==2) web_printf("hight");
+   else if(sp_voc==3) web_printf("deep");
+   else web_printf("robot %d", sp_voc+2);
+   web_printf(" mode \r\n");
   }
  }
  else if(cmdbuf[1]=='F') //load specified profile and apply all parameters from it
@@ -982,7 +997,7 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
   //set doubling enabling and specify change interval
   if((!cmdbuf[2])||(cmdbuf[2]=='0'))
   {
-   printf("Onion doubling disabled!\r\n");
+   web_printf("Onion doubling disabled!\r\n");
    rc_level=0;
   }
   else
@@ -991,12 +1006,12 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
    if(i>0)
    {
     rc_level=i;
-    printf("Apply Onion doubling change interval %d Sec\r\n", rc_level);
+    web_printf("Apply Onion doubling change interval %d Sec\r\n", rc_level);
    }
    else if(cmdbuf[2]=='?')
    {
-    if(rc_level>0) printf("Current Onion doubling change interval is %d Sec\r\n", rc_level);
-    else printf("Onion doubling is disabling now\r\n");
+    if(rc_level>0) web_printf("Current Onion doubling change interval is %d Sec\r\n", rc_level);
+    else web_printf("Onion doubling is disabling now\r\n");
    }
    else if(cmdbuf[2]=='R') reset_dbl();//reset doubling
    else if(cmdbuf[2]=='I') init_dbl(); //init doubling
@@ -1015,7 +1030,7 @@ else if(cmdbuf[1]=='G') //-Gvox  set vox level (0-100%)
    if( parseconf(cmdbuf+2)<=0) cmdbuf[2]=0;
    else cmdptr=strlen(cmdbuf);  
   }
-  if(!cmdbuf[2]) printf("Key name must be specified!\r\n");
+  if(!cmdbuf[2]) web_printf("Key name must be specified!\r\n");
   else sendkey(cmdbuf);
  }
 
@@ -1090,7 +1105,7 @@ int gochar(int c)
   {
    if(cmdptr) //if inputted string not empty
    {
-    printf("%c %c", 8, 8); //delete from screen
+    web_printf("%c %c", 8, 8); //delete from screen
     cmdptr--; //delete from buffer
    }
   }
@@ -1138,6 +1153,13 @@ int do_char(void)
  old_char=c; //for flushing TAB
  if((j<=0)||(!c)) usleep(0);
  c=goesc(c); //process esc-sequences as control characters
+ if(next_char) //remote emulate char
+ {
+  j=1;         //length for one char
+  c=next_char; //inserted remote char
+  lastchar=next_char; //for menu navigation
+  next_char=0; //once
+ }
  if((j>0)&&(c>0)) //have a character
  {
   c=gochar(c); //process character
@@ -1146,4 +1168,44 @@ int do_char(void)
  if(c==KEY_BREAK) return -1; // break (ctrl+C)
  return 0;
 }
+
+ //*****************************************************************************
+//aplly remote command: string or #ascii_char
+void setcmd(char* cmdstr)
+{
+ int i;
+ if(cmdstr[0]=='#') //command mode: one char ascii code
+ {
+  next_char=(char)atoi(cmdstr+1); //negative for >127
+  if(next_char==10) //convert <LF> to <CR> + clear command string
+  {
+   cmdbuf[0]=0;
+   cmdptr=0;
+   next_char=13;
+  }
+ }
+ else  //websocket mode
+ { //truncate to first non-printable symbol
+  for(i=0;i<strlen(cmdstr);i++) if(cmdstr[i]<32) cmdstr[i]=0;
+  strcpy(cmdbuf, cmdstr); //apply incoming string as a command
+  cmdptr=strlen(cmdbuf);  //length
+  if(cmdptr) next_char=KEY_ENTER; //emulate enter key to execute command
+ }
+}
+//output like printf to stdout and to control port
+void web_printf(char* s, ...)
+{
+    char st[256];
+    va_list ap;
+
+    va_start(ap, s);  //parce arguments
+    vsprintf(st, s, ap); //printf arg list to array
+    printf(st);  //out to stdout
+    sendweb(st); //out to control port
+    va_end(ap);  //clear arg list
+    return;
+}
+
+ 
+
 

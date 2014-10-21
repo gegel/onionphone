@@ -62,3 +62,7 @@
   void stopudp(void);
   int setaddr(char* pkt);
 
+  //Web control interface
+  int webaccept(void);
+  int readweb(void);
+  int sendweb(char* str);

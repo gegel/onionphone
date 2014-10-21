@@ -1,0 +1,486 @@
+<!doctype html>  
+
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ --> 
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame 
+       Remove this if you use the .htaccess -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>OnionPhone WebSocket GUI</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--  Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="shortcut icon" type="image/png" href="img/favicon.png" />
+
+  <!-- CSS : implied media="all" -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
+ <!--   <script src="modernizr-1.6.min.js"></script>  -->
+
+  <!-- For navbar menu -->
+  <!--[if lte IE 7]>
+  <style type="text/css">
+  #menu ul {display:inline;}
+  #ntl-menu ul {filter: alpha(opacity=95); filter: progid:DXImageTransform.Microsoft.Alpha(opacity=95);}
+  </style>
+  <![endif]-->
+
+  <style type="text/css">
+<!--
+#bup {
+	color: #F00;
+}
+#bdown {
+	color: #F00;
+}
+#bleft {
+	color: #F00;
+}
+#bright {
+	color: #F00;
+}
+#send {
+	color: #008000;
+}
+#bcall {
+	color: #00F;
+}
+#btalk {
+	color: #00F;
+}
+#bbrk {
+	color: #00F;
+}
+#bans {
+	color: #00F;
+}
+#bhalt {
+	color: #FF8000;
+}
+-->
+  </style>
+
+
+</head>
+
+<body>
+
+  <div id="container">
+
+    <div id="top">
+    
+      <div id="top-logo">
+        <a href="http://torfone.org/"><img class="imgWithTextVerticalCentered" src="img/torvoip.png" width="70" height="70" alt="TorFone.org Logo"></a>
+      </div>
+      <div id="top-heading">  
+        <a href="index.html"><span class="websiteHeading1">OnionPhone GUI</span><br /><small id="top-heading-byline">for VOIP over Tor</small></a>
+      </div>
+                
+    </div>
+    
+</div>
+
+    <div class="clearfix"></div>
+        
+    <div id="nav-top">
+      <ul id="ntl-menu">
+
+	
+  
+	<li class="liTop"><a class="top" href="http://torfone.org/onionphone.html">OnionPhone<!--[if gte IE 7]><!--></a><!--<![endif]-->
+	<!--[if lte IE 6]><table><tr><td nowrap><![endif]-->
+		<ul class="ul-l1">
+			<li><a href="http://torfone.org/download/oph_win.zip">Windows package</a></li>
+			<li><a href="http://torfone.org/download/oph_lin.zip">Linux Package</a></li>
+            <li><a href="https://github.com/gegel/onionphone">Source code</a></li>
+            <li><a href="http://torfone.org/download/oph.pdf">Documentation</a></li>
+		</ul>
+
+	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
+	</li>
+
+	<li class="liTop single"><a class="top" href="https://github.com/prof7bit/TorChat">TorChat</a></li>
+
+	<li class="liTop single last"><a class="top" href="https://www.torproject.org/download/download-easy.html.en">Tor</a></li>
+
+	<li class="liTop single last"><a class="top" href="https://www.websocket.org/">WebSocket<!--[if gte IE 7]><!--></a><!--<![endif]-->
+	<!--[if lte IE 6]><table><tr><td nowrap><![endif]-->
+		<ul class="ul-l1">
+			<li><a href="http://dev.w3.org/html5/websockets/">WebSocket API</a></li>
+			<li><a href="http://datatracker.ietf.org/doc/rfc6455/?include_text=1">WebSocket Protocol</a></li>
+		</ul>
+
+	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
+    
+    </li>
+
+</ul>
+
+    </div> <!-- #top -->
+    
+    <div class="clearfix"></div>
+    
+    <br />
+    
+	<script language="javascript" type="text/javascript">
+    
+      function browserDetect()
+      {
+        document.getElementById("browserType").innerHTML = BrowserDetect.browser + ' ' + BrowserDetect.version;
+        document.getElementById("platform").innerHTML = BrowserDetect.OS;
+    
+        if (window.WebSocket)
+        {
+          document.getElementById("wsSupportImg").src = "img/check.png"
+        }
+        else
+        {
+          document.getElementById("wsSupportImg").src = "img/cross.png"
+        }
+      }
+    
+		  // Handle difference for IE.
+
+      if (window.addEventListener)
+			{
+      window.addEventListener("load", browserDetect, false);
+			}
+     else if (window.attachEvent)
+			{
+        window.attachEvent("onload", browserDetect)    
+			}
+				
+    </script>
+    
+  <div Style="visibility: hidden; background-color: #D1D1D1; position: absolute" id="mess"></div>
+  <script type="text/javascript" src="js/tooltip.js"></script>  
+
+    <nav>      
+   .
+    <!--   
+        This is the navigation block empty now
+      -->
+    </nav>
+    
+    <div id="main-container">
+
+      <!--
+      <header>
+        This is the header.
+      </header>
+      -->
+    
+      <div id="main">
+
+        <div id="webSocketSupp">
+          <div style="float: left;">
+            <img src="img/check.png" width="36" height="28" align="absmiddle">
+          </div>
+          <div style="float: left; width: 600px; margin-left: 10px; position:relative; top: 6px;">
+            <a href="https://www.websocket.org/">HTML5 WebSocket</a> GUI ready. Run <strong>OnionPhone</strong> and connect to it.
+          </div>
+          <div class="clearfix"></div>
+
+        </div>
+        
+        <div id="noWebSocketSupp">
+          <div style="float: left;">
+            <img src="img/cross.png" width="36" height="36" align="absmiddle">
+          </div>
+          <div style="float: left; width: 600px; margin-left: 10px;">
+            <p>Your browser doesn't have native support for <a href="https://www.websocket.org/">HTML5 WebSocket</a>.</p>
+            <p>The following link lists the browsers that support WebSocket:</p>
+
+            <p><a href="http://caniuse.com/#feat=websockets">http://caniuse.com/#feat=websockets</a></p>
+          </div>
+          
+          
+          
+          
+          
+          <div class="clearfix"></div>
+        </div>
+        
+      <div style="float: left; width: 650px; margin-left: 10px; background-color:#FF8080; text-align:center; border:double #F00;" id="nojava"><h2>
+            <p>Your browser doesn't have JavaScript enabled! Please enable it.</p>
+            <p>Look  files for JavaScript code: 'websock.js' and 'tooltip.js'</p>
+            <p>No other external JavaScript will be used.</p></h2>
+          </div>
+        
+        <div id="echo">
+          <div id="echo-config" style="float: left;">
+            <strong>Location:</strong><br>
+            <input id="wsUri" size="35" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Address:port of OnionPhone control interface')" onMouseOut="hide_info(this)">
+            <input type="checkbox" style="display: none;" id="secureCb" onClick="toggleTls();">
+            <span id="secureCbLabel" style="display: none; font-size: smaller; color: black;">Use TLS</span> <br>
+            
+            <button id="connect" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Connect / disconnect WEB GUI to OnionPhone')" onMouseOut="hide_info(this)">Connect</button>
+            
+            &nbsp; <input type="checkbox" id="helpCb">
+            <span id="helpCbLabel" style="font-size: smaller; color: black;" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Shows help hints')" onMouseOut="hide_info(this)">Shows help</span>
+            
+            &nbsp; <button id="clearLogBut" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Clears log window with OnionPhone output data')" onMouseOut="hide_info(this)">Clear log</button>
+            
+            <br><br>
+            
+            <button id="budp" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Switch from Onion to UDP direct connection')" onMouseOut="hide_info(this)">UDP</button>
+            <button id="bup" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Previous menu block')" onMouseOut="hide_info(this)"><strong>ToUp</strong></button>
+            <button id="btcp" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Switch back from direct UDP to Onion')" onMouseOut="hide_info(this)"> Tor </button>
+            &nbsp; <button id="bcall" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Call to specified onion address<br>or execute call command')" onMouseOut="hide_info(this)">
+            <p><em>Call.to</em></p>
+</button>
+            <br>
+            <button id="bleft" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Previous menu item')" onMouseOut="hide_info(this)"><strong>Left</strong></button>
+            <button id="send" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Applies menu item or<br>executes command')" onMouseOut="hide_info(this)">=OK=</button>
+            <button id="bright" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Next menu item')" onMouseOut="hide_info(this)"><strong>Right</strong></button>
+             &nbsp; <button id="bans" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Answer to incoming call')" onMouseOut="hide_info(this)"><p><em>Answ</em></p></button>
+            <br>
+            <button id="bexit" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Show OnionPhone status')" onMouseOut="hide_info(this)">Info</button>
+            <button id="bdown" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Next menu block')" onMouseOut="hide_info(this)"><strong>Down</strong></button>
+            <button id="bvad" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Activate voice detector')" onMouseOut="hide_info(this)">VAD</button>
+            &nbsp; <button id="bbrk" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Hung up')" onMouseOut="hide_info(this)"><p><em>Break</em></p></button>
+            <br>
+            <button id="bping" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Ping-pong for measurement the latency')" onMouseOut="hide_info(this)">Ping</button>
+            <button id="bfind" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Show entries in address book<br>contained specified string')" onMouseOut="hide_info(this)">Find</button>
+            <button id="bname" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Preparing the dial command for specified contact name<br>or redialing the  last call if name is empty')" onMouseOut="hide_info(this)">Name</button>
+            &nbsp; <button id="bhalt" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Double click for shutdown OnionPhone daemon')" onMouseOut="hide_info(this)"><p id="bhalt"><em>Exit</em></p></button>
+            <br>
+            <strong>Codec: </strong><select name="codec" id="codec" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Audio codec for outgoing stream')" onMouseOut="hide_info(this)">
+            <option value="-CI">Decoder?</option>
+            <option value="-C?">Encoder?</option>
+            <option value="-C1">MELPE</option>
+            <option value="-C2">CODEC21</option>
+            <option value="-C3">LPC10</option>
+            <option value="-C4">MELP</option>
+            <option value="-C5">CODEC22</option>
+            <option value="-C6">CELP</option>
+            <option value="-C7" SELECTED>AMR</option>
+            <option value="-C8">LPC</option>
+            <option value="-C9">GSMHR</option>
+            <option value="-C10">G723</option>
+            <option value="-C11">G729</option>
+            <option value="-C12">GSMEFR</option>
+            <option value="-C13">GSMFR</option>
+            <option value="-C14">ILBC</option>
+            <option value="-C15">BV16</option>
+            <option value="-C16">OPUS</option>
+            <option value="-C17">SILK</option>
+            <option value="-C18">SPEEX</option>
+           </select>
+            &nbsp; <button id="btalk" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Hold the button for talk (PTT mode) or<br>push then  remove mouse from button for duplex mode')" onMouseOut="hide_info(this)"><p><em>Talk__Mute</em></p></button>
+          </div>
+          <div id="echo-log" style="float: left; margin-left: 20px; padding-left: 20px; width: 400px; border-left: solid 1px #cccccc;"> <strong>Log:</strong>
+            <div id="consoleLog"></div>
+         
+          </div>
+          <div class="clearfix"></div>
+     
+        </div>
+         
+         <hr align="left"/>
+         
+         <span id="cmdLabel" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Type the command for OnionPhone<br>and press Enter or double clicking for execute')" onMouseOut="hide_info(this)"><strong>Command: </strong></span>
+        <input id="sendMessage" size="95" value="-RI" onKeyPress="return runScript(event)">
+       <hr align="left"/>
+            
+         <div>
+         <button id="bbook" class="wsButton" style="width: 20px; height:20px;" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Auto gain control<br>Noise suppressor<br>Vocoder<br>Jitter protection<br>Voice loopback')" onMouseOut="hide_info(this)">-</button>
+         <strong>Voice advanced</strong>
+         </div>
+         <div id="book" style="display: block; margin-left: 20px; padding-left: 20px; width: 650px; height:120px; border-left: solid 1px #cccccc; border-top: solid 1px #cccccc;">
+               
+        <table class="instructions" cellspacing="0px" cellpadding="2px">
+          <tr>
+            <td valign="top" nowrap>Automatic gain control: </td>
+            <td valign="top"><input type="checkbox" id="gainCb" checked="true" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;The good headsets with mike<br>always better than internal ones!')" onMouseOut="hide_info(this)"></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Noise supressing: </td>
+            <td valign="top"><input type="checkbox" id="noiseCb" checked="true" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Noise environment can unmask you!<br>Suppress it!')" onMouseOut="hide_info(this)"></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Vocoder: </td>
+            <td valign="top"><input type="checkbox" id="vocCb" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Irreversible voice change to whisper<br>(removing the pitch)')" onMouseOut="hide_info(this)"></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Jitter buffer (mS): </td>
+            <td valign="top"><select name="jitter" id="jitter" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Size of the voice buffer for jitter compensation in mS<br>=Auto= mode useful for smart adjusting especially for Onion')" onMouseOut="hide_info(this)">
+            <option value="-J?">Buffer?</option>
+            <option value="-J-1">NONE</option>
+            <option value="-J" SELECTED>AUTO</option>
+            <option value="-J100">100</option>
+            <option value="-J200">200</option>
+            <option value="-J500">500</option>
+            <option value="-J700">700</option>
+            <option value="-J1000">1000</option>  
+            <option value="-J1500">1500</option>
+            <option value="-J2000">2000</option>
+           </select></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Voice test: </td>
+            <td valign="top"><input type="checkbox" id="testCb" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Sound loopback for adjusting settings.<br>If active, voice not passed to remote side')" onMouseOut="hide_info(this)"></td>
+          </tr>
+        </table>
+              
+       </div>
+         
+         <div>
+         <button id="baut" class="wsButton" style="width: 20px; height:20px;" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Access to secret key<br>Authentication using shared password<br> Publication of keys')" onMouseOut="hide_info(this)">-</button>
+         <strong>Authentication</strong>
+         </div>
+         <div id="aut" style="display: block; margin-left: 20px; padding-left: 20px; width: 650px; height:100px; border-left: solid 1px #cccccc; border-top: solid 1px #cccccc;">
+         
+         <table class="instructions" cellspacing="0px" cellpadding="2px">
+          <tr>
+            <td valign="top" nowrap>Set access word to current secret key:</td>
+            <td valign="top"><input id="setacc" size="25" value="" onDblClick="return runAcc(0)" onKeyPress="return runAcc(event)" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Specify secret word or use space<br>for clearing access and press Enter')" onMouseOut="hide_info(this)"></td>
+            <td valign="top"> <button id="bacc" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Check the applied access')" onClick="return runAcc(-1)" onMouseOut="hide_info(this)">Check it</button><br></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Set shared password for authentication:</td>
+            <td valign="top"><input id="setpas" size="25" value="" onDblClick="return runPas(0)" onKeyPress="return runPas(event)" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Specify shared password and press Enter<br>You can change last char under enforcement<br><br>Or specify own name and press Request button<br>for sending to remote party the text request for identification')" onMouseOut="hide_info(this)"></td>
+            <td valign="top"><button id="bpas" class="wsButton" onClick="return runPas(-1)" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Send to remote the text<br>request start of autentification')" onMouseOut="hide_info(this)">Request</button><br></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Send public key to connected abonent:</td>
+            <td valign="top"><input id="setkey" size="25" value="" onKeyPress="return runKey(event)" onDblClick="return runKey(0)" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Specify a name for key<br>will be sended and press Enter')" onMouseOut="hide_info(this)"> </td>
+            <td valign="top"><button id="bkey" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Send own default key')" onClick="return runKey(-1)" onMouseOut="hide_info(this)">Own Key</button></td>
+          </tr>
+        </table>
+       
+        </div>
+       
+        <div>
+         <button id="bother" class="wsButton" style="width: 20px; height:20px;" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Quick start guide')" onMouseOut="hide_info(this)">-</button>
+         <strong>Help</strong>
+         </div>
+         <div id="other" style="display: block; margin-left: 20px; padding-left: 20px; width: 650px;  border-left: solid 1px #cccccc; border-top: solid 1px #cccccc; text-align:justify;">
+           <p><h2>I. Installation</h2>
+             <strong>The easiest way is to use OnionOhine as a VOIP plugin for TorChat:</strong></p><br>
+           <ul>
+               <li> <kbd>Step 1:</kbd> Put the OnionPhone folder on the hard disk, removable media or TrueCrypt container (preferred).</li>
+               <li> <kbd>Step 2:</kbd> Edit the TorChat configuration file <em>/torchat/bin/Tor/torrc.txt</em>:<br>
+             immediately following the line:</li>
+               <strong><em><samp>HiddenServicePort 11009 127.0.0.1:11009</samp></em></strong>
+               <br>add the a new line:<br>
+               <em><strong><samp>HiddenServicePort 17447 127.0.0.1:17447</samp></strong></em>
+               <br>
+               then run the TorChat.</li>
+               <li> <kbd>Step 3:</kbd> Right click on myself  icon of TorChat contact list and copy ID to clipboard. Edit the OnionPhone configuration file <em>conf.txt</em>: specify our Onion address using copied ID, for example:
+               <strong><em><samp>Our_onion=gegelcy5fw7dsnsn</samp></em></strong>               <br>
+               Once started the OnionPhone now is ready to receive incoming and make outgoing calls.</li>
+           </ul>
+           <br>
+           
+           <h2>II. Key management:</h2>
+           <p>OnionPhone uses public keys to authenticate the subscribers to each other using PGP. Once you must <u>generate long-term key pair</u> (public and private keys), <u>sign public key using PGP</u> and <u>add it to your address book</u>. After this yor can establish un-authenticated (but still encrypted) connection with other subscriber, <u>send own public key</u> to him and <u>receive his public key</u>. After <u>checking PGP signatures</u> you and your subscriber set some trust level to received keys and now authenticated calls each other are avaliable.</p>
+           <p>&nbsp;</p>
+           <p><strong>Console utility addkey is useful for key management:</strong></p>
+           <p>&nbsp; </p>
+           <ul>
+             <li><kbd>Step 1:</kbd> To generate a new key pair run: <samp>./addkey -Gname [-Yaccess] [options]</samp> where <em>name</em> is your identifier, <em>access</em> is the password that will be used to encrypt your private key and <em>options</em> will be passed to other participants. If<em> -Y</em> is omitted the private key will be stored unencrypted. In this case it is recommended to store OnionPhone folder in a protected place (TrueCrypt container etc.).
+               
+               The most common use is option <em>-Oour_onion_address</em> to present own address. Upon receipt of your key this option  will be automatically copied in address books of other participants. <br>For example, after the command:<br>
+               <strong><em><samp>./addkey -Galice -Y1234 -Or4kxspnzpnsel4fu</samp></em></strong><br>
+               
+               files<em> alice.sec</em> (the private key encrypted  using password <em>1234</em>) and <em>alice</em> (the public key) will be created in the folder <em>keys</em>. </li>
+             <li><kbd>Step 2:</kbd> To sign the public key open it as a text and sign their content using PGP. Signature must be added  to the key file. Once the key has been signed further edition  is not allowed (renaming is still possible). </li>
+             <li><kbd>Step 3:</kbd> Before using the key you must add it to your address book:<br>
+               <em><strong><samp>./addkey -Aalice</samp></strong></em><br>
+               
+               To use this key as its own default edit the OnionPhone configuration file <em>conf.txt</em> specifying the key's name:<br> 
+             <strong><em><samp>Our_name=alice</samp></em></strong></li>
+             <li><kbd>Step 4:</kbd> Now you can send the key to other users. For transmission of the key establish an un-authenticated call <em>guest</em> to <em>guest</em> with the other party (see above) and execute
+               <strong>-Kname</strong>, where <em>name</em> is the key for transmission (or <strong>-K</strong> without parameter if this key is assigned as your own default). Key will be automatically added to the remote address book with the lowest possible level of trust. After manual PGP signature check of the the key file other parties can set the desired trust level  by editing <em><strong>-L</strong></em> parameter to the corresponding entries in the address book file <em>keys / contacts.txt</em>, for example:<br>
+               
+               <strong><em><samp>[alice] {FNrjEjGmlZtvKXzBQkNIDA ==} #alice -Or4kxspnzpnsel4fu -L<u>1</u></samp><u></u></em></strong><br>
+             <br>You can also pass the key in any other way (for example, by email). The recipient verifies PGP signature in the key file and determines the necessary trust level, then add the key to the address book indicating the trust level as -L<em>level</em>, for example:<br>
+               
+               <em><strong><samp>./addkey -Aalice <u>-L1</u></samp><u></u></strong></em><br>
+             </li>
+           </ul>
+           <h2>III. Calls:</h2>
+          
+             <li>To accept an incoming call press <kbd>Enter</kbd>. </li>
+             <li>To make an outgoing call as a <em>guest to guest</em> (without use of personal keys) type command: <strong><em>-Oremote_onion_address</em></strong> and press <kbd>Enter </kbd>then wait 10 - 30 sec for connection over Tor to be established. </li>
+             <li>To toggle continuous voice transmission press <kbd>Enter</kbd>. Hold down / release the <kbd>Tab</kbd> for Push-to-Talk mode. </li>
+             <li>To apply the voice codec from 1 to 18 use the command  <strong><em>-Ccodec_number</em></strong>. Smaller numbers correspond to low bitrate codecs, greater ones are for high quality. Numbers from 16 to 18 correspond to the variable bit rate codecs. </li>
+             <li>To enable security vocoder use the command <strong><em>-Qmode</em></strong>, where <em>mode</em>=3 corresponds to  &quot;whisper"  voice (recommended), modes 6-255 correspond to &quot;robot" etc. </li>
+             <li>To deactivate the vocoder use the command <strong><em>-Q-3</em></strong>.
+             To use the chat feature  type a message and send it by pressing <kbd>Enter</kbd>. </li>
+             <li>To switch to direct UDP connection use the command <strong><em>-S</em></strong> (both parties must do this). </li>
+           <li>To return into Tor from direct UDP connection use the command<strong><em> -O</em></strong>. </li>
+             <li>To end the call use the command <strong><em>-H</em></strong>.</li>
+             <li>To show contacts from adress books use the command <strong>-V</strong> or <strong>-V<em>filter</em></strong>, where <em>filter</em> is substring for searching.</li>
+             <li>To extract command for calling use <strong>-E<em>name</em></strong> where <em>name</em> is your subscriber for next call. Use <strong>-E</strong> without name for recalling.</li>
+             <li>To exit the OnionPhone use the command <strong><em>-X</em></strong> or hit <kbd>Esc</kbd> twice for emergency exit. </li>
+           </ol>
+         <br>
+         <h2>IV. Console</h2>
+         <p>The keyboard is used to typing the commands, control the voice transmission and navigating in menu. </p>
+         <p>Control keys are: </p>
+         <ol>
+           <li><strong>Back</strong> removes the last typed character. </li>
+           <li><strong>Del</strong> clears the typed string. </li>
+           <li><strong>Tab</strong> activates voice transmission while key is held down (Push-to-Talk mode). </li>
+           <li><strong>Sift+Tab</strong> (Linux) or <strong>Ctrl+Tab</strong> (Windows) activates the voice detector. </li>
+           <li><strong>Up, Down</strong> arrows are used to navigate between menu units. </li>
+           <li><strong>Left, Right</strong> arrows are used to select menu items. </li>
+           <li><strong>Enter:</strong><br>
+           - answers while incoming call is waits for being accepted;           
+           <br>
+           - enables / disables continuous voice transmission if command line is empty;           <br>
+           - if the first char of command string is &quot;<samp><strong>-</strong></samp>&quot; (command was typed)  processes the command; <br>
+           - otherwise sends typed chat message. </li>
+           <li><strong>Esc:</strong><br>
+           - rejects while incoming call is waits for being accepted;           
+           <br>
+           - if hit twice immideately exits the program clearing the memory. <br>
+           </li>
+         </ol>
+         <h2>V. Telnet</h2>
+         <p>OnionPhone can be used as a daemon controlled by any Telnet client or by any other application using Telnet protocol. Specify control interface in the file <em>conf.txt</em>:
+           </p>
+         <p><samp><strong><em>WEB_interface=127.0.0.1:23</em></strong></samp>  
+           </p>
+         <p>For activation of Telnet mode the first sends string <samp><strong>#</strong></samp>. After this you can send an OnionPhone commands as described above and receive text reports. Additional feature is the usage of the string <samp><strong>#<em>ascii_code</em></strong></samp> for emulate the key pressing. For examples, <samp><strong>#13</strong></samp> emulates <kbd>Enter</kbd>. Note: <samp><strong>#10</strong></samp> clears the command string and emulates <kbd>Enter</kbd>. </p>
+         <h2>VI. WEB interface</h2>
+         Web interface is the HTML5 local web-page uses JavaSсript for the user-friendly graphical interface that controls the Onion Phone daemon. WebSocket protocol shares the OnionPhone control interface, specified in the file <em>conf.txt</em>:<br>
+         <samp><em><strong>WEB_interface=127.0.0.1:8000</strong></em></samp><br>
+         Your Web-brouser must support HTML5, WebSocket and JavaScript must be enabled. Note that only local JavaScript will be used (can be inspected in files <em>\webgui\js\tooltip.js</em> and<em> \webgui\js\websock.js</em> in OnionPhone folder).  Press <kbd>Connect</kbd> button for the  WebSocket bidirectional asynchrone connection between browser and OnionPhone. Then use graphic elements for controlling the OnionPhone and see <kbd>Log</kbd> for checking results. Pop tabs are useful to study the the interface. </div>
+         
+      </div> <!-- #main -->
+
+    
+    </div> <!-- #main-container -->
+    
+    <div class="clearfix"></div>
+
+    <footer>
+      <div style="float: right;">
+       &copy; 2014 Van Gegel &nbsp; - &nbsp; <a href="mailto:torfone@ukr.net">Contact Developer</a>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+
+
+  </div> <!-- #container -->
+
+  <script type="text/javascript" src="js/websock.js"></script>
+
+</body>
+
+</html>

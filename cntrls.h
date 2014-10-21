@@ -83,5 +83,13 @@ int parsecmd(void);
 int do_char(void);
 void tty_rawmode(void);
 void tty_normode(void);
-
+void setcmd(char* cmdstr);
+void web_printf(char* s, ...);
+/*
+#define PPP(x,...)  \
+    char* bp=(char*)malloc(256);  \
+    sprintf(bp, __VA_ARGS__);   \
+    printf(bp);  \
+    free(bp);
+*/
 

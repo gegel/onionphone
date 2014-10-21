@@ -10,6 +10,7 @@ UDP_listen=1
 UDP_control=1
 TCP_interface=0.0.0.0:17447
 UDP_interface=0.0.0.0:17447
+WEB_interface=127.0.0.1:8000
 
 #Technical settings
 AddressBook=contacts.txt

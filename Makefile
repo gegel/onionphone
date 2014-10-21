@@ -28,7 +28,7 @@ DIRS = celp gsm lpc10 melpe melp codec2 lpc gsmhr g729 g723 ilbc bv gsmer silk a
 
 all:	$(PROGRAMS)
 
-SPKROBJS = oph.o audio.o codecs.o cntrls.o crypto.o tcp.o
+SPKROBJS = oph.o audio.o codecs.o cntrls.o crypto.o tcp.o sha1.o
 KEYOBJS = addkey.o
 
 #Link
@@ -143,6 +143,8 @@ cntrls.o: Makefile cntrls.c
 crypto.o: Makefile crypto.c
 
 tcp.o: Makefile tcp.c
+
+sha1.o: Makefile sha1.c
 
 oph.o: oph.c
 

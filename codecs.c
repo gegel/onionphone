@@ -84,6 +84,7 @@
 
 #include "libcrp.h"
 #include "crypto.h"
+#include "cntrls.h"
 #include "audio.h"
 #include "codecs.h"
 #include "ringwave.h"
@@ -1253,7 +1254,7 @@ void set_encoder(int cd)
 {
  enc_type=cd; //set internal encoder
  snd_need=codec_len(enc_type); //samples needed for compleet packet
- printf("\r\nCoder=%s\r\n",cd_name[enc_type]); //notify encoder name
+ web_printf("\r\nCoder=%s\r\n",cd_name[enc_type]); //notify encoder name
 }
 
 
@@ -1261,14 +1262,14 @@ void set_encoder(int cd)
 void get_decoder(int cd)
 {
  if(!cd) cd=dec_type;
- printf("Last decoder=%s\r\n", cd_name[cd]);
- if(vad_t) printf("VAD detector enabled now\r\n");
- printf("Voice transmission ");
- if(!tx_flag) printf("disabled\r\n");
- else printf("enabled ");
- if(tx_flag==1) printf(" by VOX\r\n");
- else if(tx_flag==2) printf(" by PTT\r\n");
- else if(tx_flag==3) printf(" continuously\r\n");
+ web_printf("Last decoder=%s\r\n", cd_name[cd]);
+ if(vad_t) web_printf("VAD detector enabled now\r\n");
+ web_printf("Voice transmission ");
+ if(!tx_flag) web_printf("disabled\r\n");
+ else web_printf("enabled ");
+ if(tx_flag==1) web_printf(" by VOX\r\n");
+ else if(tx_flag==2) web_printf(" by PTT\r\n");
+ else if(tx_flag==3) web_printf(" continuously\r\n");
  else printf("\r\n");
 }
 
@@ -1276,7 +1277,7 @@ void get_decoder(int cd)
 //*****************************************************************************
 void get_jitter(void)
 {
- printf("Average jitter is %d mS, buffer's latency is %d mS\r\n", actual_jitter/8, (sdelay+l_jit_buf+l_pkt_buf)/8);
+ web_printf("Average jitter is %d mS, buffer's latency is %d mS\r\n", actual_jitter/8, (sdelay+l_jit_buf+l_pkt_buf)/8);
 }
 
 //set amr_vbr mode for encoder
@@ -1376,7 +1377,7 @@ void go_snd(unsigned char* pkt)
   //notify if decoder changed
   if((dec_type!=q2)&&(pkt[0]!=1))
   {
-   printf("Decoder=%s\r\n", cd_name[q2]);
+   web_printf("Decoder=%s\r\n", cd_name[q2]);
    fflush(stdout);
    dec_type=q2;
    chunk=getchunksize();
@@ -1562,9 +1563,9 @@ int do_snd(unsigned char *pkt)
   //check for cmdptr is null
   if(!cmdptr) //no users console input now, we can print notify
   {
-   if(etx_flag==TX_VAD) printf("\r     \rSPEAK "); //VAD activity detected in VOX mode
-   else if(etx_flag==TX_PTT) printf("\r     \rPUSH "); //user is holding PTT button
-   else printf("\r     \rTALK "); //continious transmittion started
+   if(etx_flag==TX_VAD) web_printf("\r     \rSPEAK "); //VAD activity detected in VOX mode
+   else if(etx_flag==TX_PTT) web_printf("\r     \rPUSH "); //user is holding PTT button
+   else web_printf("\r     \rTALK "); //continious transmittion started
    fflush(stdout);
   }
   tx_flag=etx_flag; //set currrent mode by estimated mode
@@ -1601,8 +1602,8 @@ int do_snd(unsigned char *pkt)
    //check for cmdptr is null
    if(!cmdptr)  //no users console input now, we can print notify
    {
-    if(tx_flag==TX_VAD) printf("\r     \rQUIET "); //notify nactivation by vad
-    else printf("\r     \rMUTE "); //notify inactivation by user
+    if(tx_flag==TX_VAD) web_printf("\r     \rQUIET "); //notify nactivation by vad
+    else web_printf("\r     \rMUTE "); //notify inactivation by user
     fflush(stdout);
    }
    tx_flag=0; //inactivate actual tx mode for next packets

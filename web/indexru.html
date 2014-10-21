@@ -1,0 +1,493 @@
+<!doctype html>  
+
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ --> 
+<!--[if lt IE 7 ]> <html lang="en" class="no-js ie6"> <![endif]-->
+<!--[if IE 7 ]>    <html lang="en" class="no-js ie7"> <![endif]-->
+<!--[if IE 8 ]>    <html lang="en" class="no-js ie8"> <![endif]-->
+<!--[if IE 9 ]>    <html lang="en" class="no-js ie9"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!--> <html lang="en" class="no-js"> <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+
+  <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame 
+       Remove this if you use the .htaccess -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+  <title>OnionPhone WebSocket GUI</title>
+  <meta name="description" content="">
+  <meta name="author" content="">
+
+  <!--  Mobile viewport optimized: j.mp/bplateviewport -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="shortcut icon" type="image/png" href="img/favicon.png" />
+
+  <!-- CSS : implied media="all" -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
+ <!--   <script src="modernizr-1.6.min.js"></script>  -->
+
+  <!-- For navbar menu -->
+  <!--[if lte IE 7]>
+  <style type="text/css">
+  #menu ul {display:inline;}
+  #ntl-menu ul {filter: alpha(opacity=95); filter: progid:DXImageTransform.Microsoft.Alpha(opacity=95);}
+  </style>
+  <![endif]-->
+
+  <style type="text/css">
+<!--
+#bup {
+	color: #F00;
+}
+#bdown {
+	color: #F00;
+}
+#bleft {
+	color: #F00;
+}
+#bright {
+	color: #F00;
+}
+#send {
+	color: #008000;
+}
+#bcall {
+	color: #00F;
+}
+#btalk {
+	color: #00F;
+}
+#bbrk {
+	color: #00F;
+}
+#bans {
+	color: #00F;
+}
+#bhalt {
+	color: #FF8000;
+}
+-->
+  </style>
+
+
+</head>
+
+<body>
+
+  <div id="container">
+
+    <div id="top">
+    
+      <div id="top-logo">
+        <a href="http://torfone.org/"><img class="imgWithTextVerticalCentered" src="img/torvoip.png" width="70" height="70" alt="TorFone.org Logo"></a>
+      </div>
+      <div id="top-heading">  
+        <a href="index.html"><span class="websiteHeading1">Графический интерфейс для Онионфона</span><br /><small id="top-heading-byline">для телефонии через Tor</small></a>
+      </div>
+                
+    </div>
+    
+</div>
+
+    <div class="clearfix"></div>
+        
+    <div id="nav-top">
+      <ul id="ntl-menu">
+
+	
+  
+	<li class="liTop"><a class="top" href="http://torfone.org/onionphone.html">О проекте<!--[if gte IE 7]><!--></a><!--<![endif]-->
+	<!--[if lte IE 6]><table><tr><td nowrap><![endif]-->
+		<ul class="ul-l1">
+			<li><a href="http://torfone.org/download/oph_win.zip">Windows сборка</a></li>
+			<li><a href="http://torfone.org/download/oph_lin.zip">Linux сборка</a></li>
+            <li><a href="https://github.com/gegel/onionphone">Исходный код</a></li>
+            <li><a href="http://torfone.org/download/oph.pdf">Документация (англ.)</a></li>
+		</ul>
+
+	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
+	</li>
+
+	<li class="liTop single"><a class="top" href="https://github.com/prof7bit/TorChat">TorChat</a></li>
+
+	<li class="liTop single last"><a class="top" href="https://www.torproject.org/download/download-easy.html.en">Tor</a></li>
+
+	<li class="liTop single last"><a class="top" href="https://www.websocket.org/">WebSocket<!--[if gte IE 7]><!--></a><!--<![endif]-->
+	<!--[if lte IE 6]><table><tr><td nowrap><![endif]-->
+		<ul class="ul-l1">
+			<li><a href="http://dev.w3.org/html5/websockets/">WebSocket API</a></li>
+			<li><a href="http://datatracker.ietf.org/doc/rfc6455/?include_text=1">WebSocket Protocol</a></li>
+		</ul>
+
+	<!--[if lte IE 6]></td></tr></table></a><![endif]-->
+    
+    </li>
+
+</ul>
+
+    </div> <!-- #top -->
+    
+    <div class="clearfix"></div>
+    
+    <br />
+    
+	<script language="javascript" type="text/javascript">
+    
+      function browserDetect()
+      {
+        document.getElementById("browserType").innerHTML = BrowserDetect.browser + ' ' + BrowserDetect.version;
+        document.getElementById("platform").innerHTML = BrowserDetect.OS;
+    
+        if (window.WebSocket)
+        {
+          document.getElementById("wsSupportImg").src = "img/check.png"
+        }
+        else
+        {
+          document.getElementById("wsSupportImg").src = "img/cross.png"
+        }
+      }
+    
+		  // Handle difference for IE.
+
+      if (window.addEventListener)
+			{
+      window.addEventListener("load", browserDetect, false);
+			}
+     else if (window.attachEvent)
+			{
+        window.attachEvent("onload", browserDetect)    
+			}
+				
+    </script>
+    
+  <div Style="visibility: hidden; background-color: #D1D1D1; position: absolute" id="mess"></div>
+  <script type="text/javascript" src="js/tooltip.js"></script>  
+
+    <nav>      
+   .
+    <!--   
+        This is the navigation block empty now
+      -->
+    </nav>
+    
+    <div id="main-container">
+
+      <!--
+      <header>
+        This is the header.
+      </header>
+      -->
+    
+      <div id="main">
+
+        <div id="webSocketSupp">
+          <div style="float: left;">
+            <img src="img/check.png" width="36" height="28" align="absmiddle">
+          </div>
+          <div style="float: left; width: 600px; margin-left: 10px; position:relative; top: 6px;">
+            <a href="https://www.websocket.org/">HTML5 WebSocket</a> Готово. Запустите <strong>Онионфон</strong> и подключитесь к нему.
+          </div>
+          <div class="clearfix"></div>
+
+        </div>
+        
+        <div id="noWebSocketSupp">
+          <div style="float: left;">
+            <img src="img/cross.png" width="36" height="36" align="absmiddle">
+          </div>
+          <div style="float: left; width: 600px; margin-left: 10px;">
+            <p>Ваш браузер не поддерживает <a href="https://www.websocket.org/">HTML5 WebSocket</a>.</p>
+            <p>По следующей ссылке доступен список браузеров, поддерживающих WebSocket:</p>
+
+            <p><a href="http://caniuse.com/#feat=websockets">http://caniuse.com/#feat=websockets</a></p>
+          </div>
+          
+          
+          
+          
+          
+          <div class="clearfix"></div>
+        </div>
+        
+      <div style="float: left; width: 650px; margin-left: 10px; background-color:#FF8080; text-align:center; border:double #F00;" id="nojava"><h2>
+            <p>В вашем браузере отключены JavaScript! Необходимо включить их.</p>
+            <p>Просмотрите JavaScript коды в файлах: 'websock.js' и 'tooltip.js'</p>
+            <p>Никакие другие внешние JavaScript не будут использоваться.</p></h2>
+          </div>
+        
+        <div id="echo">
+          <div id="echo-config" style="float: left;">
+            <strong>Интерфейс:</strong><br>
+            <input id="wsUri" size="35" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Адрес:порт интерфейса Онионфона')" onMouseOut="hide_info(this)">
+            <input type="checkbox" style="display: none;" id="secureCb" onClick="toggleTls();">
+            <span id="secureCbLabel" style="display: none; font-size: smaller; color: black;">Исп. TLS</span> <br>
+            
+            <button id="connect" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Подключение / отключение браузера к Онионфону')" onMouseOut="hide_info(this)">Поключить</button>
+            
+            &nbsp; <input type="checkbox" id="helpCb">
+            <span id="helpCbLabel" style="font-size: smaller; color: black;" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Показывать всплывающие ярлычки (помощь)')" onMouseOut="hide_info(this)">Ярлычки</span>
+            
+            &nbsp; <button id="clearLogBut" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Очистка окна с данными, полученными от Онионфона')" onMouseOut="hide_info(this)">Очистить лог</button>
+            
+            <br><br>
+            
+            <button id="budp" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Перейти к прямому UDP соединению после<br>установки соединения через Tor')" onMouseOut="hide_info(this)"> UDP </button>
+            <button id="bup" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;На предыдущий блок меню')" onMouseOut="hide_info(this)"><strong>Вверх</strong></button>
+            <button id="btcp" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Вернуться в Tor из прямого UDP соединения')" onMouseOut="hide_info(this)"> Tor </button>
+            &nbsp; <button id="bcall" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Звонить на указанный Onion-адрес<br>или выполнить введенную команду для звонка')" onMouseOut="hide_info(this)">
+            <p><em>Вызов</em></p>
+</button>
+            <br>
+            <button id="bleft" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;На предыдущий пункт меню')" onMouseOut="hide_info(this)"><strong>&lt;== </strong></button>
+            <button id="send" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Применить выбранный пункт меню<br>или выполнить введенную команду')" onMouseOut="hide_info(this)">=OK=</button>
+            <button id="bright" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;На следующий пункт меню')" onMouseOut="hide_info(this)"><strong>==&gt;</strong></button>
+             &nbsp; <button id="bans" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Ответить на входящий звонок')" onMouseOut="hide_info(this)"><p><em>Ответ</em></p></button>
+            <br>
+            <button id="bexit" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Информация о состоянии Онионфона')" onMouseOut="hide_info(this)">Инфо</button>
+            <button id="bdown" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;На следующий блок меню')" onMouseOut="hide_info(this)"><strong>Вниз</strong></button>
+            <button id="bvad" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Активировать голосовой детектор<br>(передача только во время разговора)')" onMouseOut="hide_info(this)">VAD</button>
+            &nbsp; <button id="bbrk" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Завершить разговор')" onMouseOut="hide_info(this)"><p><em>Сброс</em></p></button>
+            <br>
+            <button id="bping" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Измерение задержки сети')" onMouseOut="hide_info(this)">Пинг</button>
+            <button id="bfind" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Показать записи в адресной книге,<br>содержащие указанную подстроку')" onMouseOut="hide_info(this)">Поиск</button>
+            <button id="bname" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Подготовить команду для звонка указанному абоненту<br>или повторить последний звонок, если имя не указано')" onMouseOut="hide_info(this)">Имя</button>
+            &nbsp; <button id="bhalt" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Завершение работы демона Онионфона<br>(двойнм счелчком!)')" onMouseOut="hide_info(this)"><p id="bhalt"><em>Выход</em></p></button>
+            <br>
+            <strong>Кодек: </strong><select name="codec" id="codec" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Выбор кодека для исходящего аудио')" onMouseOut="hide_info(this)">
+            <option value="-CI">Декодер?</option>
+            <option value="-C?">Кодер?</option>
+            <option value="-C1">MELPE</option>
+            <option value="-C2">CODEC21</option>
+            <option value="-C3">LPC10</option>
+            <option value="-C4">MELP</option>
+            <option value="-C5">CODEC22</option>
+            <option value="-C6">CELP</option>
+            <option value="-C7" SELECTED>AMR</option>
+            <option value="-C8">LPC</option>
+            <option value="-C9">GSMHR</option>
+            <option value="-C10">G723</option>
+            <option value="-C11">G729</option>
+            <option value="-C12">GSMEFR</option>
+            <option value="-C13">GSMFR</option>
+            <option value="-C14">ILBC</option>
+            <option value="-C15">BV16</option>
+            <option value="-C16">OPUS</option>
+            <option value="-C17">SILK</option>
+            <option value="-C18">SPEEX</option>
+           </select>
+            &nbsp; <button id="btalk" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Удерживайте кнопку при передаче (режим рации) или<br>или зажмите кнопку и сместите с нее указатель мыши<br>для включения непрерывной передачи (дуплекс)')" onMouseOut="hide_info(this)">
+            <p><em>Речь / пауза</em></p></button>
+          </div>
+          <div id="echo-log" style="float: left; margin-left: 20px; padding-left: 20px; width: 400px; border-left: solid 1px #cccccc;"> <strong>Лог:</strong>
+            <div id="consoleLog"></div>
+         
+          </div>
+          <div class="clearfix"></div>
+     
+        </div>
+         
+         <hr align="left"/>
+         
+         <span id="cmdLabel" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Введите комнаду для Онионфона<br>и нажмите клавишу Ввод или сделайте<br>двойной счелчек для ее отправки')" onMouseOut="hide_info(this)"><strong>Команда: </strong></span>
+        <input id="sendMessage" size="95" value="-RI" onKeyPress="return runScript(event)">
+       <hr align="left"/>
+            
+         <div>
+         <button id="bbook" class="wsButton" style="width: 20px; height:20px;" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Автоматическая регулировка чувствительности микрофона<br>Подавление шума, Изменение голоса (вокодер)<br>Компенсация сетевых задержек, Проверка звуковых настроек')" onMouseOut="hide_info(this)">-</button>
+         <strong>Расширенные настройки звука</strong>
+         </div>
+         <div id="book" style="display: block; margin-left: 20px; padding-left: 20px; width: 650px; height:120px; border-left: solid 1px #cccccc; border-top: solid 1px #cccccc;">
+               
+        <table class="instructions" cellspacing="0px" cellpadding="2px">
+          <tr>
+            <td valign="top" nowrap>Автомат. регулировка усиления: </td>
+            <td valign="top"><input type="checkbox" id="gainCb" checked="true" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Качественные наушники с микрофоном<br>всегда лучше и безопаснее встроенных систем!')" onMouseOut="hide_info(this)"></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Шумоподавитель: </td>
+            <td valign="top"><input type="checkbox" id="noiseCb" checked="true" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Случайные звуки окружения могут демаскировать Вас!<br>Подавляйте их!')" onMouseOut="hide_info(this)"></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Вокодер: </td>
+            <td valign="top"><input type="checkbox" id="vocCb" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Невосстановимое изменение голоса на шепот<br>(для других режимов вокодера<br>используйте соответствующие команды)')" onMouseOut="hide_info(this)"></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Голосовой буфер (мсек): </td>
+            <td valign="top"><select name="jitter" id="jitter" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Поддерживаемое заполнение голосового буфера в мсек<br>для компенсации спонтанных сетевых задержек<br>Режим =Авто= разработан специально для связи<br>через Tor и автоматически подстраивает Онионфон<br>в зависимости от качества Onion-соединения')" onMouseOut="hide_info(this)">
+            <option value="-J?">Буфер?</option>
+            <option value="-J-1">Мини</option>
+            <option value="-J" SELECTED>Авто</option>
+            <option value="-J100">100</option>
+            <option value="-J200">200</option>
+            <option value="-J500">500</option>
+            <option value="-J700">700</option>
+            <option value="-J1000">1000</option>  
+            <option value="-J1500">1500</option>
+            <option value="-J2000">2000</option>
+           </select></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Тест голоса: </td>
+            <td valign="top"><input type="checkbox" id="testCb" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Прослушивание собственного голоса после полной его обработки <br>Если активен, то передача голоса вашему абоненту не производится')" onMouseOut="hide_info(this)"></td>
+          </tr>
+        </table>
+              
+       </div>
+         
+         <div>
+         <button id="baut" class="wsButton" style="width: 20px; height:20px;" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Установка пароля доступа к вашему секретному ключу<br>Выполнение аутентификации с использованием общего пароля<br>Отправка своего и других ключей вашему абоненту')" onMouseOut="hide_info(this)">-</button>
+         <strong>Аутентификация</strong>
+         </div>
+         <div id="aut" style="display: block; margin-left: 20px; padding-left: 20px; width: 650px; height:100px; border-left: solid 1px #cccccc; border-top: solid 1px #cccccc;">
+         
+         <table class="instructions" cellspacing="0px" cellpadding="2px">
+          <tr>
+            <td valign="top" nowrap>Пароль к вашему приватному ключу:</td>
+            <td valign="top"><input id="setacc" size="25" value="" onDblClick="return runAcc(0)" onKeyPress="return runAcc(event)" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Укажите пароль или используйте пробел<br>для полной очистки ранее введенного пароля<br>Используйте клавишу Ввод или двойной<br>счелчок мыши для применения.')" onMouseOut="hide_info(this)"></td>
+            <td valign="top"> <button id="bacc" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Проверка правильности используемого пароля<br>(наличия у Онионфона доступа к вашему приватному ключу)')" onClick="return runAcc(-1)" onMouseOut="hide_info(this)">Проверка</button><br></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Общий пароль для аутентификации:</td>
+            <td valign="top"><input id="setpas" size="25" value="" onDblClick="return runPas(0)" onKeyPress="return runPas(event)" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Введите общий пароль, предварительно<br>согласованный между Вами и Вашим абонентом<br>Вы можете безопасно изменить последний символ <strong>под принуждением</strong>!<br>Запустите аутентификацию нажатием клавиши Ввод<br> или двойным счелчком мыши. Ваш абонент также<br>должен ввести пароль и запустить аутентификацию.')" onMouseOut="hide_info(this)"></td>
+            <td valign="top"><button id="bpas" class="wsButton" onClick="return runPas(-1)" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Отправка абоненту текстового<br>приглашения выполнить аутентификацию<br>Можно ввести свое имя в поле слева.')" onMouseOut="hide_info(this)">&nbsp;&nbsp; Запрос &nbsp;&nbsp</button><br></td>
+          </tr>
+          <tr>
+            <td valign="top" nowrap>Имя файла публичного ключа для отправки:</td>
+            <td valign="top"><input id="setkey" size="25" value="" onKeyPress="return runKey(event)" onDblClick="return runKey(0)" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Укажите имя владельца ключа (файла), который<br>Вы хотите отправить подключенному абоненту<br>Отправка производится нажатием клавиши Ввод<br>или двойным счелчком мыши')" onMouseOut="hide_info(this)"> </td>
+            <td valign="top"><button id="bkey" class="wsButton" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Отправка собственного ключа по умолчанию')" onClick="return runKey(-1)" onMouseOut="hide_info(this)">Свой ключ</button></td>
+          </tr>
+        </table>
+       
+        </div>
+       
+        <div>
+         <button id="bother" class="wsButton" style="width: 20px; height:20px;" onMouseOver="tooltip(this,'&nbsp;&nbsp;&nbsp;&nbsp;Короткая инструкция по установке и использованию Онионфона')" onMouseOut="hide_info(this)">-</button>
+         <strong>Помощь</strong>
+         </div>
+         <div id="other" style="display: block; margin-left: 20px; padding-left: 20px; width: 650px;  border-left: solid 1px #cccccc; border-top: solid 1px #cccccc; text-align:justify;">
+           <p><h2>I. Установка Онионфона:</h2>
+             <strong>Самый простой способ использовать Онионфон - в качестве VOIP плагина для TorChat:</strong></p><br>
+           <ul>
+               <li> <kbd>Шаг 1:</kbd> Поместите папку с файлами из пакета Онионфона в любое место на жестком диске, на флешку или в TrueCrypt-контейнер (последнее предпочтительно для безопасности).</li>
+               <li> <kbd>Шаг 2:</kbd> Отредактируйте конфигурационный файл Tor в составе TorChat: <em>/torchat/bin/Tor/torrc.txt</em>:<br>
+             непосредственно после строки:</li>
+               <strong><em><samp>HiddenServicePort 11009 127.0.0.1:11009</samp></em></strong>
+               <br>добавьте новую строку:<br>
+               <em><strong><samp>HiddenServicePort 17447 127.0.0.1:17447</samp></strong></em>
+               <br>
+               затем запустите TorChat.</li>
+               <li> <kbd>Шаг 3:</kbd> Правым счелчком по иконке <em>myself</em>  в списке контактов TorChat-а из меню скопируйте свой ID. Отредактируйте конфигурационный файл Онионфона <em>conf.txt</em>: укажите ваш онион-адрес, используя скопированный ID:
+               <strong><em><samp>Our_onion=gegelcy5fw7dsnsn</samp></em></strong>
+               После запуска Онионфон готов принимать входящие и выполнять исходящие звонки через сеть Tor.</li>
+           </ul>
+           <br>
+           
+           <h2>II. Использование  ключей :</h2>
+           <p>Онионфон использует публичные ключи для взаимной идентификации абонентов с помощью PGP. Перед началом использования Онионфона необходимо<u> сгенерировать постоянную ключевую пару</u> (публичный и приватный ключи), <u>подписать публичный ключ с помощью PGP</u> и затем <u>добавить его в адресную книгу</u>. Теперь Вы можете установить неатуентифицированное (но зашифрованное) соединение с Вашим абонентом, <u>отправить ему свой публичный ключ</u> и <u>получить его публичный ключ</u>. После <u>проверки PGP подписей</u> Вы и ваш абонент <u>устанавливают необходимый уровень доверия</u> к полученным ключам и в итоге можно выполнять аутентифицированные звонки друг другу.</p>
+           <p>&nbsp;</p>
+           <p><strong>Для работы с ключами используется консольная утилита <em>addkey</em>:</strong></p>
+           <p>&nbsp; </p>
+           <ul>
+             <li><kbd>Шаг 1:</kbd> Для создания новой ключевой пары выполните: <samp>./addkey -Gname [-Yaccess] [options]</samp>, где <em>name</em> - ваш идентификатор, <em>access</em> - ваш пароль, защищающий приватный ключ, и <em>options</em> - параметры, включаемые в публичный ключ для передачи другим участникам. Если опция <em>-Y</em> не используется, то приватный ключ будет сохранен в незашифрованном виде. В этом случае рекомендуется  поместить папку с Онионфоном в защищенное хранилище (например, контейнер TrueCrypt).
+               
+               Дополнительная опция <em>-Oour_onion_address</em> удобна для представления своего Onion-адреса непосредственно в публичном ключе. При получении вашего ключа дополнительные опции будут автоматически сохранены в адресных книгах ваших абонентов. <br>
+               Таким образом, например, после запука в консоли:<br>
+               <strong><em><samp>./addkey -Galice -Y1234 -Or4kxspnzpnsel4fu</samp></em></strong><br>
+               
+             в папке <em>keys</em> будут созданы файлы <em>alice.sec</em> (ваш приватный ключ, защищенный паролем <em>1234</em>) и <em>alice</em> (ваш публичный ключ). </li>
+             <li><kbd>Шаг 2:</kbd> Для подписывания публичного ключа откройте его как текст в любом редакторе и подпишите содержимое с помощью PGP. Подпись должна быть добавлена в текстовый файл публичного ключа. После подписывания ключа дальнейшее его редактрование не допускается, хотя переименовать файл можно. </li>
+             <li><strong><kbd>Шаг 3</kbd></strong>: Перед использованием нового ключа необходимо добавить его в адресную книгу:<br>
+               <em><strong><samp>./addkey -Aalice</samp></strong></em><br>
+               
+               Для использования ключа в качестве вашего постоянного отредактируйте конфигурационный файл Онионфона <em>conf.txt</em>,  указав имя собственного ключа по умолчанию:<br> 
+               <strong><em><samp>Our_name=alice</samp></em></strong></li>
+               После установки ключа по умолчанию в случае использования пароля, защищающего приватный ключ, необходимо сообщить его Онионфону в виде комнанды, например <strong>-Y1234</strong>. При использовании пароля эту команду будет необходимо выполнять каждій раз после запука Онионфона, иначе вы не сможете принимать входящие звонки, адресованные на ваше имя (хотя звонки от <em>гостя</em> к <em>гостю</em> возможны в любом случае).  
+               <li><kbd>Шаг 4:</kbd> Теперь Вы можете отправлять ваш ключ другим пользователям. Для автоматической передачи ключа сначала установите неаутентифицированное соединение: <em>гость</em> к <em>гостю</em>, используя команду <strong>-Oonion_address</strong>, и затем выполните команду
+               <strong>-Kname</strong>, где <em>name</em> - ключ из вашей адресной книги (не обязательно свой), который вы хотите отправить (или <strong>-K</strong> без параметра, если Вы отправляете свой ключ, используемый по умолчанию). После успешной пересылки ключ будет автоматически добавлен в адресную книгу вашего абонента с минимальным уровнем доверия. После проверки PGP подписи (вручную) в файле ключа абонент может изменить уровень доверия путем редактирования параметра <em><strong>-L</strong></em> в соответствующей записи в файле адресной книги <em>keys / contacts.txt</em>, например:<br>
+               
+               <strong><em><samp>[alice] {FNrjEjGmlZtvKXzBQkNIDA==} #alice -Or4kxspnzpnsel4fu -L<u>1</u></samp><u></u></em></strong>
+             <br>
+             Также можно передать ключ любым другим незащищенным путем (например, переслать по электронной почте). Получатель проверяет вашу PGP подпись в файле ключа и пределяет  уровень доверия к нему (например <strong>-L1</strong>) вручную добавляя полученный ключ в свою адресную книгу, например:<br>
+               
+               <em><strong><samp>./addkey -Aalice <u>-L1</u></samp><u></u></strong></em><br>
+             </li>
+           </ul>
+         <h2>III. Звонки:</h2>
+          
+             <li>Для приема входящего звонка нажмите клавишу <kbd>Ввод</kbd>. </li>
+             <li>Для выполнения исходящего звонка <em>гость к гостю</em> (без использования персональных ключей, при первом контакте) введите команду:  <strong><em>-Oremote_onion_address</em></strong> , нажмите <kbd>Ввод</kbd> и ждите соединения через Tor в течение 10-30 сек. </li>
+             <li>Для включения / отключения непрерывной передачи (дуплекс) используйте клавишу <kbd>Ввод</kbd>. Удерживайте клавишу <kbd>Tab</kbd> для кратковременной передачи (режим рации). </li>
+             <li>Для выбра голосового кодека от 1 до 18 используйте команду  <strong><em>-Ccodec_number</em></strong>. Меньшие номера соответствуют низкобитрейным кодекам, большие - высококачественным. Номера от 16 до 18 соответствую кодекам с переменным битрейтом (не рекомендуются для особой секретности). </li>
+             <li>Для включения изменения голоса (вокодера) используйте команду <strong><em>-Qmode </em></strong>, где <em>mode</em>=3 соответствует преобразованию голоса в шепот (рекомендуемый оптимальный режим), режимы 6-255 соответствуют голосу робота в различной тональности и т.д. </li>
+             <li>Для отключения вокодера используйте команду <strong><em>-Q-3</em></strong>. </li>
+             <li>Для использования функции чата наберите сообщение и отправьте его нажатием клавиши <kbd>Ввод</kbd>. </li>
+             <li>Для перехода от установленного соединения через Tor на прямое UDP-соединение используйте команду <strong><em>-S</em></strong> (оба абонента должны ее выполнить). В качестве параметра можно указать предпочитаемый STUN-сервер, используемый для прохода NAT.</li>
+           <li>Для возврата в Tor используйте команду<strong><em> -O</em></strong>. </li>
+             <li>Для завершения звонка используйте команду <strong><em>-H</em></strong>.</li>
+             <li>Для поиска контактов в адресной книге используйте команду <strong>-V</strong> или <strong>-V<em>filter</em></strong>, где <em>filter</em> - подстрока для поиска.</li>
+             <li>Для быстрого формирования команды дозвона к нужному абонету используйте вспомогательную команду <strong>-E<em>name</em></strong> , где <em>name</em> - имя абонента в адресной книге. При этом будет использован адрес дозвона, определенный в адресной книге для указанного абонента.  Также используйте <strong>-E</strong> без имени для повтора предыдущего звонка.</li>
+             <li>Для завершения работы Онионфона используйте команду <strong><em>-X</em></strong> или дважды быстро нажмите клавишу <kbd>Esc</kbd> для аварийного завершения в случае опасности. </li>
+           </ol>
+         <br>
+         <h2>IV. Консоль</h2>
+         <p>Клавиатура используется для набора команд и сообщений, управления передачей голоса, а также для навигации по консольному меню. </p>
+         <p>Управляющие клавиши: </p>
+         <ol>
+           <li><strong>Back</strong> удаляет последний введенный символ. </li>
+           <li><strong>Del</strong> стирает набранную строку. </li>
+           <li><strong>Tab</strong> активирует передачу, пока клавиша нажата (функция тангенты в рации). </li>
+           <li><strong>Sift+Tab</strong> (Linux) or <strong>Ctrl+Tab</strong> (Windows) акивирует головой детектор для автоматического включения передачи в течение разговора.</li>
+           <li><strong>Up, Down</strong> стрелки "Вверх" и "Вниз" используются для выбра блока в меню. </li>
+           <li><strong>Left, Right</strong> стрелки "Влево" и "Вправо" используются для выбора элемента меню в текущем блоке. </li>
+           <li><strong>Enter:</strong><br>
+           - ответ на входящий звонок;           
+           <br>
+           - включение /отключение постоянной передачи (режима дуплекса) в случае, если строка ввода пустая;           <br>
+           - если первый символ во введенной строке является &quot;<samp><strong>-</strong></samp>&quot; (была набрана команда), то эта комнда выполняется; <br>
+           - иначе, в случае установленного соединения, отправляется набранное сообщение в чат. </li>
+           <li><strong>Esc:</strong><br>
+           - отклонение входящего звонка;           
+           <br>
+           - при быстром двухкратном нажатии аварийное завершение работы Онионфона и чистка памяти. <br>
+           </li>
+         </ol>
+         <h2>V. Telnet</h2>
+         <p>Запущенный Онионфон может использоваться в качестве демона, контролируемого с помощью Telnet-клиента или любого другого приложения, использующего протокол Telnet.  Задайте управляющий IP/TCP-интерфейс Онионфона в фале <em>conf.txt</em> в виде IP-адреса (в целях безопасности предпочтительно использовать локальный хост, хотя возможно и удаленное управление) и произвольного порта:
+           <samp><strong><em>WEB_interface=127.0.0.1:23</em></strong></samp>  
+         </p>
+         <p>Для активации в Онионфоне режима Telnet после подключения необходимо отправить строку из одного символа <samp><strong>#</strong></samp>. После этого Вы можете отсылать Онионфону консольные команды, как описано выше, и обратно получать ответы и уведомления. Дополнительно можно использовать строку вида <samp><strong>#<em>ascii_code</em></strong></samp> для эмуляции нажатия клавиш. Например, <samp><strong>#13</strong></samp> эмулирует нажатие клавиши <kbd>Ввод</kbd>. Кроме того, строка <samp><strong>#10</strong></samp> дополнительно стирает все ранее полученные символы и затем также эмулирует  нажатие клавиши <kbd>Ввод</kbd>. </p>
+         <h2>VI. WEB интерфейс</h2>
+         Web интерфейс представляет собой локальную HTML5 веб-страницу, открываемую в любом браузере и использующую Java-скрипты для создания пользовательского графического интерфейса, контролирующего запущенный Онионфон. Для соединения с Онионфоном браузер использует протокол WebSocket и подключается через общий управляющий интерфейс, заданный в файле <em>conf.txt</em> , по умолчанию:<br>
+         <samp><em><strong>WEB_interface=127.0.0.1:8000</strong></em></samp><br>
+         Используемый веб-браузер должен поддерживать технологии HTML5 и WebSocket. Кроме того, необходимо разрешить выполнение Java-скриптов для данной локальной веб-страницы. При этом будут использованы только локальные Java-скрипты (смотрите код в файлах <em>\webgui\js\tooltip.js</em> и <em>\webgui\js\websock.js</em> в папке Онионфона). Никакие другие внешние Java-скрипты не используются.
+         Сначала нажмите кнопку <kbd>Connect</kbd> для установки двунаправленного асинхронного соединения между браузером и Онионфоном по протоколу WebSocket. Затем используйте графические элементы для управления Онионфоном, контролируйте поле лога для просмотра ответов, входящих служебных сообщений и чата. Всплывающие ярлычки-подсказки помогут быстро освоить азы работы с графическим интерфейсом для Онионфона даже ординарному пользователю. <br>
+         <br>
+         <strong>Русскоязычное сообщество может обсудить проект и задать вопросы на форуме <a href="https://www.pgpru.com/forum/anonimnostjvinternet/voiceovertor">PGPRU</a> </strong> 
+        </div>
+         
+      </div> <!-- #main -->
+
+    
+    </div> <!-- #main-container -->
+    
+    <div class="clearfix"></div>
+
+    <footer>
+      <div style="float: right;">
+       &copy; 2014 Van Gegel &nbsp; - &nbsp; <a href="mailto:torfone@ukr.net">Contact Developer</a>
+
+      </div>
+      <div class="clearfix"></div>
+    </footer>
+
+
+  </div> <!-- #container -->
+
+  <script type="text/javascript" src="js/websock.js"></script>
+
+</body>
+
+</html>
