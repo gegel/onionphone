@@ -24,11 +24,14 @@
  #include <time.h>
 
 //for Windows emulation of gettimeofday
-/*struct timezone
+#ifndef _TIMEZONE_DEFINED /* also in sys/time.h */
+#define _TIMEZONE_DEFINED
+struct timezone
 {
   int  tz_minuteswest; //minutes W of Greenwich
   int  tz_dsttime;     //type of dst correction 
-};*/
+};
+#endif /* _TIMEZONE_DEFINED */
 
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
@@ -54,7 +57,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
     tv->tv_sec = (long)(tmpres_h);
     tv->tv_usec = (long)(tmpres % 1000000UL);
   }
-
+/*
   if (NULL != tz)
   {
     if (!tzflag)
@@ -65,7 +68,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
     tz->tz_minuteswest = _timezone / 60;
     tz->tz_dsttime = _daylight;
   }
-
+*/
   return 0;
 }
 #else //Linux
