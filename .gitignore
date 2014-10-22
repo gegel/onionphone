@@ -1,7 +1,7 @@
 keys
 seed
-*.a
 *.o
-oph
-crp/test
 addkey
+oph
+addkey.exe
+oph.exe
