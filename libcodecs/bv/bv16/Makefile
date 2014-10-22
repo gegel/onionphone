@@ -1,0 +1,54 @@
+BLOB = builtin.o
+CC ?= cc
+LD ?= ld
+
+# NORMAL DEBUG
+MODE ?= NORMAL
+MODE_NORMAL ?= -O3
+MODE_DEBUG ?= -O0 -g -ggdb
+
+# none
+EXTRADEFS =
+
+CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
+
+OBJ = bitpack.o \
+      bv.o \
+      coarptch.o \
+      decoder.o \
+      encoder.o \
+      excdec.o \
+      excquan.o \
+      fineptch.o \
+      g192.o \
+      gaindec.o \
+      gainquan.o \
+      levelest.o \
+      lspdec.o \
+      lspquan.o \
+      plc.o \
+      postfilt.o \
+      preproc.o \
+      ptquan.o \
+      tables.o
+
+INCADD ?= -I. -I../../../common/inc
+
+all: build
+
+build: $(BLOB)
+
+$(BLOB): $(OBJ)
+	$(LD) -r $(OBJ) -o $(BLOB)
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(INCADD) -c $<
+
+clean:
+	rm -f $(OBJ) $(BLOB)
+
+test:
+	cppcheck --enable=all .
+	scan-build $(MAKE)
+
+.PHONY: all clean test
