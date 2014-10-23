@@ -734,7 +734,7 @@ void *Encoder_Interface_init(int dtx)
 	enc_interface_State *s;
 
 	/* allocate memory */
-	if ((s = (enc_interface_State *) malloc(sizeof(enc_interface_State))) ==
+	if ((s = calloc(1, sizeof(enc_interface_State))) ==
 	    NULL) {
 		fprintf(stderr, "Encoder_Interface_init: "
 			"can not malloc state structure\n");
