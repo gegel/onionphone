@@ -252,12 +252,18 @@ float mf_lpc_schr(float *r, float *a, float *k_tmp, int p)
     int i,j;
     float temp,alphap,*y1,*y2,*k;
 
-    MEM_ALLOC(MALLOC,y1,p+2,float);
-    MEM_ALLOC(MALLOC,y2,p+2,float);
+    y1 = calloc(1, (p + 2) * sizeof(float));
+    if (!y1)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    y2 = calloc(1, (p + 2) * sizeof(float));
+    if (!y2)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
 
     if (k_tmp == NULL)
     {
-        MEM_ALLOC(MALLOC,k,p+1,float);
+        k = calloc(1, (p + 1) * sizeof(float));
+        if (!k)
+            program_abort(__FILE__, "calloc", 0, __LINE__);
     }
     else
         k = k_tmp;
@@ -292,11 +298,14 @@ float mf_lpc_schr(float *r, float *a, float *k_tmp, int p)
     }
     if (k_tmp == NULL)
     {
-        MEM_FREE(FREE,k);
+        if (k)
+            free(k);
     }
 
-    MEM_FREE(FREE,y2);
-    MEM_FREE(FREE,y1);
+    if (y2)
+        free(y2);
+    if (y1)
+        free(y1);
     return(alphap);
 }
 
@@ -329,7 +338,16 @@ int mf_lpc_pred2lsp(float *a,float *w,int p)
 
     p2 = p/2;
 
-    MEM_2ALLOC(MALLOC,c,2,p2+1,float);
+    c = calloc(1, (2) * sizeof(float *));
+    if (!c)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    else {
+        for(int u__i = 0;u__i < 2;u__i++) {
+            c[u__i] = calloc(1, (p2 + 1) * sizeof(float));
+            if (!c[u__i])
+                program_abort(__FILE__, "calloc", 0, __LINE__);
+        }
+    }
     c[0][p2] = c[1][p2] = 1.0;
 
     for(i=1; i <= p2; i++)
@@ -352,7 +370,11 @@ int mf_lpc_pred2lsp(float *a,float *w,int p)
     /* ensure minimum separation and sort */
     (void)lpc_clamp(w,mf_lsp_delta,p);
 
-    MEM_2FREE(FREE,c);
+    if (c)
+    {
+	    free(c[0]);
+	    free(c);
+    }
     return(i);
 } /* LPC_PRED2LSP */
 
@@ -371,8 +393,12 @@ int mf_lpc_pred2refl(float *a,float *k,int p)
     float *b,*b1,e;
     int   i,j;
 
-    MEM_ALLOC(MALLOC,b,p+1,float);
-    MEM_ALLOC(MALLOC,b1,p+1,float);
+    b = calloc(1, (p + 1) * sizeof(float));
+    if (!b)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    b1 = calloc(1, (p + 1) * sizeof(float));
+    if (!b1)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
 
     /* equate temporary variables (b = a) */
     for(i=1; i <= p; i++)
@@ -389,8 +415,10 @@ int mf_lpc_pred2refl(float *a,float *k,int p)
             b[j] = (b1[j] - k[i]*b1[i-j])/e;
     }
 
-    MEM_FREE(FREE,b1);
-    MEM_FREE(FREE,b);
+    if (b1)
+        free(b1);
+    if (b)
+        free(b);
     return(0);
 }
 /* LPC_LSP2PRED
@@ -413,7 +441,16 @@ int mf_lpc_lsp2pred(float *w,float *a,int p)
     (void)lpc_clamp(w,mf_lsp_delta,p);
 
     p2 = p/2;
-    MEM_2ALLOC(MALLOC,f,2,p2+1,float);
+    f = calloc(1, (2) * sizeof(float *));
+    if (!f)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    else {
+        for(int u__i = 0;u__i < 2;u__i++) {
+            f[u__i] = calloc(1, (p2 + 1) * sizeof(float));
+            if (!f[u__i])
+                program_abort(__FILE__, "calloc", 0, __LINE__);
+        }
+    }
     f[0][0] = f[1][0] = 1.0;
     f[0][1] = (float)-2.0*cos((double)w[1]*M_PI);
     f[1][1] = (float)-2.0*cos((double)w[2]*M_PI);
@@ -445,7 +482,11 @@ int mf_lpc_lsp2pred(float *w,float *a,int p)
         a[p+1-i] = 0.50*(f[0][i]-f[1][i]);
     }
 
-    MEM_2FREE(FREE,f);
+    if (f)
+    {
+	    free(f[0]);
+	    free(f);
+    }
     return(0);
 }
 
@@ -466,7 +507,9 @@ int mf_lpc_refl2pred(float *k,float *a,int p)
 
     float *a1;
 
-    MEM_ALLOC(MALLOC,a1,p+1,float);
+    a1 = calloc(1, (p + 1) * sizeof(float));
+    if (!a1)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
 
     for(i=1; i <= p; i++)
     {
@@ -478,7 +521,8 @@ int mf_lpc_refl2pred(float *k,float *a,int p)
             a[j] = a1[j] + k[i]*a1[i-j];
     }
 
-    MEM_FREE(FREE,a1);
+    if (a1)
+        free(a1);
 
     return(0);
 

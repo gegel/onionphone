@@ -98,11 +98,21 @@ float mf_vq_ms4(float *cb, float *u, float *u_est, int *levels, int ma, int stag
     /* allocate memory for the current node and
        parent node (thus, the factors of two everywhere)
        The parents and current nodes are allocated contiguously */
-    MEM_ALLOC(MALLOC,indices,2*ma*stages,int);
-    MEM_ALLOC(MALLOC,errors,2*ma*p,float);
-    MEM_ALLOC(MALLOC,uhatw,p,float);
-    MEM_ALLOC(MALLOC,d,2*ma,float);
-    MEM_ALLOC(MALLOC,parents,2*ma,int);
+    indices = calloc(1, (2 * ma * stages) * sizeof(int));
+    if (!indices)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    errors = calloc(1, (2 * ma * p) * sizeof(float));
+    if (!errors)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    uhatw = calloc(1, (p) * sizeof(float));
+    if (!uhatw)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    d = calloc(1, (2 * ma) * sizeof(float));
+    if (!d)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    parents = calloc(1, (2 * ma) * sizeof(int));
+    if (!parents)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
 
     /* initialize memory */
     mf_mf_v_zap_int(indices,2*stages*ma);
@@ -123,7 +133,9 @@ float mf_vq_ms4(float *cb, float *u, float *u_est, int *levels, int ma, int stag
 
     /* u_tmp is the input vector (i.e. if u_est is non-null, it
        is subtracted off) */
-    MEM_ALLOC(MALLOC,u_tmp,p+1,float);
+    u_tmp = calloc(1, (p + 1) * sizeof(float));
+    if (!u_tmp)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
     (void)mf_v_equ(u_tmp,u,p);
     if (u_est)
     {
@@ -143,7 +155,8 @@ float mf_vq_ms4(float *cb, float *u, float *u_est, int *levels, int ma, int stag
     }
 
     /* no longer need memory so free it here */
-    MEM_FREE(FREE,u_tmp);
+    if (u_tmp)
+        free(u_tmp);
 
     /* codebook pointer is set to point to first stage */
     cbp = cb;
@@ -288,11 +301,16 @@ float mf_vq_ms4(float *cb, float *u, float *u_est, int *levels, int ma, int stag
         }
     }
 
-    MEM_FREE(FREE,parents);
-    MEM_FREE(FREE,d);
-    MEM_FREE(FREE,uhatw);
-    MEM_FREE(FREE,errors);
-    MEM_FREE(FREE,indices);
+    if (parents)
+        free(parents);
+    if (d)
+        free(d);
+    if (uhatw)
+        free(uhatw);
+    if (errors)
+        free(errors);
+    if (indices)
+        free(indices);
 
     return(d_opt);
 }
@@ -333,7 +351,9 @@ float *mf_vq_msd2(float *cb, float *u, float *u_est, float *a, int *indices, int
     /* allocate memory (if required) */
     if (u==(float*)NULL)
     {
-        MEM_ALLOC(MALLOC,u_hat,p,float);
+        u_hat = calloc(1, (p) * sizeof(float));
+        if (!u_hat)
+            program_abort(__FILE__, "calloc", 0, __LINE__);
     }
     else
         u_hat = u;

@@ -315,7 +315,9 @@ void mf_p_avg_init(float pdecay, float default_pitch, int num_good)
     mf_NUM_GOOD = num_good;
 
     /* Allocate and initialize good pitch array */
-    MEM_ALLOC(malloc,mf_good_pitch,mf_NUM_GOOD,float);
+    mf_good_pitch = calloc(1, (mf_NUM_GOOD) * sizeof(float));
+    if (!mf_good_pitch)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
     mf_fill(mf_good_pitch,mf_DEFAULT_PITCH,mf_NUM_GOOD);
 
 }
@@ -437,9 +439,13 @@ void mf_mf_pitch_ana_init(int pmin, int pmax, int fr, int lpf_ord, int lmin)
     mf_PITCH_FR = ((2*mf_PITCHMAX)+1);
 
     /* Allocate and initialize delay memory */
-    MEM_ALLOC(malloc,mf_lpres_del,mf_LPF_ORD,float);
+    mf_lpres_del = calloc(1, (mf_LPF_ORD) * sizeof(float));
+    if (!mf_lpres_del)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
     mf_v_zap(mf_lpres_del,mf_LPF_ORD);
 
     /* Allocate scratch buffer */
-    MEM_ALLOC(malloc,mf_sigbuf,mf_LPF_ORD+mf_PITCH_FR,float);
+    mf_sigbuf = calloc(1, (mf_LPF_ORD + mf_PITCH_FR) * sizeof(float));
+    if (!mf_sigbuf)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
 }

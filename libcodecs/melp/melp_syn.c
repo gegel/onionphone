@@ -405,9 +405,15 @@ void mf_mf_melp_syn_init()
      * and for number of bits per stage 
      */
  
-    MEM_ALLOC(MALLOC,mf_vq_par.num_levels,mf_vq_par.num_stages,int);
-    MEM_ALLOC(MALLOC,mf_vq_par.indices,mf_vq_par.num_stages,int);
-    MEM_ALLOC(MALLOC,mf_vq_par.num_bits,mf_vq_par.num_stages,int);
+    mf_vq_par.num_levels = calloc(1, (mf_vq_par.num_stages) * sizeof(int));
+    if (!mf_vq_par.num_levels)
+      program_abort(__FILE__, "calloc", 0, __LINE__);
+    mf_vq_par.indices = calloc(1, (mf_vq_par.num_stages) * sizeof(int));
+    if (!mf_vq_par.indices)
+      program_abort(__FILE__, "calloc", 0, __LINE__);
+    mf_vq_par.num_bits = calloc(1, (mf_vq_par.num_stages) * sizeof(int));
+    if (!mf_vq_par.num_bits)
+      program_abort(__FILE__, "calloc", 0, __LINE__);
 
 	
     mf_vq_par.num_levels[0] = 128;
@@ -439,9 +445,18 @@ void mf_mf_melp_syn_init()
      * and for number of bits per stage 
      */
  
-    MEM_ALLOC(MALLOC,mf_fs_mf_vq_par.num_levels,mf_fs_mf_vq_par.num_stages,int);
-    MEM_ALLOC(MALLOC,mf_fs_mf_vq_par.indices,mf_fs_mf_vq_par.num_stages,int);
-    MEM_ALLOC(MALLOC,mf_fs_mf_vq_par.num_bits,mf_fs_mf_vq_par.num_stages,int);
+    mf_fs_mf_vq_par.num_levels = calloc(1,
+                                        (mf_fs_mf_vq_par.num_stages) * sizeof(int));
+    if (!mf_fs_mf_vq_par.num_levels)
+      program_abort(__FILE__, "calloc", 0, __LINE__);
+    mf_fs_mf_vq_par.indices = calloc(1,
+                                     (mf_fs_mf_vq_par.num_stages) * sizeof(int));
+    if (!mf_fs_mf_vq_par.indices)
+      program_abort(__FILE__, "calloc", 0, __LINE__);
+    mf_fs_mf_vq_par.num_bits = calloc(1,
+                                      (mf_fs_mf_vq_par.num_stages) * sizeof(int));
+    if (!mf_fs_mf_vq_par.num_bits)
+      program_abort(__FILE__, "calloc", 0, __LINE__);
 
 	
     mf_fs_mf_vq_par.num_levels[0] = FS_LEVELS;

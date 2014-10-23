@@ -150,16 +150,38 @@ void mf_mf_bpvc_ana_init(int fr, int pmin, int pmax, int nbands, int num_p, int 
     mf_BPF_BEG = (mf_PIT_BEG+mf_PIT_P_FR-mf_FRAME);
 
     /* Allocate memory */
-    MEM_2ALLOC(malloc,mf_bpfdel,mf_NUM_BANDS,BPF_ORD,float);
+    mf_bpfdel = calloc(1, (mf_NUM_BANDS) * sizeof(float *));
+    if (!mf_bpfdel)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    else {
+        for(int u__i = 0;u__i < mf_NUM_BANDS;u__i++) {
+            mf_bpfdel[u__i] = calloc(1, BPF_ORD * sizeof(float));
+            if (!mf_bpfdel[u__i])
+                program_abort(__FILE__, "calloc", 0, __LINE__);
+        }
+    }
     mf_v_zap(&mf_bpfdel[0][0],mf_NUM_BANDS*BPF_ORD);
 
-    MEM_2ALLOC(malloc,mf_envdel,mf_NUM_BANDS,ENV_ORD,float);
+    mf_envdel = calloc(1, (mf_NUM_BANDS) * sizeof(float *));
+    if (!mf_envdel)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
+    else {
+        for(int u__i = 0;u__i < mf_NUM_BANDS;u__i++) {
+            mf_envdel[u__i] = calloc(1, ENV_ORD * sizeof(float));
+            if (!mf_envdel[u__i])
+                program_abort(__FILE__, "calloc", 0, __LINE__);
+        }
+    }
     mf_v_zap(&mf_envdel[0][0],mf_NUM_BANDS*ENV_ORD);
-    MEM_ALLOC(malloc,mf_mf_envdel2,mf_NUM_BANDS,float);
+    mf_mf_envdel2 = calloc(1, (mf_NUM_BANDS) * sizeof(float));
+    if (!mf_mf_envdel2)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
     mf_v_zap(mf_mf_envdel2,mf_NUM_BANDS);
 
     /* Allocate scratch buffer */
-    MEM_ALLOC(malloc,mf_sigbuf,mf_PIT_BEG+mf_PIT_P_FR,float);
+    mf_sigbuf = calloc(1, (mf_PIT_BEG + mf_PIT_P_FR) * sizeof(float));
+    if (!mf_sigbuf)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
 }
 
 /*
@@ -202,7 +224,9 @@ void mf_dc_rmv(float sigin[], float sigout[], float mf_dcdel[], int frame)
     float *mf_sigbuf;
 
     /* Allocate scratch buffer */
-    MEM_ALLOC(malloc,mf_sigbuf,frame+DC_ORD,float);
+    mf_sigbuf = calloc(1, (frame + DC_ORD) * sizeof(float));
+    if (!mf_sigbuf)
+        program_abort(__FILE__, "calloc", 0, __LINE__);
 
     /* Remove DC from input mf_speech */
     mf_v_equ(mf_sigbuf,mf_dcdel,DC_ORD);
@@ -211,7 +235,8 @@ void mf_dc_rmv(float sigin[], float sigout[], float mf_dcdel[], int frame)
     mf_zerflt(&mf_sigbuf[DC_ORD],mf_dc_num,sigout,DC_ORD,frame);
 
     /* Free scratch buffer */
-    MEM_FREE(free,mf_sigbuf);
+    if (mf_sigbuf)
+        free(mf_sigbuf);
 
 }
 
