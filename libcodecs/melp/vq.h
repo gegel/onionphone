@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard mf_speech coder
@@ -25,21 +27,23 @@ Group (phone 972 480 7442).
 #ifndef _vq_h_
 #define _vq_h_
 
-float mf_vq_ms4(float *cb, float *u, float *u_est, int *levels, int ma, int stages, int p, float *w, float *u_hat, int *indices, int max_inner);
-float *mf_vq_msd2(float *cb, float *u, float *u_est, float *a, int *indices, 
-       int *levels, int stages, int p, int conversion);
-float *mf_vq_lspw(float *w,float *lsp,float *a,int p);
+float mf_vq_ms4(float *cb, float *u, float *u_est, int *levels, int ma,
+		int stages, int p, float *w, float *u_hat, int *indices,
+		int max_inner);
+float *mf_vq_msd2(float *cb, float *u, float *u_est, float *a, int *indices,
+		  int *levels, int stages, int p, int conversion);
+float *mf_vq_lspw(float *w, float *lsp, float *a, int p);
 
 /* Structure definition */
-struct msmf_vq_param {         /* Multistage VQ parameters */
-    int num_stages;
-    int *num_levels;
-    int *num_bits;
-    int dimension;
-    int num_best;
-    int *indices;
-    char *fname_cb;
-    float *cb;
+struct msmf_vq_param {		/* Multistage VQ parameters */
+	int num_stages;
+	int *num_levels;
+	int *num_bits;
+	int dimension;
+	int num_best;
+	int *indices;
+	char *fname_cb;
+	float *cb;
 };
 
 /* External function definitions */
@@ -59,9 +63,9 @@ struct msmf_vq_param {         /* Multistage VQ parameters */
 
 void msvq_init(struct msmf_vq_param *par);
 
-float mf_vq_enc(float *cb, float *u, int levels, int p, float *u_hat, int *indices);
+float mf_vq_enc(float *cb, float *u, int levels, int p, float *u_hat,
+		int *indices);
 
 void mf_vq_fsw(float *mf_w_fs, int num_harm, float pitch);
-
 
 #endif
