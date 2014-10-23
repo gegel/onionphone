@@ -284,8 +284,8 @@ static void psearch(int l)
 
 					bigptr = submult[topptr][i];
 					for (subptr =
-					     mmax(submult[topptr][i] - 8,
-						  minptr);
+					     (mmax(submult[topptr][i] - 8,
+						  minptr));
 					     subptr <=
 					     mmin(submult[topptr][i] + 8,
 						  maxptr); subptr++) {
@@ -312,7 +312,7 @@ static void psearch(int l)
 
 		if (neigh) {
 			bigptr = tauptr;
-			for (i = mmax(tauptr - nrange, minptr);
+			for (i = (mmax(tauptr - nrange, minptr));
 			     i <= mmin(tauptr + nrange, maxptr); i++) {
 				if (i != tauptr) {
 					m = (int)pdelay[i];
