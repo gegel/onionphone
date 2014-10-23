@@ -10791,7 +10791,7 @@ static Word32 Pre_Process_init(Pre_ProcessState ** state)
 	*state = NULL;
 
 	/* allocate memory */
-	if ((s = (Pre_ProcessState *) malloc(sizeof(Pre_ProcessState))) == NULL) {
+	if ((s = calloc(1, sizeof(Pre_ProcessState))) == NULL) {
 		fprintf(stderr,
 			"Pre_Process_init: can not malloc state structure\n");
 		return -1;
@@ -11245,8 +11245,7 @@ void *Speech_Encode_Frame_init(int dtx)
 
 	/* allocate memory */
 	if ((s =
-	     (Speech_Encode_FrameState *)
-	     malloc(sizeof(Speech_Encode_FrameState))) == NULL) {
+	     calloc(1, sizeof(Speech_Encode_FrameState))) == NULL) {
 		fprintf(stderr,
 			"Speech_Encode_Frame_init: can not malloc state "
 			"structure\n");
