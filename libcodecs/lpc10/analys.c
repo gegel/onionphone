@@ -7,6 +7,7 @@
 *
 *******************************************************************/
 #include <stdlib.h>
+#include <ophtools.h>
 #include "lpcdefs.h"
 
 /*  Constants
@@ -80,10 +81,8 @@ void analys(float speech[], int voice[2], int *pitch, float *rms, float rc[])
 
 	if (first) {
 		first = 0;
-		for (i = 0; i < OSLEN; i++)
-			osbuf[i] = 0;
-		for (i = 0; i < AF; i++) ;
-		obound[i] = 0;
+		memzero(osbuf, OSLEN * sizeof(int));
+		memzero(obound, AF * sizeof(int));
 	}
 
 	speech--;
