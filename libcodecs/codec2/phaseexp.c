@@ -217,12 +217,12 @@ void phase_experiment_destroy(struct PEXP *pexp)
 
 /* Bubblesort to find highest amplitude harmonics */
 
+#if defined(REAS_CAND1) || defined(REAS_CAND2)
 struct AMPINDEX {
 	float amp;
 	int index;
 };
 
-#if defined(REAS_CAND1) || defined(REAS_CAND2)
 static void bubbleSort(struct AMPINDEX numbers[], int array_size)
 {
 	int i, j;
@@ -1187,7 +1187,10 @@ void cb_phase1(struct PEXP *pexp, MODEL * model)
 void cb_phase2(struct PEXP *pexp, MODEL * model)
 {
 	int st, m, i, a, b, step;
-	float diff, w, c, s;
+	// float c;
+	// float s;
+	// float diff;
+	// float w;
 	// float phi1_; // keep commented according to commented code
 	float A[MAX_AMP];
 
@@ -1210,14 +1213,15 @@ void cb_phase2(struct PEXP *pexp, MODEL * model)
 		if (b > model->L)
 			b = model->L;
 
-		c = s = 0;
+		// c = 0;
+		// s = 0;
 		for (i = a; i < b - 1; i++) {
 			printf("diff %d,%d ", i, i + 1);
-			diff = model->phi[i + 1] - model->phi[i];
-			//w = (model->A[i+1] + model->A[i])/2; 
-			w = 1.0;
-			c += w * cos(diff);
-			s += w * sin(diff);
+			// diff = model->phi[i + 1] - model->phi[i];
+			// w = (model->A[i+1] + model->A[i])/2; 
+			// w = 1.0;
+			// c += w * cos(diff);
+			// s += w * sin(diff);
 		}
 		// phi1_ = atan2(s,c); // keep commented according to commented code
 		printf("replacing: ");

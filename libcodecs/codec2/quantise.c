@@ -358,9 +358,9 @@ void compute_weights(const float *x, float *w, int ndim);
 void lspdt_quantise(float lsps[], float lsps_[], float lsps__prev[], int mode)
 {
 	int i;
+#ifdef TRY_LSPDT_VQ
 	float wt[LPC_ORD];
 	float lsps_dt[LPC_ORD];
-#ifdef TRY_LSPDT_VQ
 	int k, m;
 	int index;
 	const float *cb;
@@ -368,14 +368,18 @@ void lspdt_quantise(float lsps[], float lsps_[], float lsps__prev[], int mode)
 #endif				// TRY_LSPDT_VQ
 
 	//compute_weights(lsps, wt, LPC_ORD);
+#ifdef TRY_LSPDT_VQ
 	for (i = 0; i < LPC_ORD; i++) {
 		wt[i] = 1.0;
 	}
+#endif
 
 	//compute_weights(lsps, wt, LPC_ORD );
 
 	for (i = 0; i < LPC_ORD; i++) {
+#ifdef TRY_LSPDT_VQ
 		lsps_dt[i] = lsps[i] - lsps__prev[i];
+#endif
 		lsps_[i] = lsps__prev[i];
 	}
 
@@ -1371,7 +1375,7 @@ void encode_lsps_diff_freq_vq(int indexes[], float lsp[], int order)
 
 void decode_lsps_diff_freq_vq(float lsp_[], int indexes[], int order)
 {
-	int i, k, m;
+	int i, k;
 	float dlsp_[LPC_MAX];
 	float lsp__hz[LPC_MAX];
 	const float *cb;
@@ -1390,7 +1394,6 @@ void decode_lsps_diff_freq_vq(float lsp_[], int indexes[], int order)
 	/* VQ */
 
 	k = lsp_cbjnd[4].k;
-	m = lsp_cbjnd[4].m;
 	cb = lsp_cbjnd[4].cb;
 	for (i = 4; i < order; i++)
 		lsp__hz[i] = cb[indexes[4] * k + i - 4];
@@ -1454,7 +1457,7 @@ void encode_lsps_diff_time(int indexes[],
 void decode_lsps_diff_time(float lsps_[],
 			   int indexes[], float lsps__prev[], int order)
 {
-	int i, k, m;
+	int i, k;
 	const float *cb;
 
 	for (i = 0; i < order; i++)
