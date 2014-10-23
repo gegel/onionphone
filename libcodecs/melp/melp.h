@@ -29,7 +29,7 @@ Group (phone 972 480 7442).
 #define NUM_GAINFR 2        /* number of gains per frame */
 #define LPC_mf_FRAME 200       /* LPC mf_window size */
 #define mf_PITCHMIN 20         /* minimum pitch lag */
-#define mf_PITCHMAX 160        /* maximum pitch lag */
+#define mf_PITCHMAX 180        /* maximum pitch lag */
 #define mf_NUM_BANDS 5         /* number of frequency bands */
 #define mf_LPF_ORD 6           /* lowpass filter order */
 #define DC_ORD 4            /* DC removal filter order */
