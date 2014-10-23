@@ -154,7 +154,7 @@ void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
 		scale = f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
 
 		/* Check correlations for each frame */
-		temp = frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &bpvc[i], *pitch, 0,
+		frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &bpvc[i], *pitch, 0,
 						PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
 						MINLENGTH);
 
@@ -171,7 +171,7 @@ void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
 		f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
 
 		/* Check correlations for each frame */
-		temp = frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &pcorr, *pitch, 0,
+		frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &pcorr, *pitch, 0,
 						PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
 						MINLENGTH);
 

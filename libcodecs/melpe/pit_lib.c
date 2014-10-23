@@ -165,7 +165,7 @@ static void		double_ver(Shortword sig_in[], Shortword *pcorr,
 
 	if (multiple > 1){
 		temp_pit = extract_l(L_shr(L_mult(pitch, multiple), 1));
-		temp_pit = frac_pch(sig_in, &corr, temp_pit, 0, pmin, pmax,
+		frac_pch(sig_in, &corr, temp_pit, 0, pmin, pmax,
 							pmin_q7, pmax_q7, lmin);
 
 		/* use smaller of two correlation values */

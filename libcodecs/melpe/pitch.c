@@ -193,7 +193,7 @@ static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len)
 			pc2 = shr(pc2, 3);								/* Q12 */
 		}
 
-		temp1 = sub(0x1000, pc2);							/* 1.0 - pc2 */
+		sub(0x1000, pc2);							/* 1.0 - pc2 */
 		pc1 = mult(rc1, pc2);								/* Q12 */
 	}
 
@@ -271,7 +271,6 @@ static void corPeak(Shortword inbuf[], pitTrackParam *pitTrack,
 	if (temp < 0)
 		temp = 0; /* Negative Autocorrelation doesn't make sense here */
 	gp [MAXPITCH] = divide_s(temp, root); 
-	temp = gp[MAXPITCH];
 
 	/* ==== Here comes the Main loop ==== */
 	

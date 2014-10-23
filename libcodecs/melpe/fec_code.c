@@ -1038,7 +1038,7 @@ Shortword fec_decode(struct quant_param *qpar, Shortword erase)
 			vgetbits(codewd74, qpar->msvq_index[0], 2, 3);
 			codewd74[3] = 0;
 			vgetbits(&codewd74[4], qpar->fsvq_index, 7, 3);
-			berr_pos = sbc_dec(codewd74, 7, 4, &pmat74[0][0], syntab74);
+			sbc_dec(codewd74, 7, 4, &pmat74[0][0], syntab74);
 			vsetbits(qpar->msvq_index, 2, 3, codewd74);
 
 			/* Decode 4 MSB of second gain index using (7,4) Hamming code;    */
@@ -1046,7 +1046,7 @@ Shortword fec_decode(struct quant_param *qpar, Shortword erase)
 
 			vgetbits(codewd74, qpar->gain_index[1], 4, 4);
 			vgetbits(&codewd74[4], qpar->fsvq_index, 4, 3);
-			berr_pos = sbc_dec(codewd74, 7, 4, &pmat74[0][0], syntab74);
+			sbc_dec(codewd74, 7, 4, &pmat74[0][0], syntab74);
 			vsetbits(&(qpar->gain_index[1]), 4, 4, codewd74);
 
 			/* Decode LSB of second gain index, first gain index using (7,4)  */
@@ -1057,7 +1057,7 @@ Shortword fec_decode(struct quant_param *qpar, Shortword erase)
 			vgetbits(&codewd74[1], qpar->gain_index[0], 2, 3);
 			vgetbits(&codewd74[4], qpar->fsvq_index, 1, 2);
 			vgetbits(&codewd74[6], qpar->jit_index[0], 0, 1);
-			berr_pos = sbc_dec(codewd74, 7, 4, &pmat74[0][0], syntab74);
+			sbc_dec(codewd74, 7, 4, &pmat74[0][0], syntab74);
 			vsetbits(&(qpar->gain_index[1]), 0, 1, codewd74);
 			vsetbits(qpar->gain_index, 2, 3, &codewd74[1]);
 			qpar->jit_index[0] = 1;
@@ -1095,7 +1095,7 @@ Shortword	low_rate_fec_decode(struct quant_param *qpar, Shortword erase,
 			codewd74[2] = codewd74[3] = 0;
 			vgetbits(&codewd74[4], qpar->bpvc_index[0], 1, 2);
 			vgetbits(&codewd74[6], qpar->jit_index[0], 0, 1);
-			berr_pos = sbc_dec(codewd74, 7, 4, &pmat74[0][0], syntab74);
+			sbc_dec(codewd74, 7, 4, &pmat74[0][0], syntab74);
 			vsetbits(qpar->gain_index, 1, 2, codewd74);
 
 			/* for LSPs of 1st frame */

@@ -565,7 +565,6 @@ static void		frac_cor(Shortword inbuf[], Shortword pitch, Shortword *cor)
 	highStart = highPitch;
 	win = sub(PIT_COR_LEN, highPitch);
 	for (i = sub(highPitch, 1); i >= lowPitch; i--){
-		gp = 0;
 		if (i % 2 == 0){
 			ACC_r0 = L_r0;
 			ACC_r0 = L40_shr(ACC_r0, r0_shift);

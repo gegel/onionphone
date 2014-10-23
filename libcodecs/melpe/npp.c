@@ -794,9 +794,6 @@ static void		bias_compensation(Shortword biased_spect[],
 	tmp1 = extract_h(L_shl(L_mult(var_rel_av_sqrt, FVAR), 1));         /* Q10 */
 	tmp2 = extract_h(L_shl(L_mult(var_rel_av_sqrt, FVAR_SUB), 1));     /* Q13 */
 
-	L_max1 = 0;                                         /* for biased_spect[] */
-	L_max2 = 0;                                     /* for biased_spect_sub[] */
-
 	for (i = 0; i < ENH_VEC_LENF; i++){
 		L_tmp3 = L_mult(var_rel_av_sqrt, smoothedspect[i]);            /* Q29 */
 		tmp5 = var_rel[i];                                             /* Q15 */
@@ -1403,8 +1400,6 @@ static void		process_frame(Shortword inspeech[], Shortword outspeech[])
 	}
 
 	if (enh_i == 1){            /* Initial estimation of apriori SNR and Gain */
-		n_flag = TRUE;
-
 		for (i = 0; i < ENH_VEC_LENF; i++){
 			temp_yy[i] = L_mult(Ymag[i], GM_MIN);
 			shift = norm_l(temp_yy[i]);

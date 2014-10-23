@@ -438,7 +438,7 @@ Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order)
 	if ((autocorr[1] ^ autocorr[0]) >= 0){
 		refc[0] = negate(refc[0]);
 	}
-	alphap = mult(autocorr[0], sub(ONE_Q15, mult(refc[0], refc[0])));
+	mult(autocorr[0], sub(ONE_Q15, mult(refc[0], refc[0])));
 
 	y2[0] = L_deposit_h(autocorr[1]);
 	y2[1] = L_add(L_deposit_h(autocorr[0]), L_mult(refc[0], autocorr[1]));
