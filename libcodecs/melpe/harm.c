@@ -23,6 +23,7 @@
 #include "mat_lib.h"
 #include "math_lib.h"
 #include "dsp_sub.h"
+#include <ophtools.h>
 
 #define FIXED_PHASE		1
 #define SYN_FFT_SIZE	256
@@ -202,6 +203,8 @@ void harm_syn_pitch(Shortword amp[], Shortword signal[], Shortword fc,
 	Shortword	mag[SYN_FFT_SIZE/2 + 1];
 	Shortword	phase[SYN_FFT_SIZE/2 + 1];                              /* Q0 */
 	Shortword	fc1, fc2;
+
+	memzero(phase, (SYN_FFT_SIZE / 2 + 1) * sizeof(Shortword));
 
 	/* ====== Generate random phase for unvoiced segment ====== */
 	/* Note that phase[] and rndphase[] computed in harm_syn_pitch() are now  */
