@@ -121,7 +121,7 @@ int mf_melp_chn_read(struct mf_melp_param *par, struct mf_melp_param *mf_prev_pa
     /*	Read channel output buffer into bit buffer */
     bit_ptr = mf_bit_buffer;
     for (i = 0; i < NUM_CH_BITS; i++) {
-	erase |= unmf_pack_code(&par->chptr,&par->chbit,&mf_bit_buffer[mf_bit_order[i]],
+	erase |= unmf_pack_code(&par->chptr,&par->chbit, (int*)&mf_bit_buffer[mf_bit_order[i]],
 			     1,CHWORDSIZE,ERASE_MASK);
 	bit_ptr++;
     }
