@@ -13,6 +13,9 @@ FILTER *filter_create(float *num, int nl, float *den, int dl)
    int i;
    FILTER *fp;
 
+   if (dl < 2)
+	   return NULL;
+
    fp = (FILTER *) malloc(sizeof(FILTER));
 
    fp->nl = nl;
