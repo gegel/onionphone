@@ -5710,7 +5710,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 	*state = NULL;
 
 	/* allocate memory */
-	if ((s = (Decoder_amrState *) calloc(1, sizeof(Decoder_amrState))) == NULL) {
+	if ((s = calloc(1, sizeof(Decoder_amrState))) == NULL) {
 		fprintf(stderr,
 			"Decoder_amr_init: can not malloc state structure\n");
 		return -1;
@@ -5718,7 +5718,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 
 	/* DPlsf_init */
 	/* allocate memory */
-	if ((s->lsfState = (D_plsfState *) calloc(1, sizeof(D_plsfState))) == NULL) {
+	if ((s->lsfState = calloc(1, sizeof(D_plsfState))) == NULL) {
 		fprintf(stderr, "DPlsf_init: can not malloc state structure\n");
 		goto lfree;
 	}
@@ -5726,7 +5726,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 	/* ecGainPitchInit */
 	/* allocate memory */
 	if ((s->ec_gain_p_st =
-	     (ec_gain_pitchState *) calloc(1, sizeof(ec_gain_pitchState))) ==
+	     calloc(1, sizeof(ec_gain_pitchState))) ==
 	    NULL) {
 		fprintf(stderr,
 			"ecGainPitchInit: can not malloc state structure\n");
@@ -5736,7 +5736,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 	/* ecGainCodeInit */
 	/* allocate memory */
 	if ((s->ec_gain_c_st =
-	     (ec_gain_codeState *) calloc(1, sizeof(ec_gain_codeState))) == NULL) {
+	     calloc(1, sizeof(ec_gain_codeState))) == NULL) {
 		fprintf(stderr,
 			"ecGainCodeInit: can not malloc state structure\n");
 		goto lfree;
@@ -5744,7 +5744,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 
 	/* gcPredInit */
 	/* allocate memory */
-	if ((s->pred_state = (gc_predState *) calloc(1, sizeof(gc_predState)))
+	if ((s->pred_state = calloc(1, sizeof(gc_predState)))
 	    == NULL) {
 		fprintf(stderr, "gcPredInit: can not malloc state structure\n");
 		goto lfree;
@@ -5753,7 +5753,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 	/* Cb_gain_averageInit */
 	/* allocate memory */
 	if ((s->Cb_gain_averState =
-	     (Cb_gain_averageState *) calloc(1, sizeof(Cb_gain_averageState))) ==
+	     calloc(1, sizeof(Cb_gain_averageState))) ==
 	    NULL) {
 		fprintf(stderr,
 			"Cb_gain_averageInit: can not malloc state structure\n");
@@ -5767,7 +5767,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 
 	/* lsp_avgInit */
 	/* allocate memory */
-	if ((s->lsp_avg_st = (lsp_avgState *) calloc(1, sizeof(lsp_avgState)))
+	if ((s->lsp_avg_st = calloc(1, sizeof(lsp_avgState)))
 	    == NULL) {
 		fprintf(stderr,
 			"lsp_avgInit: can not malloc state structure\n");
@@ -5777,7 +5777,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 	/* Bgn_scdInit */
 	/* allocate memory */
 	if ((s->background_state =
-	     (Bgn_scdState *) calloc(1, sizeof(Bgn_scdState))) == NULL) {
+	     calloc(1, sizeof(Bgn_scdState))) == NULL) {
 		fprintf(stderr,
 			"Bgn_scdInit: can not malloc state structure\n");
 		goto lfree;
@@ -5785,7 +5785,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 
 	/* phDispInit */
 	/* allocate memory */
-	if ((s->ph_disp_st = (ph_dispState *) calloc(1, sizeof(ph_dispState)))
+	if ((s->ph_disp_st = calloc(1, sizeof(ph_dispState)))
 	    == NULL) {
 		fprintf(stderr, "phDispInit: can not malloc state structure\n");
 		goto lfree;
@@ -5793,8 +5793,7 @@ static int Decoder_amr_init(Decoder_amrState ** state)
 
 	/* dtxDecInit */
 	/* allocate memory */
-	if ((s->dtxDecoderState = (dtx_decState *) calloc(1, sizeof(dtx_decState)
-	     )) == NULL) {
+	if ((s->dtxDecoderState = calloc(1, sizeof(dtx_decState))) == NULL) {
 		fprintf(stderr, "dtxDecInit: can not malloc state structure\n");
 		goto lfree;
 	}
@@ -5874,7 +5873,7 @@ static int Post_Filter_init(Post_FilterState ** state)
 	*state = NULL;
 
 	/* allocate memory */
-	if ((s = (Post_FilterState *) calloc(1, sizeof(Post_FilterState))) ==
+	if ((s = calloc(1, sizeof(Post_FilterState))) ==
 	    NULL) {
 		fprintf(stderr, "F057:can not malloc filter structure\n");
 		return -1;
@@ -5882,7 +5881,7 @@ static int Post_Filter_init(Post_FilterState ** state)
 	s->agc_state = NULL;
 
 	/* allocate memory */
-	if ((s->agc_state = (agcState *) calloc(1, sizeof(agcState))) == NULL) {
+	if ((s->agc_state = calloc(1, sizeof(agcState))) == NULL) {
 		fprintf(stderr, "agcInit: can not malloc state structure\n");
 		free(s);
 		return -1;
@@ -5916,7 +5915,7 @@ static int Post_Process_init(Post_ProcessState ** state)
 	*state = NULL;
 
 	/* allocate memory */
-	if ((s = (Post_ProcessState *) calloc(1, sizeof(Post_ProcessState))) ==
+	if ((s = calloc(1, sizeof(Post_ProcessState))) ==
 	    NULL) {
 		fprintf(stderr,
 			"Post_Process_init: can not malloc state structure\n");
