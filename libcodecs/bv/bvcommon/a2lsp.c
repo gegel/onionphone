@@ -154,7 +154,7 @@ void a2lsp(Word16 pc[],		/* (i) Q12: predictor coefficients */
 			}
 
 			/* acos mapping for New lsp component */
-			while ((costable[ind] >= xmid) && (ind < 63))
+			while ((ind < 63) && (costable[ind] >= xmid))
 				ind++;
 			ind--;
 			a0 = L_bv_mult(bv_sub(xmid, costable[ind]),
