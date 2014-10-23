@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 #define ULAW
 
 #ifdef ULAW
@@ -46,7 +48,7 @@
 #include "lpcdefs.h"
 
 #define RECLEN 8192
-#define maxc 4 
+#define maxc 4
 #define rd 0
 #define wr 1
 
@@ -57,95 +59,97 @@ char *fname;
 short *eof;
 FILE *chan;
 {
-int i,k;
+	int i, k;
 #ifdef ULAW
-unsigned char buf[RECLEN / 2];
+	unsigned char buf[RECLEN / 2];
 #else
-short buf[RECLEN];
+	short buf[RECLEN];
 #endif
 #ifdef WUF
-short wuf[RECLEN];
+	short wuf[RECLEN];
 #endif
 
-switch(which) {
-case 0:
+	switch (which) {
+	case 0:
 /******************************************************************
 *	Read From Input File
 *******************************************************************/
 
-
 /*    Input Samples	*/
 
-	k = fread(buf, sizeof(buf[0]), length, chan);
-	if(k < length) *eof = END;
-	for(i=0;i<k;i++)	{
+		k = fread(buf, sizeof(buf[0]), length, chan);
+		if (k < length)
+			*eof = END;
+		for (i = 0; i < k; i++) {
 #ifdef ULAW
-		speech[i] = (float)audio_u2s(buf[i])/32768;
+			speech[i] = (float)audio_u2s(buf[i]) / 32768;
 #else
-		speech[i] = (float)buf[i]/32768;
+			speech[i] = (float)buf[i] / 32768;
 #endif
-	}
+		}
 
+		break;
 
-break;
-
-case 1:
+	case 1:
 /******************************************************************
 *	Write To Output File
 *******************************************************************/
 
-
-
 /*    Output Samples	*/
 
-	for(i=0;i<length;i++)
+		for (i = 0; i < length; i++)
 #ifndef WUF
 #ifdef ULAW
-		buf[i] = audio_s2u((short) mmax(-32768., mmin(32768.*speech[i], 32767.)));
+			buf[i] =
+			    audio_s2u((short)
+				      mmax(-32768.,
+					   mmin(32768. * speech[i], 32767.)));
 #else
-		buf[i] = mmax(-32768., mmin(32768.*speech[i], 32767.));
+			buf[i] =
+			    mmax(-32768., mmin(32768. * speech[i], 32767.));
 #endif
-	k = fwrite(buf, sizeof(buf[0]), length, chan);
+		k = fwrite(buf, sizeof(buf[0]), length, chan);
 #else
-wuf[i] = mmax(-32768., mmin(32768.*speech[i], 32767.));
-k = fwrite(wuf, sizeof(wuf[0]), length, chan);
+			wuf[i] =
+			    mmax(-32768., mmin(32768. * speech[i], 32767.));
+		k = fwrite(wuf, sizeof(wuf[0]), length, chan);
 #endif
-	if (k != length)
-	{
-                printf(" ***** disk write error ***** \n");
-		exit(1);
-	}
+		if (k != length) {
+			printf(" ***** disk write error ***** \n");
+			exit(1);
+		}
 
-break;
+		break;
 
-case 2:
+	case 2:
 /******************************************************************
 *	Open Files
 *******************************************************************/
-	if(chan== NULL)
-		switch(functn)
-		{
-			/*case READ:*/
+		if (chan == NULL)
+			switch (functn) {
+				/*case READ: */
 			case 0:
-                                chan = fopen(fname, "rb");
-				if(chan == NULL)
-				{
-					*eof=NOFILE;
-                                        printf("***** Error opening %s for reading *****\n",fname);
+				chan = fopen(fname, "rb");
+				if (chan == NULL) {
+					*eof = NOFILE;
+					printf
+					    ("***** Error opening %s for reading *****\n",
+					     fname);
 				}
 				break;
-			/*case WRITE:*/
+				/*case WRITE: */
 			case 1:
-                                chan = fopen(fname, "wb");
-				if (chan == NULL)
-				{
-					*eof=NOFILE;
-                                        printf("***** Error opening %s for writing *****\n",fname);
+				chan = fopen(fname, "wb");
+				if (chan == NULL) {
+					*eof = NOFILE;
+					printf
+					    ("***** Error opening %s for writing *****\n",
+					     fname);
 				}
 				break;
-		} /* end switch functn */
-break;
-case 3:
+			}	/* end switch functn */
+		break;
+	case 3:
 /******************************************************************
 *	Close Files
 *******************************************************************/
@@ -161,9 +165,9 @@ case 3:
 	END IF
 	RETURN
 *****/
-printf("******** Close files not yet written ******\n");
-break;
-case 4:
+		printf("******** Close files not yet written ******\n");
+		break;
+	case 4:
 /******************************************************************
 *	Return Filenames
 *******************************************************************/
@@ -184,7 +188,7 @@ case 4:
 
 	END
 *****/
-printf("Return Filenames\n");
-break;
-} /* end switch */
+		printf("Return Filenames\n");
+		break;
+	}			/* end switch */
 }

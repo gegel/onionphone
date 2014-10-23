@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /********************************************************************
 *
 *	PREEMP Version 48
@@ -20,16 +22,14 @@
 
 void preemp(float *inbuf, float *pebuf, int nsamp, float coef, float *z)
 {
-int i;
-float temp=0.0;
+	int i;
+	float temp = 0.0;
 
-
-for(i=1; i<=nsamp; i++) {
-	temp = inbuf[i] - *z + coef**(z+1);
-	*(z+1) = *z;
-	*z = inbuf[i];
-	pebuf[i] = temp;
-}
-
+	for (i = 1; i <= nsamp; i++) {
+		temp = inbuf[i] - *z + coef ** (z + 1);
+		*(z + 1) = *z;
+		*z = inbuf[i];
+		pebuf[i] = temp;
+	}
 
 }
