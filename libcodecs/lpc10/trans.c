@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*********************************************************************
 *
 *	TRANS Version 54
@@ -20,20 +22,19 @@
 #include "contrl.ch"
 #include "lpcdefs.h"
 
-
 void trans(int voice[2], int *pitch, float *rms, float rc[ORDER])
 {
-int ipitv, irms, irc[MAXORD], ibits[MAXNB];
+	int ipitv, irms, irc[MAXORD], ibits[MAXNB];
 
 /* Initialization */
-memset(ibits, 0, MAXNB*sizeof(int));
+	memset(ibits, 0, MAXNB * sizeof(int));
 
 /*     Quantize to 2400 bps, 600 bps, 800 bps or 1200 bps	*/
 
-  encode(voice, pitch, rms, rc-1, &ipitv, &irms, irc-1);
-  channel(0, &ipitv, &irms, irc-1, ibits-1);
+	encode(voice, pitch, rms, rc - 1, &ipitv, &irms, irc - 1);
+	channel(0, &ipitv, &irms, irc - 1, ibits - 1);
 
 /*  Decode parameters from bitstream	*/
-  channel(1, &ipitv, &irms, irc-1, ibits-1);
-  decode(ipitv, &irms, irc-1, voice, pitch, rms, rc-1);
+	channel(1, &ipitv, &irms, irc - 1, ibits - 1);
+	decode(ipitv, &irms, irc - 1, voice, pitch, rms, rc - 1);
 }

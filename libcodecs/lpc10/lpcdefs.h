@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*                              lpcdefs.h                       */
 
 #include <math.h>
@@ -18,15 +20,15 @@
 #define AF 3
 #define OSLEN 10
 #define LTAU 60
-#define SBUFL ((AF-2)*MAXFRM+1)                         /* (3-2)*180+1 = 181 */
-#define SBUFH (NF*MAXFRM)                               /* 4*180 = 720 */
-#define LBUFL ((AF-2)*MAXFRM-MAXPIT+1)                  /* (3-2)*180-156+1 = 25 */
-#define LBUFH (NF*MAXFRM)                               /* 4*180 = 720 */
+#define SBUFL ((AF-2)*MAXFRM+1)	/* (3-2)*180+1 = 181 */
+#define SBUFH (NF*MAXFRM)	/* 4*180 = 720 */
+#define LBUFL ((AF-2)*MAXFRM-MAXPIT+1)	/* (3-2)*180-156+1 = 25 */
+#define LBUFH (NF*MAXFRM)	/* 4*180 = 720 */
 #define MINWIN 90
 #define MAXWIN 156
-#define PWLEN (MAXPIT+MAXWIN)                           /* 156 + 156 = 312 */
-#define PWINH (AF*MAXFRM)                               /* 3 * 180 = 540 */
-#define PWINL (PWINH-PWLEN+1)                           /*  540 - 312 + 1 = 229 */
+#define PWLEN (MAXPIT+MAXWIN)	/* 156 + 156 = 312 */
+#define PWINH (AF*MAXFRM)	/* 3 * 180 = 540 */
+#define PWINL (PWINH-PWLEN+1)	/*  540 - 312 + 1 = 229 */
 #define DVWINL (PWINH-PWLEN/2 - MAXWIN/2 +1)
 #define DVWINH (DVWINL+MAXWIN-1)
 
