@@ -739,9 +739,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 	    	qpar->uv_flag[0] = par[0].uv_flag = 0;
 			qpar->uv_flag[1] = par[1].uv_flag = 0;
 			qpar->uv_flag[2] = par[2].uv_flag = 0;
-			if (uv_index == 3)
-		    	qpar->pitch_index = qpar->pitch_index;
-			else if (uv_index == 5)
+			if (uv_index == 5)
 		    	qpar->pitch_index = (Shortword) (qpar->pitch_index + PITCH_VQ_SIZE);
 		} else {
 			if (prot_bp1 == 1 && prot_lsp == 7){
@@ -750,9 +748,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				qpar->uv_flag[2] = par[2].uv_flag = 1;
 			} else {
 				erase_vvv |= 1;
-				if (uv_index == 3)
-			    	qpar->pitch_index = qpar->pitch_index;
-				else if (uv_index == 5)
+				if (uv_index == 5)
 					qpar->pitch_index = (Shortword) (qpar->pitch_index + PITCH_VQ_SIZE);
 			}
 		}

@@ -124,7 +124,6 @@ static void realIDFT(Shortword mag[], Shortword phase[], Shortword signal[],
 		/* (which is inversely proportional to length) and L_temp here never  */
 		/* overflows a Shortword.                                             */
 		signal[i] = r_ound(L_temp);
-		k = k;
 	}
 }
 
