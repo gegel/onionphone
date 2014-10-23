@@ -5940,12 +5940,12 @@ static int Post_Process_init(Post_ProcessState ** state)
  * Returns:
  *    Void
  */
-void Speech_Decode_Frame_exit(void **_st)
+void Speech_Decode_Frame_exit(void *_st)
 {
-	if (_st == NULL || *_st == NULL)
+	if (_st == NULL)
 		return;
 
-	Speech_Decode_FrameState *st = (Speech_Decode_FrameState *)(*_st);
+	Speech_Decode_FrameState *st = _st;
 
 	Decoder_amr_exit(&st->decoder_amrState);
 	Post_Filter_exit(&st->post_state);
@@ -6000,11 +6000,7 @@ void *Speech_Decode_Frame_init()
 	Speech_Decode_FrameState *s;
 
 	/* allocate memory */
-	if ((s =
-	     (Speech_Decode_FrameState *) calloc(1,
-						 sizeof
-						 (Speech_Decode_FrameState))) ==
-	    NULL) {
+	if ((s = calloc(1, sizeof(Speech_Decode_FrameState))) == NULL) {
 		fprintf(stderr,
 			"Speech_Decode_Frame_init: can not malloc state "
 			"structure\n");
@@ -6017,7 +6013,7 @@ void *Speech_Decode_Frame_init()
 	if (Decoder_amr_init(&s->decoder_amrState)
 	    || Post_Filter_init(&s->post_state)
 	    || Post_Process_init(&s->postHP_state)) {
-		Speech_Decode_Frame_exit((void **)(&s));
+		Speech_Decode_Frame_exit(s);
 		return NULL;
 	}
 	return s;
