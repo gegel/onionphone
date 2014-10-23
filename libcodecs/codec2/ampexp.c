@@ -444,7 +444,7 @@ static int split_vq(float sparse_pe_out[], struct AEXP *aexp,
 	vq_ind =
 	    vq_amp(vq->cb, &sparse_pe_in[vq->offset], &weights[vq->offset],
 		   vq->k, vq->m, &se);
-	printf("\n offset %d k %d m %d vq_ind %d j: ", vq->offset, vq->k, vq->m,
+	printf("\n offset %u k %u m %u vq_ind %d j: ", vq->offset, vq->k, vq->m,
 	       vq_ind);
 
 	non_zero = 0;
@@ -1130,6 +1130,6 @@ void amp_experiment(struct AEXP *aexp, MODEL * model, char *arg)
 	for (m = 1; m <= model->L; m++)
 		aexp->A_prev[m] = model->A[m];
 	aexp->frames++;
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 2; i++)
 		aexp->model_uq[i] = aexp->model_uq[i + 1];
 }
