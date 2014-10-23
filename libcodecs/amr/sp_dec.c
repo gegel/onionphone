@@ -623,7 +623,7 @@ static void D_plsf_3(D_plsfState * st, enum Mode mode, Word16 bfi, Word16 *
 		index = *indice++;
 		lsf1_r[3] = *p_dico++;
 		lsf1_r[4] = *p_dico++;
-		lsf1_r[5] = *p_dico++;
+		lsf1_r[5] = *p_dico;
 		p_dico = &p_cb3[index << 2];
 		lsf1_r[6] = *p_dico++;
 		lsf1_r[7] = *p_dico++;
@@ -2020,12 +2020,12 @@ static void D_plsf_5(D_plsfState * st, Word16 bfi, Word16 * indice,
 		lsf1_r[0] = *p_dico++;
 		lsf1_r[1] = *p_dico++;
 		lsf2_r[0] = *p_dico++;
-		lsf2_r[1] = *p_dico++;
+		lsf2_r[1] = *p_dico;
 		p_dico = &dico2_lsf_5[indice[1] << 2];
 		lsf1_r[2] = *p_dico++;
 		lsf1_r[3] = *p_dico++;
 		lsf2_r[2] = *p_dico++;
-		lsf2_r[3] = *p_dico++;
+		lsf2_r[3] = *p_dico;
 		sign = (Word16) (indice[2] & 1);
 		i = indice[2] >> 1;
 		p_dico = &dico3_lsf_5[i << 2];
@@ -2045,12 +2045,12 @@ static void D_plsf_5(D_plsfState * st, Word16 bfi, Word16 * indice,
 		lsf1_r[6] = *p_dico++;
 		lsf1_r[7] = *p_dico++;
 		lsf2_r[6] = *p_dico++;
-		lsf2_r[7] = *p_dico++;
+		lsf2_r[7] = *p_dico;
 		p_dico = &dico5_lsf_5[(indice[4] << 2)];
 		lsf1_r[8] = *p_dico++;
 		lsf1_r[9] = *p_dico++;
 		lsf2_r[8] = *p_dico++;
-		lsf2_r[9] = *p_dico++;
+		lsf2_r[9] = *p_dico;
 
 		/* Compute quantized LSFs and update the past quantized residual */
 		for (i = 0; i < M; i++) {
