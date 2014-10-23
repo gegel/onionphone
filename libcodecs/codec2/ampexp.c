@@ -1130,6 +1130,6 @@ void amp_experiment(struct AEXP *aexp, MODEL * model, char *arg)
 	for (m = 1; m <= model->L; m++)
 		aexp->A_prev[m] = model->A[m];
 	aexp->frames++;
-	for (i = 0; i < 3; i++)
+	for (i = 0; i < 2; i++)
 		aexp->model_uq[i] = aexp->model_uq[i + 1];
 }
