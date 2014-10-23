@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -30,29 +32,27 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _VQ_LIB_H_
 #define _VQ_LIB_H_
 
-
 /* External function definitions */
 
 /* The two aliases mapping msvq_enc() and fsvq_enc() to vq_ms4() and vq_enc() */
 /* are now removed because they mask off the interrelationships among the     */
 /* signals.                                                                   */
 
-Shortword	*vq_lspw(Shortword weight[], Shortword lsp[], Shortword lpc[],
-					 Shortword order);
+Shortword *vq_lspw(Shortword weight[], Shortword lsp[], Shortword lpc[],
+		   Shortword order);
 
-Shortword	vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
-				   const Shortword levels[], Shortword ma, Shortword stages,
-				   Shortword p, Shortword *w, Shortword *u_hat,
-				   Shortword *a_indices, Shortword max_inner);
+Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
+		 const Shortword levels[], Shortword ma, Shortword stages,
+		 Shortword p, Shortword * w, Shortword * u_hat,
+		 Shortword * a_indices, Shortword max_inner);
 
-Longword	vq_enc(const Shortword codebook[], Shortword u[], Shortword levels,
-				   Shortword order, Shortword u_hat[], Shortword *indices);
+Longword vq_enc(const Shortword codebook[], Shortword u[], Shortword levels,
+		Shortword order, Shortword u_hat[], Shortword * indices);
 
-void	vq_msd2(const Shortword *cb, Shortword *u_hat, const Shortword *u_est,
-				Shortword *indices, const Shortword levels[], Shortword stages,
-				Shortword p, Shortword diff_Q);
+void vq_msd2(const Shortword * cb, Shortword * u_hat, const Shortword * u_est,
+	     Shortword * indices, const Shortword levels[], Shortword stages,
+	     Shortword p, Shortword diff_Q);
 
-void	vq_fsw(Shortword w_fs[], Shortword num_harm, Shortword pitch);
-
+void vq_fsw(Shortword w_fs[], Shortword num_harm, Shortword pitch);
 
 #endif

@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -37,34 +39,32 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _MATH_LIB_H_
 #define _MATH_LIB_H_
 
-
 /* External function definitions */
 
-Shortword	L_divider2(Longword numer, Longword denom, Shortword numer_shift,
-					   Shortword denom_shift);
+Shortword L_divider2(Longword numer, Longword denom, Shortword numer_shift,
+		     Shortword denom_shift);
 
-Shortword	log10_fxp(Shortword x, Shortword Q);
+Shortword log10_fxp(Shortword x, Shortword Q);
 
-Shortword	L_log10_fxp(Longword x, Shortword Q);
+Shortword L_log10_fxp(Longword x, Shortword Q);
 
-Shortword	pow10_fxp(Shortword x, Shortword Q);
+Shortword pow10_fxp(Shortword x, Shortword Q);
 
-Shortword	sqrt_fxp(Shortword x, Shortword Q);
+Shortword sqrt_fxp(Shortword x, Shortword Q);
 
-Shortword	L_sqrt_fxp(Longword x, Shortword Q);
+Shortword L_sqrt_fxp(Longword x, Shortword Q);
 
-Shortword	L_pow_fxp(Longword x, Shortword power, Shortword Q_in,
-					  Shortword Q_out);
+Shortword L_pow_fxp(Longword x, Shortword power, Shortword Q_in,
+		    Shortword Q_out);
 
-Shortword	sin_fxp(Shortword x);
+Shortword sin_fxp(Shortword x);
 
-Shortword	cos_fxp(Shortword x);
+Shortword cos_fxp(Shortword x);
 
-Shortword	sqrt_Q15(Shortword x);
+Shortword sqrt_Q15(Shortword x);
 
-Shortword	add_shr(Shortword Var1, Shortword Var2);
+Shortword add_shr(Shortword Var1, Shortword Var2);
 
-Shortword	sub_shr(Shortword Var1, Shortword Var2);
+Shortword sub_shr(Shortword Var1, Shortword Var2);
 
 #endif
-
