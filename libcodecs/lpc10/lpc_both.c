@@ -48,7 +48,7 @@ int ipiti[11], ivuv[11];
 float rci[MAXORD][11], rmsi[11], pc[MAXORD];
 
 /*----------------------------------------------------------------------*/
-buf_man(inbuffer, outbuffer, len)
+void buf_man(inbuffer, outbuffer, len)
 float outbuffer[], inbuffer[];
 int len;
 {
