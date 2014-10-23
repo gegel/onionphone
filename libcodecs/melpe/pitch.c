@@ -469,7 +469,7 @@ Shortword multiCheck(Shortword f1, Shortword f2)
 void minCostIndex(Shortword *costBuf, Shortword *index1, Shortword *index2)
 {
 	register Shortword i;
-	Shortword co = SW_MAX;
+	Shortword co;
 
 	*index1 = 0;			/* largest weight */
 	co = costBuf[0];

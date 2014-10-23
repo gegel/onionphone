@@ -521,8 +521,8 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 
 	/* error check in U/V pattern */
 	bit_ptr1 = bit_ptr;
-	bit_cntr1= bit_cntr;
-	/*	unpack_code(&bit_ptr1, &bit_cntr1, &dontcare, 39, 1, 0);          LSP */
+	/* bit_cntr1= bit_cntr;
+		unpack_code(&bit_ptr1, &bit_cntr1, &dontcare, 39, 1, 0);          LSP */
 	bit_cntr1 = 0; bit_ptr1 += 39;
 	unpack_code(&bit_ptr1, &bit_cntr1, &prot_lsp,  3, 1, 0);           /* LSP */
 	unpack_code(&bit_ptr1, &bit_cntr1, &dontcare, 10, 1, 0);          /* GAIN */
