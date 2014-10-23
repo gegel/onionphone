@@ -38,7 +38,7 @@ Word32 w_TotalWeightedOperation()
 	tot = 0;
 	ptr = (Word32 *) & w_counter;
 	ptr2 = (Word32 *) & w_op_weight;
-	for (i = 0; i < (sizeof(w_counter) / sizeof(Word32)); i++)
+	for (i = 0; (unsigned int)i < (sizeof(w_counter) / sizeof(Word32)); i++)
 	{
 		tot += ((*ptr++) * (*ptr2++));
 	}
@@ -101,7 +101,7 @@ void Reset_WMOPS_w_counter(void)
 	Word32 *ptr;
 
 	ptr = (Word32 *) & w_counter;
-	for (i = 0; i < (sizeof(w_counter) / sizeof(Word32)); i++)
+	for (i = 0; (unsigned int)i < (sizeof(w_counter) / sizeof(Word32)); i++)
 	{
 		*ptr++ = 0;
 	}
