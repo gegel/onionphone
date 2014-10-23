@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -46,18 +48,17 @@ Secretariat fax: +33 493 65 47 16.
 
 #define CONSTANT_SCALE		FALSE
 #define MINGAIN				0
-#define LOG10OF2X2			1233                         /* 2*log10(2) in Q11 */
-#define GAIN_INT_DB_Q8		1280                              /* 5 * (1 << 8) */
-#define ONE_Q8				256                                   /* (1 << 8) */
-#define THREE_Q8			768                               /* 3 * (1 << 8) */
-#define SIX_Q12				24576                            /* 6 * (1 << 12) */
-#define TEN_Q11				20480                           /* 10 * (1 << 11) */
-#define X0001_Q8			0                             /* 0.001 * (1 << 8) */
-#define X01_Q14				1638                           /* 0.1 * (1 << 14) */
-#define N2_Q11				-4096                           /* -2 * (1 << 11) */
-#define M01_Q15				-3276                         /* -0.1 * (1 << 15) */
-#define M10_Q11				-20480                         /* -10 * (1 << 11) */
-
+#define LOG10OF2X2			1233	/* 2*log10(2) in Q11 */
+#define GAIN_INT_DB_Q8		1280	/* 5 * (1 << 8) */
+#define ONE_Q8				256	/* (1 << 8) */
+#define THREE_Q8			768	/* 3 * (1 << 8) */
+#define SIX_Q12				24576	/* 6 * (1 << 12) */
+#define TEN_Q11				20480	/* 10 * (1 << 11) */
+#define X0001_Q8			0	/* 0.001 * (1 << 8) */
+#define X01_Q14				1638	/* 0.1 * (1 << 14) */
+#define N2_Q11				-4096	/* -2 * (1 << 11) */
+#define M01_Q15				-3276	/* -0.1 * (1 << 15) */
+#define M10_Q11				-20480	/* -10 * (1 << 11) */
 
 /* Name: bpvc_ana.c                                                           */
 /*  Description: Bandpass voicing analysis                                    */
@@ -74,23 +75,21 @@ Secretariat fax: +33 493 65 47 16.
 /* Q values: speech - Q0, fpitch - Q7, bpvc - Q14, pitch - Q7                 */
 
 void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
-			  Shortword *pitch)
+	      Shortword * pitch)
 {
-	register Shortword	i, section;
-	static Shortword	bpfsp[NUM_BANDS][PITCH_FR - FRAME];
-	static Shortword	bpfdelin[NUM_BANDS][BPF_ORD];
-	static Shortword	bpfdelout[NUM_BANDS][BPF_ORD];
-	static Shortword	envdel[NUM_BANDS][ENV_ORD];
-	static Shortword	envdel2[NUM_BANDS];
-	static BOOLEAN	firstTime = TRUE;
-	Shortword	sigbuf[BPF_ORD + PITCH_FR];
-	Shortword	pcorr, temp, scale;
-	Shortword	filt_index;
+	register Shortword i, section;
+	static Shortword bpfsp[NUM_BANDS][PITCH_FR - FRAME];
+	static Shortword bpfdelin[NUM_BANDS][BPF_ORD];
+	static Shortword bpfdelout[NUM_BANDS][BPF_ORD];
+	static Shortword envdel[NUM_BANDS][ENV_ORD];
+	static Shortword envdel2[NUM_BANDS];
+	static BOOLEAN firstTime = TRUE;
+	Shortword sigbuf[BPF_ORD + PITCH_FR];
+	Shortword pcorr, temp, scale;
+	Shortword filt_index;
 
-
-
-	if (firstTime){
-		for (i = 0; i < NUM_BANDS; i++){
+	if (firstTime) {
+		for (i = 0; i < NUM_BANDS; i++) {
 			v_zap(bpfsp[i], PITCH_FR - FRAME);
 			v_zap(bpfdelin[i], BPF_ORD);
 			v_zap(bpfdelout[i], BPF_ORD);
@@ -104,13 +103,14 @@ void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
 	/* Filter lowest band and estimate pitch */
 	v_equ(&sigbuf[BPF_ORD], bpfsp[0], PITCH_FR - FRAME);
 	v_equ(&sigbuf[BPF_ORD + PITCH_FR - FRAME],
-		  &speech[PITCH_FR - FRAME - PITCHMAX], FRAME);
+	      &speech[PITCH_FR - FRAME - PITCHMAX], FRAME);
 
-	for (section = 0; section < BPF_ORD/2; section ++){
+	for (section = 0; section < BPF_ORD / 2; section++) {
 		iir_2nd_s(&sigbuf[BPF_ORD + PITCH_FR - FRAME],
-				  &bpf_den[section*3], &bpf_num[section*3],
-				  &sigbuf[BPF_ORD + PITCH_FR - FRAME], &bpfdelin[0][section*2],
-				  &bpfdelout[0][section*2], FRAME);
+			  &bpf_den[section * 3], &bpf_num[section * 3],
+			  &sigbuf[BPF_ORD + PITCH_FR - FRAME],
+			  &bpfdelin[0][section * 2], &bpfdelout[0][section * 2],
+			  FRAME);
 	}
 	v_equ(bpfsp[0], &sigbuf[BPF_ORD + FRAME], PITCH_FR - FRAME);
 
@@ -118,62 +118,67 @@ void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
 	f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
 
 	*pitch = frac_pch(&sigbuf[BPF_ORD + PITCHMAX], bpvc, fpitch[0], 5,
-					  PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
-					  MINLENGTH);
+			  PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
+			  MINLENGTH);
 
-	for (i = 1; i < NUM_PITCHES; i++){
-		temp = frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &pcorr, fpitch[i], 5,
-						PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
-						MINLENGTH);
+	for (i = 1; i < NUM_PITCHES; i++) {
+		temp =
+		    frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &pcorr, fpitch[i], 5,
+			     PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
+			     MINLENGTH);
 
 		/* choose largest correlation value */
-		if (pcorr > bpvc[0]){
+		if (pcorr > bpvc[0]) {
 			*pitch = temp;
 			bpvc[0] = pcorr;
 		}
 	}
 
 	/* Calculate bandpass voicing for frames */
-	for (i = 1; i < NUM_BANDS; i++){
+	for (i = 1; i < NUM_BANDS; i++) {
 		/* Bandpass filter input speech */
 		v_equ(&sigbuf[BPF_ORD], bpfsp[i], PITCH_FR - FRAME);
 		v_equ(&sigbuf[BPF_ORD + PITCH_FR - FRAME],
-			  &speech[PITCH_FR - FRAME - PITCHMAX], FRAME);
+		      &speech[PITCH_FR - FRAME - PITCHMAX], FRAME);
 
-		for (section = 0; section < BPF_ORD/2; section++){
-			filt_index = (Shortword) (i*(BPF_ORD/2)*3 + section*3);
+		for (section = 0; section < BPF_ORD / 2; section++) {
+			filt_index =
+			    (Shortword) (i * (BPF_ORD / 2) * 3 + section * 3);
 			iir_2nd_s(&sigbuf[BPF_ORD + PITCH_FR - FRAME],
-					  &bpf_den[filt_index], &bpf_num[filt_index],
-					  &sigbuf[BPF_ORD + PITCH_FR - FRAME],
-					  &bpfdelin[i][section*2], &bpfdelout[i][section*2],
-					  FRAME);
+				  &bpf_den[filt_index], &bpf_num[filt_index],
+				  &sigbuf[BPF_ORD + PITCH_FR - FRAME],
+				  &bpfdelin[i][section * 2],
+				  &bpfdelout[i][section * 2], FRAME);
 		}
 		v_equ(bpfsp[i], &sigbuf[BPF_ORD + FRAME], PITCH_FR - FRAME);
 
 		/* Scale signal for pitch correlations */
-		scale = f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
+		scale =
+		    f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
 
 		/* Check correlations for each frame */
 		frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &bpvc[i], *pitch, 0,
-						PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
-						MINLENGTH);
+			 PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
+			 MINLENGTH);
 
 		/* Calculate envelope of bandpass filtered input speech */
 		/* update delay buffers without scaling */
 		temp = shr(envdel2[i], scale);
-		envdel2[i] = shr(sigbuf[BPF_ORD + FRAME - 1], (Shortword) (-scale));
-		v_equ_shr(&sigbuf[BPF_ORD - ENV_ORD], envdel[i], scale, ENV_ORD);
+		envdel2[i] =
+		    shr(sigbuf[BPF_ORD + FRAME - 1], (Shortword) (-scale));
+		v_equ_shr(&sigbuf[BPF_ORD - ENV_ORD], envdel[i], scale,
+			  ENV_ORD);
 		envelope(&sigbuf[BPF_ORD], temp, &sigbuf[BPF_ORD], PITCH_FR);
 		v_equ_shr(envdel[i], &sigbuf[BPF_ORD + FRAME - ENV_ORD],
-				  (Shortword) (-scale), ENV_ORD);
+			  (Shortword) (-scale), ENV_ORD);
 
 		/* Scale signal for pitch correlations */
 		f_pitch_scale(&sigbuf[BPF_ORD], &sigbuf[BPF_ORD], PITCH_FR);
 
 		/* Check correlations for each frame */
 		frac_pch(&sigbuf[BPF_ORD + PITCHMAX], &pcorr, *pitch, 0,
-						PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
-						MINLENGTH);
+			 PITCHMIN, PITCHMAX, PITCHMIN_Q7, PITCHMAX_Q7,
+			 MINLENGTH);
 
 		/* reduce envelope correlation */
 		pcorr = sub(pcorr, X01_Q14);
@@ -182,7 +187,6 @@ void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
 			bpvc[i] = pcorr;
 	}
 }
-
 
 /* Name: dc_rmv.c                                                             */
 /*	Description: remove DC from input signal                                  */
@@ -205,14 +209,13 @@ void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
 /* order of sections swapped                                                  */
 
 void dc_rmv(Shortword sigin[], Shortword sigout[], Shortword delin[],
-			Shortword delout_hi[], Shortword delout_lo[],
-			Shortword frame)
+	    Shortword delout_hi[], Shortword delout_lo[], Shortword frame)
 {
-	static const Shortword	dc_num[(DC_ORD/2)*3] = {             /* Maybe Q13 */
+	static const Shortword dc_num[(DC_ORD / 2) * 3] = {	/* Maybe Q13 */
 #if NEW_DC_FILTER
-		8192,  -16376, 8192,
-		8192,  -16370, 8192,
-		7353,  -14706, 7353
+		8192, -16376, 8192,
+		8192, -16370, 8192,
+		7353, -14706, 7353
 #else
 		7769, -15534, 7769,
 		8007, -15999, 8007
@@ -221,7 +224,7 @@ void dc_rmv(Shortword sigin[], Shortword sigout[], Shortword delin[],
 
 	/* Signs of coefficients for dc_den are reversed.  dc_den[0] and          */
 	/* dc_den[3] are ignored.                                                 */
-	static const Shortword	dc_den[(DC_ORD/2)*3] = {
+	static const Shortword dc_den[(DC_ORD / 2) * 3] = {
 #if NEW_DC_FILTER
 		-8192, 15729, -7569,
 		-8192, 16111, -7959,
@@ -231,16 +234,15 @@ void dc_rmv(Shortword sigin[], Shortword sigout[], Shortword delin[],
 		-8192, 15986, -7836
 #endif
 	};
-	register Shortword	section;
+	register Shortword section;
 
 	/* Remove DC from input speech */
 	v_equ(sigout, sigin, frame);
-	for (section = 0; section < DC_ORD/2; section++)
-		iir_2nd_d(sigout, &dc_den[section*3], &dc_num[section*3], sigout,
-				  &delin[section*2], &delout_hi[section*2],
-				  &delout_lo[section*2], frame);
+	for (section = 0; section < DC_ORD / 2; section++)
+		iir_2nd_d(sigout, &dc_den[section * 3], &dc_num[section * 3],
+			  sigout, &delin[section * 2], &delout_hi[section * 2],
+			  &delout_lo[section * 2], frame);
 }
-
 
 /* This function removes the DC component of a given signal sigin[].  It      */
 /* computes the offset Sum(sigin[])/len by                                    */
@@ -258,12 +260,11 @@ void dc_rmv(Shortword sigin[], Shortword sigout[], Shortword delin[],
 
 void remove_dc(Shortword sigin[], Shortword sigout[], Shortword len)
 {
-	register Shortword	i;
-	Shortword	up_shift, two_power_down;
-	Longword	sum;
-	Shortword	temp;
-	Shortword	offset;
-
+	register Shortword i;
+	Shortword up_shift, two_power_down;
+	Longword sum;
+	Shortword temp;
+	Shortword offset;
 
 	/* Find up_shift and two_power_down.  Note that two_power_down can be     */
 	/* equal to len.                                                          */
@@ -281,7 +282,7 @@ void remove_dc(Shortword sigin[], Shortword sigout[], Shortword len)
 	/* if (len > two_power_down) */
 	/* if condition has been removed 'cos it is always true */
 	{
-		temp = divide_s(two_power_down, len);                          /* Q15 */
+		temp = divide_s(two_power_down, len);	/* Q15 */
 		offset = mult(extract_l(sum), temp);
 	}
 	offset = shl(offset, 1);
@@ -289,7 +290,6 @@ void remove_dc(Shortword sigin[], Shortword sigout[], Shortword len)
 	for (i = 0; i < len; i++)
 		sigout[i] = sub(sigin[i], offset);
 }
-
 
 /* Name: gain_ana.c                                                           */
 /*	Description: analyze gain level for input signal                          */
@@ -309,42 +309,41 @@ void remove_dc(Shortword sigin[], Shortword sigout[], Shortword len)
 /*	sigin (speech) - Q0                                                       */
 
 Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
-				   Shortword maxlength)
+		   Shortword maxlength)
 {
-	Shortword	length;                                                 /* Q0 */
-	Shortword	flength;                                                /* Q6 */
-	Shortword	gain;                                                   /* Q8 */
-	Shortword	pitch_Q6;                                               /* Q6 */
-	Shortword	scale;
-	Shortword	tmp_minlength;
-	Shortword	sigbegin;
-	Shortword	*temp_buf, *tmp_sig;
-	Shortword	S_temp1, S_temp2;
-	Longword	L_temp;
-
+	Shortword length;	/* Q0 */
+	Shortword flength;	/* Q6 */
+	Shortword gain;		/* Q8 */
+	Shortword pitch_Q6;	/* Q6 */
+	Shortword scale;
+	Shortword tmp_minlength;
+	Shortword sigbegin;
+	Shortword *temp_buf, *tmp_sig;
+	Shortword S_temp1, S_temp2;
+	Longword L_temp;
 
 	/* initialize scaled pitch and minlength */
-	pitch_Q6 = shr(pitch, 1);                                       /* Q7->Q6 */
+	pitch_Q6 = shr(pitch, 1);	/* Q7->Q6 */
 
 	tmp_minlength = shl(minlength, 6);
 
 	/* Find shortest pitch multiple window length (floating point) */
 	flength = pitch_Q6;
-	while (flength < tmp_minlength){
+	while (flength < tmp_minlength) {
 		flength = add(flength, pitch_Q6);
 	}
 
 	/* Convert window length to integer and check against maximum */
 	length = shr(add(flength, X05_Q6), 6);
 
-	if (length > maxlength){
+	if (length > maxlength) {
 		/* divide by 2 */
 		length = shr(length, 1);
 	}
 
 	/* Calculate RMS gain in dB */
-	/*	gain = 10.0*log10(0.01 + */
-	/*		   (v_magsq(&sigin[-(length/2)], length)/length)); */
+	/*      gain = 10.0*log10(0.01 + */
+	/*                 (v_magsq(&sigin[-(length/2)], length)/length)); */
 
 	/* use this adaptive scaling if more precision needed at low levels.      */
 	/* Seemed like it wasn't worth the mips */
@@ -359,7 +358,7 @@ Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
 	v_equ_shr(temp_buf, &sigin[sigbegin], scale, length);
 	L_temp = L_v_magsq(temp_buf, length, 0, 1);
 
-	if (L_temp){
+	if (L_temp) {
 		S_temp1 = norm_l(L_temp);
 		scale = sub(scale, shr(S_temp1, 1));
 		if (scale < 0)
@@ -374,7 +373,7 @@ Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
 		v_equ(temp_buf, &sigin[sigbegin], length);
 	tmp_sig = temp_buf - sigbegin;
 
-	if (scale){
+	if (scale) {
 		L_temp = L_v_magsq(&tmp_sig[sigbegin], length, 0, 0);
 		S_temp1 = L_log10_fxp(L_temp, 0);
 		S_temp2 = L_log10_fxp(L_deposit_l(length), 0);
@@ -397,15 +396,14 @@ Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
 		gain = shl(S_temp1, 1);
 	}
 
-	if (gain < MINGAIN){
+	if (gain < MINGAIN) {
 		gain = MINGAIN;
 	}
 
 	v_free(temp_buf);
 
-	return(gain);
+	return (gain);
 }
-
 
 /* Name: lin_int_bnd.c                                                        */
 /*	Description: Linear interpolation within bounds                           */
@@ -424,10 +422,9 @@ Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
 /*	y,ymin,ymax - Q15                                                         */
 
 Shortword lin_int_bnd(Shortword x, Shortword xmin, Shortword xmax,
-					  Shortword ymin, Shortword ymax)
+		      Shortword ymin, Shortword ymax)
 {
-	Shortword	y, temp1, temp2;
-
+	Shortword y, temp1, temp2;
 
 	if (x <= xmin)
 		y = ymin;
@@ -437,16 +434,15 @@ Shortword lin_int_bnd(Shortword x, Shortword xmin, Shortword xmax,
 		/* y = ymin + (x-xmin)*(ymax-ymin)/(xmax-xmin); */
 		temp1 = sub(x, xmin);
 		temp2 = sub(ymax, ymin);
-		temp1 = mult(temp1, temp2);                            /* temp1 in Q8 */
+		temp1 = mult(temp1, temp2);	/* temp1 in Q8 */
 		temp2 = sub(xmax, xmin);
 		/* temp1 always smaller than temp2 */
-		temp1 = divide_s(temp1, temp2);                       /* temp1 in Q15 */
+		temp1 = divide_s(temp1, temp2);	/* temp1 in Q15 */
 		y = add(ymin, temp1);
 	}
 
-	return(y);
+	return (y);
 }
-
 
 /* Name: noise_est.c                                                          */
 /*	Description: Estimate long-term noise floor                               */
@@ -466,17 +462,16 @@ Shortword lin_int_bnd(Shortword x, Shortword xmin, Shortword xmax,
 /*	Q values:                                                                 */
 /*	gain - Q8, *noise_gain - Q8, up - Q19, down - Q17, min - Q8, max - Q8     */
 
-void noise_est(Shortword gain, Shortword *noise_gain, Shortword up,
-			   Shortword down, Shortword min, Shortword max)
+void noise_est(Shortword gain, Shortword * noise_gain, Shortword up,
+	       Shortword down, Shortword min, Shortword max)
 {
-	Shortword	temp1, temp2;
-	Longword	L_noise_gain, L_temp;
-
+	Shortword temp1, temp2;
+	Longword L_noise_gain, L_temp;
 
 	/* Update noise_gain */
-	/*	temp1 = add(*noise_gain, up); */
-	/*	temp2 = add(*noise_gain, down); */
-	L_noise_gain = L_deposit_h(*noise_gain);           /* L_noise_gain in Q24 */
+	/*      temp1 = add(*noise_gain, up); */
+	/*      temp2 = add(*noise_gain, down); */
+	L_noise_gain = L_deposit_h(*noise_gain);	/* L_noise_gain in Q24 */
 	L_temp = L_shl(L_deposit_l(up), 5);
 	L_temp = L_add(L_noise_gain, L_temp);
 	temp1 = r_ound(L_temp);
@@ -498,7 +493,6 @@ void noise_est(Shortword gain, Shortword *noise_gain, Shortword up,
 		*noise_gain = max;
 }
 
-
 /* Name: noise_sup.c                                                          */
 /*	Description: Perform noise suppression on speech gain                     */
 /*	Inputs: (all in dB)                                                       */
@@ -516,12 +510,11 @@ void noise_est(Shortword gain, Shortword *noise_gain, Shortword up,
 /*	Q values:                                                                 */
 /*	*gain - Q8, noise_gain - Q8, max_noise - Q8, max_atten - Q8, nfact - Q8   */
 
-void noise_sup(Shortword *gain, Shortword noise_gain, Shortword max_noise,
-			   Shortword max_atten, Shortword nfact)
+void noise_sup(Shortword * gain, Shortword noise_gain, Shortword max_noise,
+	       Shortword max_atten, Shortword nfact)
 {
-	Shortword	gain_lev, suppress, temp;
-	Longword	L_temp;
-
+	Shortword gain_lev, suppress, temp;
+	Longword L_temp;
 
 	/* Reduce effect for louder backgr_ound noise */
 	if (noise_gain > max_noise)
@@ -529,13 +522,13 @@ void noise_sup(Shortword *gain, Shortword noise_gain, Shortword max_noise,
 
 	/* Calculate suppression factor */
 	gain_lev = sub(*gain, add(noise_gain, nfact));
-	if (gain_lev > X0001_Q8){
-		/*	suppress = -10.0*log10(1.0 - pow(10.0,-0.1*gain_lev));            */
-		L_temp = L_mult(M01_Q15, gain_lev);                  /* L_temp in Q24 */
-		temp = extract_h(L_shl(L_temp, 4));                    /* temp in Q12 */
+	if (gain_lev > X0001_Q8) {
+		/*      suppress = -10.0*log10(1.0 - pow(10.0,-0.1*gain_lev));            */
+		L_temp = L_mult(M01_Q15, gain_lev);	/* L_temp in Q24 */
+		temp = extract_h(L_shl(L_temp, 4));	/* temp in Q12 */
 		temp = pow10_fxp(temp, 14);
 		temp = sub(ONE_Q14, temp);
-		suppress = mult(M10_Q11, log10_fxp(temp, 14));     /* log returns Q12 */
+		suppress = mult(M10_Q11, log10_fxp(temp, 14));	/* log returns Q12 */
 		if (suppress > max_atten)
 			suppress = max_atten;
 	} else
@@ -544,7 +537,6 @@ void noise_sup(Shortword *gain, Shortword noise_gain, Shortword max_noise,
 	/* Apply suppression to input gain */
 	*gain = sub(*gain, suppress);
 }
-
 
 /* Name: q_bpvc.c, q_bpvc_dec.c                                               */
 /* 	Description: Quantize/decode bandpass voicing                             */
@@ -560,23 +552,22 @@ void noise_sup(Shortword *gain, Shortword noise_gain, Shortword max_noise,
 /*	Q values:                                                                 */
 /*	*bpvc - Q14                                                               */
 
-BOOLEAN q_bpvc(Shortword bpvc[], Shortword *bpvc_index, Shortword num_bands)
+BOOLEAN q_bpvc(Shortword bpvc[], Shortword * bpvc_index, Shortword num_bands)
 {
-	register Shortword	i;
-	BOOLEAN		uv_flag;
-	Shortword	index;
+	register Shortword i;
+	BOOLEAN uv_flag;
+	Shortword index;
 
-
-	if (bpvc[0] > BPTHRESH_Q14){
+	if (bpvc[0] > BPTHRESH_Q14) {
 
 		/* Voiced: pack bandpass voicing */
 		uv_flag = FALSE;
 		index = 0;
 		bpvc[0] = ONE_Q14;
 
-		for (i = 1; i < num_bands; i++){
-			index = shl(index, 1);                      /* left shift one bit */
-			if (bpvc[i] > BPTHRESH_Q14){
+		for (i = 1; i < num_bands; i++) {
+			index = shl(index, 1);	/* left shift one bit */
+			if (bpvc[i] > BPTHRESH_Q14) {
 				bpvc[i] = ONE_Q14;
 				index |= 1;
 			} else {
@@ -586,7 +577,7 @@ BOOLEAN q_bpvc(Shortword bpvc[], Shortword *bpvc_index, Shortword num_bands)
 		}
 
 		/* Don't use invalid code (only top band voiced) */
-		if (index == INVALID_BPVC){
+		if (index == INVALID_BPVC) {
 			bpvc[num_bands - 1] = 0;
 			index = 0;
 		}
@@ -598,29 +589,27 @@ BOOLEAN q_bpvc(Shortword bpvc[], Shortword *bpvc_index, Shortword num_bands)
 	}
 
 	*bpvc_index = index;
-	return(uv_flag);
+	return (uv_flag);
 }
 
-
 void q_bpvc_dec(Shortword bpvc[], Shortword bpvc_index, BOOLEAN uv_flag,
-				Shortword num_bands)
+		Shortword num_bands)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	if (uv_flag){                              /* Unvoiced: set all bpvc to 0 */
+	if (uv_flag) {		/* Unvoiced: set all bpvc to 0 */
 		bpvc_index = 0;
 		bpvc[0] = 0;
-	} else                                      /* Voiced: set bpvc[0] to 1.0 */
+	} else			/* Voiced: set bpvc[0] to 1.0 */
 		bpvc[0] = ONE_Q14;
 
-	if (bpvc_index == INVALID_BPVC){
+	if (bpvc_index == INVALID_BPVC) {
 		/* Invalid code received: set higher band voicing to zero */
 		bpvc_index = 0;
 	}
 
 	/* Decode remaining bands */
-	for (i = (Shortword) (num_bands - 1); i > 0; i--){
+	for (i = (Shortword) (num_bands - 1); i > 0; i--) {
 		if (bpvc_index & 1)
 			bpvc[i] = ONE_Q14;
 		else
@@ -628,7 +617,6 @@ void q_bpvc_dec(Shortword bpvc[], Shortword bpvc_index, BOOLEAN uv_flag,
 		bpvc_index = shr(bpvc_index, 1);
 	}
 }
-
 
 /* Name: q_gain.c, q_gain_dec.c                                               */
 /*	Description: Quantize/decode two gain terms using quasi-differential      */
@@ -645,31 +633,30 @@ void q_bpvc_dec(Shortword bpvc[], Shortword bpvc_index, BOOLEAN uv_flag,
 /*	Q values:                                                                 */
 /*	*gain - Q8, gn_qlo - Q8, gn_qup - Q8, gn_qlev - Q10                       */
 
-void q_gain(Shortword *gain, Shortword *gain_index, Shortword gn_qlo,
-			Shortword gn_qup, Shortword gn_qlev, Shortword gn_qlev_q,
-			Shortword double_flag, Shortword scale)
+void q_gain(Shortword * gain, Shortword * gain_index, Shortword gn_qlo,
+	    Shortword gn_qup, Shortword gn_qlev, Shortword gn_qlev_q,
+	    Shortword double_flag, Shortword scale)
 {
-	static Shortword	prev_gain = 0;
-	Shortword	temp, temp2;
-
+	static Shortword prev_gain = 0;
+	Shortword temp, temp2;
 
 	/* Quantize second gain term with uniform quantizer */
 	quant_u(&gain[1], &gain_index[1], gn_qlo, gn_qup, gn_qlev, gn_qlev_q,
-			double_flag, scale);
+		double_flag, scale);
 
 	/* Check for intermediate gain interpolation */
-	if (gain[0] < gn_qlo){
+	if (gain[0] < gn_qlo) {
 		gain[0] = gn_qlo;
 	}
-	if (gain[0] > gn_qup){
+	if (gain[0] > gn_qup) {
 		gain[0] = gn_qup;
 	}
 
 	/* if (fabs(gain[1] - prev_gain) < GAIN_INT_DB &&
-		 fabs(gain[0] - 0.5*(gain[1]+prev_gain)) < 3.0) */
+	   fabs(gain[0] - 0.5*(gain[1]+prev_gain)) < 3.0) */
 	temp = add(shr(gain[1], 1), shr(prev_gain, 1));
 	if (abs_s(sub(gain[1], prev_gain)) < GAIN_INT_DB_Q8 &&
-		abs_s(sub(gain[0], temp)) < THREE_Q8){
+	    abs_s(sub(gain[0], temp)) < THREE_Q8) {
 
 		/* interpolate and set special code */
 		/* gain[0] = 0.5*(gain[1] + prev_gain); */
@@ -678,7 +665,7 @@ void q_gain(Shortword *gain, Shortword *gain_index, Shortword gn_qlo,
 	} else {
 
 		/* Code intermediate gain with 7-levels */
-		if (prev_gain < gain[1]){
+		if (prev_gain < gain[1]) {
 			temp = prev_gain;
 			temp2 = gain[1];
 		} else {
@@ -687,13 +674,14 @@ void q_gain(Shortword *gain, Shortword *gain_index, Shortword gn_qlo,
 		}
 		temp = sub(temp, SIX_Q8);
 		temp2 = add(temp2, SIX_Q8);
-		if (temp < gn_qlo){
+		if (temp < gn_qlo) {
 			temp = gn_qlo;
 		}
-		if (temp2 > gn_qup){
+		if (temp2 > gn_qup) {
 			temp2 = gn_qup;
 		}
-		quant_u(&gain[0], &gain_index[0], temp, temp2, 6, SIX_Q12, 0, 3);
+		quant_u(&gain[0], &gain_index[0], temp, temp2, 6, SIX_Q12, 0,
+			3);
 
 		/* Skip all-zero code */
 		gain_index[0] = add(gain_index[0], 1);
@@ -703,26 +691,24 @@ void q_gain(Shortword *gain, Shortword *gain_index, Shortword gn_qlo,
 	prev_gain = gain[1];
 }
 
-
-void q_gain_dec(Shortword *gain, Shortword *gain_index, Shortword gn_qlo,
-				Shortword gn_qup, Shortword gn_qlev_q, Shortword scale)
+void q_gain_dec(Shortword * gain, Shortword * gain_index, Shortword gn_qlo,
+		Shortword gn_qup, Shortword gn_qlev_q, Shortword scale)
 {
-	static Shortword	prev_gain = 0;
-	static BOOLEAN	prev_gain_err = FALSE;
-	Shortword	temp, temp2;
-
+	static Shortword prev_gain = 0;
+	static BOOLEAN prev_gain_err = FALSE;
+	Shortword temp, temp2;
 
 	/* Decode second gain term */
 	quant_u_dec(gain_index[1], &gain[1], gn_qlo, gn_qup, gn_qlev_q, scale);
 
-	if (gain_index[0] == 0){
+	if (gain_index[0] == 0) {
 
 		/* interpolation bit code for intermediate gain */
 		temp = sub(gain[1], prev_gain);
 		temp = abs_s(temp);
-		if (temp > GAIN_INT_DB_Q8){
+		if (temp > GAIN_INT_DB_Q8) {
 			/* Invalid received data (bit error) */
-			if (!prev_gain_err){
+			if (!prev_gain_err) {
 				/* First time: don't allow gain excursion */
 				gain[1] = prev_gain;
 			}
@@ -736,7 +722,7 @@ void q_gain_dec(Shortword *gain, Shortword *gain_index, Shortword gn_qlo,
 	} else {
 		/* Decode 7-bit quantizer for first gain term */
 		prev_gain_err = FALSE;
-		if (prev_gain < gain[1]){
+		if (prev_gain < gain[1]) {
 			temp = prev_gain;
 			temp2 = gain[1];
 		} else {
@@ -753,13 +739,13 @@ void q_gain_dec(Shortword *gain, Shortword *gain_index, Shortword gn_qlo,
 		/* Previously we subtract 1 from gain_index[0] in this function. */
 		/* Now to incorporate the transcoder, we want to avoid changing  */
 		/* gain_index[0] in this function.                               */
-		quant_u_dec(sub(gain_index[0], 1), &gain[0], temp, temp2, SIX_Q12, 3);
+		quant_u_dec(sub(gain_index[0], 1), &gain[0], temp, temp2,
+			    SIX_Q12, 3);
 	}
 
 	/* Update previous gain for next time */
 	prev_gain = gain[1];
 }
-
 
 /* Name: scale_adj.c                                                          */
 /*	Description: Adjust scaling of output speech signal.                      */
@@ -779,17 +765,16 @@ void q_gain_dec(Shortword *gain, Shortword *gain_index, Shortword gn_qlo,
 /*	*speech - Q0                                                              */
 /*	gain - Q12                                                                */
 
-void scale_adj(Shortword *speech, Shortword gain, Shortword length,
-			   Shortword scale_over, Shortword inv_scale_over)
+void scale_adj(Shortword * speech, Shortword gain, Shortword length,
+	       Shortword scale_over, Shortword inv_scale_over)
 {
-	static Shortword	prev_scale;             /* Previous scale factor, Q13 */
-	register Shortword	i;
-	Shortword	scale, shift, log_magsq, log_length;
-	Shortword	temp;
-	Shortword	*tempbuf;
-	Longword	L_magsq, L_length, interp1, interp2;
-	Longword	L_temp;
-
+	static Shortword prev_scale;	/* Previous scale factor, Q13 */
+	register Shortword i;
+	Shortword scale, shift, log_magsq, log_length;
+	Shortword temp;
+	Shortword *tempbuf;
+	Longword L_magsq, L_length, interp1, interp2;
+	Longword L_temp;
 
 	/* Calculate desired scaling factor to match gain level */
 	/* scale = gain / (sqrt(v_magsq(&speech[0],length) / length) + .01); */
@@ -800,7 +785,7 @@ void scale_adj(Shortword *speech, Shortword gain, Shortword length,
 	v_equ_shr(tempbuf, speech, shift, length);
 	L_magsq = L_v_magsq(tempbuf, length, 0, 1);
 
-	if (L_magsq){
+	if (L_magsq) {
 		/* normalize with 1 bit of headroom */
 		temp = norm_l(L_magsq);
 		temp = sub(temp, 1);
@@ -811,13 +796,13 @@ void scale_adj(Shortword *speech, Shortword gain, Shortword length,
 	v_equ_shr(tempbuf, speech, shift, length);
 
 	/* exp = log(2^shift) */
-	shift = shl(shift, 1);                    /* total compensation = shift*2 */
+	shift = shl(shift, 1);	/* total compensation = shift*2 */
 	temp = shl(ONE_Q8, shift);
-	shift = log10_fxp(temp, 8);                               /* shift in Q12 */
+	shift = log10_fxp(temp, 8);	/* shift in Q12 */
 
 	L_magsq = L_v_magsq(tempbuf, length, 0, 0);
-	L_magsq = L_add(L_magsq, 1);                /* ensure L_magsq is not zero */
-	log_magsq = L_log10_fxp(L_magsq, 0);                  /* log_magsq in Q11 */
+	L_magsq = L_add(L_magsq, 1);	/* ensure L_magsq is not zero */
+	log_magsq = L_log10_fxp(L_magsq, 0);	/* log_magsq in Q11 */
 	/* L_magsq = log_magsq in Q12 */
 	L_magsq = L_deposit_l(log_magsq);
 	L_magsq = L_shl(L_magsq, 1);
@@ -827,48 +812,48 @@ void scale_adj(Shortword *speech, Shortword gain, Shortword length,
 	L_magsq = L_add(L_magsq, L_temp);
 
 	temp = shl(length, 7);
-	log_length = log10_fxp(temp, 7);                     /* log_length in Q12 */
+	log_length = log10_fxp(temp, 7);	/* log_length in Q12 */
 	/* L_length = log_length/2 in Q13 */
 	L_length = L_deposit_l(log_length);
 
 	L_temp = L_deposit_l(gain);
-	L_temp = L_shl(L_temp, 1);                               /* L_temp in Q13 */
+	L_temp = L_shl(L_temp, 1);	/* L_temp in Q13 */
 	L_temp = L_sub(L_temp, L_magsq);
 	L_temp = L_add(L_temp, L_length);
-	L_temp = L_shr(L_temp, 1);                                  /* Q13 -> Q12 */
-	temp = extract_l(L_temp);                                  /* temp in Q12 */
+	L_temp = L_shr(L_temp, 1);	/* Q13 -> Q12 */
+	temp = extract_l(L_temp);	/* temp in Q12 */
 	scale = pow10_fxp(temp, 13);
 
 	/* interpolate scale factors for first scale_over points */
-	for (i = 1; i < scale_over; i++){
+	for (i = 1; i < scale_over; i++) {
 		/* speech[i-1] *= ((scale*i + prev_scale*(scale_over - i))
-									  * (1.0/scale_over)); */
+		 * (1.0/scale_over)); */
 		temp = sub(scale_over, i);
 		temp = shl(temp, 11);
-		L_temp = L_mult(temp, inv_scale_over);               /* L_temp in Q30 */
-		L_temp = L_shl(L_temp, 1);                           /* L_temp in Q31 */
-		temp = extract_h(L_temp);                              /* temp in Q15 */
-		interp1 = L_mult(prev_scale, temp);                /* interp1 in Q29 */
+		L_temp = L_mult(temp, inv_scale_over);	/* L_temp in Q30 */
+		L_temp = L_shl(L_temp, 1);	/* L_temp in Q31 */
+		temp = extract_h(L_temp);	/* temp in Q15 */
+		interp1 = L_mult(prev_scale, temp);	/* interp1 in Q29 */
 
 		temp = shl(i, 11);
-		L_temp = L_mult(temp, inv_scale_over);               /* L_temp in Q30 */
-		L_temp = L_shl(L_temp, 1);                           /* L_temp in Q31 */
-		temp = extract_h(L_temp);                              /* temp in Q15 */
-		interp2 = L_mult(scale, temp);                      /* interp2 in Q29 */
+		L_temp = L_mult(temp, inv_scale_over);	/* L_temp in Q30 */
+		L_temp = L_shl(L_temp, 1);	/* L_temp in Q31 */
+		temp = extract_h(L_temp);	/* temp in Q15 */
+		interp2 = L_mult(scale, temp);	/* interp2 in Q29 */
 		L_temp = L_add(interp1, interp2);
-		interp1 = extract_h(L_temp);                        /* interp1 in Q13 */
+		interp1 = extract_h(L_temp);	/* interp1 in Q13 */
 
 		L_temp = L_mult(speech[i - 1], (Shortword) interp1);
 		L_temp = L_shl(L_temp, 2);
-		speech[i-1] = extract_h(L_temp);
+		speech[i - 1] = extract_h(L_temp);
 	}
 
 	/* Scale rest of signal */
-	v_scale_shl(&speech[scale_over - 1], scale, (Shortword) (length - scale_over + 1), 2);
+	v_scale_shl(&speech[scale_over - 1], scale,
+		    (Shortword) (length - scale_over + 1), 2);
 
 	/* Update previous scale factor for next call */
 	prev_scale = scale;
 
 	v_free(tempbuf);
 }
-

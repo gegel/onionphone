@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -34,11 +36,9 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _FS_LIB_H_
 #define _FS_LIB_H_
 
+void find_harm(Shortword input[], Shortword fsmag[], Shortword pitch,
+	       Shortword num_harm, Shortword length);
 
-void	find_harm(Shortword input[], Shortword fsmag[], Shortword pitch,
-				  Shortword num_harm, Shortword length);
-
-void	idft_real(Shortword real[], Shortword signal[], Shortword length);
-
+void idft_real(Shortword real[], Shortword signal[], Shortword length);
 
 #endif

@@ -1,11 +1,13 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* ================================================================== */
-/*                                                                    */ 
+/*                                                                    */
 /*    Microsoft Speech coder     ANSI-C Source Code                   */
 /*    SC1200 1200 bps speech coder                                    */
 /*    Fixed Point Implementation      Version 7.0                     */
 /*    Copyright (C) 2000, Microsoft Corp.                             */
 /*    All rights reserved.                                            */
-/*                                                                    */ 
+/*                                                                    */
 /* ================================================================== */
 
 /*
@@ -65,42 +67,40 @@ Secretariat fax: +33 493 65 47 16.
 
 #define BWFACT_Q15			32571
 
-#define HF_CORR_Q15			4                       /* 0.0001220703125 in Q15 */
+#define HF_CORR_Q15			4	/* 0.0001220703125 in Q15 */
 
-#define PEAK_THRESH_Q12		5488                          /* 1.34 * (1 << 12) */
-#define PEAK_THR2_Q12		6553                           /* 1.6 * (1 << 12) */
-#define SILENCE_DB_Q8		7680                           /* 30.0 * (1 << 8) */
-#define SIG_LENGTH			(LPF_ORD + PITCH_FR) /* 327 */
+#define PEAK_THRESH_Q12		5488	/* 1.34 * (1 << 12) */
+#define PEAK_THR2_Q12		6553	/* 1.6 * (1 << 12) */
+#define SILENCE_DB_Q8		7680	/* 30.0 * (1 << 8) */
+#define SIG_LENGTH			(LPF_ORD + PITCH_FR)	/* 327 */
 
-#define X01_Q15				3277                           /* 0.1 * (1 << 15) */
-#define X03_Q11				614                            /* 0.3 * (1 << 11) */
-#define X04_Q14				6554                           /* 0.4 * (1 << 14) */
-#define X045_Q14			7273                          /* 0.45 * (1 << 14) */
-#define X05_Q11				1024                           /* 0.5 * (1 << 11) */
-#define X07_Q14				11469                          /* 0.7 * (1 << 11) */
-#define X08_Q11				1638                           /* 0.8 * (1 << 11) */
-#define X12_Q11				2458                           /* 1.2 * (1 << 11) */
-#define X28_Q11				5734                           /* 2.8 * (1 << 11) */
-#define MX01_Q15			-3277                         /* -0.1 * (1 << 15) */
-#define MX02_Q15			-6554                         /* -0.2 * (1 << 15) */
-
+#define X01_Q15				3277	/* 0.1 * (1 << 15) */
+#define X03_Q11				614	/* 0.3 * (1 << 11) */
+#define X04_Q14				6554	/* 0.4 * (1 << 14) */
+#define X045_Q14			7273	/* 0.45 * (1 << 14) */
+#define X05_Q11				1024	/* 0.5 * (1 << 11) */
+#define X07_Q14				11469	/* 0.7 * (1 << 11) */
+#define X08_Q11				1638	/* 0.8 * (1 << 11) */
+#define X12_Q11				2458	/* 1.2 * (1 << 11) */
+#define X28_Q11				5734	/* 2.8 * (1 << 11) */
+#define MX01_Q15			-3277	/* -0.1 * (1 << 15) */
+#define MX02_Q15			-6554	/* -0.2 * (1 << 15) */
 
 /* memory definitions */
 
 static Shortword sigbuf[SIG_LENGTH];
-static classParam classStat[TRACK_NUM];                 /* class of subframes */
-static pitTrackParam pitTrack[TRACK_NUM];               /* pitch of subframes */
+static classParam classStat[TRACK_NUM];	/* class of subframes */
+static pitTrackParam pitTrack[TRACK_NUM];	/* pitch of subframes */
 
-Shortword	top_lpc[LPC_ORD];
+Shortword top_lpc[LPC_ORD];
 
 /* Prototype */
 
-static void		melp_ana(Shortword sp_in[], struct melp_param *par,
-						 Shortword subnum);
-void		sc_ana(struct melp_param *par);
-static BOOLEAN	subenergyRelation1(classParam classStat[], Shortword curTrack);
-static BOOLEAN	subenergyRelation2(classParam classStat[], Shortword curTrack);
-
+static void melp_ana(Shortword sp_in[], struct melp_param *par,
+		     Shortword subnum);
+void sc_ana(struct melp_param *par);
+static BOOLEAN subenergyRelation1(classParam classStat[], Shortword curTrack);
+static BOOLEAN subenergyRelation2(classParam classStat[], Shortword curTrack);
 
 /****************************************************************************
 **
@@ -118,15 +118,14 @@ static BOOLEAN	subenergyRelation2(classParam classStat[], Shortword curTrack);
 *****************************************************************************/
 void analysis(Shortword sp_in[], struct melp_param *par)
 {
-	register Shortword	i;
-	Shortword	lpc[LPC_ORD + 1], weights[LPC_ORD];
-	Shortword	num_frames;
-
+	register Shortword i;
+	Shortword lpc[LPC_ORD + 1], weights[LPC_ORD];
+	Shortword num_frames;
 
 	num_frames = (Shortword) ((rate == RATE2400) ? 1 : NF);
 
 	/* ======== Compute melp parameters ======== */
-	for (i = 0; i < num_frames; i++){
+	for (i = 0; i < num_frames; i++) {
 
 		/* Remove DC from input speech */
 
@@ -142,13 +141,13 @@ void analysis(Shortword sp_in[], struct melp_param *par)
 		/* (Q13) we use for RATE 2400.                                        */
 
 		if (rate == RATE2400)
-			dc_rmv(&sp_in[i*FRAME], &hpspeech[OLD_IN_BEG], dcdelin, 
-										dcdelout_hi, dcdelout_lo, FRAME);
+			dc_rmv(&sp_in[i * FRAME], &hpspeech[OLD_IN_BEG],
+			       dcdelin, dcdelout_hi, dcdelout_lo, FRAME);
 		else
-			dc_rmv(&sp_in[i*FRAME], &hpspeech[IN_BEG + i*FRAME], dcdelin, 
-										dcdelout_hi, dcdelout_lo, FRAME);
+			dc_rmv(&sp_in[i * FRAME], &hpspeech[IN_BEG + i * FRAME],
+			       dcdelin, dcdelout_hi, dcdelout_lo, FRAME);
 
-		melp_ana(&hpspeech[i*FRAME], &par[i], i);
+		melp_ana(&hpspeech[i * FRAME], &par[i], i);
 	}
 
 	/* ---- New routine to refine the parameters for block ---- */
@@ -159,16 +158,17 @@ void analysis(Shortword sp_in[], struct melp_param *par)
 	/* ======== Quantization ======== */
 
 	lpc[0] = ONE_Q12;
-	if (rate == RATE2400){
+	if (rate == RATE2400) {
 		/* -- Quantize MELP parameters to 2400 bps and generate bitstream --  */
 
 		/* Quantize LSF's with MSVQ */
 		v_equ(&(lpc[1]), top_lpc, LPC_ORD);
 		vq_lspw(weights, par->lsf, &(lpc[1]), LPC_ORD);
 
-		/*	msvq_enc(par->lsf, weights, par->lsf, vq_par); */
+		/*      msvq_enc(par->lsf, weights, par->lsf, vq_par); */
 		vq_ms4(msvq_cb, par->lsf, msvq_cb_mean, msvq_levels, MSVQ_M, 4,
-			   LPC_ORD, weights, par->lsf, quant_par.msvq_index, MSVQ_MAXCNT);
+		       LPC_ORD, weights, par->lsf, quant_par.msvq_index,
+		       MSVQ_MAXCNT);
 
 		/* Force minimum LSF bandwidth (separation) */
 		lpc_clamp(par->lsf, BWMIN_Q15, LPC_ORD);
@@ -176,27 +176,27 @@ void analysis(Shortword sp_in[], struct melp_param *par)
 	} else
 		lsf_vq(par);
 
-	if (rate == RATE2400){
+	if (rate == RATE2400) {
 		/* Quantize logarithmic pitch period */
 		/* Reserve all zero code for completely unvoiced */
-		par->pitch = log10_fxp(par->pitch, 7);           /* par->pitch in Q12 */
+		par->pitch = log10_fxp(par->pitch, 7);	/* par->pitch in Q12 */
 		quant_u(&par->pitch, &(quant_par.pitch_index), PIT_QLO_Q12,
-				PIT_QUP_Q12, PIT_QLEV_M1, PIT_QLEV_M1_Q8, 1, 7);
+			PIT_QUP_Q12, PIT_QLEV_M1, PIT_QLEV_M1_Q8, 1, 7);
 		/* convert pitch back to linear in Q7 */
 		par->pitch = pow10_fxp(par->pitch, 7);
 	} else
 		pitch_vq(par);
 
-	if (rate == RATE2400){
+	if (rate == RATE2400) {
 		/* Quantize gain terms with uniform log quantizer   */
 		q_gain(par->gain, quant_par.gain_index, GN_QLO_Q8, GN_QUP_Q8,
-			   GN_QLEV_M1, GN_QLEV_M1_Q10, 0, 5);
+		       GN_QLEV_M1, GN_QLEV_M1_Q10, 0, 5);
 	} else
 		gain_vq(par);
 
-	if (rate == RATE2400){                                 /* Quantize jitter */
-		/*	quant_u(&par->jitter, &par->jit_index, 0, MAX_JITTER_Q15, 2);     */
-		if (par->jitter < shr(MAX_JITTER_Q15, 1)){
+	if (rate == RATE2400) {	/* Quantize jitter */
+		/*      quant_u(&par->jitter, &par->jit_index, 0, MAX_JITTER_Q15, 2);     */
+		if (par->jitter < shr(MAX_JITTER_Q15, 1)) {
 			par->jitter = 0;
 			quant_par.jit_index[0] = 0;
 		} else {
@@ -206,13 +206,13 @@ void analysis(Shortword sp_in[], struct melp_param *par)
 	} else {
 		for (i = 0; i < NF; i++)
 			quant_u(&par[i].jitter, &(quant_par.jit_index[i]), 0,
-					MAX_JITTER_Q15, 2, ONE_Q15, 1, 7);
+				MAX_JITTER_Q15, 2, ONE_Q15, 1, 7);
 	}
 
 	/* Quantize bandpass voicing */
 	if (rate == RATE2400)
-		par[0].uv_flag = q_bpvc(par[0].bpvc, &(quant_par.bpvc_index[0]), 
-																NUM_BANDS);
+		par[0].uv_flag = q_bpvc(par[0].bpvc, &(quant_par.bpvc_index[0]),
+					NUM_BANDS);
 	else
 		quant_bp(par, num_frames);
 
@@ -220,32 +220,33 @@ void analysis(Shortword sp_in[], struct melp_param *par)
 		quant_jitter(par);
 
 	/* Calculate Fourier coeffs of residual from quantized LPC */
-	for (i = 0; i < num_frames; i++){
+	for (i = 0; i < num_frames; i++) {
 
 		/* The following fill() action is believed to be unnecessary. */
 		fill(par[i].fs_mag, ONE_Q13, NUM_HARM);
-		if (!par[i].uv_flag){
+		if (!par[i].uv_flag) {
 			lpc_lsp2pred(par[i].lsf, &(lpc[1]), LPC_ORD);
-			zerflt(&hpspeech[(i*FRAME + FRAME_END - (LPC_FRAME/2))], lpc,
-				   sigbuf, LPC_ORD, LPC_FRAME);
+			zerflt(&hpspeech
+			       [(i * FRAME + FRAME_END - (LPC_FRAME / 2))], lpc,
+			       sigbuf, LPC_ORD, LPC_FRAME);
 			window(sigbuf, win_cof, sigbuf, LPC_FRAME);
 			find_harm(sigbuf, par[i].fs_mag, par[i].pitch, NUM_HARM,
-					  LPC_FRAME);
+				  LPC_FRAME);
 		}
 	}
 
-	if (rate == RATE2400){
+	if (rate == RATE2400) {
 		/* quantize Fourier coefficients */
 		/* pre-weight vector, then use Euclidean distance */
 		window_Q(par->fs_mag, w_fs, par->fs_mag, NUM_HARM, 14);
 
-		/*	fsvq_enc(par->fs_mag, par->fs_mag, fs_vq_par); */
+		/*      fsvq_enc(par->fs_mag, par->fs_mag, fs_vq_par); */
 		/* Later it is found that we do not need the structured variable      */
 		/* fs_vq_par at all.  References to its individual fields can be      */
 		/* replaced directly with constants or other variables.               */
 
 		vq_enc(fsvq_cb, par->fs_mag, FS_LEVELS, NUM_HARM, par->fs_mag,
-			   &(quant_par.fsvq_index));
+		       &(quant_par.fsvq_index));
 	} else
 		quant_fsmag(par);
 
@@ -261,10 +262,9 @@ void analysis(Shortword sp_in[], struct melp_param *par)
 #endif
 
 	/* Update delay buffers for next block */
-	v_equ(hpspeech, &(hpspeech[num_frames*FRAME]), IN_BEG);
+	v_equ(hpspeech, &(hpspeech[num_frames * FRAME]), IN_BEG);
 
 }
-
 
 /* ========================================================================== */
 /*  Name: melp_ana.c                                                          */
@@ -277,26 +277,25 @@ void analysis(Shortword sp_in[], struct melp_param *par)
 /*  Returns: void                                                             */
 /* ========================================================================== */
 
-static void		melp_ana(Shortword speech[], struct melp_param *par,
-						 Shortword subnum)
+static void melp_ana(Shortword speech[], struct melp_param *par,
+		     Shortword subnum)
 {
-	register Shortword	i;
-	static BOOLEAN	firstTime = TRUE;
-	static Shortword	lpfsp_delin[LPF_ORD];
-	static Shortword	lpfsp_delout[LPF_ORD];
-	static Shortword	pitch_avg;
-	static Shortword	fpitch[NUM_PITCHES];
-	Shortword	cur_track, begin;
-	Shortword	sub_pitch;
-	Shortword	temp, dontcare, pcorr;
-	Shortword	auto_corr[EN_FILTER_ORDER], lpc[LPC_ORD + 1];
-	Shortword	section;
-	Shortword	temp_delin[LPF_ORD];
-	Shortword	temp_delout[LPF_ORD];
+	register Shortword i;
+	static BOOLEAN firstTime = TRUE;
+	static Shortword lpfsp_delin[LPF_ORD];
+	static Shortword lpfsp_delout[LPF_ORD];
+	static Shortword pitch_avg;
+	static Shortword fpitch[NUM_PITCHES];
+	Shortword cur_track, begin;
+	Shortword sub_pitch;
+	Shortword temp, dontcare, pcorr;
+	Shortword auto_corr[EN_FILTER_ORDER], lpc[LPC_ORD + 1];
+	Shortword section;
+	Shortword temp_delin[LPF_ORD];
+	Shortword temp_delout[LPF_ORD];
 
-
-	if (firstTime){
-		v_zap(lpfsp_delin, LPF_ORD);      /* Release V2 only use "lpfsp_del". */
+	if (firstTime) {
+		v_zap(lpfsp_delin, LPF_ORD);	/* Release V2 only use "lpfsp_del". */
 		v_zap(lpfsp_delout, LPF_ORD);
 		pitch_avg = DEFAULT_PITCH_Q7;
 		fill(fpitch, DEFAULT_PITCH_Q7, 2);
@@ -323,38 +322,43 @@ static void		melp_ana(Shortword speech[], struct melp_param *par,
 	/* the filter is completely replaced with the RATE2400 filter.            */
 
 	v_equ(&sigbuf[LPF_ORD], &speech[PITCH_BEG], PITCH_FR);
-	for (section = 0; section < LPF_ORD/2; section++){
-		for (i = (Shortword) (section*2); i < (Shortword) (section*2 + 2);
-			 i++){
-			temp_delin[i] = sigbuf[LPF_ORD + FRAME - 1 - i + section*2];
+	for (section = 0; section < LPF_ORD / 2; section++) {
+		for (i = (Shortword) (section * 2);
+		     i < (Shortword) (section * 2 + 2); i++) {
+			temp_delin[i] =
+			    sigbuf[LPF_ORD + FRAME - 1 - i + section * 2];
 		}
-		iir_2nd_s(&sigbuf[LPF_ORD], &lpf_den[section*3], &lpf_num[section*3],
-				  &sigbuf[LPF_ORD], &lpfsp_delin[section*2],
-				  &lpfsp_delout[section*2], FRAME);
-		v_equ(&(temp_delout[2*section]), &(lpfsp_delout[2*section]), 2);
-		iir_2nd_s(&sigbuf[LPF_ORD + FRAME], &lpf_den[section*3],
-				  &lpf_num[section*3], &sigbuf[LPF_ORD + FRAME],
-				  &lpfsp_delin[section*2], &lpfsp_delout[section*2],
-				  PITCH_FR - FRAME);
+		iir_2nd_s(&sigbuf[LPF_ORD], &lpf_den[section * 3],
+			  &lpf_num[section * 3], &sigbuf[LPF_ORD],
+			  &lpfsp_delin[section * 2], &lpfsp_delout[section * 2],
+			  FRAME);
+		v_equ(&(temp_delout[2 * section]), &(lpfsp_delout[2 * section]),
+		      2);
+		iir_2nd_s(&sigbuf[LPF_ORD + FRAME], &lpf_den[section * 3],
+			  &lpf_num[section * 3], &sigbuf[LPF_ORD + FRAME],
+			  &lpfsp_delin[section * 2], &lpfsp_delout[section * 2],
+			  PITCH_FR - FRAME);
 		/* restore delay buffers for the next overlapping frame */
-		v_equ(&(lpfsp_delin[2*section]), &(temp_delin[2*section]), 2);
-		v_equ(&(lpfsp_delout[2*section]), &(temp_delout[2*section]), 2);
+		v_equ(&(lpfsp_delin[2 * section]), &(temp_delin[2 * section]),
+		      2);
+		v_equ(&(lpfsp_delout[2 * section]), &(temp_delout[2 * section]),
+		      2);
 	}
 
 	f_pitch_scale(&sigbuf[LPF_ORD], &sigbuf[LPF_ORD], PITCH_FR);
 
 	/* Perform global pitch search at frame end on lowpass speech signal */
-    /* Note: avoid short pitches due to formant tracking */
-	fpitch[1] = find_pitch(&sigbuf[LPF_ORD + (PITCH_FR/2)], &dontcare,
-						   (2*PITCHMIN), PITCHMAX, PITCHMAX);
-	fpitch[1] = shl(fpitch[1], 7);                            /* fpitch in Q7 */
+	/* Note: avoid short pitches due to formant tracking */
+	fpitch[1] = find_pitch(&sigbuf[LPF_ORD + (PITCH_FR / 2)], &dontcare,
+			       (2 * PITCHMIN), PITCHMAX, PITCHMAX);
+	fpitch[1] = shl(fpitch[1], 7);	/* fpitch in Q7 */
 
 	/* Perform bandpass voicing analysis for end of frame */
 	bpvc_ana(&speech[FRAME_END], fpitch, par->bpvc, &sub_pitch);
 
 	/* Force jitter if lowest band voicing strength is weak */
-	if (par->bpvc[0] < VJIT_Q14)                          /* par->bpvc in Q14 */
-		par->jitter = MAX_JITTER_Q15;                   /* par->jitter in Q15 */
+	if (par->bpvc[0] < VJIT_Q14)	/* par->bpvc in Q14 */
+		par->jitter = MAX_JITTER_Q15;	/* par->jitter in Q15 */
 	else
 		par->jitter = 0;
 
@@ -364,16 +368,17 @@ static void		melp_ana(Shortword speech[], struct melp_param *par,
 	/* entries for computation.  lpc_schur() needs (LPC_ORD + 1) entries.     */
 
 	if (rate == RATE2400)
-		lpc_autocorr(&speech[(FRAME_END - (LPC_FRAME/2))], win_cof, auto_corr,
-					 HF_CORR_Q15, LPC_ORD, LPC_FRAME);
+		lpc_autocorr(&speech[(FRAME_END - (LPC_FRAME / 2))], win_cof,
+			     auto_corr, HF_CORR_Q15, LPC_ORD, LPC_FRAME);
 	else
-		lpc_autocorr(&speech[(FRAME_END - (LPC_FRAME/2))], win_cof, auto_corr,
-					 HF_CORR_Q15, EN_FILTER_ORDER - 1, LPC_FRAME);
+		lpc_autocorr(&speech[(FRAME_END - (LPC_FRAME / 2))], win_cof,
+			     auto_corr, HF_CORR_Q15, EN_FILTER_ORDER - 1,
+			     LPC_FRAME);
 
 	lpc[0] = ONE_Q12;
-	lpc_schur(auto_corr, &(lpc[1]), LPC_ORD);                   /* lpc in Q12 */
+	lpc_schur(auto_corr, &(lpc[1]), LPC_ORD);	/* lpc in Q12 */
 
-	if (rate == RATE2400){             /* Calculate Line Spectral Frequencies */
+	if (rate == RATE2400) {	/* Calculate Line Spectral Frequencies */
 		lpc_pred2lsp(&(lpc[1]), par->lsf, LPC_ORD);
 		v_equ(top_lpc, &(lpc[1]), LPC_ORD);
 	} else {
@@ -386,69 +391,73 @@ static void		melp_ana(Shortword speech[], struct melp_param *par,
 		lpc_clamp(par->lsf, BWMIN_Q15, LPC_ORD);
 	}
 
-
 	/* Calculate LPC residual */
 	zerflt(&speech[PITCH_BEG], lpc, &sigbuf[LPF_ORD], LPC_ORD, PITCH_FR);
 
 	/* Check peakiness of residual signal */
-	begin = LPF_ORD + (PITCHMAX/2);
-	temp = peakiness(&sigbuf[begin], PITCHMAX);                /* temp in Q12 */
+	begin = LPF_ORD + (PITCHMAX / 2);
+	temp = peakiness(&sigbuf[begin], PITCHMAX);	/* temp in Q12 */
 
-	
 	/* Peakiness: force lowest band to be voiced  */
 	if (temp > PEAK_THRESH_Q12)
 		par->bpvc[0] = ONE_Q14;
 
 	/* Extreme peakiness: force second and third bands to be voiced */
-	if (temp > PEAK_THR2_Q12){
+	if (temp > PEAK_THR2_Q12) {
 		par->bpvc[1] = ONE_Q14;
 		par->bpvc[2] = ONE_Q14;
 	}
 
-	if (rate == RATE1200){
+	if (rate == RATE1200) {
 		/* ======== Compute pre-classification and pitch parameters ========  */
 		cur_track = (Shortword) (CUR_TRACK + subnum * PIT_SUBNUM);
-		for (i = 0; i < PIT_SUBNUM; i++){
-			pitchAuto(&speech[FRAME_END + i*PIT_SUBFRAME + PIT_COR_LEN/2],
-					  &pitTrack[cur_track + i + 1],
-					  &classStat[cur_track + i + 1]);
+		for (i = 0; i < PIT_SUBNUM; i++) {
+			pitchAuto(&speech
+				  [FRAME_END + i * PIT_SUBFRAME +
+				   PIT_COR_LEN / 2],
+				  &pitTrack[cur_track + i + 1],
+				  &classStat[cur_track + i + 1]);
 
-			classify(&speech[FRAME_END + i * PIT_SUBFRAME + PIT_SUBFRAME/2],
-					 &classStat[cur_track + i + 1], auto_corr);
+			classify(&speech
+				 [FRAME_END + i * PIT_SUBFRAME +
+				  PIT_SUBFRAME / 2],
+				 &classStat[cur_track + i + 1], auto_corr);
 		}
 	}
 
 	/* Calculate overall frame pitch using lowpass filtered residual */
 	par->pitch = pitch_ana(&speech[FRAME_END], &sigbuf[LPF_ORD + PITCHMAX],
-						   sub_pitch, pitch_avg, &pcorr);
+			       sub_pitch, pitch_avg, &pcorr);
 
 	/* Calculate gain of input speech for each gain subframe */
-	for (i = 0; i < NUM_GAINFR; i++){
-		if (par->bpvc[0] > BPTHRESH_Q14){
+	for (i = 0; i < NUM_GAINFR; i++) {
+		if (par->bpvc[0] > BPTHRESH_Q14) {
 			/* voiced mode: pitch synchronous window length */
 			temp = sub_pitch;
-			par->gain[i] = gain_ana(&speech[FRAME_BEG + (i + 1)*GAINFR],
-									temp, MIN_GAINFR, PITCHMAX_X2);
+			par->gain[i] =
+			    gain_ana(&speech[FRAME_BEG + (i + 1) * GAINFR],
+				     temp, MIN_GAINFR, PITCHMAX_X2);
 		} else {
 			if (rate == RATE2400)
 				temp = (Shortword) GAIN_PITCH_Q7;
 			else
 				temp = (Shortword) 15258;
-                                                  /* (1.33*GAINFR - 0.5) << 7 */
-			par->gain[i] = gain_ana(&speech[FRAME_BEG + (i + 1)*GAINFR],
-									temp, 0, PITCHMAX_X2);
+			/* (1.33*GAINFR - 0.5) << 7 */
+			par->gain[i] =
+			    gain_ana(&speech[FRAME_BEG + (i + 1) * GAINFR],
+				     temp, 0, PITCHMAX_X2);
 		}
 	}
 
 	/* Update average pitch value */
-	if (par->gain[NUM_GAINFR - 1] > SILENCE_DB_Q8)         /* par->gain in Q8 */
+	if (par->gain[NUM_GAINFR - 1] > SILENCE_DB_Q8)	/* par->gain in Q8 */
 		temp = pcorr;
 	else
 		temp = 0;
 	/* pcorr in Q14 */
 	pitch_avg = p_avg_update(par->pitch, temp, VMIN_Q14);
 
-	if (rate == RATE1200){
+	if (rate == RATE1200) {
 		if (par->bpvc[0] > BPTHRESH_Q14)
 			par->uv_flag = FALSE;
 		else
@@ -459,25 +468,22 @@ static void		melp_ana(Shortword speech[], struct melp_param *par,
 	fpitch[0] = fpitch[1];
 }
 
-
-
 /* ======================================= */
 /* melp_ana_init(): perform initialization */
 /* ======================================= */
 
 void melp_ana_init()
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	v_zap(hpspeech, IN_BEG + BLOCK);   /* speech[] is declared IN_BEG + BLOCK */
+	v_zap(hpspeech, IN_BEG + BLOCK);	/* speech[] is declared IN_BEG + BLOCK */
 
 	/* Initialize fixed MSE weighting and inverse of weighting */
 
-	if (!w_fs_init){
+	if (!w_fs_init) {
 		vq_fsw(w_fs, NUM_HARM, X60_Q9);
 		for (i = 0; i < NUM_HARM; i++)
-			w_fs_inv[i] = divide_s(ONE_Q13, w_fs[i]);      /* w_fs_inv in Q14 */
+			w_fs_inv[i] = divide_s(ONE_Q13, w_fs[i]);	/* w_fs_inv in Q14 */
 		w_fs_init = TRUE;
 	}
 
@@ -487,8 +493,8 @@ void melp_ana_init()
 	/* Initialization of the pitch, classification and voicing paramters.  It */
 	/* is believed that the following for loop is not necessary.              */
 
-	for (i = 0; i < TRACK_NUM; i++){
-		fill(pitTrack[i].pit, FIFTY_Q0, NODE); /* !!! (12/10/99) */
+	for (i = 0; i < TRACK_NUM; i++) {
+		fill(pitTrack[i].pit, FIFTY_Q0, NODE);	/* !!! (12/10/99) */
 		fill(pitTrack[i].weight, ONE_Q15, NODE);
 
 		classStat[i].classy = UNVOICED;
@@ -498,7 +504,6 @@ void melp_ana_init()
 		classStat[i].corx = X02_Q15;
 	}
 }
-
 
 /****************************************************************************
 **
@@ -514,37 +519,36 @@ void melp_ana_init()
 **
 *****************************************************************************/
 
-void		sc_ana(struct melp_param *par)
+void sc_ana(struct melp_param *par)
 {
-	register Shortword	i;
-	static Shortword	prev_sbp3;
-	static BOOLEAN		prev_uv = UNVOICED;
-	static Shortword	prev_pitch = FIFTY_Q7;  /* Note that prev_pitch is Q7 */
-                                  /* but it is always an integer in Q7 as the */
-                                  /* former floating point version specifies. */
-	Shortword	pitCand, npitch;                                        /* Q7 */
-	Shortword	bpvc_copy[NUM_BANDS];
-	Shortword	sbp[NF + 1];
-	BOOLEAN		uv[NF + 1];
-	Shortword	curTrack;
-	Shortword	index, index1, index2;
-	Shortword	temp1, temp2;
-	Shortword	w1_w2;                                                 /* Q15 */
-
+	register Shortword i;
+	static Shortword prev_sbp3;
+	static BOOLEAN prev_uv = UNVOICED;
+	static Shortword prev_pitch = FIFTY_Q7;	/* Note that prev_pitch is Q7 */
+	/* but it is always an integer in Q7 as the */
+	/* former floating point version specifies. */
+	Shortword pitCand, npitch;	/* Q7 */
+	Shortword bpvc_copy[NUM_BANDS];
+	Shortword sbp[NF + 1];
+	BOOLEAN uv[NF + 1];
+	Shortword curTrack;
+	Shortword index, index1, index2;
+	Shortword temp1, temp2;
+	Shortword w1_w2;	/* Q15 */
 
 	/* ======== Update silence energy ======== */
-	for (i = 0; i < NF; i++){
+	for (i = 0; i < NF; i++) {
 
 		curTrack = (Shortword) (i * PIT_SUBNUM + CUR_TRACK);
 
 		/* ---- update silence energy ---- */
 		if ((classStat[curTrack].classy == SILENCE) &&
-			(classStat[curTrack - 1].classy == SILENCE)){
-			/*	silenceEn = log10(EN_UP_RATE * pow(10.0, silenceEn) +
-								  (1.0 - EN_UP_RATE) * 
-								  pow(10.0, classStat[curTrack].subEnergy)); */
+		    (classStat[curTrack - 1].classy == SILENCE)) {
+			/*      silenceEn = log10(EN_UP_RATE * pow(10.0, silenceEn) +
+			   (1.0 - EN_UP_RATE) * 
+			   pow(10.0, classStat[curTrack].subEnergy)); */
 			silenceEn = updateEn(silenceEn, EN_UP_RATE_Q15,
-								 classStat[curTrack].subEnergy);
+					     classStat[curTrack].subEnergy);
 		}
 	}
 
@@ -559,61 +563,77 @@ void		sc_ana(struct melp_param *par)
 	else
 		voicedCnt = 0;
 
-	if (!uv[1] && !uv[2] && !uv[3] && !subenergyRelation1(classStat, curTrack)){
+	if (!uv[1] && !uv[2] && !uv[3]
+	    && !subenergyRelation1(classStat, curTrack)) {
 		/* ---- process only voiced frames ---- */
 		/* check if it is offset first */
-		if ((voicedCnt < 2) || subenergyRelation2(classStat, curTrack)){
+		if ((voicedCnt < 2) || subenergyRelation2(classStat, curTrack)) {
 
 			/* Got onset position, should look forward for pitch */
 			pitCand = pitLookahead(&pitTrack[curTrack], 3);
-			if (ratio(par[0].pitch, pitCand) > X015_Q15){
+			if (ratio(par[0].pitch, pitCand) > X015_Q15) {
 				if (ratio(pitCand, par[1].pitch) < X015_Q15)
 					par[0].pitch = pitCand;
-				else if ((ratio(par[1].pitch, par[2].pitch) < X015_Q15) &&
-						 (ratio(par[0].pitch, par[1].pitch) > X015_Q15))
+				else if ((ratio(par[1].pitch, par[2].pitch) <
+					  X015_Q15)
+					 && (ratio(par[0].pitch, par[1].pitch) >
+					     X015_Q15))
 					par[0].pitch = par[1].pitch;
-				else if (ratio(par[0].pitch, par[1].pitch) > X015_Q15)
+				else if (ratio(par[0].pitch, par[1].pitch) >
+					 X015_Q15)
 					par[0].pitch = pitCand;
 			}
-		} else if (!uv[0]){
+		} else if (!uv[0]) {
 			/* not onset not offset, just check pitch smooth */
 			temp1 = sub(par[0].pitch, prev_pitch);
-			index1 = shr(temp1, 7);                                     /* Q0 */
+			index1 = shr(temp1, 7);	/* Q0 */
 			temp2 = sub(par[1].pitch, par[0].pitch);
-			index2 = shr(temp2, 7);                                     /* Q0 */
+			index2 = shr(temp2, 7);	/* Q0 */
 			if ((abs_s(index1) > 5) && (abs_s(index2) > 5) &&
-				(index1 * index2 < 0)){
+			    (index1 * index2 < 0)) {
 				/* here is a pitch jump */
 				pitCand = pitLookahead(&pitTrack[curTrack], 3);
 				if ((ratio(prev_pitch, pitCand) < X015_Q15) ||
-					(ratio(pitCand, par[1].pitch) < X02_Q15))
+				    (ratio(pitCand, par[1].pitch) < X02_Q15))
 					par[0].pitch = pitCand;
 				else {
-					/*	par[0].pitch = (prev_pitch + par[1].pitch)/2; */
+					/*      par[0].pitch = (prev_pitch + par[1].pitch)/2; */
 					temp1 = shr(prev_pitch, 1);
 					temp2 = shr(par[1].pitch, 1);
-					par[0].pitch = add(temp1, temp2);                   /* Q7 */
+					par[0].pitch = add(temp1, temp2);	/* Q7 */
 				}
-			} else if ((ratio(par[0].pitch, prev_pitch) > X015_Q15) &&
-					   ((ratio(par[1].pitch, prev_pitch) < X015_Q15) ||
-						(ratio(par[2].pitch, prev_pitch) < X015_Q15))){
-				index1 = trackPitch(prev_pitch, &pitTrack[curTrack]);
-				pitCand = shl(pitTrack[curTrack].pit[index1], 7); /* !!! (12/10/99) */
-				index2 = trackPitch(par[0].pitch, &pitTrack[curTrack]);
-				w1_w2 = sub(pitTrack[curTrack].weight[index1],
-							pitTrack[curTrack].weight[index2]);
+			} else if ((ratio(par[0].pitch, prev_pitch) > X015_Q15)
+				   &&
+				   ((ratio(par[1].pitch, prev_pitch) < X015_Q15)
+				    || (ratio(par[2].pitch, prev_pitch) <
+					X015_Q15))) {
+				index1 =
+				    trackPitch(prev_pitch, &pitTrack[curTrack]);
+				pitCand = shl(pitTrack[curTrack].pit[index1], 7);	/* !!! (12/10/99) */
+				index2 =
+				    trackPitch(par[0].pitch,
+					       &pitTrack[curTrack]);
+				w1_w2 =
+				    sub(pitTrack[curTrack].weight[index1],
+					pitTrack[curTrack].weight[index2]);
 
-				if (multiCheck(par[0].pitch, pitCand) < X008_Q15){
-					if (((par[0].pitch > pitCand) && (w1_w2 > MX02_Q15)) ||
-						(w1_w2 > X02_Q15))
+				if (multiCheck(par[0].pitch, pitCand) <
+				    X008_Q15) {
+					if (((par[0].pitch > pitCand)
+					     && (w1_w2 > MX02_Q15))
+					    || (w1_w2 > X02_Q15))
 						par[0].pitch = pitCand;
-				} else if (w1_w2 > MX01_Q15){
+				} else if (w1_w2 > MX01_Q15) {
 					par[0].pitch = pitCand;
 				}
-			} else if ((L_ratio(par[0].pitch, (Longword) (prev_pitch*2)) <
-						X008_Q15) ||
-					   (L_ratio(par[0].pitch, (Longword) (prev_pitch*3)) <
-						X008_Q15)){
+			} else
+			    if ((L_ratio
+				 (par[0].pitch,
+				  (Longword) (prev_pitch * 2)) < X008_Q15)
+				||
+				(L_ratio
+				 (par[0].pitch,
+				  (Longword) (prev_pitch * 3)) < X008_Q15)) {
 				/* possible it is a double pitch */
 				pitCand = pitLookahead(&pitTrack[curTrack], 4);
 				if (ratio(pitCand, prev_pitch) < X01_Q15)
@@ -623,33 +643,40 @@ void		sc_ana(struct melp_param *par)
 	}
 
 	/* ======== The second frame ======== */
-	prev_pitch = shl(shr(par[0].pitch, 7), 7);     /* r_ounding to Q7 integer. */
+	prev_pitch = shl(shr(par[0].pitch, 7), 7);	/* r_ounding to Q7 integer. */
 	curTrack = CUR_TRACK + 2;
 	if (!uv[2])
 		voicedCnt++;
 	else
 		voicedCnt = 0;
 
-	if (!uv[2] && !subenergyRelation1(classStat, curTrack)){
-		if ((voicedCnt < 2) || subenergyRelation2(classStat, curTrack)){
+	if (!uv[2] && !subenergyRelation1(classStat, curTrack)) {
+		if ((voicedCnt < 2) || subenergyRelation2(classStat, curTrack)) {
 
 			/* Got onset position, should look forward for pitch */
 			pitCand = pitLookahead(&pitTrack[curTrack], 3);
-			if (ratio(par[1].pitch, pitCand) > X015_Q15){
+			if (ratio(par[1].pitch, pitCand) > X015_Q15) {
 				if (ratio(pitCand, par[2].pitch) < X015_Q15)
 					par[1].pitch = pitCand;
 				else {
-					npitch = pitLookahead(&pitTrack[curTrack + 1], 3);
-					if (ratio(npitch, par[2].pitch) < X015_Q15){
-						if (ratio(pitCand, npitch) < X015_Q15)
+					npitch =
+					    pitLookahead(&pitTrack
+							 [curTrack + 1], 3);
+					if (ratio(npitch, par[2].pitch) <
+					    X015_Q15) {
+						if (ratio(pitCand, npitch) <
+						    X015_Q15)
 							par[1].pitch = pitCand;
-						else if (ratio(par[1].pitch, npitch) > X015_Q15)
+						else if (ratio
+							 (par[1].pitch,
+							  npitch) > X015_Q15)
 							par[1].pitch = npitch;
-					} else if (ratio(pitCand, npitch) < X015_Q15)
+					} else if (ratio(pitCand, npitch) <
+						   X015_Q15)
 						par[1].pitch = pitCand;
 				}
 			}
-		} else if (!uv[1]){
+		} else if (!uv[1]) {
 			/* not onset not offset, just check pitch smooth */
 			temp1 = sub(par[1].pitch, prev_pitch);
 			index1 = shr(temp1, 7);
@@ -657,40 +684,55 @@ void		sc_ana(struct melp_param *par)
 			index2 = shr(temp2, 7);
 			pitCand = pitLookahead(&pitTrack[curTrack], 3);
 			if ((abs_s(index1) > 5) && (abs_s(index2) > 5) &&
-				(index1 * index2 < 0)){
+			    (index1 * index2 < 0)) {
 				/* here is a pitch jump */
 				if ((ratio(prev_pitch, pitCand) < X015_Q15) ||
-					(ratio(pitCand, par[2].pitch) < X02_Q15))
+				    (ratio(pitCand, par[2].pitch) < X02_Q15))
 					par[1].pitch = pitCand;
 				else {
-					/*	par[1].pitch = (prev_pitch + par[2].pitch)/2; */
+					/*      par[1].pitch = (prev_pitch + par[2].pitch)/2; */
 					temp1 = shr(prev_pitch, 1);
 					temp2 = shr(par[2].pitch, 1);
-					par[1].pitch = add(temp1, temp2);                   /* Q7 */
+					par[1].pitch = add(temp1, temp2);	/* Q7 */
 				}
-			} else if ((ratio(par[1].pitch, prev_pitch) > X015_Q15) &&
-					   ((ratio(par[2].pitch, prev_pitch) < X015_Q15) ||
-						(ratio(pitCand, prev_pitch) < X015_Q15))){
+			} else if ((ratio(par[1].pitch, prev_pitch) > X015_Q15)
+				   &&
+				   ((ratio(par[2].pitch, prev_pitch) < X015_Q15)
+				    || (ratio(pitCand, prev_pitch) <
+					X015_Q15))) {
 				if (ratio(pitCand, prev_pitch) < X015_Q15)
 					par[1].pitch = pitCand;
 				else {
-					index1 = trackPitch(prev_pitch, &pitTrack[curTrack]);
-					pitCand = shl(pitTrack[curTrack].pit[index1], 7); /* !!! (12/10/99) */
-					index2 = trackPitch(par[1].pitch, &pitTrack[curTrack]);
-					w1_w2 = sub(pitTrack[curTrack].weight[index1],
-								pitTrack[curTrack].weight[index2]);
+					index1 =
+					    trackPitch(prev_pitch,
+						       &pitTrack[curTrack]);
+					pitCand = shl(pitTrack[curTrack].pit[index1], 7);	/* !!! (12/10/99) */
+					index2 =
+					    trackPitch(par[1].pitch,
+						       &pitTrack[curTrack]);
+					w1_w2 =
+					    sub(pitTrack[curTrack].
+						weight[index1],
+						pitTrack[curTrack].
+						weight[index2]);
 
-					if (multiCheck(par[1].pitch, pitCand) < X008_Q15){
-						if (((par[1].pitch > pitCand) &&
-							 (w1_w2 > MX02_Q15)) || (w1_w2 > X02_Q15))
+					if (multiCheck(par[1].pitch, pitCand) <
+					    X008_Q15) {
+						if (((par[1].pitch > pitCand)
+						     && (w1_w2 > MX02_Q15))
+						    || (w1_w2 > X02_Q15))
 							par[1].pitch = pitCand;
 					} else if (w1_w2 > MX01_Q15)
 						par[1].pitch = pitCand;
 				}
-			} else if ((L_ratio(par[1].pitch, (Longword) (prev_pitch*2)) <
-						X008_Q15) ||
-					   (L_ratio(par[1].pitch, (Longword) (prev_pitch*3)) <
-						X008_Q15)){
+			} else
+			    if ((L_ratio
+				 (par[1].pitch,
+				  (Longword) (prev_pitch * 2)) < X008_Q15)
+				||
+				(L_ratio
+				 (par[1].pitch,
+				  (Longword) (prev_pitch * 3)) < X008_Q15)) {
 				/* possible it is a double pitch */
 				pitCand = pitLookahead(&pitTrack[curTrack], 4);
 				if (ratio(pitCand, prev_pitch) < X01_Q15)
@@ -708,21 +750,22 @@ void		sc_ana(struct melp_param *par)
 		voicedCnt = 0;
 
 	if (!uv[3] && (classStat[curTrack + 1].classy == VOICED) &&
-				  (classStat[curTrack + 2].classy == VOICED) &&
-		!subenergyRelation1(classStat, curTrack)){
-		if ((voicedCnt < 2) ||
-				   subenergyRelation2(classStat, curTrack)){
+	    (classStat[curTrack + 2].classy == VOICED) &&
+	    !subenergyRelation1(classStat, curTrack)) {
+		if ((voicedCnt < 2) || subenergyRelation2(classStat, curTrack)) {
 
 			/* Got onset position, should look forward for pitch */
 			pitCand = pitLookahead(&pitTrack[curTrack], 2);
-			if (ratio(par[2].pitch, pitCand) > X015_Q15){
-				npitch = pitLookahead(&pitTrack[curTrack + 1], 1);
+			if (ratio(par[2].pitch, pitCand) > X015_Q15) {
+				npitch =
+				    pitLookahead(&pitTrack[curTrack + 1], 1);
 				if (ratio(npitch, pitCand) < X015_Q15)
 					par[2].pitch = pitCand;
-				else if (ratio(par[2].pitch, npitch) >= X015_Q15)
+				else if (ratio(par[2].pitch, npitch) >=
+					 X015_Q15)
 					par[2].pitch = npitch;
 			}
-		} else if (!uv[2]){
+		} else if (!uv[2]) {
 			/* not onset not offset, just check pitch smooth */
 			pitCand = pitLookahead(&pitTrack[curTrack], 2);
 			temp1 = sub(par[2].pitch, prev_pitch);
@@ -730,39 +773,62 @@ void		sc_ana(struct melp_param *par)
 			temp2 = sub(pitCand, par[2].pitch);
 			index2 = shr(temp2, 7);
 			if ((abs_s(index1) > 5) && (abs_s(index2) > 5) &&
-				(index1 * index2 < 0)){
+			    (index1 * index2 < 0)) {
 				/* here is a pitch jump */
 				if (ratio(prev_pitch, pitCand) < X015_Q15)
 					par[2].pitch = pitCand;
-				else { 
-					index1 = trackPitch(pitCand, &pitTrack[curTrack]);
-					index2 = trackPitch(par[2].pitch, &pitTrack[curTrack]);
-					w1_w2 = sub(pitTrack[curTrack].weight[index1],
-								pitTrack[curTrack].weight[index2]);
+				else {
+					index1 =
+					    trackPitch(pitCand,
+						       &pitTrack[curTrack]);
+					index2 =
+					    trackPitch(par[2].pitch,
+						       &pitTrack[curTrack]);
+					w1_w2 =
+					    sub(pitTrack[curTrack].
+						weight[index1],
+						pitTrack[curTrack].
+						weight[index2]);
 
-					if (multiCheck(par[2].pitch, pitCand) < X008_Q15){
-						if (((par[2].pitch > pitCand) &&
-							(w1_w2 > MX02_Q15)) || (w1_w2 > X02_Q15))
+					if (multiCheck(par[2].pitch, pitCand) <
+					    X008_Q15) {
+						if (((par[2].pitch > pitCand)
+						     && (w1_w2 > MX02_Q15))
+						    || (w1_w2 > X02_Q15))
 							par[2].pitch = pitCand;
 					} else {
-						index1 = trackPitch(prev_pitch, &pitTrack[curTrack]);
-						pitCand = shl(pitTrack[curTrack].pit[index1], 7); /* !!! (12/10/99) */
+						index1 =
+						    trackPitch(prev_pitch,
+							       &pitTrack
+							       [curTrack]);
+						pitCand = shl(pitTrack[curTrack].pit[index1], 7);	/* !!! (12/10/99) */
 
 						/* Note that w1 = pitTrack[curTrack].weight[index1]   */
 						/* has ben modified from the value outside of the if  */
 						/* condition.                                         */
 
-						w1_w2 = sub(pitTrack[curTrack].weight[index1],
-									pitTrack[curTrack].weight[index2]);
-						if (multiCheck(par[2].pitch, pitCand) < X008_Q15){
-							if (((par[2].pitch > pitCand) &&
-								 (w1_w2 > MX02_Q15)) || (w1_w2 > X02_Q15))
-								par[2].pitch = pitCand;
+						w1_w2 =
+						    sub(pitTrack[curTrack].
+							weight[index1],
+							pitTrack[curTrack].
+							weight[index2]);
+						if (multiCheck
+						    (par[2].pitch,
+						     pitCand) < X008_Q15) {
+							if (((par[2].pitch >
+							      pitCand)
+							     && (w1_w2 >
+								 MX02_Q15))
+							    || (w1_w2 >
+								X02_Q15))
+								par[2].pitch =
+								    pitCand;
 						} else {
-							/*	par[2].pitch = (prev_pitch + pitCand)/2; */
-							temp1 = shr(prev_pitch, 1);
+							/*      par[2].pitch = (prev_pitch + pitCand)/2; */
+							temp1 =
+							    shr(prev_pitch, 1);
 							temp2 = shr(pitCand, 1);
-							par[2].pitch = add(temp1, temp2);           /* Q7 */
+							par[2].pitch = add(temp1, temp2);	/* Q7 */
 						}
 					}
 				}
@@ -773,7 +839,7 @@ void		sc_ana(struct melp_param *par)
 	/* ======== Try smooth voicing information ======== */
 
 	sbp[0] = prev_sbp3;
-	for (i = 0; i < NF; i++){
+	for (i = 0; i < NF; i++) {
 
 		/* Make a copy of par[i].bpvc because the function q_bpvc() will      */
 		/* change them.  Hence we use the copy for q_bpvc().                  */
@@ -799,28 +865,28 @@ void		sc_ana(struct melp_param *par)
 	/* sbp[], more or less we are saying "set par[i].bpvc[] to ONE_Q14" or    */
 	/* "reset par[i].bpvc[] to 0".                                            */
 
-	for (i = 1; i < NF; i++){
-		curTrack = (Shortword) (CUR_TRACK + (i - 1)*2);
-		if ((sbp[i - 1] > 12) && (sbp[i + 1] > 12)){
-			if ((classStat[curTrack].subEnergy > voicedEn - X05_Q11) ||
-				((par[i - 1].bpvc[2] > X05_Q14) &&
-				 (par[i - 1].bpvc[3] > X05_Q14))){
+	for (i = 1; i < NF; i++) {
+		curTrack = (Shortword) (CUR_TRACK + (i - 1) * 2);
+		if ((sbp[i - 1] > 12) && (sbp[i + 1] > 12)) {
+			if ((classStat[curTrack].subEnergy > voicedEn - X05_Q11)
+			    || ((par[i - 1].bpvc[2] > X05_Q14)
+				&& (par[i - 1].bpvc[3] > X05_Q14))) {
 				if (sbp[i] < 12)
 					sbp[i] = 12;
 			} else {
 				if (sbp[i] < 8)
 					sbp[i] = 8;
 			}
-		} else if ((sbp[i - 1] > 8) && (sbp[i + 1] > 8)){
-			if ((classStat[curTrack].subEnergy > voicedEn - ONE_Q11) ||
-				((par[i - 1].bpvc[2] > X04_Q14) &&
-				 (par[i - 1].bpvc[3] > X04_Q14))){
+		} else if ((sbp[i - 1] > 8) && (sbp[i + 1] > 8)) {
+			if ((classStat[curTrack].subEnergy > voicedEn - ONE_Q11)
+			    || ((par[i - 1].bpvc[2] > X04_Q14)
+				&& (par[i - 1].bpvc[3] > X04_Q14))) {
 				if (sbp[i] < 8)
 					sbp[i] = 8;
 			}
-		} else if ((sbp[i - 1] < 8) && (sbp[i + 1] < 8)){
-			if ((classStat[curTrack].subEnergy < voicedEn - X05_Q11) && 
-				(par[i - 1].bpvc[3] < X07_Q14)){
+		} else if ((sbp[i - 1] < 8) && (sbp[i + 1] < 8)) {
+			if ((classStat[curTrack].subEnergy < voicedEn - X05_Q11)
+			    && (par[i - 1].bpvc[3] < X07_Q14)) {
 				if (sbp[i] > 12)
 					sbp[i] = 12;
 			}
@@ -829,19 +895,19 @@ void		sc_ana(struct melp_param *par)
 
 	curTrack = CUR_TRACK + 4;
 	if ((classStat[curTrack].subEnergy > voicedEn - X03_Q11) &&
-		(sbp[2] > 12) && (par[1].bpvc[2] > X05_Q14) &&
-		(par[1].bpvc[3] > X05_Q14)){
+	    (sbp[2] > 12) && (par[1].bpvc[2] > X05_Q14) &&
+	    (par[1].bpvc[3] > X05_Q14)) {
 		if (sbp[3] < 12)
 			sbp[3] = 12;
 	} else if ((classStat[curTrack].subEnergy > voicedEn - X05_Q11) &&
-		(sbp[2] > 8) && (par[1].bpvc[2] > X045_Q14) &&
-		(par[1].bpvc[3] > X045_Q14)){
+		   (sbp[2] > 8) && (par[1].bpvc[2] > X045_Q14) &&
+		   (par[1].bpvc[3] > X045_Q14)) {
 		if (sbp[3] < 8)
 			sbp[3] = 8;
 	}
 
 	/* ======== Depack and save back bpvc information ======== */
-	for (i = 0; i < NF; i++){
+	for (i = 0; i < NF; i++) {
 		/* sbp[i + 1] and it can only be 0, 8, 12, 15 or -1, and it is never  */
 		/* INVALID_BPVC (== 1).  On the other hand, we can call q_bpvc_dec()  */
 		/* with its uv_flag input argument passed in as FALSE, so par[i].bpvc */
@@ -856,23 +922,23 @@ void		sc_ana(struct melp_param *par)
 	prev_sbp3 = sbp[3];
 
 	/* ======== Update voiced and unvoiced counters ======== */
-	for (i = 0; i < NF; i++){
+	for (i = 0; i < NF; i++) {
 		curTrack = (Shortword) (i * PIT_SUBNUM + CUR_TRACK);
 
 		/* ---- update voiced energy ---- */
-		if (voicedCnt > 2){
-			/*	voicedEn = log10(EN_UP_RATE * pow(10.0, voicedEn) +
-								 (1.0 - EN_UP_RATE) * 
-								 pow(10.0, classStat[curTrack].subEnergy)); */
+		if (voicedCnt > 2) {
+			/*      voicedEn = log10(EN_UP_RATE * pow(10.0, voicedEn) +
+			   (1.0 - EN_UP_RATE) * 
+			   pow(10.0, classStat[curTrack].subEnergy)); */
 			voicedEn = updateEn(voicedEn, EN_UP_RATE_Q15,
-								classStat[curTrack].subEnergy);
+					    classStat[curTrack].subEnergy);
 		}
 		if (voicedEn < classStat[curTrack].subEnergy)
 			voicedEn = classStat[curTrack].subEnergy;
 	}
 
 	/* ======== Update class and pitch structures ======== */
-	for (i = 0; i < TRACK_NUM - NF*PIT_SUBNUM; i++){
+	for (i = 0; i < TRACK_NUM - NF * PIT_SUBNUM; i++) {
 		classStat[i] = classStat[i + NF * PIT_SUBNUM];
 		pitTrack[i] = pitTrack[i + NF * PIT_SUBNUM];
 	}
@@ -886,12 +952,10 @@ void		sc_ana(struct melp_param *par)
 	prev_pitch = shl(shr(par[NF - 1].pitch, 7), 7);
 }
 
-
-static BOOLEAN	subenergyRelation1(classParam classStat[], Shortword curTrack)
+static BOOLEAN subenergyRelation1(classParam classStat[], Shortword curTrack)
 {
-	BOOLEAN		result;
-	Shortword	prevg, lastg, orig, nextg, futureg;                    /* Q11 */
-
+	BOOLEAN result;
+	Shortword prevg, lastg, orig, nextg, futureg;	/* Q11 */
 
 	prevg = classStat[curTrack - 2].subEnergy;
 	lastg = classStat[curTrack - 1].subEnergy;
@@ -900,27 +964,23 @@ static BOOLEAN	subenergyRelation1(classParam classStat[], Shortword curTrack)
 	futureg = classStat[curTrack + 2].subEnergy;
 
 	result = (BOOLEAN)
-			 (((lastg - prevg < X05_Q11) && (orig - lastg < X05_Q11) &&
-			  (nextg - orig < X05_Q11) &&
-			  ((prevg - lastg > X12_Q11) || (lastg - orig > X12_Q11) ||
-			   (orig - nextg > X12_Q11))) ||
+	    (((lastg - prevg < X05_Q11) && (orig - lastg < X05_Q11) &&
+	      (nextg - orig < X05_Q11) &&
+	      ((prevg - lastg > X12_Q11) || (lastg - orig > X12_Q11) ||
+	       (orig - nextg > X12_Q11))) ||
+	     ((orig - lastg < X03_Q11) && (nextg - orig < X03_Q11) &&
+	      (((lastg - prevg < X03_Q11) &&
+		((prevg - orig > X08_Q11) || (lastg - nextg > X08_Q11))) ||
+	       ((futureg - nextg < X03_Q11) &&
+		((lastg - nextg > X08_Q11) || (orig - futureg > X08_Q11))))));
 
-			 ((orig - lastg < X03_Q11) && (nextg - orig < X03_Q11) &&
-              (((lastg - prevg < X03_Q11) &&
-			    ((prevg - orig > X08_Q11) || (lastg - nextg > X08_Q11))) ||
-
-			   ((futureg - nextg < X03_Q11) &&
-			    ((lastg - nextg > X08_Q11) || (orig - futureg > X08_Q11))))));
-
-	return(result);
+	return (result);
 }
 
-
-static BOOLEAN  subenergyRelation2(classParam classStat[], Shortword curTrack)
+static BOOLEAN subenergyRelation2(classParam classStat[], Shortword curTrack)
 {
-    BOOLEAN     result;
-	Shortword	prevg, lastg, orig, nextg, futureg;                    /* Q11 */
-
+	BOOLEAN result;
+	Shortword prevg, lastg, orig, nextg, futureg;	/* Q11 */
 
 	prevg = classStat[curTrack - 2].subEnergy;
 	lastg = classStat[curTrack - 1].subEnergy;
@@ -929,18 +989,15 @@ static BOOLEAN  subenergyRelation2(classParam classStat[], Shortword curTrack)
 	futureg = classStat[curTrack + 2].subEnergy;
 
 	result = (BOOLEAN)
-			 (((lastg - orig < X03_Q11) && (orig - nextg < X03_Q11) &&
-			  (((prevg - lastg < X03_Q11) &&
-			    ((orig - prevg > X08_Q11) || (nextg - lastg > X08_Q11))) ||
+	    (((lastg - orig < X03_Q11) && (orig - nextg < X03_Q11) &&
+	      (((prevg - lastg < X03_Q11) &&
+		((orig - prevg > X08_Q11) || (nextg - lastg > X08_Q11))) ||
+	       ((nextg - futureg < X03_Q11) &&
+		((nextg - lastg > X08_Q11) || (futureg - orig > X08_Q11))))) ||
+	     ((prevg - lastg < X05_Q11) && (lastg - orig < X05_Q11) &&
+	      (orig - nextg < X05_Q11) &&
+	      ((lastg - prevg > X12_Q11) || (orig - lastg > X12_Q11) ||
+	       (nextg - orig > X12_Q11))));
 
-			   ((nextg - futureg < X03_Q11) &&
-			    ((nextg - lastg > X08_Q11) || (futureg - orig > X08_Q11))))) ||
-
-			 ((prevg - lastg < X05_Q11) && (lastg - orig < X05_Q11) &&
-			  (orig - nextg < X05_Q11) &&
-			  ((lastg - prevg > X12_Q11) || (orig - lastg > X12_Q11) ||
-			   (nextg - orig > X12_Q11))));
-
-    return(result);
+	return (result);
 }
-
