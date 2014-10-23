@@ -161,7 +161,7 @@ int mf_fec_decode(struct mf_melp_param *par,int erase)
 	    mf_vgetbits(mf_codewd74,par->msvq_index[0],2,3);
 	    mf_codewd74[3] = 0;
 	    mf_vgetbits(&mf_codewd74[4],par->fsvq_index[0],7,3);
-	    berr_pos=mf_sbc_dec(mf_codewd74,7,4,&mf_pmat74[0][0],mf_syntab74);
+	    mf_sbc_dec(mf_codewd74,7,4,&mf_pmat74[0][0],mf_syntab74);
 	    par->msvq_index[0]=mf_vsetbits(par->msvq_index[0],2,3,mf_codewd74);
 /*
 ** Decode 4 MSB of second gain index using (7,4) Hamming code; parity bits in
@@ -169,7 +169,7 @@ int mf_fec_decode(struct mf_melp_param *par,int erase)
 */
 	    mf_vgetbits(mf_codewd74,par->gain_index[1],4,4);
 	    mf_vgetbits(&mf_codewd74[4],par->fsvq_index[0],4,3);
-	    berr_pos=mf_sbc_dec(mf_codewd74,7,4,&mf_pmat74[0][0],mf_syntab74);
+	    mf_sbc_dec(mf_codewd74,7,4,&mf_pmat74[0][0],mf_syntab74);
 	    par->gain_index[1]=mf_vsetbits(par->gain_index[1],4,4,mf_codewd74);
 /*
 ** Decode LSB of second gain index, first gain index using (7,4) Hamming code;
@@ -180,7 +180,7 @@ int mf_fec_decode(struct mf_melp_param *par,int erase)
 	    mf_vgetbits(&mf_codewd74[1],par->gain_index[0],2,3);
 	    mf_vgetbits(&mf_codewd74[4],par->fsvq_index[0],1,2);
 	    mf_vgetbits(&mf_codewd74[6],par->jit_index,0,1);
-	    berr_pos=mf_sbc_dec(mf_codewd74,7,4,&mf_pmat74[0][0],mf_syntab74);
+	    mf_sbc_dec(mf_codewd74,7,4,&mf_pmat74[0][0],mf_syntab74);
 	    par->gain_index[1]=mf_vsetbits(par->gain_index[1],0,1,mf_codewd74);
 	    par->gain_index[0]=mf_vsetbits(par->gain_index[0],2,3,&mf_codewd74[1]);
 	    par->jit_index = 1;

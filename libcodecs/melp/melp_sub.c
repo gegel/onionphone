@@ -111,7 +111,7 @@ void mf_bpvc_ana(float mf_speech[], float mf_fpitch[], float bpvc[], float pitch
 	       BPF_ORD,mf_PIT_P_FR);
 	
 	/* Check correlations for each frame */
-	temp = mf_frac_pch(&mf_sigbuf[mf_FIRST_CNTR],
+	mf_frac_pch(&mf_sigbuf[mf_FIRST_CNTR],
 			&bpvc[j],*pitch,0,mf_PITCHMIN,mf_PITCHMAX,mf_LMIN);
 
 	/* Calculate mf_envelope of bandpass filtered input mf_speech */
@@ -122,7 +122,7 @@ void mf_bpvc_ana(float mf_speech[], float mf_fpitch[], float bpvc[], float pitch
 	mf_v_equ(&mf_envdel[j][0],&mf_sigbuf[mf_PIT_BEG+mf_FRAME-ENV_ORD],ENV_ORD);
 	
 	/* Check correlations for each frame */
-	temp = mf_frac_pch(&mf_sigbuf[mf_FIRST_CNTR],&pcorr,
+	mf_frac_pch(&mf_sigbuf[mf_FIRST_CNTR],&pcorr,
 			*pitch,0,mf_PITCHMIN,mf_PITCHMAX,mf_LMIN);
 					
 	/* reduce mf_envelope correlation */

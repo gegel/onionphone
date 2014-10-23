@@ -93,7 +93,7 @@ void mf_double_ver(float sig_in[], float *pcorr, float pitch, int pmin, int pmax
 
     if (mult > 1) {
 	temp_pit = pitch * mult;
-	temp_pit = mf_frac_pch(sig_in,&corr,temp_pit,0,pmin,pmax,lmin);
+	mf_frac_pch(sig_in,&corr,temp_pit,0,pmin,pmax,lmin);
     
 	/* use smaller of two correlation values */
 	if (corr < *pcorr)

@@ -118,8 +118,6 @@ void mf_melp_syn(struct mf_melp_param *par,float sp_out[])
 	  mf_v_equ(&sp_out[0],&mf_sigsave[0],mf_syn_begin);
     }
     
-    erase = 0; /* no erasures yet */
-    
     /* Update MSVQ information */
     par->msvq_stages = mf_vq_par.num_stages;
     par->msvq_bits = mf_vq_par.num_bits;

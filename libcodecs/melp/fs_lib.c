@@ -51,7 +51,6 @@ void mf_find_harm(float input[], float fsmf_mag[], float pitch, int num_harm,
 
     for (i = 0; i < num_harm; i++)
       fsmf_mag[i] = 1.0;
-    avg = 0.0;
 
     /* Perform peak-picking on FFT of input signal */
 
