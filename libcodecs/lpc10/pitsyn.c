@@ -47,7 +47,6 @@ uvpit = 0.0;
 *ratio = (float) (*rms/(rmso+8.));
 
 if (first) {	/*1*/
-	lsamp = 0;
 	ivoice = voice[2];
   if (ivoice==0) {
     *pitch = (int) (LFRAME*0.25);
@@ -66,7 +65,6 @@ if (first) {	/*1*/
 else	{ /*1*/
 	vflag = 0;
 	lsamp = LFRAME + jsamp;
-	slope = (*pitch-ipito)/(float)lsamp;
 	*nout = 0;
 	jused = 0;
 	istart = 1;

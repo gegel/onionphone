@@ -50,7 +50,6 @@ if( voice == 0 && alphax < 128 ) alpha = 8;
 
 iptr = (int) (ipoint+1);
 p[0][iptr-1] = 1;
-i = 1;
 pbar = 1;
 sbar = s[0];
 

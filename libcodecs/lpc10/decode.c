@@ -102,7 +102,6 @@ i4 = detau[ipitv];
 	if(i4>4) {
 		dpit[fut] = i4;
 		ivoic = 2;
-		iavgp = (int) ((15*iavgp+i4+8)*0.0625);
 	}
 	else	{
 		ivoic = i4;
