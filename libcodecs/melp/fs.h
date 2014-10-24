@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard mf_speech coder
@@ -21,7 +23,8 @@ Group (phone 972 480 7442).
 
 */
 
-void mf_fft(float *datam1,int nn,int isign);
-void mf_find_harm(float input[], float mf_mag[],float pitch,int num_harm,int length);
+void mf_fft(float *datam1, int nn, int isign);
+void mf_find_harm(float input[], float mf_mag[], float pitch, int num_harm,
+		  int length);
 int mf_findmax(float input[], int npts);
 void mf_idft_real(float real[], float signal[], int length);

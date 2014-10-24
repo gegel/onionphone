@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -34,23 +36,20 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _PIT_LIB_H_
 #define _PIT_LIB_H_
 
+Shortword f_pitch_scale(Shortword sig_out[], Shortword sig_in[],
+			Shortword length);
 
-Shortword	f_pitch_scale(Shortword sig_out[], Shortword sig_in[],
-						  Shortword length);
+Shortword find_pitch(Shortword sig_in[], Shortword * pcorr, Shortword lower,
+		     Shortword upper, Shortword length);
 
-Shortword	find_pitch(Shortword sig_in[], Shortword *pcorr, Shortword lower,
-					   Shortword upper, Shortword length);
+Shortword frac_pch(Shortword sig_in[], Shortword * pcorr, Shortword fpitch,
+		   Shortword range, Shortword pmin, Shortword pmax,
+		   Shortword pmin_q7, Shortword pmax_q7, Shortword lmin);
 
-Shortword	frac_pch(Shortword sig_in[], Shortword *pcorr, Shortword fpitch,
-					 Shortword range, Shortword pmin, Shortword pmax,
-					 Shortword pmin_q7, Shortword pmax_q7, Shortword lmin);
+Shortword p_avg_update(Shortword pitch, Shortword pcorr, Shortword pthresh);
 
-Shortword	p_avg_update(Shortword pitch, Shortword pcorr, Shortword pthresh);
-
-Shortword	pitch_ana(Shortword speech[], Shortword resid[],
-					  Shortword pitch_est, Shortword pitch_avg,
-					  Shortword *pcorr2);
-
+Shortword pitch_ana(Shortword speech[], Shortword resid[],
+		    Shortword pitch_est, Shortword pitch_avg,
+		    Shortword * pcorr2);
 
 #endif
-

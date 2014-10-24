@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /**********************************************************************
 *
 *	RCCHK Version 45G
@@ -17,16 +19,16 @@
 
 void rcchk(float rc1f[MAXORD][AF])
 {
-int i;
+	int i;
 
-for(i=0;i<ORDER;i++)	{
-  if((float)fabs((double)rc1f[i][AF-1]) > .99) break;
-}
-
-if(i<ORDER)
-  if((float)fabs((double)rc1f[i][AF-1]) > .99)
-	{
-		for(i=0;i<ORDER;i++)
-			rc1f[i][AF-1] = rc1f[i][AF-2];
+	for (i = 0; i < ORDER; i++) {
+		if ((float)fabs((double)rc1f[i][AF - 1]) > .99)
+			break;
 	}
+
+	if (i < ORDER)
+		if ((float)fabs((double)rc1f[i][AF - 1]) > .99) {
+			for (i = 0; i < ORDER; i++)
+				rc1f[i][AF - 1] = rc1f[i][AF - 2];
+		}
 }

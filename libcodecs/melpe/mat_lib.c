@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -84,17 +86,15 @@ Secretariat fax: +33 493 65 47 16.
 
 Shortword *v_add(Shortword vec1[], const Shortword vec2[], Shortword n)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*vec1 = add(*vec1, *vec2);
-		vec1 ++;
-		vec2 ++;
+		vec1++;
+		vec2++;
 	}
-	return(vec1 - n);
+	return (vec1 - n);
 }
-
 
 /***************************************************************************
  *
@@ -144,17 +144,15 @@ Shortword *v_add(Shortword vec1[], const Shortword vec2[], Shortword n)
 
 Longword *L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*L_vec1 = L_add(*L_vec1, *L_vec2);
-		L_vec1 ++;
-		L_vec2 ++;
+		L_vec1++;
+		L_vec2++;
 	}
-	return(L_vec1 - n);
+	return (L_vec1 - n);
 }
-
 
 /***************************************************************************
  *
@@ -195,15 +193,14 @@ Longword *L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n)
  *************************************************************************/
 Shortword *v_equ(Shortword vec1[], const Shortword vec2[], Shortword n)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*vec1 = *vec2;
-		vec1 ++;
-		vec2 ++;
+		vec1++;
+		vec2++;
 	}
-	return(vec1 - n);
+	return (vec1 - n);
 }
 
 /***************************************************************************
@@ -245,17 +242,16 @@ Shortword *v_equ(Shortword vec1[], const Shortword vec2[], Shortword n)
  *************************************************************************/
 
 Shortword *v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
-					 Shortword n)
+		     Shortword n)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*vec1 = shr(*vec2, scale);
-		vec1 ++;
-		vec2 ++;
+		vec1++;
+		vec2++;
 	}
-	return(vec1 - n);
+	return (vec1 - n);
 }
 
 /***************************************************************************
@@ -298,17 +294,15 @@ Shortword *v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
 
 Longword *L_v_equ(Longword L_vec1[], Longword L_vec2[], Shortword n)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*L_vec1 = *L_vec2;
-		L_vec1 ++;
-		L_vec2 ++;
+		L_vec1++;
+		L_vec2++;
 	}
-	return(L_vec1 - n);
+	return (L_vec1 - n);
 }
-
 
 /***************************************************************************
  *
@@ -355,18 +349,17 @@ Longword *L_v_equ(Longword L_vec1[], Longword L_vec2[], Shortword n)
  *************************************************************************/
 
 Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
-				  Shortword qvec1, Shortword qvec2, Shortword qout)
+		  Shortword qvec1, Shortword qvec2, Shortword qout)
 {
-	register Shortword	i;
-	Shortword	innerprod;
-	Longword	L_temp;
-
+	register Shortword i;
+	Shortword innerprod;
+	Longword L_temp;
 
 	L_temp = 0;
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		L_temp = L_mac(L_temp, *vec1, *vec2);
-		vec1 ++;
-		vec2 ++;
+		vec1++;
+		vec2++;
 	}
 
 	/* (qvec1 + qvec2 + 1) is the Q value from L_mult(vec1[i], vec2[i]), and  */
@@ -375,11 +368,10 @@ Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
 	/* extract_h() after L_shl() by 16.                                       */
 
 	innerprod = extract_h(L_shl(L_temp,
-								(Shortword) (qout - ((qvec1 + qvec2 + 1) -
-											 16))));
-	return(innerprod);
+				    (Shortword) (qout - ((qvec1 + qvec2 + 1) -
+							 16))));
+	return (innerprod);
 }
-
 
 /***************************************************************************
  *
@@ -426,26 +418,24 @@ Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
  *************************************************************************/
 
 Longword L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
-				   Shortword qvec1, Shortword qvec2, Shortword qout)
+		   Shortword qvec1, Shortword qvec2, Shortword qout)
 {
-	register Shortword	i;
-	Shortword	shift;
-	Longword	L_innerprod, L_temp;
-
+	register Shortword i;
+	Shortword shift;
+	Longword L_innerprod, L_temp;
 
 	L_temp = 0;
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		L_temp = L_mac(L_temp, *vec1, *vec2);
-		vec1 ++;
-		vec2 ++;
+		vec1++;
+		vec2++;
 	}
 
 	/* L_temp is now (qvec1 + qvec2 + 1) */
 	shift = sub(qout, add(add(qvec1, qvec2), 1));
 	L_innerprod = L_shl(L_temp, shift);
-	return(L_innerprod);
+	return (L_innerprod);
 }
-
 
 /***************************************************************************
  *
@@ -487,25 +477,23 @@ Longword L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
  *************************************************************************/
 
 Shortword v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
-				  Shortword qout)
+		  Shortword qout)
 {
-	register Shortword	i;
-	Shortword	shift;
-	Shortword	magsq;
-	Longword	L_temp;
-
+	register Shortword i;
+	Shortword shift;
+	Shortword magsq;
+	Longword L_temp;
 
 	L_temp = 0;
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		L_temp = L_mac(L_temp, *vec1, *vec1);
-		vec1 ++;
+		vec1++;
 	}
 	/* qout - ((2*qvec1 + 1) - 16) */
 	shift = sub(qout, sub(add(shl(qvec1, 1), 1), 16));
 	magsq = extract_h(L_shl(L_temp, shift));
-	return(magsq);
+	return (magsq);
 }
-
 
 /***************************************************************************
  *
@@ -547,24 +535,22 @@ Shortword v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
  *************************************************************************/
 
 Longword L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
-				   Shortword qout)
+		   Shortword qout)
 {
-	register Shortword	i;
-	Shortword	shift;
-	Longword	L_magsq, L_temp;
-
+	register Shortword i;
+	Shortword shift;
+	Longword L_magsq, L_temp;
 
 	L_temp = 0;
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		L_temp = L_mac(L_temp, *vec1, *vec1);
-		vec1 ++;
+		vec1++;
 	}
 	/* ((qout-16)-((2*qvec1+1)-16)) */
 	shift = sub(sub(qout, shl(qvec1, 1)), 1);
 	L_magsq = L_shl(L_temp, shift);
-	return(L_magsq);
+	return (L_magsq);
 }
-
 
 /***************************************************************************
  *
@@ -607,16 +593,14 @@ Longword L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
 
 Shortword *v_scale(Shortword vec1[], Shortword scale, Shortword n)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*vec1 = mult(*vec1, scale);
-		vec1 ++;
+		vec1++;
 	}
-	return(vec1 - n);
+	return (vec1 - n);
 }
-
 
 /***************************************************************************
  *
@@ -661,16 +645,15 @@ Shortword *v_scale(Shortword vec1[], Shortword scale, Shortword n)
  *************************************************************************/
 
 Shortword *v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
-					   Shortword shift)
+		       Shortword shift)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*vec1 = extract_h(L_shl(L_mult(*vec1, scale), shift));
-		vec1 ++;
+		vec1++;
 	}
-	return(vec1 - n);
+	return (vec1 - n);
 }
 
 /***************************************************************************
@@ -721,18 +704,16 @@ Shortword *v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
 
 Shortword *v_sub(Shortword vec1[], const Shortword vec2[], Shortword n)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*vec1 = sub(*vec1, *vec2);
-		vec1 ++;
-		vec2 ++;
+		vec1++;
+		vec2++;
 	}
 
-	return(vec1 - n);
+	return (vec1 - n);
 }
-
 
 /***************************************************************************
  *
@@ -770,16 +751,14 @@ Shortword *v_sub(Shortword vec1[], const Shortword vec2[], Shortword n)
  *************************************************************************/
 Shortword *v_zap(Shortword vec1[], Shortword n)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*vec1 = 0;
-		vec1 ++;
+		vec1++;
 	}
-	return(vec1 - n);
+	return (vec1 - n);
 }
-
 
 /***************************************************************************
  *
@@ -818,47 +797,40 @@ Shortword *v_zap(Shortword vec1[], Shortword n)
 
 Longword *L_v_zap(Longword L_vec1[], Shortword n)
 {
-	register Shortword	i;
+	register Shortword i;
 
-
-	for (i = 0; i < n; i++){
+	for (i = 0; i < n; i++) {
 		*L_vec1 = 0;
-		L_vec1 ++;
+		L_vec1++;
 	}
 
-	return(L_vec1 - n);
+	return (L_vec1 - n);
 }
-
 
 Shortword *v_get(Shortword n)
 {
-	Shortword	*ptr;
-	Longword	size;
-
+	Shortword *ptr;
+	Longword size;
 
 	size = sizeof(Shortword) * n;
 	ptr = malloc(size);
 	assert(ptr != NULL);
-	return(ptr);
+	return (ptr);
 }
-
 
 Longword *L_v_get(Shortword n)
 {
-	Longword	*ptr;
-	Longword	size;
-
+	Longword *ptr;
+	Longword size;
 
 	size = sizeof(Longword) * n;
 	ptr = malloc(size);
 	assert(ptr != NULL);
-	return(ptr);
+	return (ptr);
 }
-
 
 void v_free(void *v)
 {
 	if (v)
 		free(v);
 }
-

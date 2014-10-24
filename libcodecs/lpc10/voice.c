@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***************************************************************************   
 *
 *	VOICIN Version 52
@@ -89,50 +91,50 @@
 #include <math.h>
 
 void voicin(int vwin[2][AF], float *inbuf, float *lpbuf, int half, float minamd,
-    	    float maxamd, int mintau, float ivrc[2], int *obound, int voibuf[2][AF+1])
+	    float maxamd, int mintau, float ivrc[2], int *obound,
+	    int voibuf[2][AF + 1])
 {
-int zc, lbe, fbe;
-int i, snrl;
-static int vstate=0;
-static float dither=20;
-static float snr;
-float snr2;
-static float maxmin;
-float qs, rc1, ar_b;
-float ar_f;
-static float voice[2][3];
-float value[9];
-short ot=0;
+	int zc, lbe, fbe;
+	int i, snrl;
+	static int vstate = 0;
+	static float dither = 20;
+	static float snr;
+	float snr2;
+	static float maxmin;
+	float qs, rc1, ar_b;
+	float ar_f;
+	static float voice[2][3];
+	float value[9];
+	short ot = 0;
 
 /*   Declare and initialize filters:	*/
 
-static int lbve, lbue, fbve, fbue, ofbue, olbue;
-static int sfbue, slbue=0;
-int ref= 3000;
-static short first=1;
+	static int lbve, lbue, fbve, fbue, ofbue, olbue;
+	static int sfbue, slbue = 0;
+	int ref = 3000;
+	static short first = 1;
 
+	if (first) {
+		lbve = ref;
+		fbve = ref;
+		fbue = ref / 16;
+		ofbue = ref / 16;
+		lbue = ref / 32;
+		olbue = ref / 32;
+		snr = (float)(64 * (fbve / fbue));
+		first = 0;
+		vdcl[0] = 600;
+		vdcl[1] = 450;
+		vdcl[2] = 300;
+		vdcl[3] = 200;
+		vdcl[4] = 6 * 0;
 
-if (first) {
-	lbve = ref;
-	fbve = ref;
-	fbue = ref/16;
-	ofbue = ref/16;
-	lbue = ref/32;
-	olbue = ref/32;
-	snr = (float) (64*(fbve/fbue));
-	first = 0;
-	vdcl[0] = 600;
-	vdcl[1] = 450;
-	vdcl[2] = 300;
-	vdcl[3] = 200;
-	vdcl[4] = 6*0;
-	
-	for(i=0;i<3;i++)	{
-		voice[1][i] = 0.0;
-		voice[0][i] = 0.0;
+		for (i = 0; i < 3; i++) {
+			voice[1][i] = 0.0;
+			voice[0][i] = 0.0;
+		}
+
 	}
-	
-}
 
 /*   The VOICE array contains the result of the linear discriminant function 
 *   (analog values).  The VOIBUF array contains the hard-limited binary 
@@ -146,64 +148,66 @@ if (first) {
 *
 *   Update linear discriminant function history each frame:		*/
 
-if (half == 1) {
-	voice[0][0]=voice[0][1];
-	voice[1][0]=voice[1][1];
-	voice[0][1]=voice[0][2];
-	voice[1][1]=voice[1][2];
-	maxmin = (float) (maxamd/mmax(minamd,1.));
-}
+	if (half == 1) {
+		voice[0][0] = voice[0][1];
+		voice[1][0] = voice[1][1];
+		voice[0][1] = voice[0][2];
+		voice[1][1] = voice[1][2];
+		maxmin = (float)(maxamd / mmax(minamd, 1.));
+	}
 
 /*   Calculate voicing parameters twice per frame:	*/
 
-vparms( (int *) vwin, inbuf, lpbuf, half, &dither, mintau, &zc, &lbe, &fbe, &qs, &rc1, &ar_b, &ar_f );
+	vparms((int *)vwin, inbuf, lpbuf, half, &dither, mintau, &zc, &lbe,
+	       &fbe, &qs, &rc1, &ar_b, &ar_f);
 
 /*   Estimate signal-to-noise ratio to select the appropriate VDC vector.
 *   The SNR is estimated as the running average of the ratio of the
 *   running average full-band voiced energy to the running average
 *   full-band unvoiced energy. SNR filter has gain of 63.	*/
 
-snr = (float) L_nint( 63*( snr + fbve/(float)(mmax(fbue,1)) )/64.);
-snr2 = (snr*fbue)/mmax(lbue,1);
+	snr = (float)L_nint(63 * (snr + fbve / (float)(mmax(fbue, 1))) / 64.);
+	snr2 = (snr * fbue) / mmax(lbue, 1);
 
 /*   Quantize SNR to SNRL according to VDCL thresholds.*/
 
 /*DO SNRL = 1, NVDCL-1 */
-for (snrl=1;snrl<nvdcl;snrl++)	{
-	if (snr2 > vdcl[snrl-1]) break;
-}
+	for (snrl = 1; snrl < nvdcl; snrl++) {
+		if (snr2 > vdcl[snrl - 1])
+			break;
+	}
 /*	(Note:	SNRL = NVDCL Here)	*/
 
 /*   Linear discriminant voicing parameters:	*/
-value[0] = maxmin;
-value[1] = (float)(lbe)/mmax(lbve,1);
-value[2] = (float) zc;
-value[3] = rc1;
-value[4] = qs;
-value[5] = ivrc[2];
-value[6] = ar_b;
-value[7] = ar_f;
-value[8] = 0.0;
+	value[0] = maxmin;
+	value[1] = (float)(lbe) / mmax(lbve, 1);
+	value[2] = (float)zc;
+	value[3] = rc1;
+	value[4] = qs;
+	value[5] = ivrc[2];
+	value[6] = ar_b;
+	value[7] = ar_f;
+	value[8] = 0.0;
 
 /*   Evaluation of linear discriminant function:	*/
 
-voice[half-1][2] = vdc[9][snrl-1];
+	voice[half - 1][2] = vdc[9][snrl - 1];
 
-for(i=1;i<10;i++)	{
-	voice[half-1][2] += vdc[i-1][snrl-1]*value[i-1];
-}
+	for (i = 1; i < 10; i++) {
+		voice[half - 1][2] += vdc[i - 1][snrl - 1] * value[i - 1];
+	}
 
 /*   Classify as voiced if discriminant > 0, otherwise unvoiced
 *   Voicing decision for current half-frame:  1 = Voiced; 0 = Unvoiced	*/
 
-if (voice[half-1][2] > 0.0) 
-	voibuf[half-1][3]=1;
-else
-	voibuf[half-1][3]=0;
+	if (voice[half - 1][2] > 0.0)
+		voibuf[half - 1][3] = 1;
+	else
+		voibuf[half - 1][3] = 0;
 
 /*   Skip voicing decision smoothing in first half-frame:	*/
 
-if (half != 1) {
+	if (half != 1) {
 /*   Voicing decision smoothing rules (override of linear combination):
 *
 *	Unvoiced half-frames:  At least two in a row.
@@ -246,110 +250,117 @@ if (half != 1) {
 */
 
 /*OT = (AND(OBOUND(1), 2) .NE. 0 .OR. OBOUND(2) .EQ. 1) .AND. AND(OBOUND(3), 1) .EQ. 0 */
-ot = ((obound[1] & 2) != 0 || obound[2] == 1) && (obound[3] & 1) == 0;
+		ot = ((obound[1] & 2) != 0 || obound[2] == 1)
+		    && (obound[3] & 1) == 0;
 
 /*   Multi-way dispatch on voicing decision history:	*/
 
-vstate = voibuf[0][1]*8 + voibuf[1][1]*4 + voibuf[0][2]*2 + voibuf[1][2];
+		vstate =
+		    voibuf[0][1] * 8 + voibuf[1][1] * 4 + voibuf[0][2] * 2 +
+		    voibuf[1][2];
 /*	GOTO (99,1,2,99,4,5,6,7,8,99,10,11,99,13,14,99) VSTATE+1	*/
 
 /*if(count==9) printf("vstate = %d\n",vstate);*/
 
-switch(vstate+1)	{
-	case 1:
-		break;
-	case 2:
-		if (ot && voibuf[0][3] == 1) voibuf[0][2] = 1;
-		break;
-	case 3:
-		if (voibuf[0][3] == 0 || voice[0][1] < -voice[1][1]) 
-			voibuf[0][2] = 0;
-		else
-			voibuf[1][2] = 1;
-		break;
-	case 4:
-		break;
-	case 5:
-		voibuf[1][1] = 0;
-		break;
-	case 6:
-		if (voice[1][0] < -voice[0][1]) 
+		switch (vstate + 1) {
+		case 1:
+			break;
+		case 2:
+			if (ot && voibuf[0][3] == 1)
+				voibuf[0][2] = 1;
+			break;
+		case 3:
+			if (voibuf[0][3] == 0 || voice[0][1] < -voice[1][1])
+				voibuf[0][2] = 0;
+			else
+				voibuf[1][2] = 1;
+			break;
+		case 4:
+			break;
+		case 5:
 			voibuf[1][1] = 0;
-		else
-			voibuf[0][2] = 1;
-		break;
-	case 7:
-	/*   VOIBUF(2,0) must be 0	*/
-		if (voibuf[0][0] == 1 || voibuf[0][3] == 1 || voice[1][1] > voice[0][0]) 
-			voibuf[1][2] = 1;
-		else
-			voibuf[0][1] = 1;
-		break;
-	case 8:
-		if (ot) voibuf[1][1] = 0;
-		break;
-	case 9:
-		if (ot) voibuf[1][1] = 1;
-		break;
-	case 10:
-		break;
-	case 11:
-		if (voice[0][1] <  -voice[1][0]) 
-			voibuf[0][2] = 0;
-		else
+			break;
+		case 6:
+			if (voice[1][0] < -voice[0][1])
+				voibuf[1][1] = 0;
+			else
+				voibuf[0][2] = 1;
+			break;
+		case 7:
+			/*   VOIBUF(2,0) must be 0      */
+			if (voibuf[0][0] == 1 || voibuf[0][3] == 1
+			    || voice[1][1] > voice[0][0])
+				voibuf[1][2] = 1;
+			else
+				voibuf[0][1] = 1;
+			break;
+		case 8:
+			if (ot)
+				voibuf[1][1] = 0;
+			break;
+		case 9:
+			if (ot)
+				voibuf[1][1] = 1;
+			break;
+		case 10:
+			break;
+		case 11:
+			if (voice[0][1] < -voice[1][0])
+				voibuf[0][2] = 0;
+			else
+				voibuf[1][1] = 1;
+			break;
+		case 12:
 			voibuf[1][1] = 1;
-		break;
-	case 12:
-		voibuf[1][1] = 1;
-		break;
-	case 13:
-		break;
-	case 14:
-		if ((voibuf[0][3] == 0) && (voice[1][1] < -voice[0][1]) )
-			voibuf[1][2] = 0;
-		else
-			voibuf[0][2] = 1;
-		break;
-	case 15:
-		if (ot && voibuf[0][3] == 0) voibuf[0][2] = 0;
-		break;
-	default:
-		break;
-}
-} /* (99)*/
+			break;
+		case 13:
+			break;
+		case 14:
+			if ((voibuf[0][3] == 0) && (voice[1][1] < -voice[0][1]))
+				voibuf[1][2] = 0;
+			else
+				voibuf[0][2] = 1;
+			break;
+		case 15:
+			if (ot && voibuf[0][3] == 0)
+				voibuf[0][2] = 0;
+			break;
+		default:
+			break;
+		}
+	}
 
-/*   Now update parameters:
-*   ----------------------
-*
-*   During unvoiced half-frames, update the low band and full band unvoiced
-*   energy estimates (LBUE and FBUE) and also the zero crossing
-*   threshold (DITHER).  (The input to the unvoiced energy filters is
-*   restricted to be less than 10dB above the previous inputs of the
-*   filters.)
-*   During voiced half-frames, update the low-pass (LBVE) and all-pass 
-*   (FBVE) voiced energy estimates.					*/
+	/* (99) */
+	/*   Now update parameters:
+	 *   ----------------------
+	 *
+	 *   During unvoiced half-frames, update the low band and full band unvoiced
+	 *   energy estimates (LBUE and FBUE) and also the zero crossing
+	 *   threshold (DITHER).  (The input to the unvoiced energy filters is
+	 *   restricted to be less than 10dB above the previous inputs of the
+	 *   filters.)
+	 *   During voiced half-frames, update the low-pass (LBVE) and all-pass 
+	 *   (FBVE) voiced energy estimates.                                   */
+	if (voibuf[half - 1][3] == 0) {
+		sfbue = L_nint((63 * sfbue + 8 * mmin(fbe, 3 * ofbue)) / 64.);
+		fbue = sfbue / 8;
+		ofbue = fbe;
+		slbue = L_nint((63 * slbue + 8 * mmin(lbe, 3 * olbue)) / 64.);
+		lbue = slbue / 8;
 
-if (voibuf[half-1][3] == 0) {
-	sfbue = L_nint(( 63*sfbue + 8*mmin(fbe,3*ofbue) )/64.);
-	fbue = sfbue/8;
-	ofbue = fbe;
-	slbue = L_nint(( 63*slbue + 8*mmin(lbe,3*olbue) )/64.);
-	lbue = slbue/8;
-		
-	olbue = lbe;
-}
-else{
-	lbve = L_nint(( 63*lbve + lbe )/64.);
-	fbve = L_nint(( 63*fbve + fbe )/64.);
-}
+		olbue = lbe;
+	} else {
+		lbve = L_nint((63 * lbve + lbe) / 64.);
+		fbve = L_nint((63 * fbve + fbe) / 64.);
+	}
 
 /*   Set dither threshold to yield proper zero crossing rates in the
 *   presence of low frequency noise and low level signal input.
 *   NOTE: The divisor is a function of REF, the expected energies.	*/
 
-dither = (float) mmin(mmax( 64*sqrt((float)(lbue*lbve)) / ref,1.),20.);
+	dither =
+	    (float)mmin(mmax(64 * sqrt((float)(lbue * lbve)) / ref, 1.), 20.);
 
 /*   Voicing decisions are returned in VOIBUF.	*/
 
 }
-

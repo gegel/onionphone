@@ -49,7 +49,7 @@ OBJ = analys.o \
       voice_nn.o \
       vparms.o
 
-INCADD ?= -I.
+INCADD ?= -I. -I../../common/inc
 
 all: build
 

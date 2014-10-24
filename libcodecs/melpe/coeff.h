@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -35,31 +37,28 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _COEFF_H_
 #define _COEFF_H_
 
-
 #include "sc1200.h"
 
 /* Lowpass filter coefficient in second-order sections */
 
-extern const Shortword	lpf_num[];
-extern const Shortword	lpf_den[];
+extern const Shortword lpf_num[];
+extern const Shortword lpf_den[];
 
 /* Butterworth bandpass filters in second-order sections */
-extern const Shortword	bpf_num[];
-extern const Shortword	bpf_num_class[];
+extern const Shortword bpf_num[];
+extern const Shortword bpf_num_class[];
 
 /* sign of coefficients for bpf_den is reversed */
-extern const Shortword	bpf_den[];
-extern const Shortword	bpf_den_class[];
+extern const Shortword bpf_den[];
+extern const Shortword bpf_den_class[];
 
 /* Hamming window coefficents in Q15 */
-extern const Shortword	win_cof[];
+extern const Shortword win_cof[];
 
 /* Bandpass filter coeffients */
-extern const Shortword	bp_cof[][MIX_ORD + 1];
+extern const Shortword bp_cof[][MIX_ORD + 1];
 
 /* Triangle pulse dispersion filter */
-extern const Shortword	disp_cof[];
-
+extern const Shortword disp_cof[];
 
 #endif
-

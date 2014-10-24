@@ -10791,7 +10791,7 @@ static Word32 Pre_Process_init(Pre_ProcessState ** state)
 	*state = NULL;
 
 	/* allocate memory */
-	if ((s = (Pre_ProcessState *) malloc(sizeof(Pre_ProcessState))) == NULL) {
+	if ((s = calloc(1, sizeof(Pre_ProcessState))) == NULL) {
 		fprintf(stderr,
 			"Pre_Process_init: can not malloc state structure\n");
 		return -1;
@@ -11048,32 +11048,32 @@ static Word32 cod_amr_init(cod_amrState ** state, Word32 dtx)
 {
 	cod_amrState *s;
 
-	if ((s = (cod_amrState *) calloc(1, sizeof(cod_amrState))) == NULL) {
+	if ((s = calloc(1, sizeof(cod_amrState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init clLtpState */
-	if ((s->clLtpSt = (clLtpState *) calloc(1, sizeof(clLtpState))) == NULL) {
+	if ((s->clLtpSt = calloc(1, sizeof(clLtpState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init Pitch_frState */
 	if ((s->clLtpSt->pitchSt =
-	     (Pitch_frState *) calloc(1, sizeof(Pitch_frState))) == NULL) {
+	     calloc(1, sizeof(Pitch_frState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init lspState */
-	if ((s->lspSt = (lspState *) calloc(1, sizeof(lspState))) == NULL) {
+	if ((s->lspSt = calloc(1, sizeof(lspState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init Q_plsfState */
-	if ((s->lspSt->qSt = (Q_plsfState *) calloc(1, sizeof(Q_plsfState))) ==
+	if ((s->lspSt->qSt = calloc(1, sizeof(Q_plsfState))) ==
 	    NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
@@ -11081,67 +11081,65 @@ static Word32 cod_amr_init(cod_amrState ** state, Word32 dtx)
 
 	/* init gainQuantState */
 	if ((s->gainQuantSt =
-	     (gainQuantState *) calloc(1, sizeof(gainQuantState)
-	     )) == NULL) {
+	     calloc(1, sizeof(gainQuantState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init gc_predState x2 */
 	if ((s->gainQuantSt->gc_predSt =
-	     (gc_predState *) calloc(1, sizeof(gc_predState))) == NULL) {
+	     calloc(1, sizeof(gc_predState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	if ((s->gainQuantSt->gc_predUncSt =
-	     (gc_predState *) calloc(1, sizeof(gc_predState))) == NULL) {
+	     calloc(1, sizeof(gc_predState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init gain_adaptState */
 	if ((s->gainQuantSt->adaptSt =
-	     (gain_adaptState *) calloc(1, sizeof(gain_adaptState))) == NULL) {
+	     calloc(1, sizeof(gain_adaptState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init pitchOLWghtState */
 	if ((s->pitchOLWghtSt =
-	     (pitchOLWghtState *) calloc(1,
-					 sizeof(pitchOLWghtState))) == NULL) {
+	     calloc(1, sizeof(pitchOLWghtState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init tonStabState */
-	if ((s->tonStabSt = (tonStabState *) calloc(1, sizeof(tonStabState)))
+	if ((s->tonStabSt = calloc(1, sizeof(tonStabState)))
 	    == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init lpcState */
-	if ((s->lpcSt = (lpcState *) calloc(1, sizeof(lpcState))) == NULL) {
+	if ((s->lpcSt = calloc(1, sizeof(lpcState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* init LevinsonState */
 	if ((s->lpcSt->LevinsonSt =
-	     (LevinsonState *) calloc(1, sizeof(LevinsonState))) == NULL) {
+	     calloc(1, sizeof(LevinsonState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
-	if ((s->vadSt = (vadState *) calloc(1, sizeof(vadState))) == NULL) {
+	if ((s->vadSt = calloc(1, sizeof(vadState))) == NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
 	}
 
 	/* Init dtx_encState */
-	if ((s->dtxEncSt = (dtx_encState *) calloc(1, sizeof(dtx_encState))) ==
+	if ((s->dtxEncSt = calloc(1, sizeof(dtx_encState))) ==
 	    NULL) {
 		fprintf(stderr, "can not malloc state structure\n");
 		goto lfree;
@@ -11245,8 +11243,7 @@ void *Speech_Encode_Frame_init(int dtx)
 
 	/* allocate memory */
 	if ((s =
-	     (Speech_Encode_FrameState *)
-	     malloc(sizeof(Speech_Encode_FrameState))) == NULL) {
+	     calloc(1, sizeof(Speech_Encode_FrameState))) == NULL) {
 		fprintf(stderr,
 			"Speech_Encode_Frame_init: can not malloc state "
 			"structure\n");

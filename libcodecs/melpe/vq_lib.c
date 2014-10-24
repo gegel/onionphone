@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -35,23 +37,21 @@ Secretariat fax: +33 493 65 47 16.
 #include "lpc_lib.h"
 #include "constant.h"
 
-
-#define MAXWT		4096                    /* w[i] < 2.0 to avoid saturation */
+#define MAXWT		4096	/* w[i] < 2.0 to avoid saturation */
 #define MAXWT2		(MAXWT*2)
 #define MAXWT4		(MAXWT*4)
-#define ONE_Q28		268435456L                                   /* (1 << 28) */
-#define EIGHT_Q11   16384                                    /* 8 * (1 << 11) */
-#define X016_Q15	5242                                  /* 0.16 * (1 << 15) */
-#define X064_Q15	20971                                 /* 0.64 * (1 << 15) */
-#define X069_Q15	22609                                 /* 0.69 * (1 << 15) */
-#define X14_Q14		22937                                  /* 1.4 * (1 << 14) */
-#define X25_Q6		1600                                     /* 25 * (1 << 6) */
-#define X75_Q8		19200                                    /* 75 * (1 << 8) */
-#define X117_Q5		3744                                    /* 117 * (1 << 5) */
-#define XN03_Q15	-9830                                 /* -0.3 * (1 << 15) */
+#define ONE_Q28		268435456L	/* (1 << 28) */
+#define EIGHT_Q11   16384	/* 8 * (1 << 11) */
+#define X016_Q15	5242	/* 0.16 * (1 << 15) */
+#define X064_Q15	20971	/* 0.64 * (1 << 15) */
+#define X069_Q15	22609	/* 0.69 * (1 << 15) */
+#define X14_Q14		22937	/* 1.4 * (1 << 14) */
+#define X25_Q6		1600	/* 25 * (1 << 6) */
+#define X75_Q8		19200	/* 75 * (1 << 8) */
+#define X117_Q5		3744	/* 117 * (1 << 5) */
+#define XN03_Q15	-9830	/* -0.3 * (1 << 15) */
 
 #define P_SWAP(x, y, type)	{type u__p; u__p = x; x = y; y = u__p;}
-
 
 /* VQ_LSPW - compute LSP weighting vector                                     */
 /*                                                                            */
@@ -68,14 +68,13 @@ Secretariat fax: +33 493 65 47 16.
 /*      The coder does not use the returned value from vq_lspw() at all.      */
 
 Shortword *vq_lspw(Shortword weight[], Shortword lsp[], Shortword lpc[],
-				   Shortword order)
+		   Shortword order)
 {
-	register Shortword	i;
-	Longword	L_temp;
+	register Shortword i;
+	Longword L_temp;
 
-
-	for (i = 0; i < order; i++){
-		L_temp = lpc_aejw(lpc, lsp[i], order);               /* L_temp in Q19 */
+	for (i = 0; i < order; i++) {
+		L_temp = lpc_aejw(lpc, lsp[i], order);	/* L_temp in Q19 */
 		weight[i] = L_pow_fxp(L_temp, XN03_Q15, 19, 11);
 	}
 
@@ -83,9 +82,8 @@ Shortword *vq_lspw(Shortword weight[], Shortword lsp[], Shortword lpc[],
 
 	weight[8] = mult(weight[8], X064_Q15);
 	weight[9] = mult(weight[9], X016_Q15);
-	return(weight);
+	return (weight);
 }
-
 
 /* VQ_MS4-                                                                    */
 /*		Tree search multi-stage VQ encoder (optimized for speed               */
@@ -117,63 +115,62 @@ Shortword *vq_lspw(Shortword weight[], Shortword lsp[], Shortword lpc[],
 /*      Note:                                                                 */
 /*          The coder does not use the returned value from vq_lspw() at all.  */
 
-Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
-				 const Shortword levels[], Shortword ma, Shortword stages,
-				 Shortword order, Shortword weights[], Shortword *u_hat,
-				 Shortword *a_indices, Shortword max_inner)
+Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
+		 const Shortword levels[], Shortword ma, Shortword stages,
+		 Shortword order, Shortword weights[], Shortword * u_hat,
+		 Shortword * a_indices, Shortword max_inner)
 {
-	const Shortword		*cbp, *cb_currentstage, *cb_table;
-	Shortword	tmp, *u_tmp, *uhatw, uhatw_sq;
-	Shortword	d_cj, d_opt;
-	Shortword	*d, *p_d, *n_d, *p_distortion;
-	Shortword	*errors, *p_errors, *n_errors, *p_e;
-	Shortword	i, j, m, s, c, p_max, inner_counter;
-	Shortword	*indices, *p_indices, *n_indices;
-	Shortword	*parents, *p_parents, *n_parents;
-	Shortword	*tmp_p_e;
-	Shortword	temp;
-	Longword	L_temp, L_temp1;
-
+	const Shortword *cbp, *cb_currentstage, *cb_table;
+	Shortword tmp, *u_tmp, *uhatw, uhatw_sq;
+	Shortword d_cj, d_opt;
+	Shortword *d, *p_d, *n_d, *p_distortion;
+	Shortword *errors, *p_errors, *n_errors, *p_e;
+	Shortword i, j, m, s, c, p_max, inner_counter;
+	Shortword *indices, *p_indices, *n_indices;
+	Shortword *parents, *p_parents, *n_parents;
+	Shortword *tmp_p_e;
+	Shortword temp;
+	Longword L_temp, L_temp1;
 
 	/* make sure weights don't get too big */
 	j = 0;
-	for (i = 0; i < order; i++){
-		if (weights[i] > MAXWT4){
+	for (i = 0; i < order; i++) {
+		if (weights[i] > MAXWT4) {
 			j = 3;
 			break;
-		} else if (weights[i] > MAXWT2){
+		} else if (weights[i] > MAXWT2) {
 			j = 2;
-		} else if (weights[i] > MAXWT){
+		} else if (weights[i] > MAXWT) {
 			if (j == 0)
 				j = 1;
 		}
 	}
-	for (i = 0; i < order; i++){
+	for (i = 0; i < order; i++) {
 		weights[i] = shr(weights[i], j);
 	}
 
 	/* allocate memory for the current node and parent node (thus, the        */
 	/* factors of two everywhere) The parents and current nodes are allocated */
 	/* contiguously */
-	indices = v_get((Shortword) (2*ma*stages));
-	errors = v_get((Shortword) (2*ma*order));
+	indices = v_get((Shortword) (2 * ma * stages));
+	errors = v_get((Shortword) (2 * ma * order));
 	uhatw = v_get(order);
-	d = v_get((Shortword) (2*ma));
-	parents = v_get((Shortword) (2*ma));
-	tmp_p_e = v_get((Shortword) (ma*order));
+	d = v_get((Shortword) (2 * ma));
+	parents = v_get((Shortword) (2 * ma));
+	tmp_p_e = v_get((Shortword) (ma * order));
 
 	/* initialize memory */
-	v_zap(indices, (Shortword) (2*stages*ma));
-	v_zap(parents, (Shortword) (2*ma));
+	v_zap(indices, (Shortword) (2 * stages * ma));
+	v_zap(parents, (Shortword) (2 * ma));
 
 	/* initialize inner loop counter */
 	inner_counter = 0;
 
 	/* set up memory */
 	p_indices = &indices[0];
-	n_indices = &indices[ma*stages];
+	n_indices = &indices[ma * stages];
 	p_errors = &errors[0];
-	n_errors = &errors[ma*order];
+	n_errors = &errors[ma * order];
 	p_d = &d[0];
 	n_d = &d[ma];
 	p_parents = &parents[0];
@@ -181,10 +178,10 @@ Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
 
 	/* u_tmp is the input vector (i.e. if u_est is non-null, it is subtracted */
 	/* off) */
-	u_tmp = v_get((Shortword) (order + 1));                     /* u_tmp is Q15 */
-	(void) v_equ(u_tmp, u, order);
+	u_tmp = v_get((Shortword) (order + 1));	/* u_tmp is Q15 */
+	(void)v_equ(u_tmp, u, order);
 	if (u_est)
-		(void) v_sub(u_tmp, u_est, order);
+		(void)v_sub(u_tmp, u_est, order);
 
 	/* change u_tmp from Q15 to Q17 */
 	for (j = 0; j < order; j++)
@@ -192,8 +189,8 @@ Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
 
 	/* L_temp is Q31 */
 	L_temp = 0;
-	for (j = 0; j < order; j++){
-		temp = mult(u_tmp[j], weights[j]);                      /* temp = Q13 */
+	for (j = 0; j < order; j++) {
+		temp = mult(u_tmp[j], weights[j]);	/* temp = Q13 */
 		L_temp = L_mac(L_temp, temp, u_tmp[j]);
 	}
 
@@ -201,9 +198,9 @@ Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
 	tmp = extract_h(L_temp);
 
 	/* set up inital error vectors (i.e. error vectors = u_tmp) */
-	for (c = 0; c < ma; c++){
+	for (c = 0; c < ma; c++) {
 		/* n_errors is Q17, n_d is Q15 */
-		(void) v_equ(&n_errors[c*order], u_tmp, order);
+		(void)v_equ(&n_errors[c * order], u_tmp, order);
 		n_d[c] = tmp;
 	}
 
@@ -215,36 +212,36 @@ Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
 
 	/* set m to 1 for the first stage and loop over all stages */
 
-	for(m = 1, s = 0; s < stages; s++){
+	for (m = 1, s = 0; s < stages; s++) {
 		/* Save the pointer to the beginning of the current stage.  Note: cbp */
 		/* is only incremented in one spot, and it is incremented all the way */
 		/* through all the stages. */
 		cb_currentstage = cbp;
 
 		/* set up pointers to the parent and current nodes */
-		P_SWAP(p_indices, n_indices, Shortword*);
-		P_SWAP(p_parents, n_parents, Shortword*);
-		P_SWAP(p_errors, n_errors, Shortword*);
-		P_SWAP(p_d, n_d, Shortword*);
+		P_SWAP(p_indices, n_indices, Shortword *);
+		P_SWAP(p_parents, n_parents, Shortword *);
+		P_SWAP(p_errors, n_errors, Shortword *);
+		P_SWAP(p_d, n_d, Shortword *);
 
 		/* p_max is the pointer to the maximum distortion node over all       */
 		/* candidates.  The so-called worst of the best. */
 		p_max = 0;
 
 		/* store errors in Q15 in tmp_p_e */
-		for (i = 0; i < m*order; i++){
+		for (i = 0; i < m * order; i++) {
 			tmp_p_e[i] = shr(p_errors[i], 2);
 		}
 
 		/* set the distortions to a large value */
-		for (c = 0; c < ma; c++){
+		for (c = 0; c < ma; c++) {
 			n_d[c] = SW_MAX;
 		}
-		for (j = 0; j < levels[s]; j++){
+		for (j = 0; j < levels[s]; j++) {
 			/* compute weighted codebook element, increment codebook pointer */
 			/* L_temp is Q31 */
 			L_temp = 0;
-			for (i = 0; i < order; i++, cbp++){
+			for (i = 0; i < order; i++, cbp++) {
 				/* Q17*Q11 << 1 = Q29 */
 				L_temp1 = L_mult(*cbp, weights[i]);
 
@@ -269,11 +266,13 @@ Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
 			p_distortion = p_d;
 
 			/* iterate over all parent nodes */
-			for (c = 0; c < m; c++){
+			for (c = 0; c < m; c++) {
 				/* L_temp is Q31, p_distortion is same Q as n_d, p_e is Q15 */
-				L_temp = L_deposit_h(add(*p_distortion++, uhatw_sq));
+				L_temp =
+				    L_deposit_h(add(*p_distortion++, uhatw_sq));
 				for (i = 0; i < order; i++)
-					L_temp = L_mac(L_temp, *p_e++, uhatw[i]);
+					L_temp =
+					    L_mac(L_temp, *p_e++, uhatw[i]);
 
 				/* d_cj is Q15 */
 				d_cj = extract_h(L_temp);
@@ -281,27 +280,33 @@ Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
 				/* determine if d is less than the maximum candidate          */
 				/* distortion.  i.e., is the distortion found better than the */
 				/* so-called worst of the best */
-				if (d_cj <= n_d[p_max]){
+				if (d_cj <= n_d[p_max]) {
 					/* replace the worst with the values just found */
 					/* n_d is now a Q16 */
 					n_d[p_max] = d_cj;
 
-					i = add(shr(extract_l(L_mult(p_max, stages)), 1), s);
+					i = add(shr
+						(extract_l
+						 (L_mult(p_max, stages)), 1),
+						s);
 					n_indices[i] = j;
 					n_parents[p_max] = c;
 
 					/* want to limit the number of times the inner loop is    */
 					/* entered (to reduce the *maximum* complexity) */
-					if (inner_counter < max_inner){
-						inner_counter = add(inner_counter, 1);
-						if (inner_counter < max_inner){
+					if (inner_counter < max_inner) {
+						inner_counter =
+						    add(inner_counter, 1);
+						if (inner_counter < max_inner) {
 							p_max = 0;
 							/* find the new maximum */
-							for (i = 1; i < ma; i++){
-								if (n_d[i] > n_d[p_max])
-									p_max = i;
+							for (i = 1; i < ma; i++) {
+								if (n_d[i] >
+								    n_d[p_max])
+									p_max =
+									    i;
 							}
-						} else {                /* inner_counter == max_inner */
+						} else {	/* inner_counter == max_inner */
 							/* The inner loop counter now exceeds the         */
 							/* maximum, and the inner loop will now not be    */
 							/* entered.  Instead of quitting the search or    */
@@ -310,58 +315,61 @@ Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
 							/* by setting p_max to equal the index of the     */
 							/* minimum distortion i.e. only keep one          */
 							/* candidate ar_ound the MINIMUM distortion */
-							for (i = 1; i < ma; i++){
-								if (n_d[i] < n_d[p_max])
-									p_max = i;
+							for (i = 1; i < ma; i++) {
+								if (n_d[i] <
+								    n_d[p_max])
+									p_max =
+									    i;
 							}
 						}
 					}
 				}
-			} /* for c */
-		} /* for j */
+			}	/* for c */
+		}		/* for j */
 
 		/* compute the error vectors for each node */
-		for (c = 0; c < ma; c++){
+		for (c = 0; c < ma; c++) {
 			/* get the error from the parent node and subtract off the        */
 			/* codebook value */
-			(void) v_equ(&n_errors[c*order], &p_errors[n_parents[c]*order],
-						 order);
-			(void) v_sub(&n_errors[c*order],
-						 &cb_currentstage[n_indices[c*stages + s]*order],
-						 order);
+			(void)v_equ(&n_errors[c * order],
+				    &p_errors[n_parents[c] * order], order);
+			(void)v_sub(&n_errors[c * order],
+				    &cb_currentstage[n_indices[c * stages + s] *
+						     order], order);
 			/* get the indices that were used for the parent node */
-			(void) v_equ(&n_indices[c*stages],
-						 &p_indices[n_parents[c]*stages], s);
+			(void)v_equ(&n_indices[c * stages],
+				    &p_indices[n_parents[c] * stages], s);
 		}
 
-		m = (Shortword) (m*levels[s]);
+		m = (Shortword) (m * levels[s]);
 		if (m > ma)
 			m = ma;
-	} /* for s */
+	}			/* for s */
 
 	/* find the optimum candidate c */
-	for (i = 1, c = 0; i < ma; i++){
+	for (i = 1, c = 0; i < ma; i++) {
 		if (n_d[i] < n_d[c])
 			c = i;
 	}
 
 	d_opt = n_d[c];
 
-	if (a_indices){
-		(void) v_equ(a_indices, &n_indices[c*stages], stages);
+	if (a_indices) {
+		(void)v_equ(a_indices, &n_indices[c * stages], stages);
 	}
-	if (u_hat){
+	if (u_hat) {
 		if (u_est)
-			(void) v_equ(u_hat, u_est, order);
+			(void)v_equ(u_hat, u_est, order);
 		else
-			(void) v_zap(u_hat, order);
+			(void)v_zap(u_hat, order);
 
 		cb_currentstage = cb;
-		for (s = 0; s < stages; s++){
-			cb_table = &cb_currentstage[n_indices[c*stages + s]*order];
+		for (s = 0; s < stages; s++) {
+			cb_table =
+			    &cb_currentstage[n_indices[c * stages + s] * order];
 			for (i = 0; i < order; i++)
 				u_hat[i] = add(u_hat[i], shr(cb_table[i], 2));
-			cb_currentstage += levels[s]*order;
+			cb_currentstage += levels[s] * order;
 		}
 	}
 
@@ -372,9 +380,8 @@ Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
 	v_free(errors);
 	v_free(indices);
 
-	return(d_opt);
+	return (d_opt);
 }
-
 
 /*  VQ_MSD2 -                                                                 */
 /*      Tree search multi-stage VQ decoder                                    */
@@ -403,23 +410,22 @@ Shortword vq_ms4(const Shortword *cb, Shortword *u, const Shortword *u_est,
 /*      Note:                                                                 */
 /*          The coder does not use the returned value from vq_lspw() at all.  */
 
-void vq_msd2(const Shortword *cb, Shortword *u_hat, const Shortword *u_est,
-			 Shortword *indices, const Shortword levels[], Shortword stages,
-			 Shortword p, Shortword diff_Q)
+void vq_msd2(const Shortword * cb, Shortword * u_hat, const Shortword * u_est,
+	     Shortword * indices, const Shortword levels[], Shortword stages,
+	     Shortword p, Shortword diff_Q)
 {
-	register Shortword	i, j;
-	const Shortword		*cb_currentstage, *cb_table;
-	Longword	*L_u_hat, L_temp;
-
+	register Shortword i, j;
+	const Shortword *cb_currentstage, *cb_table;
+	Longword *L_u_hat, L_temp;
 
 	/* allocate memory (if required) */
 	L_u_hat = L_v_get(p);
 
 	/* add estimate on (if non-null), or clear vector */
 	if (u_est)
-		(void) v_equ(u_hat, u_est, p);
+		(void)v_equ(u_hat, u_est, p);
 	else
-		(void) v_zap(u_hat, p);
+		(void)v_zap(u_hat, p);
 
 	/* put u_hat to a long buffer */
 	for (i = 0; i < p; i++)
@@ -427,14 +433,14 @@ void vq_msd2(const Shortword *cb, Shortword *u_hat, const Shortword *u_est,
 
 	/* add the contribution of each stage */
 	cb_currentstage = cb;
-	for (i = 0; i < stages; i++){
-		/*	(void) v_add(u_hat, &cb_currentstage[indices[i]*p], p);           */
-		cb_table = &cb_currentstage[indices[i]*p];
-		for (j = 0; j < p; j++){
+	for (i = 0; i < stages; i++) {
+		/*      (void) v_add(u_hat, &cb_currentstage[indices[i]*p], p);           */
+		cb_table = &cb_currentstage[indices[i] * p];
+		for (j = 0; j < p; j++) {
 			L_temp = L_deposit_l(cb_table[j]);
 			L_u_hat[j] = L_add(L_u_hat[j], L_temp);
 		}
-		cb_currentstage += levels[i]*p;
+		cb_currentstage += levels[i] * p;
 	}
 
 	/* convert long buffer back to u_hat */
@@ -443,7 +449,6 @@ void vq_msd2(const Shortword *cb, Shortword *u_hat, const Shortword *u_est,
 
 	v_free(L_u_hat);
 }
-
 
 /* VQ_ENC -                                                                   */
 /*  encode vector with full VQ using unweighted Euclidean distance            */
@@ -467,27 +472,26 @@ void vq_msd2(const Shortword *cb, Shortword *u_hat, const Shortword *u_est,
 /*          The coder does not use the returned value from vq_lspw() at all.  */
 
 Longword vq_enc(const Shortword codebook[], Shortword u[], Shortword levels,
-				Shortword order, Shortword u_hat[], Shortword *indices)
+		Shortword order, Shortword u_hat[], Shortword * indices)
 {
-	register Shortword	i, j;
-	const Shortword		*p_cb;
-	Shortword	index;
-	Longword	d, dmin;
-	Shortword	temp;
-
+	register Shortword i, j;
+	const Shortword *p_cb;
+	Shortword index;
+	Longword d, dmin;
+	Shortword temp;
 
 	/* Search codebook for minimum distance */
 	index = 0;
 	dmin = LW_MAX;
 	p_cb = codebook;
-	for (i = 0; i < levels; i++){
+	for (i = 0; i < levels; i++) {
 		d = 0;
-		for (j = 0; j < order; j++){
+		for (j = 0; j < order; j++) {
 			temp = sub(u[j], *p_cb);
 			d = L_mac(d, temp, temp);
 			p_cb++;
 		}
-		if (d < dmin){
+		if (d < dmin) {
 			dmin = d;
 			index = i;
 		}
@@ -495,11 +499,10 @@ Longword vq_enc(const Shortword codebook[], Shortword u[], Shortword levels,
 
 	/* Update index and quantized value, and return minimum distance */
 	*indices = index;
-	v_equ(u_hat, &codebook[order*index], order);
+	v_equ(u_hat, &codebook[order * index], order);
 
-	return(dmin);
+	return (dmin);
 }
-
 
 /* ========================================================================== */
 /* vq_fsw() computes the weights for Euclidean distance of Fourier harmonics. */
@@ -508,35 +511,34 @@ Longword vq_enc(const Shortword codebook[], Shortword u[], Shortword levels,
 /* ========================================================================== */
 void vq_fsw(Shortword w_fs[], Shortword num_harm, Shortword pitch)
 {
-	register Shortword	i;
-	register Shortword	temp;
-	Shortword	tempw0, denom;
-	Longword	L_temp;
+	register Shortword i;
+	register Shortword temp;
+	Shortword tempw0, denom;
+	Longword L_temp;
 
 	/* Calculate fundamental frequency */
 	/* w0 = TWOPI/pitch */
 	/* tempw0 = w0/(0.25*PI) = 8/pitch */
 
-	tempw0 = divide_s(EIGHT_Q11, pitch);                     /* tempw0 in Q17 */
-	for (i = 0; i < num_harm; i++){
+	tempw0 = divide_s(EIGHT_Q11, pitch);	/* tempw0 in Q17 */
+	for (i = 0; i < num_harm; i++) {
 
 		/* Bark-scale weighting */
 		/* w_fs[i] = 117.0/(25.0 + 75.0* pow(1.0 + */
 		/*           1.4*SQR(w0*(i+1)/(0.25*PI)),0.69)) */
 
 		temp = add(i, 1);
-		temp = shl(temp, 11);                                   /* (i+1), Q11 */
-		L_temp = L_mult(tempw0, temp);                                 /* Q29 */
-		L_temp = L_shl(L_temp, 1);                                     /* Q30 */
-		temp = extract_h(L_temp);                    /* w0*(i+1)/0.25*PI, Q14 */
-		temp = mult(temp, temp);                               /* SQR(*), Q13 */
+		temp = shl(temp, 11);	/* (i+1), Q11 */
+		L_temp = L_mult(tempw0, temp);	/* Q29 */
+		L_temp = L_shl(L_temp, 1);	/* Q30 */
+		temp = extract_h(L_temp);	/* w0*(i+1)/0.25*PI, Q14 */
+		temp = mult(temp, temp);	/* SQR(*), Q13 */
 		/* Q28 for L_temp = 1.0 + 1.4*SQR(*) */
-		L_temp = L_mult(X14_Q14, temp);                                /* Q28 */
-		L_temp = L_add(ONE_Q28, L_temp);                               /* Q28 */
-		temp = L_pow_fxp(L_temp, X069_Q15, 28, 13);                    /* Q13 */
-		temp = mult(X75_Q8, temp);                                      /* Q6 */
-		denom = add(X25_Q6, temp);                                      /* Q6 */
-		w_fs[i] = divide_s(X117_Q5, denom);                            /* Q14 */
+		L_temp = L_mult(X14_Q14, temp);	/* Q28 */
+		L_temp = L_add(ONE_Q28, L_temp);	/* Q28 */
+		temp = L_pow_fxp(L_temp, X069_Q15, 28, 13);	/* Q13 */
+		temp = mult(X75_Q8, temp);	/* Q6 */
+		denom = add(X25_Q6, temp);	/* Q6 */
+		w_fs[i] = divide_s(X117_Q5, denom);	/* Q14 */
 	}
 }
-

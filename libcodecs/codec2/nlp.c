@@ -235,7 +235,9 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 	COMP fw[PE_FFT_SIZE];	/* DFT of squared signal (input)  */
 	COMP Fw[PE_FFT_SIZE];	/* DFT of squared signal (output) */
 	float gmax;
+#ifndef POST_PROCESS_MBE
 	int gmax_bin;
+#endif
 	int m, i, j;
 	float best_f0;
 	TIMER_VAR(start, tnotch, filter, peakpick, window, fft, magsq,
@@ -311,11 +313,15 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 	/* find global peak */
 
 	gmax = 0.0;
+#ifndef POST_PROCESS_MBE
 	gmax_bin = PE_FFT_SIZE * DEC / pmax;
+#endif
 	for (i = PE_FFT_SIZE * DEC / pmax; i <= PE_FFT_SIZE * DEC / pmin; i++) {
 		if (Fw[i].real > gmax) {
 			gmax = Fw[i].real;
+#ifndef POST_PROCESS_MBE
 			gmax_bin = i;
+#endif
 		}
 	}
 

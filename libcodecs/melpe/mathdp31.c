@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -68,16 +70,14 @@ Secretariat fax: +33 493 65 47 16.
 
 Longword L_mpy_ls(Longword L_var2, Shortword var1)
 {
-	Longword	L_varOut;
-	Shortword	swtemp;
-
+	Longword L_varOut;
+	Shortword swtemp;
 
 	swtemp = shr(extract_l(L_var2), 1);
-	swtemp = (Shortword) ((short) 32767 & (short) swtemp);
+	swtemp = (Shortword) ((short)32767 & (short)swtemp);
 
 	L_varOut = L_mult(var1, swtemp);
 	L_varOut = L_shr(L_varOut, 15);
 	L_varOut = L_mac(L_varOut, var1, extract_h(L_var2));
 	return (L_varOut);
 }
-

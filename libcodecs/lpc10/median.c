@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /**********************************************************************
 *
 *	MEDIAN Version 45G
@@ -16,16 +18,17 @@
 
 int median(int d1, int d2, int d3)
 {
-int the_median;
+	int the_median;
 
-the_median = d2;
-if    ( d2 > d1 && d2 > d3 ) {
-	the_median = d1;
-	if ( d3 > d1 ) the_median = d3;
-}
-else if ( d2 < d1 && d2 < d3 ) {
-	   the_median = d1;
-	   if ( d3 < d1 ) the_median = d3;
-}
-return(the_median);
+	the_median = d2;
+	if (d2 > d1 && d2 > d3) {
+		the_median = d1;
+		if (d3 > d1)
+			the_median = d3;
+	} else if (d2 < d1 && d2 < d3) {
+		the_median = d1;
+		if (d3 < d1)
+			the_median = d3;
+	}
+	return (the_median);
 }
