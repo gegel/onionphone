@@ -573,7 +573,7 @@ Word32 Lsp_Svq(Word16 * Tv, Word16 * Wvect)
 	Word16 Tmp[LpcOrder];
 	Word16 *LspQntPnt;
 
-	memzero(Tmp, LpcOrder);
+	memzero(Tmp, LpcOrder * sizeof(Word16));
 
 	/*
 	 * Initialize the return value
