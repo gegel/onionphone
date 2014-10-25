@@ -27,20 +27,20 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basop32.h"
 
 #define  WINSZ 160
 
-void Autocorr(Word32 r[],	/* (o) : Autocorrelations      */
-	      Word16 x[],	/* (i) : Input signal          */
-	      Word16 window[],	/* (i) : LPC Analysis window   */
-	      Word16 l_window,	/* (i) : window length         */
-	      Word16 m)
+void Autocorr(int32_t r[],	/* (o) : Autocorrelations      */
+	      int16_t x[],	/* (i) : Input signal          */
+	      int16_t window[],	/* (i) : LPC Analysis window   */
+	      int16_t l_window,	/* (i) : window length         */
+	      int16_t m)
 {				/* (i) : LPC order             */
-	Word16 n, j, y_shift, shift;
-	Word16 buf[WINSZ];
-	Word32 a0;
+	int16_t n, j, y_shift, shift;
+	int16_t buf[WINSZ];
+	int32_t a0;
 
 	/* Window signal */
 	for (n = 0; n < l_window; n++)
@@ -80,14 +80,14 @@ void Autocorr(Word32 r[],	/* (o) : Autocorrelations      */
 	return;
 }
 
-void Spectral_Smoothing(Word16 m,	/* (i)     : LPC order         */
-			Word32 r[],	/* (i/o)   : Autocorrelations  */
-			Word16 lag_h[],	/* (i)     : SST coefficients  */
-			Word16 lag_l[]	/* (i)     : SST coefficients  */
+void Spectral_Smoothing(int16_t m,	/* (i)     : LPC order         */
+			int32_t r[],	/* (i/o)   : Autocorrelations  */
+			int16_t lag_h[],	/* (i)     : SST coefficients  */
+			int16_t lag_l[]	/* (i)     : SST coefficients  */
     )
 {
-	Word16 i;
-	Word16 hi, lo;
+	int16_t i;
+	int16_t hi, lo;
 
 	for (i = 1; i <= m; i++) {
 		L_Extract(r[i], &hi, &lo);

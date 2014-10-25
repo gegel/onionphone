@@ -26,6 +26,7 @@
   $Log$
 ******************************************************************************/
 
-void postfilter(Word16 * s,	/* input : quantized speech signal         */
-		Word16 pp,	/* input : pitch period                    */
-		Word16 * ma_a, Word16 * b_prv, Word16 * pp_prv, Word16 * e);	/* output: enhanced speech signal          */
+void postfilter(int16_t * s,	/* input : quantized speech signal         */
+		int16_t pp,	/* input : pitch period                    */
+		int16_t * ma_a, int16_t * b_prv, int16_t * pp_prv,
+		int16_t * e);	/* output: enhanced speech signal          */

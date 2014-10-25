@@ -26,22 +26,22 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bv16cnst.h"
 #include "basop32.h"
 #include "../itug729ilib/oper_32b.h"
 
-Word32 estlevel(Word32 lg,
-		Word32 * level,
-		Word32 * lmax,
-		Word32 * lmin,
-		Word32 * lmean,
-		Word32 * x1,
-		Word16 ngfae, Word16 nggalgc, Word16 * estl_alpha_min)
+int32_t estlevel(int32_t lg,
+		int32_t * level,
+		int32_t * lmax,
+		int32_t * lmin,
+		int32_t * lmean,
+		int32_t * x1,
+		int16_t ngfae, int16_t nggalgc, int16_t * estl_alpha_min)
 {
-	Word32 lth;
-	Word32 a0;
-	Word16 s, t;
+	int32_t lth;
+	int32_t a0;
+	int16_t s, t;
 
 	/* Reset forgetting factor for Lmin to fast decay. This is to avoid Lmin
 	   staying at an incorrect low level compensation for the possibility 

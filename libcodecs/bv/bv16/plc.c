@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "utility.h"
@@ -37,20 +37,20 @@
 #include "postfilt.h"
 #include "../itug729ilib/oper_32b.h"
 
-void BV16_PLC(struct BV16_Decoder_State *ds, Word16 * out)
+void BV16_PLC(struct BV16_Decoder_State *ds, int16_t * out)
 {
 	int n;
-	Word16 *sq;
-	Word32 E;
-	Word16 tmp;
-	Word16 scplcg;		/* Q14 */
-	Word32 acc;
-	Word16 dsEw, dsEexp, Eexp, Ew;
-	Word16 gain, gainexp;
-	Word16 hi, lo;
-	Word16 xq[LXQ];
-	Word16 d[LTMOFF + FRSZ];
-	Word16 r[FRSZ];
+	int16_t *sq;
+	int32_t E;
+	int16_t tmp;
+	int16_t scplcg;		/* Q14 */
+	int32_t acc;
+	int16_t dsEw, dsEexp, Eexp, Ew;
+	int16_t gain, gainexp;
+	int16_t hi, lo;
+	int16_t xq[LXQ];
+	int16_t d[LTMOFF + FRSZ];
+	int16_t r[FRSZ];
 
    /************************************************************/
 	/*                 Copy decoder state memory                */

@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -35,16 +35,15 @@
 #include "mathutil.h"
 #include "../itug729ilib/oper_32b.h"
 
-Word32 gaindec(			/* Q18 */
-		      Word32 * lgq,	/* Q25 */
-		      Word16 gidx, Word16 * lgpm,	/* Q11 */
-		      Word32 * prevlg,	/* Q25 */
-		      Word32 level,	/* Q25 */
-		      Word16 * nggalgc, Word32 * lg_el)
+int32_t gaindec(int32_t * lgq,	/* Q25 */
+		      int16_t gidx, int16_t * lgpm,	/* Q11 */
+		      int32_t * prevlg,	/* Q25 */
+		      int32_t level,	/* Q25 */
+		      int16_t * nggalgc, int32_t * lg_el)
 {
-	Word32 elg;
-	Word16 lg_exp, lg_frac, lgc;
-	Word16 i, n, k;
+	int32_t elg;
+	int16_t lg_exp, lg_frac, lgc;
+	int16_t i, n, k;
 
 	/* Calculate estimated log-gain */
 	elg = L_bv_shr(bv_L_deposit_h(lgmean), 1);	/* Q26 */
@@ -108,11 +107,11 @@ Word32 gaindec(			/* Q18 */
 	return Pow2(lg_exp, lg_frac);
 }
 
-void gainplc(Word32 E, Word16 * lgeqm, Word32 * lgqm)
+void gainplc(int32_t E, int16_t * lgeqm, int32_t * lgqm)
 {
 	int k;
-	Word16 exponent, fraction, lge;
-	Word32 lg, mrlg, elg;
+	int16_t exponent, fraction, lge;
+	int32_t lg, mrlg, elg;
 
 	exponent = 1;
 	fraction = 0;

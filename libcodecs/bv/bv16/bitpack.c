@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -64,77 +64,77 @@
 *      };
 *
 ****************************************************************************/
-void BV16_BitPack(UWord8 * PackedStream, struct BV16_Bit_Stream *BitStruct)
+void BV16_BitPack(uint8_t * PackedStream, struct BV16_Bit_Stream *BitStruct)
 {
-	UWord32 temppack;
+	uint32_t temppack;
 
 	/* fill the first 16 bit word */
-	temppack = (((UWord32) BitStruct->lspidx[0]) << 25);	/* 32-7 */
-	temppack |= (((UWord32) BitStruct->lspidx[1]) << 18);	/* 25-7 */
-	temppack |= (((UWord32) BitStruct->ppidx) << 11);	/* 18-7 */
+	temppack = (((uint32_t) BitStruct->lspidx[0]) << 25);	/* 32-7 */
+	temppack |= (((uint32_t) BitStruct->lspidx[1]) << 18);	/* 25-7 */
+	temppack |= (((uint32_t) BitStruct->ppidx) << 11);	/* 18-7 */
 	/* total=21 */
 
 	/* store 1st byte in the payload */
-	*PackedStream++ = (UWord8) (temppack >> 24);
+	*PackedStream++ = (uint8_t) (temppack >> 24);
 
 	/* store 2nd byte in the payload */
-	*PackedStream++ = (UWord8) ((temppack << 8) >> 24);
+	*PackedStream++ = (uint8_t) ((temppack << 8) >> 24);
 
 	/* clear the upper 16 bits */
 	temppack = temppack << 16;
 
-	temppack |= (((UWord32) BitStruct->bqidx) << 22);	/* 32-(21-16)-5 = 32-10 */
-	temppack |= (((UWord32) BitStruct->gidx) << 18);	/* 22-4 */
-	temppack |= (((UWord32) BitStruct->qvidx[0]) << 13);	/* 18-5 */
+	temppack |= (((uint32_t) BitStruct->bqidx) << 22);	/* 32-(21-16)-5 = 32-10 */
+	temppack |= (((uint32_t) BitStruct->gidx) << 18);	/* 22-4 */
+	temppack |= (((uint32_t) BitStruct->qvidx[0]) << 13);	/* 18-5 */
 	/* total=19 */
 
 	/* store 3rd byte in the payload */
-	*PackedStream++ = (UWord8) (temppack >> 24);
+	*PackedStream++ = (uint8_t) (temppack >> 24);
 
 	/* store 4th byte in the payload */
-	*PackedStream++ = (UWord8) ((temppack << 8) >> 24);
+	*PackedStream++ = (uint8_t) ((temppack << 8) >> 24);
 
 	/* clear the upper 16 bits */
 	temppack = temppack << 16;
 
-	temppack |= (((UWord32) BitStruct->qvidx[1]) << 24);	/* 32-(19-16)-5 = 32-8 */
-	temppack |= (((UWord32) BitStruct->qvidx[2]) << 19);	/* 24-5 */
-	temppack |= (((UWord32) BitStruct->qvidx[3]) << 14);	/* 19-5 */
+	temppack |= (((uint32_t) BitStruct->qvidx[1]) << 24);	/* 32-(19-16)-5 = 32-8 */
+	temppack |= (((uint32_t) BitStruct->qvidx[2]) << 19);	/* 24-5 */
+	temppack |= (((uint32_t) BitStruct->qvidx[3]) << 14);	/* 19-5 */
 	/* total=18 */
 
 	/* store 5th byte in the payload */
-	*PackedStream++ = (UWord8) (temppack >> 24);
+	*PackedStream++ = (uint8_t) (temppack >> 24);
 
 	/* store 6th byte in the payload */
-	*PackedStream++ = (UWord8) ((temppack << 8) >> 24);
+	*PackedStream++ = (uint8_t) ((temppack << 8) >> 24);
 
 	/* clear the upper 16 bits */
 	temppack = temppack << 16;
 
-	temppack |= (((UWord32) BitStruct->qvidx[4]) << 25);	/* 32-(18-16)-5 = 32-7 */
-	temppack |= (((UWord32) BitStruct->qvidx[5]) << 20);	/* 25-5 */
-	temppack |= (((UWord32) BitStruct->qvidx[6]) << 15);	/* 20-5 */
+	temppack |= (((uint32_t) BitStruct->qvidx[4]) << 25);	/* 32-(18-16)-5 = 32-7 */
+	temppack |= (((uint32_t) BitStruct->qvidx[5]) << 20);	/* 25-5 */
+	temppack |= (((uint32_t) BitStruct->qvidx[6]) << 15);	/* 20-5 */
 	/* total=17 */
 
 	/* store 7th byte in the payload */
-	*PackedStream++ = (UWord8) (temppack >> 24);
+	*PackedStream++ = (uint8_t) (temppack >> 24);
 
 	/* store 8th byte in the payload */
-	*PackedStream++ = (UWord8) ((temppack << 8) >> 24);
+	*PackedStream++ = (uint8_t) ((temppack << 8) >> 24);
 
 	/* clear the upper 16 bits */
 	temppack = temppack << 16;
 
-	temppack |= (((UWord32) BitStruct->qvidx[7]) << 26);	/* 32-(17-16)-5 = 32-6 */
-	temppack |= (((UWord32) BitStruct->qvidx[8]) << 21);	/* 25-5 */
-	temppack |= (((UWord32) BitStruct->qvidx[9]) << 16);	/* 20-5 */
+	temppack |= (((uint32_t) BitStruct->qvidx[7]) << 26);	/* 32-(17-16)-5 = 32-6 */
+	temppack |= (((uint32_t) BitStruct->qvidx[8]) << 21);	/* 25-5 */
+	temppack |= (((uint32_t) BitStruct->qvidx[9]) << 16);	/* 20-5 */
 	/* total=18 */
 
 	/* store 9th byte in the payload */
-	*PackedStream++ = (UWord8) (temppack >> 24);
+	*PackedStream++ = (uint8_t) (temppack >> 24);
 
 	/* store 10th byte in the payload */
-	*PackedStream++ = (UWord8) ((temppack << 8) >> 24);
+	*PackedStream++ = (uint8_t) ((temppack << 8) >> 24);
 
 	return;
 }
@@ -172,40 +172,40 @@ void BV16_BitPack(UWord8 * PackedStream, struct BV16_Bit_Stream *BitStruct)
 *
 *
 ****************************************************************************/
-void BV16_BitUnPack(UWord8 * PackedStream, struct BV16_Bit_Stream *BitStruct)
+void BV16_BitUnPack(uint8_t * PackedStream, struct BV16_Bit_Stream *BitStruct)
 {
-	UWord32 bitword32;
+	uint32_t bitword32;
 
 	/* unpack bytes 1 and 2 of bit stream */
-	bitword32 = (UWord32) * PackedStream++;
-	bitword32 = (bitword32 << 8) | (UWord32) * PackedStream++;
+	bitword32 = (uint32_t) * PackedStream++;
+	bitword32 = (bitword32 << 8) | (uint32_t) * PackedStream++;
 	BitStruct->lspidx[0] = (short)(bitword32 >> 9);
 	BitStruct->lspidx[1] = (short)((bitword32 & 0x01FF) >> 2);
 
 	/* unpack bytes 3 and 4 of bit stream */
-	bitword32 = ((bitword32 & 0x0003) << 8) | (UWord32) * PackedStream++;
-	bitword32 = (bitword32 << 8) | (UWord32) * PackedStream++;
+	bitword32 = ((bitword32 & 0x0003) << 8) | (uint32_t) * PackedStream++;
+	bitword32 = (bitword32 << 8) | (uint32_t) * PackedStream++;
 	BitStruct->ppidx = (short)(bitword32 >> 11);
 	BitStruct->bqidx = (short)((bitword32 & 0x07FF) >> 6);
 	BitStruct->gidx = (short)((bitword32 & 0x003F) >> 2);
 
 	/* unpack bytes 5 and 6 of bit stream */
-	bitword32 = ((bitword32 & 0x0003) << 8) | (UWord32) * PackedStream++;
-	bitword32 = (bitword32 << 8) | (UWord32) * PackedStream++;
+	bitword32 = ((bitword32 & 0x0003) << 8) | (uint32_t) * PackedStream++;
+	bitword32 = (bitword32 << 8) | (uint32_t) * PackedStream++;
 	BitStruct->qvidx[0] = (short)(bitword32 >> 13);
 	BitStruct->qvidx[1] = (short)((bitword32 & 0x1FFF) >> 8);
 	BitStruct->qvidx[2] = (short)((bitword32 & 0x00FF) >> 3);
 
 	/* unpack bytes 7 and 8 of bit stream */
-	bitword32 = ((bitword32 & 0x0007) << 8) | (UWord32) * PackedStream++;
-	bitword32 = (bitword32 << 8) | (UWord32) * PackedStream++;
+	bitword32 = ((bitword32 & 0x0007) << 8) | (uint32_t) * PackedStream++;
+	bitword32 = (bitword32 << 8) | (uint32_t) * PackedStream++;
 	BitStruct->qvidx[3] = (short)(bitword32 >> 14);
 	BitStruct->qvidx[4] = (short)((bitword32 & 0x3FFF) >> 9);
 	BitStruct->qvidx[5] = (short)((bitword32 & 0x01FF) >> 4);
 
 	/* unpack bytes 9 and 10 of bit stream */
-	bitword32 = ((bitword32 & 0x000F) << 8) | (UWord32) * PackedStream++;
-	bitword32 = (bitword32 << 8) | (UWord32) * PackedStream++;
+	bitword32 = ((bitword32 & 0x000F) << 8) | (uint32_t) * PackedStream++;
+	bitword32 = (bitword32 << 8) | (uint32_t) * PackedStream++;
 	BitStruct->qvidx[6] = (short)((bitword32 >> 15));
 	BitStruct->qvidx[7] = (short)((bitword32 & 0x7FFF) >> 10);
 	BitStruct->qvidx[8] = (short)((bitword32 & 0x03FF) >> 5);

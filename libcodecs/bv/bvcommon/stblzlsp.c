@@ -26,12 +26,12 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "basop32.h"
 
-void stblz_lsp(Word16 * lsp,	/* Q15 */
-	       Word16 order)
+void stblz_lsp(int16_t * lsp,	/* Q15 */
+	       int16_t order)
 {
 
 	/* This function orders the lsp to prevent      */
@@ -39,8 +39,8 @@ void stblz_lsp(Word16 * lsp,	/* Q15 */
 	/* lsp properties in order to avoid marginal    */
 	/* stability of the synthesis filter.           */
 
-	Word16 k, i;
-	Word16 mintmp, maxtmp, a0;
+	int16_t k, i;
+	int16_t mintmp, maxtmp, a0;
 
 	/* order lsps as minimum stability requirement */
 	do {
@@ -56,7 +56,7 @@ void stblz_lsp(Word16 * lsp,	/* Q15 */
 	} while (k > 0);	/* repeat order checking if there was order reversal */
 
 	/* impose basic lsp properties */
-	maxtmp = bv_sub(LSPMAX, (Word16) ((order - 1) * DLSPMIN));
+	maxtmp = bv_sub(LSPMAX, (int16_t) ((order - 1) * DLSPMIN));
 
 	if (lsp[0] < LSPMIN)
 		lsp[0] = LSPMIN;
@@ -83,9 +83,9 @@ void stblz_lsp(Word16 * lsp,	/* Q15 */
 	return;
 }
 
-Word16 stblchck(Word16 * x, Word16 vdim)
+int16_t stblchck(int16_t * x, int16_t vdim)
 {
-	Word16 k, stbl;
+	int16_t k, stbl;
 
 	if (x[0] < 0)
 		stbl = 0;

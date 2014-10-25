@@ -40,68 +40,68 @@
 #define  STBLDIM 3		/* dimension of stability enforcement */
 
 /* LPC bandwidth expansion */
-extern Word16 bwel[];
+extern int16_t bwel[];
 
 /* LPC to lsp Conversion */
-extern Word16 bv_grid[];
+extern int16_t bv_grid[];
 
 /* LPC WEIGHTING FILTER */
-extern Word16 STWAL[];
+extern int16_t STWAL[];
 
 /* Coarse Pitch Search */
-extern Word16 invk[];
+extern int16_t invk[];
 
 /* Pitch tap codebook - actually content different for BV16 and BV32 */
-extern Word16 pp9cb[];
+extern int16_t pp9cb[];
 
 /* Function prototypes */
 
-void azfilter(Word16 a[],	/* (i) Q12 : prediction coefficients          */
-	      Word16 m,		/* (i)     : LPC order                        */
-	      Word16 x[],	/* (i) Q0  : input signal samples, incl. past */
-	      Word16 y[],	/* (o) Q0  : filtered output signal           */
-	      Word16 lg		/* (i)     : size of filtering                */
+void azfilter(int16_t a[],	/* (i) Q12 : prediction coefficients          */
+	      int16_t m,		/* (i)     : LPC order                        */
+	      int16_t x[],	/* (i) Q0  : input signal samples, incl. past */
+	      int16_t y[],	/* (o) Q0  : filtered output signal           */
+	      int16_t lg		/* (i)     : size of filtering                */
     );
 
-void apfilter(Word16 a[],	/* (i) Q12 : prediction coefficients  */
-	      Word16 m,		/* (i)     : LPC order                */
-	      Word16 x[],	/* (i) Q0  : input signal             */
-	      Word16 y[],	/* (o) Q0  : output signal            */
-	      Word16 lg,	/* (i)     : size of filtering        */
-	      Word16 mem[],	/* (i/o) Q0: filter memory            */
-	      Word16 update	/* (i)     : memory update flag       */
+void apfilter(int16_t a[],	/* (i) Q12 : prediction coefficients  */
+	      int16_t m,		/* (i)     : LPC order                */
+	      int16_t x[],	/* (i) Q0  : input signal             */
+	      int16_t y[],	/* (o) Q0  : output signal            */
+	      int16_t lg,	/* (i)     : size of filtering        */
+	      int16_t mem[],	/* (i/o) Q0: filter memory            */
+	      int16_t update	/* (i)     : memory update flag       */
     );
 
-void lsp2a(Word16 lsp[],	/* (i) Q15 : line spectral frequencies            */
-	   Word16 a[]);		/* (o) Q12 : predictor coefficients (order = 10)  */
+void lsp2a(int16_t lsp[],	/* (i) Q15 : line spectral frequencies            */
+	   int16_t a[]);		/* (o) Q12 : predictor coefficients (order = 10)  */
 
-void stblz_lsp(Word16 * lsp,	/* Q15 */
-	       Word16 order);
+void stblz_lsp(int16_t * lsp,	/* Q15 */
+	       int16_t order);
 
-Word16 stblchck(Word16 * x, Word16 vdim);
+int16_t stblchck(int16_t * x, int16_t vdim);
 
-void a2lsp(Word16 a[],		/* (i) Q12 : predictor coefficients              */
-	   Word16 lsp[],	/* (o) Q15 : line spectral frequencies           */
-	   Word16 old_lsp[]);	/* (i)     : old lsp[] (in case not found 10 roots) */
+void a2lsp(int16_t a[],		/* (i) Q12 : predictor coefficients              */
+	   int16_t lsp[],	/* (o) Q15 : line spectral frequencies           */
+	   int16_t old_lsp[]);	/* (i)     : old lsp[] (in case not found 10 roots) */
 
-void Autocorr(Word32 r[],	/* (o) : Autocorrelations      */
-	      Word16 x[],	/* (i) : Input signal          */
-	      Word16 window[],	/* (i) : LPC Analysis window   */
-	      Word16 l_window,	/* (i) : window length         */
-	      Word16 m);	/* (i) : LPC order             */
+void Autocorr(int32_t r[],	/* (o) : Autocorrelations      */
+	      int16_t x[],	/* (i) : Input signal          */
+	      int16_t window[],	/* (i) : LPC Analysis window   */
+	      int16_t l_window,	/* (i) : window length         */
+	      int16_t m);	/* (i) : LPC order             */
 
-void Spectral_Smoothing(Word16 m,	/* (i)     : LPC order                    */
-			Word32 rl[],	/* (i/o)   : Autocorrelations  lags       */
-			Word16 lag_h[],	/* (i)     : SST coefficients  (msb)      */
-			Word16 lag_l[]);	/* (i)     : SST coefficients  (lsb)   */
+void Spectral_Smoothing(int16_t m,	/* (i)     : LPC order                    */
+			int32_t rl[],	/* (i/o)   : Autocorrelations  lags       */
+			int16_t lag_h[],	/* (i)     : SST coefficients  (msb)      */
+			int16_t lag_l[]);	/* (i)     : SST coefficients  (lsb)   */
 
-void Levinson(Word32 r32[],	/* (i)  : r32[] double precision vector of autocorrelation coefficients   */
-	      Word16 a[],	/* (o)  : a[] in Q12 - LPC coefficients                                   */
-	      Word16 old_a[],	/* (i/o): old_a[] in Q12 - previous LPC coefficients                      */
-	      Word16 m);	/* (i)  : LPC order                                                       */
+void Levinson(int32_t r32[],	/* (i)  : r32[] double precision vector of autocorrelation coefficients   */
+	      int16_t a[],	/* (o)  : a[] in Q12 - LPC coefficients                                   */
+	      int16_t old_a[],	/* (i/o): old_a[] in Q12 - previous LPC coefficients                      */
+	      int16_t m);	/* (i)  : LPC order                                                       */
 
-void pp3dec(Word16 idx, Word16 * b);
+void pp3dec(int16_t idx, int16_t * b);
 
-void vqdec(Word16 * xq, Word16 idx, Word16 * cb, Word16 vdim);
+void vqdec(int16_t * xq, int16_t idx, int16_t * cb, int16_t vdim);
 
 #endif				/* BVCOMMON_H */

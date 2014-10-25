@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -42,12 +42,12 @@
 /* y[n]=b[0]*x[n]+b[1]*x[n-1]+b[2]*x[n-2]-a[1]*y[n-1]-a[2]*y[n-2]       */
 /************************************************************************/
 
-void preprocess(struct BV16_Encoder_State *cs, Word16 * output,	/* (o) Q0 output signal, less factor 1.5  */
-		Word16 * input,	/* (i) Q0 input signal                    */
-		Word16 N)
+void preprocess(struct BV16_Encoder_State *cs, int16_t * output,	/* (o) Q0 output signal, less factor 1.5  */
+		int16_t * input,	/* (i) Q0 input signal                    */
+		int16_t N)
 {				/* length of signal                       */
-	Word16 n;
-	Word32 a0;
+	int16_t n;
+	int32_t a0;
 
 	for (n = 0; n < N; n++) {
 

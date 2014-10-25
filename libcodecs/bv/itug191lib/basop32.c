@@ -133,15 +133,15 @@ extern int currCounter;
  |   Local Functions                                                         |
  |___________________________________________________________________________|
 */
-Word16 saturate(Word32 L_var1);
+int16_t saturate(int32_t L_var1);
 
 /*___________________________________________________________________________
  |                                                                           |
  |   Constants and Globals                                                   |
  |___________________________________________________________________________|
 */
-Flag bv_Overflow = 0;
-Flag bv_Carry = 0;
+int bv_Overflow = 0;
+int bv_Carry = 0;
 
 /*___________________________________________________________________________
  |                                                                           |
@@ -174,14 +174,14 @@ Flag bv_Carry = 0;
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 saturate(Word32 L_var1)
+int16_t saturate(int32_t L_var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (L_var1 > 0X00007fffL) {
 		bv_Overflow = 1;
 		var_out = MAX_16;
-	} else if (L_var1 < (Word32) 0xffff8000L) {
+	} else if (L_var1 < (int32_t) 0xffff8000L) {
 		bv_Overflow = 1;
 		var_out = MIN_16;
 	} else {
@@ -228,12 +228,12 @@ Word16 saturate(Word32 L_var1)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_add(Word16 var1, Word16 var2)
+int16_t bv_add(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 L_sum;
+	int16_t var_out;
+	int32_t L_sum;
 
-	L_sum = (Word32) var1 + var2;
+	L_sum = (int32_t) var1 + var2;
 	var_out = saturate(L_sum);
 
 #if (WMOPS)
@@ -275,12 +275,12 @@ Word16 bv_add(Word16 var1, Word16 var2)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_sub(Word16 var1, Word16 var2)
+int16_t bv_sub(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 L_diff;
+	int16_t var_out;
+	int32_t L_diff;
 
-	L_diff = (Word32) var1 - var2;
+	L_diff = (int32_t) var1 - var2;
 	var_out = saturate(L_diff);
 
 #if (WMOPS)
@@ -316,11 +316,11 @@ Word16 bv_sub(Word16 var1, Word16 var2)
  |             range : 0x0000 0000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_abs_s(Word16 var1)
+int16_t bv_abs_s(int16_t var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
-	if (var1 == (Word16) MIN_16) {
+	if (var1 == (int16_t) MIN_16) {
 		var_out = MAX_16;
 	} else {
 		if (var1 < 0) {
@@ -370,10 +370,10 @@ Word16 bv_abs_s(Word16 var1)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_shl(Word16 var1, Word16 var2)
+int16_t bv_shl(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 result;
+	int16_t var_out;
+	int32_t result;
 
 	if (var2 < 0) {
 		if (var2 < -16)
@@ -385,10 +385,10 @@ Word16 bv_shl(Word16 var1, Word16 var2)
 		bv_multiCounter[currCounter].bv_shr--;
 #endif
 	} else {
-		result = (Word32) var1 *((Word32) 1 << var2);
+		result = (int32_t) var1 *((int32_t) 1 << var2);
 
 		if ((var2 > 15 && var1 != 0)
-		    || (result != (Word32) ((Word16) result))) {
+		    || (result != (int32_t) ((int16_t) result))) {
 			bv_Overflow = 1;
 			var_out = (var1 > 0) ? MAX_16 : MIN_16;
 		} else {
@@ -440,9 +440,9 @@ Word16 bv_shl(Word16 var1, Word16 var2)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_shr(Word16 var1, Word16 var2)
+int16_t bv_shr(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (var2 < 0) {
 		if (var2 < -16)
@@ -505,17 +505,17 @@ Word16 bv_shr(Word16 var1, Word16 var2)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_mult(Word16 var1, Word16 var2)
+int16_t bv_mult(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 L_product;
+	int16_t var_out;
+	int32_t L_product;
 
-	L_product = (Word32) var1 *(Word32) var2;
+	L_product = (int32_t) var1 *(int32_t) var2;
 
-	L_product = (L_product & (Word32) 0xffff8000L) >> 15;
+	L_product = (L_product & (int32_t) 0xffff8000L) >> 15;
 
-	if (L_product & (Word32) 0x00010000L)
-		L_product = L_product | (Word32) 0xffff0000L;
+	if (L_product & (int32_t) 0x00010000L)
+		L_product = L_product | (int32_t) 0xffff0000L;
 
 	var_out = saturate(L_product);
 
@@ -559,13 +559,13 @@ Word16 bv_mult(Word16 var1, Word16 var2)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
-Word32 L_bv_mult(Word16 var1, Word16 var2)
+int32_t L_bv_mult(int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
-	L_var_out = (Word32) var1 *(Word32) var2;
+	L_var_out = (int32_t) var1 *(int32_t) var2;
 
-	if (L_var_out != (Word32) 0x40000000L) {
+	if (L_var_out != (int32_t) 0x40000000L) {
 		L_var_out *= 2;
 	} else {
 		bv_Overflow = 1;
@@ -606,9 +606,9 @@ Word32 L_bv_mult(Word16 var1, Word16 var2)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_negate(Word16 var1)
+int16_t bv_negate(int16_t var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	var_out = (var1 == MIN_16) ? MAX_16 : -var1;
 
@@ -645,11 +645,11 @@ Word16 bv_negate(Word16 var1)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_extract_h(Word32 L_var1)
+int16_t bv_extract_h(int32_t L_var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
-	var_out = (Word16) (L_var1 >> 16);
+	var_out = (int16_t) (L_var1 >> 16);
 
 #if (WMOPS)
 	bv_multiCounter[currCounter].bv_extract_h++;
@@ -684,11 +684,11 @@ Word16 bv_extract_h(Word32 L_var1)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_extract_l(Word32 L_var1)
+int16_t bv_extract_l(int32_t L_var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
-	var_out = (Word16) L_var1;
+	var_out = (int16_t) L_var1;
 
 #if (WMOPS)
 	bv_multiCounter[currCounter].bv_extract_l++;
@@ -726,12 +726,12 @@ Word16 bv_extract_l(Word32 L_var1)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 intround(Word32 L_var1)
+int16_t intround(int32_t L_var1)
 {
-	Word16 var_out;
-	Word32 L_rounded;
+	int16_t var_out;
+	int32_t L_rounded;
 
-	L_rounded = L_bv_add(L_var1, (Word32) 0x00008000L);
+	L_rounded = L_bv_add(L_var1, (int32_t) 0x00008000L);
 	var_out = bv_extract_h(L_rounded);
 
 #if (WMOPS)
@@ -778,10 +778,10 @@ Word16 intround(Word32 L_var1)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
-Word32 bv_L_mac(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t bv_L_mac(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
-	Word32 L_product;
+	int32_t L_var_out;
+	int32_t L_product;
 
 	L_product = L_bv_mult(var1, var2);
 	L_var_out = L_bv_add(L_var3, L_product);
@@ -830,10 +830,10 @@ Word32 bv_L_mac(Word32 L_var3, Word16 var1, Word16 var2)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
-Word32 bv_L_msu(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t bv_L_msu(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
-	Word32 L_product;
+	int32_t L_var_out;
+	int32_t L_product;
 
 	L_product = L_bv_mult(var1, var2);
 	L_var_out = L_bv_sub(L_var3, L_product);
@@ -888,9 +888,9 @@ Word32 bv_L_msu(Word32 L_var3, Word16 var1, Word16 var2)
  |    operators which take into account its value.                           |
  |___________________________________________________________________________|
 */
-Word32 bv_bv_L_macNs(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t bv_bv_L_macNs(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = L_bv_mult(var1, var2);
 	L_var_out = L_bv_add_c(L_var3, L_var_out);
@@ -945,9 +945,9 @@ Word32 bv_bv_L_macNs(Word32 L_var3, Word16 var1, Word16 var2)
  |    operators which take into account its value.                           |
  |___________________________________________________________________________|
 */
-Word32 bv_bv_L_msuNs(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t bv_bv_L_msuNs(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = L_bv_mult(var1, var2);
 	L_var_out = L_bv_sub_c(L_var3, L_var_out);
@@ -992,9 +992,9 @@ Word32 bv_bv_L_msuNs(Word32 L_var3, Word16 var1, Word16 var2)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
-Word32 L_bv_add(Word32 L_var1, Word32 L_var2)
+int32_t L_bv_add(int32_t L_var1, int32_t L_var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = L_var1 + L_var2;
 
@@ -1041,9 +1041,9 @@ Word32 L_bv_add(Word32 L_var1, Word32 L_var2)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
-Word32 L_bv_sub(Word32 L_var1, Word32 L_var2)
+int32_t L_bv_sub(int32_t L_var1, int32_t L_var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = L_var1 - L_var2;
 
@@ -1096,11 +1096,11 @@ Word32 L_bv_sub(Word32 L_var1, Word32 L_var2)
  |    operators which take into account its value.                           |
  |___________________________________________________________________________|
 */
-Word32 L_bv_add_c(Word32 L_var1, Word32 L_var2)
+int32_t L_bv_add_c(int32_t L_var1, int32_t L_var2)
 {
-	Word32 L_var_out;
-	Word32 L_test;
-	Flag carry_int = 0;
+	int32_t L_var_out;
+	int32_t L_test;
+	int carry_int = 0;
 
 	L_var_out = L_var1 + L_var2 + bv_Carry;
 
@@ -1134,7 +1134,7 @@ Word32 L_bv_add_c(Word32 L_var1, Word32 L_var2)
 			bv_Overflow = 1;
 			bv_Carry = carry_int;
 		} else {
-			if (L_test == (Word32) 0xFFFFFFFFL) {
+			if (L_test == (int32_t) 0xFFFFFFFFL) {
 				bv_Carry = 1;
 			} else {
 				bv_Carry = carry_int;
@@ -1187,11 +1187,11 @@ Word32 L_bv_add_c(Word32 L_var1, Word32 L_var2)
  |    operators which take into account its value.                           |
  |___________________________________________________________________________|
 */
-Word32 L_bv_sub_c(Word32 L_var1, Word32 L_var2)
+int32_t L_bv_sub_c(int32_t L_var1, int32_t L_var2)
 {
-	Word32 L_var_out;
-	Word32 L_test;
-	Flag carry_int = 0;
+	int32_t L_var_out;
+	int32_t L_test;
+	int carry_int = 0;
 
 	if (bv_Carry) {
 		bv_Carry = 0;
@@ -1208,7 +1208,7 @@ Word32 L_bv_sub_c(Word32 L_var1, Word32 L_var2)
 			}
 		}
 	} else {
-		L_var_out = L_var1 - L_var2 - (Word32) 0X00000001L;
+		L_var_out = L_var1 - L_var2 - (int32_t) 0X00000001L;
 		L_test = L_var1 - L_var2;
 
 		if ((L_test < 0) && (L_var1 > 0) && (L_var2 < 0)) {
@@ -1262,9 +1262,9 @@ Word32 L_bv_sub_c(Word32 L_var1, Word32 L_var2)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
-Word32 L_bv_negate(Word32 L_var1)
+int32_t L_bv_negate(int32_t L_var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = (L_var1 == MIN_32) ? MAX_32 : -L_var1;
 
@@ -1307,18 +1307,18 @@ Word32 L_bv_negate(Word32 L_var1)
  |             range : 0x8000 <= var_out <= 0x7fff.                          |
  |___________________________________________________________________________|
 */
-Word16 bv_bv_mult_r(Word16 var1, Word16 var2)
+int16_t bv_bv_mult_r(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 L_product_arr;
+	int16_t var_out;
+	int32_t L_product_arr;
 
-	L_product_arr = (Word32) var1 *(Word32) var2;	/* product */
-	L_product_arr += (Word32) 0x00004000L;	/* round */
-	L_product_arr &= (Word32) 0xffff8000L;
+	L_product_arr = (int32_t) var1 *(int32_t) var2;	/* product */
+	L_product_arr += (int32_t) 0x00004000L;	/* round */
+	L_product_arr &= (int32_t) 0xffff8000L;
 	L_product_arr >>= 15;	/* shift */
 
-	if (L_product_arr & (Word32) 0x00010000L) {	/* sign extend when necessary */
-		L_product_arr |= (Word32) 0xffff0000L;
+	if (L_product_arr & (int32_t) 0x00010000L) {	/* sign extend when necessary */
+		L_product_arr |= (int32_t) 0xffff0000L;
 	}
 	var_out = saturate(L_product_arr);
 
@@ -1361,10 +1361,10 @@ Word16 bv_bv_mult_r(Word16 var1, Word16 var2)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
-Word32 L_bv_shl(Word32 L_var1, Word16 var2)
+int32_t L_bv_shl(int32_t L_var1, int16_t var2)
 {
 
-	Word32 L_var_out = 0L;
+	int32_t L_var_out = 0L;
 
 	if (var2 <= 0) {
 		if (var2 < -32)
@@ -1376,12 +1376,12 @@ Word32 L_bv_shl(Word32 L_var1, Word16 var2)
 #endif
 	} else {
 		for (; var2 > 0; var2--) {
-			if (L_var1 > (Word32) 0X3fffffffL) {
+			if (L_var1 > (int32_t) 0X3fffffffL) {
 				bv_Overflow = 1;
 				L_var_out = MAX_32;
 				break;
 			} else {
-				if (L_var1 < (Word32) 0xc0000000L) {
+				if (L_var1 < (int32_t) 0xc0000000L) {
 					bv_Overflow = 1;
 					L_var_out = MIN_32;
 					break;
@@ -1430,9 +1430,9 @@ Word32 L_bv_shl(Word32 L_var1, Word16 var2)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
-Word32 L_bv_shr(Word32 L_var1, Word16 var2)
+int32_t L_bv_shr(int32_t L_var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	if (var2 < 0) {
 		if (var2 < -32)
@@ -1500,9 +1500,9 @@ Word32 L_bv_shr(Word32 L_var1, Word16 var2)
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word16 bv_bv_shr_r(Word16 var1, Word16 var2)
+int16_t bv_bv_shr_r(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (var2 > 15) {
 		var_out = 0;
@@ -1514,7 +1514,7 @@ Word16 bv_bv_shr_r(Word16 var1, Word16 var2)
 #endif
 
 		if (var2 > 0) {
-			if ((var1 & ((Word16) 1 << (var2 - 1))) != 0) {
+			if ((var1 & ((int16_t) 1 << (var2 - 1))) != 0) {
 				var_out++;
 			}
 		}
@@ -1564,12 +1564,12 @@ Word16 bv_bv_shr_r(Word16 var1, Word16 var2)
  |             range : 0x0000 8000 <= L_var_out <= 0x0000 7fff.              |
  |___________________________________________________________________________|
 */
-Word16 bv_mac_r(Word32 L_var3, Word16 var1, Word16 var2)
+int16_t bv_mac_r(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	L_var3 = bv_L_mac(L_var3, var1, var2);
-	L_var3 = L_bv_add(L_var3, (Word32) 0x00008000L);
+	L_var3 = L_bv_add(L_var3, (int32_t) 0x00008000L);
 	var_out = bv_extract_h(L_var3);
 
 #if (WMOPS)
@@ -1619,12 +1619,12 @@ Word16 bv_mac_r(Word32 L_var3, Word16 var1, Word16 var2)
  |             range : 0x0000 8000 <= L_var_out <= 0x0000 7fff.              |
  |___________________________________________________________________________|
 */
-Word16 bv_msu_r(Word32 L_var3, Word16 var1, Word16 var2)
+int16_t bv_msu_r(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	L_var3 = bv_L_msu(L_var3, var1, var2);
-	L_var3 = L_bv_add(L_var3, (Word32) 0x00008000L);
+	L_var3 = L_bv_add(L_var3, (int32_t) 0x00008000L);
 	var_out = bv_extract_h(L_var3);
 
 #if (WMOPS)
@@ -1664,11 +1664,11 @@ Word16 bv_msu_r(Word32 L_var3, Word16 var1, Word16 var2)
  |             range : 0x8000 0000 <= var_out <= 0x7fff 0000.                |
  |___________________________________________________________________________|
 */
-Word32 bv_L_deposit_h(Word16 var1)
+int32_t bv_L_deposit_h(int16_t var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
-	L_var_out = (Word32) var1 << 16;
+	L_var_out = (int32_t) var1 << 16;
 
 #if (WMOPS)
 	bv_multiCounter[currCounter].bv_L_deposit_h++;
@@ -1704,11 +1704,11 @@ Word32 bv_L_deposit_h(Word16 var1)
  |             range : 0xFFFF 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
-Word32 bv_L_deposit_l(Word16 var1)
+int32_t bv_L_deposit_l(int16_t var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
-	L_var_out = (Word32) var1;
+	L_var_out = (int32_t) var1;
 
 #if (WMOPS)
 	bv_multiCounter[currCounter].bv_L_deposit_l++;
@@ -1757,9 +1757,9 @@ Word32 bv_L_deposit_l(Word16 var1)
  |             range : 0x8000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
-Word32 L_bv_bv_shr_r(Word32 L_var1, Word16 var2)
+int32_t L_bv_bv_shr_r(int32_t L_var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	if (var2 > 31) {
 		L_var_out = 0;
@@ -1770,7 +1770,7 @@ Word32 L_bv_bv_shr_r(Word32 L_var1, Word16 var2)
 		bv_multiCounter[currCounter].L_bv_shr--;
 #endif
 		if (var2 > 0) {
-			if ((L_var1 & ((Word32) 1 << (var2 - 1))) != 0) {
+			if ((L_var1 & ((int32_t) 1 << (var2 - 1))) != 0) {
 				L_var_out++;
 			}
 		}
@@ -1810,9 +1810,9 @@ Word32 L_bv_bv_shr_r(Word32 L_var1, Word16 var2)
  |             range : 0x0000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
-Word32 bv_L_abs(Word32 L_var1)
+int32_t bv_L_abs(int32_t L_var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	if (L_var1 == MIN_32) {
 		L_var_out = MAX_32;
@@ -1860,9 +1860,9 @@ Word32 bv_L_abs(Word32 L_var1)
  |             range : 0x8000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
-Word32 bv_L_sat(Word32 L_var1)
+int32_t bv_L_sat(int32_t L_var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = L_var1;
 
@@ -1915,14 +1915,14 @@ Word32 bv_L_sat(Word32 L_var1)
  |             range : 0x0000 0000 <= var_out <= 0x0000 000f.                |
  |___________________________________________________________________________|
 */
-Word16 bv_norm_s(Word16 var1)
+int16_t bv_norm_s(int16_t var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (var1 == 0) {
 		var_out = 0;
 	} else {
-		if (var1 == (Word16) 0xffff) {
+		if (var1 == (int16_t) 0xffff) {
 			var_out = 15;
 		} else {
 			if (var1 < 0) {
@@ -1976,12 +1976,12 @@ Word16 bv_norm_s(Word16 var1)
  |             It's a Q15 value (point between b15 and b14).                 |
  |___________________________________________________________________________|
 */
-Word16 bv_div_s(Word16 var1, Word16 var2)
+int16_t bv_div_s(int16_t var1, int16_t var2)
 {
-	Word16 var_out = 0;
-	Word16 iteration;
-	Word32 L_num;
-	Word32 L_denom;
+	int16_t var_out = 0;
+	int16_t iteration;
+	int32_t L_num;
+	int32_t L_denom;
 
 	if ((var1 > var2) || (var1 < 0) || (var2 < 0)) {
 		printf("Division Error var1=%d  var2=%d\n", var1, var2);
@@ -2059,20 +2059,20 @@ Word16 bv_div_s(Word16 var1, Word16 var2)
  |             range : 0x0000 0000 <= var_out <= 0x0000 001f.                |
  |___________________________________________________________________________|
 */
-Word16 bv_norm_l(Word32 L_var1)
+int16_t bv_norm_l(int32_t L_var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (L_var1 == 0) {
 		var_out = 0;
 	} else {
-		if (L_var1 == (Word32) 0xffffffffL) {
+		if (L_var1 == (int32_t) 0xffffffffL) {
 			var_out = 31;
 		} else {
 			if (L_var1 < 0) {
 				L_var1 = ~L_var1;
 			}
-			for (var_out = 0; L_var1 < (Word32) 0x40000000L;
+			for (var_out = 0; L_var1 < (int32_t) 0x40000000L;
 			     var_out++) {
 				L_var1 <<= 1;
 			}
@@ -2131,13 +2131,13 @@ Word16 bv_norm_l(Word32 L_var1)
  |                                                                           |
  |___________________________________________________________________________|
 */
-Word32 bv_L_mls(Word32 Lv, Word16 v)
+int32_t bv_L_mls(int32_t Lv, int16_t v)
 {
-	Word32 Temp;
+	int32_t Temp;
 
-	Temp = Lv & (Word32) 0x0000ffff;
-	Temp = Temp * (Word32) v;
-	Temp = L_bv_shr(Temp, (Word16) 15);
+	Temp = Lv & (int32_t) 0x0000ffff;
+	Temp = Temp * (int32_t) v;
+	Temp = L_bv_shr(Temp, (int16_t) 15);
 	Temp = bv_L_mac(Temp, v, bv_extract_h(Lv));
 
 #if (WMOPS)
@@ -2188,22 +2188,22 @@ Word32 bv_L_mls(Word32 Lv, Word16 v)
 |             It's a Q15 value (point between b15 and b14).                 |
 |___________________________________________________________________________|
 */
-Word16 bv_div_l(Word32 L_num, Word16 den)
+int16_t bv_div_l(int32_t L_num, int16_t den)
 {
-	Word16 var_out = (Word16) 0;
-	Word32 L_den;
-	Word16 iteration;
+	int16_t var_out = (int16_t) 0;
+	int32_t L_den;
+	int16_t iteration;
 
 #if (WMOPS)
 	bv_multiCounter[currCounter].bv_div_l++;
 #endif
 
-	if (den == (Word16) 0) {
+	if (den == (int16_t) 0) {
 		printf("Division by 0 in bv_div_l, Fatal error \n");
 		exit(0);
 	}
 
-	if ((L_num < (Word32) 0) || (den < (Word16) 0)) {
+	if ((L_num < (int32_t) 0) || (den < (int16_t) 0)) {
 		printf("Division Error in bv_div_l, Fatal error \n");
 		exit(0);
 	}
@@ -2216,22 +2216,22 @@ Word16 bv_div_l(Word32 L_num, Word16 den)
 	if (L_num >= L_den) {
 		return MAX_16;
 	} else {
-		L_num = L_bv_shr(L_num, (Word16) 1);
-		L_den = L_bv_shr(L_den, (Word16) 1);
+		L_num = L_bv_shr(L_num, (int16_t) 1);
+		L_den = L_bv_shr(L_den, (int16_t) 1);
 #if (WMOPS)
 		bv_multiCounter[currCounter].L_bv_shr -= 2;
 #endif
-		for (iteration = (Word16) 0; iteration < (Word16) 15;
+		for (iteration = (int16_t) 0; iteration < (int16_t) 15;
 		     iteration++) {
-			var_out = bv_shl(var_out, (Word16) 1);
-			L_num = L_bv_shl(L_num, (Word16) 1);
+			var_out = bv_shl(var_out, (int16_t) 1);
+			L_num = L_bv_shl(L_num, (int16_t) 1);
 #if (WMOPS)
 			bv_multiCounter[currCounter].bv_shl--;
 			bv_multiCounter[currCounter].L_bv_shl--;
 #endif
 			if (L_num >= L_den) {
 				L_num = L_bv_sub(L_num, L_den);
-				var_out = bv_add(var_out, (Word16) 1);
+				var_out = bv_add(var_out, (int16_t) 1);
 #if (WMOPS)
 				bv_multiCounter[currCounter].L_bv_sub--;
 				bv_multiCounter[currCounter].bv_add--;
@@ -2272,12 +2272,12 @@ Word16 bv_div_l(Word32 L_num, Word16 den)
 |             are performed if ORIGINAL_G7231 is defined.                   |
 |___________________________________________________________________________|
 */
-Word16 i_bv_mult(Word16 a, Word16 b)
+int16_t i_bv_mult(int16_t a, int16_t b)
 {
 #ifdef ORIGINAL_G7231
 	return a * b;
 #else
-	register Word32 c = a * b;
+	register int32_t c = a * b;
 #if (WMOPS)
 	bv_multiCounter[currCounter].i_bv_mult++;
 #endif
@@ -2319,11 +2319,11 @@ Word16 i_bv_mult(Word16 a, Word16 b)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.
  |___________________________________________________________________________
 */
-Word32 L_bv_mult0(Word16 var1, Word16 var2)
+int32_t L_bv_mult0(int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
-	L_var_out = (Word32) var1 *(Word32) var2;
+	L_var_out = (int32_t) var1 *(int32_t) var2;
 
 #if (WMOPS)
 	bv_multiCounter[currCounter].L_bv_mult0++;
@@ -2361,10 +2361,10 @@ Word32 L_bv_mult0(Word16 var1, Word16 var2)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.
  |___________________________________________________________________________
 */
-Word32 bv_L_mac0(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t bv_L_mac0(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
-	Word32 L_product;
+	int32_t L_var_out;
+	int32_t L_product;
 
 	L_product = L_bv_mult0(var1, var2);
 	L_var_out = L_bv_add(L_var3, L_product);
@@ -2407,10 +2407,10 @@ Word32 bv_L_mac0(Word32 L_var3, Word16 var1, Word16 var2)
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.
  |___________________________________________________________________________
 */
-Word32 bv_L_msu0(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t bv_L_msu0(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
-	Word32 L_product;
+	int32_t L_var_out;
+	int32_t L_product;
 
 	L_product = L_bv_mult0(var1, var2);
 	L_var_out = L_bv_sub(L_var3, L_product);

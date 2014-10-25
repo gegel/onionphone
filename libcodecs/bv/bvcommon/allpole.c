@@ -26,26 +26,26 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "basop32.h"
 #include "utility.h"
 
 #define BUFFERSIZE  (LPCO+160)
 
-void apfilter(Word16 a[],	/* (i) Q12 : prediction coefficients  */
-	      Word16 m,		/* (i)     : LPC order                */
-	      Word16 x[],	/* (i) Q0  : input signal             */
-	      Word16 y[],	/* (o) Q0  : output signal            */
-	      Word16 lg,	/* (i)     : size of filtering        */
-	      Word16 mem[],	/* (i/o) Q0: filter memory            */
-	      Word16 update	/* (i)     : memory update flag       */
+void apfilter(int16_t a[],	/* (i) Q12 : prediction coefficients  */
+	      int16_t m,		/* (i)     : LPC order                */
+	      int16_t x[],	/* (i) Q0  : input signal             */
+	      int16_t y[],	/* (o) Q0  : output signal            */
+	      int16_t lg,	/* (i)     : size of filtering        */
+	      int16_t mem[],	/* (i/o) Q0: filter memory            */
+	      int16_t update	/* (i)     : memory update flag       */
     )
 {
-	Word16 buf[BUFFERSIZE];	/* buffer for filter memory & signal */
-	Word32 a0;
-	Word16 *fp1;
-	Word16 i, n;
+	int16_t buf[BUFFERSIZE];	/* buffer for filter memory & signal */
+	int32_t a0;
+	int16_t *fp1;
+	int16_t i, n;
 
 	/* copy filter memory to beginning part of temporary buffer */
 	W16copy(buf, mem, m);
