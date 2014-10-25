@@ -30,7 +30,7 @@
 /*
  * include files
  */
-#include "ophint.h"
+#include <stdint.h>
 #include "interf_rom.h"
 
 /*
@@ -72,9 +72,9 @@
 #define MIN_ENERGY            -14336	/* 14 Q10 */
 #define MIN_ENERGY_MR122      -2381	/* 14 / (20*log10(2)) Q10 */
 #define PN_INITIAL_SEED       0x70816958L	/* Pseudo noise generator seed value  */
-#define MIN_16                (Word16)-32768
-#define MAX_16                (Word16)0x7fff
-#define MAX_32                (Word32)0x7fffffffL
+#define MIN_16                (int16_t)-32768
+#define MAX_16                (int16_t)0x7fff
+#define MAX_32                (int32_t)0x7fffffffL
 #define EXPCONST              5243	/* 0.16 in Q15 */
 #define DTX_MAX_EMPTY_THRESH  50
 #define DTX_ELAPSED_FRAMES_THRESH (24 + 7 -1)
@@ -113,7 +113,7 @@
  */
 
 /* level adjustment for different modes Q11 */
-static const Word16 dtx_log_en_adjust[9] = {
+static const int16_t dtx_log_en_adjust[9] = {
 	-1023,
 	/* MR475 */ -878,
 	/* MR515 */ -732,
@@ -127,7 +127,7 @@ static const Word16 dtx_log_en_adjust[9] = {
 };
 
 /* attenuation factors for codebook gain */
-static const Word32 cdown[7] = {
+static const int32_t cdown[7] = {
 	32767,
 	32112,
 	32112,
@@ -138,7 +138,7 @@ static const Word32 cdown[7] = {
 };
 
 /* attenuation factors for adaptive codebook gain */
-static const Word32 pdown[7] = {
+static const int32_t pdown[7] = {
 	32767,
 	32112,
 	32112,
@@ -149,7 +149,7 @@ static const Word32 pdown[7] = {
 };
 
 /* algebraic code book gain MA predictor coefficients */
-static const Word32 pred[NPRED] = {
+static const int32_t pred[NPRED] = {
 	5571,
 	4751,
 	2785,
@@ -157,14 +157,14 @@ static const Word32 pred[NPRED] = {
 };
 
 /* algebraic code book gain MA predictor coefficients (MR122) */
-static const Word32 pred_MR122[NPRED] = {
+static const int32_t pred_MR122[NPRED] = {
 	44,
 	37,
 	22,
 	12
 };
 
-static const Word32 gamma4_gamma3_MR122[M] = {
+static const int32_t gamma4_gamma3_MR122[M] = {
 	22938,
 	16057,
 	11240,
@@ -177,7 +177,7 @@ static const Word32 gamma4_gamma3_MR122[M] = {
 	925
 };
 
-static const Word32 gamma3[M] = {
+static const int32_t gamma3[M] = {
 	18022,
 	9912,
 	5451,
@@ -190,7 +190,7 @@ static const Word32 gamma3[M] = {
 	83
 };
 
-static const Word32 gamma4_MR122[M] = {
+static const int32_t gamma4_MR122[M] = {
 	24576,
 	18432,
 	13824,
@@ -205,7 +205,7 @@ static const Word32 gamma4_MR122[M] = {
 
 /* adaptive codebook gain quantization table (MR122, MR795) */
 #define NB_QUA_PITCH 16
-static const Word32 qua_gain_pitch[NB_QUA_PITCH] = {
+static const int32_t qua_gain_pitch[NB_QUA_PITCH] = {
 	0,
 	3277,
 	6556,
@@ -226,7 +226,7 @@ static const Word32 qua_gain_pitch[NB_QUA_PITCH] = {
 
 /* fixed codebook gain quantization table (MR122, MR795) */
 #define NB_QUA_CODE 32
-static const Word32 qua_gain_code[NB_QUA_CODE * 3] = {
+static const int32_t qua_gain_code[NB_QUA_CODE * 3] = {
 /* gain factor (g_fac) and quantized energy error (qua_ener_MR122, qua_ener)
  * are stored:
  *
@@ -338,7 +338,7 @@ static const Word32 qua_gain_code[NB_QUA_CODE * 3] = {
 };
 
 /* gray coding table */
-static const Word8 gray[8] = {
+static const int8_t gray[8] = {
 	0,
 	1,
 	3,
@@ -350,7 +350,7 @@ static const Word8 gray[8] = {
 };
 
 /* gray decoding table */
-static const Word32 dgray[8] = {
+static const int32_t dgray[8] = {
 	0,
 	1,
 	3,
@@ -362,7 +362,7 @@ static const Word32 dgray[8] = {
 };
 
 /* table[i] = sqrt((i+16)*2^-6) * 2^15, i.e. sqrt(x) scaled Q15 */
-static const Word32 sqrt_table[49] = {
+static const int32_t sqrt_table[49] = {
 	16384,
 	16888,
 	17378,
@@ -414,7 +414,7 @@ static const Word32 sqrt_table[49] = {
 	32767
 };
 
-static const Word32 inv_sqrt_table[49] = {
+static const int32_t inv_sqrt_table[49] = {
 	32767,
 	31790,
 	30894,
@@ -467,7 +467,7 @@ static const Word32 inv_sqrt_table[49] = {
 };
 
 /* table used inbase 2 logharithm computation */
-static const Word32 log2_table[33] = {
+static const int32_t log2_table[33] = {
 	0,
 	1455,
 	2866,
@@ -504,7 +504,7 @@ static const Word32 log2_table[33] = {
 };
 
 /* table used in 2 to the power computation */
-static const Word32 pow2_table[33] = {
+static const int32_t pow2_table[33] = {
 	16384,
 	16743,
 	17109,
@@ -541,7 +541,7 @@ static const Word32 pow2_table[33] = {
 };
 
 /* table of cos(x) */
-static const Word32 cos_table[65] = {
+static const int32_t cos_table[65] = {
 	32767,
 	32729,
 	32610,
@@ -610,7 +610,7 @@ static const Word32 cos_table[65] = {
 };
 
 /* slope used to compute y = acos(x) */
-static const Word32 acos_slope[64] = {
+static const int32_t acos_slope[64] = {
 	-26887,
 	-8812,
 	-5323,
@@ -679,7 +679,7 @@ static const Word32 acos_slope[64] = {
 
 /* All impulse responses are in Q15 */
 /* phase dispersion impulse response (MR795) */
-static const Word32 ph_imp_low_MR795[] = {
+static const int32_t ph_imp_low_MR795[] = {
 	26777,
 	801,
 	2505,
@@ -723,7 +723,7 @@ static const Word32 ph_imp_low_MR795[] = {
 };
 
 /* phase dispersion impulse response (MR795) */
-static const Word32 ph_imp_mid_MR795[] = {
+static const int32_t ph_imp_mid_MR795[] = {
 	30274,
 	3831,
 	-4036,
@@ -767,7 +767,7 @@ static const Word32 ph_imp_mid_MR795[] = {
 };
 
 /* phase dispersion impulse response (MR475 - MR67) */
-static const Word32 ph_imp_low[] = {
+static const int32_t ph_imp_low[] = {
 	14690,
 	11518,
 	1268,
@@ -811,7 +811,7 @@ static const Word32 ph_imp_low[] = {
 };
 
 /* phase dispersion impulse response (MR475 - MR67) */
-static const Word32 ph_imp_mid[] = {
+static const int32_t ph_imp_mid[] = {
 	30274,
 	3831,
 	-4036,
@@ -858,7 +858,7 @@ static const Word32 ph_imp_mid[] = {
 #define PAST_RQ_INIT_SIZE 8
 
 /* initalization table for MA predictor in dtx mode */
-static const Word32 past_rq_init[80] = {
+static const int32_t past_rq_init[80] = {
 	-258,
 	-318,
 	-439,
@@ -944,7 +944,7 @@ static const Word32 past_rq_init[80] = {
 #define ALPHA     29491
 #define ONE_ALPHA 3277
 /* LSF means (not in MR122) */
-static const Word32 mean_lsf_3[10] = {
+static const int32_t mean_lsf_3[10] = {
 	1546,
 	2272,
 	3778,
@@ -960,7 +960,7 @@ static const Word32 mean_lsf_3[10] = {
 #define ALPHA_122     31128
 #define ONE_ALPHA_122 1639
 /* LSF means ->normalize frequency domain */
-static const Word32 mean_lsf_5[10] = {
+static const int32_t mean_lsf_5[10] = {
 	1384,
 	2077,
 	3420,
@@ -974,7 +974,7 @@ static const Word32 mean_lsf_5[10] = {
 };
 
 /* LSF prediction factors (not in MR122) */
-static const Word32 pred_fac[10] = {
+static const int32_t pred_fac[10] = {
 	9556,
 	10769,
 	12571,
@@ -992,7 +992,7 @@ static const Word32 pred_fac[10] = {
 #define DICO3_SIZE_3  512
 
 /* 1st LSF quantizer (not in MR122 and MR795) */
-static const Word32 dico1_lsf_3[] = {
+static const int32_t dico1_lsf_3[] = {
 	6,
 	82,
 	-131,
@@ -1764,7 +1764,7 @@ static const Word32 dico1_lsf_3[] = {
 };
 
 /* 2nd LSF quantizer (not in MR122) */
-static const Word32 dico2_lsf_3[] = {
+static const int32_t dico2_lsf_3[] = {
 	50,
 	71,
 	-9,
@@ -3304,7 +3304,7 @@ static const Word32 dico2_lsf_3[] = {
 };
 
 /* 3rd LSF quantizer (not in MR122, MR515 and MR475) */
-static const Word32 dico3_lsf_3[] = {
+static const int32_t dico3_lsf_3[] = {
 	67,
 	-17,
 	66,
@@ -5358,7 +5358,7 @@ static const Word32 dico3_lsf_3[] = {
 #define MR515_3_SIZE  128
 
 /* 3rd LSF quantizer (MR515 and MR475) */
-static const Word32 mr515_3_lsf[] = {
+static const int32_t mr515_3_lsf[] = {
 	419,
 	163,
 	-30,
@@ -5876,7 +5876,7 @@ static const Word32 mr515_3_lsf[] = {
 #define MR795_1_SIZE  512
 
 /* 1st LSF quantizer (MR795) */
-static const Word32 mr795_1_lsf[] = {
+static const int32_t mr795_1_lsf[] = {
 	-890,
 	-1550,
 	-2541,
@@ -7422,7 +7422,7 @@ static const Word32 mr795_1_lsf[] = {
 #define DICO5_SIZE_5  64
 
 /* 1st LSF quantizer (MR122) */
-static const Word32 dico1_lsf_5[DICO1_SIZE_5 * 4] = {
+static const int32_t dico1_lsf_5[DICO1_SIZE_5 * 4] = {
 	-451,
 	-1065,
 	-529,
@@ -7938,7 +7938,7 @@ static const Word32 dico1_lsf_5[DICO1_SIZE_5 * 4] = {
 };
 
 /* 2nd LSF quantizer (MR122) */
-static const Word32 dico2_lsf_5[DICO2_SIZE_5 * 4] = {
+static const int32_t dico2_lsf_5[DICO2_SIZE_5 * 4] = {
 	-1631,
 	-1600,
 	-1796,
@@ -8966,7 +8966,7 @@ static const Word32 dico2_lsf_5[DICO2_SIZE_5 * 4] = {
 };
 
 /* 3rd LSF quantizer (MR122) */
-static const Word32 dico3_lsf_5[DICO3_SIZE_5 * 4] = {
+static const int32_t dico3_lsf_5[DICO3_SIZE_5 * 4] = {
 	-1812,
 	-2275,
 	-1879,
@@ -9994,7 +9994,7 @@ static const Word32 dico3_lsf_5[DICO3_SIZE_5 * 4] = {
 };
 
 /* 4th LSF quantizer (MR122) */
-static const Word32 dico4_lsf_5[DICO4_SIZE_5 * 4] = {
+static const int32_t dico4_lsf_5[DICO4_SIZE_5 * 4] = {
 	-1857,
 	-1681,
 	-1857,
@@ -11022,7 +11022,7 @@ static const Word32 dico4_lsf_5[DICO4_SIZE_5 * 4] = {
 };
 
 /* 5th LSF quantizer (MR122) */
-static const Word32 dico5_lsf_5[DICO5_SIZE_5 * 4] = {
+static const int32_t dico5_lsf_5[DICO5_SIZE_5 * 4] = {
 	-1002,
 	-929,
 	-1096,
@@ -11282,7 +11282,7 @@ static const Word32 dico5_lsf_5[DICO5_SIZE_5 * 4] = {
 };
 
 /* Scaling factors for the lsp variability operation */
-static const Word16 lsf_hist_mean_scale[M] = {
+static const int16_t lsf_hist_mean_scale[M] = {
 	20000,
 	20000,
 	20000,
@@ -11318,7 +11318,7 @@ static const Word16 lsf_hist_mean_scale[M] = {
  * g_fac(2)          (Q12)  frame 1 and 3
  *
  */
-static const Word32 table_gain_MR475[MR475_VQ_SIZE * 4] = {
+static const int32_t table_gain_MR475[MR475_VQ_SIZE * 4] = {
 /*
  * g_pit(0),
  * g_fac(0),
@@ -12352,7 +12352,7 @@ static const Word32 table_gain_MR475[MR475_VQ_SIZE * 4] = {
 
 /* table used in 'high' rates: MR67 MR74 */
 #define VQ_SIZE_HIGHRATES 128
-static const Word32 table_gain_highrates[VQ_SIZE_HIGHRATES * 4] = {
+static const int32_t table_gain_highrates[VQ_SIZE_HIGHRATES * 4] = {
 /*
  * Note: every 4th value (qua_ener) contains the original values from IS641
  * to ensure bit-exactness; however, they are not exactly the
@@ -12878,7 +12878,7 @@ static const Word32 table_gain_highrates[VQ_SIZE_HIGHRATES * 4] = {
 
 /* table used in 'low' rates: MR475, MR515, MR59 */
 #define VQ_SIZE_LOWRATES 64
-static const Word32 table_gain_lowrates[VQ_SIZE_LOWRATES * 4] = {
+static const int32_t table_gain_lowrates[VQ_SIZE_LOWRATES * 4] = {
 /*
  * g_pit,
  * g_fac,
@@ -13142,7 +13142,7 @@ static const Word32 table_gain_lowrates[VQ_SIZE_LOWRATES * 4] = {
 	-14774
 };
 
-static const Word32 inter6[61] = {
+static const int32_t inter6[61] = {
 	29443,
 	28346,
 	25207,
@@ -13210,7 +13210,7 @@ static const Word32 inter6[61] = {
  * window for non-MR122 modesm; uses 40 samples lookahead
  * used only in BuildCNParam
  */
-static const Word32 window_200_40[L_WINDOW] = {
+static const int32_t window_200_40[L_WINDOW] = {
 	2621, 2623, 2629, 2638, 2651, 2668, 2689, 2713, 2741, 2772,
 	2808, 2847, 2890, 2936, 2986, 3040, 3097, 3158, 3223, 3291,
 	3363, 3438, 3517, 3599, 3685, 3774, 3867, 3963, 4063, 4166,
@@ -13239,13 +13239,13 @@ static const Word32 window_200_40[L_WINDOW] = {
 
 /* comparision optimization tables */
 /* definition of bad speech */
-static const UWord8 table_speech_bad[9] = { 0, 0, 1, 1, 0, 0, 0, 1, 0 };
-static const UWord8 table_SID[9] = { 0, 0, 0, 0, 1, 1, 1, 0, 0 };
-static const UWord8 table_DTX[9] = { 0, 0, 0, 0, 1, 1, 1, 1, 0 };
-static const UWord8 table_mute[9] = { 0, 0, 0, 0, 1, 0, 1, 1, 0 };
+static const uint8_t table_speech_bad[9] = { 0, 0, 1, 1, 0, 0, 0, 1, 0 };
+static const uint8_t table_SID[9] = { 0, 0, 0, 0, 1, 1, 1, 0, 0 };
+static const uint8_t table_DTX[9] = { 0, 0, 0, 0, 1, 1, 1, 1, 0 };
+static const uint8_t table_mute[9] = { 0, 0, 0, 0, 1, 0, 1, 1, 0 };
 
 /* track start positions for fixed codebook routines */
-static const Word8 startPos[16] = {
+static const int8_t startPos[16] = {
 	0,
 	2,
 	0,

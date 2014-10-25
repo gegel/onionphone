@@ -30,7 +30,7 @@
 /*
  * include files
  */
-#include "ophint.h"
+#include <stdint.h>
 #include "modes.h"
 
 /*

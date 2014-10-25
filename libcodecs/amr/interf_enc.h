@@ -57,8 +57,8 @@ void *Encoder_Interface_init(int dtx);
  */
 void Encoder_Interface_exit(void *state);
 
-int AMR475_encode(void *st, Word16 * speech, UWord8 * serial, int force_speech);
-int AMR_encode(void *st, UWord8 mode, Word16 * speech, UWord8 * serial,
+int AMR475_encode(void *st, int16_t * speech, uint8_t * serial, int force_speech);
+int AMR_encode(void *st, uint8_t mode, int16_t * speech, uint8_t * serial,
 	       int force_speech);
 #endif /* _interf_enc_h_ */
 
