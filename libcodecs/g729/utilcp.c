@@ -15,8 +15,6 @@
 /*****************************************************************************/
 /* auxiliary functions                                                       */
 /*****************************************************************************/
-
-#include "ophint.h"
 #include "ld8k.h"
 
 /*-------------------------------------------------------------------*
@@ -24,14 +22,14 @@
 *           ~~~~~~~~~~                                              *
 * Set vector x[] to zero                                            *
 *-------------------------------------------------------------------*/
-void set_zero(FLOAT x[],	/* (o)    : vector to clear     */
+void set_zero(float x[],	/* (o)    : vector to clear     */
 	      int L		/* (i)    : length of vector    */
     )
 {
 	int i;
 
 	for (i = 0; i < L; i++)
-		x[i] = (F) 0.0;
+		x[i] = (float) 0.0;
 
 	return;
 }
@@ -41,8 +39,8 @@ void set_zero(FLOAT x[],	/* (o)    : vector to clear     */
 *           ~~~~~                                                   *
 * Copy vector x[] to y[]                                            *
 *-------------------------------------------------------------------*/
-void copy(FLOAT x[],		/* (i)   : input vector   */
-	  FLOAT y[],		/* (o)   : output vector  */
+void copy(float x[],		/* (i)   : input vector   */
+	  float y[],		/* (o)   : output vector  */
 	  int L			/* (i)   : vector length  */
     )
 {
@@ -55,26 +53,26 @@ void copy(FLOAT x[],		/* (i)   : input vector   */
 }
 
 /* Random generator  */
-INT16 random_g729c(INT16 * seed)
+int16_t random_g729c(int16_t * seed)
 {
 
-	*seed = (INT16) ((*seed) * 31821L + 13849L);
+	*seed = (int16_t) ((*seed) * 31821L + 13849L);
 
 	return (*seed);
 
 }
 
 /*-----------------------------------------------------------*
-* fwrite16 - writes a FLOAT array as a Short to a a file    *
+* fwrite16 - writes a float array as a Short to a a file    *
 *-----------------------------------------------------------*/
-void fwrite16(FLOAT * data,	/* input: inputdata */
+void fwrite16(float * data,	/* input: inputdata */
 	      int length,	/* input: length of data array */
 	      FILE * fp		/* input: file pointer */
     )
 {
 	int i;
-	INT16 sp16[L_FRAME];
-	FLOAT temp;
+	int16_t sp16[L_FRAME];
+	float temp;
 
 	if (length > L_FRAME) {
 		printf("error in fwrite16\n");
@@ -84,47 +82,47 @@ void fwrite16(FLOAT * data,	/* input: inputdata */
 	for (i = 0; i < length; i++) {
 		/* round and convert to int  */
 		temp = data[i];
-		if (temp >= (F) 0.0)
-			temp += (F) 0.5;
+		if (temp >= (float) 0.0)
+			temp += (float) 0.5;
 		else
-			temp -= (F) 0.5;
-		if (temp > (F) 32767.0)
-			temp = (F) 32767.0;
-		if (temp < (F) - 32768.0)
-			temp = (F) - 32768.0;
-		sp16[i] = (INT16) temp;
+			temp -= (float) 0.5;
+		if (temp > (float) 32767.0)
+			temp = (float) 32767.0;
+		if (temp < (float) - 32768.0)
+			temp = (float) - 32768.0;
+		sp16[i] = (int16_t) temp;
 	}
-	fwrite(sp16, sizeof(INT16), length, fp);
+	fwrite(sp16, sizeof(int16_t), length, fp);
 	return;
 }
 
 /*****************************************************************************/
 /* Functions used by VAD.C                                                   */
 /*****************************************************************************/
-void dvsub(FLOAT * in1, FLOAT * in2, FLOAT * out, INT16 npts)
+void dvsub(float * in1, float * in2, float * out, int16_t npts)
 {
 	while (npts--)
 		*(out++) = *(in1++) - *(in2++);
 }
 
-FLOAT dvdot(FLOAT * in1, FLOAT * in2, INT16 npts)
+float dvdot(float * in1, float * in2, int16_t npts)
 {
-	FLOAT accum;
+	float accum;
 
-	accum = (F) 0.0;
+	accum = (float) 0.0;
 	while (npts--)
 		accum += *(in1++) * *(in2++);
 	return (accum);
 }
 
-void dvwadd(FLOAT * in1, FLOAT scalar1, FLOAT * in2, FLOAT scalar2,
-	    FLOAT * out, INT16 npts)
+void dvwadd(float * in1, float scalar1, float * in2, float scalar2,
+	    float * out, int16_t npts)
 {
 	while (npts--)
 		*(out++) = *(in1++) * scalar1 + *(in2++) * scalar2;
 }
 
-void dvsmul(FLOAT * in, FLOAT scalar, FLOAT * out, INT16 npts)
+void dvsmul(float * in, float scalar, float * out, int16_t npts)
 {
 	while (npts--)
 		*(out++) = *(in++) * scalar;

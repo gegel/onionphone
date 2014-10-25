@@ -24,7 +24,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "ophint.h"
 #include "ld8k.h"
 #include "tab_ld8k.h"
 #include "ld8cp.h"
@@ -34,9 +33,9 @@
 #include "sid.h"
 #include "tab_dtx.h"
 
-static FLOAT cur_gain;
-static FLOAT lspSid[M];
-static FLOAT sid_gain;
+static float cur_gain;
+static float lspSid[M];
+static float sid_gain;
 
 /*
 **
@@ -51,7 +50,7 @@ void init_dec_cng(void)
 	int i;
 
 	for (i = 0; i < M; i++)
-		lspSid[i] = (FLOAT) cos(freq_prev_reset[i]);
+		lspSid[i] = (float) cos(freq_prev_reset[i]);
 
 	sid_gain = tab_Sidgain[0];
 
@@ -69,16 +68,16 @@ void init_dec_cng(void)
 *                     Computes current frame LSPs
 *-----------------------------------------------------------*/
 void dec_cng(int past_ftyp,	/* (i)   : past frame type                      */
-	     FLOAT sid_sav,	/* (i)   : energy to recover SID gain           */
+	     float sid_sav,	/* (i)   : energy to recover SID gain           */
 	     int *parm,		/* (i)   : coded SID parameters                 */
-	     FLOAT * exc,	/* (i/o) : excitation array                     */
-	     FLOAT * lsp_old,	/* (i/o) : previous lsp                         */
-	     FLOAT * A_t,	/* (o)   : set of interpolated LPC coefficients */
-	     INT16 * seed,	/* (i/o) : random generator seed                */
-	     FLOAT freq_prev[MA_NP][M]	/* (i/o) : previous LPS for quantization        */
+	     float * exc,	/* (i/o) : excitation array                     */
+	     float * lsp_old,	/* (i/o) : previous lsp                         */
+	     float * A_t,	/* (o)   : set of interpolated LPC coefficients */
+	     int16_t * seed,	/* (i/o) : random generator seed                */
+	     float freq_prev[MA_NP][M]	/* (i/o) : previous LPS for quantization        */
     )
 {
-	FLOAT temp;
+	float temp;
 	int ind;
 
 	/* SID Frame */
@@ -139,19 +138,19 @@ void init_lsfq_noise(void)
 	for (i = 0; i < 4; i++)
 		for (j = 0; j < M; j++) {
 			noise_fg[1][i][j] =
-			    fg[0][i][j] * (F) 0.6 + fg[1][i][j] * (F) 0.4;
+			    fg[0][i][j] * (float) 0.6 + fg[1][i][j] * (float) 0.4;
 		}
 
 	return;
 }
 
 void sid_lsfq_decode(int *index,	/* (i) : quantized indices    */
-		     FLOAT * lspq,	/* (o) : quantized lsp vector */
-		     FLOAT freq_prev[MA_NP][M]	/* (i) : memory of predictor  */
+		     float * lspq,	/* (o) : quantized lsp vector */
+		     float freq_prev[MA_NP][M]	/* (i) : memory of predictor  */
     )
 {
 	int i;
-	FLOAT lsfq[M], tmpbuf[M];
+	float lsfq[M], tmpbuf[M];
 
 	/* get the lsf error vector */
 	copy(lspcb1[PtrTab_1[index[1]]], tmpbuf, M);
@@ -162,7 +161,7 @@ void sid_lsfq_decode(int *index,	/* (i) : quantized indices    */
 
 	/* guarantee minimum distance of 0.0012 between tmpbuf[j]
 	   and tmpbuf[j+1] */
-	lsp_expand_1_2(tmpbuf, (FLOAT) 0.0012);
+	lsp_expand_1_2(tmpbuf, (float) 0.0012);
 
 	/* compute the quantized lsf vector */
 	lsp_prev_compose(tmpbuf, lsfq, noise_fg[index[0]], freq_prev,
@@ -176,6 +175,6 @@ void sid_lsfq_decode(int *index,	/* (i) : quantized indices    */
 
 	/* convert lsf to lsp */
 	for (i = 0; i < M; i++)
-		lspq[i] = (FLOAT) cos(lsfq[i]);
+		lspq[i] = (float) cos(lsfq[i]);
 
 }

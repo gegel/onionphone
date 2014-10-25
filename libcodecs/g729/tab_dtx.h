@@ -13,16 +13,16 @@
 */
 
 /* VAD constants */
-extern FLOAT lbf_corr[NP + 1];
+extern float lbf_corr[NP + 1];
 
 /* SID LSF quantization */
-extern FLOAT noise_fg[MODE][MA_NP][M];
-extern FLOAT noise_fg_sum[MODE][M];
-extern FLOAT noise_fg_sum_inv[MODE][M];
+extern float noise_fg[MODE][MA_NP][M];
+extern float noise_fg_sum[MODE][M];
+extern float noise_fg_sum_inv[MODE][M];
 extern int PtrTab_1[32];
 extern int PtrTab_2[2][16];
-extern FLOAT Mp[MODE];
+extern float Mp[MODE];
 
 /* SID gain quantization */
-extern FLOAT fact[NB_GAIN + 1];
-extern FLOAT tab_Sidgain[32];
+extern float fact[NB_GAIN + 1];
+extern float tab_Sidgain[32];

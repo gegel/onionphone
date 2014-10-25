@@ -22,5 +22,5 @@
 
 void vad_init(void);
 
-void vad(FLOAT rc, FLOAT * lsf, FLOAT * rxx, FLOAT * sigpp, int frm_count,
-	 int prev_marker, int pprev_marker, int *marker, FLOAT * Energy_db);
+void vad(float rc, float * lsf, float * rxx, float * sigpp, int frm_count,
+	 int prev_marker, int pprev_marker, int *marker, float * Energy_db);

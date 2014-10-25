@@ -23,29 +23,29 @@
  Used for the floating point version of G.729 main body
  (not for G.729A)
 */
-extern FLOAT b100[3];
-extern FLOAT a100[3];
-extern FLOAT b140[3];
-extern FLOAT a140[3];
-extern FLOAT hamwindow[L_WINDOW];
-extern FLOAT grid[GRID_POINTS + 1];
-extern FLOAT lspcb1[NC0][M];	/*First Stage Codebook */
-extern FLOAT lspcb2[NC1][M];	/*Second Stage Codebook */
-extern FLOAT fg[MODE][MA_NP][M];	/*MA prediction coef.  */
-extern FLOAT fg_sum[MODE][M];	/*present MA prediction coef. */
-extern FLOAT fg_sum_inv[MODE][M];	/*inverse coef. */
-extern FLOAT inter_3[FIR_SIZE_ANA];
-extern FLOAT inter_3l[FIR_SIZE_SYN];
-extern FLOAT pred[4];
-extern FLOAT coef[2][2];
-extern FLOAT thr1[NCODE1 - NCAN1];
-extern FLOAT thr2[NCODE2 - NCAN2];
-extern FLOAT gbk1[NCODE1][2];
-extern FLOAT gbk2[NCODE2][2];
+extern float b100[3];
+extern float a100[3];
+extern float b140[3];
+extern float a140[3];
+extern float hamwindow[L_WINDOW];
+extern float grid[GRID_POINTS + 1];
+extern float lspcb1[NC0][M];	/*First Stage Codebook */
+extern float lspcb2[NC1][M];	/*Second Stage Codebook */
+extern float fg[MODE][MA_NP][M];	/*MA prediction coef.  */
+extern float fg_sum[MODE][M];	/*present MA prediction coef. */
+extern float fg_sum_inv[MODE][M];	/*inverse coef. */
+extern float inter_3[FIR_SIZE_ANA];
+extern float inter_3l[FIR_SIZE_SYN];
+extern float pred[4];
+extern float coef[2][2];
+extern float thr1[NCODE1 - NCAN1];
+extern float thr2[NCODE2 - NCAN2];
+extern float gbk1[NCODE1][2];
+extern float gbk2[NCODE2][2];
 extern int map1[NCODE1];
 extern int map2[NCODE2];
 extern int imap1[NCODE1];
 extern int imap2[NCODE2];
-extern FLOAT tab_hup_l[SIZ_TAB_HUP_L];
-extern FLOAT tab_hup_s[SIZ_TAB_HUP_S];
+extern float tab_hup_l[SIZ_TAB_HUP_L];
+extern float tab_hup_s[SIZ_TAB_HUP_S];
 extern int bitsno[PRM_SIZE];

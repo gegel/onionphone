@@ -23,37 +23,35 @@
 */
 
 /* Functions corr_xy2() and cor_h_x()   */
-
-#include "ophint.h"
 #include "ld8k.h"
 
 /*----------------------------------------------------------------------------
 * corr_xy2 - compute the correlation products needed for gain computation
 *----------------------------------------------------------------------------
 */
-void corr_xy2(FLOAT xn[],	/* input : target vector x[0:l_subfr] */
-	      FLOAT y1[],	/* input : filtered adaptive codebook vector */
-	      FLOAT y2[],	/* input : filtered 1st codebook innovation */
-	      FLOAT g_coeff[]	/* output: <y2,y2> , -2<xn,y2> , and 2<y1,y2> */
+void corr_xy2(float xn[],	/* input : target vector x[0:l_subfr] */
+	      float y1[],	/* input : filtered adaptive codebook vector */
+	      float y2[],	/* input : filtered 1st codebook innovation */
+	      float g_coeff[]	/* output: <y2,y2> , -2<xn,y2> , and 2<y1,y2> */
     )
 {
-	FLOAT y2y2, xny2, y1y2;
+	float y2y2, xny2, y1y2;
 	int i;
 
-	y2y2 = (F) 0.01;
+	y2y2 = (float) 0.01;
 	for (i = 0; i < L_SUBFR; i++)
 		y2y2 += y2[i] * y2[i];
 	g_coeff[2] = y2y2;
 
-	xny2 = (F) 0.01;
+	xny2 = (float) 0.01;
 	for (i = 0; i < L_SUBFR; i++)
 		xny2 += xn[i] * y2[i];
-	g_coeff[3] = (F) - 2.0 * xny2;
+	g_coeff[3] = (float) - 2.0 * xny2;
 
-	y1y2 = (F) 0.01;
+	y1y2 = (float) 0.01;
 	for (i = 0; i < L_SUBFR; i++)
 		y1y2 += y1[i] * y2[i];
-	g_coeff[4] = (F) 2.0 *y1y2;
+	g_coeff[4] = (float) 2.0 *y1y2;
 
 	return;
 
@@ -65,16 +63,16 @@ void corr_xy2(FLOAT xn[],	/* input : target vector x[0:l_subfr] */
 * Compute  correlations of input response h[] with the target vector X[].  *
 *--------------------------------------------------------------------------*/
 
-void cor_h_x(FLOAT h[],		/* (i) :Impulse response of filters      */
-	     FLOAT x[],		/* (i) :Target vector                    */
-	     FLOAT d[]		/* (o) :Correlations between h[] and x[] */
+void cor_h_x(float h[],		/* (i) :Impulse response of filters      */
+	     float x[],		/* (i) :Target vector                    */
+	     float d[]		/* (o) :Correlations between h[] and x[] */
     )
 {
 	int i, j;
-	FLOAT s;
+	float s;
 
 	for (i = 0; i < L_SUBFR; i++) {
-		s = (F) 0.0;
+		s = (float) 0.0;
 		for (j = i; j < L_SUBFR; j++)
 			s += x[j] * h[j - i];
 		d[i] = s;

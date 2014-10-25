@@ -17,7 +17,6 @@
  *             ~~~~~~~~~~     ~~~~~~~~~~~~~~~                      *
  *-----------------------------------------------------------------*/
 #include <math.h>
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "tab_ld8k.h"
@@ -44,69 +43,69 @@
   *--------------------------------------------------------*/
 
 /* Speech vector */
-static FLOAT old_speech[L_TOTAL];
-static FLOAT *speech, *p_window;
-FLOAT *new_speech;		/* Global variable */
+static float old_speech[L_TOTAL];
+static float *speech, *p_window;
+float *new_speech;		/* Global variable */
 
 /* Weighted speech vector */
-static FLOAT old_wsp[L_FRAME + PIT_MAX];
-static FLOAT *wsp;
+static float old_wsp[L_FRAME + PIT_MAX];
+static float *wsp;
 
 /* Excitation vector */
-static FLOAT old_exc[L_FRAME + PIT_MAX + L_INTERPOL];
-static FLOAT *exc;
+static float old_exc[L_FRAME + PIT_MAX + L_INTERPOL];
+static float *exc;
 
 /* Zero vector */
-static FLOAT ai_zero[L_SUBFR + M_BWDP1];
-static FLOAT *zero;
+static float ai_zero[L_SUBFR + M_BWDP1];
+static float *zero;
 
 /* Lsp (Line spectral pairs) */
-static FLOAT lsp_old[M] =
-    { (F) 0.9595, (F) 0.8413, (F) 0.6549, (F) 0.4154, (F) 0.1423,
-	(F) - 0.1423, (F) - 0.4154, (F) - 0.6549, (F) - 0.8413, (F) - 0.9595
+static float lsp_old[M] =
+    { (float) 0.9595, (float) 0.8413, (float) 0.6549, (float) 0.4154, (float) 0.1423,
+	(float) - 0.1423, (float) - 0.4154, (float) - 0.6549, (float) - 0.8413, (float) - 0.9595
 };
 
-static FLOAT lsp_old_q[M];
+static float lsp_old_q[M];
 
 /* Filter's memory */
-static FLOAT mem_syn[M_BWD], mem_w0[M_BWD], mem_w[M_BWD];
-static FLOAT mem_err[M_BWD + L_SUBFR], *error;
-static FLOAT pit_sharp;
+static float mem_syn[M_BWD], mem_w0[M_BWD], mem_w[M_BWD];
+static float mem_err[M_BWD + L_SUBFR], *error;
+static float pit_sharp;
 
 /* For G.729B */
 /* DTX variables */
 static int pastVad;
 static int ppastVad;
-static INT16 seed;
+static int16_t seed;
 
 /* for G.729E */
 /* for the backward analysis */
-static FLOAT prev_filter[M_BWDP1];	/* Previous selected filter */
+static float prev_filter[M_BWDP1];	/* Previous selected filter */
 
-static FLOAT rexp[M_BWDP1];
-static FLOAT synth[L_ANA_BWD];
-static FLOAT *synth_ptr;
+static float rexp[M_BWDP1];
+static float synth[L_ANA_BWD];
+static float *synth_ptr;
 static int prev_lp_mode;
-static FLOAT gamma1[2], gamma2[2];	/* Weighting factor for the 2 subframes */
-static FLOAT A_t_bwd_mem[M_BWDP1];
+static float gamma1[2], gamma2[2];	/* Weighting factor for the 2 subframes */
+static float A_t_bwd_mem[M_BWDP1];
 static int bwd_dominant;
-static FLOAT C_int;		/* See file bwfw.c */
-static INT16 glob_stat;		/* Mesure of global stationnarity */
-static INT16 stat_bwd;		/* Nbre of consecutive backward frames */
-static INT16 val_stat_bwd;	/* Value associated with stat_bwd */
+static float C_int;		/* See file bwfw.c */
+static int16_t glob_stat;		/* Mesure of global stationnarity */
+static int16_t stat_bwd;		/* Nbre of consecutive backward frames */
+static int16_t val_stat_bwd;	/* Value associated with stat_bwd */
 
 /* Last backward A(z) for case of unstable filter */
-static FLOAT old_A_bwd[M_BWDP1];
-static FLOAT old_rc_bwd[2];
+static float old_A_bwd[M_BWDP1];
+static float old_rc_bwd[2];
 /* Last forkward A(z) for case of unstable filter */
-static FLOAT old_A_fwd[MP1];
-static FLOAT old_rc_fwd[2];
-static FLOAT freq_prev[MA_NP][M];	/* previous LSP vector       */
+static float old_A_fwd[MP1];
+static float old_rc_fwd[2];
+static float freq_prev[MA_NP][M];	/* previous LSP vector       */
 
 static int lag_buf[5] = { 20, 20, 20, 20, 20 };
-static FLOAT pgain_buf[5] = { (F) 0.7, (F) 0.7, (F) 0.7, (F) 0.7, (F) 0.7 };
+static float pgain_buf[5] = { (float) 0.7, (float) 0.7, (float) 0.7, (float) 0.7, (float) 0.7 };
 
-#define         AVG(a,b,c,d) (int)(((a)+(b)+(c)+(d))/((F)4.0)+(F)0.5)
+#define         AVG(a,b,c,d) (int)(((a)+(b)+(c)+(d))/((float)4.0)+(float)0.5)
 
 /*----------------------------------------------------------------------------
  * init_coder_ld8c - initialization of variables for the encoder
@@ -175,26 +174,26 @@ void init_coder_ld8c(int dtx_enable	/* input : DTX enable flag */
 	synth_ptr = synth + MEM_SYN_BWD;
 	prev_lp_mode = 0;
 	bwd_dominant = 0;	/* See file bwfw.c */
-	C_int = (F) 1.1;	/* Filter interpolation parameter */
+	C_int = (float) 1.1;	/* Filter interpolation parameter */
 	glob_stat = 10000;	/* Mesure of global stationnarity */
 	stat_bwd = 0;		/* Nbre of consecutive backward frames */
 	val_stat_bwd = 0;	/* Value associated with stat_bwd */
 
 	for (i = 0; i < M_BWDP1; i++)
-		rexp[i] = (F) 0.;
+		rexp[i] = (float) 0.;
 
-	A_t_bwd_mem[0] = (F) 1.;
+	A_t_bwd_mem[0] = (float) 1.;
 	for (i = 1; i < M_BWDP1; i++)
-		A_t_bwd_mem[i] = (F) 0.;
+		A_t_bwd_mem[i] = (float) 0.;
 	set_zero(prev_filter, M_BWDP1);
-	prev_filter[0] = (F) 1.;
+	prev_filter[0] = (float) 1.;
 
 	set_zero(old_A_bwd, M_BWDP1);
-	old_A_bwd[0] = (F) 1.;
+	old_A_bwd[0] = (float) 1.;
 	set_zero(old_rc_bwd, 2);
 
 	set_zero(old_A_fwd, MP1);
-	old_A_fwd[0] = (F) 1.;
+	old_A_fwd[0] = (float) 1.;
 	set_zero(old_rc_fwd, 2);
 
 	return;
@@ -211,51 +210,51 @@ void coder_ld8c(int ana[],	/* output: analysis parameters */
     )
 {
 	/* LPC analysis */
-	FLOAT r_fwd[NP + 1];	/* Autocorrelations (forward) */
-	FLOAT r_bwd[M_BWDP1];	/* Autocorrelations (backward) */
-	FLOAT rc_fwd[M];	/* Reflection coefficients : forward analysis */
-	FLOAT rc_bwd[M_BWD];	/* Reflection coefficients : backward analysis */
-	FLOAT A_t_fwd[MP1 * 2];	/* A(z) forward unquantized for the 2 subframes */
-	FLOAT A_t_fwd_q[MP1 * 2];	/* A(z) forward quantized for the 2 subframes */
-	FLOAT A_t_bwd[2 * M_BWDP1];	/* A(z) backward for the 2 subframes */
-	FLOAT *Aq;		/* A(z) "quantized" for the 2 subframes */
-	FLOAT *Ap;		/* A(z) "unquantized" for the 2 subframes */
-	FLOAT *pAp, *pAq;
-	FLOAT Ap1[M_BWDP1];	/* A(z) with spectral expansion         */
-	FLOAT Ap2[M_BWDP1];	/* A(z) with spectral expansion         */
-	FLOAT lsp_new[M], lsp_new_q[M];	/* LSPs at 2th subframe                 */
-	FLOAT lsf_int[M];	/* Interpolated LSF 1st subframe.       */
-	FLOAT lsf_new[M];
+	float r_fwd[NP + 1];	/* Autocorrelations (forward) */
+	float r_bwd[M_BWDP1];	/* Autocorrelations (backward) */
+	float rc_fwd[M];	/* Reflection coefficients : forward analysis */
+	float rc_bwd[M_BWD];	/* Reflection coefficients : backward analysis */
+	float A_t_fwd[MP1 * 2];	/* A(z) forward unquantized for the 2 subframes */
+	float A_t_fwd_q[MP1 * 2];	/* A(z) forward quantized for the 2 subframes */
+	float A_t_bwd[2 * M_BWDP1];	/* A(z) backward for the 2 subframes */
+	float *Aq;		/* A(z) "quantized" for the 2 subframes */
+	float *Ap;		/* A(z) "unquantized" for the 2 subframes */
+	float *pAp, *pAq;
+	float Ap1[M_BWDP1];	/* A(z) with spectral expansion         */
+	float Ap2[M_BWDP1];	/* A(z) with spectral expansion         */
+	float lsp_new[M], lsp_new_q[M];	/* LSPs at 2th subframe                 */
+	float lsf_int[M];	/* Interpolated LSF 1st subframe.       */
+	float lsf_new[M];
 	int lp_mode;		/* LP Backward (1) / Forward (0) Indication mode */
 	int m_ap, m_aq;
 	int code_lsp[2];
 
 	/* Other vectors */
-	FLOAT h1[L_SUBFR];	/* Impulse response h1[]              */
-	FLOAT xn[L_SUBFR];	/* Target vector for pitch search     */
-	FLOAT xn2[L_SUBFR];	/* Target vector for codebook search  */
-	FLOAT code[L_SUBFR];	/* Fixed codebook excitation          */
-	FLOAT y1[L_SUBFR];	/* Filtered adaptive excitation       */
-	FLOAT y2[L_SUBFR];	/* Filtered fixed codebook excitation */
-	FLOAT res2[L_SUBFR];	/* Pitch prediction residual          */
-	FLOAT g_coeff[5];	/* Correlations between xn, y1, & y2:
+	float h1[L_SUBFR];	/* Impulse response h1[]              */
+	float xn[L_SUBFR];	/* Target vector for pitch search     */
+	float xn2[L_SUBFR];	/* Target vector for codebook search  */
+	float code[L_SUBFR];	/* Fixed codebook excitation          */
+	float y1[L_SUBFR];	/* Filtered adaptive excitation       */
+	float y2[L_SUBFR];	/* Filtered fixed codebook excitation */
+	float res2[L_SUBFR];	/* Pitch prediction residual          */
+	float g_coeff[5];	/* Correlations between xn, y1, & y2:
 				   <y1,y1>, <xn,y1>, <y2,y2>, <xn,y2>,<y1,y2> */
 
 	/* Scalars */
 	int i, j, i_gamma, i_subfr;
 	int T_op, t0, t0_min, t0_max, t0_frac;
 	int index, taming;
-	FLOAT gain_pit, gain_code;
+	float gain_pit, gain_code;
 
 	/* for G.729E */
 	int sat_filter;
-	FLOAT freq_cur[M];
+	float freq_cur[M];
 
 	/* For G.729B */
-	FLOAT r_nbe[MP1];
-	FLOAT lsfq_mem[MA_NP][M];
+	float r_nbe[MP1];
+	float lsfq_mem[MA_NP][M];
 	int Vad;
-	FLOAT Energy_db;
+	float Energy_db;
 
 	int avg_lag;
 
@@ -306,7 +305,7 @@ void coder_ld8c(int ana[],	/* output: analysis parameters */
 		/* Tests saturation of A_t_bwd */
 		sat_filter = 0;
 		for (i = M_BWDP1; i < 2 * M_BWDP1; i++)
-			if (A_t_bwd[i] >= (F) 8.)
+			if (A_t_bwd[i] >= (float) 8.)
 				sat_filter = 1;
 		if (sat_filter == 1)
 			copy(A_t_bwd_mem, &A_t_bwd[M_BWDP1], M_BWDP1);
@@ -453,7 +452,7 @@ void coder_ld8c(int ana[],	/* output: analysis parameters */
 
 			for (i = 0; i < 4; i++)
 				pgain_buf[i] = pgain_buf[i + 1];
-			pgain_buf[4] = (F) 0.5;
+			pgain_buf[4] = (float) 0.5;
 
 			pAp += MP1;
 			pAq += MP1;
@@ -461,7 +460,7 @@ void coder_ld8c(int ana[],	/* output: analysis parameters */
 		/* update previous filter for next frame */
 		copy(&A_t_fwd_q[MP1], prev_filter, MP1);
 		for (i = MP1; i < M_BWDP1; i++)
-			prev_filter[i] = (F) 0.;
+			prev_filter[i] = (float) 0.;
 		prev_lp_mode = lp_mode;
 
 		pit_sharp = SHARPMIN;
@@ -486,15 +485,15 @@ void coder_ld8c(int ana[],	/* output: analysis parameters */
 		/* update previous filter for next frame */
 		copy(&Aq[MP1], prev_filter, MP1);
 		for (i = MP1; i < M_BWDP1; i++)
-			prev_filter[i] = (F) 0.;
+			prev_filter[i] = (float) 0.;
 		for (j = MP1; j < M_BWDP1; j++)
-			ai_zero[j] = (F) 0.;
+			ai_zero[j] = (float) 0.;
 	} else {
 		m_aq = M_BWD;
 		Aq = A_t_bwd;
 		if (bwd_dominant == 0) {
 			for (j = MP1; j < M_BWDP1; j++)
-				ai_zero[j] = (F) 0.;
+				ai_zero[j] = (float) 0.;
 		}
 		/* update previous filter for next frame */
 		copy(&Aq[M_BWDP1], prev_filter, M_BWDP1);

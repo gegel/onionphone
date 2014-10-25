@@ -26,15 +26,13 @@
 /* ----------------------------------------------------------------------- */
 #include <stdio.h>
 #include <math.h>
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "tabld8cp.h"
 
-static void calc_stat(FLOAT gpred_b, FLOAT gpred_f, int mode,
-		      int prev_mode, INT16 * glob_stat, INT16 * stat_bwd,
-		      INT16 * val_stat_bwd);
+static void calc_stat(float gpred_b, float gpred_f, int mode,
+		      int prev_mode, int16_t * glob_stat, int16_t * stat_bwd,
+		      int16_t * val_stat_bwd);
 
 /* ---------------------------------------------------------------------- */
 /*                              SET_LPC_MODE                              */
@@ -42,30 +40,30 @@ static void calc_stat(FLOAT gpred_b, FLOAT gpred_f, int mode,
 /*                    BACKWARD <--> FORWARD DECISION                      */
 /* ---------------------------------------------------------------------- */
 
-void set_lpc_mode(FLOAT * signal_ptr,	/* I   Input signal */
-		  FLOAT * a_fwd,	/* I   Forward LPC filter */
-		  FLOAT * a_bwd,	/* I   Backward LPC filter */
+void set_lpc_mode(float * signal_ptr,	/* I   Input signal */
+		  float * a_fwd,	/* I   Forward LPC filter */
+		  float * a_bwd,	/* I   Backward LPC filter */
 		  int *mode,	/* O  Backward / forward Indication */
-		  FLOAT * lsp_new,	/* I   LSP vector current frame */
-		  FLOAT * lsp_old,	/* I   LSP vector previous frame */
+		  float * lsp_new,	/* I   LSP vector current frame */
+		  float * lsp_old,	/* I   LSP vector previous frame */
 		  int *bwd_dominant,	/* O   Bwd dominant mode indication */
 		  int prev_mode,	/* I   previous frame Backward / forward Indication */
-		  FLOAT * prev_filter,	/* I   previous frame filter */
-		  FLOAT * C_int,	/*I/O filter interpolation parameter */
-		  INT16 * glob_stat,	/* I/O Mre of global stationnarity */
-		  INT16 * stat_bwd,	/* I/O Number of consecutive backward frames */
-		  INT16 * val_stat_bwd	/* I/O Value associated with stat_bwd */
+		  float * prev_filter,	/* I   previous frame filter */
+		  float * C_int,	/*I/O filter interpolation parameter */
+		  int16_t * glob_stat,	/* I/O Mre of global stationnarity */
+		  int16_t * stat_bwd,	/* I/O Number of consecutive backward frames */
+		  int16_t * val_stat_bwd	/* I/O Value associated with stat_bwd */
     )
 {
 
 	int i;
-	FLOAT res[L_FRAME];
-	FLOAT *pa_bwd;
-	FLOAT gap;
-	FLOAT gpred_f, gpred_b, gpred_bint;
-	FLOAT tmp;
-	FLOAT thresh_lpc;
-	FLOAT dist_lsp, energy;
+	float res[L_FRAME];
+	float *pa_bwd;
+	float gap;
+	float gpred_f, gpred_b, gpred_bint;
+	float tmp;
+	float thresh_lpc;
+	float dist_lsp, energy;
 
 	pa_bwd = a_bwd + M_BWDP1;
 	/* Backward filter prediction gain (no interpolation ) */
@@ -111,11 +109,11 @@ void set_lpc_mode(FLOAT * signal_ptr,	/* I   Input signal */
 	/* ----------------------------------- */
 
 	/* Threshold adaptation according to the global stationnarity indicator */
-	gap = (FLOAT) (*glob_stat) * GAP_FACT;
-	gap += (F) 1.;
+	gap = (float) (*glob_stat) * GAP_FACT;
+	gap += (float) 1.;
 
 	if ((gpred_bint > gpred_f - gap) && (gpred_b > gpred_f - gap) &&
-	    (gpred_b > (F) 0.) && (gpred_bint > (F) 0.))
+	    (gpred_b > (float) 0.) && (gpred_bint > (float) 0.))
 		*mode = 1;
 	else
 		*mode = 0;
@@ -134,14 +132,14 @@ void set_lpc_mode(FLOAT * signal_ptr,	/* I   Input signal */
 
 	/* Adaptation of the LSPs thresholds */
 	if (*glob_stat < 32000) {
-		thresh_lpc = (F) 0.;
+		thresh_lpc = (float) 0.;
 	} else {
-		thresh_lpc = (F) 0.03;
+		thresh_lpc = (float) 0.03;
 	}
 
 	/* Switching backward -> forward forbidden in case of a LPC stationnary */
 	if ((dist_lsp < thresh_lpc) && (*mode == 0) && (prev_mode == 1)
-	    && (gpred_b > (F) 0.) && (gpred_bint > (F) 0.)) {
+	    && (gpred_b > (float) 0.) && (gpred_bint > (float) 0.)) {
 		*mode = 1;
 	}
 
@@ -162,14 +160,14 @@ void set_lpc_mode(FLOAT * signal_ptr,	/* I   Input signal */
 		calc_stat(gpred_b, gpred_f, *mode,
 			  prev_mode, glob_stat, stat_bwd, val_stat_bwd);
 	if (*mode == 0)
-		*C_int = (F) 1.1;
+		*C_int = (float) 1.1;
 	return;
 }
 
 void update_bwd(int *mode,	/* O  Backward / forward Indication */
 		int *bwd_dominant,	/* O   Bwd dominant mode indication */
-		FLOAT * C_int,	/*I/O filter interpolation parameter */
-		INT16 * glob_stat	/* I/O Mre of global stationnarity */
+		float * C_int,	/*I/O filter interpolation parameter */
+		int16_t * glob_stat	/* I/O Mre of global stationnarity */
     )
 {
 	/* BIT RATES IN FORWARD MODE ONLY */
@@ -182,7 +180,7 @@ void update_bwd(int *mode,	/* O  Backward / forward Indication */
 	*mode = 0;
 /*  tst_bwd_dominant(bwd_dominant, *mode);*/
 	*bwd_dominant = 0;
-	*C_int = (F) 1.1;
+	*C_int = (float) 1.1;
 	return;
 }
 
@@ -199,16 +197,16 @@ void update_bwd(int *mode,	/* O  Backward / forward Indication */
 /*                                                                        */
 /* ---------------------------------------------------------------------- */
 
-static void calc_stat(FLOAT gpred_b,	/* I  Backward prediction gain */
-		      FLOAT gpred_f,	/* I  Forward prediction gain */
+static void calc_stat(float gpred_b,	/* I  Backward prediction gain */
+		      float gpred_f,	/* I  Forward prediction gain */
 		      int mode,	/* I  LPC mode indication */
 		      int prev_mode,	/* I  previous frame LPC mode */
-		      INT16 * glob_stat,	/* I/O Mre of global stationnarity  */
-		      INT16 * stat_bwd,	/* I/O Number of consecutive backward frames */
-		      INT16 * val_stat_bwd	/* I/O Value associated with stat_bwd */
+		      int16_t * glob_stat,	/* I/O Mre of global stationnarity  */
+		      int16_t * stat_bwd,	/* I/O Number of consecutive backward frames */
+		      int16_t * val_stat_bwd	/* I/O Value associated with stat_bwd */
     )
 {
-	INT16 s_temp;
+	int16_t s_temp;
 	/* --------------------------------------------------------------- */
 	/* First adaptation based on previous backward / forward decisions */
 	/* --------------------------------------------------------------- */
@@ -237,8 +235,8 @@ static void calc_stat(FLOAT gpred_b,	/* I  Backward prediction gain */
 
 		/* Transition occurs after less than 20 backward frames => decrease stat */
 		if (*stat_bwd < 20) {
-			s_temp = (INT16) (5000 - *val_stat_bwd);
-			*glob_stat = (INT16) (*glob_stat - s_temp);
+			s_temp = (int16_t) (5000 - *val_stat_bwd);
+			*glob_stat = (int16_t) (*glob_stat - s_temp);
 		}
 
 		/* Reset consecutive backward frames counter */
@@ -261,7 +259,7 @@ static void calc_stat(FLOAT gpred_b,	/* I  Backward prediction gain */
 			*glob_stat += 1600;
 		else if (gpred_b > gpred_f + TH1)
 			*glob_stat += 800;
-		else if (gpred_b > gpred_f + (F) 0.)
+		else if (gpred_b > gpred_f + (float) 0.)
 			*glob_stat += 400;
 
 	}
