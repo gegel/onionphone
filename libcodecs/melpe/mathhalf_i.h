@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -117,19 +119,18 @@ Secretariat fax: +33 493 65 47 16.
 
 static __inline Shortword saturate(Longword L_var1)
 {
-	Shortword	swOut;
+	Shortword swOut;
 
-	if (L_var1 > SW_MAX){
+	if (L_var1 > SW_MAX) {
 		swOut = SW_MAX;
 		inc_saturation();
-	} else if (L_var1 < SW_MIN){
+	} else if (L_var1 < SW_MIN) {
 		swOut = SW_MIN;
 		inc_saturation();
 	} else
-		swOut = (Shortword) L_var1;              /* automatic type conversion */
+		swOut = (Shortword) L_var1;	/* automatic type conversion */
 	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -173,10 +174,10 @@ static __inline Shortword saturate(Longword L_var1)
 
 static __inline Shortword divide_s(Shortword var1, Shortword var2)
 {
-	Longword	L_div;
-	Shortword	swOut;
+	Longword L_div;
+	Shortword swOut;
 
-	if (var1 < 0 || var2 < 0 || var1 > var2){
+	if (var1 < 0 || var2 < 0 || var1 > var2) {
 		/* undefined output for invalid input into divide_s() */
 		return ((Shortword) 0);
 	}
@@ -186,9 +187,8 @@ static __inline Shortword divide_s(Shortword var1, Shortword var2)
 
 	L_div = ((0x00008000L * (Longword) var1) / (Longword) var2);
 	swOut = saturate(L_div);
-	return(swOut);
+	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -222,12 +222,11 @@ static __inline Shortword divide_s(Shortword var1, Shortword var2)
 
 static __inline Longword L_deposit_l(Shortword var1)
 {
-	Longword	L_Out;
+	Longword L_Out;
 
 	L_Out = var1;
-	return(L_Out);
+	return (L_Out);
 }
-
 
 /***************************************************************************
  *
@@ -262,12 +261,11 @@ static __inline Longword L_deposit_l(Shortword var1)
 
 static __inline Longword L_deposit_h(Shortword var1)
 {
-	Longword	L_var2;
+	Longword L_var2;
 
 	L_var2 = (Longword) var1 << 16;
-	return(L_var2);
+	return (L_var2);
 }
-
 
 /***************************************************************************
  *
@@ -304,12 +302,11 @@ static __inline Longword L_deposit_h(Shortword var1)
 
 static __inline Shortword extract_l(Longword L_var1)
 {
-	Shortword	var2;
+	Shortword var2;
 
 	var2 = (Shortword) (0x0000ffffL & L_var1);
-	return(var2);
+	return (var2);
 }
-
 
 /***************************************************************************
  *
@@ -347,12 +344,11 @@ static __inline Shortword extract_l(Longword L_var1)
 
 static __inline Shortword extract_h(Longword L_var1)
 {
-	Shortword	var2;
+	Shortword var2;
 
 	var2 = (Shortword) (0x0000ffffL & (L_var1 >> 16));
-	return(var2);
+	return (var2);
 }
-
 
 /***************************************************************************
  *
@@ -396,14 +392,13 @@ static __inline Shortword extract_h(Longword L_var1)
 
 static __inline Shortword r_ound(Longword L_var1)
 {
-	Longword	L_Prod;
-	Shortword	var2;
+	Longword L_Prod;
+	Shortword var2;
 
-	L_Prod = L_add(L_var1, 0x00008000L);                         /* r_ound MSP */
+	L_Prod = L_add(L_var1, 0x00008000L);	/* r_ound MSP */
 	var2 = extract_h(L_Prod);
-	return(var2);
+	return (var2);
 }
-
 
 /***************************************************************************
  *
@@ -436,17 +431,15 @@ static __inline Shortword r_ound(Longword L_var1)
 
 static __inline Shortword negate(Shortword var1)
 {
-	Shortword	swOut;
+	Shortword swOut;
 
-
-	if (var1 == SW_MIN){
+	if (var1 == SW_MIN) {
 		inc_saturation();
 		swOut = SW_MAX;
 	} else
 		swOut = (Shortword) (-var1);
-	return(swOut);
+	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -481,16 +474,15 @@ static __inline Shortword negate(Shortword var1)
 
 static __inline Longword L_negate(Longword L_var1)
 {
-	Longword	L_Out;
+	Longword L_Out;
 
-	if (L_var1 == LW_MIN){
+	if (L_var1 == LW_MIN) {
 		inc_saturation();
 		L_Out = LW_MAX;
 	} else
 		L_Out = -L_var1;
-	return(L_Out);
+	return (L_Out);
 }
-
 
 /***************************************************************************
  *
@@ -538,14 +530,13 @@ static __inline Longword L_negate(Longword L_var1)
 
 static __inline Shortword add(Shortword var1, Shortword var2)
 {
-	Longword	L_sum;
-	Shortword	swOut;
+	Longword L_sum;
+	Shortword swOut;
 
 	L_sum = (Longword) var1 + var2;
 	swOut = saturate(L_sum);
-	return(swOut);
+	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -594,36 +585,37 @@ static __inline Shortword add(Shortword var1, Shortword var2)
  *************************************************************************/
 static __inline Longword L_add(Longword L_var1, Longword L_var2)
 {
-	Longword	L_Sum, L_SumLow, L_SumHigh;
+	Longword L_Sum, L_SumLow, L_SumHigh;
 
 	L_Sum = L_var1 + L_var2;
 
-	if ((L_var1 > 0 && L_var2 > 0) || (L_var1 < 0 && L_var2 < 0)){
+	if ((L_var1 > 0 && L_var2 > 0) || (L_var1 < 0 && L_var2 < 0)) {
 
 		/* an overflow is possible */
-		L_SumLow = (L_var1 & (Longword) 0xffff) + (L_var2 & (Longword) 0xffff);
-		L_SumHigh = ((L_var1 >> 16) & (Longword) 0xffff) +
-					((L_var2 >> 16) & (Longword) 0xffff);
-		if (L_SumLow & (Longword) 0x10000){
+		L_SumLow =
+		    (L_var1 & (Longword) 0xffff) + (L_var2 & (Longword) 0xffff);
+		L_SumHigh =
+		    ((L_var1 >> 16) & (Longword) 0xffff) +
+		    ((L_var2 >> 16) & (Longword) 0xffff);
+		if (L_SumLow & (Longword) 0x10000) {
 			/* carry into high word is set */
-			L_SumHigh ++;
+			L_SumHigh++;
 		}
 
 		/* Update sum only if there is an overflow or underflow */
-		if ( ((Longword) 0x10000 & L_SumHigh) &&
-			!((Longword) 0x8000 & L_SumHigh)){
+		if (((Longword) 0x10000 & L_SumHigh) &&
+		    !((Longword) 0x8000 & L_SumHigh)) {
 			inc_saturation();
-			L_Sum = LW_MIN;                                      /* underflow */
+			L_Sum = LW_MIN;	/* underflow */
 		} else if (!((Longword) 0x10000 & L_SumHigh) &&
-				    ((Longword) 0x8000 & L_SumHigh)){
+			   ((Longword) 0x8000 & L_SumHigh)) {
 			inc_saturation();
-			L_Sum = LW_MAX;                                       /* overflow */
+			L_Sum = LW_MAX;	/* overflow */
 		}
 	}
 
 	return (L_Sum);
 }
-
 
 /***************************************************************************
  *
@@ -670,15 +662,14 @@ static __inline Longword L_add(Longword L_var1, Longword L_var2)
  *************************************************************************/
 static __inline Shortword sub(Shortword var1, Shortword var2)
 {
-	Longword	L_diff;
-	Shortword	swOut;
+	Longword L_diff;
+	Shortword swOut;
 
 	L_diff = (Longword) var1 - var2;
 	swOut = saturate(L_diff);
 
-	return(swOut);
+	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -727,20 +718,19 @@ static __inline Shortword sub(Shortword var1, Shortword var2)
  *************************************************************************/
 static __inline Longword L_sub(Longword L_var1, Longword L_var2)
 {
-	Longword	L_Sum;
+	Longword L_Sum;
 
 	/* check for overflow */
 	if ((L_var1 > 0 && L_var2 < 0) || (L_var1 < 0 && L_var2 > 0)) {
-		if (L_var2 == LW_MIN){
+		if (L_var2 == LW_MIN) {
 			L_Sum = L_add(L_var1, LW_MAX);
 			L_Sum = L_add(L_Sum, 1);
 		} else
 			L_Sum = L_add(L_var1, -L_var2);
-	} else                                            /* no overflow possible */
+	} else			/* no overflow possible */
 		L_Sum = L_var1 - L_var2;
-	return(L_Sum);
+	return (L_Sum);
 }
-
 
 /***************************************************************************
  *
@@ -790,21 +780,21 @@ static __inline Longword L_sub(Longword L_var1, Longword L_var2)
 
 static __inline Shortword shr(Shortword var1, Shortword var2)
 {
-	Shortword	swMask, swOut;
+	Shortword swMask, swOut;
 
 	if (var2 == 0 || var1 == 0)
 		swOut = var1;
-	else if (var2 < 0){                   /* perform an arithmetic left shift */
-		if (var2 <= -15){
+	else if (var2 < 0) {	/* perform an arithmetic left shift */
+		if (var2 <= -15) {
 			swOut = (Shortword) ((var1 > 0) ? SW_MAX : SW_MIN);
-                                                                  /* saturate */
+			/* saturate */
 			inc_saturation();
 		} else
-			swOut = shl(var1, (Shortword) -var2);
-	} else {                                          /* positive shift count */
+			swOut = shl(var1, (Shortword) - var2);
+	} else {		/* positive shift count */
 		if (var2 >= 15)
 			swOut = (Shortword) ((var1 < 0) ? -1 : 0);
-		else {                                 /* take care of sign extension */
+		else {		/* take care of sign extension */
 			swMask = 0;
 			if (var1 < 0)
 				swMask = (Shortword) (~swMask << (16 - var2));
@@ -815,7 +805,6 @@ static __inline Shortword shr(Shortword var1, Shortword var2)
 	}
 	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -870,36 +859,36 @@ static __inline Shortword shr(Shortword var1, Shortword var2)
 
 static __inline Shortword shl(Shortword var1, Shortword var2)
 {
-	Shortword	swOut;
-	Longword	L_Out;
+	Shortword swOut;
+	Longword L_Out;
 
-	if (var2 == 0 || var1 == 0){
+	if (var2 == 0 || var1 == 0) {
 		swOut = var1;
-	} else if (var2 < 0){                            /* perform a right shift */
+	} else if (var2 < 0) {	/* perform a right shift */
 		if (var2 <= -15)
 			swOut = (Shortword) ((var1 < 0) ? -1 : 0);
 		else
 			swOut = shr(var1, negate(var2));
 
-	} else {                                                      /* var2 > 0 */
-		if (var2 >= 15){
+	} else {		/* var2 > 0 */
+		if (var2 >= 15) {
 			swOut = (Shortword) ((var1 > 0) ? SW_MAX : SW_MIN);
-                                                                  /* saturate */
+			/* saturate */
 			inc_saturation();
 		} else {
-			L_Out = (Longword) var1 * (1 << var2);
-			swOut = (Shortword) L_Out;           /* copy low portion to swOut */
-                                              /* overflow could have happened */
-			if (swOut != L_Out){                                /* overflowed */
-				swOut = (Shortword) ((var1 > 0) ? SW_MAX : SW_MIN);
-                                                                  /* saturate */
+			L_Out = (Longword) var1 *(1 << var2);
+			swOut = (Shortword) L_Out;	/* copy low portion to swOut */
+			/* overflow could have happened */
+			if (swOut != L_Out) {	/* overflowed */
+				swOut =
+				    (Shortword) ((var1 > 0) ? SW_MAX : SW_MIN);
+				/* saturate */
 				inc_saturation();
 			}
 		}
 	}
 	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -952,16 +941,16 @@ static __inline Shortword shl(Shortword var1, Shortword var2)
 
 static __inline Longword L_shr(Longword L_var1, Shortword var2)
 {
-	Longword	L_Mask, L_Out;
+	Longword L_Mask, L_Out;
 
 	if (var2 == 0 || L_var1 == 0)
 		L_Out = L_var1;
-	else if (var2 < 0){                               /* perform a left shift */
-		if (var2 <= -31){
-			L_Out = (L_var1 > 0) ? LW_MAX : LW_MIN;               /* saturate */
+	else if (var2 < 0) {	/* perform a left shift */
+		if (var2 <= -31) {
+			L_Out = (L_var1 > 0) ? LW_MAX : LW_MIN;	/* saturate */
 			inc_saturation();
 		} else
-			L_Out = L_shl(L_var1, (Shortword) -var2);
+			L_Out = L_shl(L_var1, (Shortword) - var2);
 	} else {
 		if (var2 >= 31)
 			L_Out = (L_var1 > 0) ? 0 : 0xffffffffL;
@@ -976,7 +965,6 @@ static __inline Longword L_shr(Longword L_var1, Shortword var2)
 	}
 	return (L_Out);
 }
-
 
 /***************************************************************************
  *
@@ -1027,8 +1015,8 @@ static __inline Longword L_shr(Longword L_var1, Shortword var2)
 
 static __inline Longword L_shl(Longword L_var1, Shortword var2)
 {
-	Longword	L_Mask, L_Out = 0;
-	int		i, iOverflow = 0;
+	Longword L_Mask, L_Out = 0;
+	int i, iOverflow = 0;
 
 	if (var2 == 0 || L_var1 == 0)
 		L_Out = L_var1;
@@ -1036,32 +1024,31 @@ static __inline Longword L_shl(Longword L_var1, Shortword var2)
 		if (var2 <= -31)
 			L_Out = (L_var1 > 0) ? 0 : 0xffffffffL;
 		else
-			L_Out = L_shr(L_var1, (Shortword) -var2);
+			L_Out = L_shr(L_var1, (Shortword) - var2);
 	} else {
 		if (var2 >= 31)
 			iOverflow = 1;
 		else {
 			if (L_var1 < 0)
-				L_Mask = LW_SIGN;                            /* sign bit mask */
+				L_Mask = LW_SIGN;	/* sign bit mask */
 			else
 				L_Mask = 0x0;
 			L_Out = L_var1;
-			for (i = 0; i < var2 && !iOverflow; i++){   /* check the sign bit */
+			for (i = 0; i < var2 && !iOverflow; i++) {	/* check the sign bit */
 				L_Out = (L_Out & 0x7fffffffL) << 1;
 				if ((L_Mask ^ L_Out) & LW_SIGN)
 					iOverflow = 1;
 			}
 		}
 
-		if (iOverflow){
-			L_Out = (L_var1 > 0) ? LW_MAX : LW_MIN;               /* saturate */
+		if (iOverflow) {
+			L_Out = (L_var1 > 0) ? LW_MAX : LW_MIN;	/* saturate */
 			inc_saturation();
 		}
 	}
 
 	return (L_Out);
 }
-
 
 /***************************************************************************
  *
@@ -1120,22 +1107,21 @@ static __inline Longword L_shl(Longword L_var1, Shortword var2)
 
 static __inline Shortword shift_r(Shortword var1, Shortword var2)
 {
-	Shortword	swOut, swRnd;
+	Shortword swOut, swRnd;
 
 	if (var2 >= 0)
 		swOut = shl(var1, var2);
-	else {                                                     /* right shift */
+	else {			/* right shift */
 		if (var2 < -15)
 			swOut = 0;
 		else {
 			swRnd = (Shortword) (shl(var1, (Shortword) (var2 + 1)) &
-								 (Shortword) 0x1);
+					     (Shortword) 0x1);
 			swOut = add(shl(var1, var2), swRnd);
 		}
 	}
-	return(swOut);
+	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -1196,19 +1182,18 @@ static __inline Shortword shift_r(Shortword var1, Shortword var2)
 
 static __inline Longword L_shift_r(Longword L_var1, Shortword var2)
 {
-	Longword	L_Out, L_rnd;
+	Longword L_Out, L_rnd;
 
 	if (var2 < -31)
 		L_Out = 0;
-	else if (var2 < 0){                                        /* right shift */
+	else if (var2 < 0) {	/* right shift */
 		L_rnd = L_shl(L_var1, (Shortword) (var2 + 1)) & (Longword) 0x1;
 		L_Out = L_add(L_shl(L_var1, var2), L_rnd);
 	} else
 		L_Out = L_shl(L_var1, var2);
 
-	return(L_Out);
+	return (L_Out);
 }
-
 
 /***************************************************************************
  *
@@ -1270,26 +1255,27 @@ static __inline Longword L_shift_r(Longword L_var1, Shortword var2)
 
 static __inline Shortword norm_l(Longword L_var1)
 {
-	Shortword	swShiftCnt;
+	Shortword swShiftCnt;
 
-	if (L_var1 != 0){
-		if (!(L_var1 & LW_SIGN)){                           /* positive input */
-			for (swShiftCnt = 0; !(L_var1 <= LW_MAX && L_var1 >= 0x40000000L);
-				 swShiftCnt++){
+	if (L_var1 != 0) {
+		if (!(L_var1 & LW_SIGN)) {	/* positive input */
+			for (swShiftCnt = 0;
+			     !(L_var1 <= LW_MAX && L_var1 >= 0x40000000L);
+			     swShiftCnt++) {
 				L_var1 = L_var1 << 1;
 			}
-		} else {                                            /* negative input */
+		} else {	/* negative input */
 			for (swShiftCnt = 0;
-				 !(L_var1 >= LW_MIN && L_var1 < (Longword) 0xc0000000L);
-				 swShiftCnt++){
+			     !(L_var1 >= LW_MIN
+			       && L_var1 < (Longword) 0xc0000000L);
+			     swShiftCnt++) {
 				L_var1 = L_var1 << 1;
 			}
 		}
 	} else
 		swShiftCnt = 0;
-	return(swShiftCnt);
+	return (swShiftCnt);
 }
-
 
 /***************************************************************************
  *
@@ -1349,14 +1335,13 @@ static __inline Shortword norm_l(Longword L_var1)
 
 static __inline Shortword norm_s(Shortword var1)
 {
-	short	swShiftCnt;
-	Longword	L_var1;
+	short swShiftCnt;
+	Longword L_var1;
 
 	L_var1 = L_deposit_h(var1);
 	swShiftCnt = norm_l(L_var1);
-	return(swShiftCnt);
+	return (swShiftCnt);
 }
-
 
 /***************************************************************************
  *
@@ -1401,18 +1386,17 @@ static __inline Shortword norm_s(Shortword var1)
 
 static __inline Longword L_mult(Shortword var1, Shortword var2)
 {
-	Longword	L_product;
+	Longword L_product;
 
-	if (var1 == SW_MIN && var2 == SW_MIN){                        /* overflow */
+	if (var1 == SW_MIN && var2 == SW_MIN) {	/* overflow */
 		inc_saturation();
 		L_product = LW_MAX;
 	} else {
-		L_product = (Longword) var1 *var2;                /* integer multiply */
+		L_product = (Longword) var1 *var2;	/* integer multiply */
 		L_product <<= 1;
 	}
-	return(L_product);
+	return (L_product);
 }
-
 
 /***************************************************************************
  *
@@ -1456,14 +1440,13 @@ static __inline Longword L_mult(Shortword var1, Shortword var2)
 
 static __inline Shortword mult(Shortword var1, Shortword var2)
 {
-	Longword	L_product;
-	Shortword	swOut;
+	Longword L_product;
+	Shortword swOut;
 
 	L_product = L_mult(var1, var2);
 	swOut = extract_h(L_product);
-	return(swOut);
+	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -1520,12 +1503,11 @@ static __inline Shortword mult(Shortword var1, Shortword var2)
 
 static __inline Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
 {
-	Longword	L_Out;
+	Longword L_Out;
 
 	L_Out = L_add(L_var3, L_mult(var1, var2));
-	return(L_Out);
+	return (L_Out);
 }
-
 
 /***************************************************************************
  *
@@ -1582,12 +1564,11 @@ static __inline Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
 
 static __inline Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
 {
-	Longword	L_Out;
+	Longword L_Out;
 
 	L_Out = L_sub(L_var3, L_mult(var1, var2));
-	return(L_Out);
+	return (L_Out);
 }
-
 
 /***************************************************************************
  *
@@ -1649,12 +1630,11 @@ static __inline Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
 
 static __inline Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
 {
-	Shortword	swOut;
+	Shortword swOut;
 
 	swOut = r_ound(L_sub(L_var3, L_mult(var1, var2)));
 	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -1693,7 +1673,7 @@ static __inline Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
 
 static __inline Shortword abs_s(Shortword var1)
 {
-	Shortword	swOut;
+	Shortword swOut;
 
 	if (var1 == SW_MIN)
 		swOut = SW_MAX;
@@ -1703,9 +1683,8 @@ static __inline Shortword abs_s(Shortword var1)
 		else
 			swOut = var1;
 	}
-	return(swOut);
+	return (swOut);
 }
-
 
 /***************************************************************************
  *
@@ -1741,7 +1720,7 @@ static __inline Shortword abs_s(Shortword var1)
  *************************************************************************/
 static __inline Longword L_abs(Longword L_var1)
 {
-	Longword	L_Out;
+	Longword L_Out;
 
 	if (L_var1 == LW_MIN)
 		L_Out = LW_MAX;
@@ -1751,7 +1730,7 @@ static __inline Longword L_abs(Longword L_var1)
 		else
 			L_Out = L_var1;
 	}
-	return(L_Out);
+	return (L_Out);
 }
 
 /*___________________________________________________________________________
@@ -1781,24 +1760,24 @@ static __inline Longword L_abs(Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static __inline Word40	L40_add(Word40 acc, Longword L_var1)
+static __inline Word40 L40_add(Word40 acc, Longword L_var1)
 {
-	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))){
+	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	acc = acc + (Word40)L_var1;
+	acc = acc + (Word40) L_var1;
 
-	if (acc > MAX_40){
+	if (acc > MAX_40) {
 		acc = MAX_40;
 		/* Overflow = 1; */
 	}
-	if (acc < MIN_40){
+	if (acc < MIN_40) {
 		acc = MIN_40;
 		/* Overflow = 1; */
 	}
-	return(acc);
+	return (acc);
 }
 
 /*___________________________________________________________________________
@@ -1830,22 +1809,22 @@ static __inline Word40	L40_add(Word40 acc, Longword L_var1)
 
 static __inline Word40 L40_sub(Word40 acc, Longword L_var1)
 {
-	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))){
+	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	acc = acc - (Word40)L_var1;
+	acc = acc - (Word40) L_var1;
 
-	if (acc > MAX_40){
+	if (acc > MAX_40) {
 		acc = MAX_40;
 		/* Overflow = 1; */
 	}
-	if (acc < MIN_40){
+	if (acc < MIN_40) {
 		acc = MIN_40;
 		/* Overflow = 1; */
 	}
-	return(acc);
+	return (acc);
 }
 
 /*___________________________________________________________________________
@@ -1880,22 +1859,22 @@ static __inline Word40 L40_sub(Word40 acc, Longword L_var1)
 
 static __inline Word40 L40_mac(Word40 acc, Shortword var1, Shortword var2)
 {
-	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))){
+	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	acc = acc + ((Word40)var1 * (Word40)var2 * 2);
+	acc = acc + ((Word40) var1 * (Word40) var2 * 2);
 
-	if (acc > MAX_40){
+	if (acc > MAX_40) {
 		acc = MAX_40;
 		/* Overflow = 1; */
 	}
-	if (acc < MIN_40){
+	if (acc < MIN_40) {
 		acc = MIN_40;
 		/* Overflow = 1; */
 	}
-	return(acc);
+	return (acc);
 }
 
 /*___________________________________________________________________________
@@ -1931,22 +1910,22 @@ static __inline Word40 L40_mac(Word40 acc, Shortword var1, Shortword var2)
 
 static __inline Word40 L40_msu(Word40 acc, Shortword var1, Shortword var2)
 {
-	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))){
+	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	acc = acc - ((Word40)var1 * (Word40)var2 * 2);
+	acc = acc - ((Word40) var1 * (Word40) var2 * 2);
 
-	if (acc > MAX_40){
+	if (acc > MAX_40) {
 		acc = MAX_40;
 		/* Overflow = 1; */
 	}
-	if (acc < MIN_40){
+	if (acc < MIN_40) {
 		acc = MIN_40;
 		/* Overflow = 1; */
 	}
-	return(acc);
+	return (acc);
 }
 
 /*___________________________________________________________________________
@@ -1980,28 +1959,27 @@ static __inline Word40 L40_msu(Word40 acc, Shortword var1, Shortword var2)
 static __inline Word40 L40_shl(Word40 acc, Shortword var1)
 {
 
-	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))){
+	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	if (var1 < 0){
+	if (var1 < 0) {
 		acc = L40_shr(acc, (Shortword) (-var1));
 	} else {
-		for(; var1 > 0; var1--){
+		for (; var1 > 0; var1--) {
 			acc = acc * 2;
-			if (acc > MAX_40){
+			if (acc > MAX_40) {
 				acc = MAX_40;
 				break;
-			} else if (acc < MIN_40){
+			} else if (acc < MIN_40) {
 				acc = MIN_40;
 				break;
 			}
 		}
 	}
-	return(acc);
+	return (acc);
 }
-
 
 /*___________________________________________________________________________
  |                                                                           |
@@ -2034,23 +2012,22 @@ static __inline Word40 L40_shl(Word40 acc, Shortword var1)
 static __inline Word40 L40_shr(Word40 acc, Shortword var1)
 {
 
-	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))){
+	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	if (var1 < 0){
-		acc = L40_shl(acc, (Shortword) -var1);
-	} else { 
-		for ( ; var1 > 0; var1--){
+	if (var1 < 0) {
+		acc = L40_shl(acc, (Shortword) - var1);
+	} else {
+		for (; var1 > 0; var1--) {
 			acc = floor(acc * 0.5);
 			if ((acc == 0) || (acc == -1))
 				break;
 		}
 	}
-	return(acc);
+	return (acc);
 }
-
 
 /*___________________________________________________________________________
  |                                                                           |
@@ -2077,17 +2054,17 @@ static __inline Word40 L40_shr(Word40 acc, Shortword var1)
 
 static __inline Word40 L40_negate(Word40 acc)
 {
-	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))){
+	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
 	acc = -acc;
 
-	if (acc > MAX_40){
+	if (acc > MAX_40) {
 		acc = MAX_40;
 	}
-	return(acc);
+	return (acc);
 }
 
 /*___________________________________________________________________________
@@ -2119,37 +2096,36 @@ static __inline Word40 L40_negate(Word40 acc)
 
 static __inline Shortword norm32(Word40 acc)
 {
-	Shortword	var1;
+	Shortword var1;
 
-	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))){
+	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
 	var1 = 0;
 
-	if (acc > 0){
-		while (acc > (Word40) MAX_32){
+	if (acc > 0) {
+		while (acc > (Word40) MAX_32) {
 			acc = floor(acc * 0.5);
 			var1--;
 		}
-		while (acc <= (0.5*(Word40) MAX_32)){
+		while (acc <= (0.5 * (Word40) MAX_32)) {
 			acc = acc * 2;
 			var1++;
 		}
-	} else if (acc < 0){
-		while (acc < (Word40) MIN_32){
+	} else if (acc < 0) {
+		while (acc < (Word40) MIN_32) {
 			acc = floor(acc * 0.5);
 			var1--;
 		}
-		while (acc >= (0.5*(Word40) MIN_32)){
+		while (acc >= (0.5 * (Word40) MIN_32)) {
 			acc = acc * 2;
 			var1++;
 		}
 	}
-	return(var1);
+	return (var1);
 }
-
 
 /*___________________________________________________________________________
  |                                                                           |
@@ -2176,22 +2152,21 @@ static __inline Shortword norm32(Word40 acc)
 
 static __inline Longword L_sat32(Word40 acc)
 {
-	Longword	L_var_out;
+	Longword L_var_out;
 
-
-	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))){
+	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	if (acc > (Word40) MAX_32){
+	if (acc > (Word40) MAX_32) {
 		acc = (Word40) MAX_32;
 	}
-	if (acc < (Word40) MIN_32){
+	if (acc < (Word40) MIN_32) {
 		acc = (Word40) MIN_32;
 	}
 	L_var_out = (Longword) acc;
-	return(L_var_out);
+	return (L_var_out);
 }
 
 /*

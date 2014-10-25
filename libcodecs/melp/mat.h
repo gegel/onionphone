@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard mf_speech coder
@@ -22,13 +24,12 @@ Group (phone 972 480 7442).
    Copyright (c) 1995 by Texas Instruments, Inc.  All rights reserved.
 */
 
-float mf_v_inner(float *v1,float *v2,int n);
-float v_mf_magsq(float *v,int n);
-float *mf_v_zap(float *v,int n);
-float *mf_v_equ(float *v1,float *v2,int n);
-float *mf_v_sub(float *v1,float *v2,int n);
-float *mf_v_add(float *v1,float *v2,int n);
-float *mf_v_scale(float *v,float scale,int n);
-int *mf_mf_v_zap_int(int *v,int n);
-int *mf_mf_v_equ_int(int *v1,int *v2,int n);
-
+float mf_v_inner(float *v1, float *v2, int n);
+float v_mf_magsq(float *v, int n);
+float *mf_v_zap(float *v, int n);
+float *mf_v_equ(float *v1, float *v2, int n);
+float *mf_v_sub(float *v1, float *v2, int n);
+float *mf_v_add(float *v1, float *v2, int n);
+float *mf_v_scale(float *v, float scale, int n);
+int *mf_mf_v_zap_int(int *v, int n);
+int *mf_mf_v_equ_int(int *v1, int *v2, int n);

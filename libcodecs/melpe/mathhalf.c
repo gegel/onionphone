@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -121,8 +123,7 @@ inc_saturation()
 	saturation++;
 }
 #else
- void inc_saturation()
+void inc_saturation()
 {
 }
 #endif
-

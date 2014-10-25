@@ -69,7 +69,7 @@ void *Speech_Decode_Frame_init();
 /*
  * free status struct
  */
-void Speech_Decode_Frame_exit(void **st);
+void Speech_Decode_Frame_exit(void *_st);
 
 /*
  * Decodes one frame from encoded parameters

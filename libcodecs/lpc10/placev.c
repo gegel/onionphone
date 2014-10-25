@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*******************************************************************
 *
 *	PLACEV Version 48
@@ -23,10 +25,10 @@ void placev(int osbuf[], int osptr, int *obound, int vwin[2][AF])
 *    OSPTR1	OSPTR excluding samaples in 3F
 */
 
-int lrange, hrange, i;
-int q;
-int osptr1;
-short crit;
+	int lrange, hrange, i;
+	int q;
+	int osptr1;
+	short crit;
 
 /*   Voicing Window Placement
 *
@@ -83,72 +85,78 @@ short crit;
 
 /* Compute the placement range	*/
 
-
-lrange = mmax(vwin[1][AF-2]+1, (AF-2)*LFRAME+1);
-hrange = AF*LFRAME;
+	lrange = mmax(vwin[1][AF - 2] + 1, (AF - 2) * LFRAME + 1);
+	hrange = AF * LFRAME;
 
 /* Compute OSPTR1, so the following code only looks at relevant onsets. */
 
-for (osptr1=osptr-1; osptr1>=1; osptr1--) {
-   if (osbuf[osptr1-1] <= hrange) break;
-}
-osptr1++;
+	for (osptr1 = osptr - 1; osptr1 >= 1; osptr1--) {
+		if (osbuf[osptr1 - 1] <= hrange)
+			break;
+	}
+	osptr1++;
 
 /* Check for case 1 first (fast case):	*/
 
-if ((osptr1 <= 1) || (osbuf[osptr1-2] < lrange)) {
-	vwin[0][AF-1] = mmax(vwin[1][AF-2]+1, DVWINL);
-	vwin[1][AF-1] = vwin[0][AF-1] + MAXWIN - 1;
-	*obound = 0;
-}
-else {
+	if ((osptr1 <= 1) || (osbuf[osptr1 - 2] < lrange)) {
+		vwin[0][AF - 1] = mmax(vwin[1][AF - 2] + 1, DVWINL);
+		vwin[1][AF - 1] = vwin[0][AF - 1] + MAXWIN - 1;
+		*obound = 0;
+	} else {
 
 /* Search backward in OSBUF for first onset in range.
 * This code relies on the above check being performed first.	*/
 
-	for(q=osptr1-1;q>=1;q--) {
-		if (osbuf[q-1] < lrange) break;
-	}
-	q++;
+		for (q = osptr1 - 1; q >= 1; q--) {
+			if (osbuf[q - 1] < lrange)
+				break;
+		}
+		q++;
 
 /* Check for case 2 (placement before onset):
 
 * Check for critical region exception:	*/
-	
-	crit = 0;
-	for(i=q+1;i<=osptr1-1;i++) {
-		if (osbuf[i-1] - osbuf[q-1] >= MINWIN) {
-			crit = 1;
-			break;
-		}
-	}
 
-	if (!crit && osbuf[q-1] > mmax((AF-1)*LFRAME, lrange+MINWIN-1)) {
-		vwin[1][AF-1] = osbuf[q-1] - 1;
-		vwin[0][AF-1] = mmax (lrange, vwin[1][AF-1]-MAXWIN+1);
-		*obound = 2;
-	}
-/* Case 3 (placement AFter onset)	*/
-	
-	else {
-		vwin[0][AF-1] = osbuf[q-1];
-L110:		q++;
-		if(q < osptr1) {
-			if(osbuf[q-1] <= vwin[0][AF-1] + MAXWIN) {
-				if (osbuf[q-1]	< vwin[0][AF-1] + MINWIN) goto L110;
-				vwin[1][AF-1] = osbuf[q-1] - 1;
-				*obound = 3;
+		crit = 0;
+		for (i = q + 1; i <= osptr1 - 1; i++) {
+			if (osbuf[i - 1] - osbuf[q - 1] >= MINWIN) {
+				crit = 1;
+				break;
 			}
-			else {
-				vwin[1][AF-1] = mmin(vwin[0][AF-1] + MAXWIN - 1, hrange);
+		}
+
+		if (!crit
+		    && osbuf[q - 1] > mmax((AF - 1) * LFRAME,
+					   lrange + MINWIN - 1)) {
+			vwin[1][AF - 1] = osbuf[q - 1] - 1;
+			vwin[0][AF - 1] =
+			    mmax(lrange, vwin[1][AF - 1] - MAXWIN + 1);
+			*obound = 2;
+		}
+/* Case 3 (placement AFter onset)	*/
+
+		else {
+			vwin[0][AF - 1] = osbuf[q - 1];
+ L110:			q++;
+			if (q < osptr1) {
+				if (osbuf[q - 1] <= vwin[0][AF - 1] + MAXWIN) {
+					if (osbuf[q - 1] <
+					    vwin[0][AF - 1] + MINWIN)
+						goto L110;
+					vwin[1][AF - 1] = osbuf[q - 1] - 1;
+					*obound = 3;
+				} else {
+					vwin[1][AF - 1] =
+					    mmin(vwin[0][AF - 1] + MAXWIN - 1,
+						 hrange);
+					*obound = 1;
+				}
+			} else {
+				vwin[1][AF - 1] =
+				    mmin(vwin[0][AF - 1] + MAXWIN - 1, hrange);
 				*obound = 1;
 			}
 		}
-		else {
-			vwin[1][AF-1] = mmin(vwin[0][AF-1] + MAXWIN - 1, hrange);
-			*obound = 1;
-		}
-	}
 
-}
+	}
 }

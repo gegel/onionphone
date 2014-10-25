@@ -1,6 +1,7 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*   LPC Processing control variables:
 */
-
 
 /*  Files for Speech, Parameter, and Bitstream Input & Output,
       and message and debug outputs.

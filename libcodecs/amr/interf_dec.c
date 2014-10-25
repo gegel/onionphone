@@ -582,7 +582,7 @@ void *Decoder_Interface_init(void)
 	dec_interface_State *s;
 
 	/* allocate memory */
-	if ((s = (dec_interface_State *) malloc(sizeof(dec_interface_State))) ==
+	if ((s = calloc(1, sizeof(dec_interface_State))) ==
 	    NULL) {
 		fprintf(stderr, "Decoder_Interface_init: "
 			"can not malloc state structure\n");

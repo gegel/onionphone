@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -34,7 +36,6 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _LPC_LIB_H_
 #define _LPC_LIB_H_
 
-
 /* better names */
 #define lpc_autocorr			   lpc_acor
 #define lpc_bw_expand			   lpc_bwex
@@ -44,27 +45,25 @@ Secretariat fax: +33 493 65 47 16.
 #define lpc_synthesis			   lpc_syn
 
 /* autocorrelation routine */
-void	lpc_acor(Shortword input[], const Shortword win_cof[], Shortword r[],
-				 Shortword hf_correction, Shortword order, Shortword npts);
+void lpc_acor(Shortword input[], const Shortword win_cof[], Shortword r[],
+	      Shortword hf_correction, Shortword order, Shortword npts);
 
-Longword	lpc_aejw(Shortword lpc[], Shortword omega, Shortword order);
+Longword lpc_aejw(Shortword lpc[], Shortword omega, Shortword order);
 
-Shortword	lpc_bwex(Shortword lpc[], Shortword aw[], Shortword gamma,
-					 Shortword order);
+Shortword lpc_bwex(Shortword lpc[], Shortword aw[], Shortword gamma,
+		   Shortword order);
 
-Shortword	lpc_clmp(Shortword lsp[], Shortword delta, Shortword order);
+Shortword lpc_clmp(Shortword lsp[], Shortword delta, Shortword order);
 
-Shortword	lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order);
+Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order);
 
-Shortword	lpc_pred2lsp(Shortword lpc[], Shortword lsf[], Shortword order);
+Shortword lpc_pred2lsp(Shortword lpc[], Shortword lsf[], Shortword order);
 
-Shortword	lpc_pred2refl(Shortword lpc[], Shortword *refc, Shortword order);
+Shortword lpc_pred2refl(Shortword lpc[], Shortword * refc, Shortword order);
 
-Shortword	lpc_lsp2pred(Shortword lsf[], Shortword lpc[], Shortword order);
+Shortword lpc_lsp2pred(Shortword lsf[], Shortword lpc[], Shortword order);
 
-Shortword	lpc_syn(Shortword x[], Shortword y[], Shortword a[],
-					Shortword order, Shortword length);
-
+Shortword lpc_syn(Shortword x[], Shortword y[], Shortword a[],
+		  Shortword order, Shortword length);
 
 #endif
-
