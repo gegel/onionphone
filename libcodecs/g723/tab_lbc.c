@@ -45,8 +45,8 @@
 **
 **                  Nb_puls[4] (MP-MLQ)
 **                  FcbkGainTable[24] (ACELP and MP-MLQ)
-**                  MaxPosTable[4]  (MP-MLQ), Word32
-**                  CombinatorialTable[6][30](MP-MLQ),Word32
+**                  MaxPosTable[4]  (MP-MLQ), int32_t
+**                  CombinatorialTable[6][30](MP-MLQ),int32_t
 **                  epsi170[170] (ACELP)
 **                  gain170[170] (ACELP)
 **
@@ -64,11 +64,11 @@
 **              Comfort Noise Generation
 **
 **                  fact[4]
-**                  L_bseg[3], Word32
+**                  L_bseg[3], int32_t
 **                  base[3]
 **
 **
-**              All tables are Word16 unless separately denoted
+**              All tables are int16_t unless separately denoted
 */
 
 /*
@@ -78,7 +78,7 @@
 **
 */
 
-Word16 HammingWindowTable[LpcFrame] = {
+int16_t HammingWindowTable[LpcFrame] = {
 	2621,
 	2631,
 	2659,
@@ -273,7 +273,7 @@ Word16 HammingWindowTable[LpcFrame] = {
 **
 */
 
-Word16 BinomialWindowTable[LpcOrder] = {
+int16_t BinomialWindowTable[LpcOrder] = {
 	32749,
 	32695,
 	32604,
@@ -301,7 +301,7 @@ Word16 BinomialWindowTable[LpcOrder] = {
 **
 */
 
-Word16 BandExpTable[LpcOrder] = {
+int16_t BandExpTable[LpcOrder] = {
 	32571,
 	32376,
 	32182,
@@ -326,7 +326,7 @@ Word16 BandExpTable[LpcOrder] = {
 **
 */
 
-Word16 CosineTable[CosineTableSize] = {
+int16_t CosineTable[CosineTableSize] = {
 	16384,
 	16383,
 	16379,
@@ -847,7 +847,7 @@ Word16 CosineTable[CosineTableSize] = {
 **
 */
 
-Word16 LspDcTable[LpcOrder] = {
+int16_t LspDcTable[LpcOrder] = {
 	0x0c3b,
 	0x1271,
 	0x1e0a,
@@ -886,7 +886,7 @@ Word16 LspDcTable[LpcOrder] = {
 **      the subvector
 */
 
-Word16 BandInfoTable[LspQntBands][2] = {
+int16_t BandInfoTable[LspQntBands][2] = {
 	{0, 3}
 	,
 	{3, 3}
@@ -904,7 +904,7 @@ Word16 BandInfoTable[LspQntBands][2] = {
 **      8 bit, 256 entry table.
 */
 
-Word16 Band0Tb8[LspCbSize * 3] = {
+int16_t Band0Tb8[LspCbSize * 3] = {
 	0, 0, 0,
 	-270, -1372, -1032,
 	-541, -1650, -1382,
@@ -1173,7 +1173,7 @@ Word16 Band0Tb8[LspCbSize * 3] = {
 **      8 bit, 256 entry table.
 */
 
-Word16 Band1Tb8[LspCbSize * 3] = {
+int16_t Band1Tb8[LspCbSize * 3] = {
 	0, 0, 0,
 	-2114, -1302, 76,
 	-2652, -1278, -1368,
@@ -1442,7 +1442,7 @@ Word16 Band1Tb8[LspCbSize * 3] = {
 **      8 bit, 256 entry table.
 */
 
-Word16 Band2Tb8[LspCbSize * 4] = {
+int16_t Band2Tb8[LspCbSize * 4] = {
 	0, 0, 0, 0,
 	601, 512, -542, 334,
 	428, 1087, -484, -132,
@@ -1708,7 +1708,7 @@ Word16 Band2Tb8[LspCbSize * 4] = {
 **      collects the three subvector tables.
 */
 
-Word16 *BandQntTable[LspQntBands] = {
+int16_t *BandQntTable[LspQntBands] = {
 	Band0Tb8,
 	Band1Tb8,
 	Band2Tb8,
@@ -1726,7 +1726,7 @@ Word16 *BandQntTable[LspQntBands] = {
 **     These values are scaled by 32768.
 */
 
-Word16 PerFiltZeroTable[LpcOrder] = {
+int16_t PerFiltZeroTable[LpcOrder] = {
 	29491,
 	26542,
 	23888,
@@ -1751,7 +1751,7 @@ Word16 PerFiltZeroTable[LpcOrder] = {
 **     These values are scaled by 32768
 */
 
-Word16 PerFiltPoleTable[LpcOrder] = {
+int16_t PerFiltPoleTable[LpcOrder] = {
 	16384,
 	8192,
 	4096,
@@ -1776,7 +1776,7 @@ Word16 PerFiltPoleTable[LpcOrder] = {
 **     These values are scaled by 32768
 */
 
-Word16 PostFiltZeroTable[LpcOrder] = {
+int16_t PostFiltZeroTable[LpcOrder] = {
 	21299,
 	13844,
 	8999,
@@ -1801,7 +1801,7 @@ Word16 PostFiltZeroTable[LpcOrder] = {
 **     These values are scaled by 32768
 */
 
-Word16 PostFiltPoleTable[LpcOrder] = {
+int16_t PostFiltPoleTable[LpcOrder] = {
 	24576,
 	18432,
 	13824,
@@ -1825,7 +1825,7 @@ Word16 PostFiltPoleTable[LpcOrder] = {
 **      excitation (MP-MLQ), indexed by subframe number (0,..,3).
 */
 
-Word16 Nb_puls[4] = { 6, 5, 6, 5 };
+int16_t Nb_puls[4] = { 6, 5, 6, 5 };
 
 /*
 **  FcbkGainTable:
@@ -1837,7 +1837,7 @@ Word16 Nb_puls[4] = { 6, 5, 6, 5 };
 **      Contains x where 20*log10(x) = 3.2*i,  i = 1,..,24
 */
 
-Word16 FcbkGainTable[NumOfGainLev] = {
+int16_t FcbkGainTable[NumOfGainLev] = {
 	1,
 	2,
 	3,
@@ -1877,7 +1877,7 @@ Word16 FcbkGainTable[NumOfGainLev] = {
 **      non-zero pulses in the high-rate
 */
 
-Word32 MaxPosTable[4] = {
+int32_t MaxPosTable[4] = {
 	0x00090f6fL,
 	0x00022caaL,
 	0x00090f6fL,
@@ -1896,7 +1896,7 @@ Word32 MaxPosTable[4] = {
 **      (MaxPulsNum-1-i) elements among (SubFrLen-2-j)
 */
 
-Word32 CombinatorialTable[MaxPulseNum][SubFrLen / Sgrid] = {
+int32_t CombinatorialTable[MaxPulseNum][SubFrLen / Sgrid] = {
 	{118755L,
 	 98280L,
 	 80730L,
@@ -2114,7 +2114,7 @@ Word32 CombinatorialTable[MaxPulseNum][SubFrLen / Sgrid] = {
 **           These are scaled down by 14 bits (factor of 16384)
 */
 
-Word16 AcbkGainTable085[85 * 20] = {
+int16_t AcbkGainTable085[85 * 20] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 800, 1496, 167, -256,
@@ -2355,7 +2355,7 @@ Word16 AcbkGainTable085[85 * 20] = {
 **           These are scaled down by 14 bits (factor of 16384)
 */
 
-Word16 AcbkGainTable170[170 * 20] = {
+int16_t AcbkGainTable170[170 * 20] = {
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 0, 0, 0, 0,
 	0, 0, 0, 0, 776, 212, 715, 670,
@@ -2791,7 +2791,7 @@ Word16 AcbkGainTable170[170 * 20] = {
 **
 */
 
-Word16 *AcbkGainTablePtr[2] = {
+int16_t *AcbkGainTablePtr[2] = {
 	AcbkGainTable085,
 	AcbkGainTable170,
 };
@@ -2807,7 +2807,7 @@ Word16 *AcbkGainTablePtr[2] = {
 
 */
 
-Word16 LpfConstTable[2] = {
+int16_t LpfConstTable[2] = {
 	0x1800,
 	0x2000,
 };
@@ -2833,7 +2833,7 @@ Word16 LpfConstTable[2] = {
 **      pitch period behind the current vector. (In contrast, the 5
 **      tap LTP uses all five vectors centered one pitch period back.)
 */
-Word16 epsi170[170] = {
+int16_t epsi170[170] = {
 	60, 0, 60, 0, 1, 0, 0, 1,
 	-1, 1, 0, -1, 2, -2, 0, 1,
 	0, 0, -1, 0, 0, 0, 1, 0,
@@ -2874,7 +2874,7 @@ Word16 epsi170[170] = {
 **      table (determined in Find_Acbk). The values are in Q12.
 */
 
-Word16 gain170[170] = {
+int16_t gain170[170] = {
 	0, 2489, 0, 5217, 6171, 3953, 10364, 9357,
 	8843, 9396, 5794, 10816, 11606, 12072, 8616, 12170,
 	14440, 7787, 13721, 18205, 14471, 15807, 15275, 13480,
@@ -2911,7 +2911,7 @@ Word16 gain170[170] = {
 **      The table is indexed by the index into the AcbkGainTable170
 **      table (determined in Find_Acbk). The values are in Q13.
 */
-Word16 tabgain170[170] = {
+int16_t tabgain170[170] = {
 	1024, 1591, 1678, 1891, 2120, 2399, 2966, 3049,
 	3185, 3317, 3433, 3523, 3729, 3779, 3789, 4262,
 	4450, 4469, 4713, 4944, 4950, 4980, 5010, 5032,
@@ -2948,7 +2948,7 @@ Word16 tabgain170[170] = {
 **      The table is indexed by the index into the AcbkGainTable085
 **      table (determined in Find_Acbk). The values are in Q13.
 */
-Word16 tabgain85[85] = {
+int16_t tabgain85[85] = {
 	1024, 1308, 1906, 2291, 2511, 2736, 3298, 3489,
 	3531, 3844, 4360, 4541, 4684, 4813, 5069, 5528,
 	5577, 5713, 5923, 5958, 5958, 6064, 6132, 6331,
@@ -2982,6 +2982,6 @@ Word16 tabgain85[85] = {
 **      table base : first code of each segment
 **
 */
-Word16 nfact[4] = { 273, 998, 499, 333 };
-Word32 L_bseg[3] = { 2048L, 18432L, 231233L };	/* Bug fixed 24-09-96 */
-Word16 base[3] = { 0, 32, 96 };
+int16_t nfact[4] = { 273, 998, 499, 333 };
+int32_t L_bseg[3] = { 2048L, 18432L, 231233L };	/* Bug fixed 24-09-96 */
+int16_t base[3] = { 0, 32, 96 };

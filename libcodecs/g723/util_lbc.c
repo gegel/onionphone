@@ -47,38 +47,38 @@
 #include <stdio.h>
 
 #include "g723_const.h"
-extern Flag UseHp;
+extern int UseHp;
 extern CODSTATDEF CodStat;
 extern DECSTATDEF DecStat;
 extern enum Crate WrkRate;
 
-extern void Line_Pack(LINEDEF * Line, char *Vout, Word16 Ftyp);
-extern Word32 Ser2Par(Word16 ** Pnt, int Count);
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
+extern void Line_Pack(LINEDEF * Line, char *Vout, int16_t Ftyp);
+extern int32_t Ser2Par(int16_t ** Pnt, int Count);
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
 
-extern Word32 L_g723_mult(Word16 var1, Word16 var2);	/* Long mult,           1 */
-extern Word32 g723_L_mac(Word32 L_var3, Word16 var1, Word16 var2);	/* Mac,    1 */
-extern Word32 L_mls(Word32, Word16);	/* Wght ?? */
-extern Word32 L_g723_add(Word32 L_var1, Word32 L_var2);	/* Long add,        2 */
-extern Word16 round_(Word32 L_var1);	/* Round,               1 */
-extern Word16 g723_mult_r(Word16 var1, Word16 var2);	/* Mult with round,     2 */
-extern Word16 g723_mac_r(Word32 L_var3, Word16 var1, Word16 var2);	/* Mac with rounding, */
-extern Word16 g723_msu_r(Word32 L_var3, Word16 var1, Word16 var2);	/* Msu with rounding, */
-extern Word16 g723_shr(Word16 var1, Word16 var2);	/* Short shift right,   1 */
-extern Word32 L_g723_shr(Word32 L_var1, Word16 var2);	/* Long shift right,    2 */
-extern Word16 g723_abs_s(Word16 var1);	/* Short abs,           1 */
-extern Word16 g723_norm_s(Word16 var1);	/* Short norm,           15 */
-//extern Word32 L_g723_shr(Word32 L_var1, Word16 var2); /* Long shift right,    2 */
-extern Word16 g723_extract_l(Word32 L_var1);	/* Extract low,         1 */
-extern Word16 g723_sub(Word16 var1, Word16 var2);	/* Short sub,           1 */
-extern Word16 *Par2Ser(Word32 Inp, Word16 * Pnt, int BitNum);
-extern Word16 g723_norm_l(Word32 L_var1);	/* Long norm,            30 */
-extern Word32 L_g723_shl(Word32 L_var1, Word16 var2);	/* Long shift left,     2 */
-extern Word16 g723_extract_h(Word32 L_var1);	/* Extract high,        1 */
-extern Word16 div_l(Word32, Word16);
-extern Word32 g723_L_deposit_h(Word16 var1);	/* 16 bit var1 -> MSB,     2 */
-extern Word32 g723_L_msu(Word32 L_var3, Word16 var1, Word16 var2);	/* Msu,    1 */
-extern Word32 g723_L_deposit_l(Word16 var1);	/* 16 bit var1 -> LSB,     2 */
+extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
+extern int32_t g723_L_mac(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac,    1 */
+extern int32_t L_mls(int32_t, int16_t);	/* Wght ?? */
+extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
+extern int16_t round_(int32_t L_var1);	/* Round,               1 */
+extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
+extern int16_t g723_mac_r(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac with rounding, */
+extern int16_t g723_msu_r(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu with rounding, */
+extern int16_t g723_shr(int16_t var1, int16_t var2);	/* Short shift right,   1 */
+extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
+extern int16_t g723_abs_s(int16_t var1);	/* Short abs,           1 */
+extern int16_t g723_norm_s(int16_t var1);	/* Short norm,           15 */
+//extern int32_t L_g723_shr(int32_t L_var1, int16_t var2); /* Long shift right,    2 */
+extern int16_t g723_extract_l(int32_t L_var1);	/* Extract low,         1 */
+extern int16_t g723_sub(int16_t var1, int16_t var2);	/* Short sub,           1 */
+extern int16_t *Par2Ser(int32_t Inp, int16_t * Pnt, int BitNum);
+extern int16_t g723_norm_l(int32_t L_var1);	/* Long norm,            30 */
+extern int32_t L_g723_shl(int32_t L_var1, int16_t var2);	/* Long shift left,     2 */
+extern int16_t g723_extract_h(int32_t L_var1);	/* Extract high,        1 */
+extern int16_t div_l(int32_t, int16_t);
+extern int32_t g723_L_deposit_h(int16_t var1);	/* 16 bit var1 -> MSB,     2 */
+extern int32_t g723_L_msu(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu,    1 */
+extern int32_t g723_L_deposit_l(int16_t var1);	/* 16 bit var1 -> LSB,     2 */
 /*
 **
 ** Function:        Read_lbc()
@@ -89,25 +89,25 @@ extern Word32 g723_L_deposit_l(Word16 var1);	/* 16 bit var1 -> LSB,     2 */
 **
 ** Arguments:
 **
-**  Word16 *Dpnt
+**  int16_t *Dpnt
 **  int     Len
 **  FILE *Fp
 **
 ** Outputs:
 **
-**  Word16 *Dpnt
+**  int16_t *Dpnt
 **
 ** Return value:    None
 **
 */
-void Read_lbc(Word16 * Dpnt, int Len, FILE * Fp)
+void Read_lbc(int16_t * Dpnt, int Len, FILE * Fp)
 {
 	int i;
 
 	for (i = 0; i < Len; i++)
-		Dpnt[i] = (Word16) 0;
+		Dpnt[i] = (int16_t) 0;
 
-	fread((char *)Dpnt, sizeof(Word16), Len, Fp);
+	fread((char *)Dpnt, sizeof(int16_t), Len, Fp);
 
 	return;
 }
@@ -122,7 +122,7 @@ void Read_lbc(Word16 * Dpnt, int Len, FILE * Fp)
 **
 ** Arguments:
 **
-**  Word16 *Dpnt
+**  int16_t *Dpnt
 **  int     Len
 **  FILE *Fp
 **
@@ -131,17 +131,17 @@ void Read_lbc(Word16 * Dpnt, int Len, FILE * Fp)
 ** Return value:    None
 **
 */
-void Write_lbc(Word16 * Dpnt, int Len, FILE * Fp)
+void Write_lbc(int16_t * Dpnt, int Len, FILE * Fp)
 {
-	fwrite((char *)Dpnt, sizeof(Word16), Len, Fp);
+	fwrite((char *)Dpnt, sizeof(int16_t), Len, Fp);
 }
 
 void Line_Wr(char *Line, FILE * Fp)
 {
-	Word16 Info;
+	int16_t Info;
 	int Size;
 
-	Info = Line[0] & (Word16) 0x0003;
+	Info = Line[0] & (int16_t) 0x0003;
 
 	/* Check frame type and rate informations */
 	switch (Info) {
@@ -170,13 +170,13 @@ void Line_Wr(char *Line, FILE * Fp)
 
 int Line_Rd(char *Line, FILE * Fp)
 {
-	Word16 Info;
+	int16_t Info;
 	int Size;
 
 	if (fread(Line, 1, 1, Fp) != 1)
 		return (-1);
 
-	Info = Line[0] & (Word16) 0x0003;
+	Info = Line[0] & (int16_t) 0x0003;
 
 	/* Check frame type and rate informations */
 	switch (Info) {
@@ -218,7 +218,7 @@ int Line_Rd(char *Line, FILE * Fp)
 **
 ** Arguments:
 **
-**  Word16 *Dpnt
+**  int16_t *Dpnt
 **
 ** Inputs:
 **
@@ -227,35 +227,35 @@ int Line_Rd(char *Line, FILE * Fp)
 **
 ** Outputs:
 **
-**  Word16 *Dpnt
+**  int16_t *Dpnt
 **
 ** Return value:    None
 **
 */
-void Rem_Dc(Word16 * Dpnt)
+void Rem_Dc(int16_t * Dpnt)
 {
 	int i;
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
 	if (UseHp) {
 		for (i = 0; i < Frame; i++) {
 
 			/* Do the Fir and scale by 2 */
-			Acc0 = L_g723_mult(Dpnt[i], (Word16) 0x4000);
+			Acc0 = L_g723_mult(Dpnt[i], (int16_t) 0x4000);
 			Acc0 =
-			    g723_L_mac(Acc0, CodStat.HpfZdl, (Word16) 0xc000);
+			    g723_L_mac(Acc0, CodStat.HpfZdl, (int16_t) 0xc000);
 			CodStat.HpfZdl = Dpnt[i];
 
 			/* Do the Iir part */
-			Acc1 = L_mls(CodStat.HpfPdl, (Word16) 0x7f00);
+			Acc1 = L_mls(CodStat.HpfPdl, (int16_t) 0x7f00);
 			Acc0 = L_g723_add(Acc0, Acc1);
 			CodStat.HpfPdl = Acc0;
 			Dpnt[i] = round_(Acc0);
 		}
 	} else {
 		for (i = 0; i < Frame; i++)
-			Dpnt[i] = g723_shr(Dpnt[i], (Word16) 1);
+			Dpnt[i] = g723_shr(Dpnt[i], (int16_t) 1);
 	}
 
 	return;
@@ -271,24 +271,24 @@ void Rem_Dc(Word16 * Dpnt)
 **
 ** Arguments:
 **
-**  Word16 *Vect
-**  Word16 Len
+**  int16_t *Vect
+**  int16_t Len
 **
 ** Outputs:
 **
-**  Word16 *Vect
+**  int16_t *Vect
 **
 ** Return value:  The power of 2 by which the data vector multiplyed.
 **
 */
-Word16 Vec_Norm(Word16 * Vect, Word16 Len)
+int16_t Vec_Norm(int16_t * Vect, int16_t Len)
 {
 	int i;
 
-	Word16 Acc0, Acc1;
-	Word16 Exp;
-	Word16 Rez;
-	Word32 Temp;
+	int16_t Acc0, Acc1;
+	int16_t Exp;
+	int16_t Rez;
+	int32_t Temp;
 
 	static short ShiftTable[16] = {
 		0x0001,
@@ -310,7 +310,7 @@ Word16 Vec_Norm(Word16 * Vect, Word16 Len)
 	};
 
 	/* Find absolute maximum */
-	Acc1 = (Word16) 0;
+	Acc1 = (int16_t) 0;
 	for (i = 0; i < Len; i++) {
 		Acc0 = g723_abs_s(Vect[i]);
 		if (Acc0 > Acc1)
@@ -328,7 +328,7 @@ Word16 Vec_Norm(Word16 * Vect, Word16 Len)
 		Vect[i] = g723_extract_l(Temp);
 	}
 
-	Rez = g723_sub(Rez, (Word16) 3);
+	Rez = g723_sub(Rez, (int16_t) 3);
 	return Rez;
 }
 
@@ -342,22 +342,22 @@ Word16 Vec_Norm(Word16 * Vect, Word16 Len)
 **
 ** Arguments:
 **
-**  Word16 *PrevDat
-**  Word16 *DataBuff
+**  int16_t *PrevDat
+**  int16_t *DataBuff
 **
 ** Outputs:
 **
-**  Word16 *PrevDat
-**  Word16 *DataBuff
+**  int16_t *PrevDat
+**  int16_t *DataBuff
 **
 ** Return value:    None
 **
 */
-void Mem_Shift(Word16 * PrevDat, Word16 * DataBuff)
+void Mem_Shift(int16_t * PrevDat, int16_t * DataBuff)
 {
 	int i;
 
-	Word16 Dpnt[Frame + LpcFrame - SubFrLen];
+	int16_t Dpnt[Frame + LpcFrame - SubFrLen];
 
 	/*  Form Buffer  */
 	for (i = 0; i < LpcFrame - SubFrLen; i++)
@@ -388,23 +388,23 @@ void Mem_Shift(Word16 * PrevDat, Word16 * DataBuff)
 **
 **  LINEDEF *Line     Coded parameters for a frame
 **  char    *Vout     bitstream chars
-**  Word16   VadBit   Voice Activity Indicator
+**  int16_t   VadBit   Voice Activity Indicator
 **
 ** Outputs:
 **
-**  Word16 *Vout
+**  int16_t *Vout
 **
 ** Return value:    None
 **
 */
-void Line_Pack(LINEDEF * Line, char *Vout, Word16 Ftyp)
+void Line_Pack(LINEDEF * Line, char *Vout, int16_t Ftyp)
 {
 	int i;
 	int BitCount;
 
-	Word16 BitStream[192];
-	Word16 *Bsp = BitStream;
-	Word32 Temp;
+	int16_t BitStream[192];
+	int16_t *Bsp = BitStream;
+	int32_t Temp;
 
 	/* Clear the output vector */
 	for (i = 0; i < 24; i++)
@@ -457,16 +457,16 @@ void Line_Pack(LINEDEF * Line, char *Vout, Word16 Ftyp)
 		 */
 
 		/* Adaptive code book lags */
-		Temp = (Word32) (*Line).Olp[0] - (Word32) PitchMin;
+		Temp = (int32_t) (*Line).Olp[0] - (int32_t) PitchMin;
 		Bsp = Par2Ser(Temp, Bsp, 7);
 
-		Temp = (Word32) (*Line).Sfs[1].AcLg;
+		Temp = (int32_t) (*Line).Sfs[1].AcLg;
 		Bsp = Par2Ser(Temp, Bsp, 2);
 
-		Temp = (Word32) (*Line).Olp[1] - (Word32) PitchMin;
+		Temp = (int32_t) (*Line).Olp[1] - (int32_t) PitchMin;
 		Bsp = Par2Ser(Temp, Bsp, 7);
 
-		Temp = (Word32) (*Line).Sfs[3].AcLg;
+		Temp = (int32_t) (*Line).Sfs[3].AcLg;
 		Bsp = Par2Ser(Temp, Bsp, 2);
 
 		/* Write combined 12 bit index of all the gains */
@@ -475,7 +475,7 @@ void Line_Pack(LINEDEF * Line, char *Vout, Word16 Ftyp)
 			    (*Line).Sfs[i].AcGn * NumOfGainLev +
 			    (*Line).Sfs[i].Mamp;
 			if (WrkRate == Rate63)
-				Temp += (Word32) (*Line).Sfs[i].Tran << 11;
+				Temp += (int32_t) (*Line).Sfs[i].Tran << 11;
 			Bsp = Par2Ser(Temp, Bsp, 12);
 		}
 
@@ -487,7 +487,7 @@ void Line_Pack(LINEDEF * Line, char *Vout, Word16 Ftyp)
 		if (WrkRate == Rate63) {
 
 			/* Write the reserved bit as 0 */
-			*Bsp++ = (Word16) 0;
+			*Bsp++ = (int16_t) 0;
 
 			/* Write 13 bit combined position index */
 			Temp = (*Line).Sfs[0].Ppos >> 16;
@@ -512,16 +512,16 @@ void Line_Pack(LINEDEF * Line, char *Vout, Word16 Ftyp)
 			Bsp = Par2Ser(Temp, Bsp, 14);
 
 			/* Write pulse amplitudes */
-			Temp = (Word32) (*Line).Sfs[0].Pamp;
+			Temp = (int32_t) (*Line).Sfs[0].Pamp;
 			Bsp = Par2Ser(Temp, Bsp, 6);
 
-			Temp = (Word32) (*Line).Sfs[1].Pamp;
+			Temp = (int32_t) (*Line).Sfs[1].Pamp;
 			Bsp = Par2Ser(Temp, Bsp, 5);
 
-			Temp = (Word32) (*Line).Sfs[2].Pamp;
+			Temp = (int32_t) (*Line).Sfs[2].Pamp;
 			Bsp = Par2Ser(Temp, Bsp, 6);
 
-			Temp = (Word32) (*Line).Sfs[3].Pamp;
+			Temp = (int32_t) (*Line).Sfs[3].Pamp;
 			Bsp = Par2Ser(Temp, Bsp, 5);
 		}
 
@@ -550,7 +550,7 @@ void Line_Pack(LINEDEF * Line, char *Vout, Word16 Ftyp)
 		Bsp = Par2Ser(Temp, Bsp, 24);
 
 		/* Do Sid frame gain */
-		Temp = (Word32) (*Line).Sfs[0].Mamp;
+		Temp = (int32_t) (*Line).Sfs[0].Mamp;
 		Bsp = Par2Ser(Temp, Bsp, 6);
 	}
 
@@ -573,13 +573,13 @@ void Line_Pack(LINEDEF * Line, char *Vout, Word16 Ftyp)
 	return;
 }
 
-Word16 *Par2Ser(Word32 Inp, Word16 * Pnt, int BitNum)
+int16_t *Par2Ser(int32_t Inp, int16_t * Pnt, int BitNum)
 {
 	int i;
-	Word16 Temp;
+	int16_t Temp;
 
 	for (i = 0; i < BitNum; i++) {
-		Temp = (Word16) Inp & (Word16) 0x0001;
+		Temp = (int16_t) Inp & (int16_t) 0x0001;
 		Inp >>= 1;
 		*Pnt++ = Temp;
 	}
@@ -598,30 +598,30 @@ Word16 *Par2Ser(Word32 Inp, Word16 * Pnt, int BitNum)
 ** Arguments:
 **
 **  char   *Vinp        bitstream chars
-**  Word16 *VadType
+**  int16_t *VadType
 **
 ** Outputs:
 **
-**  Word16 *VadType
+**  int16_t *VadType
 **
 ** Return value:
 **
 **  LINEDEF             coded parameters
-**     Word16   Crc
-**     Word32   LspId
-**     Word16   Olp[SubFrames/2]
+**     int16_t   Crc
+**     int32_t   LspId
+**     int16_t   Olp[SubFrames/2]
 **     SFSDEF   Sfs[SubFrames]
 **
 */
-LINEDEF Line_Unpk(char *Vinp, Word16 * Ftyp, Word16 Crc)
+LINEDEF Line_Unpk(char *Vinp, int16_t * Ftyp, int16_t Crc)
 {
 	int i;
-	Word16 BitStream[192];
-	Word16 *Bsp = BitStream;
+	int16_t BitStream[192];
+	int16_t *Bsp = BitStream;
 	LINEDEF Line;
-	Word32 Temp;
-	Word16 Info;
-	Word16 Bound_AcGn;
+	int32_t Temp;
+	int16_t Info;
+	int16_t Bound_AcGn;
 
 	Line.Crc = Crc;
 	if (Crc != 0) {
@@ -632,10 +632,10 @@ LINEDEF Line_Unpk(char *Vinp, Word16 * Ftyp, Word16 Crc)
 	/* Unpack the byte info to BitStream vector */
 	for (i = 0; i < 192; i++)
 		BitStream[i] =
-		    (Vinp[i >> 3] >> (i & (Word16) 0x0007)) & (Word16) 1;
+		    (Vinp[i >> 3] >> (i & (int16_t) 0x0007)) & (int16_t) 1;
 
 	/* Decode the frame type and rate info */
-	Info = (Word16) Ser2Par(&Bsp, 2);
+	Info = (int16_t) Ser2Par(&Bsp, 2);
 
 	if (Info == 3) {
 		*Ftyp = 0;
@@ -648,7 +648,7 @@ LINEDEF Line_Unpk(char *Vinp, Word16 * Ftyp, Word16 Crc)
 
 	if (Info == 2) {
 		/* Decode the Noise Gain */
-		Line.Sfs[0].Mamp = (Word16) Ser2Par(&Bsp, 6);
+		Line.Sfs[0].Mamp = (int16_t) Ser2Par(&Bsp, 6);
 		*Ftyp = 2;
 		return Line;
 	}
@@ -665,19 +665,19 @@ LINEDEF Line_Unpk(char *Vinp, Word16 * Ftyp, Word16 Crc)
 	Temp = Ser2Par(&Bsp, 7);
 	/* Test if forbidden code */
 	if (Temp <= 123) {
-		Line.Olp[0] = (Word16) Temp + (Word16) PitchMin;
+		Line.Olp[0] = (int16_t) Temp + (int16_t) PitchMin;
 	} else {
 		/* transmission error */
 		Line.Crc = 1;
 		return Line;
 	}
 
-	Line.Sfs[1].AcLg = (Word16) Ser2Par(&Bsp, 2);
+	Line.Sfs[1].AcLg = (int16_t) Ser2Par(&Bsp, 2);
 
 	Temp = Ser2Par(&Bsp, 7);
 	/* Test if forbidden code */
 	if (Temp <= 123) {
-		Line.Olp[1] = (Word16) Temp + (Word16) PitchMin;
+		Line.Olp[1] = (int16_t) Temp + (int16_t) PitchMin;
 	}
 
 	else {
@@ -686,7 +686,7 @@ LINEDEF Line_Unpk(char *Vinp, Word16 * Ftyp, Word16 Crc)
 		return Line;
 	}
 
-	Line.Sfs[3].AcLg = (Word16) Ser2Par(&Bsp, 2);
+	Line.Sfs[3].AcLg = (int16_t) Ser2Par(&Bsp, 2);
 
 	Line.Sfs[0].AcLg = 1;
 	Line.Sfs[2].AcLg = 1;
@@ -699,14 +699,14 @@ LINEDEF Line_Unpk(char *Vinp, Word16 * Ftyp, Word16 Crc)
 		Line.Sfs[i].Tran = 0;
 		Bound_AcGn = NbFilt170;
 		if ((WrkRate == Rate63) && (Line.Olp[i >> 1] < (SubFrLen - 2))) {
-			Line.Sfs[i].Tran = (Word16) (Temp >> 11);
+			Line.Sfs[i].Tran = (int16_t) (Temp >> 11);
 			Temp &= 0x000007ffL;
 			Bound_AcGn = NbFilt085;
 		}
-		Line.Sfs[i].AcGn = (Word16) (Temp / (Word16) NumOfGainLev);
+		Line.Sfs[i].AcGn = (int16_t) (Temp / (int16_t) NumOfGainLev);
 		if (Line.Sfs[i].AcGn < Bound_AcGn) {
 			Line.Sfs[i].Mamp =
-			    (Word16) (Temp % (Word16) NumOfGainLev);
+			    (int16_t) (Temp % (int16_t) NumOfGainLev);
 		} else {
 			/* error detected */
 			Line.Crc = 1;
@@ -737,10 +737,10 @@ LINEDEF Line_Unpk(char *Vinp, Word16 * Ftyp, Word16 Crc)
 		Line.Sfs[3].Ppos = (Line.Sfs[3].Ppos << 14) + Ser2Par(&Bsp, 14);
 
 		/* Decode pulse amplitudes */
-		Line.Sfs[0].Pamp = (Word16) Ser2Par(&Bsp, 6);
-		Line.Sfs[1].Pamp = (Word16) Ser2Par(&Bsp, 5);
-		Line.Sfs[2].Pamp = (Word16) Ser2Par(&Bsp, 6);
-		Line.Sfs[3].Pamp = (Word16) Ser2Par(&Bsp, 5);
+		Line.Sfs[0].Pamp = (int16_t) Ser2Par(&Bsp, 6);
+		Line.Sfs[1].Pamp = (int16_t) Ser2Par(&Bsp, 5);
+		Line.Sfs[2].Pamp = (int16_t) Ser2Par(&Bsp, 6);
+		Line.Sfs[3].Pamp = (int16_t) Ser2Par(&Bsp, 5);
 	}
 
 	else {
@@ -751,18 +751,18 @@ LINEDEF Line_Unpk(char *Vinp, Word16 * Ftyp, Word16 Crc)
 
 		/* Decode the amplitudes */
 		for (i = 0; i < SubFrames; i++)
-			Line.Sfs[i].Pamp = (Word16) Ser2Par(&Bsp, 4);
+			Line.Sfs[i].Pamp = (int16_t) Ser2Par(&Bsp, 4);
 	}
 	return Line;
 }
 
-Word32 Ser2Par(Word16 ** Pnt, int Count)
+int32_t Ser2Par(int16_t ** Pnt, int Count)
 {
 	int i;
-	Word32 Rez = 0L;
+	int32_t Rez = 0L;
 
 	for (i = 0; i < Count; i++) {
-		Rez += (Word32) ** Pnt << i;
+		Rez += (int32_t) ** Pnt << i;
 		(*Pnt)++;
 	}
 	return Rez;
@@ -778,25 +778,25 @@ Word32 Ser2Par(Word16 ** Pnt, int Count)
 **
 ** Arguments:
 **
-**  Word16 *Dpnt
+**  int16_t *Dpnt
 **
 ** Outputs:         None
 **
 ** Return value:
 **
-**      Word32 energy
+**      int32_t energy
 **
 */
-Word32 Comp_En(Word16 * Dpnt)
+int32_t Comp_En(int16_t * Dpnt)
 {
 	int i;
-	Word32 Rez;
-	Word16 Temp[SubFrLen];
+	int32_t Rez;
+	int16_t Temp[SubFrLen];
 
 	for (i = 0; i < SubFrLen; i++)
-		Temp[i] = g723_shr(Dpnt[i], (Word16) 2);
+		Temp[i] = g723_shr(Dpnt[i], (int16_t) 2);
 
-	Rez = (Word32) 0;
+	Rez = (int32_t) 0;
 	for (i = 0; i < SubFrLen; i++)
 		Rez = g723_L_mac(Rez, Temp[i], Temp[i]);
 
@@ -813,23 +813,23 @@ Word32 Comp_En(Word16 * Dpnt)
 **
 ** Arguments:
 **
-**  Word32 Num
+**  int32_t Num
 **
 ** Outputs:     None
 **
 ** Return value:
 **
-**  Word16 square root of num
+**  int16_t square root of num
 **
 */
-Word16 Sqrt_lbc(Word32 Num)
+int16_t Sqrt_lbc(int32_t Num)
 {
 	int i;
 
-	Word16 Rez = (Word16) 0;
-	Word16 Exp = (Word16) 0x4000;
+	int16_t Rez = (int16_t) 0;
+	int16_t Exp = (int16_t) 0x4000;
 
-	Word32 Acc;
+	int32_t Acc;
 
 	for (i = 0; i < 14; i++) {
 
@@ -837,7 +837,7 @@ Word16 Sqrt_lbc(Word32 Num)
 		if (Num >= Acc)
 			Rez = g723_add(Rez, Exp);
 
-		Exp = g723_shr(Exp, (Word16) 1);
+		Exp = g723_shr(Exp, (int16_t) 1);
 	}
 	return Rez;
 }
@@ -852,24 +852,24 @@ Word16 Sqrt_lbc(Word32 Num)
 **
 ** Arguments:
 **
-**  Word16 *p
+**  int16_t *p
 **
 ** Outputs:
 **
-**  Word16 *p
+**  int16_t *p
 **
 ** Return value:
 **
-**  Word16 random number
+**  int16_t random number
 **
 */
-Word16 Rand_lbc(Word16 * p)
+int16_t Rand_lbc(int16_t * p)
 {
-	Word32 Temp;
+	int32_t Temp;
 
 	Temp = g723_L_deposit_l(*p);
-	Temp &= (Word32) 0x0000ffff;
-	Temp = Temp * (Word32) 521 + (Word32) 259;
+	Temp &= (int32_t) 0x0000ffff;
+	Temp = Temp * (int32_t) 521 + (int32_t) 259;
 	*p = g723_extract_l(Temp);
 	return g723_extract_l(Temp);
 }
@@ -884,44 +884,44 @@ Word16 Rand_lbc(Word16 * p)
 **
 ** Arguments:
 **
-**  Word16 *Tv
-**  Word32 Sen
+**  int16_t *Tv
+**  int32_t Sen
 **
 **  Inputs:
 **
-**  Word16 DecStat.Gain
+**  int16_t DecStat.Gain
 **
 ** Outputs:
 **
-**  Word16 *Tv
+**  int16_t *Tv
 **
 ** Return value:    None
 **
 */
-void Scale(Word16 * Tv, Word32 Sen)
+void Scale(int16_t * Tv, int32_t Sen)
 {
 	int i;
 
-	Word32 Acc0, Acc1;
-	Word16 Exp, SfGain;
+	int32_t Acc0, Acc1;
+	int16_t Exp, SfGain;
 
 	Acc0 = Sen;
 	Acc1 = Comp_En(Tv);
 
 	/* Normalize both */
-	if ((Acc1 != (Word32) 0) && (Acc0 != (Word32) 0)) {
+	if ((Acc1 != (int32_t) 0) && (Acc0 != (int32_t) 0)) {
 
 		Exp = g723_norm_l(Acc1);
 		Acc1 = L_g723_shl(Acc1, Exp);
 
 		SfGain = g723_norm_l(Acc0);
 		Acc0 = L_g723_shl(Acc0, SfGain);
-		Acc0 = L_g723_shr(Acc0, (Word16) 1);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 1);
 		Exp = g723_sub(Exp, SfGain);
-		Exp = g723_add(Exp, (Word16) 1);
-		Exp = g723_sub((Word16) 6, Exp);
-		if (Exp < (Word16) 0)
-			Exp = (Word16) 0;
+		Exp = g723_add(Exp, (int16_t) 1);
+		Exp = g723_sub((int16_t) 6, Exp);
+		if (Exp < (int16_t) 0)
+			Exp = (int16_t) 0;
 
 		SfGain = g723_extract_h(Acc1);
 
@@ -940,15 +940,16 @@ void Scale(Word16 * Tv, Word32 Sen)
 
 		/* Update gain */
 		Acc0 = g723_L_deposit_h(DecStat.Gain);
-		Acc0 = g723_L_msu(Acc0, DecStat.Gain, (Word16) 0x0800);
-		Acc0 = g723_L_mac(Acc0, SfGain, (Word16) 0x0800);
+		Acc0 = g723_L_msu(Acc0, DecStat.Gain, (int16_t) 0x0800);
+		Acc0 = g723_L_mac(Acc0, SfGain, (int16_t) 0x0800);
 		DecStat.Gain = round_(Acc0);
 
 		Exp =
-		    g723_add(DecStat.Gain, g723_shr(DecStat.Gain, (Word16) 4));
+		    g723_add(DecStat.Gain,
+			     g723_shr(DecStat.Gain, (int16_t) 4));
 
 		Acc0 = L_g723_mult(Tv[i], Exp);
-		Acc0 = L_g723_shl(Acc0, (Word16) 4);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 4);
 		Tv[i] = round_(Acc0);
 	}
 

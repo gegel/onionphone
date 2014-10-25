@@ -26,19 +26,21 @@
 #include "g723_const.h"
 /* Global Variable */
 DECCNGDEF DecCng;
-extern Word16 LspDcTable[LpcOrder];
+extern int16_t LspDcTable[LpcOrder];
 extern DECSTATDEF DecStat;
 
-extern void Lsp_Inq(Word16 * Lsp, Word16 * PrevLsp, Word32 LspId, Word16 Crc);
-extern Word16 Qua_SidGain(Word16 * Ener, Word16 * shEner, Word16 nq);
-extern Word16 g723_extract_h(Word32 L_var1);	/* Extract high,        1 */
-extern Word32 L_g723_add(Word32 L_var1, Word32 L_var2);	/* Long add,        2 */
+extern void Lsp_Inq(int16_t * Lsp, int16_t * PrevLsp, int32_t LspId,
+		    int16_t Crc);
+extern int16_t Qua_SidGain(int16_t * Ener, int16_t * shEner, int16_t nq);
+extern int16_t g723_extract_h(int32_t L_var1);	/* Extract high,        1 */
+extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
 
-extern Word32 L_g723_mult(Word16 var1, Word16 var2);	/* Long mult,           1 */
-extern void Calc_Exc_Rand(Word16 cur_gain, Word16 * PrevExc, Word16 * DataExc,
-			  Word16 * nRandom, LINEDEF * Line);
-extern void Lsp_Int(Word16 * QntLpc, Word16 * CurrLsp, Word16 * PrevLsp);
-extern Word16 Dec_SidGain(Word16 i_gain);
+extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
+extern void Calc_Exc_Rand(int16_t cur_gain, int16_t * PrevExc,
+			  int16_t * DataExc,
+			  int16_t * nRandom, LINEDEF * Line);
+extern void Lsp_Int(int16_t * QntLpc, int16_t * CurrLsp, int16_t * PrevLsp);
+extern int16_t Dec_SidGain(int16_t i_gain);
 
 /*
 **
@@ -82,23 +84,24 @@ void Init_Dec_Cng(void)
 **
 ** Arguments:
 **
-**  Word16 Ftyp        Type of silence frame
+**  int16_t Ftyp        Type of silence frame
 **  LINEDEF *Line      Coded parameters
-**  Word16 *DataExc    Current frame excitation
-**  Word16 *QntLpc     Interpolated frame LPC coefficients
+**  int16_t *DataExc    Current frame excitation
+**  int16_t *QntLpc     Interpolated frame LPC coefficients
 **
 ** Outputs:
 **
-**  Word16 *DataExc
-**  Word16 *QntLpc
+**  int16_t *DataExc
+**  int16_t *QntLpc
 **
 ** Return value:       None
 **
 */
-void Dec_Cng(Word16 Ftyp, LINEDEF * Line, Word16 * DataExc, Word16 * QntLpc)
+void Dec_Cng(int16_t Ftyp, LINEDEF * Line, int16_t * DataExc,
+	     int16_t * QntLpc)
 {
 
-	Word16 temp;
+	int16_t temp;
 	int i;
 
 	if (Ftyp == 2) {

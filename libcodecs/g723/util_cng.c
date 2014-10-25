@@ -33,42 +33,43 @@
 
 #include "g723_const.h"
 
-extern Word16 base[3];
-extern Word16 nfact[4];
-extern Word16 Nb_puls[4];
+extern int16_t base[3];
+extern int16_t nfact[4];
+extern int16_t Nb_puls[4];
 
-extern Word32 L_bseg[3];
+extern int32_t L_bseg[3];
 
-extern Word16 g723_shr(Word16 var1, Word16 var2);	/* Short shift right,   1 */
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
-extern Word16 g723_shl(Word16 var1, Word16 var2);	/* Short shift left,    1 */
-extern Word16 g723_sub(Word16 var1, Word16 var2);	/* Short sub,           1 */
+extern int16_t g723_shr(int16_t var1, int16_t var2);	/* Short shift right,   1 */
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
+extern int16_t g723_shl(int16_t var1, int16_t var2);	/* Short shift left,    1 */
+extern int16_t g723_sub(int16_t var1, int16_t var2);	/* Short sub,           1 */
 
-extern void Decod_Acbk(Word16 * Tv, Word16 * PrevExc, Word16 Olp, Word16 Lid,
-		       Word16 Gid);
+extern void Decod_Acbk(int16_t * Tv, int16_t * PrevExc, int16_t Olp,
+		       int16_t Lid,
+		       int16_t Gid);
 
-extern Word16 g723_abs_s(Word16 var1);	/* Short abs,           1 */
-extern Word16 g723_norm_s(Word16 var1);	/* Short norm,           15 */
-extern Word32 g723_L_mac(Word32 L_var3, Word16 var1, Word16 var2);	/* Mac,    1 */
-extern Word16 g723_extract_h(Word32 L_var1);	/* Extract high,        1 */
-extern Word32 L_g723_shl(Word32 L_var1, Word16 var2);	/* Long shift left,     2 */
-extern Word32 L_g723_mult(Word16 var1, Word16 var2);	/* Long mult,           1 */
-extern Word32 L_g723_shr(Word32 L_var1, Word16 var2);	/* Long shift right,    2 */
-extern Word16 g723_extract_l(Word32 L_var1);	/* Extract low,         1 */
-extern Word32 L_g723_sub(Word32 L_var1, Word32 L_var2);	/* Long sub,        2 */
-extern Word32 L_mls(Word32, Word16);	/* Wght ?? */
-extern Word32 g723_L_msu(Word32 L_var3, Word16 var1, Word16 var2);	/* Msu,    1 */
-extern Word32 L_g723_negate(Word32 L_var1);	/* Long negate,     2 */
-extern Word16 g723_negate(Word16 var1);	/* Short negate,        1 */
-extern Word16 Sqrt_lbc(Word32 Num);
-extern Word16 g723_mult(Word16 var1, Word16 var2);	/* Short mult,          1 */
-extern Word16 Rand_lbc(Word16 * p);
-extern Word32 g723_L_deposit_l(Word16 var1);	/* 16 bit var1 -> LSB,     2 */
-extern Word32 L_g723_add(Word32 L_var1, Word32 L_var2);	/* Long add,        2 */
-extern Word16 g723_mult_r(Word16 var1, Word16 var2);
+extern int16_t g723_abs_s(int16_t var1);	/* Short abs,           1 */
+extern int16_t g723_norm_s(int16_t var1);	/* Short norm,           15 */
+extern int32_t g723_L_mac(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac,    1 */
+extern int16_t g723_extract_h(int32_t L_var1);	/* Extract high,        1 */
+extern int32_t L_g723_shl(int32_t L_var1, int16_t var2);	/* Long shift left,     2 */
+extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
+extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
+extern int16_t g723_extract_l(int32_t L_var1);	/* Extract low,         1 */
+extern int32_t L_g723_sub(int32_t L_var1, int32_t L_var2);	/* Long sub,        2 */
+extern int32_t L_mls(int32_t, int16_t);	/* Wght ?? */
+extern int32_t g723_L_msu(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu,    1 */
+extern int32_t L_g723_negate(int32_t L_var1);	/* Long negate,     2 */
+extern int16_t g723_negate(int16_t var1);	/* Short negate,        1 */
+extern int16_t Sqrt_lbc(int32_t Num);
+extern int16_t g723_mult(int16_t var1, int16_t var2);	/* Short mult,          1 */
+extern int16_t Rand_lbc(int16_t * p);
+extern int32_t g723_L_deposit_l(int16_t var1);	/* 16 bit var1 -> LSB,     2 */
+extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
+extern int16_t g723_mult_r(int16_t var1, int16_t var2);
 
 /* Declaration of local functions */
-static Word16 random_number(Word16 number_max_p1, Word16 * nRandom);
+static int16_t random_number(int16_t number_max_p1, int16_t * nRandom);
 
 /*
 **
@@ -83,44 +84,44 @@ static Word16 random_number(Word16 number_max_p1, Word16 * nRandom);
 **
 ** Arguments:
 **
-**  Word16 curGain     current average gain to match
-**  Word16 *PrevExc    previous/current excitation (updated)
-**  Word16 *DataEXc    current frame excitation
-**  Word16 *nRandom    random generator status (input/output)
+**  int16_t curGain     current average gain to match
+**  int16_t *PrevExc    previous/current excitation (updated)
+**  int16_t *DataEXc    current frame excitation
+**  int16_t *nRandom    random generator status (input/output)
 **
 ** Outputs:
 **
-**  Word16 *PrevExc
-**  Word16 *DataExc
-**  Word16 *nRandom
+**  int16_t *PrevExc
+**  int16_t *DataExc
+**  int16_t *nRandom
 **
 ** Return value:       None
 **
 */
-void Calc_Exc_Rand(Word16 curGain, Word16 * PrevExc, Word16 * DataExc,
-		   Word16 * nRandom, LINEDEF * Line)
+void Calc_Exc_Rand(int16_t curGain, int16_t * PrevExc, int16_t * DataExc,
+		   int16_t * nRandom, LINEDEF * Line)
 {
 	int i, i_subfr, iblk;
-	Word16 temp, temp2;
-	Word16 j;
-	Word16 TabPos[2 * NbPulsBlk], TabSign[2 * NbPulsBlk];
-	Word16 *ptr_TabPos, *ptr_TabSign;
-	Word16 *ptr1, *curExc;
-	Word16 sh1, x1, x2, inter_exc, delta, b0;
-	Word32 L_acc, L_c, L_temp;
-	Word16 tmp[SubFrLen / Sgrid];
-	Word16 offset[SubFrames];
-	Word16 tempExc[SubFrLenD];
+	int16_t temp, temp2;
+	int16_t j;
+	int16_t TabPos[2 * NbPulsBlk], TabSign[2 * NbPulsBlk];
+	int16_t *ptr_TabPos, *ptr_TabSign;
+	int16_t *ptr1, *curExc;
+	int16_t sh1, x1, x2, inter_exc, delta, b0;
+	int32_t L_acc, L_c, L_temp;
+	int16_t tmp[SubFrLen / Sgrid];
+	int16_t offset[SubFrames];
+	int16_t tempExc[SubFrLenD];
 
 	/*
 	 * generate LTP codes
 	 */
-	Line->Olp[0] = random_number(21, nRandom) + (Word16) 123;
-	Line->Olp[1] = random_number(19, nRandom) + (Word16) 123;	/* G723.1 maintenance April 2006 */
-	/* Before : Line->Olp[1] = random_number(21, nRandom) + (Word16)123; */
+	Line->Olp[0] = random_number(21, nRandom) + (int16_t) 123;
+	Line->Olp[1] = random_number(19, nRandom) + (int16_t) 123;	/* G723.1 maintenance April 2006 */
+	/* Before : Line->Olp[1] = random_number(21, nRandom) + (int16_t)123; */
 	for (i_subfr = 0; i_subfr < SubFrames; i_subfr++) {	/* in [1, NbFilt] */
 		Line->Sfs[i_subfr].AcGn =
-		    random_number(NbFilt, nRandom) + (Word16) 1;
+		    random_number(NbFilt, nRandom) + (int16_t) 1;
 	}
 	Line->Sfs[0].AcLg = 1;
 	Line->Sfs[1].AcLg = 0;
@@ -137,12 +138,14 @@ void Calc_Exc_Rand(Word16 curGain, Word16 * PrevExc, Word16 * DataExc,
 	ptr1 = offset;
 	for (iblk = 0; iblk < SubFrames / 2; iblk++) {
 		temp = random_number((1 << (NbPulsBlk + 2)), nRandom);
-		*ptr1++ = temp & (Word16) 0x0001;
+		*ptr1++ = temp & (int16_t) 0x0001;
 		temp = g723_shr(temp, 1);
-		*ptr1++ = g723_add((Word16) SubFrLen, (Word16) (temp & 0x0001));
+		*ptr1++ = g723_add((int16_t) SubFrLen,
+				   (int16_t) (temp & 0x0001));
 		for (i = 0; i < NbPulsBlk; i++) {
 			*ptr_TabSign++ =
-			    g723_shl(g723_sub((temp & (Word16) 0x0002), 1), 14);
+			    g723_shl(g723_sub((temp & (int16_t) 0x0002), 1),
+				     14);
 			temp = g723_shr(temp, 1);
 		}
 	}
@@ -152,7 +155,7 @@ void Calc_Exc_Rand(Word16 curGain, Word16 * PrevExc, Word16 * DataExc,
 	for (i_subfr = 0; i_subfr < SubFrames; i_subfr++) {
 
 		for (i = 0; i < (SubFrLen / Sgrid); i++)
-			tmp[i] = (Word16) i;
+			tmp[i] = (int16_t) i;
 		temp = (SubFrLen / Sgrid);
 		for (i = 0; i < Nb_puls[i_subfr]; i++) {
 			j = random_number(temp, nRandom);
@@ -288,21 +291,21 @@ void Calc_Exc_Rand(Word16 curGain, Word16 * PrevExc, Word16 * DataExc,
 **
 ** Arguments:
 **
-**  Word16 np1
-**  Word16 *nRandom    random generator status (input/output)
+**  int16_t np1
+**  int16_t *nRandom    random generator status (input/output)
 **
 ** Outputs:
 **
-**  Word16 *nRandom
+**  int16_t *nRandom
 **
 ** Return value:       random number in [0, (np1-1)]
 **
 */
-Word16 random_number(Word16 np1, Word16 * nRandom)
+int16_t random_number(int16_t np1, int16_t * nRandom)
 {
-	Word16 temp;
+	int16_t temp;
 
-	temp = Rand_lbc(nRandom) & (Word16) 0x7FFF;
+	temp = Rand_lbc(nRandom) & (int16_t) 0x7FFF;
 	temp = g723_mult(temp, np1);
 	return (temp);
 }
@@ -322,9 +325,9 @@ Word16 random_number(Word16 np1, Word16 * nRandom)
 **
 ** Arguments:
 **
-**  Word16 *Ener        table of the energies
-**  Word16 *shEner      corresponding scaling factors
-**  Word16 nq           if nq >= 1 : quantization of nq energies
+**  int16_t *Ener        table of the energies
+**  int16_t *shEner      corresponding scaling factors
+**  int16_t nq           if nq >= 1 : quantization of nq energies
 **                      for SID gain calculation in function Cod_Cng()
 **                      if nq = 0 : in function Comp_Info(),
 **                      quantization of saved estimated excitation energy
@@ -335,13 +338,13 @@ Word16 random_number(Word16 np1, Word16 * nRandom)
 ** Return value:       index of quantized energy
 **
 */
-Word16 Qua_SidGain(Word16 * Ener, Word16 * shEner, Word16 nq)
+int16_t Qua_SidGain(int16_t * Ener, int16_t * shEner, int16_t nq)
 {
-	Word16 temp, iseg, iseg_p1;
-	Word16 j, j2, k, exp;
-	Word32 L_x, L_y;
-	Word16 sh1;
-	Word32 L_acc;
+	int16_t temp, iseg, iseg_p1;
+	int16_t j, j2, k, exp;
+	int32_t L_x, L_y;
+	int16_t sh1;
+	int32_t L_acc;
 	int i;
 
 	if (nq == 0) {
@@ -444,17 +447,17 @@ Word16 Qua_SidGain(Word16 * Ener, Word16 * shEner, Word16 nq)
 **
 ** Arguments:
 **
-**  Word16 iGain        index of quantized Sid Gain
+**  int16_t iGain        index of quantized Sid Gain
 **
 ** Outputs:             None
 **
 ** Return value:        decoded gain value << 5
 **
 */
-Word16 Dec_SidGain(Word16 iGain)
+int16_t Dec_SidGain(int16_t iGain)
 {
-	Word16 i, iseg;
-	Word16 temp;
+	int16_t i, iseg;
+	int16_t temp;
 
 	iseg = g723_shr(iGain, 4);
 	if (iseg == 3)

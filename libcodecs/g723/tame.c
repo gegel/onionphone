@@ -30,29 +30,29 @@
 #include "lbccodec.h"
 #include "g723_const.h"
 
-extern Flag UseHp;
-extern Flag UsePf;
-extern Flag UseVx;
+extern int UseHp;
+extern int UsePf;
+extern int UseVx;
 extern enum Wmode WrkMode;
 extern enum Crate WrkRate;
-extern Word16 tabgain85[85];
-extern Word16 tabgain170[170];
+extern int16_t tabgain85[85];
+extern int16_t tabgain170[170];
 extern CODSTATDEF CodStat;
 
-extern Word32 L_mls(Word32, Word16);	/* Wght ?? */
-extern Word32 L_g723_add(Word32 L_var1, Word32 L_var2);	/* Long add,        2 */
-extern Word16 g723_mult(Word16 var1, Word16 var2);	/* Short mult,          1 */
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
-extern Word16 g723_sub(Word16 var1, Word16 var2);	/* Short sub,           1 */
+extern int32_t L_mls(int32_t, int16_t);	/* Wght ?? */
+extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
+extern int16_t g723_mult(int16_t var1, int16_t var2);	/* Short mult,          1 */
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
+extern int16_t g723_sub(int16_t var1, int16_t var2);	/* Short sub,           1 */
 
 #define NbPulsBlk          11	/* Nb of pulses in 2-subframes blocks         */
 
-extern Word16 g723_shl(Word16 var1, Word16 var2);	/* Short shift left,    1 */
-extern Word32 L_g723_shl(Word32 L_var1, Word16 var2);	/* Long shift left,     2 */
-extern Word32 L_g723_sub(Word32 L_var1, Word32 L_var2);	/* Long sub,        2 */
-extern Word32 L_g723_negate(Word32 L_var1);	/* Long negate,     2 */
-extern Word32 L_g723_shr(Word32 L_var1, Word16 var2);	/* Long shift right,    2 */
-extern Word16 g723_extract_l(Word32 L_var1);	/* Extract low,         1 */
+extern int16_t g723_shl(int16_t var1, int16_t var2);	/* Short shift left,    1 */
+extern int32_t L_g723_shl(int32_t L_var1, int16_t var2);	/* Long shift left,     2 */
+extern int32_t L_g723_sub(int32_t L_var1, int32_t L_var2);	/* Long sub,        2 */
+extern int32_t L_g723_negate(int32_t L_var1);	/* Long negate,     2 */
+extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
+extern int16_t g723_extract_l(int32_t L_var1);	/* Extract low,         1 */
 /*
 **
 ** Function:        Update_Err()
@@ -68,9 +68,9 @@ extern Word16 g723_extract_l(Word32 L_var1);	/* Extract low,         1 */
 **
 ** Arguments:
 **
-**  Word16 Olp      Center value for pitch delay
-**  Word16 AcLg     Offset value for pitch delay
-**  Word16 AcGn     Index of Gain LT filter
+**  int16_t Olp      Center value for pitch delay
+**  int16_t AcLg     Offset value for pitch delay
+**  int16_t AcGn     Index of Gain LT filter
 **
 ** Outputs: None
 **
@@ -78,20 +78,20 @@ extern Word16 g723_extract_l(Word32 L_var1);	/* Extract low,         1 */
 **
 */
 
-void Update_Err(Word16 Olp, Word16 AcLg, Word16 AcGn)
+void Update_Err(int16_t Olp, int16_t AcLg, int16_t AcGn)
 {
-	Word16 *ptr_tab;
-	Word16 i, iz, temp1, temp2;
-	Word16 Lag;
-	Word32 Worst1, Worst0, L_temp;
-	Word16 beta;
+	int16_t *ptr_tab;
+	int16_t i, iz, temp1, temp2;
+	int16_t Lag;
+	int32_t Worst1, Worst0, L_temp;
+	int16_t beta;
 
-	Lag = Olp - (Word16) Pstep + AcLg;
+	Lag = Olp - (int16_t) Pstep + AcLg;
 
 	/* Select Quantization tables */
 	ptr_tab = tabgain85;
 	if (WrkRate == Rate63) {
-		if (Olp >= (Word16) (SubFrLen - 2))
+		if (Olp >= (int16_t) (SubFrLen - 2))
 			ptr_tab = tabgain170;
 	} else {
 		ptr_tab = tabgain170;
@@ -175,30 +175,30 @@ void Update_Err(Word16 Olp, Word16 AcLg, Word16 AcGn)
 **
 ** Arguments:
 **
-**  Word16 Lag1      1st long term Lag of the tested zone
-**  Word16 Lag2      2nd long term Lag of the tested zone
+**  int16_t Lag1      1st long term Lag of the tested zone
+**  int16_t Lag2      2nd long term Lag of the tested zone
 **
 ** Outputs: None
 **
 ** Return value:
-**  Word16          index iTest used to compute Acbk number of filters
+**  int16_t          index iTest used to compute Acbk number of filters
 */
 
-Word16 Test_Err(Word16 Lag1, Word16 Lag2)
+int16_t Test_Err(int16_t Lag1, int16_t Lag2)
 {
 
 	int i, i1, i2;
-	Word16 zone1, zone2;
-	Word32 Acc, Err_max;
-	Word16 iTest;
+	int16_t zone1, zone2;
+	int32_t Acc, Err_max;
+	int16_t iTest;
 
 	i2 = Lag2 + ClPitchOrd / 2;
-	zone2 = g723_mult((Word16) i2, (Word16) 1092);
+	zone2 = g723_mult((int16_t) i2, (int16_t) 1092);
 
 	i1 = -SubFrLen + 1 + Lag1 - ClPitchOrd / 2;
 	if (i1 <= 0)
 		i1 = 1;
-	zone1 = g723_mult((Word16) i1, (Word16) 1092);
+	zone1 = g723_mult((int16_t) i1, (int16_t) 1092);
 
 	Err_max = -1L;
 	for (i = zone2; i >= zone1; i--) {

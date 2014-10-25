@@ -27,47 +27,52 @@
 	Last modified : March 2006
 */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 
 #include "g723_const.h"
 
-extern Word16 Durbin(Word16 * Lpc, Word16 * Corr, Word16 Err, Word16 * Pk2);
-extern Word16 Qua_SidGain(Word16 * Ener, Word16 * shEner, Word16 nq);
-extern Word16 g723_abs_s(Word16 var1);	/* Short abs,           1 */
-extern Word16 g723_sub(Word16 var1, Word16 var2);	/* Short sub,           1 */
+extern int16_t Durbin(int16_t * Lpc, int16_t * Corr, int16_t Err,
+		      int16_t * Pk2);
+extern int16_t Qua_SidGain(int16_t * Ener, int16_t * shEner, int16_t nq);
+extern int16_t g723_abs_s(int16_t var1);	/* Short abs,           1 */
+extern int16_t g723_sub(int16_t var1, int16_t var2);	/* Short sub,           1 */
 
 extern VADSTATDEF VadStat;
 extern CODSTATDEF CodStat;
 
-extern Word16 g723_shr(Word16 var1, Word16 var2);	/* Short shift right,   1 */
+extern int16_t g723_shr(int16_t var1, int16_t var2);	/* Short shift right,   1 */
 
 #define NbPulsBlk          11	/* Nb of pulses in 2-subframes blocks         */
 
-extern void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp);
-extern Word32 Lsp_Qnt(Word16 * CurrLsp, Word16 * PrevLsp);
-extern void Lsp_Inq(Word16 * Lsp, Word16 * PrevLsp, Word32 LspId, Word16 Crc);
-extern Word16 Dec_SidGain(Word16 i_gain);
-extern Word16 g723_extract_h(Word32 L_var1);	/* Extract high,        1 */
-extern Word32 L_g723_add(Word32 L_var1, Word32 L_var2);	/* Long add,        2 */
-extern Word32 L_g723_mult(Word16 var1, Word16 var2);	/* Long mult,           1 */
-extern void Calc_Exc_Rand(Word16 cur_gain, Word16 * PrevExc, Word16 * DataExc,
-			  Word16 * nRandom, LINEDEF * Line);
-extern void Lsp_Int(Word16 * QntLpc, Word16 * CurrLsp, Word16 * PrevLsp);
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
-extern Word32 g723_L_deposit_l(Word16 var1);	/* 16 bit var1 -> LSB,     2 */
-extern Word32 L_g723_shl(Word32 L_var1, Word16 var2);	/* Long shift left,     2 */
-extern Word16 g723_norm_l(Word32 L_var1);	/* Long norm,            30 */
-extern Word16 g723_extract_l(Word32 L_var1);	/* Extract low,         1 */
-extern Word32 L_g723_shr(Word32 L_var1, Word16 var2);	/* Long shift right,    2 */
-extern Word32 g723_L_mac(Word32 L_var3, Word16 var1, Word16 var2);	/* Mac,    1 */
-extern Word16 round_(Word32 L_var1);	/* Round,               1 */
-extern Word16 g723_mult_r(Word16 var1, Word16 var2);	/* Mult with round,     2 */
+extern void AtoLsp(int16_t * LspVect, int16_t * Lpc, int16_t * PrevLsp);
+extern int32_t Lsp_Qnt(int16_t * CurrLsp, int16_t * PrevLsp);
+extern void Lsp_Inq(int16_t * Lsp, int16_t * PrevLsp, int32_t LspId,
+		    int16_t Crc);
+extern int16_t Dec_SidGain(int16_t i_gain);
+extern int16_t g723_extract_h(int32_t L_var1);	/* Extract high,        1 */
+extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
+extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
+extern void Calc_Exc_Rand(int16_t cur_gain, int16_t * PrevExc,
+			  int16_t * DataExc,
+			  int16_t * nRandom, LINEDEF * Line);
+extern void Lsp_Int(int16_t * QntLpc, int16_t * CurrLsp, int16_t * PrevLsp);
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
+extern int32_t g723_L_deposit_l(int16_t var1);	/* 16 bit var1 -> LSB,     2 */
+extern int32_t L_g723_shl(int32_t L_var1, int16_t var2);	/* Long shift left,     2 */
+extern int16_t g723_norm_l(int32_t L_var1);	/* Long norm,            30 */
+extern int16_t g723_extract_l(int32_t L_var1);	/* Extract low,         1 */
+extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
+extern int32_t g723_L_mac(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac,    1 */
+extern int16_t round_(int32_t L_var1);	/* Round,               1 */
+extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
 
 /* Declaration of local functions */
-static void ComputePastAvFilter(Word16 * Coeff);
-static void CalcRC(Word16 * Coeff, Word16 * RC, Word16 * shRC);
-static Flag LpcDiff(Word16 * RC, Word16 shRC, Word16 * Acf, Word16 alpha);
+static void ComputePastAvFilter(int16_t * Coeff);
+static void CalcRC(int16_t * Coeff, int16_t * RC, int16_t * shRC);
+static int LpcDiff(int16_t * RC, int16_t shRC, int16_t * Acf,
+		    int16_t alpha);
 
 /* Global Variables */
 CODCNGDEF CodCng;
@@ -124,27 +129,28 @@ void Init_Cod_Cng(void)
 **
 ** Arguments:
 **
-**  Word16 *DataExc    Current frame synthetic excitation
-**  Word16 *Ftyp     Characterizes the frame type for CNG
+**  int16_t *DataExc    Current frame synthetic excitation
+**  int16_t *Ftyp     Characterizes the frame type for CNG
 **  LINEDEF *Line      Quantized parameters (used for SID frames)
-**  Word16 *QntLpc     Interpolated frame LPC coefficients
+**  int16_t *QntLpc     Interpolated frame LPC coefficients
 **
 ** Outputs:
 **
-**  Word16 *DataExc
-**  Word16 *Ftyp
+**  int16_t *DataExc
+**  int16_t *Ftyp
 **  LINEDEF *Line
-**  Word16 *QntLpc
+**  int16_t *QntLpc
 **
 ** Return value:       None
 **
 */
-void Cod_Cng(Word16 * DataExc, Word16 * Ftyp, LINEDEF * Line, Word16 * QntLpc)
+void Cod_Cng(int16_t * DataExc, int16_t * Ftyp, LINEDEF * Line,
+	     int16_t * QntLpc)
 {
 
-	Word16 curCoeff[LpcOrder];
-	Word16 curQGain;
-	Word16 temp;
+	int16_t curCoeff[LpcOrder];
+	int16_t curQGain;
+	int16_t temp;
 	int i;
 
 	/*
@@ -280,22 +286,22 @@ void Cod_Cng(Word16 * DataExc, Word16 * Ftyp, LINEDEF * Line, Word16 * QntLpc)
 **
 ** Arguments:
 **
-**  Word16 *Acf_sf     sets of subframes Acfs of current frame
-**  Word16 *ShAcf_sf   corresponding scaling factors
+**  int16_t *Acf_sf     sets of subframes Acfs of current frame
+**  int16_t *ShAcf_sf   corresponding scaling factors
 **
 ** Output :            None
 **
 ** Return value:       None
 **
 */
-void Update_Acf(Word16 * Acf_sf, Word16 * ShAcf_sf)
+void Update_Acf(int16_t * Acf_sf, int16_t * ShAcf_sf)
 {
 
 	int i, i_subfr;
-	Word16 *ptr1, *ptr2;
-	Word32 L_temp[LpcOrderP1];
-	Word16 sh1, temp;
-	Word32 L_acc0;
+	int16_t *ptr1, *ptr2;
+	int32_t L_temp[LpcOrderP1];
+	int16_t sh1, temp;
+	int32_t L_acc0;
 
 	/* Update Acf and ShAcf */
 	ptr2 = CodCng.Acf + SizAcf;
@@ -350,23 +356,23 @@ void Update_Acf(Word16 * Acf_sf, Word16 * ShAcf_sf)
 **
 ** Argument:
 **
-**  Word16 *Coeff      set of LPC coefficients
+**  int16_t *Coeff      set of LPC coefficients
 **
 ** Output:
 **
-**  Word16 *Coeff
+**  int16_t *Coeff
 **
 ** Return value:       None
 **
 */
-void ComputePastAvFilter(Word16 * Coeff)
+void ComputePastAvFilter(int16_t * Coeff)
 {
 	int i, j;
-	Word16 *ptr_Acf;
-	Word32 L_sumAcf[LpcOrderP1];
-	Word16 Corr[LpcOrder], Err;
-	Word16 sh1, temp;
-	Word32 L_acc0;
+	int16_t *ptr_Acf;
+	int32_t L_sumAcf[LpcOrderP1];
+	int16_t Corr[LpcOrder], Err;
+	int16_t sh1, temp;
+	int32_t L_acc0;
 
 	/* Search ShAcf min */
 	sh1 = CodCng.ShAcf[1];
@@ -418,23 +424,23 @@ void ComputePastAvFilter(Word16 * Coeff)
 **
 ** Arguments :
 **
-**  Word16 *Coeff      set of LPC coefficients
-**  Word16 *RC         derived from LPC coefficients autocorrelation
-**  Word16 *ShRC       corresponding scaling factor
+**  int16_t *Coeff      set of LPC coefficients
+**  int16_t *RC         derived from LPC coefficients autocorrelation
+**  int16_t *ShRC       corresponding scaling factor
 **
 ** Outputs :
 **
-**  Word16 *RC
-**  Word16 *ShRC
+**  int16_t *RC
+**  int16_t *ShRC
 **
 ** Return value:       None
 **
 */
-void CalcRC(Word16 * Coeff, Word16 * RC, Word16 * ShRC)
+void CalcRC(int16_t * Coeff, int16_t * RC, int16_t * ShRC)
 {
 	int i, j;
-	Word16 sh1;
-	Word32 L_acc;
+	int16_t sh1;
+	int32_t L_acc;
 
 	L_acc = 0L;
 	for (j = 0; j < LpcOrder; j++) {
@@ -442,13 +448,13 @@ void CalcRC(Word16 * Coeff, Word16 * RC, Word16 * ShRC)
 	}
 	L_acc = L_g723_shr(L_acc, 1);
 	L_acc = L_g723_add(L_acc, 0x04000000L);	/* 1 << 2 * Lpc_justif. */
-	sh1 = g723_norm_l(L_acc) - (Word16) 2;	/* 1 bit because of x2 in RC[i], i> 0 */
+	sh1 = g723_norm_l(L_acc) - (int16_t) 2;	/* 1 bit because of x2 in RC[i], i> 0 */
 	/* & 1 bit margin for Itakura distance */
 	L_acc = L_g723_shl(L_acc, sh1);	/* shift right if < 0 */
 	RC[0] = round_(L_acc);
 
 	for (i = 1; i <= LpcOrder; i++) {
-		L_acc = L_g723_mult((Word16) 0xE000, Coeff[i - 1]);	/* - (1 << Lpc_justif.) */
+		L_acc = L_g723_mult((int16_t) 0xE000, Coeff[i - 1]);	/* - (1 << Lpc_justif.) */
 		for (j = 0; j < LpcOrder - i; j++) {
 			L_acc = g723_L_mac(L_acc, Coeff[j], Coeff[j + i]);
 		}
@@ -474,10 +480,10 @@ void CalcRC(Word16 * Coeff, Word16 * RC, Word16 * ShRC)
 **
 ** Arguments :
 **
-**  Word16 *RC         derived from LPC coefficients autocorrelation
-**  Word16 ShRC        corresponding scaling factor
-**  Word16 *ptrAcf     pointer on signal autocorrelation function
-**  Word16 alpha       residual energy in LPC analysis using *ptrAcf
+**  int16_t *RC         derived from LPC coefficients autocorrelation
+**  int16_t ShRC        corresponding scaling factor
+**  int16_t *ptrAcf     pointer on signal autocorrelation function
+**  int16_t alpha       residual energy in LPC analysis using *ptrAcf
 **
 ** Output:             None
 **
@@ -485,12 +491,12 @@ void CalcRC(Word16 * Coeff, Word16 * RC, Word16 * ShRC)
 **                     flag = 0 if different filters
 **
 */
-Flag LpcDiff(Word16 * RC, Word16 ShRC, Word16 * ptrAcf, Word16 alpha)
+int LpcDiff(int16_t * RC, int16_t ShRC, int16_t * ptrAcf, int16_t alpha)
 {
-	Word32 L_temp0, L_temp1;
-	Word16 temp;
+	int32_t L_temp0, L_temp1;
+	int16_t temp;
 	int i;
-	Flag diff;
+	int diff;
 
 	L_temp0 = 0L;
 	for (i = 0; i <= LpcOrder; i++) {
@@ -499,7 +505,7 @@ Flag LpcDiff(Word16 * RC, Word16 ShRC, Word16 * ptrAcf, Word16 alpha)
 	}
 
 	temp = g723_mult_r(alpha, FracThresh);
-	L_temp1 = L_g723_add((Word32) temp, (Word32) alpha);
+	L_temp1 = L_g723_add((int32_t) temp, (int32_t) alpha);
 	temp = g723_add(ShRC, 9);	/* 9 = Lpc_justif. * 2 - 15 - 2 */
 	L_temp1 = L_g723_shl(L_temp1, temp);
 
