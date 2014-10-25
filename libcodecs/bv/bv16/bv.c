@@ -40,7 +40,6 @@
 #else
 #include "bitpack.h"
 #endif
-#include "memutil.h"
 
 int frame;
 Word16 bfi = 0;

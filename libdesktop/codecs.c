@@ -53,7 +53,6 @@
 #include "../libcodecs/bv/bv16/bv16.h"
 #include "../libcodecs/bv/bv16/utility.h"
 #include "../libcodecs/bv/bv16/bitpack.h"
-#include "../libcodecs/bv/bv16/memutil.h"
 //*/
 #include "../libcodecs/speex/speex/speex.h"
 #include "../libcodecs/speex/speex/speex_preprocess.h"
