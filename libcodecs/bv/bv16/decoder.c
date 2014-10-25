@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -40,8 +40,8 @@
 void Reset_BV16_Decoder(struct BV16_Decoder_State *c)
 {
 	int i;
-	W16zero((Word16 *) c,
-		sizeof(struct BV16_Decoder_State) / sizeof(Word16));
+	W16zero((int16_t *) c,
+		sizeof(struct BV16_Decoder_State) / sizeof(int16_t));
 	c->lsplast[0] = 3641;
 	c->lsplast[1] = 7282;
 	c->lsplast[2] = 10923;
@@ -70,23 +70,23 @@ void Reset_BV16_Decoder(struct BV16_Decoder_State *c)
 }
 
 void BV16_Decode(struct BV16_Bit_Stream *bs,
-		 struct BV16_Decoder_State *ds, Word16 * x)
+		 struct BV16_Decoder_State *ds, int16_t * x)
 {
-	Word32 lgq, lg_el;
-	Word16 gainq;		/* Q3 */
-	Word16 pp;
-	Word32 a0;
-	Word16 gain_exp;
-	Word16 i;
-	Word16 a0hi, a0lo;
-	Word16 ltsym[LTMOFF + FRSZ];
-	Word16 xq[LXQ];
-	Word16 a[LPCO + 1];
-	Word16 lspq[LPCO];	/* Q15 */
-	Word16 cbs[VDIM * CBSZ];
-	Word16 bq[3];		/* Q15 */
-	Word32 bss;
-	Word32 E;
+	int32_t lgq, lg_el;
+	int16_t gainq;		/* Q3 */
+	int16_t pp;
+	int32_t a0;
+	int16_t gain_exp;
+	int16_t i;
+	int16_t a0hi, a0lo;
+	int16_t ltsym[LTMOFF + FRSZ];
+	int16_t xq[LXQ];
+	int16_t a[LPCO + 1];
+	int16_t lspq[LPCO];	/* Q15 */
+	int16_t cbs[VDIM * CBSZ];
+	int16_t bq[3];		/* Q15 */
+	int32_t bss;
+	int32_t E;
 
 	/* set frame erasure flags */
 	if (ds->cfecount != 0) {
@@ -160,6 +160,6 @@ void BV16_Decode(struct BV16_Bit_Stream *bs,
 		bss = 32768;
 	else if (bss < 0)
 		bss = 0;
-	ds->per = bv_add(bv_shr(ds->per, 1), (Word16) L_bv_shr(bss, 1));
+	ds->per = bv_add(bv_shr(ds->per, 1), (int16_t) L_bv_shr(bss, 1));
 
 }

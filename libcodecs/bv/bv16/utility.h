@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-void UW8copy(UWord8 * y, UWord8 * x, int size);
-void W16copy(Word16 * y, Word16 * x, int size);
-void W16zero(Word16 * x, int size);
-void W32copy(Word32 * y, Word32 * x, int size);
+void UW8copy(uint8_t * y, uint8_t * x, int size);
+void W16copy(int16_t * y, int16_t * x, int size);
+void W16zero(int16_t * x, int size);
+void W32copy(int32_t * y, int32_t * x, int size);

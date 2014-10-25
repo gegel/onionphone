@@ -29,7 +29,7 @@
 #ifndef BITPACK_H
 #define BITPACK_H
 
-void BV16_BitPack(UWord8 * PackedStream, struct BV16_Bit_Stream *BitStruct);
-void BV16_BitUnPack(UWord8 * PackedStream, struct BV16_Bit_Stream *BitStruct);
+void BV16_BitPack(uint8_t * PackedStream, struct BV16_Bit_Stream *BitStruct);
+void BV16_BitUnPack(uint8_t * PackedStream, struct BV16_Bit_Stream *BitStruct);
 
 #endif

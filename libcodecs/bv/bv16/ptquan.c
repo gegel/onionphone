@@ -26,23 +26,23 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
 #include "bv16externs.h"
 #include "basop32.h"
 
-Word16 pitchtapquan(Word16 * x, Word16 pp, Word16 * b,	/* Q15 */
-		    Word32 * re)
+int16_t pitchtapquan(int16_t * x, int16_t pp, int16_t * b,	/* Q15 */
+		    int32_t * re)
 {				/* Q3 */
-	Word32 cormax, cor;
-	Word16 s0, s1, s2;
-	Word32 t0, t1, t2;
-	Word16 *xt, *sp0, *sp1, *sp2;
+	int32_t cormax, cor;
+	int16_t s0, s1, s2;
+	int32_t t0, t1, t2;
+	int16_t *xt, *sp0, *sp1, *sp2;
 	int ppm2, qidx = 0, i, j;
-	Word32 p[9];
-	Word16 sp[9];
+	int32_t p[9];
+	int16_t sp[9];
 
 	ppm2 = pp - 2;
 	xt = x + XOFF;

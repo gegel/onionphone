@@ -20,7 +20,7 @@
 /* 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.                 */
 /*****************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basop32.h"
 #include "../itug191lib/basop32.c"
 #include "../itug729ilib/oper_32b.c"

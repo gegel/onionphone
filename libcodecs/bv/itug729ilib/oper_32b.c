@@ -44,7 +44,7 @@
  |___________________________________________________________________________|
 */
 
-void L_Extract(Word32 L_32, Word16 * hi, Word16 * lo)
+void L_Extract(int32_t L_32, int16_t * hi, int16_t * lo)
 {
 	*hi = bv_extract_h(L_32);
 	*lo = bv_extract_l(bv_L_msu(L_bv_shr(L_32, 1), *hi, 16384));	/* lo = L_32>>1   */
@@ -72,9 +72,9 @@ void L_Extract(Word32 L_32, Word16 * hi, Word16 * lo)
  |___________________________________________________________________________|
 */
 
-Word32 L_Comp(Word16 hi, Word16 lo)
+int32_t L_Comp(int16_t hi, int16_t lo)
 {
-	Word32 L_32;
+	int32_t L_32;
 
 	L_32 = bv_L_deposit_h(hi);
 	return (bv_L_mac(L_32, lo, 1));	/* = hi<<16 + lo<<1 */
@@ -100,9 +100,9 @@ Word32 L_Comp(Word16 hi, Word16 lo)
  |___________________________________________________________________________|
 */
 
-Word32 Mpy_32(Word16 hi1, Word16 lo1, Word16 hi2, Word16 lo2)
+int32_t Mpy_32(int16_t hi1, int16_t lo1, int16_t hi2, int16_t lo2)
 {
-	Word32 L_32;
+	int32_t L_32;
 
 	L_32 = L_bv_mult(hi1, hi2);
 	L_32 = bv_L_mac(L_32, bv_mult(hi1, lo2), 1);
@@ -131,9 +131,9 @@ Word32 Mpy_32(Word16 hi1, Word16 lo1, Word16 hi2, Word16 lo2)
  |___________________________________________________________________________|
 */
 
-Word32 Mpy_32_16(Word16 hi, Word16 lo, Word16 n)
+int32_t Mpy_32_16(int16_t hi, int16_t lo, int16_t n)
 {
-	Word32 L_32;
+	int32_t L_32;
 
 	L_32 = L_bv_mult(hi, n);
 	L_32 = bv_L_mac(L_32, bv_mult(lo, n), 1);
@@ -185,21 +185,21 @@ Word32 Mpy_32_16(Word16 hi, Word16 lo, Word16 n)
  |___________________________________________________________________________|
 */
 
-Word32 Div_32(Word32 L_num, Word16 denom_hi, Word16 denom_lo)
+int32_t Div_32(int32_t L_num, int16_t denom_hi, int16_t denom_lo)
 {
-	Word16 approx, hi, lo, n_hi, n_lo;
-	Word32 L_32;
+	int16_t approx, hi, lo, n_hi, n_lo;
+	int32_t L_32;
 
 	/* First approximation: 1 / L_denom = 1/denom_hi */
 
-	approx = bv_div_s((Word16) 0x3fff, denom_hi);	/* result in Q14 */
+	approx = bv_div_s((int16_t) 0x3fff, denom_hi);	/* result in Q14 */
 	/* Note: 3fff = 0.5 in Q15 */
 
 	/* 1/L_denom = approx * (2.0 - L_denom * approx) */
 
 	L_32 = Mpy_32_16(denom_hi, denom_lo, approx);	/* result in Q30 */
 
-	L_32 = L_bv_sub((Word32) 0x7fffffffL, L_32);	/* result in Q30 */
+	L_32 = L_bv_sub((int32_t) 0x7fffffffL, L_32);	/* result in Q30 */
 
 	L_Extract(L_32, &hi, &lo);
 

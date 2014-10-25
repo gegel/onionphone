@@ -26,21 +26,20 @@
   $Log$
 ******************************************************************************/
 
-Word32 Pow2(			/* Q0 output            */
-		   Word16 int_comp,	/* Q0 Integer part      */
-		   Word16 frac_comp	/* Q15 frac_compal part  */
+int32_t Pow2(int16_t int_comp,	/* Q0 Integer part      */
+		   int16_t frac_comp	/* Q15 frac_compal part  */
     );
 
-void Log2(Word32 x,		/* (i) input           */
-	  Word16 * int_comp,	/* Q0 integer part     */
-	  Word16 * frac_comp	/* Q15 fractional part */
+void Log2(int32_t x,		/* (i) input           */
+	  int16_t * int_comp,	/* Q0 integer part     */
+	  int16_t * frac_comp	/* Q15 fractional part */
     );
 
-void sqrt_i(Word16 x_man, Word16 x_exp, Word16 * y_man, Word16 * y_exp);
-Word16 sqrts(Word16 x);
+void sqrt_i(int16_t x_man, int16_t x_exp, int16_t * y_man, int16_t * y_exp);
+int16_t sqrts(int16_t x);
 
-extern Word16 tabsqrt[];
-extern Word16 tablog[];
-extern Word16 tabpow[];
-extern Word16 costable[];
-extern Word16 acosslope[];
+extern int16_t tabsqrt[];
+extern int16_t tablog[];
+extern int16_t tabpow[];
+extern int16_t costable[];
+extern int16_t acosslope[];

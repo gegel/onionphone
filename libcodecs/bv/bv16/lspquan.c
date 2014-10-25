@@ -27,30 +27,30 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
 #include "bv16externs.h"
 #include "basop32.h"
 
-void vqmse(Word16 * xq,
-	   Word16 * idx, Word16 * x, Word16 * cb, int vdim, int cbsz);
+void vqmse(int16_t * xq,
+	   int16_t * idx, int16_t * x, int16_t * cb, int vdim, int cbsz);
 
-void svqwmse(Word16 * xq,
-	     Word16 * idx,
-	     Word16 * x,
-	     Word16 * xa, Word16 * w, Word16 * cb, int vdim, int cbsz);
+void svqwmse(int16_t * xq,
+	     int16_t * idx,
+	     int16_t * x,
+	     int16_t * xa, int16_t * w, int16_t * cb, int vdim, int cbsz);
 
-void lspquan(Word16 * lspq,	/* Q15 */
-	     Word16 * lspidx, Word16 * lsp,	/* Q15 */
-	     Word16 * lsppm)
+void lspquan(int16_t * lspq,	/* Q15 */
+	     int16_t * lspidx, int16_t * lsp,	/* Q15 */
+	     int16_t * lsppm)
 {				/* Q15 */
-	Word32 a0;
-	Word16 d[LPCO], w[LPCO];
-	Word16 elsp[LPCO], lspe[LPCO], lspa[LPCO];
-	Word16 lspeq1[LPCO], lspeq2[LPCO];
-	Word16 *fp1, *fp2, min_d;
+	int32_t a0;
+	int16_t d[LPCO], w[LPCO];
+	int16_t elsp[LPCO], lspe[LPCO], lspa[LPCO];
+	int16_t lspeq1[LPCO], lspeq2[LPCO];
+	int16_t *fp1, *fp2, min_d;
 	int i, k;
 
 	/* Calculate the weights for weighted mean-square error distortion */
@@ -128,18 +128,18 @@ void lspquan(Word16 * lspq,	/* Q15 */
 
 /*==========================================================================*/
 
-void vqmse(Word16 * xq,		/* Q17 VQ output vector (quantized version of input vector) */
-	   Word16 * idx,	/* VQ codebook index for the nearest neighbor */
-	   Word16 * x,		/* Q17 input vector */
-	   Word16 * cb,		/* VQ codebook */
+void vqmse(int16_t * xq,		/* Q17 VQ output vector (quantized version of input vector) */
+	   int16_t * idx,	/* VQ codebook index for the nearest neighbor */
+	   int16_t * x,		/* Q17 input vector */
+	   int16_t * cb,		/* VQ codebook */
 	   int vdim,		/* vector dimension */
 	   int cbsz)
 {				/* codebook size (number of codevectors) */
-	Word32 dmin, d;
-	Word16 *fp1;
-	Word16 j, k;
+	int32_t dmin, d;
+	int16_t *fp1;
+	int16_t j, k;
 
-	Word16 e;
+	int16_t e;
 
 	fp1 = cb;
 	dmin = MAX_32;
@@ -162,18 +162,18 @@ void vqmse(Word16 * xq,		/* Q17 VQ output vector (quantized version of input vec
 }
 
 /* Signed WMSE VQ */
-void svqwmse(Word16 * xq,	/* Q17 */
-	     Word16 * idx, Word16 * x,	/* Q17 */
-	     Word16 * xa,	/* Q15 */
-	     Word16 * w,	/* Q15 */
-	     Word16 * cb,	/* Q17 */
+void svqwmse(int16_t * xq,	/* Q17 */
+	     int16_t * idx, int16_t * x,	/* Q17 */
+	     int16_t * xa,	/* Q15 */
+	     int16_t * w,	/* Q15 */
+	     int16_t * cb,	/* Q17 */
 	     int vdim, int cbsz)
 {
-	Word32 dmin, d;
-	Word16 *fp1, *fp2;
-	Word16 xqc[STBLDIM];
-	Word16 j, k, stbl, sign = 1;
-	Word16 e, we;
+	int32_t dmin, d;
+	int16_t *fp1, *fp2;
+	int16_t xqc[STBLDIM];
+	int16_t j, k, stbl, sign = 1;
+	int16_t e, we;
 
 	fp1 = cb;
 	dmin = MAX_32;
@@ -250,5 +250,5 @@ void svqwmse(Word16 * xq,	/* Q17 */
 			xq[k] = bv_negate(xq[k]);
 
 	if (sign < 0)
-		*idx = bv_sub((Word16) (2 * cbsz - 1), (*idx));
+		*idx = bv_sub((int16_t) (2 * cbsz - 1), (*idx));
 }

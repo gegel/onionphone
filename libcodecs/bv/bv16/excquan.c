@@ -39,23 +39,23 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
 #include "basop32.h"
 #include "utility.h"
 
-void vq2snfc_zsr_codebook(Word16 * qzsr,	// normalized by gain_exp-1
-			  Word16 * cb,	// normalized by gain_exp
-			  Word16 * aq,	// Q12
-			  Word16 * fsz,	// Q12
-			  Word16 * fsp)	// Q12
+void vq2snfc_zsr_codebook(int16_t * qzsr,	// normalized by gain_exp-1
+			  int16_t * cb,	// normalized by gain_exp
+			  int16_t * aq,	// Q12
+			  int16_t * fsz,	// Q12
+			  int16_t * fsp)	// Q12
 {
-	Word32 a0, a1;
-	Word16 buf1[VDIM], buf2[VDIM], buf3[VDIM];
-	Word16 *fp1, *fp2, *fp3, *fpa, *fpb;
-	Word16 j, i, n;
+	int32_t a0, a1;
+	int16_t buf1[VDIM], buf2[VDIM], buf3[VDIM];
+	int16_t *fp1, *fp2, *fp3, *fpa, *fpb;
+	int16_t j, i, n;
 
 	/* Q-values of signals are relative to the normalization by gain_exp */
 
@@ -109,15 +109,15 @@ void vq2snfc_zsr_codebook(Word16 * qzsr,	// normalized by gain_exp-1
 /* COMPUTE PITCH-PREDICTED VECTOR, WHICH SHOULD BE INDEPENDENT OF THE
 RESIDUAL VQ CODEVECTORS BEING TRIED IF vdim < MIN. PITCH PERIOD */
 
-void vq2snfc_ppv(Word32 * ltfv,	// Q16
-		 Word32 * ppv,	// Q16
-		 Word16 * ltsym,	// Q0
-		 Word16 * ltnfm,	// Q0
-		 Word16 * b,	// Q15
-		 Word16 beta)	// Q13
+void vq2snfc_ppv(int32_t * ltfv,	// Q16
+		 int32_t * ppv,	// Q16
+		 int16_t * ltsym,	// Q0
+		 int16_t * ltnfm,	// Q0
+		 int16_t * b,	// Q15
+		 int16_t beta)	// Q13
 {
-	Word32 a0, a1;
-	Word16 n, *sp1;
+	int32_t a0, a1;
+	int16_t n, *sp1;
 	for (n = 0; n < VDIM; n++) {
 		sp1 = &ltsym[n];	// Q0
 		a0 = L_bv_mult(*sp1--, b[0]);	// Q16
@@ -132,18 +132,18 @@ void vq2snfc_ppv(Word32 * ltfv,	// Q16
 	return;
 }
 
-void vq2snfc_zir(Word16 * qzir,
-		 Word32 * ppv,
-		 Word32 * ltfv,
-		 Word16 * aq,
-		 Word16 * buf1,
-		 Word16 * buf2,
-		 Word16 * buf3,
-		 Word16 * fsz, Word16 * fsp, Word16 * s, Word16 gexpm3)
+void vq2snfc_zir(int16_t * qzir,
+		 int32_t * ppv,
+		 int32_t * ltfv,
+		 int16_t * aq,
+		 int16_t * buf1,
+		 int16_t * buf2,
+		 int16_t * buf3,
+		 int16_t * fsz, int16_t * fsp, int16_t * s, int16_t gexpm3)
 {
-	Word32 a0, a1, a2;
-	Word16 i, n;
-	Word16 *sp1, *spa, *spb;
+	int32_t a0, a1, a2;
+	int16_t i, n;
+	int16_t *sp1, *spa, *spb;
 
 	for (n = 0; n < VDIM; n++) {
 
@@ -181,13 +181,13 @@ void vq2snfc_zir(Word16 * qzir,
 /* loop through every codevector of the residual vq codebook */
 /* and find the one that minimizes the energy of q[n] */
 
-Word16 vq2snfc_vq(Word16 * qzsr,	// normalized by gain_exp - 1
-		  Word16 * qzir,	// normalized by gain_exp - 3
-		  Word16 * rsign)
+int16_t vq2snfc_vq(int16_t * qzsr,	// normalized by gain_exp - 1
+		  int16_t * qzir,	// normalized by gain_exp - 3
+		  int16_t * rsign)
 {
-	Word32 Emin, E;
-	Word16 j, n, jmin, sign = 1, e;
-	Word16 *fp4, *fp2;
+	int32_t Emin, E;
+	int16_t j, n, jmin, sign = 1, e;
+	int16_t *fp4, *fp2;
 
 	Emin = MAX_32;
 	jmin = 0;
@@ -225,26 +225,26 @@ Word16 vq2snfc_vq(Word16 * qzsr,	// normalized by gain_exp - 1
 	return jmin;
 }
 
-void vq2snfc_update_mem(Word16 * s,	// Q0
-			Word16 * stsym,	// Q0
-			Word16 * stnfz,	// Q0
-			Word16 * stnfp,	// Q0
-			Word16 * ltsym,	// Q0
-			Word16 * ltnfm,	// Q0
-			Word16 * aq,	// Q12
-			Word16 * fsz,	// Q12
-			Word16 * fsp,	// Q12
-			Word16 * uq,	// normalized by gain_exp
-			Word32 * ppv,	// Q16
-			Word32 * ltfv,	// Q16
-			Word16 gain_exp)
+void vq2snfc_update_mem(int16_t * s,	// Q0
+			int16_t * stsym,	// Q0
+			int16_t * stnfz,	// Q0
+			int16_t * stnfp,	// Q0
+			int16_t * ltsym,	// Q0
+			int16_t * ltnfm,	// Q0
+			int16_t * aq,	// Q12
+			int16_t * fsz,	// Q12
+			int16_t * fsp,	// Q12
+			int16_t * uq,	// normalized by gain_exp
+			int32_t * ppv,	// Q16
+			int32_t * ltfv,	// Q16
+			int16_t gain_exp)
 {
-	Word16 *fp3, *fp4;
-	Word16 *fp1, *fpa, *fpb;
-	Word16 *p_uq, *p_s;
-	Word16 n, i;
-	Word32 *p_ppv, *p_ltfv;
-	Word32 a0, a1, v, vq, qs, uq32;
+	int16_t *fp3, *fp4;
+	int16_t *fp1, *fpa, *fpb;
+	int16_t *p_uq, *p_s;
+	int16_t n, i;
+	int32_t *p_ppv, *p_ltfv;
+	int32_t a0, a1, v, vq, qs, uq32;
 
 	fp3 = ltsym;
 	fp4 = ltnfm;
@@ -300,33 +300,33 @@ void vq2snfc_update_mem(Word16 * s,	// Q0
 	return;
 }
 
-void excquan(Word16 * idx,	/* quantizer codebook index for uq[] vector */
-	     Word16 * s,	/* (i) Q0 input signal vector */
-	     Word16 * aq,	/* (i) Q12 noise feedback filter coefficient array */
-	     Word16 * fsz,	/* (i) Q12 short-term noise feedback filter - numerator */
-	     Word16 * fsp,	/* (i) Q12 short-term noise feedback filter - denominator */
-	     Word16 * b,	/* (i) Q15 coefficient of 3-tap pitch predictor */
-	     Word16 beta,	/* (i) Q13 coefficient of pitch feedback filter */
-	     Word16 * stsym,	/* (i/o) Q0 filter memory */
-	     Word16 * ltsym,	/* (i/0) Q0 long-term synthesis filter memory */
-	     Word16 * ltnfm,	/* (i/o) Q0 long-term noise feedback filter memory */
-	     Word16 * stnfz,	/* (i/o) Q0 filter memory */
-	     Word16 * stnfp,	/* (i/o) Q0 filter memory */
-	     Word16 * cb,	/* (i) scalar quantizer codebook - normalized by gain_exp */
-	     Word16 pp,		/* pitch period (# of 8 kHz samples) */
-	     Word16 gain_exp)
+void excquan(int16_t * idx,	/* quantizer codebook index for uq[] vector */
+	     int16_t * s,	/* (i) Q0 input signal vector */
+	     int16_t * aq,	/* (i) Q12 noise feedback filter coefficient array */
+	     int16_t * fsz,	/* (i) Q12 short-term noise feedback filter - numerator */
+	     int16_t * fsp,	/* (i) Q12 short-term noise feedback filter - denominator */
+	     int16_t * b,	/* (i) Q15 coefficient of 3-tap pitch predictor */
+	     int16_t beta,	/* (i) Q13 coefficient of pitch feedback filter */
+	     int16_t * stsym,	/* (i/o) Q0 filter memory */
+	     int16_t * ltsym,	/* (i/0) Q0 long-term synthesis filter memory */
+	     int16_t * ltnfm,	/* (i/o) Q0 long-term noise feedback filter memory */
+	     int16_t * stnfz,	/* (i/o) Q0 filter memory */
+	     int16_t * stnfp,	/* (i/o) Q0 filter memory */
+	     int16_t * cb,	/* (i) scalar quantizer codebook - normalized by gain_exp */
+	     int16_t pp,		/* pitch period (# of 8 kHz samples) */
+	     int16_t gain_exp)
 {
-	Word16 qzir[VDIM];	// normalized by gain_exp-3
-	Word16 uq[VDIM];	// normalized by gain_exp
-	Word16 buf1[LPCO + FRSZ];	// Q0
-	Word16 buf2[NSTORDER + FRSZ];	// Q0
-	Word16 buf3[NSTORDER + FRSZ];	// Q0
-	Word32 ltfv[VDIM], ppv[VDIM];	// Q16
-	Word16 qzsr[VDIM * CBSZ];	// normalized by gain_exp-1
-	Word16 *sp3;
-	Word16 sign = 1;
-	Word16 m, n, jmin, iv;
-	Word16 gexpm3;
+	int16_t qzir[VDIM];	// normalized by gain_exp-3
+	int16_t uq[VDIM];	// normalized by gain_exp
+	int16_t buf1[LPCO + FRSZ];	// Q0
+	int16_t buf2[NSTORDER + FRSZ];	// Q0
+	int16_t buf3[NSTORDER + FRSZ];	// Q0
+	int32_t ltfv[VDIM], ppv[VDIM];	// Q16
+	int16_t qzsr[VDIM * CBSZ];	// normalized by gain_exp-1
+	int16_t *sp3;
+	int16_t sign = 1;
+	int16_t m, n, jmin, iv;
+	int16_t gexpm3;
 
 	gexpm3 = bv_sub(gain_exp, 3);
 

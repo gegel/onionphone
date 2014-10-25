@@ -26,15 +26,15 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 
-void vqdec(Word16 * xq,		/* VQ output vector (quantized version of input vector) */
-	   Word16 idx,		/* VQ codebook index for the nearest neighbor */
-	   Word16 * cb,		/* VQ codebook */
-	   Word16 vdim)
+void vqdec(int16_t * xq,		/* VQ output vector (quantized version of input vector) */
+	   int16_t idx,		/* VQ codebook index for the nearest neighbor */
+	   int16_t * cb,		/* VQ codebook */
+	   int16_t vdim)
 {				/* vector dimension */
 
-	Word16 j, k;
+	int16_t j, k;
 	j = idx * vdim;
 	for (k = 0; k < vdim; k++)
 		xq[k] = cb[j + k];

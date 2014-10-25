@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -34,27 +34,27 @@
 
 #define  DEV   (DECF-1)
 
-Word16 refinepitch(Word16 * x,	/* (i) Q1 */
-		   Word16 cpp, Word16 * ppt)
+int16_t refinepitch(int16_t * x,	/* (i) Q1 */
+		   int16_t cpp, int16_t * ppt)
 {				/* (o) Q9 */
-	Word32 a0, a1;
-	Word32 cor, energy, cormax, enermax32;	/* Q3 */
-	Word16 energymax, energymax_exp, ener, ener_exp;
-	Word16 cor2, cor2_exp, cor2max, cor2max_exp;
-	Word16 *sp0, *sp1, *sp2, *sp3;
-	Word16 *xt;
-	Word16 s, t;
-	Word16 lb, ub;
+	int32_t a0, a1;
+	int32_t cor, energy, cormax, enermax32;	/* Q3 */
+	int16_t energymax, energymax_exp, ener, ener_exp;
+	int16_t cor2, cor2_exp, cor2max, cor2max_exp;
+	int16_t *sp0, *sp1, *sp2, *sp3;
+	int16_t *xt;
+	int16_t s, t;
+	int16_t lb, ub;
 	int pp, i, j;
 
 	if (cpp >= MAXPP)
 		cpp = MAXPP - 1;
 	if (cpp < MINPP)
 		cpp = MINPP;
-	lb = bv_sub((Word16) cpp, DEV);
+	lb = bv_sub((int16_t) cpp, DEV);
 	if (lb < MINPP)
 		lb = MINPP;	/* lower bound of pitch period search range */
-	ub = bv_add((Word16) cpp, DEV);
+	ub = bv_add((int16_t) cpp, DEV);
 	/* to avoid selecting HMAXPP as the refined pitch period */
 	if (ub >= MAXPP)
 		ub = MAXPP - 1;	/* lower bound of pitch period search range */

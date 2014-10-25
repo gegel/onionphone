@@ -27,7 +27,7 @@
 ******************************************************************************/
 
 #include <ophtools.h>
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -35,25 +35,26 @@
 #include "mathutil.h"
 
 /* Standard Long-Term Postfilter */
-void postfilter(Word16 * s,	/* input : quantized speech signal         */
-		Word16 pp,	/* input : pitch period                    */
-		Word16 * ma_a, Word16 * b_prv, Word16 * pp_prv, Word16 * e)
+void postfilter(int16_t * s,	/* input : quantized speech signal         */
+		int16_t pp,	/* input : pitch period                    */
+		int16_t * ma_a, int16_t * b_prv, int16_t * pp_prv,
+		int16_t * e)
 {				/* output: enhanced speech signal          */
 	int n;
-	Word16 len, t0, t1, t2, t3, shift, aa, R0norm, R0_exp;
-	Word32 a0, a1, R0, R1, R01, R01max, Rx;
-	Word16 *fp1;
-	Word16 ppt, pptmin, pptmax, ppnew;
-	Word16 bb[2];
-	Word16 R1max_exp, R1max, R01Sqmax_exp, R01Sqmax, R01Sq_exp, R01Sq,
+	int16_t len, t0, t1, t2, t3, shift, aa, R0norm, R0_exp;
+	int32_t a0, a1, R0, R1, R01, R01max, Rx;
+	int16_t *fp1;
+	int16_t ppt, pptmin, pptmax, ppnew;
+	int16_t bb[2];
+	int16_t R1max_exp, R1max, R01Sqmax_exp, R01Sqmax, R01Sq_exp, R01Sq,
 	    R1_exp, R1n;
-	Word16 gainn, Rx_exp;
-	Word16 buf[MAXPP + FRSZ];
-	Word16 *ps, ww1, ww2;
-	Word32 step, delta;
-	Word16 bi0, bi1c, bi1p;
+	int16_t gainn, Rx_exp;
+	int16_t buf[MAXPP + FRSZ];
+	int16_t *ps, ww1, ww2;
+	int32_t step, delta;
+	int16_t bi0, bi1c, bi1p;
 
-	memzero(buf, (MAXPP + FRSZ) * sizeof(Word16));
+	memzero(buf, (MAXPP + FRSZ) * sizeof(int16_t));
 	ps = s + XQOFF;
 
    /********************************************************************/
@@ -154,7 +155,7 @@ void postfilter(Word16 * s,	/* input : quantized speech signal         */
 		a0 = R1max_exp - 16;
 		t1 = bv_mult(R1max, R0norm);
 		a0 = a0 + R0_exp - 15;
-		sqrt_i(t1, (Word16) a0, &t1, &t2);
+		sqrt_i(t1, (int16_t) a0, &t1, &t2);
 		t0 = bv_norm_l(R01max);
 		t3 = bv_extract_h(L_bv_shl(R01max, t0));
 		t0 = t0 - 16;
@@ -207,7 +208,7 @@ void postfilter(Word16 * s,	/* input : quantized speech signal         */
    /******************************************************************/
 	bb[0] = gainn;
 	bb[1] = bv_mult(gainn, bb[1]);
-	step = (Word32) ((1.0 / (NINT + 1)) * (2147483648.0));
+	step = (int32_t) ((1.0 / (NINT + 1)) * (2147483648.0));
 	delta = 0;
 	for (n = 0; n < NINT; n++) {
 		delta = L_bv_add(delta, step);
