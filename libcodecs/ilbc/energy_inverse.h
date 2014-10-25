@@ -25,7 +25,7 @@
 
 /* Inverses the in vector in into Q29 domain */
 
-void WebRtcIlbcfix_EnergyInverse(WebRtc_Word16 * energy,	/* (i/o) Energy and inverse
+void WebRtcIlbcfix_EnergyInverse(int16_t * energy,	/* (i/o) Energy and inverse
 								   energy (in Q29) */
 				 int noOfEnergies);	/* (i)   The length of the energy
 							   vector */

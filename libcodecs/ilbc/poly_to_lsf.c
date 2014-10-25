@@ -23,12 +23,12 @@
 #include "poly_to_lsp.h"
 #include "lsp_to_lsf.h"
 
-void WebRtcIlbcfix_Poly2Lsf(WebRtc_Word16 * lsf,	/* (o) lsf coefficients (Q13) */
-			    WebRtc_Word16 * a	/* (i) A coefficients (Q12) */
+void WebRtcIlbcfix_Poly2Lsf(int16_t * lsf,	/* (o) lsf coefficients (Q13) */
+			    int16_t * a	/* (i) A coefficients (Q12) */
     )
 {
-	WebRtc_Word16 lsp[10];
+	int16_t lsp[10];
 	WebRtcIlbcfix_Poly2Lsp(a, lsp,
-			       (WebRtc_Word16 *) WebRtcIlbcfix_kLspMean);
+			       (int16_t *) WebRtcIlbcfix_kLspMean);
 	WebRtcIlbcfix_Lsp2Lsf(lsp, lsf, 10);
 }

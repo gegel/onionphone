@@ -18,15 +18,15 @@
 
 #include "signal_processing_library.h"
 
-WebRtc_Word32 WebRtcSpl_DotProductWithScale(WebRtc_Word16 * vector1,
-					    WebRtc_Word16 * vector2, int length,
+int32_t WebRtcSpl_DotProductWithScale(int16_t * vector1,
+					    int16_t * vector2, int length,
 					    int scaling)
 {
-	WebRtc_Word32 sum;
+	int32_t sum;
 	int i;
 #ifdef _ARM_OPT_
 #pragma message("NOTE: _ARM_OPT_ optimizations are used")
-	WebRtc_Word16 len4 = (length >> 2) << 2;
+	int16_t len4 = (length >> 2) << 2;
 #endif
 
 	sum = 0;

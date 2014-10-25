@@ -21,13 +21,13 @@
 #include "defines.h"
 #include "constants.h"
 
-void WebRtcIlbcfix_InterpolateSamples(WebRtc_Word16 * interpSamples,	/* (o) The interpolated samples */
-				      WebRtc_Word16 * CBmem,	/* (i) The CB memory */
-				      WebRtc_Word16 lMem	/* (i) Length of the CB memory */
+void WebRtcIlbcfix_InterpolateSamples(int16_t * interpSamples,	/* (o) The interpolated samples */
+				      int16_t * CBmem,	/* (i) The CB memory */
+				      int16_t lMem	/* (i) Length of the CB memory */
     )
 {
-	WebRtc_Word16 *ppi, *ppo, i, j, temp1, temp2;
-	WebRtc_Word16 *tmpPtr;
+	int16_t *ppi, *ppo, i, j, temp1, temp2;
+	int16_t *tmpPtr;
 
 	/* Calculate the 20 vectors of interpolated samples (4 samples each)
 	   that are used in the codebooks for lag 20 to 39 */
@@ -40,11 +40,11 @@ void WebRtcIlbcfix_InterpolateSamples(WebRtc_Word16 * interpSamples,	/* (o) The 
 		for (i = 0; i < 4; i++) {
 
 			*tmpPtr++ =
-			    (WebRtc_Word16)
+			    (int16_t)
 			    WEBRTC_SPL_MUL_16_16_RSFT(WebRtcIlbcfix_kAlpha
 						      [temp2], *ppo,
 						      15) +
-			    (WebRtc_Word16)
+			    (int16_t)
 			    WEBRTC_SPL_MUL_16_16_RSFT(WebRtcIlbcfix_kAlpha
 						      [temp1], *ppi, 15);
 

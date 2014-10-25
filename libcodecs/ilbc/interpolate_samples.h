@@ -27,9 +27,9 @@
  *  Construct the interpolated samples for the Augmented CB
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_InterpolateSamples(WebRtc_Word16 * interpSamples,	/* (o) The interpolated samples */
-				      WebRtc_Word16 * CBmem,	/* (i) The CB memory */
-				      WebRtc_Word16 lMem	/* (i) Length of the CB memory */
+void WebRtcIlbcfix_InterpolateSamples(int16_t * interpSamples,	/* (o) The interpolated samples */
+				      int16_t * CBmem,	/* (i) The CB memory */
+				      int16_t lMem	/* (i) Length of the CB memory */
     );
 
 #endif

@@ -18,21 +18,21 @@
 
 #include "signal_processing_library.h"
 
-int WebRtcSpl_AutoCorrelation(G_CONST WebRtc_Word16 * in_vector,
+int WebRtcSpl_AutoCorrelation(const int16_t * in_vector,
 			      int in_vector_length,
-			      int order, WebRtc_Word32 * result, int *scale)
+			      int order, int32_t * result, int *scale)
 {
-	WebRtc_Word32 sum;
+	int32_t sum;
 	int i, j;
-	WebRtc_Word16 smax;	// Sample max
-	G_CONST WebRtc_Word16 *xptr1;
-	G_CONST WebRtc_Word16 *xptr2;
-	WebRtc_Word32 *resultptr;
+	int16_t smax;	// Sample max
+	const int16_t *xptr1;
+	const int16_t *xptr2;
+	int32_t *resultptr;
 	int scaling = 0;
 
 #ifdef _ARM_OPT_
 #pragma message("NOTE: _ARM_OPT_ optimizations are used")
-	WebRtc_Word16 loops4;
+	int16_t loops4;
 #endif
 
 	if (order < 0)

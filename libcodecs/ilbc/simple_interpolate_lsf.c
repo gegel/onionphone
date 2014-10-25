@@ -27,28 +27,28 @@
  *  lsf interpolator (subrutine to LPCencode)
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_SimpleInterpolateLsf(WebRtc_Word16 * syntdenum,	/* (o) the synthesis filter denominator
+void WebRtcIlbcfix_SimpleInterpolateLsf(int16_t * syntdenum,	/* (o) the synthesis filter denominator
 									   resulting from the quantized
 									   interpolated lsf Q12 */
-					WebRtc_Word16 * weightdenum,	/* (o) the weighting filter denominator
+					int16_t * weightdenum,	/* (o) the weighting filter denominator
 									   resulting from the unquantized
 									   interpolated lsf Q12 */
-					WebRtc_Word16 * lsf,	/* (i) the unquantized lsf coefficients Q13 */
-					WebRtc_Word16 * lsfdeq,	/* (i) the dequantized lsf coefficients Q13 */
-					WebRtc_Word16 * lsfold,	/* (i) the unquantized lsf coefficients of
+					int16_t * lsf,	/* (i) the unquantized lsf coefficients Q13 */
+					int16_t * lsfdeq,	/* (i) the dequantized lsf coefficients Q13 */
+					int16_t * lsfold,	/* (i) the unquantized lsf coefficients of
 								   the previous signal frame Q13 */
-					WebRtc_Word16 * lsfdeqold,	/* (i) the dequantized lsf coefficients of the
+					int16_t * lsfdeqold,	/* (i) the dequantized lsf coefficients of the
 									   previous signal frame Q13 */
-					WebRtc_Word16 length,	/* (i) should equate FILTERORDER */
+					int16_t length,	/* (i) should equate FILTERORDER */
 					iLBC_Enc_Inst_t * iLBCenc_inst
 					/* (i/o) the encoder state structure */
     )
 {
 	int i, pos, lp_length;
 
-	WebRtc_Word16 *lsf2, *lsfdeq2;
+	int16_t *lsf2, *lsfdeq2;
 	/* Stack based */
-	WebRtc_Word16 lp[LPC_FILTERORDER + 1];
+	int16_t lp[LPC_FILTERORDER + 1];
 
 	lsf2 = lsf + length;
 	lsfdeq2 = lsfdeq + length;
@@ -69,9 +69,9 @@ void WebRtcIlbcfix_SimpleInterpolateLsf(WebRtc_Word16 * syntdenum,	/* (o) the sy
 						     WebRtcIlbcfix_kLsfWeight30ms
 						     [0], length);
 		WebRtcIlbcfix_BwExpand(weightdenum, lp,
-				       (WebRtc_Word16 *)
+				       (int16_t *)
 				       WebRtcIlbcfix_kLpcChirpWeightDenum,
-				       (WebRtc_Word16) lp_length);
+				       (int16_t) lp_length);
 
 		/* subframe 2 to 6: Interpolation between first and second
 		   set of lsf coefficients */
@@ -91,9 +91,9 @@ void WebRtcIlbcfix_SimpleInterpolateLsf(WebRtc_Word16 * syntdenum,	/* (o) the sy
 							     WebRtcIlbcfix_kLsfWeight30ms
 							     [i], length);
 			WebRtcIlbcfix_BwExpand(weightdenum + pos, lp,
-					       (WebRtc_Word16 *)
+					       (int16_t *)
 					       WebRtcIlbcfix_kLpcChirpWeightDenum,
-					       (WebRtc_Word16) lp_length);
+					       (int16_t) lp_length);
 
 			pos += lp_length;
 		}
@@ -119,9 +119,9 @@ void WebRtcIlbcfix_SimpleInterpolateLsf(WebRtc_Word16 * syntdenum,	/* (o) the sy
 							     WebRtcIlbcfix_kLsfWeight20ms
 							     [i], length);
 			WebRtcIlbcfix_BwExpand(weightdenum + pos, lp,
-					       (WebRtc_Word16 *)
+					       (int16_t *)
 					       WebRtcIlbcfix_kLpcChirpWeightDenum,
-					       (WebRtc_Word16) lp_length);
+					       (int16_t) lp_length);
 
 			pos += lp_length;
 		}

@@ -27,9 +27,9 @@
  * Swap bytes (to simplify operations on Little Endian machines)
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_SwapBytes(const WebRtc_UWord16 * input,	/* (i) the sequence to swap */
-			     WebRtc_Word16 wordLength,	/* (i) number or WebRtc_UWord16 to swap */
-			     WebRtc_UWord16 * output	/* (o) the swapped sequence */
+void WebRtcIlbcfix_SwapBytes(const uint16_t * input,	/* (i) the sequence to swap */
+			     int16_t wordLength,	/* (i) number or uint16_t to swap */
+			     uint16_t * output	/* (o) the swapped sequence */
     );
 
 #endif

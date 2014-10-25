@@ -22,13 +22,13 @@
 
 #include "energy_inverse.h"
 
-void WebRtcIlbcfix_EnergyInverse(WebRtc_Word16 * energy,	/* (i/o) Energy and inverse
+void WebRtcIlbcfix_EnergyInverse(int16_t * energy,	/* (i/o) Energy and inverse
 								   energy (in Q29) */
 				 int noOfEnergies)
 {				/* (i)   The length of the energy
 				   vector */
-	WebRtc_Word32 Nom = (WebRtc_Word32) 0x1FFFFFFF;
-	WebRtc_Word16 *energyPtr;
+	int32_t Nom = (int32_t) 0x1FFFFFFF;
+	int16_t *energyPtr;
 	int i;
 
 	/* Set the minimum energy value to 16384 to avoid overflow */
@@ -42,7 +42,7 @@ void WebRtcIlbcfix_EnergyInverse(WebRtc_Word16 * energy,	/* (i/o) Energy and inv
 	energyPtr = energy;
 	for (i = 0; i < noOfEnergies; i++) {
 		(*energyPtr) =
-		    (WebRtc_Word16) WebRtcSpl_DivW32W16(Nom, (*energyPtr));
+		    (int16_t) WebRtcSpl_DivW32W16(Nom, (*energyPtr));
 		energyPtr++;
 	}
 }

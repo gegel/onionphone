@@ -42,7 +42,7 @@
  * }
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_GetLspPoly(WebRtc_Word16 * lsp,	/* (i) LSP in Q15 */
-			      WebRtc_Word32 * f);	/* (o) polonymial in Q24 */
+void WebRtcIlbcfix_GetLspPoly(int16_t * lsp,	/* (i) LSP in Q15 */
+			      int32_t * f);	/* (o) polonymial in Q24 */
 
 #endif

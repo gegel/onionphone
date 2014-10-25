@@ -655,14 +655,14 @@ void ilbc_f(void)
 //ILBC encode 240 samples (30 mS) to 50 bytes
 int ilbc_e(unsigned char* buf, short* speech)
 {
-  return WebRtcIlbcfix_Encode(Enc_Inst, (WebRtc_Word16*)speech, (WebRtc_Word16)ilbc_frameLen, (WebRtc_Word16*)buf);
+  return WebRtcIlbcfix_Encode(Enc_Inst, (int16_t*)speech, (int16_t)ilbc_frameLen, (int16_t*)buf);
 }
 //*****************************************************************************
 //ILBC decode 50 bytes to 240 samples
 int ilbc_d(short* speech, unsigned char* buf)
 {
- WebRtc_Word16 speechType;
- WebRtcIlbcfix_Decode(Dec_Inst, (WebRtc_Word16*)buf, ilbc_frameLen==240 ? 50 : 38,  (WebRtc_Word16*)speech,&speechType);
+ int16_t speechType;
+ WebRtcIlbcfix_Decode(Dec_Inst, (int16_t*)buf, ilbc_frameLen==240 ? 50 : 38,  (int16_t*)speech,&speechType);
  return (int) speechType;
 }
 //*****************************************************************************
