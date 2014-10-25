@@ -27,7 +27,7 @@ void WebRtcSpl_ReflCoefToLpc(const int16_t * k, int use_order,
 	int m, i;
 
 	kptr = k;
-	*a = 4096;		// i.e., (Word16_MAX >> 3)+1.
+	*a = 4096;		// i.e., (int16_t_MAX >> 3)+1.
 	*any = *a;
 	a[1] = WEBRTC_SPL_RSHIFT_W16((*k), 3);
 

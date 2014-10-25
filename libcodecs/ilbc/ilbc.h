@@ -56,7 +56,7 @@ extern "C" {
    *      - XXX_xxxinst       : Pointer to created instance that should be
    *                            assigned
    *      - ILBCXXX_inst_Addr : Pointer to the desired memory space
-   *      - size              : The size that this structure occupies (in Word16)
+   *      - size              : The size that this structure occupies (in int16_t)
    *
    * Return value             :  0 - Ok
    *                            -1 - Error
