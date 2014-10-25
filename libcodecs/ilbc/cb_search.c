@@ -37,51 +37,51 @@
 
 void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 			    /* (i) the encoder state structure */
-			    WebRtc_Word16 * index,	/* (o) Codebook indices */
-			    WebRtc_Word16 * gain_index,	/* (o) Gain quantization indices */
-			    WebRtc_Word16 * intarget,	/* (i) Target vector for encoding */
-			    WebRtc_Word16 * decResidual,	/* (i) Decoded residual for codebook construction */
-			    WebRtc_Word16 lMem,	/* (i) Length of buffer */
-			    WebRtc_Word16 lTarget,	/* (i) Length of vector */
-			    WebRtc_Word16 * weightDenum,	/* (i) weighting filter coefficients in Q12 */
-			    WebRtc_Word16 block	/* (i) the subblock number */
+			    int16_t * index,	/* (o) Codebook indices */
+			    int16_t * gain_index,	/* (o) Gain quantization indices */
+			    int16_t * intarget,	/* (i) Target vector for encoding */
+			    int16_t * decResidual,	/* (i) Decoded residual for codebook construction */
+			    int16_t lMem,	/* (i) Length of buffer */
+			    int16_t lTarget,	/* (i) Length of vector */
+			    int16_t * weightDenum,	/* (i) weighting filter coefficients in Q12 */
+			    int16_t block	/* (i) the subblock number */
     )
 {
-	WebRtc_Word16 i, j, stage, range;
-	WebRtc_Word16 *pp, scale, tmp;
-	WebRtc_Word16 bits, temp1, temp2;
-	WebRtc_Word16 base_size;
-	WebRtc_Word32 codedEner, targetEner;
-	WebRtc_Word16 gains[CB_NSTAGES + 1];
-	WebRtc_Word16 *cb_vecPtr;
-	WebRtc_Word16 indexOffset, sInd, eInd;
-	WebRtc_Word32 CritMax = 0;
-	WebRtc_Word16 shTotMax = WEBRTC_SPL_WORD16_MIN;
-	WebRtc_Word16 bestIndex = 0;
-	WebRtc_Word16 bestGain = 0;
-	WebRtc_Word16 indexNew, CritNewSh;
-	WebRtc_Word32 CritNew;
-	WebRtc_Word32 *cDotPtr;
-	WebRtc_Word16 noOfZeros;
-	WebRtc_Word16 *gainPtr;
-	WebRtc_Word32 t32, tmpW32;
-	WebRtc_Word16 *WebRtcIlbcfix_kGainSq5_ptr;
+	int16_t i, j, stage, range;
+	int16_t *pp, scale, tmp;
+	int16_t bits, temp1, temp2;
+	int16_t base_size;
+	int32_t codedEner, targetEner;
+	int16_t gains[CB_NSTAGES + 1];
+	int16_t *cb_vecPtr;
+	int16_t indexOffset, sInd, eInd;
+	int32_t CritMax = 0;
+	int16_t shTotMax = WEBRTC_SPL_WORD16_MIN;
+	int16_t bestIndex = 0;
+	int16_t bestGain = 0;
+	int16_t indexNew, CritNewSh;
+	int32_t CritNew;
+	int32_t *cDotPtr;
+	int16_t noOfZeros;
+	int16_t *gainPtr;
+	int32_t t32, tmpW32;
+	int16_t *WebRtcIlbcfix_kGainSq5_ptr;
 	/* Stack based */
-	WebRtc_Word16 CBbuf[CB_MEML + LPC_FILTERORDER + CB_HALFFILTERLEN];
-	WebRtc_Word32 cDot[128];
-	WebRtc_Word32 Crit[128];
-	WebRtc_Word16 targetVec[SUBL + LPC_FILTERORDER];
-	WebRtc_Word16 cbvectors[CB_MEML];
-	WebRtc_Word16 codedVec[SUBL];
-	WebRtc_Word16 interpSamples[20 * 4];
-	WebRtc_Word16 interpSamplesFilt[20 * 4];
-	WebRtc_Word16 energyW16[CB_EXPAND * 128];
-	WebRtc_Word16 energyShifts[CB_EXPAND * 128];
-	WebRtc_Word16 *inverseEnergy = energyW16;	/* Reuse memory */
-	WebRtc_Word16 *inverseEnergyShifts = energyShifts;	/* Reuse memory */
-	WebRtc_Word16 *buf = &CBbuf[LPC_FILTERORDER];
-	WebRtc_Word16 *target = &targetVec[LPC_FILTERORDER];
-	WebRtc_Word16 *aug_vec = (WebRtc_Word16 *) cDot;	/* length [SUBL], reuse memory */
+	int16_t CBbuf[CB_MEML + LPC_FILTERORDER + CB_HALFFILTERLEN];
+	int32_t cDot[128];
+	int32_t Crit[128];
+	int16_t targetVec[SUBL + LPC_FILTERORDER];
+	int16_t cbvectors[CB_MEML];
+	int16_t codedVec[SUBL];
+	int16_t interpSamples[20 * 4];
+	int16_t interpSamplesFilt[20 * 4];
+	int16_t energyW16[CB_EXPAND * 128];
+	int16_t energyShifts[CB_EXPAND * 128];
+	int16_t *inverseEnergy = energyW16;	/* Reuse memory */
+	int16_t *inverseEnergyShifts = energyShifts;	/* Reuse memory */
+	int16_t *buf = &CBbuf[LPC_FILTERORDER];
+	int16_t *target = &targetVec[LPC_FILTERORDER];
+	int16_t *aug_vec = (int16_t *) cDot;	/* length [SUBL], reuse memory */
 
 	/* Determine size of codebook sections */
 
@@ -112,8 +112,8 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 
 	/* Find the highest absolute value to calculate proper
 	   vector scale factor (so that it uses 12 bits) */
-	temp1 = WebRtcSpl_MaxAbsValueW16(buf, (WebRtc_Word16) lMem);
-	temp2 = WebRtcSpl_MaxAbsValueW16(target, (WebRtc_Word16) lTarget);
+	temp1 = WebRtcSpl_MaxAbsValueW16(buf, (int16_t) lMem);
+	temp2 = WebRtcSpl_MaxAbsValueW16(target, (int16_t) lTarget);
 
 	if ((temp1 > 0) && (temp2 > 0)) {
 		temp1 = WEBRTC_SPL_MAX(temp1, temp2);
@@ -157,7 +157,7 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 		/* Compute the CB vectors' energies for the second cb section (filtered cb) */
 		WebRtcIlbcfix_CbMemEnergyAugmentation(interpSamplesFilt,
 						      cbvectors, scale,
-						      (WebRtc_Word16) (base_size
+						      (int16_t) (base_size
 								       + 20),
 						      energyW16, energyShifts);
 
@@ -236,7 +236,7 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 
 		/* Update the global best index and the corresponding gain */
 		WebRtcIlbcfix_CbUpdateBestIndex(CritNew, CritNewSh,
-						(WebRtc_Word16) (indexNew +
+						(int16_t) (indexNew +
 								 indexOffset),
 						cDot[indexNew + indexOffset],
 						inverseEnergy[indexNew +
@@ -246,7 +246,7 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 						&CritMax, &shTotMax, &bestIndex,
 						&bestGain);
 
-		sInd = bestIndex - (WebRtc_Word16) (CB_RESRANGE >> 1);
+		sInd = bestIndex - (int16_t) (CB_RESRANGE >> 1);
 		eInd = sInd + CB_RESRANGE;
 		if (sInd < 0) {
 			eInd -= sInd;
@@ -264,9 +264,9 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 							      cbvectors + lMem,
 							      interpSamplesFilt,
 							      cDot,
-							      (WebRtc_Word16)
+							      (int16_t)
 							      (sInd + 20),
-							      (WebRtc_Word16)
+							      (int16_t)
 							      (WEBRTC_SPL_MIN
 							       (39,
 								(eInd + 20))),
@@ -280,7 +280,7 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 			/* Calculate the cross correlations (main part of the filtered CB) */
 			WebRtcSpl_CrossCorrelation(cDotPtr, target, cb_vecPtr,
 						   lTarget,
-						   (WebRtc_Word16) (eInd - i +
+						   (int16_t) (eInd - i +
 								    1), scale,
 						   -1);
 
@@ -291,7 +291,7 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 			/* Calculate the cross correlations (main part of the filtered CB) */
 			WebRtcSpl_CrossCorrelation(cDotPtr, target, cb_vecPtr,
 						   lTarget,
-						   (WebRtc_Word16) (eInd -
+						   (int16_t) (eInd -
 								    sInd + 1),
 						   scale, -1);
 
@@ -302,7 +302,7 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 
 		/* Search for best index in this part of the vector */
 		WebRtcIlbcfix_CbSearchCore(cDot,
-					   (WebRtc_Word16) (eInd - sInd + 1),
+					   (int16_t) (eInd - sInd + 1),
 					   stage, inverseEnergy + indexOffset,
 					   inverseEnergyShifts + indexOffset,
 					   Crit, &indexNew, &CritNew,
@@ -310,7 +310,7 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 
 		/* Update the global best index and the corresponding gain */
 		WebRtcIlbcfix_CbUpdateBestIndex(CritNew, CritNewSh,
-						(WebRtc_Word16) (indexNew +
+						(int16_t) (indexNew +
 								 indexOffset),
 						cDot[indexNew],
 						inverseEnergy[indexNew +
@@ -323,7 +323,7 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 		index[stage] = bestIndex;
 
 		bestGain = WebRtcIlbcfix_GainQuant(bestGain,
-						   (WebRtc_Word16)
+						   (int16_t)
 						   WEBRTC_SPL_ABS_W16(gains
 								      [stage]),
 						   stage, &gain_index[stage]);
@@ -354,7 +354,9 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 					/* Adjust index and extract vector */
 					index[stage] += (base_size - 20);
 
-					WebRtcIlbcfix_CreateAugmentedVec((WebRtc_Word16) (index[stage] - base_size + 40), buf + lMem, aug_vec);
+					WebRtcIlbcfix_CreateAugmentedVec((int16_t) (index[stage] - base_size + 40),
+									 buf + lMem,
+									 aug_vec);
 					pp = aug_vec;
 
 				}
@@ -368,7 +370,9 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 				} else {
 					/* Adjust index and extract vector */
 					index[stage] += (base_size - 20);
-					WebRtcIlbcfix_CreateAugmentedVec((WebRtc_Word16) (index[stage] - 2 * base_size + 40), cbvectors + lMem, aug_vec);
+					WebRtcIlbcfix_CreateAugmentedVec((int16_t) (index[stage] - 2 * base_size + 40),
+									 cbvectors + lMem,
+									 aug_vec);
 					pp = aug_vec;
 				}
 			}
@@ -378,9 +382,9 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 		   to measure, from the target vector */
 
 		WebRtcSpl_AddAffineVectorToVector(target, pp,
-						  (WebRtc_Word16) (-bestGain),
-						  (WebRtc_Word32) 8192,
-						  (WebRtc_Word16) 14,
+						  (int16_t) (-bestGain),
+						  (int32_t) 8192,
+						  (int16_t) 14,
 						  (int)lTarget);
 
 		/* record quantized gain */
@@ -399,8 +403,8 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 
 	j = gain_index[0];
 
-	temp1 = (WebRtc_Word16) WebRtcSpl_NormW32(codedEner);
-	temp2 = (WebRtc_Word16) WebRtcSpl_NormW32(targetEner);
+	temp1 = (int16_t) WebRtcSpl_NormW32(codedEner);
+	temp2 = (int16_t) WebRtcSpl_NormW32(targetEner);
 
 	if (temp1 < temp2) {
 		bits = 16 - temp1;
@@ -408,20 +412,20 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 		bits = 16 - temp2;
 	}
 
-	tmp = (WebRtc_Word16) WEBRTC_SPL_MUL_16_16_RSFT(gains[1], gains[1], 14);
+	tmp = (int16_t) WEBRTC_SPL_MUL_16_16_RSFT(gains[1], gains[1], 14);
 
 	targetEner =
 	    WEBRTC_SPL_MUL_16_16(WEBRTC_SPL_SHIFT_W32(targetEner, -bits), tmp);
 
-	tmpW32 = ((WebRtc_Word32) (gains[1] - 1)) << 1;
+	tmpW32 = ((int32_t) (gains[1] - 1)) << 1;
 
 	/* Pointer to the table that contains
 	   gain_sq5TblFIX * gain_sq5TblFIX in Q14 */
-	gainPtr = (WebRtc_Word16 *) WebRtcIlbcfix_kGainSq5Sq + gain_index[0];
-	temp1 = (WebRtc_Word16) WEBRTC_SPL_SHIFT_W32(codedEner, -bits);
+	gainPtr = (int16_t *) WebRtcIlbcfix_kGainSq5Sq + gain_index[0];
+	temp1 = (int16_t) WEBRTC_SPL_SHIFT_W32(codedEner, -bits);
 
 	WebRtcIlbcfix_kGainSq5_ptr =
-	    (WebRtc_Word16 *) & WebRtcIlbcfix_kGainSq5[j];
+	    (int16_t *) & WebRtcIlbcfix_kGainSq5[j];
 
 	/* targetEner and codedEner are in Q(-2*scale) */
 	for (i = gain_index[0]; i < 32; i++) {
@@ -437,7 +441,7 @@ void WebRtcIlbcfix_CbSearch(iLBC_Enc_Inst_t * iLBCenc_inst,
 			if ((*WebRtcIlbcfix_kGainSq5_ptr) < tmpW32) {
 				j = i;
 				WebRtcIlbcfix_kGainSq5_ptr =
-				    (WebRtc_Word16 *) &
+				    (int16_t *) &
 				    WebRtcIlbcfix_kGainSq5[i];
 			}
 		}

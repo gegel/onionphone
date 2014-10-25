@@ -27,7 +27,7 @@
  *  check for stability of lsf coefficients
  *---------------------------------------------------------------*/
 
-int WebRtcIlbcfix_LsfCheck(WebRtc_Word16 * lsf,	/* LSF parameters */
+int WebRtcIlbcfix_LsfCheck(int16_t * lsf,	/* LSF parameters */
 			   int dim,	/* dimension of LSF */
 			   int NoAn);	/* No of analysis per frame */
 

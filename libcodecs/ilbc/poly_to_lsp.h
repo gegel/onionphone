@@ -28,9 +28,9 @@
  * function is only for 10:th order LPC
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_Poly2Lsp(WebRtc_Word16 * a,	/* (o) A coefficients in Q12 */
-			    WebRtc_Word16 * lsp,	/* (i) LSP coefficients in Q15 */
-			    WebRtc_Word16 * old_lsp	/* (i) old LSP coefficients that are used if the new
+void WebRtcIlbcfix_Poly2Lsp(int16_t * a,	/* (o) A coefficients in Q12 */
+			    int16_t * lsp,	/* (i) LSP coefficients in Q15 */
+			    int16_t * old_lsp	/* (i) old LSP coefficients that are used if the new
 							   coefficients turn out to be unstable */
     );
 

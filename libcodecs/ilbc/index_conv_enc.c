@@ -23,7 +23,7 @@
  *  Convert the codebook indexes to make the search easier
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_IndexConvEnc(WebRtc_Word16 * index	/* (i/o) Codebook indexes */
+void WebRtcIlbcfix_IndexConvEnc(int16_t * index	/* (i/o) Codebook indexes */
     )
 {
 	int k;

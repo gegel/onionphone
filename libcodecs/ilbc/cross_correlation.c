@@ -22,17 +22,17 @@
 
 #include "signal_processing_library.h"
 
-void WebRtcSpl_CrossCorrelation(WebRtc_Word32 * cross_correlation,
-				WebRtc_Word16 * seq1, WebRtc_Word16 * seq2,
-				WebRtc_Word16 dim_seq,
-				WebRtc_Word16 dim_cross_correlation,
-				WebRtc_Word16 right_shifts,
-				WebRtc_Word16 step_seq2)
+void WebRtcSpl_CrossCorrelation(int32_t * cross_correlation,
+				int16_t * seq1, int16_t * seq2,
+				int16_t dim_seq,
+				int16_t dim_cross_correlation,
+				int16_t right_shifts,
+				int16_t step_seq2)
 {
 	int i, j;
-	WebRtc_Word16 *seq1Ptr;
-	WebRtc_Word16 *seq2Ptr;
-	WebRtc_Word32 *CrossCorrPtr;
+	int16_t *seq1Ptr;
+	int16_t *seq2Ptr;
+	int32_t *CrossCorrPtr;
 
 #ifdef _XSCALE_OPT_
 
@@ -54,7 +54,7 @@ void WebRtcSpl_CrossCorrelation(WebRtc_Word32 * cross_correlation,
 	iseq1Ptr = iseq1;
 	for (i = 0; i < ((dim_seq + 1) >> 1); i++) {
 		*iseq1Ptr = (unsigned short)*seq1Ptr++;
-		*iseq1Ptr++ |= (WebRtc_Word32) * seq1Ptr++ << 16;
+		*iseq1Ptr++ |= (int32_t) * seq1Ptr++ << 16;
 
 	}
 
@@ -83,8 +83,8 @@ void WebRtcSpl_CrossCorrelation(WebRtc_Word32 * cross_correlation,
 	for (i = 0; i < i_len; i++) {
 		*iseq2Ptr = (unsigned short)*seq2Ptr++;
 		*iseq3Ptr = (unsigned short)*seq2Ptr;
-		*iseq2Ptr++ |= (WebRtc_Word32) * seq2Ptr++ << 16;
-		*iseq3Ptr++ |= (WebRtc_Word32) * seq2Ptr << 16;
+		*iseq2Ptr++ |= (int32_t) * seq2Ptr++ << 16;
+		*iseq3Ptr++ |= (int32_t) * seq2Ptr << 16;
 	}
 
 	if (len % 2) {
@@ -133,12 +133,12 @@ void WebRtcSpl_CrossCorrelation(WebRtc_Word32 * cross_correlation,
 		}
 
 		macc40 = _ReadCoProcessor(0);
-		*CrossCorrPtr = (WebRtc_Word32) (macc40 >> right_shifts);
+		*CrossCorrPtr = (int32_t) (macc40 >> right_shifts);
 		CrossCorrPtr += step_seq2;
 	}
 #else				// #ifdef _XSCALE_OPT_
 #ifdef _ARM_OPT_
-	WebRtc_Word16 dim_seq8 = (dim_seq >> 3) << 3;
+	int16_t dim_seq8 = (dim_seq >> 3) << 3;
 #endif
 
 	CrossCorrPtr = cross_correlation;

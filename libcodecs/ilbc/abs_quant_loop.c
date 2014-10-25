@@ -22,24 +22,24 @@
 #include "constants.h"
 #include "sort_sq.h"
 
-void WebRtcIlbcfix_AbsQuantLoop(WebRtc_Word16 * syntOutIN,
-				WebRtc_Word16 * in_weightedIN,
-				WebRtc_Word16 * weightDenumIN,
-				WebRtc_Word16 * quantLenIN,
-				WebRtc_Word16 * idxVecIN)
+void WebRtcIlbcfix_AbsQuantLoop(int16_t * syntOutIN,
+				int16_t * in_weightedIN,
+				int16_t * weightDenumIN,
+				int16_t * quantLenIN,
+				int16_t * idxVecIN)
 {
 	int n, k1, k2;
-	WebRtc_Word16 index;
-	WebRtc_Word32 toQW32;
-	WebRtc_Word32 toQ32;
-	WebRtc_Word16 tmp16a;
-	WebRtc_Word16 xq;
+	int16_t index;
+	int32_t toQW32;
+	int32_t toQ32;
+	int16_t tmp16a;
+	int16_t xq;
 
-	WebRtc_Word16 *syntOut = syntOutIN;
-	WebRtc_Word16 *in_weighted = in_weightedIN;
-	WebRtc_Word16 *weightDenum = weightDenumIN;
-	WebRtc_Word16 *quantLen = quantLenIN;
-	WebRtc_Word16 *idxVec = idxVecIN;
+	int16_t *syntOut = syntOutIN;
+	int16_t *in_weighted = in_weightedIN;
+	int16_t *weightDenum = weightDenumIN;
+	int16_t *quantLen = quantLenIN;
+	int16_t *idxVec = idxVecIN;
 
 	n = 0;
 
@@ -53,15 +53,15 @@ void WebRtcIlbcfix_AbsQuantLoop(WebRtc_Word16 * syntOutIN,
 
 			/* the quantizer */
 			toQW32 =
-			    (WebRtc_Word32) (*in_weighted) -
-			    (WebRtc_Word32) (*syntOut);
+			    (int32_t) (*in_weighted) -
+			    (int32_t) (*syntOut);
 
-			toQ32 = (((WebRtc_Word32) toQW32) << 2);
+			toQ32 = (((int32_t) toQW32) << 2);
 
 			if (toQ32 > 32767) {
-				toQ32 = (WebRtc_Word32) 32767;
+				toQ32 = (int32_t) 32767;
 			} else if (toQ32 < -32768) {
-				toQ32 = (WebRtc_Word32) - 32768;
+				toQ32 = (int32_t) - 32768;
 			}
 
 			/* Quantize the state */
@@ -76,7 +76,7 @@ void WebRtcIlbcfix_AbsQuantLoop(WebRtc_Word16 * syntOutIN,
 				   (state_sq3Tbl is in Q13 and toQ is in Q11)
 				 */
 				WebRtcIlbcfix_SortSq(&xq, &index,
-						     (WebRtc_Word16) toQ32,
+						     (int16_t) toQ32,
 						     WebRtcIlbcfix_kStateSq3,
 						     8);
 			}
@@ -88,8 +88,8 @@ void WebRtcIlbcfix_AbsQuantLoop(WebRtc_Word16 * syntOutIN,
 			tmp16a = ((WebRtcIlbcfix_kStateSq3[index] + 2) >> 2);
 
 			*syntOut =
-			    (WebRtc_Word16) (tmp16a +
-					     (WebRtc_Word32) (*in_weighted) -
+			    (int16_t) (tmp16a +
+					     (int32_t) (*in_weighted) -
 					     toQW32);
 
 			n++;

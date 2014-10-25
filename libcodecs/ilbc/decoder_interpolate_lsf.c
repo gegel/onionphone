@@ -27,17 +27,17 @@
  *  obtain synthesis and weighting filters form lsf coefficients
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_DecoderInterpolateLsp(WebRtc_Word16 * syntdenum,	/* (o) synthesis filter coefficients */
-					 WebRtc_Word16 * weightdenum,	/* (o) weighting denumerator
+void WebRtcIlbcfix_DecoderInterpolateLsp(int16_t * syntdenum,	/* (o) synthesis filter coefficients */
+					 int16_t * weightdenum,	/* (o) weighting denumerator
 									   coefficients */
-					 WebRtc_Word16 * lsfdeq,	/* (i) dequantized lsf coefficients */
-					 WebRtc_Word16 length,	/* (i) length of lsf coefficient vector */
+					 int16_t * lsfdeq,	/* (i) dequantized lsf coefficients */
+					 int16_t length,	/* (i) length of lsf coefficient vector */
 					 iLBC_Dec_Inst_t * iLBCdec_inst
 					 /* (i) the decoder state structure */
     )
 {
 	int i, pos, lp_length;
-	WebRtc_Word16 lp[LPC_FILTERORDER + 1], *lsfdeq2;
+	int16_t lp[LPC_FILTERORDER + 1], *lsfdeq2;
 
 	lsfdeq2 = lsfdeq + length;
 	lp_length = length + 1;
@@ -52,9 +52,9 @@ void WebRtcIlbcfix_DecoderInterpolateLsp(WebRtc_Word16 * syntdenum,	/* (o) synth
 						     [0], length);
 		WEBRTC_SPL_MEMCPY_W16(syntdenum, lp, lp_length);
 		WebRtcIlbcfix_BwExpand(weightdenum, lp,
-				       (WebRtc_Word16 *)
+				       (int16_t *)
 				       WebRtcIlbcfix_kLpcChirpSyntDenum,
-				       (WebRtc_Word16) lp_length);
+				       (int16_t) lp_length);
 
 		/* subframes 2 to 6: interpolation between first and last LSF */
 
@@ -66,9 +66,9 @@ void WebRtcIlbcfix_DecoderInterpolateLsp(WebRtc_Word16 * syntdenum,	/* (o) synth
 							     [i], length);
 			WEBRTC_SPL_MEMCPY_W16(syntdenum + pos, lp, lp_length);
 			WebRtcIlbcfix_BwExpand(weightdenum + pos, lp,
-					       (WebRtc_Word16 *)
+					       (int16_t *)
 					       WebRtcIlbcfix_kLpcChirpSyntDenum,
-					       (WebRtc_Word16) lp_length);
+					       (int16_t) lp_length);
 			pos += lp_length;
 		}
 	} else {		/* iLBCdec_inst->mode=20 */
@@ -82,9 +82,9 @@ void WebRtcIlbcfix_DecoderInterpolateLsp(WebRtc_Word16 * syntdenum,	/* (o) synth
 							     [i], length);
 			WEBRTC_SPL_MEMCPY_W16(syntdenum + pos, lp, lp_length);
 			WebRtcIlbcfix_BwExpand(weightdenum + pos, lp,
-					       (WebRtc_Word16 *)
+					       (int16_t *)
 					       WebRtcIlbcfix_kLpcChirpSyntDenum,
-					       (WebRtc_Word16) lp_length);
+					       (int16_t) lp_length);
 			pos += lp_length;
 		}
 	}

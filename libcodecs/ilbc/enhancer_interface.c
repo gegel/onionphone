@@ -28,43 +28,42 @@
  * interface for enhancer
  *---------------------------------------------------------------*/
 
-int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
-					   WebRtc_Word16 * out,	/* (o) enhanced signal */
-					   WebRtc_Word16 * in,	/* (i) unenhanced signal */
+int WebRtcIlbcfix_EnhancerInterface(int16_t * out,	/* (o) enhanced signal */
+					   int16_t * in,	/* (i) unenhanced signal */
 					   iLBC_Dec_Inst_t * iLBCdec_inst	/* (i) buffers etc */
     )
 {
 	int iblock;
 	int lag = 20, tlag = 20;
 	int inLen = iLBCdec_inst->blockl + 120;
-	WebRtc_Word16 scale, scale1, plc_blockl;
-	WebRtc_Word16 *enh_buf, *enh_period;
-	WebRtc_Word32 tmp1, tmp2, max, new_blocks;
-	WebRtc_Word16 *enh_bufPtr1;
+	int16_t scale, scale1, plc_blockl;
+	int16_t *enh_buf, *enh_period;
+	int32_t tmp1, tmp2, max, new_blocks;
+	int16_t *enh_bufPtr1;
 	int i, k;
-	WebRtc_Word16 EnChange;
-	WebRtc_Word16 SqrtEnChange;
-	WebRtc_Word16 inc;
-	WebRtc_Word16 win;
-	WebRtc_Word16 *tmpW16ptr;
-	WebRtc_Word16 startPos;
-	WebRtc_Word16 *plc_pred;
-	WebRtc_Word16 *target, *regressor;
-	WebRtc_Word16 max16;
+	int16_t EnChange;
+	int16_t SqrtEnChange;
+	int16_t inc;
+	int16_t win;
+	int16_t *tmpW16ptr;
+	int16_t startPos;
+	int16_t *plc_pred;
+	int16_t *target, *regressor;
+	int16_t max16;
 	int shifts;
-	WebRtc_Word32 ener;
-	WebRtc_Word16 enerSh;
-	WebRtc_Word16 corrSh;
-	WebRtc_Word16 ind, sh;
-	WebRtc_Word16 start, stop;
+	int32_t ener;
+	int16_t enerSh;
+	int16_t corrSh;
+	int16_t ind, sh;
+	int16_t start, stop;
 	/* Stack based */
-	WebRtc_Word16 totsh[3];
-	WebRtc_Word16 downsampled[(BLOCKL_MAX + 120) >> 1];	/* length 180 */
-	WebRtc_Word32 corr32[50];
-	WebRtc_Word32 corrmax[3];
-	WebRtc_Word16 corr16[3];
-	WebRtc_Word16 en16[3];
-	WebRtc_Word16 lagmax[3];
+	int16_t totsh[3];
+	int16_t downsampled[(BLOCKL_MAX + 120) >> 1];	/* length 180 */
+	int32_t corr32[50];
+	int32_t corrmax[3];
+	int16_t corr16[3];
+	int16_t en16[3];
+	int16_t lagmax[3];
 
 	plc_pred = downsampled;	/* Reuse memory since plc_pred[ENH_BLOCKL] and
 				   downsampled are non overlapping */
@@ -97,7 +96,10 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 			       (ENH_NBLOCKS_TOT - new_blocks));
 
 	WebRtcSpl_DownsampleFast(enh_buf + ENH_BUFL - inLen,	/* Input samples */
-				 (WebRtc_Word16) (inLen + ENH_BUFL_FILTEROVERHEAD), downsampled, (WebRtc_Word16) WEBRTC_SPL_RSHIFT_W16(inLen, 1), (WebRtc_Word16 *) WebRtcIlbcfix_kLpFiltCoefs,	/* Coefficients in Q12 */
+				 (int16_t) (inLen + ENH_BUFL_FILTEROVERHEAD),
+				 downsampled,
+				 (int16_t) WEBRTC_SPL_RSHIFT_W16(inLen, 1),
+				 (int16_t *) WebRtcIlbcfix_kLpFiltCoefs,	/* Coefficients in Q12 */
 				 FILTERORDER_DS_PLUS1,	/* Length of filter (order-1) */
 				 FACTOR_DS, DELAY_DS);
 
@@ -111,7 +113,7 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 
 		/* scaling */
 		max16 = WebRtcSpl_MaxAbsValueW16(&regressor[-50],
-						 (WebRtc_Word16)
+						 (int16_t)
 						 (ENH_BLOCKL_HALF + 50 - 1));
 		shifts =
 		    WebRtcSpl_GetSizeInBits(WEBRTC_SPL_MUL_16_16(max16, max16))
@@ -121,7 +123,7 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 		/* compute cross correlation */
 		WebRtcSpl_CrossCorrelation(corr32, target, regressor,
 					   ENH_BLOCKL_HALF, 50,
-					   (WebRtc_Word16) shifts, -1);
+					   (int16_t) shifts, -1);
 
 		/* Find 3 highest correlations that should be compared for the
 		   highest (corr*corr)/ener */
@@ -152,14 +154,14 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 							  shifts);
 			enerSh = 15 - WebRtcSpl_GetSizeInBits(ener);
 			corr16[i] =
-			    (WebRtc_Word16) WEBRTC_SPL_SHIFT_W32(corrmax[i],
+			    (int16_t) WEBRTC_SPL_SHIFT_W32(corrmax[i],
 								 corrSh);
 			corr16[i] =
-			    (WebRtc_Word16) WEBRTC_SPL_MUL_16_16_RSFT(corr16[i],
+			    (int16_t) WEBRTC_SPL_MUL_16_16_RSFT(corr16[i],
 								      corr16[i],
 								      16);
 			en16[i] =
-			    (WebRtc_Word16) WEBRTC_SPL_SHIFT_W32(ener, enerSh);
+			    (int16_t) WEBRTC_SPL_SHIFT_W32(ener, enerSh);
 			totsh[i] = enerSh - WEBRTC_SPL_LSHIFT_W32(corrSh, 1);
 		}
 
@@ -188,7 +190,7 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 
 		/* Store the estimated lag in the non-downsampled domain */
 		enh_period[ENH_NBLOCKS_TOT - new_blocks + iblock] =
-		    (WebRtc_Word16) WEBRTC_SPL_MUL_16_16(lag, 8);
+		    (int16_t) WEBRTC_SPL_MUL_16_16(lag, 8);
 
 		/* Store the estimated lag for backward PLC */
 		if (iLBCdec_inst->prev_enh_pl == 1) {
@@ -218,7 +220,7 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 		/* scaling */
 		max16 =
 		    WebRtcSpl_MaxAbsValueW16(regressor,
-					     (WebRtc_Word16) (plc_blockl + 3 -
+					     (int16_t) (plc_blockl + 3 -
 							      1));
 		if (max16 > 5000)
 			shifts = 2;
@@ -228,7 +230,7 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 		/* compute cross correlation */
 		WebRtcSpl_CrossCorrelation(corr32, target, regressor,
 					   plc_blockl, 3,
-					   (WebRtc_Word16) shifts, 1);
+					   (int16_t) shifts, 1);
 
 		/* find lag */
 		lag = WebRtcSpl_MaxIndexW32(corr32, 3);
@@ -286,7 +288,7 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 						      plc_blockl], plc_blockl);
 			max16 = WebRtcSpl_MaxAbsValueW16(plc_pred, plc_blockl);
 			max = WEBRTC_SPL_MAX(max, max16);
-			scale = 22 - (WebRtc_Word16) WebRtcSpl_NormW32(max);
+			scale = 22 - (int16_t) WebRtcSpl_NormW32(max);
 			scale = WEBRTC_SPL_MAX(scale, 0);
 
 			tmp2 =
@@ -310,26 +312,26 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 				 */
 
 				scale1 =
-				    (WebRtc_Word16) WebRtcSpl_NormW32(tmp1);
+				    (int16_t) WebRtcSpl_NormW32(tmp1);
 				tmp1 = WEBRTC_SPL_SHIFT_W32(tmp1, (scale1 - 16));	/* using 15 bits */
 
 				tmp2 = WEBRTC_SPL_SHIFT_W32(tmp2, (scale1));
 				EnChange =
-				    (WebRtc_Word16) WebRtcSpl_DivW32W16(tmp2,
-									(WebRtc_Word16)
+				    (int16_t) WebRtcSpl_DivW32W16(tmp2,
+									(int16_t)
 									tmp1);
 
 				/* Calculate the Sqrt of the energy in Q15 ((14+16)/2) */
 				SqrtEnChange =
-				    (WebRtc_Word16)
+				    (int16_t)
 				    WebRtcSpl_SqrtFloor(WEBRTC_SPL_LSHIFT_W32
-							((WebRtc_Word32)
+							((int32_t)
 							 EnChange, 14));
 
 				/* Multiply first part of vector with 2*SqrtEnChange */
 				WebRtcSpl_ScaleVector(plc_pred, plc_pred,
 						      SqrtEnChange,
-						      (WebRtc_Word16)
+						      (int16_t)
 						      (plc_blockl - 16), 14);
 
 				/* Calculate increase parameter for window part (16 last samples) */
@@ -343,7 +345,7 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 
 				for (i = 16; i > 0; i--) {
 					(*tmpW16ptr) =
-					    (WebRtc_Word16)
+					    (int16_t)
 					    WEBRTC_SPL_MUL_16_16_RSFT((*tmpW16ptr), (SqrtEnChange + (win >> 1)), 14);
 					/* multiply by (2.0*SqrtEnChange+win) */
 
@@ -367,11 +369,11 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 			for (i = 0; i < plc_blockl; i++) {
 				win += inc;
 				*enh_bufPtr1 =
-				    (WebRtc_Word16)
+				    (int16_t)
 				    WEBRTC_SPL_MUL_16_16_RSFT((*enh_bufPtr1),
 							      win, 14);
 				*enh_bufPtr1 +=
-				    (WebRtc_Word16)
+				    (int16_t)
 				    WEBRTC_SPL_MUL_16_16_RSFT((16384 - win),
 							      plc_pred
 							      [plc_blockl - 1 -
@@ -379,7 +381,7 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 				enh_bufPtr1--;
 			}
 		} else {
-			WebRtc_Word16 *synt = &downsampled[LPC_FILTERORDER];
+			int16_t *synt = &downsampled[LPC_FILTERORDER];
 
 			enh_bufPtr1 =
 			    &enh_buf[ENH_BUFL - iLBCdec_inst->blockl -
@@ -405,17 +407,17 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 								(LPC_FILTERORDER
 								 + 1)],
 						  LPC_FILTERORDER + 1,
-						  (WebRtc_Word16) lag);
+						  (int16_t) lag);
 
 			WEBRTC_SPL_MEMCPY_W16(&synt[-LPC_FILTERORDER],
 					      &synt[lag - LPC_FILTERORDER],
 					      LPC_FILTERORDER);
 			WebRtcIlbcfix_HpOutput(synt,
-					       (WebRtc_Word16 *)
+					       (int16_t *)
 					       WebRtcIlbcfix_kHpOutCoefs,
 					       iLBCdec_inst->hpimemy,
 					       iLBCdec_inst->hpimemx,
-					       (WebRtc_Word16) lag);
+					       (int16_t) lag);
 			WebRtcSpl_FilterARFastQ12(enh_bufPtr1, synt,
 						  &iLBCdec_inst->
 						  old_syntdenum[(iLBCdec_inst->
@@ -424,17 +426,17 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 								(LPC_FILTERORDER
 								 + 1)],
 						  LPC_FILTERORDER + 1,
-						  (WebRtc_Word16) lag);
+						  (int16_t) lag);
 
 			WEBRTC_SPL_MEMCPY_W16(iLBCdec_inst->syntMem,
 					      &synt[lag - LPC_FILTERORDER],
 					      LPC_FILTERORDER);
 			WebRtcIlbcfix_HpOutput(synt,
-					       (WebRtc_Word16 *)
+					       (int16_t *)
 					       WebRtcIlbcfix_kHpOutCoefs,
 					       iLBCdec_inst->hpimemy,
 					       iLBCdec_inst->hpimemx,
-					       (WebRtc_Word16) lag);
+					       (int16_t) lag);
 		}
 	}
 
@@ -444,11 +446,11 @@ int WebRtcIlbcfix_EnhancerInterface(	/* (o) Estimated lag in end of in[] */
 		WebRtcIlbcfix_Enhancer(out +
 				       WEBRTC_SPL_MUL_16_16(iblock, ENH_BLOCKL),
 				       enh_buf, ENH_BUFL,
-				       (WebRtc_Word16) (WEBRTC_SPL_MUL_16_16
+				       (int16_t) (WEBRTC_SPL_MUL_16_16
 							(iblock,
 							 ENH_BLOCKL) +
 							startPos), enh_period,
-				       (WebRtc_Word16 *)
+				       (int16_t *)
 				       WebRtcIlbcfix_kEnhPlocs,
 				       ENH_NBLOCKS_TOT);
 	}

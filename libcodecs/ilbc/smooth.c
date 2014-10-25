@@ -26,23 +26,23 @@
  * find the smoothed output data
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_Smooth(WebRtc_Word16 * odata,	/* (o) smoothed output */
-			  WebRtc_Word16 * current,	/* (i) the un enhanced residual for
+void WebRtcIlbcfix_Smooth(int16_t * odata,	/* (o) smoothed output */
+			  int16_t * current,	/* (i) the un enhanced residual for
 							   this block */
-			  WebRtc_Word16 * surround	/* (i) The approximation from the
+			  int16_t * surround	/* (i) The approximation from the
 							   surrounding sequences */
     )
 {
-	WebRtc_Word16 maxtot, scale, scale1, scale2;
-	WebRtc_Word16 A, B, C, denomW16;
-	WebRtc_Word32 B_W32, denom, num;
-	WebRtc_Word32 errs;
-	WebRtc_Word32 w00, w10, w11, endiff, crit;
-	WebRtc_Word32 w00prim, w10prim, w11_div_w00;
-	WebRtc_Word16 w11prim;
-	WebRtc_Word16 bitsw00, bitsw10, bitsw11;
-	WebRtc_Word32 w11w00, w10w10, w00w00;
-	WebRtc_Word16 max1, max2;
+	int16_t maxtot, scale, scale1, scale2;
+	int16_t A, B, C, denomW16;
+	int32_t B_W32, denom, num;
+	int32_t errs;
+	int32_t w00, w10, w11, endiff, crit;
+	int32_t w00prim, w10prim, w11_div_w00;
+	int16_t w11prim;
+	int16_t bitsw00, bitsw10, bitsw11;
+	int32_t w11w00, w10w10, w00w00;
+	int16_t max1, max2;
 
 	/* compute some inner products (ensure no overflow by first calculating proper scale factor) */
 
@@ -51,7 +51,7 @@ void WebRtcIlbcfix_Smooth(WebRtc_Word16 * odata,	/* (o) smoothed output */
 	maxtot = WEBRTC_SPL_MAX(max1, max2);
 
 	scale = WebRtcSpl_GetSizeInBits(maxtot);
-	scale = (WebRtc_Word16) WEBRTC_SPL_MUL_16_16(2, scale) - 26;
+	scale = (int16_t) WEBRTC_SPL_MUL_16_16(2, scale) - 26;
 	scale = WEBRTC_SPL_MAX(0, scale);
 
 	w00 =
@@ -83,14 +83,14 @@ void WebRtcIlbcfix_Smooth(WebRtc_Word16 * odata,	/* (o) smoothed output */
 	}
 
 	w00prim = WEBRTC_SPL_LSHIFT_W32(w00, scale1);
-	w11prim = (WebRtc_Word16) WEBRTC_SPL_SHIFT_W32(w11, scale2);
+	w11prim = (int16_t) WEBRTC_SPL_SHIFT_W32(w11, scale2);
 
 	/* Perform C = sqrt(w11/w00) (C is in Q11 since (16+6)/2=11) */
 	if (w11prim > 64) {
-		endiff = WEBRTC_SPL_LSHIFT_W32((WebRtc_Word32)
+		endiff = WEBRTC_SPL_LSHIFT_W32((int32_t)
 					       WebRtcSpl_DivW32W16(w00prim,
 								   w11prim), 6);
-		C = (WebRtc_Word16) WebRtcSpl_SqrtFloor(endiff);	/* C is in Q11 */
+		C = (int16_t) WebRtcSpl_SqrtFloor(endiff);	/* C is in Q11 */
 	} else {
 		C = 1;
 	}
@@ -129,21 +129,21 @@ void WebRtcIlbcfix_Smooth(WebRtc_Word16 * odata,	/* (o) smoothed output */
 			scale = scale1;
 		}
 
-		w11w00 = WEBRTC_SPL_MUL_16_16((WebRtc_Word16)
+		w11w00 = WEBRTC_SPL_MUL_16_16((int16_t)
 					      WEBRTC_SPL_SHIFT_W32(w11, -scale),
-					      (WebRtc_Word16)
+					      (int16_t)
 					      WEBRTC_SPL_SHIFT_W32(w00,
 								   -scale));
 
-		w10w10 = WEBRTC_SPL_MUL_16_16((WebRtc_Word16)
+		w10w10 = WEBRTC_SPL_MUL_16_16((int16_t)
 					      WEBRTC_SPL_SHIFT_W32(w10, -scale),
-					      (WebRtc_Word16)
+					      (int16_t)
 					      WEBRTC_SPL_SHIFT_W32(w10,
 								   -scale));
 
-		w00w00 = WEBRTC_SPL_MUL_16_16((WebRtc_Word16)
+		w00w00 = WEBRTC_SPL_MUL_16_16((int16_t)
 					      WEBRTC_SPL_SHIFT_W32(w00, -scale),
-					      (WebRtc_Word16)
+					      (int16_t)
 					      WEBRTC_SPL_SHIFT_W32(w00,
 								   -scale));
 
@@ -154,7 +154,7 @@ void WebRtcIlbcfix_Smooth(WebRtc_Word16 * odata,	/* (o) smoothed output */
 			/* denom is in Q16 */
 			denom =
 			    WebRtcSpl_DivW32W16(endiff,
-						(WebRtc_Word16)
+						(int16_t)
 						WEBRTC_SPL_RSHIFT_W32(w00w00,
 								      16));
 		} else {
@@ -169,7 +169,7 @@ void WebRtcIlbcfix_Smooth(WebRtc_Word16 * odata,	/* (o) smoothed output */
 			if (scale > 0) {
 				/* denomW16 is in Q(16+scale) */
 				denomW16 =
-				    (WebRtc_Word16) WEBRTC_SPL_RSHIFT_W32(denom,
+				    (int16_t) WEBRTC_SPL_RSHIFT_W32(denom,
 									  scale);
 
 				/* num in Q(34-scale) */
@@ -178,14 +178,14 @@ void WebRtcIlbcfix_Smooth(WebRtc_Word16 * odata,	/* (o) smoothed output */
 							  scale);
 			} else {
 				/* denomW16 is in Q16 */
-				denomW16 = (WebRtc_Word16) denom;
+				denomW16 = (int16_t) denom;
 
 				/* num in Q34 */
 				num = ENH_A0_MINUS_A0A0DIV4;
 			}
 
 			/* A sqrt( (ENH_A0-(ENH_A0^2)/4)*(w00*w00)/(w11*w00 + w10*w10) ) in Q9 */
-			A = (WebRtc_Word16)
+			A = (int16_t)
 			    WebRtcSpl_SqrtFloor(WebRtcSpl_DivW32W16
 						(num, denomW16));
 
@@ -204,7 +204,7 @@ void WebRtcIlbcfix_Smooth(WebRtc_Word16 * odata,	/* (o) smoothed output */
 			if ((w00prim > 0) && (w10prim > 0)) {
 				w11_div_w00 =
 				    WebRtcSpl_DivW32W16(w10prim,
-							(WebRtc_Word16)
+							(int16_t)
 							w00prim);
 
 				if (WebRtcSpl_GetSizeInBits(w11_div_w00) +
@@ -212,11 +212,11 @@ void WebRtcIlbcfix_Smooth(WebRtc_Word16 * odata,	/* (o) smoothed output */
 					B_W32 = 0;
 				} else {
 					B_W32 =
-					    (WebRtc_Word32) 1073741824 -
-					    (WebRtc_Word32) ENH_A0DIV2 -
+					    (int32_t) 1073741824 -
+					    (int32_t) ENH_A0DIV2 -
 					    WEBRTC_SPL_MUL(A, w11_div_w00);
 				}
-				B = (WebRtc_Word16) WEBRTC_SPL_RSHIFT_W32(B_W32, 16);	/* B in Q14 */
+				B = (int16_t) WEBRTC_SPL_RSHIFT_W32(B_W32, 16);	/* B in Q14 */
 			} else {
 				/* No smoothing */
 				A = 0;
