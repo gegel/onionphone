@@ -1194,7 +1194,7 @@ void cb_phase2(struct PEXP *pexp, MODEL * model)
 	// float phi1_; // keep commented according to commented code
 	float A[MAX_AMP];
 
-	memzero(A, MAX_AMP);
+	memzero(A, MAX_AMP * sizeof(float));
 
 	for (m = 1; m <= model->L; m++) {
 		A[m] = model->A[m];

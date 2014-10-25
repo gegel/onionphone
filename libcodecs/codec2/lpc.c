@@ -266,8 +266,8 @@ void find_aks(float Sn[],	/* Nsam samples with order sample memory */
 	float R[LPC_MAX + 1];	/* order+1 autocorrelation values of Sn[] */
 	int i;
 
-	memzero(Wn, LPC_MAX_N);
-	memzero(R, LPC_MAX + 1);
+	memzero(Wn, LPC_MAX_N * sizeof(float));
+	memzero(R, (LPC_MAX + 1) * sizeof(float));
 
 	assert(order < LPC_MAX);
 	assert(Nsam < LPC_MAX_N);
