@@ -56,46 +56,46 @@
 
 #include "g723_const.h"
 
-extern Word16 *BandQntTable[LspQntBands];
-extern Word16 BandInfoTable[LspQntBands][2];
-extern Word16 LspDcTable[LpcOrder];
-extern Word16 CosineTable[CosineTableSize];
-extern Word16 BandExpTable[LpcOrder];
+extern int16_t *BandQntTable[LspQntBands];
+extern int16_t BandInfoTable[LspQntBands][2];
+extern int16_t LspDcTable[LpcOrder];
+extern int16_t CosineTable[CosineTableSize];
+extern int16_t BandExpTable[LpcOrder];
 
-#define MIN_16 (Word16)0x8000
-#define MAX_16 (Word16)0x7fff
+#define MIN_16 (int16_t)0x8000
+#define MAX_16 (int16_t)0x7fff
 #define  CosineTableSize   512
 
-extern Word16 g723_mult_r(Word16 var1, Word16 var2);	/* Mult with round,     2 */
-extern Word16 round_(Word32 L_var1);	/* Round,               1 */
-extern Word16 g723_mac_r(Word32 L_var3, Word16 var1, Word16 var2);
-//extern Word16 g723_msu_r(Word32 L_var3, Word16 var1, Word16 var2);
-extern Word32 L_mls(Word32, Word16);	/* Wght ?? */
-extern Word32 L_g723_mult(Word16 var1, Word16 var2);	/* Long mult,           1 */
-extern Word16 g723_negate(Word16 var1);	/* Short negate,        1 */
-extern Word32 L_g723_negate(Word32 L_var1);	/* Long negate,     2 */
-extern void LsptoA(Word16 * Lsp);
-extern Word16 g723_shr(Word16 var1, Word16 var2);	/* Short shift right,   1 */
-extern Word32 L_g723_shr(Word32 L_var1, Word16 var2);	/* Long shift right,    2 */
-extern Word16 g723_shl(Word16 var1, Word16 var2);	/* Short shift left,    1 */
-extern Word32 L_g723_shl(Word32 L_var1, Word16 var2);	/* Long shift left,     2 */
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
-extern Word32 L_g723_add(Word32 L_var1, Word32 L_var2);	/* Long add,        2 */
-extern Word16 g723_sub(Word16 var1, Word16 var2);	/* Short sub,           1 */
-extern Word32 L_g723_sub(Word32 L_var1, Word32 L_var2);	/* Long sub,        2 */
-extern Word16 div_s(Word16 var1, Word16 var2);	/* Short division,       18 */
-extern Word32 Lsp_Svq(Word16 * Tv, Word16 * Wvect);
-extern Word32 g723_L_msu(Word32 L_var3, Word16 var1, Word16 var2);	/* Msu,    1 */
-extern Word16 g723_extract_h(Word32 L_var1);	/* Extract high,        1 */
-extern Word16 div_l(Word32, Word16);
-extern Word32 g723_L_mac(Word32 L_var3, Word16 var1, Word16 var2);	/* Mac,    1 */
-extern Word32 g723_L_deposit_h(Word16 var1);	/* 16 bit var1 -> MSB,     2 */
-//extern Word32 L_g723_sub(Word32 L_var1, Word32 L_var2);   /* Long sub,        2 */
-extern Word32 g723_L_abs(Word32 L_var1);	/* Long abs,              3 */
-extern Word16 g723_norm_l(Word32 L_var1);	/* Long norm,            30 */
-//extern Word32 L_g723_shl(Word32 L_var1, Word16 var2); /* Long shift left,     2 */
-//extern Word32 g723_L_mac(Word32 L_var3, Word16 var1, Word16 var2); /* Mac,    1 */
-extern Word16 g723_norm_s(Word16 var1);	/* Short norm,           15 */
+extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
+extern int16_t round_(int32_t L_var1);	/* Round,               1 */
+extern int16_t g723_mac_r(int32_t L_var3, int16_t var1, int16_t var2);
+//extern int16_t g723_msu_r(int32_t L_var3, int16_t var1, int16_t var2);
+extern int32_t L_mls(int32_t, int16_t);	/* Wght ?? */
+extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
+extern int16_t g723_negate(int16_t var1);	/* Short negate,        1 */
+extern int32_t L_g723_negate(int32_t L_var1);	/* Long negate,     2 */
+extern void LsptoA(int16_t * Lsp);
+extern int16_t g723_shr(int16_t var1, int16_t var2);	/* Short shift right,   1 */
+extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
+extern int16_t g723_shl(int16_t var1, int16_t var2);	/* Short shift left,    1 */
+extern int32_t L_g723_shl(int32_t L_var1, int16_t var2);	/* Long shift left,     2 */
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
+extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
+extern int16_t g723_sub(int16_t var1, int16_t var2);	/* Short sub,           1 */
+extern int32_t L_g723_sub(int32_t L_var1, int32_t L_var2);	/* Long sub,        2 */
+extern int16_t div_s(int16_t var1, int16_t var2);	/* Short division,       18 */
+extern int32_t Lsp_Svq(int16_t * Tv, int16_t * Wvect);
+extern int32_t g723_L_msu(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu,    1 */
+extern int16_t g723_extract_h(int32_t L_var1);	/* Extract high,        1 */
+extern int16_t div_l(int32_t, int16_t);
+extern int32_t g723_L_mac(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac,    1 */
+extern int32_t g723_L_deposit_h(int16_t var1);	/* 16 bit var1 -> MSB,     2 */
+//extern int32_t L_g723_sub(int32_t L_var1, int32_t L_var2);   /* Long sub,        2 */
+extern int32_t g723_L_abs(int32_t L_var1);	/* Long abs,              3 */
+extern int16_t g723_norm_l(int32_t L_var1);	/* Long norm,            30 */
+//extern int32_t L_g723_shl(int32_t L_var1, int16_t var2); /* Long shift left,     2 */
+//extern int32_t g723_L_mac(int32_t L_var3, int16_t var1, int16_t var2); /* Mac,    1 */
+extern int16_t g723_norm_s(int16_t var1);	/* Short norm,           15 */
 
 /*
 **
@@ -117,13 +117,13 @@ extern Word16 g723_norm_s(Word16 var1);	/* Short norm,           15 */
 **
 ** Arguments:       
 **
-**  Word16 *LspVect     Empty Buffer
-**  Word16 Lpc[]        Unquantized LPC coefficients (10 words)
-**  Word16 PrevLsp[]    LSP frequencies from the previous frame (10 words)
+**  int16_t *LspVect     Empty Buffer
+**  int16_t Lpc[]        Unquantized LPC coefficients (10 words)
+**  int16_t PrevLsp[]    LSP frequencies from the previous frame (10 words)
 **
 ** Outputs:
 **
-**  Word16 LspVect[]    LSP frequencies for the current frame (10 words)
+**  int16_t LspVect[]    LSP frequencies for the current frame (10 words)
 **
 ** Return value:        None
 **
@@ -134,26 +134,26 @@ extern Word16 g723_norm_s(Word16 var1);	/* Short norm,           15 */
 # ** 作用:     量化LSP系数,LSP系数被分为三个子矢量，分别为3维、3维、4维。  
 # ** 每个子矢量使用不同的矢量量化表。每个量化表有256个数据，所以用8比特量化。  
 # ** 参数:         
-# **  Word16 CurrLsp[]    当前帧的未被量化的LSP矢量  
-# **  Word16 PrevLsp[]    前一帧的10个LSP矢量  
+# **  int16_t CurrLsp[]    当前帧的未被量化的LSP矢量  
+# **  int16_t PrevLsp[]    前一帧的10个LSP矢量  
 # ** 输出:          
 # ** 当前帧的10个已被量化的LSP矢量  
 # 
 */
 
-void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
+void AtoLsp(int16_t * LspVect, int16_t * Lpc, int16_t * PrevLsp)
 {
 
 	int i, j, k;
 
-	Word32 Lpq[LpcOrder + 2];
-	Word16 Spq[LpcOrder + 2];
+	int32_t Lpq[LpcOrder + 2];
+	int16_t Spq[LpcOrder + 2];
 
-	Word16 Exp;
-	Word16 LspCnt;
+	int16_t Exp;
+	int16_t LspCnt;
 
-	Word32 PrevVal, CurrVal;
-	Word32 Acc0, Acc1;
+	int32_t PrevVal, CurrVal;
+	int32_t Acc0, Acc1;
 
 	/*
 	 * Perform a bandwidth expansion on the LPC coefficients.  This
@@ -189,7 +189,7 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 #   
 */
 
-	Lpq[0] = Lpq[1] = (Word32) 0x02000000L;
+	Lpq[0] = Lpq[1] = (int32_t) 0x02000000L;
 
 	/*
 	 * This loop computes the coefficients of P(z) and Q(z).  The long
@@ -200,21 +200,21 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 		/* P(z) */
 		Acc0 = L_g723_negate(Lpq[2 * i + 0]);
 		Acc1 = g723_L_deposit_h(LspVect[i]);
-		Acc1 = L_g723_shr(Acc1, (Word16) 4);
+		Acc1 = L_g723_shr(Acc1, (int16_t) 4);
 		Acc0 = L_g723_sub(Acc0, Acc1);
 		Acc1 = g723_L_deposit_h(LspVect[LpcOrder - 1 - i]);
-		Acc1 = L_g723_shr(Acc1, (Word16) 4);
+		Acc1 = L_g723_shr(Acc1, (int16_t) 4);
 		Acc0 = L_g723_sub(Acc0, Acc1);
 		Lpq[2 * i + 2] = Acc0;
 
 		/* Q(z) */
 		Acc0 = Lpq[2 * i + 1];
 		Acc1 = g723_L_deposit_h(LspVect[i]);
-		Acc1 = L_g723_shr(Acc1, (Word16) 4);
+		Acc1 = L_g723_shr(Acc1, (int16_t) 4);
 
 		Acc0 = L_g723_sub(Acc0, Acc1);
 		Acc1 = g723_L_deposit_h(LspVect[LpcOrder - 1 - i]);
-		Acc1 = L_g723_shr(Acc1, (Word16) 4);
+		Acc1 = L_g723_shr(Acc1, (int16_t) 4);
 		Acc0 = L_g723_add(Acc0, Acc1);
 		Lpq[2 * i + 3] = Acc0;
 	}
@@ -228,8 +228,8 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 #   在多项式估计中把p_5和 q_5一分为二   
 #   
 */
-	Lpq[LpcOrder + 0] = L_g723_shr(Lpq[LpcOrder + 0], (Word16) 1);
-	Lpq[LpcOrder + 1] = L_g723_shr(Lpq[LpcOrder + 1], (Word16) 1);
+	Lpq[LpcOrder + 0] = L_g723_shr(Lpq[LpcOrder + 0], (int16_t) 1);
+	Lpq[LpcOrder + 1] = L_g723_shr(Lpq[LpcOrder + 1], (int16_t) 1);
 
 	/*
 	 * Normalize the polynomial coefficients and convert to shorts
@@ -280,7 +280,7 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 
 	/* Evaluate the sum polynomial at frequency zero */
 	/* 估计 sum 多项式为0的频率 */
-	PrevVal = (Word32) 0;
+	PrevVal = (int32_t) 0;
 	for (j = 0; j <= LpcOrder / 2; j++)
 		PrevVal = g723_L_mac(PrevVal, Spq[2 * j], CosineTable[0]);
 
@@ -295,12 +295,12 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 #   * 搜索环. 在单位圆中以pi/256的间隔来估计P(z)和Q(z)  
 #   
 */
-	LspCnt = (Word16) 0;
+	LspCnt = (int16_t) 0;
 	for (i = 1; i < CosineTableSize / 2; i++) {
 
 		/* Evaluate the selected polynomial */
 		/* 估计选择的多项式 */
-		CurrVal = (Word32) 0;
+		CurrVal = (int32_t) 0;
 		for (j = 0; j <= LpcOrder / 2; j++)
 			CurrVal = g723_L_mac(CurrVal, Spq[LpcOrder - 2 * j + k],
 					     CosineTable[i * j %
@@ -308,7 +308,7 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 
 		/* Check for a sign change, indicating a zero crossing */
 		/* 检测信号的改变 */
-		if ((CurrVal ^ PrevVal) < (Word32) 0) {
+		if ((CurrVal ^ PrevVal) < (int32_t) 0) {
 
 			/*
 			 * Interpolate to find the bottom 7 bits of the
@@ -323,7 +323,7 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 			Acc0 = L_g723_shl(Acc0, Exp);
 			Acc1 = L_g723_shl(Acc1, Exp);
 
-			Acc1 = L_g723_shr(Acc1, (Word16) 8);
+			Acc1 = L_g723_shr(Acc1, (int16_t) 8);
 
 			LspVect[LspCnt] = div_l(Acc1, g723_extract_h(Acc0));
 
@@ -331,13 +331,13 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 			 * Add the upper part of the zero-crossing frequency,
 			 * i.e. bits 7-15
 			 */
-			Exp = g723_shl((Word16) (i - 1), (Word16) 7);
+			Exp = g723_shl((int16_t) (i - 1), (int16_t) 7);
 			LspVect[LspCnt] = g723_add(LspVect[LspCnt], Exp);
 			LspCnt++;
 
 			/* Check if all zeros have been found */
 			/* 检测是否所有的零点都找到 */
-			if (LspCnt == (Word16) LpcOrder)
+			if (LspCnt == (int16_t) LpcOrder)
 				break;
 
 			/*
@@ -351,7 +351,7 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 /*  
 #   * 估计在现有的频率下的新的多项式  
 */
-			CurrVal = (Word32) 0;
+			CurrVal = (int32_t) 0;
 			for (j = 0; j <= LpcOrder / 2; j++)
 				CurrVal =
 				    g723_L_mac(CurrVal,
@@ -375,7 +375,7 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 #   *检测是否所有的10个零点都找到。如果没有找到，则忽略找到的结果，  
 #   *并使用先前的LSP系数的来代替   
 */
-	if (LspCnt != (Word16) LpcOrder) {
+	if (LspCnt != (int16_t) LpcOrder) {
 		for (j = 0; j < LpcOrder; j++)
 			LspVect[j] = PrevLsp[j];
 	}
@@ -400,14 +400,14 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 **
 ** Arguments:       
 **
-**  Word16 CurrLsp[]    Unquantized LSP frequencies for the current frame (10 words)
-**  Word16 PrevLsp[]    LSP frequencies from the previous frame (10 words)
+**  int16_t CurrLsp[]    Unquantized LSP frequencies for the current frame (10 words)
+**  int16_t PrevLsp[]    LSP frequencies from the previous frame (10 words)
 **
 ** Outputs:             Quantized LSP frequencies for the current frame (10 words)
 **
 ** Return value:
 **
-**  Word32      Long word packed with the 3 VQ indices.  Band 0
+**  int32_t      Long word packed with the 3 VQ indices.  Band 0
 **          corresponds to bits [23:16], band 1 corresponds
 **          to bits [15:8], and band 2 corresponds to bits [7:0].
 **          (Bit 0 is the least significant.)
@@ -419,21 +419,21 @@ void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp)
 # ** 作用:     量化LSP系数,LSP系数被分为三个子矢量，分别为3维、3维、4维。  
 # ** 每个子矢量使用不同的矢量量化表。每个量化表有256个数据，所以用8比特量化。  
 # ** 参数:         
-# **  Word16 CurrLsp[]    当前帧的未被量化的LSP矢量  
-# **  Word16 PrevLsp[]    前一帧的10个LSP矢量  
+# **  int16_t CurrLsp[]    当前帧的未被量化的LSP矢量  
+# **  int16_t PrevLsp[]    前一帧的10个LSP矢量  
 # ** 输出:          
 # ** 当前帧的10个已被量化的LSP矢量  
 # 
 */
 
-Word32 Lsp_Qnt(Word16 * CurrLsp, Word16 * PrevLsp)
+int32_t Lsp_Qnt(int16_t * CurrLsp, int16_t * PrevLsp)
 {
 	int i;
 
-	Word16 Wvect[LpcOrder];
+	int16_t Wvect[LpcOrder];
 
-	Word16 Tmp0, Tmp1;
-	Word16 Exp;
+	int16_t Tmp0, Tmp1;
+	int16_t Exp;
 
 	/*
 	 * Compute the VQ weighting vector.  The weights assign greater
@@ -456,7 +456,7 @@ Word32 Lsp_Qnt(Word16 * CurrLsp, Word16 * PrevLsp)
 	}
 
 	/* Invert the differences */
-	Tmp0 = (Word16) 0x0020;
+	Tmp0 = (int16_t) 0x0020;
 	for (i = 0; i < LpcOrder; i++) {
 
 		if (Wvect[i] > Tmp0)
@@ -466,7 +466,7 @@ Word32 Lsp_Qnt(Word16 * CurrLsp, Word16 * PrevLsp)
 	}
 
 	/* Normalize the weight vector */
-	Tmp0 = (Word16) 0;
+	Tmp0 = (int16_t) 0;
 	for (i = 0; i < LpcOrder; i++)
 		if (Wvect[i] > Tmp0)
 			Tmp0 = Wvect[i];
@@ -506,7 +506,7 @@ Word32 Lsp_Qnt(Word16 * CurrLsp, Word16 * PrevLsp)
 	 * vector.
 	 */
 	for (i = 0; i < LpcOrder; i++) {
-		Tmp0 = g723_mult_r(PrevLsp[i], (Word16) LspPrd0);
+		Tmp0 = g723_mult_r(PrevLsp[i], (int16_t) LspPrd0);
 		CurrLsp[i] = g723_sub(CurrLsp[i], Tmp0);
 	}
 
@@ -537,14 +537,14 @@ Word32 Lsp_Qnt(Word16 * CurrLsp, Word16 * PrevLsp)
 **
 ** Arguments:       
 **
-**  Word16 Tv[]     VQ target vector (10 words)
-**  Word16 Wvect[]      VQ weight vector (10 words)
+**  int16_t Tv[]     VQ target vector (10 words)
+**  int16_t Wvect[]      VQ weight vector (10 words)
 **
 ** Outputs:         None
 **
 ** Return value:    
 **
-**  Word32      Long word packed with the 3 VQ indices.  Band 0
+**  int32_t      Long word packed with the 3 VQ indices.  Band 0
 **          corresponds to bits [23:16], band 1 corresponds
 **          to bits [15:8], and band 2 corresponds to bits [7:0].
 **              
@@ -555,30 +555,30 @@ Word32 Lsp_Qnt(Word16 * CurrLsp, Word16 * PrevLsp)
 # ** 作用:       
 # **           对三个子矢量寻找最佳（使加权均方误差最小的）的矢量量化表  
 # ** 参数:         
-# **  Word16 Tv[]     VQ 目标矢量 (10 words)  
-# **  Word16 Wvect[]      VQ 权重矢量 (10 words)  
+# **  int16_t Tv[]     VQ 目标矢量 (10 words)  
+# **  int16_t Wvect[]      VQ 权重矢量 (10 words)  
 # ** 输出:         无  
 # ** 返回值:      
-# **  Word32      长整型的矢量索引.   
+# **  int32_t      长整型的矢量索引.   
 # 
 */
 
-Word32 Lsp_Svq(Word16 * Tv, Word16 * Wvect)
+int32_t Lsp_Svq(int16_t * Tv, int16_t * Wvect)
 {
 	int i, j, k;
 
-	Word32 Rez, Indx;
-	Word32 Acc0, Acc1;
+	int32_t Rez, Indx;
+	int32_t Acc0, Acc1;
 
-	Word16 Tmp[LpcOrder];
-	Word16 *LspQntPnt;
+	int16_t Tmp[LpcOrder];
+	int16_t *LspQntPnt;
 
-	memzero(Tmp, LpcOrder * sizeof(Word16));
+	memzero(Tmp, LpcOrder * sizeof(int16_t));
 
 	/*
 	 * Initialize the return value
 	 */
-	Rez = (Word32) 0;
+	Rez = (int32_t) 0;
 
 	/*
 	 * Quantize each band separately
@@ -596,8 +596,8 @@ Word32 Lsp_Svq(Word16 * Tv, Word16 * Wvect)
 */
 
 		/* Initialize the search */
-		Acc1 = (Word32) - 1;
-		Indx = (Word32) 0;
+		Acc1 = (int32_t) - 1;
+		Indx = (int32_t) 0;
 		LspQntPnt = BandQntTable[k];
 
 		for (i = 0; i < LspCbSize; i++) {
@@ -615,13 +615,13 @@ Word32 Lsp_Svq(Word16 * Tv, Word16 * Wvect)
 				    g723_mult_r(Wvect[BandInfoTable[k][0] + j],
 						LspQntPnt[j]);
 
-			Acc0 = (Word32) 0;
+			Acc0 = (int32_t) 0;
 			for (j = 0; j < BandInfoTable[k][1]; j++)
 				Acc0 =
 				    g723_L_mac(Acc0,
 					       Tv[BandInfoTable[k][0] + j],
 					       Tmp[j]);
-			Acc0 = L_g723_shl(Acc0, (Word16) 1);
+			Acc0 = L_g723_shl(Acc0, (int16_t) 1);
 			for (j = 0; j < BandInfoTable[k][1]; j++)
 				Acc0 = g723_L_msu(Acc0, LspQntPnt[j], Tmp[j]);
 
@@ -633,14 +633,14 @@ Word32 Lsp_Svq(Word16 * Tv, Word16 * Wvect)
 			 */
 			if (Acc0 > Acc1) {
 				Acc1 = Acc0;
-				Indx = (Word32) i;
+				Indx = (int32_t) i;
 			}
 		}
 
 		/*
 		 * Pack the result with the optimum index for this band
 		 */
-		Rez = L_g723_shl(Rez, (Word16) LspCbBits);
+		Rez = L_g723_shl(Rez, (int16_t) LspCbBits);
 		Rez = L_g723_add(Rez, Indx);
 	}
 
@@ -664,46 +664,46 @@ Word32 Lsp_Svq(Word16 * Tv, Word16 * Wvect)
 **
 ** Arguments:
 **
-**  Word16 *Lsp     Empty buffer
-**  Word16 PrevLsp[]    Quantized LSP frequencies from the previous frame
+**  int16_t *Lsp     Empty buffer
+**  int16_t PrevLsp[]    Quantized LSP frequencies from the previous frame
 **               (10 words)
-**  Word32 LspId        Long word packed with the 3 VQ indices.  Band 0
+**  int32_t LspId        Long word packed with the 3 VQ indices.  Band 0
 **               corresponds to bits [23:16], band 1 corresponds
 **               to bits [15:8], and band 2 corresponds to bits
 **               [7:0].
-**  Word16 Crc      Frame erasure indicator
+**  int16_t Crc      Frame erasure indicator
 **
 ** Outputs:
 **
-**  Word16 Lsp[]        Quantized LSP frequencies for current frame (10
+**  int16_t Lsp[]        Quantized LSP frequencies for current frame (10
 **               words)
 **
 ** Return value:         None
 **
 */
-void Lsp_Inq(Word16 * Lsp, Word16 * PrevLsp, Word32 LspId, Word16 Crc)
+void Lsp_Inq(int16_t * Lsp, int16_t * PrevLsp, int32_t LspId, int16_t Crc)
 {
 	int i, j;
 
-	Word16 *LspQntPnt;
+	int16_t *LspQntPnt;
 
-	Word16 Scon;
-	Word16 Lprd;
+	int16_t Scon;
+	int16_t Lprd;
 
-	Word16 Tmp;
-	Flag Test;
+	int16_t Tmp;
+	int Test;
 
 	/*
 	 * Check for frame erasure.  If a frame erasure has occurred, the
 	 * resulting VQ table entries are zero.  In addition, a different
 	 * fixed predictor and minimum frequency separation are used.
 	 */
-	if (Crc == (Word16) 0) {
-		Scon = (Word16) 0x0100;
+	if (Crc == (int16_t) 0) {
+		Scon = (int16_t) 0x0100;
 		Lprd = LspPrd0;
 	} else {
-		LspId = (Word32) 0;
-		Scon = (Word16) 0x0200;
+		LspId = (int32_t) 0;
+		Scon = (int16_t) 0x0200;
 		Lprd = LspPrd1;
 	}
 
@@ -716,7 +716,7 @@ void Lsp_Inq(Word16 * Lsp, Word16 * PrevLsp, Word32 LspId, Word16 Crc)
 		/*
 		 * Get the VQ table entry corresponding to the transmitted index
 		 */
-		Tmp = (Word16) (LspId & (Word32) 0x000000ff);
+		Tmp = (int16_t) (LspId & (int32_t) 0x000000ff);
 		LspId >>= 8;
 
 		LspQntPnt = BandQntTable[i];
@@ -763,20 +763,20 @@ void Lsp_Inq(Word16 * Lsp, Word16 * PrevLsp, Word32 LspId, Word16 Crc)
 	for (i = 0; i < LpcOrder; i++) {
 
 		/* Check the first frequency */
-		if (Lsp[0] < (Word16) 0x180)
-			Lsp[0] = (Word16) 0x180;
+		if (Lsp[0] < (int16_t) 0x180)
+			Lsp[0] = (int16_t) 0x180;
 
 		/* Check the last frequency */
-		if (Lsp[LpcOrder - 1] > (Word16) 0x7e00)
-			Lsp[LpcOrder - 1] = (Word16) 0x7e00;
+		if (Lsp[LpcOrder - 1] > (int16_t) 0x7e00)
+			Lsp[LpcOrder - 1] = (int16_t) 0x7e00;
 
 		/* Perform the modification */
 		for (j = 1; j < LpcOrder; j++) {
 
 			Tmp = g723_add(Scon, Lsp[j - 1]);
 			Tmp = g723_sub(Tmp, Lsp[j]);
-			if (Tmp > (Word16) 0) {
-				Tmp = g723_shr(Tmp, (Word16) 1);
+			if (Tmp > (int16_t) 0) {
+				Tmp = g723_shr(Tmp, (int16_t) 1);
 				Lsp[j - 1] = g723_sub(Lsp[j - 1], Tmp);
 				Lsp[j] = g723_add(Lsp[j], Tmp);
 			}
@@ -790,9 +790,9 @@ void Lsp_Inq(Word16 * Lsp, Word16 * PrevLsp, Word32 LspId, Word16 Crc)
 		 */
 		for (j = 1; j < LpcOrder; j++) {
 			Tmp = g723_add(Lsp[j - 1], Scon);
-			Tmp = g723_sub(Tmp, (Word16) 4);
+			Tmp = g723_sub(Tmp, (int16_t) 4);
 			Tmp = g723_sub(Tmp, Lsp[j]);
-			if (Tmp > (Word16) 0)
+			if (Tmp > (int16_t) 0)
 				Test = True;
 		}
 
@@ -826,33 +826,33 @@ void Lsp_Inq(Word16 * Lsp, Word16 * PrevLsp, Word32 LspId, Word16 Crc)
 **
 ** Arguments:
 **
-**  Word16 *QntLpc      Empty buffer
-**  Word16 CurrLsp[]    Quantized LSP frequencies for the current frame,
+**  int16_t *QntLpc      Empty buffer
+**  int16_t CurrLsp[]    Quantized LSP frequencies for the current frame,
 **               subframe 3 (10 words)
-**  Word16 PrevLsp[]    Quantized LSP frequencies for the previous frame,
+**  int16_t PrevLsp[]    Quantized LSP frequencies for the previous frame,
 **               subframe 3 (10 words)
 **
 ** Outputs:
 **
-**  Word16 QntLpc[]     Quantized LPC coefficients for current frame, all
+**  int16_t QntLpc[]     Quantized LPC coefficients for current frame, all
 **               subframes (40 words)
 **
 ** Return value:        None
 **
 */
-void Lsp_Int(Word16 * QntLpc, Word16 * CurrLsp, Word16 * PrevLsp)
+void Lsp_Int(int16_t * QntLpc, int16_t * CurrLsp, int16_t * PrevLsp)
 {
 	int i, j;
 
-	Word16 Tmp;
-	Word16 *Dpnt;
+	int16_t Tmp;
+	int16_t *Dpnt;
 
-	Word32 Acc0;
+	int32_t Acc0;
 
 	/*
 	 * Initialize the interpolation factor
 	 */
-	Tmp = (Word16) (MIN_16 / SubFrames);
+	Tmp = (int16_t) (MIN_16 / SubFrames);
 
 	Dpnt = QntLpc;
 
@@ -881,7 +881,7 @@ void Lsp_Int(Word16 * QntLpc, Word16 * CurrLsp, Word16 * PrevLsp)
 		Dpnt += LpcOrder;
 
 		/* Update the interpolation factor */
-		Tmp = g723_add(Tmp, (Word16) (MIN_16 / SubFrames));
+		Tmp = g723_add(Tmp, (int16_t) (MIN_16 / SubFrames));
 	}
 
 }
@@ -902,24 +902,24 @@ void Lsp_Int(Word16 * QntLpc, Word16 * CurrLsp, Word16 * PrevLsp)
 **
 ** Arguments:       
 **
-**  Word16 Lsp[]        LSP frequencies (10 words)
+**  int16_t Lsp[]        LSP frequencies (10 words)
 **
 ** Outputs:
 **
-**  Word16 Lsp[]        LPC coefficients (10 words)
+**  int16_t Lsp[]        LPC coefficients (10 words)
 **
 ** Return value:        None
 ** 
 */
-void LsptoA(Word16 * Lsp)
+void LsptoA(int16_t * Lsp)
 {
 	int i, j;
 
-	Word32 Acc0, Acc1;
-	Word16 Tmp;
+	int32_t Acc0, Acc1;
+	int16_t Tmp;
 
-	Word32 P[LpcOrder / 2 + 1];
-	Word32 Q[LpcOrder / 2 + 1];
+	int32_t P[LpcOrder / 2 + 1];
+	int32_t Q[LpcOrder / 2 + 1];
 
 	/*
 	 * Compute the cosines of the LSP frequencies by table lookup and
@@ -930,7 +930,7 @@ void LsptoA(Word16 * Lsp)
 		/*
 		 * Do the table lookup using bits [15:7] of the LSP frequency
 		 */
-		j = (int)g723_shr(Lsp[i], (Word16) 7);
+		j = (int)g723_shr(Lsp[i], (int16_t) 7);
 		Acc0 = g723_L_deposit_h(CosineTable[j]);
 
 		/*
@@ -941,9 +941,9 @@ void LsptoA(Word16 * Lsp)
 		Acc0 =
 		    g723_L_mac(Acc0, Tmp,
 			       g723_add(g723_shl
-					((Word16) (Lsp[i] & 0x007f),
-					 (Word16) 8), (Word16) 0x0080));
-		Acc0 = L_g723_shl(Acc0, (Word16) 1);
+					((int16_t) (Lsp[i] & 0x007f),
+					 (int16_t) 8), (int16_t) 0x0080));
+		Acc0 = L_g723_shl(Acc0, (int16_t) 1);
 		Lsp[i] = g723_negate(round_(Acc0));
 	}
 
@@ -961,19 +961,19 @@ void LsptoA(Word16 * Lsp)
 	 * Initialize the arrays with the coefficients of the product
 	 * P_1(z)P_2(z) and Q_1(z)Q_2(z).  Scale by 1/8.
 	 */
-	P[0] = (Word32) 0x10000000L;
-	P[1] = L_g723_mult(Lsp[0], (Word16) 0x2000);
-	P[1] = g723_L_mac(P[1], Lsp[2], (Word16) 0x2000);
+	P[0] = (int32_t) 0x10000000L;
+	P[1] = L_g723_mult(Lsp[0], (int16_t) 0x2000);
+	P[1] = g723_L_mac(P[1], Lsp[2], (int16_t) 0x2000);
 	P[2] = L_g723_mult(Lsp[0], Lsp[2]);
-	P[2] = L_g723_shr(P[2], (Word16) 1);
-	P[2] = L_g723_add(P[2], (Word32) 0x20000000L);
+	P[2] = L_g723_shr(P[2], (int16_t) 1);
+	P[2] = L_g723_add(P[2], (int32_t) 0x20000000L);
 
-	Q[0] = (Word32) 0x10000000L;
-	Q[1] = L_g723_mult(Lsp[1], (Word16) 0x2000);
-	Q[1] = g723_L_mac(Q[1], Lsp[3], (Word16) 0x2000);
+	Q[0] = (int32_t) 0x10000000L;
+	Q[1] = L_g723_mult(Lsp[1], (int16_t) 0x2000);
+	Q[1] = g723_L_mac(Q[1], Lsp[3], (int16_t) 0x2000);
 	Q[2] = L_g723_mult(Lsp[1], Lsp[3]);
-	Q[2] = L_g723_shr(Q[2], (Word16) 1);
-	Q[2] = L_g723_add(Q[2], (Word32) 0x20000000L);
+	Q[2] = L_g723_shr(Q[2], (int16_t) 1);
+	Q[2] = L_g723_add(Q[2], (int32_t) 0x20000000L);
 
 	/*
 	 * Compute the intermediate polynomials P_1(z)P_2(z)...P_i(z) and
@@ -998,33 +998,35 @@ void LsptoA(Word16 * Lsp)
 		for (j = i; j >= 2; j--) {
 			Acc0 = P[j - 1];
 			Acc0 = L_mls(Acc0, Lsp[2 * i + 0]);
-			Acc0 = L_g723_add(Acc0, L_g723_shr(P[j], (Word16) 1));
+			Acc0 = L_g723_add(Acc0, L_g723_shr(P[j], (int16_t) 1));
 			Acc0 =
-			    L_g723_add(Acc0, L_g723_shr(P[j - 2], (Word16) 1));
+			    L_g723_add(Acc0,
+				       L_g723_shr(P[j - 2], (int16_t) 1));
 			P[j] = Acc0;
 
 			Acc1 = Q[j - 1];
 			Acc1 = L_mls(Acc1, Lsp[2 * i + 1]);
-			Acc1 = L_g723_add(Acc1, L_g723_shr(Q[j], (Word16) 1));
+			Acc1 = L_g723_add(Acc1, L_g723_shr(Q[j], (int16_t) 1));
 			Acc1 =
-			    L_g723_add(Acc1, L_g723_shr(Q[j - 2], (Word16) 1));
+			    L_g723_add(Acc1,
+				       L_g723_shr(Q[j - 2], (int16_t) 1));
 			Q[j] = Acc1;
 		}
 
 		/* Compute coefficients 1, 0 */
-		P[0] = L_g723_shr(P[0], (Word16) 1);
-		Q[0] = L_g723_shr(Q[0], (Word16) 1);
+		P[0] = L_g723_shr(P[0], (int16_t) 1);
+		Q[0] = L_g723_shr(Q[0], (int16_t) 1);
 
 		Acc0 = g723_L_deposit_h(Lsp[2 * i + 0]);
-		Acc0 = L_g723_shr(Acc0, (Word16) i);
+		Acc0 = L_g723_shr(Acc0, (int16_t) i);
 		Acc0 = L_g723_add(Acc0, P[1]);
-		Acc0 = L_g723_shr(Acc0, (Word16) 1);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 1);
 		P[1] = Acc0;
 
 		Acc1 = g723_L_deposit_h(Lsp[2 * i + 1]);
-		Acc1 = L_g723_shr(Acc1, (Word16) i);
+		Acc1 = L_g723_shr(Acc1, (int16_t) i);
 		Acc1 = L_g723_add(Acc1, Q[1]);
-		Acc1 = L_g723_shr(Acc1, (Word16) 1);
+		Acc1 = L_g723_shr(Acc1, (int16_t) 1);
 		Q[1] = Acc1;
 	}
 
@@ -1041,14 +1043,14 @@ void LsptoA(Word16 * Lsp)
 		Acc0 = L_g723_add(Acc0, P[i + 1]);
 		Acc0 = L_g723_sub(Acc0, Q[i]);
 		Acc0 = L_g723_add(Acc0, Q[i + 1]);
-		Acc0 = L_g723_shl(Acc0, (Word16) 3);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 3);
 		Lsp[i] = g723_negate(round_(Acc0));
 
 		Acc1 = P[i];
 		Acc1 = L_g723_add(Acc1, P[i + 1]);
 		Acc1 = L_g723_add(Acc1, Q[i]);
 		Acc1 = L_g723_sub(Acc1, Q[i + 1]);
-		Acc1 = L_g723_shl(Acc1, (Word16) 3);
+		Acc1 = L_g723_shl(Acc1, (int16_t) 3);
 		Lsp[LpcOrder - 1 - i] = g723_negate(round_(Acc1));
 	}
 

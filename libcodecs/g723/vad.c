@@ -24,27 +24,27 @@
 #include "g723_const.h"
 #include "lbccodec.h"
 
-extern Flag UseVx;
+extern int UseVx;
 extern CODSTATDEF CodStat;
 
 #define NbPulsBlk          11	/* Nb of pulses in 2-subframes blocks         */
 
-extern Word16 g723_sub(Word16 var1, Word16 var2);	/* Short sub,           1 */
-extern Word16 g723_abs_s(Word16 var1);	/* Short abs,           1 */
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
-extern Word32 L_g723_mult(Word16 var1, Word16 var2);	/* Long mult,           1 */
-extern Word32 g723_L_msu(Word32 L_var3, Word16 var1, Word16 var2);	/* Msu,    1 */
-extern Word16 round_(Word32 L_var1);	/* Round,               1 */
-extern Word32 g723_L_mac(Word32 L_var3, Word16 var1, Word16 var2);	/* Mac,    1 */
-extern Word32 L_mls(Word32, Word16);	/* Wght ?? */
-extern Word32 L_g723_sub(Word32 L_var1, Word32 L_var2);	/* Long sub,        2 */
-extern Word32 L_g723_shr(Word32 L_var1, Word16 var2);	/* Long shift right,    2 */
-extern Word32 L_g723_add(Word32 L_var1, Word32 L_var2);	/* Long add,        2 */
-extern Word32 L_g723_shl(Word32 L_var1, Word16 var2);	/* Long shift left,     2 */
-extern Word16 g723_norm_l(Word32 L_var1);	/* Long norm,            30 */
-extern Word16 g723_extract_h(Word32 L_var1);	/* Extract high,        1 */
-extern Word32 g723_L_deposit_h(Word16 var1);	/* 16 bit var1 -> MSB,     2 */
-extern Word16 g723_extract_l(Word32 L_var1);	/* Extract low,         1 */
+extern int16_t g723_sub(int16_t var1, int16_t var2);	/* Short sub,           1 */
+extern int16_t g723_abs_s(int16_t var1);	/* Short abs,           1 */
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
+extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
+extern int32_t g723_L_msu(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu,    1 */
+extern int16_t round_(int32_t L_var1);	/* Round,               1 */
+extern int32_t g723_L_mac(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac,    1 */
+extern int32_t L_mls(int32_t, int16_t);	/* Wght ?? */
+extern int32_t L_g723_sub(int32_t L_var1, int32_t L_var2);	/* Long sub,        2 */
+extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
+extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
+extern int32_t L_g723_shl(int32_t L_var1, int16_t var2);	/* Long shift left,     2 */
+extern int16_t g723_norm_l(int32_t L_var1);	/* Long norm,            30 */
+extern int16_t g723_extract_h(int32_t L_var1);	/* Extract high,        1 */
+extern int32_t g723_L_deposit_h(int16_t var1);	/* 16 bit var1 -> MSB,     2 */
+extern int16_t g723_extract_l(int32_t L_var1);	/* Extract low,         1 */
 
 VADSTATDEF VadStat;
 
@@ -68,17 +68,17 @@ void Init_Vad(void)
 
 }
 
-Flag Comp_Vad(Word16 * Dpnt)
+int Comp_Vad(int16_t * Dpnt)
 {
 	int i, j;
 
-	Word32 Acc0, Acc1;
-	Word16 Tm0, Tm1, Tm2;
-	Word16 Minp;
+	int32_t Acc0, Acc1;
+	int16_t Tm0, Tm1, Tm2;
+	int16_t Minp;
 
-	Flag VadState = 1;
+	int VadState = 1;
 
-	static Word16 ScfTab[11] = {
+	static int16_t ScfTab[11] = {
 		9170,
 		9170,
 		9170,
@@ -140,7 +140,7 @@ Flag Comp_Vad(Word16 * Dpnt)
 	}
 
 	/* Scale the rezidual energy */
-	Acc1 = L_mls(Acc1, (Word16) 2913);
+	Acc1 = L_mls(Acc1, (int16_t) 2913);
 
 	/* Clip noise level in any case */
 	if (VadStat.Nlev > VadStat.Penr) {
