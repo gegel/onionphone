@@ -43,8 +43,8 @@ void Levinson(Word32 r32[],	/* (i)  : r32[] double precision vector of autocorre
 	Word16 rc_hi, rc_lo;
 	Word32 a0, a1, alpha_man;
 
-	memzero(r_hi, LPCO + 1);
-	memzero(r_lo, LPCO + 1);
+	memzero(r_hi, (LPCO + 1) * sizeof(Word16));
+	memzero(r_lo, (LPCO + 1) * sizeof(Word16));
 
 	/* Normalization of autocorrelation coefficients */
 	exp = bv_norm_l(r32[0]);
