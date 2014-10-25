@@ -8,7 +8,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
@@ -18,7 +18,7 @@
 
 /* 1/6 resolution interpolation filter  (-3 dB at 3600 Hz) */
 
-static const Word16 w_inter_6[FIR_SIZE] = {
+static const int16_t w_inter_6[FIR_SIZE] = {
 	29519,
 	28316, 24906, 19838, 13896, 7945, 2755,
 	-1127, -3459, -4304, -3969, -2899, -1561,
@@ -26,15 +26,14 @@ static const Word16 w_inter_6[FIR_SIZE] = {
 	220, 0, -131, -194, -215, 0
 };
 
-Word16 w_Interpol_6(		/* (o)  : interpolated value  */
-			   Word16 * x,	/* (i)  : input vector        */
-			   Word16 frac	/* (i)  : fraction            */
+int16_t w_Interpol_6(int16_t * x,	/* (i)  : input vector        */
+			   int16_t frac	/* (i)  : fraction            */
     )
 {
-	Word16 i, k;
-	Word16 *x1, *x2;
-	const Word16 *c1, *c2;
-	Word32 s;
+	int16_t i, k;
+	int16_t *x1, *x2;
+	const int16_t *c1, *c2;
+	int32_t s;
 
 	if (frac < 0) {
 		frac = w_add(frac, UP_SAMP);

@@ -19,7 +19,7 @@
  | lag_wind[10]=  0.89481968                           |
  -----------------------------------------------------*/
 
-static const Word16 w_lag_h[10] = {
+static const int16_t w_lag_h[10] = {
 	32728,
 	32619,
 	32438,
@@ -32,7 +32,7 @@ static const Word16 w_lag_h[10] = {
 	29321
 };
 
-static const Word16 w_lag_l[10] = {
+static const int16_t w_lag_l[10] = {
 	11904,
 	17280,
 	30720,

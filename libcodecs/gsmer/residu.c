@@ -12,21 +12,21 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
 /* m = LPC order == 10 */
 #define m 10
 
-void w_Residu(Word16 a[],	/* (i)     : w_prediction coefficients                      */
-	      Word16 x[],	/* (i)     : w_speech signal                                */
-	      Word16 y[],	/* (o)     : residual signal                              */
-	      Word16 lg		/* (i)     : size of filtering                            */
+void w_Residu(int16_t a[],	/* (i)     : w_prediction coefficients                      */
+	      int16_t x[],	/* (i)     : w_speech signal                                */
+	      int16_t y[],	/* (o)     : residual signal                              */
+	      int16_t lg		/* (i)     : size of filtering                            */
     )
 {
-	Word16 i, j;
-	Word32 s;
+	int16_t i, j;
+	int32_t s;
 
 	for (i = 0; i < lg; i++) {
 		s = w_L_w_mult(x[i], a[0]);

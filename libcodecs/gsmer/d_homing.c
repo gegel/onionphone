@@ -20,7 +20,7 @@
  *
  **************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "cnst.h"
 #include "dtx.h"
 #include "codec.h"
@@ -112,9 +112,9 @@
  *
  **************************************************************************/
 
-Word16 w_decoder_homing_frame_w_test(Word16 w_parm[], Word16 nbr_of_params)
+int16_t w_decoder_homing_frame_w_test(int16_t w_parm[], int16_t nbr_of_params)
 {
-	static const Word16 dhf_mask[PRM_NO] = {
+	static const int16_t dhf_mask[PRM_NO] = {
 		0x0004,		/* LPC 1 */
 		0x002f,		/* LPC 2 */
 		0x00b4,		/* LPC 3 */
@@ -178,7 +178,7 @@ Word16 w_decoder_homing_frame_w_test(Word16 w_parm[], Word16 nbr_of_params)
 		0x0000 /* FCB-GAIN 4 */
 	};
 
-	Word16 i, j = 0;
+	int16_t i, j = 0;
 
 	for (i = 0; i < nbr_of_params; i++) {
 		j = w_parm[i] ^ dhf_mask[i];
@@ -214,45 +214,45 @@ void w_decoder_reset(void)
 
 	/* variable defined in decoder.c */
 	/* ----------------------------- */
-	extern Word16 synth_buf[L_FRAME + M];
+	extern int16_t synth_buf[L_FRAME + M];
 
 	/* variable defined in w_agc.c */
 	/* -------------------------- */
-	extern Word16 w_past_gain;
+	extern int16_t w_past_gain;
 
 	/* variables defined in d_gains.c */
 	/* ------------------------------ */
 	/* Error concealment */
-	extern Word16 w_pbuf[5], w_w_past_gain_pit, w_prev_gp, w_gbuf[5],
+	extern int16_t w_pbuf[5], w_w_past_gain_pit, w_prev_gp, w_gbuf[5],
 	    w_w_past_gain_code, w_prev_gc;
 
 	/* CNI */
-	extern Word16 w_gcode0_CN, w_gain_code_old_CN, w_gain_code_new_CN;
-	extern Word16 w_gain_code_muting_CN;
+	extern int16_t w_gcode0_CN, w_gain_code_old_CN, w_gain_code_new_CN;
+	extern int16_t w_gain_code_muting_CN;
 
 	/* Memories of gain dequantization: */
-	extern Word16 v_past_qua_en[4], v_pred[4];
+	extern int16_t v_past_qua_en[4], v_pred[4];
 
 	/* variables defined in d_plsf_5.c */
 	/* ------------------------------ */
 	/* Past quantized w_prediction w_error */
-	extern Word16 v_past_r2_q[M];
+	extern int16_t v_past_r2_q[M];
 
 	/* Past dequantized lsfs */
-	extern Word16 w_past_lsf_q[M];
+	extern int16_t w_past_lsf_q[M];
 
 	/* CNI */
-	extern Word16 w_lsf_p_CN[M], w_lsf_new_CN[M], w_lsf_old_CN[M];
+	extern int16_t w_lsf_p_CN[M], w_lsf_new_CN[M], w_lsf_old_CN[M];
 
 	/* variables defined in dec_lag6.c */
 	/* ------------------------------ */
-	extern Word16 w_old_T0;
+	extern int16_t w_old_T0;
 
 	/* variable defined in preemph.c */
 	/* ------------------------------ */
-	extern Word16 w_mem_pre;
+	extern int16_t w_mem_pre;
 
-	Word16 i;
+	int16_t i;
 
 	/* reset all the decoder w_state variables */
 	/* ------------------------------------- */

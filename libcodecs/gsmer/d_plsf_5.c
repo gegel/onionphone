@@ -15,7 +15,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 #include "sig_proc.h"
@@ -40,39 +40,39 @@
 
 /* Past quantized w_prediction w_error */
 
-Word16 v_past_r2_q[M];
+int16_t v_past_r2_q[M];
 
 /* Past dequantized lsfs */
 
-Word16 w_past_lsf_q[M];
+int16_t w_past_lsf_q[M];
 
 /* Reference LSF parameter vector (comfort noise) */
 
-Word16 w_lsf_p_CN[M];
+int16_t w_lsf_p_CN[M];
 
 /*  LSF memories for comfort noise interpolation */
 
-Word16 w_lsf_old_CN[M], w_lsf_new_CN[M];
+int16_t w_lsf_old_CN[M], w_lsf_new_CN[M];
 
  /* LSF parameter buffer */
 
-extern Word16 w_lsf_old_rx[DTX_HANGOVER][M];
+extern int16_t w_lsf_old_rx[DTX_HANGOVER][M];
 
-void w_D_plsf_5(Word16 * indice,	/* input : quantization indices of 5 w_submatrices */
-		Word16 * lsp1_q,	/* output: quantized 1st LSP vector              */
-		Word16 * lsp2_q,	/* output: quantized 2nd LSP vector              */
-		Word16 bfi,	/* input : bad frame indicator (set to 1 if a bad
+void w_D_plsf_5(int16_t * indice,	/* input : quantization indices of 5 w_submatrices */
+		int16_t * lsp1_q,	/* output: quantized 1st LSP vector              */
+		int16_t * lsp2_q,	/* output: quantized 2nd LSP vector              */
+		int16_t bfi,	/* input : bad frame indicator (set to 1 if a bad
 				   frame is received)                    */
-		Word16 w_rxdtx_ctrl,	/* input : RX DTX control word                   */
-		Word16 w_w_rx_dtx_w_state	/* input : w_state of the comfort noise insertion
+		int16_t w_rxdtx_ctrl,	/* input : RX DTX control word                   */
+		int16_t w_w_rx_dtx_w_state	/* input : w_state of the comfort noise insertion
 						   period                                */
     )
 {
-	Word16 i;
-	const Word16 *p_dico;
-	Word16 temp, sign;
-	Word16 lsf1_r[M], lsf2_r[M];
-	Word16 lsf1_q[M], lsf2_q[M];
+	int16_t i;
+	const int16_t *p_dico;
+	int16_t temp, sign;
+	int16_t lsf1_r[M], lsf2_r[M];
+	int16_t lsf1_q[M], lsf2_q[M];
 
 	/* Update comfort noise LSF quantizer memory */
 

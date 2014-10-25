@@ -2,7 +2,7 @@
 
 /* Hamming_cos window for LPC analysis.           */
 
-static const Word16 w_window_232_8[L_WINDOW] = {
+static const int16_t w_window_232_8[L_WINDOW] = {
 	2621, 2623, 2627, 2634, 2644, 2656, 2671, 2689, 2710, 2734,
 	2760, 2789, 2821, 2855, 2893, 2933, 2975, 3021, 3069, 3120,
 	3173, 3229, 3288, 3350, 3414, 3481, 3550, 3622, 3697, 3774,
@@ -31,7 +31,7 @@ static const Word16 w_window_232_8[L_WINDOW] = {
 
 /* Hamming-cosine window for LPC analysis.           */
 
-static const Word16 w_window_160_80[L_WINDOW] = {
+static const int16_t w_window_160_80[L_WINDOW] = {
 	2621, 2624, 2633, 2648, 2668, 2695, 2727, 2765, 2809, 2859,
 	2915, 2976, 3043, 3116, 3194, 3279, 3368, 3464, 3565, 3671,
 	3783, 3900, 4023, 4151, 4285, 4423, 4567, 4716, 4870, 5029,

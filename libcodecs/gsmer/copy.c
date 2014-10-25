@@ -9,16 +9,16 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
-void w_Copy(Word16 x[],		/* (i)   : input vector   */
-	    Word16 y[],		/* (o)   : output vector  */
-	    Word16 L		/* (i)   : vector length  */
+void w_Copy(int16_t x[],		/* (i)   : input vector   */
+	    int16_t y[],		/* (o)   : output vector  */
+	    int16_t L		/* (i)   : vector length  */
     )
 {
-	Word16 i;
+	int16_t i;
 
 	for (i = 0; i < L; i++) {
 		y[i] = x[i];

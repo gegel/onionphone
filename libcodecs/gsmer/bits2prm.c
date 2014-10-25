@@ -32,28 +32,27 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
 /* Local function */
 
-Word16 w_Bin2int(		/* Reconstructed parameter                      */
-			Word16 no_of_bits,	/* input : number of bits associated with value */
-			Word16 * bitstream	/* output: w_address where bits are written       */
+int16_t w_Bin2int(int16_t no_of_bits,	/* input : number of bits associated with value */
+			int16_t * bitstream	/* output: w_address where bits are written       */
     );
 
 #define BIT_0     0
 #define BIT_1     1
 #define PRM_NO    57
 
-void w_Bits2w_prm_12k2(Word16 bits[],	/* input : w_serial bits (244 + bfi)                */
-		       Word16 w_prm[]	/* output: analysis parameters  (57+1 parameters) */
+void w_Bits2w_prm_12k2(int16_t bits[],	/* input : w_serial bits (244 + bfi)                */
+		       int16_t w_prm[]	/* output: analysis parameters  (57+1 parameters) */
     )
 {
-	Word16 i;
+	int16_t i;
 
-	static const Word16 bitno[PRM_NO] = {
+	static const int16_t bitno[PRM_NO] = {
 		7, 8, 9, 8, 6,	/* LSP VQ          */
 		9, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 5,	/* first w_subframe  */
 		6, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 5,	/* second w_subframe */
@@ -79,12 +78,11 @@ void w_Bits2w_prm_12k2(Word16 bits[],	/* input : w_serial bits (244 + bfi)      
  *
  *************************************************************************/
 
-Word16 w_Bin2int(		/* Reconstructed parameter                      */
-			Word16 no_of_bits,	/* input : number of bits associated with value */
-			Word16 * bitstream	/* output: w_address where bits are written       */
+int16_t w_Bin2int(int16_t no_of_bits,	/* input : number of bits associated with value */
+			int16_t * bitstream	/* output: w_address where bits are written       */
     )
 {
-	Word16 value, i, bit;
+	int16_t value, i, bit;
 
 	value = 0;
 	for (i = 0; i < no_of_bits; i++) {

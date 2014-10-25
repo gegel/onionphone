@@ -35,7 +35,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
@@ -46,23 +46,23 @@
 
 /* Last A(z) for case of unsw_table filter */
 
-Word16 w_old_A[M + 1];
+int16_t w_old_A[M + 1];
 
-void w_er_Levinson(Word16 Rh[],	/* (i)     : Rh[m+1] Vector of autocorrelations (msb) */
-		   Word16 Rl[],	/* (i)     : Rl[m+1] Vector of autocorrelations (lsb) */
-		   Word16 A[],	/* (o)     : A[m]    LPC coefficients  (m = 10)       */
-		   Word16 rc[]
+void w_er_Levinson(int16_t Rh[],	/* (i)     : Rh[m+1] Vector of autocorrelations (msb) */
+		   int16_t Rl[],	/* (i)     : Rl[m+1] Vector of autocorrelations (lsb) */
+		   int16_t A[],	/* (o)     : A[m]    LPC coefficients  (m = 10)       */
+		   int16_t rc[]
 		   /* (o)     : rc[4]   First 4 reflection coefficients  */
     )
 {
-	Word16 i, j;
-	Word16 hi, lo;
-	Word16 Kh, Kl;		/* reflexion coefficient; hi and lo      */
-	Word16 alp_h, alp_l, alp_exp;	/* Prediction gain; hi lo and exponent   */
-	Word16 Ah[M + 1], Al[M + 1];	/* LPC coef. in double prec.             */
-	Word16 Anh[M + 1], Anl[M + 1];	/* LPC coef.for next iteration in double
+	int16_t i, j;
+	int16_t hi, lo;
+	int16_t Kh, Kl;		/* reflexion coefficient; hi and lo      */
+	int16_t alp_h, alp_l, alp_exp;	/* Prediction gain; hi lo and exponent   */
+	int16_t Ah[M + 1], Al[M + 1];	/* LPC coef. in double prec.             */
+	int16_t Anh[M + 1], Anl[M + 1];	/* LPC coef.for next iteration in double
 					   prec. */
-	Word32 t0, t1, t2;	/* temporary variable                    */
+	int32_t t0, t1, t2;	/* temporary variable                    */
 
 	/* K = A[1] = -R[1] / R[0] */
 
@@ -83,7 +83,7 @@ void w_er_Levinson(Word16 Rh[],	/* (i)     : Rh[m+1] Vector of autocorrelations 
 
 	t0 = w_Mpy_32(Kh, Kl, Kh, Kl);	/* K*K             */
 	t0 = w_L_abs(t0);	/* Some case <0 !! */
-	t0 = w_L_w_sub((Word32) 0x7fffffffL, t0);	/* 1 - K*K        */
+	t0 = w_L_w_sub((int32_t) 0x7fffffffL, t0);	/* 1 - K*K        */
 	w_L_Extract(t0, &hi, &lo);	/* DPF format      */
 	t0 = w_Mpy_32(Rh[0], Rl[0], hi, lo);	/* Alpha in        */
 
@@ -156,7 +156,7 @@ void w_er_Levinson(Word16 Rh[],	/* (i)     : Rh[m+1] Vector of autocorrelations 
 
 		t0 = w_Mpy_32(Kh, Kl, Kh, Kl);	/* K*K             */
 		t0 = w_L_abs(t0);	/* Some case <0 !! */
-		t0 = w_L_w_sub((Word32) 0x7fffffffL, t0);	/* 1 - K*K        */
+		t0 = w_L_w_sub((int32_t) 0x7fffffffL, t0);	/* 1 - K*K        */
 		w_L_Extract(t0, &hi, &lo);	/* DPF format      */
 		t0 = w_Mpy_32(alp_h, alp_l, hi, lo);
 

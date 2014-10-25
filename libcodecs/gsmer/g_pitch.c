@@ -17,23 +17,22 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
 #include "sig_proc.h"
 
-Word16 w_G_pitch(		/* (o)   : Gain of pitch lag w_saturated to 1.2      */
-			Word16 xn[],	/* (i)   : Pitch target.                           */
-			Word16 y1[],	/* (i)   : Filtered adaptive codebook.             */
-			Word16 w_L_w_subfr	/*       : Length of w_subframe.                     */
+int16_t w_G_pitch(int16_t xn[],	/* (i)   : Pitch target.                           */
+			int16_t y1[],	/* (i)   : Filtered adaptive codebook.             */
+			int16_t w_L_w_subfr	/*       : Length of w_subframe.                     */
     )
 {
-	Word16 i;
-	Word16 xy, yy, exp_xy, exp_yy, gain;
-	Word32 s;
+	int16_t i;
+	int16_t xy, yy, exp_xy, exp_yy, gain;
+	int32_t s;
 
-	Word16 scaled_y1[80];	/* Usually dynamic allocation of (w_L_w_subfr) */
+	int16_t scaled_y1[80];	/* Usually dynamic allocation of (w_L_w_subfr) */
 
 	/* divide by 2 "y1[]" to avoid overflow */
 
@@ -93,7 +92,7 @@ Word16 w_G_pitch(		/* (o)   : Gain of pitch lag w_saturated to 1.2      */
 	i = w_sub(xy, 4);
 
 	if (i < 0)
-		return ((Word16) 0);
+		return ((int16_t) 0);
 
 	/* compute gain = xy/yy */
 

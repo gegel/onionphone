@@ -30,15 +30,15 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
 /* Local function */
 
-void w_Int2bin(Word16 value,	/* input : value to be converted to binary      */
-	       Word16 no_of_bits,	/* input : number of bits associated with value */
-	       Word16 * bitstream	/* output: w_address where bits are written       */
+void w_Int2bin(int16_t value,	/* input : value to be converted to binary      */
+	       int16_t no_of_bits,	/* input : number of bits associated with value */
+	       int16_t * bitstream	/* output: w_address where bits are written       */
     );
 
 #define BIT_0     0
@@ -46,13 +46,13 @@ void w_Int2bin(Word16 value,	/* input : value to be converted to binary      */
 #define MASK      0x0001
 #define PRM_NO    57
 
-void w_Prm2bits_12k2(Word16 w_prm[],	/* input : analysis parameters  (57 parameters)   */
-		     Word16 bits[]	/* output: 244 w_serial bits                        */
+void w_Prm2bits_12k2(int16_t w_prm[],	/* input : analysis parameters  (57 parameters)   */
+		     int16_t bits[]	/* output: 244 w_serial bits                        */
     )
 {
-	Word16 i;
+	int16_t i;
 
-	static const Word16 bitno[PRM_NO] = {
+	static const int16_t bitno[PRM_NO] = {
 		7, 8, 9, 8, 6,	/* LSP VQ          */
 		9, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 5,	/* first w_subframe  */
 		6, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 5,	/* second w_subframe */
@@ -76,12 +76,12 @@ void w_Prm2bits_12k2(Word16 w_prm[],	/* input : analysis parameters  (57 paramet
  *
  *************************************************************************/
 
-void w_Int2bin(Word16 value,	/* input : value to be converted to binary      */
-	       Word16 no_of_bits,	/* input : number of bits associated with value */
-	       Word16 * bitstream	/* output: w_address where bits are written       */
+void w_Int2bin(int16_t value,	/* input : value to be converted to binary      */
+	       int16_t no_of_bits,	/* input : number of bits associated with value */
+	       int16_t * bitstream	/* output: w_address where bits are written       */
     )
 {
-	Word16 *pt_bitstream, i, bit;
+	int16_t *pt_bitstream, i, bit;
 
 	pt_bitstream = &bitstream[no_of_bits];
 

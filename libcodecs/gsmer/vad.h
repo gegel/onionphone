@@ -12,55 +12,57 @@
 
 /* Struct for storing pseudo floating point exponent and mantissa */
 struct _fp {
-	Word16 e;		/* exponent */
-	Word16 m;		/* mantissa */
+	int16_t e;		/* exponent */
+	int16_t m;		/* mantissa */
 };
 
 typedef struct _fp Pfloat;
 
 void w_er_vad_reset(void);
 
-Word16 w_vad_computation(Word16 r_h[],
-			 Word16 r_l[],
-			 Word16 scal_acf, Word16 rc[], Word16 w_ptch);
+int16_t w_vad_computation(int16_t r_h[],
+			 int16_t r_l[],
+			 int16_t scal_acf, int16_t rc[], int16_t w_ptch);
 
-void w_er_energy_computation(Word16 r_h[],
-			     Word16 scal_acf,
-			     Word16 w_rvad[],
-			     Word16 scal_w_rvad, Pfloat * acf0, Pfloat * pvad);
+void w_er_energy_computation(int16_t r_h[],
+			     int16_t scal_acf,
+			     int16_t w_rvad[],
+			     int16_t scal_w_rvad, Pfloat * acf0,
+			     Pfloat * pvad);
 
-void w_acf_averaging(Word16 r_h[],
-		     Word16 r_l[],
-		     Word16 scal_acf, Word32 L_av0[], Word32 L_av1[]
+void w_acf_averaging(int16_t r_h[],
+		     int16_t r_l[],
+		     int16_t scal_acf, int32_t L_av0[], int32_t L_av1[]
     );
 
-void w_er_w_predictor_values(Word32 L_av1[], Word16 rav1[], Word16 * scal_rav1);
+void w_er_w_predictor_values(int32_t L_av1[], int16_t rav1[],
+			     int16_t * scal_rav1);
 
-void w_er_schur_recursion(Word32 L_av1[], Word16 vpar[]
+void w_er_schur_recursion(int32_t L_av1[], int16_t vpar[]
     );
 
-void w_er_step_up(Word16 np, Word16 vpar[], Word16 aav1[]
+void w_er_step_up(int16_t np, int16_t vpar[], int16_t aav1[]
     );
 
-void w_er_compute_rav1(Word16 aav1[], Word16 rav1[], Word16 * scal_rav1);
+void w_er_compute_rav1(int16_t aav1[], int16_t rav1[], int16_t * scal_rav1);
 
-Word16 w_er_spectral_comparison(Word16 rav1[], Word16 scal_rav1, Word32 L_av0[]
+int16_t w_er_spectral_comparison(int16_t rav1[], int16_t scal_rav1, int32_t L_av0[]
     );
 
-void w_er_threshold_adaptation(Word16 stat,
-			       Word16 w_ptch,
-			       Word16 tone,
-			       Word16 rav1[],
-			       Word16 scal_rav1,
+void w_er_threshold_adaptation(int16_t stat,
+			       int16_t w_ptch,
+			       int16_t tone,
+			       int16_t rav1[],
+			       int16_t scal_rav1,
 			       Pfloat pvad,
 			       Pfloat acf0,
-			       Word16 w_rvad[],
-			       Word16 * scal_w_rvad, Pfloat * w_thvad);
+			       int16_t w_rvad[],
+			       int16_t * scal_w_rvad, Pfloat * w_thvad);
 
-void w_er_tone_detection(Word16 rc[], Word16 * tone);
+void w_er_tone_detection(int16_t rc[], int16_t * tone);
 
-Word16 w_er_vad_decision(Pfloat pvad, Pfloat w_thvad);
+int16_t w_er_vad_decision(Pfloat pvad, Pfloat w_thvad);
 
-Word16 w_er_vad_hangover(Word16 vvad);
+int16_t w_er_vad_hangover(int16_t vvad);
 
-void w_er_periodicity_update(Word16 lags[], Word16 * w_ptch);
+void w_er_periodicity_update(int16_t lags[], int16_t * w_ptch);

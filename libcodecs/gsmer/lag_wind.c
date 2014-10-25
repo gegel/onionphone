@@ -14,20 +14,20 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
 
 #include "lag_wind.tab"
 
-void w_Lag_window(Word16 m,	/* (i)     : LPC order                        */
-		  Word16 r_h[],	/* (i/o)   : w_Autocorrelations  (msb)          */
-		  Word16 r_l[]	/* (i/o)   : w_Autocorrelations  (lsb)          */
+void w_Lag_window(int16_t m,	/* (i)     : LPC order                        */
+		  int16_t r_h[],	/* (i/o)   : w_Autocorrelations  (msb)          */
+		  int16_t r_l[]	/* (i/o)   : w_Autocorrelations  (lsb)          */
     )
 {
-	Word16 i;
-	Word32 x;
+	int16_t i;
+	int32_t x;
 
 	for (i = 1; i <= m; i++) {
 		x = w_Mpy_32(r_h[i], r_l[i], w_lag_h[i - 1], w_lag_l[i - 1]);

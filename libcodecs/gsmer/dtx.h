@@ -51,54 +51,56 @@
 void w_reset_w_tx_dtx(void);	/* Reset tx dtx variables */
 void w_reset_w_rx_dtx(void);	/* Reset rx dtx variables */
 
-void w_tx_dtx(Word16 VAD_flag, Word16 * w_txdtx_ctrl);
+void w_tx_dtx(int16_t VAD_flag, int16_t * w_txdtx_ctrl);
 
-void w_rx_dtx(Word16 * w_rxdtx_ctrl, Word16 TAF, Word16 bfi, Word16 SID_flag);
+void w_rx_dtx(int16_t * w_rxdtx_ctrl, int16_t TAF, int16_t bfi,
+	      int16_t SID_flag);
 
-void w_CN_encoding(Word16 params[], Word16 w_txdtx_ctrl);
+void w_CN_encoding(int16_t params[], int16_t w_txdtx_ctrl);
 
-void w_sid_codeword_encoding(Word16 ser2[]
+void w_sid_codeword_encoding(int16_t ser2[]
     );
 
-Word16 w_sid_frame_detection(Word16 ser2[]
+int16_t w_sid_frame_detection(int16_t ser2[]
     );
 
-void w_update_lsf_history(Word16 lsf1[M],
-			  Word16 lsf2[M], Word16 lsf_old[DTX_HANGOVER][M]
+void w_update_lsf_history(int16_t lsf1[M],
+			  int16_t lsf2[M], int16_t lsf_old[DTX_HANGOVER][M]
     );
 
-void update_w_lsf_p_CN(Word16 lsf_old[DTX_HANGOVER][M], Word16 w_lsf_p_CN[M]
+void update_w_lsf_p_CN(int16_t lsf_old[DTX_HANGOVER][M], int16_t w_lsf_p_CN[M]
     );
 
-void w_aver_lsf_history(Word16 lsf_old[DTX_HANGOVER][M],
-			Word16 lsf1[M], Word16 lsf2[M], Word16 lsf_aver[M]
+void w_aver_lsf_history(int16_t lsf_old[DTX_HANGOVER][M],
+			int16_t lsf1[M], int16_t lsf2[M], int16_t lsf_aver[M]
     );
 
-void w_update_gain_code_history_tx(Word16 new_gain_code,
-				   Word16 w_gain_code_old_tx[4 * DTX_HANGOVER]
+void w_update_gain_code_history_tx(int16_t new_gain_code,
+				   int16_t w_gain_code_old_tx[4 * DTX_HANGOVER]
     );
 
-void w_update_gain_code_history_rx(Word16 new_gain_code,
-				   Word16 w_gain_code_old_rx[4 * DTX_HANGOVER]
+void w_update_gain_code_history_rx(int16_t new_gain_code,
+				   int16_t w_gain_code_old_rx[4 * DTX_HANGOVER]
     );
 
-Word16 compute_w_CN_w_excitation_gain(Word16 w_res2[L_SUBFR]
+int16_t compute_w_CN_w_excitation_gain(int16_t w_res2[L_SUBFR]
     );
 
-Word16 update_w_gcode0_CN(Word16 w_gain_code_old_tx[4 * DTX_HANGOVER]
+int16_t update_w_gcode0_CN(int16_t w_gain_code_old_tx[4 * DTX_HANGOVER]
     );
 
-Word16 w_aver_gain_code_history(Word16 w_CN_w_excitation_gain,
-				Word16 gain_code_old[4 * DTX_HANGOVER]
+int16_t w_aver_gain_code_history(int16_t w_CN_w_excitation_gain,
+				int16_t gain_code_old[4 * DTX_HANGOVER]
     );
 
-void w_build_CN_code(Word16 cod[], Word32 * seed);
+void w_build_CN_code(int16_t cod[], int32_t * seed);
 
-Word16 w_pseudonoise(Word32 * shift_reg, Word16 no_bits);
+int16_t w_pseudonoise(int32_t * shift_reg, int16_t no_bits);
 
-Word16 w_interpolate_CN_param(Word16 old_param,
-			      Word16 new_param, Word16 w_w_rx_dtx_w_state);
+int16_t w_interpolate_CN_param(int16_t old_param,
+			      int16_t new_param, int16_t w_w_rx_dtx_w_state);
 
-void w_interpolate_CN_lsf(Word16 w_lsf_old_CN[M],
-			  Word16 w_lsf_new_CN[M],
-			  Word16 lsf_interp_CN[M], Word16 w_w_rx_dtx_w_state);
+void w_interpolate_CN_lsf(int16_t w_lsf_old_CN[M],
+			  int16_t w_lsf_new_CN[M],
+			  int16_t lsf_interp_CN[M],
+			  int16_t w_w_rx_dtx_w_state);

@@ -19,7 +19,7 @@
  *
  **************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "cnst.h"
 #include "vad.h"
 #include "dtx.h"
@@ -47,9 +47,9 @@
  *
  **************************************************************************/
 
-Word16 w_encoder_homing_frame_w_test(Word16 input_frame[])
+int16_t w_encoder_homing_frame_w_test(int16_t input_frame[])
 {
-	Word16 i, j;
+	int16_t i, j;
 
 	for (i = 0; i < L_FRAME; i++) {
 		j = input_frame[i] ^ EHF_MASK;
@@ -85,19 +85,19 @@ void w_encoder_reset(void)
 
 	/* Variables defined in levinson.c */
 	/* ------------------------------- */
-	extern Word16 w_old_A[M + 1];	/* Last A(z) for case of unsw_table filter */
+	extern int16_t w_old_A[M + 1];	/* Last A(z) for case of unsw_table filter */
 
 	/* Variables defined in q_gains.c */
 	/* ------------------------------- */
 	/* Memories of gain quantization: */
-	extern Word16 w_past_qua_en[4], w_pred[4];
+	extern int16_t w_past_qua_en[4], w_pred[4];
 
 	/* Variables defined in w_q_plsf_5.c */
 	/* ------------------------------- */
 	/* Past quantized w_prediction w_error */
-	extern Word16 w_past_r2_q[M];
+	extern int16_t w_past_r2_q[M];
 
-	Word16 i;
+	int16_t i;
 
 	/* reset all the encoder w_state variables */
 	/* ------------------------------------- */

@@ -8,15 +8,15 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
-void w_Set_w_zero(Word16 x[],	/* (o)    : vector to clear     */
-		  Word16 L	/* (i)    : length of vector    */
+void w_Set_w_zero(int16_t x[],	/* (o)    : vector to clear     */
+		  int16_t L	/* (i)    : length of vector    */
     )
 {
-	Word16 i;
+	int16_t i;
 
 	for (i = 0; i < L; i++) {
 		x[i] = 0;

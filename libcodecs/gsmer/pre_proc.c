@@ -12,7 +12,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
@@ -30,13 +30,13 @@
 
 /* filter coefficients (fc = 80 Hz, coeff. b[] is divided by 2) */
 
-static const Word16 b[3] = { 1899, -3798, 1899 };
-static const Word16 a[3] = { 4096, 7807, -3733 };
+static const int16_t b[3] = { 1899, -3798, 1899 };
+static const int16_t a[3] = { 4096, 7807, -3733 };
 
 /* Static values to be preserved between calls */
 /* y[] values are kept in double precision     */
 
-static Word16 w_y2_hi, w_y2_lo, w_y1_hi, w_y1_lo, x0, x1;
+static int16_t w_y2_hi, w_y2_lo, w_y1_hi, w_y1_lo, x0, x1;
 
 /* Initialization of static values */
 
@@ -50,11 +50,11 @@ void w_Init_w_Pre_Process(void)
 	x1 = 0;
 }
 
-void w_Pre_Process(Word16 signal[],	/* input/output signal */
-		   Word16 lg)
+void w_Pre_Process(int16_t signal[],	/* input/output signal */
+		   int16_t lg)
 {				/* lenght of signal    */
-	Word16 i, x2;
-	Word32 L_tmp;
+	int16_t i, x2;
+	int32_t L_tmp;
 
 	for (i = 0; i < lg; i++) {
 		x2 = x1;

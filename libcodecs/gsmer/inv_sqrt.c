@@ -22,21 +22,20 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
 #include "inv_sqrt.tab"		/* Table for inv_sqrt() */
 
-Word32 w_Inv_sqrt(		/* (o) : output value   */
-			 Word32 L_x	/* (i) : input value    */
+int32_t w_Inv_sqrt(int32_t L_x	/* (i) : input value    */
     )
 {
-	Word16 exp, i, a, tmp;
-	Word32 L_y;
+	int16_t exp, i, a, tmp;
+	int32_t L_y;
 
-	if (L_x <= (Word32) 0)
-		return ((Word32) 0x3fffffffL);
+	if (L_x <= (int32_t) 0)
+		return ((int32_t) 0x3fffffffL);
 
 	exp = w_norm_l(L_x);
 	L_x = w_L_w_shl(L_x, exp);	/* L_x is normalize */
@@ -53,7 +52,7 @@ Word32 w_Inv_sqrt(		/* (o) : output value   */
 	i = w_extract_h(L_x);	/* Extract b25-b31 */
 	L_x = w_L_w_shr(L_x, 1);
 	a = w_extract_l(L_x);	/* Extract b10-b24 */
-	a = a & (Word16) 0x7fff;
+	a = a & (int16_t) 0x7fff;
 
 	i = w_sub(i, 16);
 

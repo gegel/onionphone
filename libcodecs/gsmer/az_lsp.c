@@ -24,7 +24,7 @@
  *
  ***********************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
@@ -38,19 +38,19 @@
 
 /* local function */
 
-static Word16 Chebps(Word16 x, Word16 f[], Word16 n);
+static int16_t Chebps(int16_t x, int16_t f[], int16_t n);
 
-void w_Az_lsp(Word16 a[],	/* (i)     : w_predictor coefficients                 */
-	      Word16 lsp[],	/* (o)     : line spectral pairs                    */
-	      Word16 old_lsp[]	/* (i)     : old lsp[] (in case not found 10 roots) */
+void w_Az_lsp(int16_t a[],	/* (i)     : w_predictor coefficients                 */
+	      int16_t lsp[],	/* (o)     : line spectral pairs                    */
+	      int16_t old_lsp[]	/* (i)     : old lsp[] (in case not found 10 roots) */
     )
 {
-	Word16 i, j, nf, ip;
-	Word16 xlow, ylow, xhigh, yhigh, xmid, ymid, xint;
-	Word16 x, y, sign, exp;
-	Word16 *coef;
-	Word16 f1[M / 2 + 1], f2[M / 2 + 1];
-	Word32 t0;
+	int16_t i, j, nf, ip;
+	int16_t xlow, ylow, xhigh, yhigh, xmid, ymid, xint;
+	int16_t x, y, sign, exp;
+	int16_t *coef;
+	int16_t f1[M / 2 + 1], f2[M / 2 + 1];
+	int32_t t0;
 
     /*-------------------------------------------------------------*
      *  find the sum and diff. pol. F1(z) and F2(z)                *
@@ -105,7 +105,7 @@ void w_Az_lsp(Word16 a[],	/* (i)     : w_predictor coefficients                 
 		xlow = w_grid[j];
 		ylow = Chebps(xlow, coef, NC);
 
-		if (w_L_w_mult(ylow, yhigh) <= (Word32) 0L) {
+		if (w_L_w_mult(ylow, yhigh) <= (int32_t) 0L) {
 
 			/* divide 4 times the interval */
 
@@ -114,7 +114,7 @@ void w_Az_lsp(Word16 a[],	/* (i)     : w_predictor coefficients                 
 				xmid = w_add(w_shr(xlow, 1), w_shr(xhigh, 1));
 				ymid = Chebps(xmid, coef, NC);
 
-				if (w_L_w_mult(ylow, ymid) <= (Word32) 0L) {
+				if (w_L_w_mult(ylow, ymid) <= (int32_t) 0L) {
 					yhigh = ymid;
 					xhigh = xmid;
 				} else {
@@ -138,7 +138,7 @@ void w_Az_lsp(Word16 a[],	/* (i)     : w_predictor coefficients                 
 				y = w_abs_s(y);
 				exp = w_norm_s(y);
 				y = w_shl(y, exp);
-				y = w_div_s((Word16) 16383, y);
+				y = w_div_s((int16_t) 16383, y);
 				t0 = w_L_w_mult(x, y);
 				t0 = w_L_w_shr(t0, w_sub(20, exp));
 				y = w_extract_l(t0);	/* y= (xhigh-xlow)/(yhigh-ylow) */
@@ -196,11 +196,11 @@ void w_Az_lsp(Word16 a[],	/* (i)     : w_predictor coefficients                 
  *
  ***********************************************************************/
 
-static Word16 Chebps(Word16 x, Word16 f[], Word16 n)
+static int16_t Chebps(int16_t x, int16_t f[], int16_t n)
 {
-	Word16 i, cheb;
-	Word16 b0_h, b0_l, b1_h, b1_l, b2_h, b2_l;
-	Word32 t0;
+	int16_t i, cheb;
+	int16_t b0_h, b0_l, b1_h, b1_l, b2_h, b2_l;
+	int32_t t0;
 
 	b2_h = 256;		/* b2 = 1.0 */
 	b2_l = 0;
@@ -212,7 +212,7 @@ static Word16 Chebps(Word16 x, Word16 f[], Word16 n)
 	for (i = 2; i < n; i++) {
 		t0 = w_w_Mpy_32_16(b1_h, b1_l, x);	/* t0 = 2.0*x*b1        */
 		t0 = w_L_w_shl(t0, 1);
-		t0 = w_L_mac(t0, b2_h, (Word16) 0x8000);	/* t0 = 2.0*x*b1 - b2   */
+		t0 = w_L_mac(t0, b2_h, (int16_t) 0x8000);	/* t0 = 2.0*x*b1 - b2   */
 		t0 = w_L_msu(t0, b2_l, 1);
 		t0 = w_L_mac(t0, f[i], 8192);	/* t0 = 2.0*x*b1 - b2 + f[i] */
 
@@ -225,7 +225,7 @@ static Word16 Chebps(Word16 x, Word16 f[], Word16 n)
 	}
 
 	t0 = w_w_Mpy_32_16(b1_h, b1_l, x);	/* t0 = x*b1; */
-	t0 = w_L_mac(t0, b2_h, (Word16) 0x8000);	/* t0 = x*b1 - b2   */
+	t0 = w_L_mac(t0, b2_h, (int16_t) 0x8000);	/* t0 = x*b1 - b2   */
 	t0 = w_L_msu(t0, b2_l, 1);
 	t0 = w_L_mac(t0, f[i], 4096);	/* t0 = x*b1 - b2 + f[i]/2 */
 
