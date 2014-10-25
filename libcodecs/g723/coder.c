@@ -146,7 +146,7 @@ int Coder(int16_t * DataBuff, char *Vout)
 	int i, j;
 
 #ifdef TEST_MIPS
-	unsigned int test_temp = 0;
+	unsigned int test_temp;
 #endif				//TEST_MIPS
 
 	/*
@@ -164,7 +164,7 @@ int Coder(int16_t * DataBuff, char *Vout)
 
 	int16_t *Dpnt;
 
-	int16_t Ftyp = 1;
+	int16_t Ftyp;
 
 	/*
 	   Coder Start
@@ -174,7 +174,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 	//High-pass filtering
 	//------------------------------------------------------------(1)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -189,7 +188,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 	/* Compute the Unquantized Lpc set for whole frame */
 	//------------------------------------------------------------(2)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -204,7 +202,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 	/* Convert to Lsp */
 	//------------------------------------------------------------(3)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -220,7 +217,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 /* Convert to Lsp */
 	//------------------------------------------------------------(4)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -235,7 +231,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 	/* VQ Lsp vector */
 	//------------------------------------------------------------(5)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -249,7 +244,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 
 	//------------------------------------------------------------(6)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -264,7 +258,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 	/* Compute Perceptual filter Lpc coefficients */
 	//------------------------------------------------------------(7)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -278,7 +271,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 	/* Apply the perceptual weighting filter */
 	//------------------------------------------------------------(8)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -295,7 +287,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 	 */
 	//------------------------------------------------------------(9)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -310,7 +301,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 	/* Construct the buffer */
 	//------------------------------------------------------------(10)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -327,7 +317,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 
 	//------------------------------------------------------------(11)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -343,7 +332,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 
 	//------------------------------------------------------------(12)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -367,7 +355,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 
 		//------------------------------------------------------------(13)
 #ifdef TEST_MIPS
-		test_temp = 0;
 		test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -462,7 +449,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 			/* Compute full impulse response */
 			//------------------------------------------------------------(15)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -479,7 +465,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 
 			//------------------------------------------------------------(16)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -497,7 +482,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 
 			//------------------------------------------------------------(17)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -513,7 +497,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 			/* Compute fixed code book contribution */
 			//------------------------------------------------------------(18)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -528,7 +511,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 			/* Reconstruct the excitation */
 			//------------------------------------------------------------(19)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -543,7 +525,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 
 			//------------------------------------------------------------(20)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -567,7 +548,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 			/* Update exc_err */
 			//------------------------------------------------------------(21)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -584,7 +564,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 
 			//------------------------------------------------------------(22)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -611,7 +590,6 @@ int Coder(int16_t * DataBuff, char *Vout)
 	/* Pack the Line structure */
 	//------------------------------------------------------------(23)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
