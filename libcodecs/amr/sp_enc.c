@@ -35,10 +35,10 @@
  * Definition of structures used in encoding process
  */
     typedef struct {
-	Float32 y2;
-	Float32 y1;
-	Float32 x0;
-	Float32 x1;
+	float y2;
+	float y1;
+	float x0;
+	float x1;
 
 } Pre_ProcessState;
 
@@ -94,54 +94,54 @@
 
 /* structures */
 typedef struct {
-	Float32 pre_emp_mem;
-	Word16 update_cnt;
-	Word16 hyster_cnt;
-	Word16 last_update_cnt;
-	Float32 ch_enrg_long_db[NUM_CHAN];
-	Word32 Lframe_cnt;
-	Float32 ch_enrg[NUM_CHAN];
-	Float32 ch_noise[NUM_CHAN];
-	Float32 tsnr;
-	Word16 hangover;
-	Word16 burstcount;
-	Word16 fupdate_flag;
-	Float32 negSNRvar;
-	Float32 negSNRbias;
-	Float32 R0;
-	Float32 Rmax;
-	Word16 LTP_flag;
+	float pre_emp_mem;
+	int16_t update_cnt;
+	int16_t hyster_cnt;
+	int16_t last_update_cnt;
+	float ch_enrg_long_db[NUM_CHAN];
+	int32_t Lframe_cnt;
+	float ch_enrg[NUM_CHAN];
+	float ch_noise[NUM_CHAN];
+	float tsnr;
+	int16_t hangover;
+	int16_t burstcount;
+	int16_t fupdate_flag;
+	float negSNRvar;
+	float negSNRbias;
+	float R0;
+	float Rmax;
+	int16_t LTP_flag;
 } vadState;
 #else
 typedef struct {
-	Float32 bckr_est[COMPLEN];	/* background noise estimate */
-	Float32 ave_level[COMPLEN];
+	float bckr_est[COMPLEN];	/* background noise estimate */
+	float ave_level[COMPLEN];
 
 	/* averaged input components for stationary estimation */
-	Float32 old_level[COMPLEN];	/* input levels of the previous frame */
-	Float32 sub_level[COMPLEN];
+	float old_level[COMPLEN];	/* input levels of the previous frame */
+	float sub_level[COMPLEN];
 
 	/* input levels calculated at the end of a frame (lookahead) */
-	Float32 a_data5[3][2];	/* memory for the filter bank */
-	Float32 a_data3[5];	/* memory for the filter bank */
-	Float32 best_corr_hp;	/* FIP filtered value */
+	float a_data5[3][2];	/* memory for the filter bank */
+	float a_data3[5];	/* memory for the filter bank */
+	float best_corr_hp;	/* FIP filtered value */
 
 	/* counts length of a speech burst incl HO addition */
-	Float32 corr_hp_fast;	/* filtered value */
-	Word32 vadreg;		/* flags for intermediate VAD decisions */
-	Word32 pitch;		/* flags for pitch detection */
-	Word32 oldlag_count, oldlag;	/* variables for pitch detection */
-	Word32 complex_high;	/* flags for complex detection */
-	Word32 complex_low;	/* flags for complex detection */
-	Word32 complex_warning;	/* complex background warning */
-	Word32 tone;		/* flags for tone detection */
-	Word16 burst_count;	/* counts length of a speech burst */
-	Word16 hang_count;	/* hangover counter */
-	Word16 stat_count;	/* stationary counter */
-	Word16 complex_hang_count;	/* complex hangover counter, used by VAD */
-	Word16 complex_hang_timer;	/* hangover initiator, used by CAD */
-	Word16 speech_vad_decision;	/* final decision */
-	Word16 sp_burst_count;
+	float corr_hp_fast;	/* filtered value */
+	int32_t vadreg;		/* flags for intermediate VAD decisions */
+	int32_t pitch;		/* flags for pitch detection */
+	int32_t oldlag_count, oldlag;	/* variables for pitch detection */
+	int32_t complex_high;	/* flags for complex detection */
+	int32_t complex_low;	/* flags for complex detection */
+	int32_t complex_warning;	/* complex background warning */
+	int32_t tone;		/* flags for tone detection */
+	int16_t burst_count;	/* counts length of a speech burst */
+	int16_t hang_count;	/* hangover counter */
+	int16_t stat_count;	/* stationary counter */
+	int16_t complex_hang_count;	/* complex hangover counter, used by VAD */
+	int16_t complex_hang_timer;	/* hangover initiator, used by CAD */
+	int16_t speech_vad_decision;	/* final decision */
+	int16_t sp_burst_count;
 
 } vadState;
 #endif
@@ -149,79 +149,79 @@ typedef struct {
 #define DTX_ELAPSED_FRAMES_THRESH (24 + 7 -1)
 #define DTX_HANG_CONST 7	/* yields eight frames of SP HANGOVER */
 typedef struct {
-	Float32 lsp_hist[M * DTX_HIST_SIZE];
-	Float32 log_en_hist[DTX_HIST_SIZE];
-	Word32 init_lsf_vq_index;
-	Word16 hist_ptr;
-	Word16 log_en_index;
-	Word16 lsp_index[3];
+	float lsp_hist[M * DTX_HIST_SIZE];
+	float log_en_hist[DTX_HIST_SIZE];
+	int32_t init_lsf_vq_index;
+	int16_t hist_ptr;
+	int16_t log_en_index;
+	int16_t lsp_index[3];
 
 	/* DTX handler stuff */
-	Word16 dtxHangoverCount;
-	Word16 decAnaElapsedCount;
+	int16_t dtxHangoverCount;
+	int16_t decAnaElapsedCount;
 
 } dtx_encState;
 typedef struct {
 	/* gain history */
-	Float32 gp[N_FRAME];
+	float gp[N_FRAME];
 
 	/* counters */
-	Word16 count;
+	int16_t count;
 
 } tonStabState;
 typedef struct {
-	Word32 past_qua_en[4];
+	int32_t past_qua_en[4];
 
 	/* normal MA predictor memory, (contains 20*log10(qua_err)) */
 } gc_predState;
 
 typedef struct {
-	Float32 prev_alpha;	/* previous adaptor output, */
-	Float32 prev_gc;	/* previous code gain, */
-	Float32 ltpg_mem[LTPG_MEM_SIZE];	/* LTP coding gain history, */
-	Word16 onset;		/* onset state, */
+	float prev_alpha;	/* previous adaptor output, */
+	float prev_gc;	/* previous code gain, */
+	float ltpg_mem[LTPG_MEM_SIZE];	/* LTP coding gain history, */
+	int16_t onset;		/* onset state, */
 
 	/* (ltpg_mem[0] not used for history) */
 } gain_adaptState;
 typedef struct {
 
-	Float32 sf0_target_en;
-	Float32 sf0_coeff[5];
-	Word32 sf0_gcode0_exp;
-	Word32 sf0_gcode0_fra;
-	Word16 *gain_idx_ptr;
+	float sf0_target_en;
+	float sf0_coeff[5];
+	int32_t sf0_gcode0_exp;
+	int32_t sf0_gcode0_fra;
+	int16_t *gain_idx_ptr;
 
 	gc_predState *gc_predSt;
 	gc_predState *gc_predUncSt;
 	gain_adaptState *adaptSt;
 } gainQuantState;
 typedef struct {
-	Word32 T0_prev_subframe;	/* integer pitch lag of previous sub-frame */
+	int32_t T0_prev_subframe;	/* integer pitch lag of previous sub-frame */
 
 } Pitch_frState;
 typedef struct {
 	Pitch_frState *pitchSt;
 } clLtpState;
 typedef struct {
-	Float32 ada_w;
-	Word32 old_T0_med;
-	Word16 wght_flg;
+	float ada_w;
+	int32_t old_T0_med;
+	int16_t wght_flg;
 
 } pitchOLWghtState;
 typedef struct {
-	Float32 past_rq[M];	/* Past quantized prediction error */
+	float past_rq[M];	/* Past quantized prediction error */
 
 } Q_plsfState;
 typedef struct {
 	/* Past LSPs */
-	Float32 lsp_old[M];
-	Float32 lsp_old_q[M];
+	float lsp_old[M];
+	float lsp_old_q[M];
 
 	/* Quantization state */
 	Q_plsfState *qSt;
 } lspState;
 typedef struct {
-	Float32 old_A[M + 1];	/* Last A(z) for case of unstable filter */
+	float old_A[M + 1];	/* Last A(z) for case of unstable filter */
 
 } LevinsonState;
 typedef struct {
@@ -229,29 +229,29 @@ typedef struct {
 } lpcState;
 typedef struct {
 	/* Speech vector */
-	Float32 old_speech[L_TOTAL];
-	Float32 *speech, *p_window, *p_window_12k2;
-	Float32 *new_speech;	/* Global variable */
+	float old_speech[L_TOTAL];
+	float *speech, *p_window, *p_window_12k2;
+	float *new_speech;	/* Global variable */
 
 	/* Weight speech vector */
-	Float32 old_wsp[L_FRAME + PIT_MAX];
-	Float32 *wsp;
+	float old_wsp[L_FRAME + PIT_MAX];
+	float *wsp;
 
 	/* OL LTP states */
-	Word32 old_lags[5];
-	Float32 ol_gain_flg[2];
+	int32_t old_lags[5];
+	float ol_gain_flg[2];
 
 	/* Excitation vector */
-	Float32 old_exc[L_FRAME + PIT_MAX + L_INTERPOL];
-	Float32 *exc;
+	float old_exc[L_FRAME + PIT_MAX + L_INTERPOL];
+	float *exc;
 
 	/* Zero vector */
-	Float32 ai_zero[L_SUBFR + MP1];
-	Float32 *zero;
+	float ai_zero[L_SUBFR + MP1];
+	float *zero;
 
 	/* Impulse response vector */
-	Float32 *h1;
-	Float32 hvec[L_SUBFR * 2];
+	float *h1;
+	float hvec[L_SUBFR * 2];
 
 	/* Substates */
 	lpcState *lpcSt;
@@ -262,21 +262,21 @@ typedef struct {
 	tonStabState *tonStabSt;
 	vadState *vadSt;
 
-	Word32 dtx;
+	int32_t dtx;
 
 	dtx_encState *dtxEncSt;
 
 	/* Filter's memory */
-	Float32 mem_syn[M], mem_w0[M], mem_w[M];
-	Float32 mem_err[M + L_SUBFR], *error;
-	Float32 sharp;
+	float mem_syn[M], mem_w0[M], mem_w[M];
+	float mem_err[M + L_SUBFR], *error;
+	float sharp;
 
 } cod_amrState;
 typedef struct {
 	cod_amrState *cod_amr_state;
 	Pre_ProcessState *pre_state;
 
-	Word32 dtx;
+	int32_t dtx;
 
 } Speech_Encode_FrameState;
 
@@ -293,9 +293,9 @@ typedef struct {
  * Returns:
  *    acc                dot product
  */
-static Float64 Dotproduct40(Float32 * x, Float32 * y)
+static double Dotproduct40(float * x, float * y)
 {
-	Float64 acc;
+	double acc;
 
 	acc = x[0] * y[0] + x[1] * y[1] + x[2] * y[2] + x[3] * y[3];
 	acc += x[4] * y[4] + x[5] * y[5] + x[6] * y[6] + x[7] * y[7];
@@ -324,11 +324,11 @@ static Float64 Dotproduct40(Float32 * x, Float32 * y)
  * Returns:
  *    void
  */
-static void Autocorr(Float32 x[], Float32 r[], const Float32 wind[])
+static void Autocorr(float x[], float r[], const float wind[])
 {
-	Word32 i, j;		/* Counters */
-	Float32 y[L_WINDOW + M + 1];	/* Windowed signal */
-	Float64 sum;		/* temp */
+	int32_t i, j;		/* Counters */
+	float y[L_WINDOW + M + 1];	/* Windowed signal */
+	double sum;		/* temp */
 
 	/*
 	 * Windowing of signal
@@ -351,7 +351,7 @@ static void Autocorr(Float32 x[], Float32 r[], const Float32 wind[])
 		for (j = 0; j < L_WINDOW; j += 40) {
 			sum += Dotproduct40(&y[j], &y[j + i]);
 		}
-		r[i] = (Float32) sum;
+		r[i] = (float) sum;
 	}
 }
 
@@ -371,11 +371,11 @@ static void Autocorr(Float32 x[], Float32 r[], const Float32 wind[])
  *    void
  *
  */
-static void Levinson(Float32 * old_A, Float32 * r, Float32 * A, Float32 * rc)
+static void Levinson(float * old_A, float * r, float * A, float * rc)
 {
-	Float32 sum, at, err;
-	Word32 l, j, i;
-	Float32 rct[M];		/* temporary reflection coefficients  0,...,m-1 */
+	float sum, at, err;
+	int32_t l, j, i;
+	float rct[M];		/* temporary reflection coefficients  0,...,m-1 */
 
 	rct[0] = (-r[1]) / r[0];
 	A[0] = 1.0F;
@@ -404,8 +404,8 @@ static void Levinson(Float32 * old_A, Float32 * r, Float32 * A, Float32 * rc)
 		if (err <= 0.0)
 			err = 0.01F;
 	}
-	memcpy(rc, rct, 4 * sizeof(Float32));
-	memcpy(old_A, A, MP1 * sizeof(Float32));
+	memcpy(rc, rct, 4 * sizeof(float));
+	memcpy(old_A, A, MP1 * sizeof(float));
 }
 
 /*
@@ -442,12 +442,12 @@ static void Levinson(Float32 * old_A, Float32 * r, Float32 * A, Float32 * rc)
  *    void
  *
  */
-static void lpc(Float32 * old_A, Float32 x[], Float32 x_12k2[], Float32 a[],
+static void lpc(float * old_A, float x[], float x_12k2[], float a[],
 		enum Mode mode)
 {
-	Word32 i;
-	Float32 r[MP1];
-	Float32 rc[4];
+	int32_t i;
+	float r[MP1];
+	float rc[4];
 
 	if (mode == MR122) {
 		Autocorr(x_12k2, r, window_160_80);
@@ -528,10 +528,10 @@ static void lpc(Float32 * old_A, Float32 x[], Float32 x_12k2[], Float32 a[],
  * Returns:
  *    result of polynomial evaluation
  */
-static Float32 Chebps(Float32 x, Float32 f[])
+static float Chebps(float x, float f[])
 {
-	Float32 b0, b1, b2, x2;
-	Word32 i;
+	float b0, b1, b2, x2;
+	int32_t i;
 
 	x2 = 2.0F * x;
 	b2 = 1.0F;
@@ -563,13 +563,13 @@ static Float32 Chebps(Float32 x, Float32 f[])
  * Returns:
  *    void
  */
-static void Az_lsp(Float32 a[], Float32 lsp[], Float32 old_lsp[])
+static void Az_lsp(float a[], float lsp[], float old_lsp[])
 {
-	Word32 i, j, nf, ip;
-	Float32 xlow, ylow, xhigh, yhigh, xmid, ymid, xint;
-	Float32 y;
-	Float32 *coef;
-	Float32 f1[6], f2[6];
+	int32_t i, j, nf, ip;
+	float xlow, ylow, xhigh, yhigh, xmid, ymid, xint;
+	float y;
+	float *coef;
+	float f1[6], f2[6];
 
 	/*
 	 *  find the sum and diff. pol. F1(z) and F2(z)
@@ -683,17 +683,17 @@ static void Az_lsp(Float32 a[], Float32 lsp[], Float32 old_lsp[])
  * Returns:
  *    void
  */
-static void Get_lsp_pol(Float32 * lsp, Float32 * f)
+static void Get_lsp_pol(float * lsp, float * f)
 {
-	Word32 i, j;
-	Float32 T0;
+	int32_t i, j;
+	float T0;
 
 	f[0] = 1.0F;
 	f[1] = -2.0F * lsp[0];
 
 	for (i = 2; i <= 5; i++) {
 		T0 = -2.0F * lsp[2 * i - 2];
-		f[i] = (Float32) (T0 * f[i - 1] + 2.0F * f[i - 2]);
+		f[i] = (float) (T0 * f[i - 1] + 2.0F * f[i - 2]);
 
 		for (j = i - 1; j >= 2; j--) {
 			f[j] = f[j] + T0 * f[j - 1] + f[j - 2];
@@ -718,10 +718,10 @@ static void Get_lsp_pol(Float32 * lsp, Float32 * f)
  * Returns:
  *    void
  */
-static void Lsp_Az(Float32 lsp[], Float32 a[])
+static void Lsp_Az(float lsp[], float a[])
 {
-	Float32 f1[6], f2[6];
-	Word32 i, j;
+	float f1[6], f2[6];
+	int32_t i, j;
 
 	Get_lsp_pol(&lsp[0], f1);
 	Get_lsp_pol(&lsp[1], f2);
@@ -733,8 +733,8 @@ static void Lsp_Az(Float32 lsp[], Float32 a[])
 	a[0] = 1;
 
 	for (i = 1, j = 10; i <= 5; i++, j--) {
-		a[i] = (Float32) ((f1[i] + f2[i]) * 0.5F);
-		a[j] = (Float32) ((f1[i] - f2[i]) * 0.5F);
+		a[i] = (float) ((f1[i] + f2[i]) * 0.5F);
+		a[j] = (float) ((f1[i] - f2[i]) * 0.5F);
 	}
 	return;
 }
@@ -758,11 +758,11 @@ static void Lsp_Az(Float32 lsp[], Float32 a[])
  * Returns:
  *    void
  */
-static void Int_lpc_1and3_2(Float32 lsp_old[], Float32 lsp_mid[], Float32
-			    lsp_new[], Float32 az[])
+static void Int_lpc_1and3_2(float lsp_old[], float lsp_mid[], float
+			    lsp_new[], float az[])
 {
-	Float32 lsp[M];
-	Word32 i;
+	float lsp[M];
+	int32_t i;
 
 	for (i = 0; i < M; i += 2) {
 		lsp[i] = (lsp_mid[i] + lsp_old[i]) * 0.5F;
@@ -797,12 +797,12 @@ static void Int_lpc_1and3_2(Float32 lsp_old[], Float32 lsp_mid[], Float32
  * Returns:
  *    void
  */
-static void Lsp_lsf(Float32 lsp[], Float32 lsf[])
+static void Lsp_lsf(float lsp[], float lsf[])
 {
-	Word32 i;
+	int32_t i;
 
 	for (i = 0; i < M; i++) {
-		lsf[i] = (Float32) (acos(lsp[i]) * SCALE_LSP_FREQ);
+		lsf[i] = (float) (acos(lsp[i]) * SCALE_LSP_FREQ);
 	}
 	return;
 }
@@ -821,10 +821,10 @@ static void Lsp_lsf(Float32 lsp[], Float32 lsf[])
  * Returns:
  *    void
  */
-static void Lsf_wt(Float32 * lsf, Float32 * wf)
+static void Lsf_wt(float * lsf, float * wf)
 {
-	Float32 temp;
-	Word32 i;
+	float temp;
+	int32_t i;
 
 	wf[0] = lsf[1];
 
@@ -861,13 +861,13 @@ static void Lsf_wt(Float32 * lsf, Float32 * wf)
  * Returns:
  *    index             quantization index
  */
-static Word16 Vq_subvec(Float32 * lsf_r1, Float32 * lsf_r2,
-			const Float32 * dico, Float32 * wf1, Float32 * wf2,
-			Word16 dico_size)
+static int16_t Vq_subvec(float * lsf_r1, float * lsf_r2,
+			const float * dico, float * wf1, float * wf2,
+			int16_t dico_size)
 {
-	Float64 temp, dist, dist_min;
-	const Float32 *p_dico;
-	Word32 i, index = 0;
+	double temp, dist, dist_min;
+	const float *p_dico;
+	int32_t i, index = 0;
 
 	dist_min = DBL_MAX;
 	p_dico = dico;
@@ -894,7 +894,7 @@ static Word16 Vq_subvec(Float32 * lsf_r1, Float32 * lsf_r2,
 	lsf_r1[1] = *p_dico++;
 	lsf_r2[0] = *p_dico++;
 	lsf_r2[1] = *p_dico++;
-	return (Word16) index;
+	return (int16_t) index;
 }
 
 /*
@@ -914,14 +914,14 @@ static Word16 Vq_subvec(Float32 * lsf_r1, Float32 * lsf_r2,
  * Returns:
  *    index             quantization index
  */
-static Word16 Vq_subvec_s(Float32 * lsf_r1, Float32 * lsf_r2,
-			  const Float32 * dico, Float32 * wf1, Float32 * wf2,
-			  Word16 dico_size)
+static int16_t Vq_subvec_s(float * lsf_r1, float * lsf_r2,
+			  const float * dico, float * wf1, float * wf2,
+			  int16_t dico_size)
 {
-	Float64 dist_min, dist1, dist2, temp1, temp2;
-	const Float32 *p_dico;
-	Word32 i, index = 0;
-	Word16 sign = 0;
+	double dist_min, dist1, dist2, temp1, temp2;
+	const float *p_dico;
+	int32_t i, index = 0;
+	int16_t sign = 0;
 
 	dist_min = DBL_MAX;
 	p_dico = dico;
@@ -973,7 +973,7 @@ static Word16 Vq_subvec_s(Float32 * lsf_r1, Float32 * lsf_r2,
 	}
 	index = index << 1;
 	index = index + sign;
-	return (Word16) index;
+	return (int16_t) index;
 }
 
 /*
@@ -991,10 +991,10 @@ static Word16 Vq_subvec_s(Float32 * lsf_r1, Float32 * lsf_r2,
  * Returns:
  *    void
  */
-static void Reorder_lsf(Float32 * lsf, Float32 min_dist)
+static void Reorder_lsf(float * lsf, float min_dist)
 {
-	Float32 lsf_min;
-	Word32 i;
+	float lsf_min;
+	int32_t i;
 
 	lsf_min = min_dist;
 
@@ -1020,12 +1020,12 @@ static void Reorder_lsf(Float32 * lsf, Float32 min_dist)
  * Returns:
  *    void
  */
-static void Lsf_lsp(Float32 lsf[], Float32 lsp[])
+static void Lsf_lsp(float lsf[], float lsp[])
 {
-	Word32 i;
+	int32_t i;
 
 	for (i = 0; i < M; i++) {
-		lsp[i] = (Float32) cos(SCALE_FREQ_LSP * lsf[i]);
+		lsp[i] = (float) cos(SCALE_FREQ_LSP * lsf[i]);
 	}
 	return;
 }
@@ -1047,13 +1047,13 @@ static void Lsf_lsp(Float32 lsf[], Float32 lsp[])
  * Returns:
  *    index             quantization index
  */
-static Word16 Vq_subvec3(Float32 * lsf_r1, const Float32 * dico, Float32 * wf1,
-			 Word16 dico_size, Word32 use_half)
+static int16_t Vq_subvec3(float * lsf_r1, const float * dico, float * wf1,
+			 int16_t dico_size, int32_t use_half)
 {
-	Float64 dist, dist_min;
-	Float32 temp;
-	const Float32 *p_dico;
-	Word32 i, index = 0;
+	double dist, dist_min;
+	float temp;
+	const float *p_dico;
+	int32_t i, index = 0;
 
 	dist_min = FLT_MAX;
 	p_dico = dico;
@@ -1101,7 +1101,7 @@ static Word16 Vq_subvec3(Float32 * lsf_r1, const Float32 * dico, Float32 * wf1,
 	lsf_r1[0] = *p_dico++;
 	lsf_r1[1] = *p_dico++;
 	lsf_r1[2] = *p_dico++;
-	return (Word16) index;
+	return (int16_t) index;
 }
 
 /*
@@ -1120,13 +1120,13 @@ static Word16 Vq_subvec3(Float32 * lsf_r1, const Float32 * dico, Float32 * wf1,
  * Returns:
  *    index             quantization index
  */
-static Word16 Vq_subvec4(Float32 * lsf_r1, const Float32 * dico, Float32 * wf1,
-			 Word16 dico_size)
+static int16_t Vq_subvec4(float * lsf_r1, const float * dico, float * wf1,
+			 int16_t dico_size)
 {
-	Float64 dist, dist_min;
-	Float32 temp;
-	const Float32 *p_dico;
-	Word32 i, index = 0;
+	double dist, dist_min;
+	float temp;
+	const float *p_dico;
+	int32_t i, index = 0;
 
 	dist_min = FLT_MAX;
 	p_dico = dico;
@@ -1157,7 +1157,7 @@ static Word16 Vq_subvec4(Float32 * lsf_r1, const Float32 * dico, Float32 * wf1,
 	lsf_r1[1] = *p_dico++;
 	lsf_r1[2] = *p_dico++;
 	lsf_r1[3] = *p_dico++;
-	return (Word16) index;
+	return (int16_t) index;
 }
 
 /*
@@ -1180,16 +1180,16 @@ static Word16 Vq_subvec4(Float32 * lsf_r1, const Float32 * dico, Float32 * wf1,
  * Returns:
  *    void
  */
-static void Q_plsf_3(enum Mode mode, Float32 * past_rq, Float32 * lsp1,
-		     Float32 * lsp1_q, Word16 * indice, Word32 * pred_init_i)
+static void Q_plsf_3(enum Mode mode, float * past_rq, float * lsp1,
+		     float * lsp1_q, int16_t * indice, int32_t * pred_init_i)
 {
-	Float32 lsf1[M], wf1[M], lsf_p[M], lsf_r1[M];
-	Float32 lsf1_q[M];
-	Float32 pred_init_err;
-	Float32 min_pred_init_err;
-	Float32 temp_r1[M];
-	Float32 temp_p[M];
-	Word32 j, i;
+	float lsf1[M], wf1[M], lsf_p[M], lsf_r1[M];
+	float lsf1_q[M];
+	float pred_init_err;
+	float min_pred_init_err;
+	float temp_r1[M];
+	float temp_p[M];
+	int32_t j, i;
 
 	/* convert LSFs to normalize frequency domain */
 	Lsp_lsf(lsp1, lsf1);
@@ -1301,13 +1301,13 @@ static void Q_plsf_3(enum Mode mode, Float32 * past_rq, Float32 * lsp1,
  * Returns:
  *    void
  */
-static void Q_plsf_5(Float32 * past_rq, Float32 * lsp1, Float32 * lsp2,
-		     Float32 * lsp1_q, Float32 * lsp2_q, Word16 * indice)
+static void Q_plsf_5(float * past_rq, float * lsp1, float * lsp2,
+		     float * lsp1_q, float * lsp2_q, int16_t * indice)
 {
-	Float32 lsf1[M], lsf2[M], wf1[M], wf2[M], lsf_p[M], lsf_r1[M],
+	float lsf1[M], lsf2[M], wf1[M], wf2[M], lsf_p[M], lsf_r1[M],
 	    lsf_r2[M];
-	Float32 lsf1_q[M], lsf2_q[M];
-	Word32 i;
+	float lsf1_q[M], lsf2_q[M];
+	int32_t i;
 
 	/* convert LSFs to normalize frequency domain */
 	Lsp_lsf(lsp1, lsf1);
@@ -1381,11 +1381,11 @@ static void Q_plsf_5(Float32 * past_rq, Float32 * lsp1, Float32 * lsp2,
  * Returns:
  *    void
  */
-static void Int_lpc_1and3(Float32 lsp_old[], Float32 lsp_mid[], Float32 lsp_new
-			  [], Float32 az[])
+static void Int_lpc_1and3(float lsp_old[], float lsp_mid[], float lsp_new
+			  [], float az[])
 {
-	Word32 i;
-	Float32 lsp[M];
+	int32_t i;
+	float lsp[M];
 
 	for (i = 0; i < M; i++) {
 		lsp[i] = (lsp_mid[i] + lsp_old[i]) * 0.5F;
@@ -1428,10 +1428,10 @@ static void Int_lpc_1and3(Float32 lsp_old[], Float32 lsp_mid[], Float32 lsp_new
  * Returns:
  *    void
  */
-static void Int_lpc_1to3_2(Float32 lsp_old[], Float32 lsp_new[], Float32 az[])
+static void Int_lpc_1to3_2(float lsp_old[], float lsp_new[], float az[])
 {
-	Float32 lsp[M];
-	Word32 i;
+	float lsp[M];
+	int32_t i;
 
 	for (i = 0; i < M; i += 2) {
 		lsp[i] = lsp_new[i] * 0.25F + lsp_old[i] * 0.75F;
@@ -1483,10 +1483,10 @@ static void Int_lpc_1to3_2(Float32 lsp_old[], Float32 lsp_new[], Float32 az[])
  * Returns:
  *    void
  */
-static void Int_lpc_1to3(Float32 lsp_old[], Float32 lsp_new[], Float32 az[])
+static void Int_lpc_1to3(float lsp_old[], float lsp_new[], float az[])
 {
-	Float32 lsp[M];
-	Word32 i;
+	float lsp[M];
+	int32_t i;
 
 	for (i = 0; i < M; i++) {
 		lsp[i] = lsp_new[i] * 0.25F + lsp_old[i] * 0.75F;
@@ -1538,13 +1538,13 @@ static void Int_lpc_1to3(Float32 lsp_old[], Float32 lsp_new[], Float32 az[])
  * Returns:
  *    void
  */
-static void lsp(enum Mode req_mode, enum Mode used_mode, Float32 * lsp_old,
-		Float32 * lsp_old_q, Float32 * past_rq, Float32 az[],
-		Float32 azQ[], Float32 lsp_new[], Word16 ** anap)
+static void lsp(enum Mode req_mode, enum Mode used_mode, float * lsp_old,
+		float * lsp_old_q, float * past_rq, float az[],
+		float azQ[], float lsp_new[], int16_t ** anap)
 {
-	Float32 lsp_new_q[M];	/* LSPs at 4th subframe */
-	Float32 lsp_mid[M], lsp_mid_q[M];	/* LSPs at 2nd subframe */
-	Word32 pred_init_i;	/* init index for MA prediction in DTX mode */
+	float lsp_new_q[M];	/* LSPs at 4th subframe */
+	float lsp_mid[M], lsp_mid_q[M];	/* LSPs at 2nd subframe */
+	int32_t pred_init_i;	/* init index for MA prediction in DTX mode */
 
 	if (req_mode == MR122) {
 		Az_lsp(&az[MP1], lsp_mid, lsp_old);
@@ -1640,10 +1640,10 @@ static void lsp(enum Mode req_mode, enum Mode used_mode, Float32 * lsp_old,
  * Returns:
  *    resonance flag
  */
-static Word16 check_lsp(Word16 * count, Float32 * lsp)
+static int16_t check_lsp(int16_t * count, float * lsp)
 {
-	Float32 dist, dist_min1, dist_min2, dist_th;
-	Word32 i;
+	float dist, dist_min1, dist_min2, dist_th;
+	int32_t i;
 
 	/*
 	 * Check for a resonance:
@@ -1706,9 +1706,9 @@ static Word16 check_lsp(Word16 * count, Float32 * lsp)
  * Returns:
  *    void
  */
-static void Weight_Ai(Float32 a[], const Float32 fac[], Float32 a_exp[])
+static void Weight_Ai(float a[], const float fac[], float a_exp[])
 {
-	Word32 i;
+	int32_t i;
 
 	a_exp[0] = a[0];
 
@@ -1733,10 +1733,10 @@ static void Weight_Ai(Float32 a[], const Float32 fac[], Float32 a_exp[])
  * Returns:
  *    void
  */
-static void Residu(Float32 a[], Float32 x[], Float32 y[])
+static void Residu(float a[], float x[], float y[])
 {
-	Float32 s;
-	Word32 i;
+	float s;
+	int32_t i;
 
 	for (i = 0; i < L_SUBFR; i += 4) {
 		s = x[i] * a[0];
@@ -1808,13 +1808,13 @@ static void Residu(Float32 a[], Float32 x[], Float32 y[])
  * Returns:
  *    void
  */
-static void Syn_filt(Float32 a[], Float32 x[], Float32 y[], Float32 mem[],
-		     Word16 update)
+static void Syn_filt(float a[], float x[], float y[], float mem[],
+		     int16_t update)
 {
-	Float64 tmp[50];
-	Float64 sum;
-	Float64 *yy;
-	Word32 i;
+	double tmp[50];
+	double sum;
+	double *yy;
+	int32_t i;
 
 	/* Copy mem[] to yy[] */
 	yy = tmp;
@@ -1837,7 +1837,7 @@ static void Syn_filt(Float32 a[], Float32 x[], Float32 y[], Float32 mem[],
 		sum -= a[9] * yy[-9];
 		sum -= a[10] * yy[-10];
 		*yy++ = sum;
-		y[i] = (Float32) yy[-1];
+		y[i] = (float) yy[-1];
 		sum = x[i + 1] * a[0];
 		sum -= a[1] * yy[-1];
 		sum -= a[2] * yy[-2];
@@ -1850,7 +1850,7 @@ static void Syn_filt(Float32 a[], Float32 x[], Float32 y[], Float32 mem[],
 		sum -= a[9] * yy[-9];
 		sum -= a[10] * yy[-10];
 		*yy++ = sum;
-		y[i + 1] = (Float32) yy[-1];
+		y[i + 1] = (float) yy[-1];
 		sum = x[i + 2] * a[0];
 		sum -= a[1] * yy[-1];
 		sum -= a[2] * yy[-2];
@@ -1863,7 +1863,7 @@ static void Syn_filt(Float32 a[], Float32 x[], Float32 y[], Float32 mem[],
 		sum -= a[9] * yy[-9];
 		sum -= a[10] * yy[-10];
 		*yy++ = sum;
-		y[i + 2] = (Float32) yy[-1];
+		y[i + 2] = (float) yy[-1];
 		sum = x[i + 3] * a[0];
 		sum -= a[1] * yy[-1];
 		sum -= a[2] * yy[-2];
@@ -1876,7 +1876,7 @@ static void Syn_filt(Float32 a[], Float32 x[], Float32 y[], Float32 mem[],
 		sum -= a[9] * yy[-9];
 		sum -= a[10] * yy[-10];
 		*yy++ = sum;
-		y[i + 3] = (Float32) yy[-1];
+		y[i + 3] = (float) yy[-1];
 	}
 
 	/* Update of memory if update==1 */
@@ -1925,16 +1925,16 @@ static void Syn_filt(Float32 a[], Float32 x[], Float32 y[], Float32 mem[],
  * Returns:
  *    void
  */
-static Word32 pre_big(enum Mode mode, const Float32 gamma1[], const Float32
-		      gamma1_12k2[], const Float32 gamma2[], Float32 A_t[],
-		      Word16 frame_offset, Float32 speech[], Float32 mem_w[],
-		      Float32 wsp[])
+static int32_t pre_big(enum Mode mode, const float gamma1[], const float
+		      gamma1_12k2[], const float gamma2[], float A_t[],
+		      int16_t frame_offset, float speech[], float mem_w[],
+		      float wsp[])
 {
-	Float32 Ap1[MP1], Ap2[MP1];
-	Word32 offset, i;
+	float Ap1[MP1], Ap2[MP1];
+	int32_t offset, i;
 
 	/* A(z) with spectral expansion */
-	const Float32 *g1;
+	const float *g1;
 
 	g1 = gamma1_12k2;
 
@@ -1991,12 +1991,12 @@ static Word32 pre_big(enum Mode mode, const Float32 gamma1[], const Float32
  * Returns:
  *    void
  */
-static void comp_corr(Float32 sig[], Word32 L_frame, Word32 lag_max, Word32
-		      lag_min, Float32 corr[])
+static void comp_corr(float sig[], int32_t L_frame, int32_t lag_max, int32_t
+		      lag_min, float corr[])
 {
-	Word32 i, j;
-	Float32 *p, *p1;
-	Float32 T0;
+	int32_t i, j;
+	float *p, *p1;
+	float T0;
 
 	for (i = lag_max; i >= lag_min; i--) {
 		p = sig;
@@ -2058,7 +2058,7 @@ static void comp_corr(Float32 sig[], Word32 L_frame, Word32 lag_max, Word32
  *    void
  */
 #ifndef VAD2
-static void vad_tone_detection(vadState * st, Float32 T0, Float32 t1)
+static void vad_tone_detection(vadState * st, float T0, float t1)
 {
 	if ((t1 > 0) && (T0 > t1 * TONE_THR)) {
 		st->tone = st->tone | 0x00004000;
@@ -2087,18 +2087,18 @@ static void vad_tone_detection(vadState * st, Float32 T0, Float32 t1)
  *    p_max             lag found
  */
 #ifdef VAD2
-static Word16 Lag_max(Float32 corr[], Float32 sig[], Word16 L_frame,
-		      Word32 lag_max, Word32 lag_min, Float32 * cor_max,
-		      Word32 dtx, Float32 * rmax, Float32 * r0)
+static int16_t Lag_max(float corr[], float sig[], int16_t L_frame,
+		      int32_t lag_max, int32_t lag_min, float * cor_max,
+		      int32_t dtx, float * rmax, float * r0)
 #else
-static Word16 Lag_max(vadState * vadSt, Float32 corr[], Float32 sig[], Word16
-		      L_frame, Word32 lag_max, Word32 lag_min,
-		      Float32 * cor_max, Word32 dtx)
+static int16_t Lag_max(vadState * vadSt, float corr[], float sig[], int16_t
+		      L_frame, int32_t lag_max, int32_t lag_min,
+		      float * cor_max, int32_t dtx)
 #endif
 {
-	Float32 max, T0;
-	Float32 *p;
-	Word32 i, j, p_max;
+	float max, T0;
+	float *p;
+	int32_t i, j, p_max;
 
 	max = -FLT_MAX;
 	p_max = lag_max;
@@ -2129,14 +2129,14 @@ static Word16 Lag_max(vadState * vadSt, Float32 corr[], Float32 sig[], Word16
 	}
 
 	if (T0 > 0.0F)
-		T0 = 1.0F / (Float32) sqrt(T0);
+		T0 = 1.0F / (float) sqrt(T0);
 	else
 		T0 = 0.0F;
 
 	/* max = max/sqrt(energy) */
 	max *= T0;
 	*cor_max = max;
-	return ((Word16) p_max);
+	return ((int16_t) p_max);
 }
 
 /*
@@ -2163,19 +2163,19 @@ static Word16 Lag_max(vadState * vadSt, Float32 corr[], Float32 sig[], Word16
  *    void
  */
 #ifndef VAD2
-static void hp_max(Float32 corr[], Float32 sig[], Word32 L_frame, Word32
-		   lag_max, Word32 lag_min, Float32 * cor_hp_max)
+static void hp_max(float corr[], float sig[], int32_t L_frame, int32_t
+		   lag_max, int32_t lag_min, float * cor_hp_max)
 {
-	Float32 T0, t1, max;
-	Float32 *p, *p1;
-	Word32 i;
+	float T0, t1, max;
+	float *p, *p1;
+	int32_t i;
 
 	max = -FLT_MAX;
 
 	for (i = lag_max - 1; i > lag_min; i--) {
 		/* high-pass filtering */
 		T0 = ((corr[-i] * 2) - corr[-i - 1]) - corr[-i + 1];
-		T0 = (Float32) fabs(T0);
+		T0 = (float) fabs(T0);
 
 		if (T0 >= max) {
 			max = T0;
@@ -2200,7 +2200,7 @@ static void hp_max(Float32 corr[], Float32 sig[], Word32 L_frame, Word32
 
 	/* high-pass filtering */
 	T0 = T0 - t1;
-	T0 = (Float32) fabs(T0);
+	T0 = (float) fabs(T0);
 
 	/* max/T0 */
 	if (T0 != 0) {
@@ -2226,7 +2226,7 @@ static void hp_max(Float32 corr[], Float32 sig[], Word32 L_frame, Word32
  *    void
  */
 #ifndef VAD2
-static void vad_tone_detection_update(vadState * st, Word16 one_lag_per_frame)
+static void vad_tone_detection_update(vadState * st, int16_t one_lag_per_frame)
 {
 	/* Shift tone flags right by one bit */
 	st->tone = st->tone >> 1;
@@ -2302,23 +2302,23 @@ static void vad_tone_detection_update(vadState * st, Word16 one_lag_per_frame)
  * Returns:
  *    void
  */
-static Word32 Pitch_ol(enum Mode mode, vadState * vadSt, Float32 signal[],
-		       Word32 pit_min, Word32 pit_max, Word16 L_frame,
-		       Word32 dtx, Word16 idx)
+static int32_t Pitch_ol(enum Mode mode, vadState * vadSt, float signal[],
+		       int32_t pit_min, int32_t pit_max, int16_t L_frame,
+		       int32_t dtx, int16_t idx)
 {
 #ifdef VAD2
 	(void)mode;
 	(void)idx;
 #endif
-	Float32 corr[PIT_MAX + 1];
-	Float32 max1, max2, max3, p_max1, p_max2, p_max3;
-	Float32 *corr_ptr;
-	Word32 i, j;
+	float corr[PIT_MAX + 1];
+	float max1, max2, max3, p_max1, p_max2, p_max3;
+	float *corr_ptr;
+	int32_t i, j;
 #ifdef VAD2
-	Float32 r01 = 0, r02 = 0, r03 = 0;
-	Float32 rmax1 = 0, rmax2 = 0, rmax3 = 0;
+	float r01 = 0, r02 = 0, r03 = 0;
+	float rmax1 = 0, rmax2 = 0, rmax3 = 0;
 #else
-	Float32 corr_hp_max;
+	float corr_hp_max;
 #endif
 
 #ifndef VAD2
@@ -2414,7 +2414,7 @@ static Word32 Pitch_ol(enum Mode mode, vadState * vadSt, Float32 signal[],
 		vadSt->R0 += r01;	/* Save max energy */
 	}
 #endif
-	return (Word32) p_max1;
+	return (int32_t) p_max1;
 }
 
 /*
@@ -2440,14 +2440,14 @@ static Word32 Pitch_ol(enum Mode mode, vadState * vadSt, Float32 signal[],
  * Returns:
  *    p_max             lag found
  */
-static Word32 Lag_max_wght(vadState * vadSt, Float32 corr[], Float32 signal[],
-			   Word32 old_lag, Word32 * cor_max, Word32 wght_flg,
-			   Float32 * gain_flg, Word32 dtx)
+static int32_t Lag_max_wght(vadState * vadSt, float corr[], float signal[],
+			   int32_t old_lag, int32_t * cor_max, int32_t wght_flg,
+			   float * gain_flg, int32_t dtx)
 {
-	Float32 t0, t1, max;
-	Float32 *psignal, *p1signal;
-	const Float32 *ww, *we;
-	Word32 i, j, p_max;
+	float t0, t1, max;
+	float *psignal, *p1signal;
+	const float *ww, *we;
+	int32_t i, j, p_max;
 
 	ww = &corrweight[250];
 	we = &corrweight[266 - old_lag];
@@ -2527,13 +2527,13 @@ static Word32 Lag_max_wght(vadState * vadSt, Float32 corr[], Float32 signal[],
  * Returns:
  *    index of the median value
  */
-static Word32 gmed_n(Word32 ind[], Word32 n)
+static int32_t gmed_n(int32_t ind[], int32_t n)
 {
-	Word32 i, j, ix = 0;
-	Word32 max;
-	Word32 medianIndex;
-	Word32 tmp[9];
-	Word32 tmp2[9];
+	int32_t i, j, ix = 0;
+	int32_t max;
+	int32_t medianIndex;
+	int32_t tmp[9];
+	int32_t tmp2[9];
 
 	for (i = 0; i < n; i++) {
 		tmp2[i] = ind[i];
@@ -2594,17 +2594,17 @@ static Word32 gmed_n(Word32 ind[], Word32 n)
  * Returns:
  *    p_max1            open loop pitch lag
  */
-static Word32 Pitch_ol_wgh(Word32 * old_T0_med, Word16 * wght_flg,
-			   Float32 * ada_w, vadState * vadSt, Float32 signal[],
-			   Word32 old_lags[], Float32 ol_gain_flg[], Word16 idx,
-			   Word32 dtx)
+static int32_t Pitch_ol_wgh(int32_t * old_T0_med, int16_t * wght_flg,
+			   float * ada_w, vadState * vadSt, float signal[],
+			   int32_t old_lags[], float ol_gain_flg[], int16_t idx,
+			   int32_t dtx)
 {
-	Float32 corr[PIT_MAX + 1];
+	float corr[PIT_MAX + 1];
 #ifndef VAD2
-	Float32 corr_hp_max;
+	float corr_hp_max;
 #endif
-	Float32 *corrPtr;
-	Word32 i, max1, p_max1;
+	float *corrPtr;
+	int32_t i, max1, p_max1;
 
 	/* calculate all coreelations of signal, from pit_min to pit_max */
 	corrPtr = &corr[PIT_MAX];
@@ -2686,10 +2686,10 @@ static Word32 Pitch_ol_wgh(Word32 * old_T0_med, Word16 * wght_flg,
  * Returns:
  *    void
  */
-static void ol_ltp(enum Mode mode, vadState * vadSt, Float32 wsp[],
-		   Word32 * T_op, Float32 ol_gain_flg[], Word32 * old_T0_med,
-		   Word16 * wght_flg, Float32 * ada_w, Word32 * old_lags,
-		   Word32 dtx, Word16 idx)
+static void ol_ltp(enum Mode mode, vadState * vadSt, float wsp[],
+		   int32_t * T_op, float ol_gain_flg[], int32_t * old_T0_med,
+		   int16_t * wght_flg, float * ada_w, int32_t * old_lags,
+		   int32_t dtx, int16_t idx)
 {
 	if (mode != MR102) {
 		ol_gain_flg[0] = 0;
@@ -2779,16 +2779,16 @@ static void ol_ltp(enum Mode mode, vadState * vadSt, Float32 wsp[],
  * Returns:
  *    void
  */
-static void subframePreProc(enum Mode mode, const Float32 gamma1[], const
-			    Float32 gamma1_12k2[], const Float32 gamma2[],
-			    Float32 * A, Float32 * Aq, Float32 * speech,
-			    Float32 * mem_err, Float32 * mem_w0, Float32 * zero,
-			    Float32 ai_zero[], Float32 * exc, Float32 h1[],
-			    Float32 xn[], Float32 res2[], Float32 error[])
+static void subframePreProc(enum Mode mode, const float gamma1[], const
+			    float gamma1_12k2[], const float gamma2[],
+			    float * A, float * Aq, float * speech,
+			    float * mem_err, float * mem_w0, float * zero,
+			    float ai_zero[], float * exc, float h1[],
+			    float xn[], float res2[], float error[])
 {
-	Float32 Ap1[MP1];	/* weighted LPC coefficients */
-	Float32 Ap2[MP1];	/* weighted LPC coefficients */
-	const Float32 *g1;
+	float Ap1[MP1];	/* weighted LPC coefficients */
+	float Ap2[MP1];	/* weighted LPC coefficients */
+	const float *g1;
 
 	/* mode specific pointer to gamma1 values */
 	g1 = gamma1;
@@ -2847,9 +2847,9 @@ static void subframePreProc(enum Mode mode, const Float32 gamma1[], const
  * Returns:
  *    void
  */
-static void getRange(Word32 T0, Word16 delta_low, Word16 delta_range,
-		     Word16 pitmin, Word16 pitmax, Word32 * T0_min,
-		     Word32 * T0_max)
+static void getRange(int32_t T0, int16_t delta_low, int16_t delta_range,
+		     int16_t pitmin, int16_t pitmax, int32_t * T0_min,
+		     int32_t * T0_max)
 {
 	*T0_min = T0 - delta_low;
 
@@ -2907,14 +2907,14 @@ static void getRange(Word32 T0, Word16 delta_low, Word16 delta_range,
  * Returns:
  *    void
  */
-static void Norm_Corr(Float32 exc[], Float32 xn[], Float32 h[], Word32 t_min,
-		      Word32 t_max, Float32 corr_norm[])
+static void Norm_Corr(float exc[], float xn[], float h[], int32_t t_min,
+		      int32_t t_max, float corr_norm[])
 {
-	Float32 exc_temp[L_SUBFR];
-	Float32 *p_exc;
-	Float32 corr, norm;
-	Float32 sum;
-	Word32 i, j, k;
+	float exc_temp[L_SUBFR];
+	float *p_exc;
+	float corr, norm;
+	float sum;
+	int32_t i, j, k;
 
 	k = -t_min;
 	p_exc = &exc[-t_min];
@@ -2935,17 +2935,17 @@ static void Norm_Corr(Float32 exc[], Float32 xn[], Float32 h[], Word32 t_min,
 		/*        39                     */
 		/* SQRT[ SUM[ Yk(n) * Yk(n)] ]   */
 		/*       n=0                     */
-		norm = (Float32) Dotproduct40(exc_temp, exc_temp);
+		norm = (float) Dotproduct40(exc_temp, exc_temp);
 
 		if (norm == 0)
 			norm = 1.0;
 		else
-			norm = (Float32) (1.0 / (sqrt(norm)));
+			norm = (float) (1.0 / (sqrt(norm)));
 
 		/*        39                  */
 		/* SQRT[ SUM[ X(n) * Yk(n)] ] */
 		/*       n=0                  */
-		corr = (Float32) Dotproduct40(xn, exc_temp);
+		corr = (float) Dotproduct40(xn, exc_temp);
 
 		/* R(k) */
 		corr_norm[i] = corr * norm;
@@ -2995,12 +2995,12 @@ static void Norm_Corr(Float32 exc[], Float32 xn[], Float32 h[], Word32 t_min,
  * Returns:
  *    s                 interpolated value
  */
-static Float32 Interpol_3or6(Float32 * x, Word32 frac, Word16 flag3)
+static float Interpol_3or6(float * x, int32_t frac, int16_t flag3)
 {
-	Float32 s;
-	Float32 *x1, *x2;
-	const Float32 *c1, *c2;
-	Word32 i, k;
+	float s;
+	float *x1, *x2;
+	const float *c1, *c2;
+	int32_t i, k;
 
 	if (flag3 != 0) {
 		/* inter_3[k] = b60[2*k] -> k' = 2*k */
@@ -3050,11 +3050,11 @@ static Float32 Interpol_3or6(Float32 * x, Word32 frac, Word16 flag3)
  * Returns:
  *    void
  */
-static void searchFrac(Word32 * lag, Word32 * frac, Word16 last_frac, Float32
-		       corr[], Word16 flag3)
+static void searchFrac(int32_t * lag, int32_t * frac, int16_t last_frac, float
+		       corr[], int16_t flag3)
 {
-	Float32 max, corr_int;
-	Word32 i;
+	float max, corr_int;
+	int32_t i;
 
 	/*
 	 * Test the fractions around T0 and choose the one which maximizes
@@ -3110,10 +3110,10 @@ static void searchFrac(Word32 * lag, Word32 * frac, Word16 last_frac, Float32
  * Returns:
  *    index             index of encoding
  */
-static Word32 Enc_lag3(Word32 T0, Word32 T0_frac, Word32 T0_prev, Word32 T0_min,
-		       Word32 T0_max, Word16 delta_flag, Word16 flag4)
+static int32_t Enc_lag3(int32_t T0, int32_t T0_frac, int32_t T0_prev, int32_t T0_min,
+		       int32_t T0_max, int16_t delta_flag, int16_t flag4)
 {
-	Word32 index, i, tmp_ind, uplag, tmp_lag;
+	int32_t index, i, tmp_ind, uplag, tmp_lag;
 
 	/* if 1st or 3rd subframe */
 	if (delta_flag == 0) {
@@ -3200,10 +3200,10 @@ static Word32 Enc_lag3(Word32 T0, Word32 T0_frac, Word32 T0_prev, Word32 T0_min,
  * Returns:
  *    index             index of encoding
  */
-static Word32 Enc_lag6(Word32 T0, Word32 T0_frac, Word32 T0_min, Word16
+static int32_t Enc_lag6(int32_t T0, int32_t T0_frac, int32_t T0_min, int16_t
 		       delta_flag)
 {
-	Word32 index;
+	int32_t index;
 
 	/* if 1st or 3rd subframe */
 	if (delta_flag == 0) {
@@ -3299,20 +3299,20 @@ static Word32 Enc_lag6(Word32 T0, Word32 T0_frac, Word32 T0_min, Word16
  * Returns:
  *    lag             closed-loop pitch lag
  */
-static Word32 Pitch_fr(Word32 * T0_prev_subframe, enum Mode mode, Word32 T_op[],
-		       Float32 exc[], Float32 xn[], Float32 h[], Word16 i_subfr,
-		       Word32 * pit_frac, Word16 * resu3, Word32 * ana_index)
+static int32_t Pitch_fr(int32_t * T0_prev_subframe, enum Mode mode, int32_t T_op[],
+		       float exc[], float xn[], float h[], int16_t i_subfr,
+		       int32_t * pit_frac, int16_t * resu3, int32_t * ana_index)
 {
-	Float32 corr_v[40];
-	Float32 max;
-	Float32 *corr;
-	Word32 i, t_min, t_max, T0_min, T0_max;
-	Word32 lag, frac, tmp_lag;
-	Word16 max_frac_lag, flag3, flag4, last_frac;
-	Word16 delta_int_low, delta_int_range, delta_frc_low, delta_frc_range;
-	Word16 pit_min;
-	Word16 frame_offset;
-	Word16 delta_search;
+	float corr_v[40];
+	float max;
+	float *corr;
+	int32_t i, t_min, t_max, T0_min, T0_max;
+	int32_t lag, frac, tmp_lag;
+	int16_t max_frac_lag, flag3, flag4, last_frac;
+	int16_t delta_int_low, delta_int_range, delta_frc_low, delta_frc_range;
+	int16_t pit_min;
+	int16_t frame_offset;
+	int16_t delta_search;
 
 	/* set mode specific variables */
 	max_frac_lag = mode_dep_parm[mode].max_frac_lag;
@@ -3505,12 +3505,12 @@ static Word32 Pitch_fr(Word32 * T0_prev_subframe, enum Mode mode, Word32 T_op[],
  * Returns:
  *    void
  */
-static void Pred_lt_3or6(Float32 exc[], Word32 T0, Word32 frac, Word16 flag3)
+static void Pred_lt_3or6(float exc[], int32_t T0, int32_t frac, int16_t flag3)
 {
-	Float32 s;
-	Float32 *x0, *x1, *x2;
-	const Float32 *c1, *c2;
-	Word32 j;
+	float s;
+	float *x0, *x1, *x2;
+	const float *c1, *c2;
+	int32_t j;
 
 	x0 = &exc[-T0];
 	frac = -frac;
@@ -3540,7 +3540,7 @@ static void Pred_lt_3or6(Float32 exc[], Word32 T0, Word32 frac, Word16 flag3)
 		s += x1[-7] * c1[42] + x2[7] * c2[42];
 		s += x1[-8] * c1[48] + x2[8] * c2[48];
 		s += x1[-9] * c1[54] + x2[9] * c2[54];
-		exc[j] = (Float32) floor(s + 0.5F);
+		exc[j] = (float) floor(s + 0.5F);
 		x1 = x0++;
 		x2 = x0;
 		s = x1[0] * c1[0] + x2[0] * c2[0];
@@ -3553,7 +3553,7 @@ static void Pred_lt_3or6(Float32 exc[], Word32 T0, Word32 frac, Word16 flag3)
 		s += x1[-7] * c1[42] + x2[7] * c2[42];
 		s += x1[-8] * c1[48] + x2[8] * c2[48];
 		s += x1[-9] * c1[54] + x2[9] * c2[54];
-		exc[j + 1] = (Float32) floor(s + 0.5F);
+		exc[j + 1] = (float) floor(s + 0.5F);
 		x1 = x0++;
 		x2 = x0;
 		s = x1[0] * c1[0] + x2[0] * c2[0];
@@ -3566,7 +3566,7 @@ static void Pred_lt_3or6(Float32 exc[], Word32 T0, Word32 frac, Word16 flag3)
 		s += x1[-7] * c1[42] + x2[7] * c2[42];
 		s += x1[-8] * c1[48] + x2[8] * c2[48];
 		s += x1[-9] * c1[54] + x2[9] * c2[54];
-		exc[j + 2] = (Float32) floor(s + 0.5F);
+		exc[j + 2] = (float) floor(s + 0.5F);
 		x1 = x0++;
 		x2 = x0;
 		s = x1[0] * c1[0] + x2[0] * c2[0];
@@ -3579,17 +3579,17 @@ static void Pred_lt_3or6(Float32 exc[], Word32 T0, Word32 frac, Word16 flag3)
 		s += x1[-7] * c1[42] + x2[7] * c2[42];
 		s += x1[-8] * c1[48] + x2[8] * c2[48];
 		s += x1[-9] * c1[54] + x2[9] * c2[54];
-		exc[j + 3] = (Float32) floor(s + 0.5F);
+		exc[j + 3] = (float) floor(s + 0.5F);
 	}
 	return;
 }
 
-static void Pred_lt_3or6_fixed(Word32 exc[], Word32 T0, Word32 frac,
-			       Word32 flag3)
+static void Pred_lt_3or6_fixed(int32_t exc[], int32_t T0, int32_t frac,
+			       int32_t flag3)
 {
-	Word32 s, i;
-	Word32 *x0, *x1, *x2;
-	const Word32 *c1, *c2;
+	int32_t s, i;
+	int32_t *x0, *x1, *x2;
+	const int32_t *c1, *c2;
 
 	x0 = &exc[-T0];
 	frac = -frac;
@@ -3655,23 +3655,23 @@ static void Pred_lt_3or6_fixed(Word32 exc[], Word32 T0, Word32 frac,
  * Returns:
  *    gain              gain saturated to 1.2
  */
-static Float32 G_pitch(Float32 xn[], Float32 y1[], Float32 gCoeff[])
+static float G_pitch(float xn[], float y1[], float gCoeff[])
 {
-	Float32 gain, sum;
+	float gain, sum;
 
 	/* Compute scalar product <y1[],y1[]> */
-	sum = (Float32) Dotproduct40(y1, y1);
+	sum = (float) Dotproduct40(y1, y1);
 
 	/* Avoid case of all zeros */
 	sum += 0.01F;
 	gCoeff[0] = sum;
 
 	/* Compute scalar product <xn[],y1[]> */
-	sum = (Float32) Dotproduct40(xn, y1);
+	sum = (float) Dotproduct40(xn, y1);
 	gCoeff[1] = sum;
 
 	/* compute gain = xy/yy */
-	gain = (Float32) (gCoeff[1] / gCoeff[0]);
+	gain = (float) (gCoeff[1] / gCoeff[0]);
 
 	/* if(gain >1.2) gain = 1.2 */
 	if (gain < 0.0)
@@ -3697,10 +3697,10 @@ static Float32 G_pitch(Float32 xn[], Float32 y1[], Float32 gCoeff[])
  * Returns:
  *    True or false
  */
-static Word16 check_gp_clipping(Float32 * gp, Float32 g_pitch)
+static int16_t check_gp_clipping(float * gp, float g_pitch)
 {
-	Float32 sum;
-	Word32 i;
+	float sum;
+	int32_t i;
 
 	sum = g_pitch;
 
@@ -3732,18 +3732,18 @@ static Word16 check_gp_clipping(Float32 * gp, Float32 g_pitch)
  * Returns:
  *    index             index of quantization
  */
-static Word16 q_gain_pitch(enum Mode mode, Float32 gp_limit, Float32 * gain,
-			   Float32 gain_cand[], Word32 gain_cind[])
+static int16_t q_gain_pitch(enum Mode mode, float gp_limit, float * gain,
+			   float gain_cand[], int32_t gain_cind[])
 {
-	Float32 err_min, err;
-	Word32 i, index;
+	float err_min, err;
+	int32_t i, index;
 
-	err_min = (Float32) fabs(*gain - qua_gain_pitch[0]);
+	err_min = (float) fabs(*gain - qua_gain_pitch[0]);
 	index = 0;
 
 	for (i = 1; i < NB_QUA_PITCH; i++) {
 		if (qua_gain_pitch[i] <= gp_limit) {
-			err = (Float32) fabs(*gain - qua_gain_pitch[i]);
+			err = (float) fabs(*gain - qua_gain_pitch[i]);
 
 			if (err < err_min) {
 				err_min = err;
@@ -3759,7 +3759,7 @@ static Word16 q_gain_pitch(enum Mode mode, Float32 gp_limit, Float32 * gain,
 		 * neighbours, except for the extreme cases (i=0 or i=NB_QUA_PITCH-1),
 		 * where the direct neighbour and the neighbour to that is used.
 		 */
-		Word32 ii;
+		int32_t ii;
 
 		if (index == 0) {
 			ii = index;
@@ -3783,7 +3783,7 @@ static Word16 q_gain_pitch(enum Mode mode, Float32 gp_limit, Float32 * gain,
 		/* return the index and gain pitch found */
 		*gain = qua_gain_pitch_MR122[index];
 	}
-	return (Word16) index;
+	return (int16_t) index;
 }
 
 /*
@@ -3826,26 +3826,26 @@ static Word16 q_gain_pitch(enum Mode mode, Float32 gp_limit, Float32 * gain,
  * Returns:
  *    void
  */
-static void cl_ltp(Word32 * T0_prev_subframe, Float32 * gp, enum Mode mode,
-		   Word16 frame_offset, Word32 T_op[], Float32 * h1,
-		   Float32 * exc, Float32 res2[], Float32 xn[], Word16 lsp_flag,
-		   Float32 xn2[], Float32 y1[], Word32 * T0, Word32 * T0_frac,
-		   Float32 * gain_pit, Float32 gCoeff[], Word16 ** anap,
-		   Float32 * gp_limit)
+static void cl_ltp(int32_t * T0_prev_subframe, float * gp, enum Mode mode,
+		   int16_t frame_offset, int32_t T_op[], float * h1,
+		   float * exc, float res2[], float xn[], int16_t lsp_flag,
+		   float xn2[], float y1[], int32_t * T0, int32_t * T0_frac,
+		   float * gain_pit, float gCoeff[], int16_t ** anap,
+		   float * gp_limit)
 {
-	Float32 s;
-	Word32 i, n;
-	Word16 gpc_flag, resu3;	/* flag for upsample resolution */
+	float s;
+	int32_t i, n;
+	int16_t gpc_flag, resu3;	/* flag for upsample resolution */
 
-	Word32 exc_tmp[314];
-	Word32 *exc_tmp_p;
+	int32_t exc_tmp[314];
+	int32_t *exc_tmp_p;
 
 	exc_tmp_p = exc_tmp + PIT_MAX + L_INTERPOL;
 
 	/* Closed-loop fractional pitch search */
 	*T0 = Pitch_fr(T0_prev_subframe, mode, T_op, exc, xn, h1, frame_offset,
 		       T0_frac, &resu3, &i);
-	*(*anap)++ = (Word16) i;
+	*(*anap)++ = (int16_t) i;
 
 	/*
 	 * Compute the adaptive codebook vector
@@ -3854,12 +3854,12 @@ static void cl_ltp(Word32 * T0_prev_subframe, Float32 * gp, enum Mode mode,
 	 * syncronisation
 	 */
 	for (i = -(PIT_MAX + L_INTERPOL); i < 40; i++)
-		exc_tmp_p[i] = (Word32) exc[i];
+		exc_tmp_p[i] = (int32_t) exc[i];
 
 	Pred_lt_3or6_fixed(exc_tmp_p, *T0, *T0_frac, resu3);
 
 	for (i = -(PIT_MAX + L_INTERPOL); i < 40; i++)
-		exc[i] = (Float32) exc_tmp_p[i];
+		exc[i] = (float) exc_tmp_p[i];
 
 	/*
 	 *   Convolve to get filtered adaptive codebook vector
@@ -3938,10 +3938,10 @@ static void cl_ltp(Word32 * T0_prev_subframe, Float32 * gp, enum Mode mode,
  * Returns:
  *    acc               dot product
  */
-static Float32 DotProduct(Float32 * x, Float32 * y, Word32 len)
+static float DotProduct(float * x, float * y, int32_t len)
 {
-	Word32 i;
-	Float32 acc;
+	int32_t i;
+	float acc;
 
 	acc = 0.0F;
 
@@ -3965,14 +3965,14 @@ static Float32 DotProduct(Float32 * x, Float32 * y, Word32 len)
  * Returns:
  *    void
  */
-static void cor_h_x(Float32 h[], Float32 x[], Float32 dn[])
+static void cor_h_x(float h[], float x[], float dn[])
 {
-	Word32 i;
+	int32_t i;
 
-	dn[0] = (Float32) Dotproduct40(h, x);
+	dn[0] = (float) Dotproduct40(h, x);
 
 	for (i = 1; i < L_CODE; i++)
-		dn[i] = (Float32) DotProduct(h, &x[i], L_CODE - i);
+		dn[i] = (float) DotProduct(h, &x[i], L_CODE - i);
 }
 
 /*
@@ -3991,10 +3991,10 @@ static void cor_h_x(Float32 h[], Float32 x[], Float32 dn[])
  * Returns:
  *    void
  */
-static void set_sign(Float32 dn[], Float32 sign[], Float32 dn2[], Word16 n)
+static void set_sign(float dn[], float sign[], float dn2[], int16_t n)
 {
-	Float32 val, min;
-	Word32 i, j, k, pos = 0;
+	float val, min;
+	int32_t i, j, k, pos = 0;
 
 	/* set sign according to dn[] */
 	for (i = 0; i < L_CODE; i++) {
@@ -4049,17 +4049,17 @@ static void set_sign(Float32 dn[], Float32 sign[], Float32 dn2[], Word16 n)
  * Returns:
  *    void
  */
-static void cor_h(Float32 h[], Float32 sign[], Float32 rr[][L_CODE])
+static void cor_h(float h[], float sign[], float rr[][L_CODE])
 {
-	Float32 sum;
-	Float32 *prr, *ph, *ph_max;
-	Float32 *rrj, *rri, *signi, *signj;
-	Word32 ii, total_loops, four_loops;
+	float sum;
+	float *prr, *ph, *ph_max;
+	float *rrj, *rri, *signi, *signj;
+	int32_t ii, total_loops, four_loops;
 
 	sum = 0.0F;
 
 	/* Compute diagonal matrix of autocorrelation of h */
-	rr[0][0] = (Float32) Dotproduct40(h, h);
+	rr[0][0] = (float) Dotproduct40(h, h);
 	prr = &rr[39][39];
 	ph = &h[0];
 	ph_max = ph + 39;
@@ -4136,7 +4136,7 @@ static void cor_h(Float32 h[], Float32 sign[], Float32 rr[][L_CODE])
 	 * {
 	 * j = m;
 	 * i = j - ii;
-	 * sum = (Float32)0.0;
+	 * sum = (float)0.0;
 	 * for ( k = 0; k < (L_CODE-ii); k++ )
 	 * {
 	 * sum += h[k]*h[k+ii];
@@ -4376,13 +4376,13 @@ static void cor_h(Float32 h[], Float32 sign[], Float32 rr[][L_CODE])
  * Returns:
  *    void
  */
-static void search_2i40_9bits(Word16 subNr, Float32 dn[], Float32 rr[][L_CODE],
-			      Word32 codvec[])
+static void search_2i40_9bits(int16_t subNr, float dn[], float rr[][L_CODE],
+			      int32_t codvec[])
 {
-	Float32 ps0, ps1, psk, alp, alp0, alp1, alpk, sq, sq1;
-	Word32 i0, i1, ix, i;
-	Word16 ipos[2];
-	Word16 track1;
+	float ps0, ps1, psk, alp, alp0, alp1, alpk, sq, sq1;
+	int32_t i0, i1, ix, i;
+	int16_t ipos[2];
+	int16_t track1;
 
 	psk = -1;
 	alpk = 1;
@@ -4450,15 +4450,15 @@ static void search_2i40_9bits(Word16 subNr, Float32 dn[], Float32 rr[][L_CODE],
  * Returns:
  *    void
  */
-static void build_code_2i40_9bits(Word16 subNr, Word32 codvec[], Float32
-				  dn_sign[], Float32 cod[], Float32 h[],
-				  Float32 y[], Word16 * anap)
+static void build_code_2i40_9bits(int16_t subNr, int32_t codvec[], float
+				  dn_sign[], float cod[], float h[],
+				  float y[], int16_t * anap)
 {
-	Float32 s;
-	Float32 *p0, *p1;
-	Word32 _sign[2];
-	Word32 i, j, k, track, index, indx = 0, rsign = 0;
-	Word8 first, *pt;
+	float s;
+	float *p0, *p1;
+	int32_t _sign[2];
+	int32_t i, j, k, track, index, indx = 0, rsign = 0;
+	int8_t first, *pt;
 
 	pt = &trackTable[subNr + (subNr << 2)];
 	memzero(cod, 160);
@@ -4468,7 +4468,7 @@ static void build_code_2i40_9bits(Word16 subNr, Word32 codvec[], Float32
 		i = codvec[k];
 
 		/* read sign */
-		j = (Word32) dn_sign[i];
+		j = (int32_t) dn_sign[i];
 
 		/* index = pos/5 */
 		index = i / 5;
@@ -4519,8 +4519,8 @@ static void build_code_2i40_9bits(Word16 subNr, Word32 codvec[], Float32
 		s += *p1++ * _sign[1];
 		y[i] = s;
 	}
-	anap[0] = (Word16) indx;
-	anap[1] = (Word16) rsign;
+	anap[0] = (int16_t) indx;
+	anap[1] = (int16_t) rsign;
 }
 
 /*
@@ -4550,14 +4550,14 @@ static void build_code_2i40_9bits(Word16 subNr, Word32 codvec[], Float32
  * Returns:
  *    void
  */
-static void code_2i40_9bits(Word16 subNr, Float32 x[], Float32 h[], Word32 T0,
-			    Float32 pitch_sharp, Float32 code[], Float32 y[],
-			    Word16 * anap)
+static void code_2i40_9bits(int16_t subNr, float x[], float h[], int32_t T0,
+			    float pitch_sharp, float code[], float y[],
+			    int16_t * anap)
 {
-	Float32 rr[L_CODE][L_CODE];
-	Float32 dn[L_CODE], dn_sign[L_CODE], dn2[L_CODE];
-	Word32 codvec[2];
-	Word32 i;
+	float rr[L_CODE][L_CODE];
+	float dn[L_CODE], dn_sign[L_CODE], dn2[L_CODE];
+	int32_t codvec[2];
+	int32_t i;
 
 	if ((T0 < L_CODE) && (pitch_sharp != 0.0F))
 		for (i = T0; i < L_CODE; i++) {
@@ -4595,14 +4595,14 @@ static void code_2i40_9bits(Word16 subNr, Float32 x[], Float32 h[], Word32 T0,
  * Returns:
  *    void
  */
-static void search_2i40_11bits(Float32 dn[], Float32 rr[][L_CODE], Word32
+static void search_2i40_11bits(float dn[], float rr[][L_CODE], int32_t
 			       codvec[])
 {
-	Float64 alpk, alp, alp0, alp1;
-	Float32 psk, ps0, ps1, sq, sq1;
-	Word32 i, i0, i1, ix = 0;
-	Word16 ipos[2];
-	Word16 track1, track2;
+	double alpk, alp, alp0, alp1;
+	float psk, ps0, ps1, sq, sq1;
+	int32_t i, i0, i1, ix = 0;
+	int16_t ipos[2];
+	int16_t track1, track2;
 
 	psk = -1;
 	alpk = 1;
@@ -4683,20 +4683,20 @@ static void search_2i40_11bits(Float32 dn[], Float32 rr[][L_CODE], Word32
  * Returns:
  *    void
  */
-static void build_code_2i40_11bits(Word32 codvec[], Float32 dn_sign[], Float32
-				   cod[], Float32 h[], Float32 y[],
-				   Word16 * anap)
+static void build_code_2i40_11bits(int32_t codvec[], float dn_sign[], float
+				   cod[], float h[], float y[],
+				   int16_t * anap)
 {
-	Float64 s;
-	Float32 *p0, *p1;
-	Word32 _sign[2];
-	Word32 i, j, k, track, index, indx = 0, rsign = 0;
+	double s;
+	float *p0, *p1;
+	int32_t _sign[2];
+	int32_t i, j, k, track, index, indx = 0, rsign = 0;
 
 	memzero(cod, 160);
 
 	for (k = 0; k < 2; k++) {
 		i = codvec[k];	/* read pulse position */
-		j = (Word16) dn_sign[i];	/* read sign */
+		j = (int16_t) dn_sign[i];	/* read sign */
 		index = i / 5;	/* index = pos/5 */
 
 		/* track = pos%5 */
@@ -4740,10 +4740,10 @@ static void build_code_2i40_11bits(Word32 codvec[], Float32 dn_sign[], Float32
 	for (i = 0; i < L_CODE; i++) {
 		s = *p0++ * _sign[0];
 		s += *p1++ * _sign[1];
-		y[i] = (Float32) s;
+		y[i] = (float) s;
 	}
-	anap[0] = (Word16) indx;
-	anap[1] = (Word16) rsign;
+	anap[0] = (int16_t) indx;
+	anap[1] = (int16_t) rsign;
 }
 
 /*
@@ -4778,14 +4778,14 @@ static void build_code_2i40_11bits(Word32 codvec[], Float32 dn_sign[], Float32
  * Returns:
  *    void
  */
-static void code_2i40_11bits(Float32 x[], Float32 h[], Word32 T0, Float32
-			     pitch_sharp, Float32 code[], Float32 y[],
-			     Word16 * anap)
+static void code_2i40_11bits(float x[], float h[], int32_t T0, float
+			     pitch_sharp, float code[], float y[],
+			     int16_t * anap)
 {
-	Float32 rr[L_CODE][L_CODE];
-	Float32 dn[L_CODE], dn2[L_CODE], dn_sign[L_CODE];
-	Word32 codvec[2];
-	Word32 i;
+	float rr[L_CODE][L_CODE];
+	float dn[L_CODE], dn2[L_CODE], dn_sign[L_CODE];
+	int32_t codvec[2];
+	int32_t i;
 
 	if ((T0 < L_CODE) && (pitch_sharp != 0.0F)) {
 		for (i = T0; i < L_CODE; i++) {
@@ -4826,13 +4826,13 @@ static void code_2i40_11bits(Float32 x[], Float32 h[], Word32 T0, Float32
  * Returns:
  *    void
  */
-static void search_3i40(Float32 dn[], Float32 dn2[], Float32 rr[][L_CODE],
-			Word32 codvec[])
+static void search_3i40(float dn[], float dn2[], float rr[][L_CODE],
+			int32_t codvec[])
 {
-	Float32 psk, ps0, ps1, sq, sq1, alpk, alp, alp0, alp1, ps = 0.0F;
-	Float32 *rr2, *rr1, *rr0, *pdn, *pdn_max;
-	Word32 ipos[3];
-	Word32 i0, i1, i2, ix, i, pos, track1, track2;
+	float psk, ps0, ps1, sq, sq1, alpk, alp, alp0, alp1, ps = 0.0F;
+	float *rr2, *rr1, *rr0, *pdn, *pdn_max;
+	int32_t ipos[3];
+	int32_t i0, i1, i2, ix, i, pos, track1, track2;
 
 	psk = -1.0F;
 	alpk = 1.0F;
@@ -4875,7 +4875,7 @@ static void search_3i40(Float32 dn[], Float32 dn2[], Float32 rr[][L_CODE],
 								sq = sq1;
 								ps = ps1;
 								alp = alp1;
-								ix = (Word16)
+								ix = (int16_t)
 								    (pdn - dn);
 							}
 							pdn += STEP;
@@ -4909,7 +4909,7 @@ static void search_3i40(Float32 dn[], Float32 dn2[], Float32 rr[][L_CODE],
 							    (sq * alp1)) {
 								sq = sq1;
 								alp = alp1;
-								ix = (Word16)
+								ix = (int16_t)
 								    (pdn - dn);
 							}
 							pdn += STEP;
@@ -4961,14 +4961,14 @@ static void search_3i40(Float32 dn[], Float32 dn2[], Float32 rr[][L_CODE],
  * Returns:
  *    void
  */
-static void build_code_3i40_14bits(Word32 codvec[], Float32 dn_sign[], Float32
-				   cod[], Float32 h[], Float32 y[],
-				   Word16 * anap)
+static void build_code_3i40_14bits(int32_t codvec[], float dn_sign[], float
+				   cod[], float h[], float y[],
+				   int16_t * anap)
 {
-	Float64 s;
-	Float32 _sign[3];
-	Float32 *p0, *p1, *p2;
-	Word32 i, j, k, track, index, indx, rsign;
+	double s;
+	float _sign[3];
+	float *p0, *p1, *p2;
+	int32_t i, j, k, track, index, indx, rsign;
 
 	memzero(cod, 160);
 	indx = 0;
@@ -4979,7 +4979,7 @@ static void build_code_3i40_14bits(Word32 codvec[], Float32 dn_sign[], Float32
 		i = codvec[k];
 
 		/* read sign */
-		j = (Word16) dn_sign[i];
+		j = (int16_t) dn_sign[i];
 
 		/* index = pos/5 */
 		index = i / 5;
@@ -5018,10 +5018,10 @@ static void build_code_3i40_14bits(Word32 codvec[], Float32 dn_sign[], Float32
 		s = *p0++ * _sign[0];
 		s += *p1++ * _sign[1];
 		s += *p2++ * _sign[2];
-		y[i] = (Float32) s;
+		y[i] = (float) s;
 	}
-	anap[0] = (Word16) indx;
-	anap[1] = (Word16) rsign;
+	anap[0] = (int16_t) indx;
+	anap[1] = (int16_t) rsign;
 }
 
 /*
@@ -5055,14 +5055,14 @@ static void build_code_3i40_14bits(Word32 codvec[], Float32 dn_sign[], Float32
  * Returns:
  *    void
  */
-static void code_3i40_14bits(Float32 x[], Float32 h[], Word32 T0, Float32
-			     pitch_sharp, Float32 code[], Float32 y[],
-			     Word16 * anap)
+static void code_3i40_14bits(float x[], float h[], int32_t T0, float
+			     pitch_sharp, float code[], float y[],
+			     int16_t * anap)
 {
-	Float32 rr[L_CODE][L_CODE];
-	Float32 dn[L_CODE], dn2[L_CODE], dn_sign[L_CODE];
-	Word32 codvec[3];
-	Word32 i;
+	float rr[L_CODE][L_CODE];
+	float dn[L_CODE], dn2[L_CODE], dn_sign[L_CODE];
+	int32_t codvec[3];
+	int32_t i;
 
 	memzero(codvec, 3);
 
@@ -5107,13 +5107,13 @@ static void code_3i40_14bits(Float32 x[], Float32 h[], Word32 T0, Float32
  * Returns:
  *    void
  */
-static void search_4i40(Float32 dn[], Float32 dn2[], Float32 rr[][L_CODE],
-			Word32 codvec[])
+static void search_4i40(float dn[], float dn2[], float rr[][L_CODE],
+			int32_t codvec[])
 {
-	Float64 alpk, alp, alp0, alp1;
-	Float32 ps, psk, ps0, ps1, sq, sq1;
-	Word32 ipos[4];
-	Word32 i0, i1, i2, i3, ix, i, pos, track;
+	double alpk, alp, alp0, alp1;
+	float ps, psk, ps0, ps1, sq, sq1;
+	int32_t ipos[4];
+	int32_t i0, i1, i2, i3, ix, i, pos, track;
 
 	/* Default value */
 	psk = -1;
@@ -5273,13 +5273,13 @@ static void search_4i40(Float32 dn[], Float32 dn2[], Float32 rr[][L_CODE],
  * Returns:
  *    void
  */
-static void build_code_4i40(Word32 codvec[], Float32 dn_sign[], Float32 cod[],
-			    Float32 h[], Float32 y[], Word16 * anap)
+static void build_code_4i40(int32_t codvec[], float dn_sign[], float cod[],
+			    float h[], float y[], int16_t * anap)
 {
-	Float64 s;
-	Float32 *p0, *p1, *p2, *p3;
-	Word32 _sign[4];
-	Word32 i, j, k, track, index, indx = 0, rsign = 0;
+	double s;
+	float *p0, *p1, *p2, *p3;
+	int32_t _sign[4];
+	int32_t i, j, k, track, index, indx = 0, rsign = 0;
 
 	memzero(cod, 160);
 
@@ -5288,7 +5288,7 @@ static void build_code_4i40(Word32 codvec[], Float32 dn_sign[], Float32 cod[],
 		i = codvec[k];
 
 		/* read sign */
-		j = (Word16) dn_sign[i];
+		j = (int16_t) dn_sign[i];
 		index = i / 5;
 		track = i % 5;
 		index = gray[index];
@@ -5324,10 +5324,10 @@ static void build_code_4i40(Word32 codvec[], Float32 dn_sign[], Float32 cod[],
 		s += *p1++ * _sign[1];
 		s += *p2++ * _sign[2];
 		s += *p3++ * _sign[3];
-		y[i] = (Float32) (s);
+		y[i] = (float) (s);
 	}
-	anap[0] = (Word16) indx;
-	anap[1] = (Word16) rsign;
+	anap[0] = (int16_t) indx;
+	anap[1] = (int16_t) rsign;
 }
 
 /*
@@ -5361,14 +5361,14 @@ static void build_code_4i40(Word32 codvec[], Float32 dn_sign[], Float32 cod[],
  * Returns:
  *    void
  */
-static void code_4i40_17bits(Float32 x[], Float32 h[], Word32 T0, Float32
-			     pitch_sharp, Float32 code[], Float32 y[],
-			     Word16 * anap)
+static void code_4i40_17bits(float x[], float h[], int32_t T0, float
+			     pitch_sharp, float code[], float y[],
+			     int16_t * anap)
 {
-	Float32 rr[L_CODE][L_CODE];
-	Float32 dn[L_CODE], dn2[L_CODE], dn_sign[L_CODE];
-	Word32 codvec[4];
-	Word32 i;
+	float rr[L_CODE][L_CODE];
+	float dn[L_CODE], dn2[L_CODE], dn_sign[L_CODE];
+	int32_t codvec[4];
+	int32_t i;
 
 	if ((T0 < L_CODE) && (pitch_sharp != 0)) {
 		for (i = T0; i < L_CODE; i++) {
@@ -5425,20 +5425,20 @@ static void code_4i40_17bits(Float32 x[], Float32 h[], Word32 T0, Float32
  * Returns:
  *    void
  */
-static void set_sign12k2(Float32 dn[], Float32 cn[], Float32 sign[], Word32
-			 pos_max[], Word16 nb_track, Word32 ipos[], Word16 step)
+static void set_sign12k2(float dn[], float cn[], float sign[], int32_t
+			 pos_max[], int16_t nb_track, int32_t ipos[], int16_t step)
 {
-	Float32 b[L_CODE];
-	Float32 val, cor, k_cn, k_dn, max, max_of_all, sum;
-	Word32 i, j, pos = 0;
+	float b[L_CODE];
+	float val, cor, k_cn, k_dn, max, max_of_all, sum;
+	int32_t i, j, pos = 0;
 
 	/* calculate energy for normalization of cn[] and dn[] */
 	sum = 0.01F;
-	sum += (Float32) Dotproduct40(cn, cn);
-	k_cn = (Float32) (1 / sqrt(sum));
+	sum += (float) Dotproduct40(cn, cn);
+	k_cn = (float) (1 / sqrt(sum));
 	sum = 0.01F;
-	sum += (Float32) Dotproduct40(dn, dn);
-	k_dn = (Float32) (1 / sqrt(sum));
+	sum += (float) Dotproduct40(dn, dn);
+	k_dn = (float) (1 / sqrt(sum));
 
 	for (i = 0; i < L_CODE; i++) {
 		val = dn[i];
@@ -5519,15 +5519,15 @@ static void set_sign12k2(Float32 dn[], Float32 cn[], Float32 sign[], Word32
  * Returns:
  *    void
  */
-static void search_8i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
-			Word32 pos_max[], Word32 codvec[])
+static void search_8i40(float dn[], float rr[][L_CODE], int32_t ipos[],
+			int32_t pos_max[], int32_t codvec[])
 {
-	Float32 rrv[L_CODE];
-	Float32 psk, ps, ps0, ps1, ps2, sq, sq2, alpk, alp, alp0, alp1, alp2;
-	Float32 *p_r, *p_r0, *p_r1, *p_r2, *p_r3, *p_r4, *p_r5, *p_r6, *p_r7,
+	float rrv[L_CODE];
+	float psk, ps, ps0, ps1, ps2, sq, sq2, alpk, alp, alp0, alp1, alp2;
+	float *p_r, *p_r0, *p_r1, *p_r2, *p_r3, *p_r4, *p_r5, *p_r6, *p_r7,
 	    *p_r8;
-	Float32 *p_rrv, *p_rrv0, *p_dn, *p_dn0, *p_dn1, *p_dn_max;
-	Word32 i0, i1, i2, i3, i4, i5, i6, i7, j, k, ia, ib, i, pos;
+	float *p_rrv, *p_rrv0, *p_dn, *p_dn0, *p_dn1, *p_dn_max;
+	int32_t i0, i1, i2, i3, i4, i5, i6, i7, j, k, ia, ib, i, pos;
 
 	p_dn_max = &dn[39];
 
@@ -5826,14 +5826,14 @@ static void search_8i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
 		if ((alpk * sq) > (psk * alp)) {
 			psk = sq;
 			alpk = alp;
-			codvec[0] = (Word16) i0;
-			codvec[1] = (Word16) i1;
-			codvec[2] = (Word16) i2;
-			codvec[3] = (Word16) i3;
-			codvec[4] = (Word16) i4;
-			codvec[5] = (Word16) i5;
-			codvec[6] = (Word16) ia;
-			codvec[7] = (Word16) ib;
+			codvec[0] = (int16_t) i0;
+			codvec[1] = (int16_t) i1;
+			codvec[2] = (int16_t) i2;
+			codvec[3] = (int16_t) i3;
+			codvec[4] = (int16_t) i4;
+			codvec[5] = (int16_t) i5;
+			codvec[6] = (int16_t) ia;
+			codvec[7] = (int16_t) ib;
 		}
 
 		/*
@@ -5869,14 +5869,14 @@ static void search_8i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
  * Returns:
  *    void
  */
-static void build_code_8i40_31bits(Word32 codvec[], Float32 dn_sign[], Float32
-				   cod[], Float32 h[], Float32 y[],
-				   Word32 sign_indx[], Word32 pos_indx[])
+static void build_code_8i40_31bits(int32_t codvec[], float dn_sign[], float
+				   cod[], float h[], float y[],
+				   int32_t sign_indx[], int32_t pos_indx[])
 {
-	Float64 s;
-	Float32 *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7;
-	Word32 sign[8];
-	Word32 i, j, k, track, sign_index, pos_index;
+	double s;
+	float *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7;
+	int32_t sign[8];
+	int32_t i, j, k, track, sign_index, pos_index;
 
 	memzero(cod, L_CODE << 2);
 
@@ -5890,7 +5890,7 @@ static void build_code_8i40_31bits(Word32 codvec[], Float32 dn_sign[], Float32
 		i = codvec[k];
 
 		/* read sign */
-		j = (Word32) dn_sign[i];
+		j = (int32_t) dn_sign[i];
 
 		/* index = pos/4 */
 		pos_index = i >> 2;
@@ -5966,7 +5966,7 @@ static void build_code_8i40_31bits(Word32 codvec[], Float32 dn_sign[], Float32
 		s += *p5++ * sign[5];
 		s += *p6++ * sign[6];
 		s += *p7++ * sign[7];
-		y[i] = (Float32) (s);
+		y[i] = (float) (s);
 	}
 }
 
@@ -5985,9 +5985,9 @@ static void build_code_8i40_31bits(Word32 codvec[], Float32 dn_sign[], Float32
  * Returns:
  *    indx
  */
-static Word16 compress10(Word32 pos_indxA, Word32 pos_indxB, Word32 pos_indxC)
+static int16_t compress10(int32_t pos_indxA, int32_t pos_indxB, int32_t pos_indxC)
 {
-	Word32 indx, ia, ib, ic;
+	int32_t indx, ia, ib, ic;
 
 	ia = pos_indxA >> 1;
 	ib = ((pos_indxB >> 1) * 5);
@@ -5997,7 +5997,7 @@ static Word16 compress10(Word32 pos_indxA, Word32 pos_indxB, Word32 pos_indxC)
 	ib = (pos_indxB & 1) << 1;
 	ic = (pos_indxC & 1) << 2;
 	indx = indx + (ia + (ib + ic));
-	return (Word16) indx;
+	return (int16_t) indx;
 }
 
 /*
@@ -6019,13 +6019,13 @@ static Word16 compress10(Word32 pos_indxA, Word32 pos_indxB, Word32 pos_indxC)
  * Returns:
  *    void
  */
-static void compress_code(Word32 sign_indx[], Word32 pos_indx[], Word16 indx[]
+static void compress_code(int32_t sign_indx[], int32_t pos_indx[], int16_t indx[]
     )
 {
-	Word32 i, ia, ib, ic;
+	int32_t i, ia, ib, ic;
 
 	for (i = 0; i < NB_TRACK_MR102; i++) {
-		indx[i] = (Word16) sign_indx[i];
+		indx[i] = (int16_t) sign_indx[i];
 	}
 
 	/*
@@ -6061,7 +6061,7 @@ static void compress_code(Word32 sign_indx[], Word32 pos_indx[], Word16 indx[]
 	ic = ((ib * 1311) >> 15) << 2;
 	ia = pos_indx[3] & 1;
 	ib = (pos_indx[7] & 1) << 1;
-	indx[NB_TRACK_MR102 + 2] = (Word16) (ia + (ib + ic));
+	indx[NB_TRACK_MR102 + 2] = (int16_t) (ia + (ib + ic));
 }
 
 /*
@@ -6076,7 +6076,7 @@ static void compress_code(Word32 sign_indx[], Word32 pos_indx[], Word16 indx[]
  *    pitch_sharp       I: Last quantized pitch gain
  *    code              O: algebraic (fixed) codebook excitation
  *    y                 O: filtered fixed codebook excitation
- *    anap              O: 7 Word16, index of 8 pulses (signs+positions)
+ *    anap              O: 7 int16_t, index of 8 pulses (signs+positions)
  *
  * Function:
  *    Searches a 31 bit algebraic codebook containing 8 pulses
@@ -6103,15 +6103,15 @@ static void compress_code(Word32 sign_indx[], Word32 pos_indx[], Word16 indx[]
  * Returns:
  *    void
  */
-static void code_8i40_31bits(Float32 x[], Float32 cn[], Float32 h[],
-			     Word32 T0, Float32 pitch_sharp, Float32 code[],
-			     Float32 y[], Word16 anap[])
+static void code_8i40_31bits(float x[], float cn[], float h[],
+			     int32_t T0, float pitch_sharp, float code[],
+			     float y[], int16_t anap[])
 {
-	Float32 rr[L_CODE][L_CODE];
-	Float32 dn[L_CODE], sign[L_CODE];
-	Word32 ipos[8], pos_max[NB_TRACK_MR102], codvec[8],
+	float rr[L_CODE][L_CODE];
+	float dn[L_CODE], sign[L_CODE];
+	int32_t ipos[8], pos_max[NB_TRACK_MR102], codvec[8],
 	    linear_signs[NB_TRACK_MR102], linear_codewords[8];
-	Word32 i;
+	int32_t i;
 
 	memzero(ipos, 8);
 
@@ -6178,15 +6178,15 @@ static void code_8i40_31bits(Float32 x[], Float32 cn[], Float32 h[],
  * Returns:
  *    void
  */
-static void search_10i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
-			 Word32 pos_max[], Word32 codvec[])
+static void search_10i40(float dn[], float rr[][L_CODE], int32_t ipos[],
+			 int32_t pos_max[], int32_t codvec[])
 {
-	Float32 rrv[L_CODE];
-	Float32 psk, ps, ps0, ps1, ps2, sq, sq2, alpk, alp, alp0, alp1, alp2;
-	Float32 *p_r, *p_r0, *p_r1, *p_r2, *p_r3, *p_r4, *p_r5, *p_r6, *p_r7,
+	float rrv[L_CODE];
+	float psk, ps, ps0, ps1, ps2, sq, sq2, alpk, alp, alp0, alp1, alp2;
+	float *p_r, *p_r0, *p_r1, *p_r2, *p_r3, *p_r4, *p_r5, *p_r6, *p_r7,
 	    *p_r8, *p_r9, *p_r10;
-	Float32 *p_rrv, *p_rrv0, *p_dn, *p_dn0, *p_dn1, *p_dn_max;
-	Word32 i0, i1, i2, i3, i4, i5, i6, i7, i8, i9, j, k, ia, ib, i, pos;
+	float *p_rrv, *p_rrv0, *p_dn, *p_dn0, *p_dn1, *p_dn_max;
+	int32_t i0, i1, i2, i3, i4, i5, i6, i7, i8, i9, j, k, ia, ib, i, pos;
 
 	p_dn_max = &dn[39];
 
@@ -6264,8 +6264,8 @@ static void search_10i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
 					sq = sq2;
 					ps = ps2;
 					alp = alp2;
-					ia = (Word16) (p_dn0 - dn);
-					ib = (Word16) (p_dn - dn);
+					ia = (int16_t) (p_dn0 - dn);
+					ib = (int16_t) (p_dn - dn);
 				}
 				p_rrv += 5;
 				p_dn += 5;
@@ -6346,8 +6346,8 @@ static void search_10i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
 					sq = sq2;
 					ps = ps2;
 					alp = alp2;
-					ia = (Word16) (p_dn0 - dn);
-					ib = (Word16) (p_dn - dn);
+					ia = (int16_t) (p_dn0 - dn);
+					ib = (int16_t) (p_dn - dn);
 				}
 				p_dn += 5;
 				p_rrv += 5;
@@ -6444,8 +6444,8 @@ static void search_10i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
 					sq = sq2;
 					ps = ps2;
 					alp = alp2;
-					ia = (Word16) (p_dn0 - dn);
-					ib = (Word16) (p_dn - dn);
+					ia = (int16_t) (p_dn0 - dn);
+					ib = (int16_t) (p_dn - dn);
 				}
 				p_dn += 5;
 				p_rrv += 5;
@@ -6555,8 +6555,8 @@ static void search_10i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
 				if ((alp * sq2) > (sq * alp2)) {
 					sq = sq2;
 					alp = alp2;
-					ia = (Word16) (p_dn0 - dn);
-					ib = (Word16) (p_dn - dn);
+					ia = (int16_t) (p_dn0 - dn);
+					ib = (int16_t) (p_dn - dn);
 				}
 				p_dn += 5;
 				p_rrv += 5;
@@ -6581,16 +6581,16 @@ static void search_10i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
 		if ((alpk * sq) > (psk * alp)) {
 			psk = sq;
 			alpk = alp;
-			codvec[0] = (Word16) i0;
-			codvec[1] = (Word16) i1;
-			codvec[2] = (Word16) i2;
-			codvec[3] = (Word16) i3;
-			codvec[4] = (Word16) i4;
-			codvec[5] = (Word16) i5;
-			codvec[6] = (Word16) i6;
-			codvec[7] = (Word16) i7;
-			codvec[8] = (Word16) ia;
-			codvec[9] = (Word16) ib;
+			codvec[0] = (int16_t) i0;
+			codvec[1] = (int16_t) i1;
+			codvec[2] = (int16_t) i2;
+			codvec[3] = (int16_t) i3;
+			codvec[4] = (int16_t) i4;
+			codvec[5] = (int16_t) i5;
+			codvec[6] = (int16_t) i6;
+			codvec[7] = (int16_t) i7;
+			codvec[8] = (int16_t) ia;
+			codvec[9] = (int16_t) ib;
 		}
 
 		/*
@@ -6624,13 +6624,13 @@ static void search_10i40(Float32 dn[], Float32 rr[][L_CODE], Word32 ipos[],
  * Returns:
  *    void
  */
-static void build_code_10i40_35bits(Word32 codvec[], Float32 dn_sign[], Float32
-				    cod[], Float32 h[], Float32 y[],
-				    Word16 indx[])
+static void build_code_10i40_35bits(int32_t codvec[], float dn_sign[], float
+				    cod[], float h[], float y[],
+				    int16_t indx[])
 {
-	Word32 i, j, k, track, index, sign[10];
-	Float32 *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8, *p9;
-	Float64 s;
+	int32_t i, j, k, track, index, sign[10];
+	float *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8, *p9;
+	double s;
 
 	memzero(cod, 160);
 	memzero(y, 160);
@@ -6644,13 +6644,13 @@ static void build_code_10i40_35bits(Word32 codvec[], Float32 dn_sign[], Float32
 		i = codvec[k];
 
 		/* read sign */
-		j = (Word16) dn_sign[i];
+		j = (int16_t) dn_sign[i];
 
 		/* index = pos/5 */
-		index = (Word16) (i / 5);
+		index = (int16_t) (i / 5);
 
 		/* track = pos%5 */
-		track = (Word16) (i % 5);
+		track = (int16_t) (i % 5);
 
 		if (j > 0) {
 			cod[i] = cod[i] + 1;
@@ -6662,23 +6662,23 @@ static void build_code_10i40_35bits(Word32 codvec[], Float32 dn_sign[], Float32
 		}
 
 		if (indx[track] < 0) {
-			indx[track] = (Word16) index;
+			indx[track] = (int16_t) index;
 		} else {
 			if (((index ^ indx[track]) & 8) == 0) {
 				/* sign of 1st pulse == sign of 2nd pulse */
 				if (indx[track] <= index) {
-					indx[track + 5] = (Word16) index;
+					indx[track + 5] = (int16_t) index;
 				} else {
-					indx[track + 5] = (Word16) indx[track];
-					indx[track] = (Word16) index;
+					indx[track + 5] = (int16_t) indx[track];
+					indx[track] = (int16_t) index;
 				}
 			} else {
 				/* sign of 1st pulse != sign of 2nd pulse */
 				if ((indx[track] & 7) <= (index & 7)) {
-					indx[track + 5] = (Word16) indx[track];
-					indx[track] = (Word16) index;
+					indx[track + 5] = (int16_t) indx[track];
+					indx[track] = (int16_t) index;
 				} else {
-					indx[track + 5] = (Word16) index;
+					indx[track + 5] = (int16_t) index;
 				}
 			}
 		}
@@ -6705,7 +6705,7 @@ static void build_code_10i40_35bits(Word32 codvec[], Float32 dn_sign[], Float32
 		s += *p7++ * sign[7];
 		s += *p8++ * sign[8];
 		s += *p9++ * sign[9];
-		y[i] = (Float32) (s);
+		y[i] = (float) (s);
 	}
 }
 
@@ -6723,14 +6723,14 @@ static void build_code_10i40_35bits(Word32 codvec[], Float32 dn_sign[], Float32
  * Returns:
  *    void
  */
-static void q_p(Word16 * ind, Word32 n)
+static void q_p(int16_t * ind, int32_t n)
 {
-	Word16 tmp;
+	int16_t tmp;
 
 	tmp = *ind;
 
 	if (n < 5) {
-		*ind = (Word16) ((tmp & 0x8) | gray[tmp & 0x7]);
+		*ind = (int16_t) ((tmp & 0x8) | gray[tmp & 0x7]);
 	} else {
 		*ind = gray[tmp & 0x7];
 	}
@@ -6747,7 +6747,7 @@ static void q_p(Word16 * ind, Word32 n)
  *    gain_pit          I: quantified adaptive codebook gain
  *    code              O: algebraic (fixed) codebook excitation
  *    y                 O: filtered fixed codebook excitation
- *    anap              O: 7 Word16, index of 8 pulses (signs+positions)
+ *    anap              O: 7 int16_t, index of 8 pulses (signs+positions)
  *
  * Function:
  *    Searches a 35 bit algebraic codebook containing 10 pulses
@@ -6824,14 +6824,14 @@ static void q_p(Word16 * ind, Word32 n)
  * Returns:
  *    void
  */
-static void code_10i40_35bits(Float32 x[], Float32 cn[], Float32 h[],
-			      Word32 T0, Float32 gain_pit, Float32 code[],
-			      Float32 y[], Word16 anap[])
+static void code_10i40_35bits(float x[], float cn[], float h[],
+			      int32_t T0, float gain_pit, float code[],
+			      float y[], int16_t anap[])
 {
-	Float32 rr[L_CODE][L_CODE];
-	Float32 dn[L_CODE], sign[L_CODE];
-	Word32 ipos[10], pos_max[NB_TRACK], codvec[10];
-	Word32 i;
+	float rr[L_CODE][L_CODE];
+	float dn[L_CODE], sign[L_CODE];
+	int32_t ipos[10], pos_max[NB_TRACK], codvec[10];
+	int32_t i;
 
 	/* include pitch contribution into impulse resp. */
 	if (gain_pit > 1.0F)
@@ -6893,10 +6893,10 @@ static void code_10i40_35bits(Float32 x[], Float32 cn[], Float32 h[],
  * Returns:
  *    void
  */
-static void cbsearch(enum Mode mode, Word16 subnr, Float32 x[],
-		     Float32 h[], Word32 T0, Float32 pitch_sharp,
-		     Float32 gain_pit, Float32 code[], Float32 y[],
-		     Float32 * res2, Word16 ** anap)
+static void cbsearch(enum Mode mode, int16_t subnr, float x[],
+		     float h[], int32_t T0, float pitch_sharp,
+		     float gain_pit, float code[], float y[],
+		     float * res2, int16_t ** anap)
 {
 	switch (mode) {
 	case MR475:
@@ -6956,10 +6956,10 @@ static void cbsearch(enum Mode mode, Word16 subnr, Float32 x[],
  * Returns:
  *    void
  */
-static void Log2_norm(Word32 x, Word32 exp, Word32 * exponent, Word32 *
+static void Log2_norm(int32_t x, int32_t exp, int32_t * exponent, int32_t *
 		      fraction)
 {
-	Word32 y, i, a;
+	int32_t y, i, a;
 
 	if (x <= 0) {
 		*exponent = 0;
@@ -6998,11 +6998,11 @@ static void Log2_norm(Word32 x, Word32 exp, Word32 * exponent, Word32 *
  * Returns:
  *    void
  */
-static void Log2(Word32 x, Word32 * exponent, Word32 * fraction)
+static void Log2(int32_t x, int32_t * exponent, int32_t * fraction)
 {
 	int exp;
 
-	frexp((Float64) x, &exp);
+	frexp((double) x, &exp);
 	exp = 31 - exp;
 	Log2_norm(x << exp, exp, exponent, fraction);
 }
@@ -7028,9 +7028,9 @@ static void Log2(Word32 x, Word32 * exponent, Word32 * fraction)
  * Returns:
  *    result (range: 0<=val<=0x7fffffff)
  */
-static Word32 Pow2(Word32 exponent, Word32 fraction)
+static int32_t Pow2(int32_t exponent, int32_t fraction)
 {
-	Word32 i, a, tmp, x, exp;
+	int32_t i, a, tmp, x, exp;
 
 	/* Extract b10-b16 of fraction */
 	i = fraction >> 10;
@@ -7051,7 +7051,7 @@ static Word32 Pow2(Word32 exponent, Word32 fraction)
 		exp = (30 - exponent);
 
 		/* Rounding */
-		if ((x & ((Word32) 1 << (exp - 1))) != 0) {
+		if ((x & ((int32_t) 1 << (exp - 1))) != 0) {
 			x = (x >> exp) + 1;
 		} else
 			x = x >> exp;
@@ -7101,11 +7101,11 @@ static Word32 Pow2(Word32 exponent, Word32 fraction)
  * Returns:
  *    void
  */
-static void gc_pred(Word32 * past_qua_en, enum Mode mode, Float32 * code,
-		    Word32 * gcode0_exp, Word32 * gcode0_fra, Float32 * en)
+static void gc_pred(int32_t * past_qua_en, enum Mode mode, float * code,
+		    int32_t * gcode0_exp, int32_t * gcode0_fra, float * en)
 {
-	Float64 ener_code;
-	Word32 exp, frac, ener, ener_tmp, tmp;
+	double ener_code;
+	int32_t exp, frac, ener, ener_tmp, tmp;
 	int exp_code;
 
 	/* energy of code */
@@ -7113,7 +7113,7 @@ static void gc_pred(Word32 * past_qua_en, enum Mode mode, Float32 * code,
 
 	if (mode == MR122) {
 
-		ener = (Word32) (ener_code * 33554432);
+		ener = (int32_t) (ener_code * 33554432);
 		/* ener_code = ener_code / lcode; lcode = 40; 1/40 = 26214 Q20       */
 		ener = ((ener + 0x00008000L) >> 16) * 52428;
 
@@ -7138,11 +7138,11 @@ static void gc_pred(Word32 * past_qua_en, enum Mode mode, Float32 * code,
 		*gcode0_exp = ener >> 16;
 		*gcode0_fra = (ener >> 1) - (*gcode0_exp << 15);
 	} else {
-		ener = (Word32) (ener_code * 134217728);
+		ener = (int32_t) (ener_code * 134217728);
 		if (ener < 0)
 			ener = 0x7fffffff;
 
-		frexp((Float64) ener, &exp_code);
+		frexp((double) ener, &exp_code);
 		exp_code = 31 - exp_code;
 		ener <<= exp_code;
 
@@ -7157,7 +7157,7 @@ static void gc_pred(Word32 * past_qua_en, enum Mode mode, Float32 * code,
 			/* mean = 36 dB */
 			tmp += 2183936;	/* Q14 */
 
-			*en = (Float32) ener_code;
+			*en = (float) ener_code;
 		} else if (mode == MR74) {
 			/* mean = 30 dB */
 			tmp += 2085632;	/* Q14 */
@@ -7236,11 +7236,11 @@ static void gc_pred(Word32 * past_qua_en, enum Mode mode, Float32 * code,
  * Returns:
  *    void
  */
-static void calc_filt_energies(enum Mode mode, Float32 xn[], Float32 xn2[],
-			       Float32 y1[], Float32 y2[], Float32 gCoeff[],
-			       Float32 coeff[], Float32 * cod_gain)
+static void calc_filt_energies(enum Mode mode, float xn[], float xn2[],
+			       float y1[], float y2[], float gCoeff[],
+			       float coeff[], float * cod_gain)
 {
-	Float32 sum, ener_init = 0.01F;
+	float sum, ener_init = 0.01F;
 
 	if ((mode == MR795) || (mode == MR475))
 		ener_init = 0;
@@ -7248,23 +7248,23 @@ static void calc_filt_energies(enum Mode mode, Float32 xn[], Float32 xn2[],
 	coeff[1] = -2.0F * gCoeff[1];
 
 	/* Compute scalar product <y2[],y2[]> */
-	sum = (Float32) Dotproduct40(y2, y2);
+	sum = (float) Dotproduct40(y2, y2);
 	sum += ener_init;
 	coeff[2] = sum;
 
 	/* Compute scalar product -2*<xn[],y2[]> */
-	sum = (Float32) Dotproduct40(xn, y2);
+	sum = (float) Dotproduct40(xn, y2);
 	sum += ener_init;
 	coeff[3] = -2.0F * sum;
 
 	/* Compute scalar product 2*<y1[],y2[]> */
-	sum = (Float32) Dotproduct40(y1, y2);
+	sum = (float) Dotproduct40(y1, y2);
 	sum += ener_init;
 	coeff[4] = 2.0F * sum;
 
 	if ((mode == MR475) || (mode == MR795)) {
 		/* Compute scalar product <xn2[],y2[]> */
-		sum = (Float32) Dotproduct40(xn2, y2);
+		sum = (float) Dotproduct40(xn2, y2);
 
 		if (sum <= 0) {
 			*cod_gain = 0;
@@ -7302,11 +7302,11 @@ static void calc_filt_energies(enum Mode mode, Float32 xn[], Float32 xn2[],
  * Returns:
  *    void
  */
-static void MR475_update_unq_pred(Word32 * past_qua_en, Float32 gcode0, Float32
+static void MR475_update_unq_pred(int32_t * past_qua_en, float gcode0, float
 				  cod_gain)
 {
-	Float32 qua_ener, pred_err_fact;
-	Word32 i, index, energy, max, s;
+	float qua_ener, pred_err_fact;
+	int32_t i, index, energy, max, s;
 
 	if (cod_gain <= 0) {
 		/*MIN_QUA_ENER */
@@ -7325,10 +7325,10 @@ static void MR475_update_unq_pred(Word32 * past_qua_en, Float32 gcode0, Float32
 			/*MAX_QUA_ENER */
 			qua_ener = 17.8558F;
 		} else {
-			qua_ener = (Float32) (20.0F * log10(pred_err_fact));
+			qua_ener = (float) (20.0F * log10(pred_err_fact));
 		}
 	}
-	energy = (Word32) (qua_ener * 1024 + 0.5F);
+	energy = (int32_t) (qua_ener * 1024 + 0.5F);
 	max = abs(energy - qua_gain_code[0]);
 	index = 0;
 	/* find match from table */
@@ -7380,23 +7380,23 @@ static void MR475_update_unq_pred(Word32 * past_qua_en, Float32 gcode0, Float32
  * Returns:
  *    index             index of quantization
  */
-static Word16 MR475_gain_quant(Word32 * past_qua_en, Word32 sf0_gcode0_exp,
-			       Word32 sf0_gcode0_fra, Float32 sf0_coeff[],
-			       Float32 sf0_target_en,
-			       Float32 sf1_code_nosharp[],
-			       Word32 sf1_gcode0_exp, Word32 sf1_gcode0_fra,
-			       Float32 sf1_coeff[], Float32 sf1_target_en,
-			       Float32 gp_limit, Float32 * sf0_gain_pit,
-			       Float32 * sf0_gain_cod, Float32 * sf1_gain_pit,
-			       Float32 * sf1_gain_cod)
+static int16_t MR475_gain_quant(int32_t * past_qua_en, int32_t sf0_gcode0_exp,
+			       int32_t sf0_gcode0_fra, float sf0_coeff[],
+			       float sf0_target_en,
+			       float sf1_code_nosharp[],
+			       int32_t sf1_gcode0_exp, int32_t sf1_gcode0_fra,
+			       float sf1_coeff[], float sf1_target_en,
+			       float gp_limit, float * sf0_gain_pit,
+			       float * sf0_gain_cod, float * sf1_gain_pit,
+			       float * sf1_gain_cod)
 {
-	Float32 temp, temp2, g_pitch, g2_pitch, g_code, g2_code, g_pit_cod,
+	float temp, temp2, g_pitch, g2_pitch, g_code, g2_code, g_pit_cod,
 	    dist_min, sf0_gcode0, sf1_gcode0;
-	const Float32 *p;
-	Word32 i, tmp, g_code_tmp, gcode0, index = 0;
+	const float *p;
+	int32_t i, tmp, g_code_tmp, gcode0, index = 0;
 
-	sf0_gcode0 = (Float32) Pow2(sf0_gcode0_exp, sf0_gcode0_fra);
-	sf1_gcode0 = (Float32) Pow2(sf1_gcode0_exp, sf1_gcode0_fra);
+	sf0_gcode0 = (float) Pow2(sf0_gcode0_exp, sf0_gcode0_fra);
+	sf1_gcode0 = (float) Pow2(sf1_gcode0_exp, sf1_gcode0_fra);
 
 	if ((sf0_target_en * 2.0F) < sf1_target_en) {
 		sf0_coeff[0] *= 2.0F;
@@ -7473,19 +7473,19 @@ static Word16 MR475_gain_quant(Word32 * past_qua_en, Word32 sf0_gcode0_exp,
 	tmp = index << 2;
 	p = &table_gain_MR475[tmp];
 	*sf0_gain_pit = *p++;
-	g_code_tmp = (Word32) (*p++ * 4096 + 0.5F);
+	g_code_tmp = (int32_t) (*p++ * 4096 + 0.5F);
 
 	gcode0 = Pow2(14, sf0_gcode0_fra);
 	if (sf0_gcode0_exp < 11) {
 		*sf0_gain_cod =
-		    (Float32) ((g_code_tmp * gcode0) >> (25 - sf0_gcode0_exp));
+		    (float) ((g_code_tmp * gcode0) >> (25 - sf0_gcode0_exp));
 	} else {
 		i = ((g_code_tmp * gcode0) << (sf0_gcode0_exp - 9));
 
 		if ((i >> (sf0_gcode0_exp - 9)) != (g_code_tmp * gcode0)) {
-			*sf0_gain_cod = (Float32) 0x7FFF;
+			*sf0_gain_cod = (float) 0x7FFF;
 		} else {
-			*sf0_gain_cod = (Float32) (i >> 16);
+			*sf0_gain_cod = (float) (i >> 16);
 		}
 	}
 
@@ -7507,19 +7507,19 @@ static Word16 MR475_gain_quant(Word32 * past_qua_en, Word32 sf0_gcode0_exp,
 	tmp += 2;
 	p = &table_gain_MR475[tmp];
 	*sf1_gain_pit = *p++;
-	g_code_tmp = (Word32) (*p++ * 4096 + 0.5F);
+	g_code_tmp = (int32_t) (*p++ * 4096 + 0.5F);
 
 	gcode0 = Pow2(14, sf1_gcode0_fra);
 	if (sf1_gcode0_exp < 11) {
 		*sf1_gain_cod =
-		    (Float32) ((g_code_tmp * gcode0) >> (25 - sf1_gcode0_exp));
+		    (float) ((g_code_tmp * gcode0) >> (25 - sf1_gcode0_exp));
 	} else {
 		i = ((g_code_tmp * gcode0) << (sf1_gcode0_exp - 9));
 
 		if ((i >> (sf1_gcode0_exp - 9)) != (g_code_tmp * gcode0)) {
-			*sf1_gain_cod = (Float32) 0x7FFF;
+			*sf1_gain_cod = (float) 0x7FFF;
 		} else {
-			*sf1_gain_cod = (Float32) (i >> 16);
+			*sf1_gain_cod = (float) (i >> 16);
 		}
 	}
 
@@ -7532,7 +7532,7 @@ static Word16 MR475_gain_quant(Word32 * past_qua_en, Word32 sf0_gcode0_exp,
 	    NB_QUA_CODE + VQ_SIZE_HIGHRATES + VQ_SIZE_LOWRATES + (index << 1) +
 	    1;
 
-	return (Word16) index;
+	return (int16_t) index;
 }
 
 /*
@@ -7564,12 +7564,12 @@ static Word16 MR475_gain_quant(Word32 * past_qua_en, Word32 sf0_gcode0_exp,
  * Returns:
  *    index             quantization index
  */
-static Word16 q_gain_code(Float32 gcode0, Float32 * gain,
-			  Word32 * qua_ener_index)
+static int16_t q_gain_code(float gcode0, float * gain,
+			  int32_t * qua_ener_index)
 {
-	Float64 err_min, err;
-	const Float32 *p;
-	Word32 i, index;
+	double err_min, err;
+	const float *p;
+	int32_t i, index;
 
 	p = &gain_factor[0];
 
@@ -7586,10 +7586,10 @@ static Word16 q_gain_code(Float32 gcode0, Float32 * gain,
 		}
 	}
 	p = &gain_factor[index];
-	*gain = (Float32) floor(gcode0 * *p);
+	*gain = (float) floor(gcode0 * *p);
 	*qua_ener_index = index;
 
-	return (Word16) index;
+	return (int16_t) index;
 }
 
 /*
@@ -7614,19 +7614,19 @@ static Word16 q_gain_code(Float32 gcode0, Float32 * gain,
  * Returns:
  *    void
  */
-static void MR795_gain_code_quant3(Word32 gcode0_exp, Word32 gcode0_fra,
-				   Float32 g_pitch_cand[],
-				   Word32 g_pitch_cind[], Float32 coeff[],
-				   Float32 * gain_pit, Word32 * gain_pit_ind,
-				   Float32 * gain_cod, Word32 * gain_cod_ind,
-				   Word32 * qua_ener_index)
+static void MR795_gain_code_quant3(int32_t gcode0_exp, int32_t gcode0_fra,
+				   float g_pitch_cand[],
+				   int32_t g_pitch_cind[], float coeff[],
+				   float * gain_pit, int32_t * gain_pit_ind,
+				   float * gain_cod, int32_t * gain_cod_ind,
+				   int32_t * qua_ener_index)
 {
-	Float32 gcode0, dist_min, g_pitch, g2_pitch, g_code, g2_code, g_pit_cod,
+	float gcode0, dist_min, g_pitch, g2_pitch, g_code, g2_code, g_pit_cod,
 	    tmp0, tmp;
-	const Float32 *p;
-	Word32 i, j, cod_ind, pit_ind, g_code0, g_code_tmp;
+	const float *p;
+	int32_t i, j, cod_ind, pit_ind, g_code0, g_code_tmp;
 
-	gcode0 = (Float32) Pow2(gcode0_exp, gcode0_fra);
+	gcode0 = (float) Pow2(gcode0_exp, gcode0_fra);
 	/*
 	 * The error energy (sum) to be minimized consists of five terms, t[0..4].
 	 *
@@ -7685,7 +7685,7 @@ static void MR795_gain_code_quant3(Word32 gcode0_exp, Word32 gcode0_fra,
 	 *  read quantized gains and new values for MA predictor memories
 	 */
 	p = &gain_factor[cod_ind];
-	g_code_tmp = (Word32) (2048 * *p);
+	g_code_tmp = (int32_t) (2048 * *p);
 	*qua_ener_index = cod_ind;
 
 	/*
@@ -7700,13 +7700,13 @@ static void MR795_gain_code_quant3(Word32 gcode0_exp, Word32 gcode0_fra,
 		i = i >> gcode0_exp;
 	else
 		i = i << (-gcode0_exp);
-	*gain_cod = (Float32) (i >> 16);
+	*gain_cod = (float) (i >> 16);
 	if (*gain_cod > 32767)
 		*gain_cod = 32767;
 
 	*gain_cod *= 0.5F;
 
-	*gain_cod_ind = (Word16) cod_ind;
+	*gain_cod_ind = (int16_t) cod_ind;
 	*gain_pit = g_pitch_cand[pit_ind];
 	*gain_pit_ind = g_pitch_cind[pit_ind];
 }
@@ -7737,14 +7737,14 @@ static void MR795_gain_code_quant3(Word32 gcode0_exp, Word32 gcode0_fra,
  * Returns:
  *    void
  */
-static void calc_unfilt_energies(Float32 res[], Float32 exc[], Float32 code[],
-				 Float32 gain_pit, Float32 en[], Float32 * ltpg)
+static void calc_unfilt_energies(float res[], float exc[], float code[],
+				 float gain_pit, float en[], float * ltpg)
 {
-	Float32 sum, pred_gain;
-	Word32 i;
+	float sum, pred_gain;
+	int32_t i;
 
 	/* Compute residual energy */
-	en[0] = (Float32) Dotproduct40(res, res);
+	en[0] = (float) Dotproduct40(res, res);
 
 	/* ResEn := 0 if ResEn < 200.0 */
 	if (en[0] < 200) {
@@ -7752,10 +7752,10 @@ static void calc_unfilt_energies(Float32 res[], Float32 exc[], Float32 code[],
 	}
 
 	/* Compute ltp excitation energy */
-	en[1] = (Float32) Dotproduct40(exc, exc);
+	en[1] = (float) Dotproduct40(exc, exc);
 
 	/* Compute scalar product <exc[],code[]> */
-	en[2] = (Float32) Dotproduct40(exc, code);
+	en[2] = (float) Dotproduct40(exc, code);
 
 	/* Compute energy of LTP residual */
 	en[3] = 0;
@@ -7770,7 +7770,7 @@ static void calc_unfilt_energies(Float32 res[], Float32 exc[], Float32 code[],
 	if (en[3] > 0 && en[0] != 0) {
 		/* gain = ResEn / LTPResEn */
 		pred_gain = en[0] / en[3];
-		*ltpg = (Float32) (log10(pred_gain) / log10(2));
+		*ltpg = (float) (log10(pred_gain) / log10(2));
 	} else {
 		*ltpg = 0;
 	}
@@ -7790,13 +7790,13 @@ static void calc_unfilt_energies(Float32 res[], Float32 exc[], Float32 code[],
  * Returns:
  *    index of the median value
  */
-static Float32 gmed_n_f(Float32 ind[], Word16 n)
+static float gmed_n_f(float ind[], int16_t n)
 {
-	Word32 medianIndex;
-	Word32 i, j, ix = 0;
-	Word32 tmp[9];
-	Float32 tmp2[9];
-	Float32 max;
+	int32_t medianIndex;
+	int32_t i, j, ix = 0;
+	int32_t tmp[9];
+	float tmp2[9];
+	float max;
 
 	for (i = 0; i < n; i++) {
 		tmp2[i] = ind[i];
@@ -7853,13 +7853,13 @@ static Float32 gmed_n_f(Float32 ind[], Word16 n)
  * Returns:
  *    void
  */
-static void gain_adapt(Float32 * prev_gc, Word16 * onset, Float32 * ltpg_mem,
-		       Float32 * prev_alpha, Float32 ltpg, Float32 gain_cod,
-		       Float32 * alpha)
+static void gain_adapt(float * prev_gc, int16_t * onset, float * ltpg_mem,
+		       float * prev_alpha, float ltpg, float gain_cod,
+		       float * alpha)
 {
-	Float32 result, filt;	/* alpha factor, median-filtered LTP coding gain */
-	Word32 i;
-	Word16 adapt;		/* adaptdation status; 0, 1, or 2 */
+	float result, filt;	/* alpha factor, median-filtered LTP coding gain */
+	int32_t i;
+	int16_t adapt;		/* adaptdation status; 0, 1, or 2 */
 
 	/* basic adaptation */
 	if (ltpg <= 0.3321928F /*LTP_GAIN_THR1 */ ) {
@@ -7899,7 +7899,7 @@ static void gain_adapt(Float32 * prev_gc, Word16 * onset, Float32 * ltpg_mem,
 			if (filt < 0) {
 				result = 0.5;
 			} else {
-				result = (Float32) (0.5 - 0.75257499 * filt);
+				result = (float) (0.5 - 0.75257499 * filt);
 			}
 		}
 	} else {
@@ -7955,23 +7955,23 @@ static void gain_adapt(Float32 * prev_gc, Word16 * onset, Float32 * ltpg_mem,
  * Returns:
  *    index             codebook index
  */
-static Word16 MR795_gain_code_quant_mod(Float32 gain_pit, Word32 gcode0_exp,
-					Word32 gcode0_fra, Float32 en[],
-					Float32 alpha, Float32 gain_cod_unq,
-					Float32 * gain_cod,
-					Word32 * qua_ener_index)
+static int16_t MR795_gain_code_quant_mod(float gain_pit, int32_t gcode0_exp,
+					int32_t gcode0_fra, float en[],
+					float alpha, float gain_cod_unq,
+					float * gain_cod,
+					int32_t * qua_ener_index)
 {
-	Float32 coeff[5];
-	Float32 gcode0, g2_pitch, g_code, g2_code, d2_code, dist_min, gain_code,
+	float coeff[5];
+	float gcode0, g2_pitch, g_code, g2_code, d2_code, dist_min, gain_code,
 	    tmp;
-	const Float32 *p;
-	Word32 i, index, g_code_tmp, g_code0;
+	const float *p;
+	int32_t i, index, g_code_tmp, g_code0;
 
-	gcode0 = (Float32) Pow2(gcode0_exp, gcode0_fra);
+	gcode0 = (float) Pow2(gcode0_exp, gcode0_fra);
 
 	gain_code = *gain_cod;
 	g2_pitch = gain_pit * gain_pit;
-	coeff[0] = (Float32) (sqrt(alpha * en[0]));
+	coeff[0] = (float) (sqrt(alpha * en[0]));
 	coeff[1] = alpha * en[1] * g2_pitch;
 	coeff[2] = 2.0F * alpha * en[2] * gain_pit;
 	coeff[3] = alpha * en[3];
@@ -7997,7 +7997,7 @@ static Word16 MR795_gain_code_quant_mod(Float32 gain_pit, Word32 gcode0_exp,
 		d2_code = d2_code * d2_code;
 		tmp = coeff[1] + coeff[2] * g_code;
 		tmp += coeff[3] * g2_code;
-		tmp = (Float32) sqrt(tmp);
+		tmp = (float) sqrt(tmp);
 		tmp = tmp - coeff[0];
 		tmp = tmp * tmp;
 		tmp += coeff[4] * d2_code;
@@ -8016,7 +8016,7 @@ static Word16 MR795_gain_code_quant_mod(Float32 gain_pit, Word32 gcode0_exp,
 	 *  read quantized gains and new values for MA predictor memories
 	 */
 	p = &gain_factor[index];
-	g_code_tmp = (Word32) (2048 * *p);
+	g_code_tmp = (int32_t) (2048 * *p);
 	*qua_ener_index = index;
 
 	/* calculate final fixed codebook gain:
@@ -8030,12 +8030,12 @@ static Word16 MR795_gain_code_quant_mod(Float32 gain_pit, Word32 gcode0_exp,
 		i = i >> gcode0_exp;
 	else
 		i = i << (-gcode0_exp);
-	*gain_cod = (Float32) (i >> 16);
+	*gain_cod = (float) (i >> 16);
 	if (*gain_cod > 32767)
 		*gain_cod = 32767;
 
 	*gain_cod *= 0.5F;
-	return (Word16) index;
+	return (int16_t) index;
 }
 
 /*
@@ -8073,19 +8073,19 @@ static Word16 MR795_gain_code_quant_mod(Float32 gain_pit, Word32 gcode0_exp,
  * Returns:
  *    void
  */
-static void MR795_gain_quant(Float32 * prev_gc, Word16 * onset,
-			     Float32 * ltpg_mem, Float32 * prev_alpha,
-			     Float32 res[], Float32 exc[], Float32 code[],
-			     Float32 coeff[], Float32 code_en,
-			     Word32 gcode0_exp, Word32 gcode0_fra,
-			     Float32 cod_gain, Float32 gp_limit,
-			     Float32 * gain_pit, Float32 * gain_cod,
-			     Word32 * qua_ener_index, Word16 ** anap)
+static void MR795_gain_quant(float * prev_gc, int16_t * onset,
+			     float * ltpg_mem, float * prev_alpha,
+			     float res[], float exc[], float code[],
+			     float coeff[], float code_en,
+			     int32_t gcode0_exp, int32_t gcode0_fra,
+			     float cod_gain, float gp_limit,
+			     float * gain_pit, float * gain_cod,
+			     int32_t * qua_ener_index, int16_t ** anap)
 {
-	Float32 en[4], g_pitch_cand[3];
-	Float32 ltpg, alpha, gain_cod_unq;	/* code gain (unq.) */
-	Word32 g_pitch_cind[3];	/* pitch gain indices */
-	Word32 gain_pit_index, gain_cod_index;
+	float en[4], g_pitch_cand[3];
+	float ltpg, alpha, gain_cod_unq;	/* code gain (unq.) */
+	int32_t g_pitch_cind[3];	/* pitch gain indices */
+	int32_t gain_pit_index, gain_cod_index;
 
 	/*
 	 * get list of candidate quantized pitch gain values
@@ -8135,8 +8135,8 @@ static void MR795_gain_quant(Float32 * prev_gc, Word16 * onset,
 					      en, alpha, gain_cod_unq, gain_cod,
 					      qua_ener_index);
 	}
-	*(*anap)++ = (Word16) gain_pit_index;
-	*(*anap)++ = (Word16) gain_cod_index;
+	*(*anap)++ = (int16_t) gain_pit_index;
+	*(*anap)++ = (int16_t) gain_cod_index;
 }
 
 /*
@@ -8158,17 +8158,17 @@ static void MR795_gain_quant(Float32 * prev_gc, Word16 * onset,
  * Returns:
  *    index             index of quantization
  */
-static Word16 Qua_gain(enum Mode mode, Word32 gcode0_exp, Word32 gcode0_fra,
-		       Float32 coeff[], Float32 gp_limit, Float32 * gain_pit,
-		       Float32 * gain_cod, Word32 * qua_ener_index)
+static int16_t Qua_gain(enum Mode mode, int32_t gcode0_exp, int32_t gcode0_fra,
+		       float coeff[], float gp_limit, float * gain_pit,
+		       float * gain_cod, int32_t * qua_ener_index)
 {
-	Float32 g_pitch, g2_pitch, g_code, g2_code, g_pit_cod, tmp, dist_min,
+	float g_pitch, g2_pitch, g_code, g2_code, g_pit_cod, tmp, dist_min,
 	    gcode0;
-	const Float32 *table_gain, *p;
-	Word32 i, index = 0, gcode_0, g_code_tmp;
-	Word16 table_len;
+	const float *table_gain, *p;
+	int32_t i, index = 0, gcode_0, g_code_tmp;
+	int16_t table_len;
 
-	gcode0 = (Float32) Pow2(gcode0_exp, gcode0_fra);
+	gcode0 = (float) Pow2(gcode0_exp, gcode0_fra);
 
 	if ((mode == MR102) || (mode == MR74) || (mode == MR67)) {
 		table_len = VQ_SIZE_HIGHRATES;
@@ -8224,7 +8224,7 @@ static Word16 Qua_gain(enum Mode mode, Word32 gcode0_exp, Word32 gcode0_fra,
 	 */
 	p = &table_gain[index << 1];
 	*gain_pit = *p++;
-	g_code_tmp = (Word32) (4096 * *p);
+	g_code_tmp = (int32_t) (4096 * *p);
 
 	/*
 	 * calculate final fixed codebook gain:
@@ -8234,20 +8234,20 @@ static Word16 Qua_gain(enum Mode mode, Word32 gcode0_exp, Word32 gcode0_fra,
 	gcode_0 = Pow2(14, gcode0_fra);
 	if (gcode0_exp < 11) {
 		*gain_cod =
-		    (Float32) ((g_code_tmp * gcode_0) >> (25 - gcode0_exp));
+		    (float) ((g_code_tmp * gcode_0) >> (25 - gcode0_exp));
 	} else {
 		i = ((g_code_tmp * gcode_0) << (gcode0_exp - 9));
 
 		if ((i >> (gcode0_exp - 9)) != (g_code_tmp * gcode_0)) {
 			*gain_cod = 0x7FFF;
 		} else {
-			*gain_cod = (Float32) (i >> 16);
+			*gain_cod = (float) (i >> 16);
 		}
 	}
 	*gain_cod = *gain_cod * 0.5F;
 	*qua_ener_index += index;
 
-	return (Word16) index;
+	return (int16_t) index;
 }
 
 /*
@@ -8294,21 +8294,21 @@ static Word16 Qua_gain(enum Mode mode, Word32 gcode0_exp, Word32 gcode0_fra,
  * Returns:
  *    index             index of quantization
  */
-static void gainQuant(enum Mode mode, Word32 even_subframe, Word32 *
-		      past_qua_en, Word32 * past_qua_en_unq,
-		      Float32 * sf0_coeff, Float32 * sf0_target_en,
-		      Word32 * sf0_gcode0_exp, Word32 * sf0_gcode0_fra,
-		      Word16 ** gain_idx_ptr, Float32 * sf0_gain_pit,
-		      Float32 * sf0_gain_cod, Float32 * res, Float32 * exc,
-		      Float32 code[], Float32 xn[], Float32 xn2[], Float32 y1[],
-		      Float32 y2[], Float32 gCoeff[], Float32 gp_limit,
-		      Float32 * gain_pit, Float32 * gain_cod, Float32 * prev_gc,
-		      Word16 * onset, Float32 * ltpg_mem, Float32 * prev_alpha,
-		      Word16 ** anap)
+static void gainQuant(enum Mode mode, int32_t even_subframe, int32_t *
+		      past_qua_en, int32_t * past_qua_en_unq,
+		      float * sf0_coeff, float * sf0_target_en,
+		      int32_t * sf0_gcode0_exp, int32_t * sf0_gcode0_fra,
+		      int16_t ** gain_idx_ptr, float * sf0_gain_pit,
+		      float * sf0_gain_cod, float * res, float * exc,
+		      float code[], float xn[], float xn2[], float y1[],
+		      float y2[], float gCoeff[], float gp_limit,
+		      float * gain_pit, float * gain_cod, float * prev_gc,
+		      int16_t * onset, float * ltpg_mem, float * prev_alpha,
+		      int16_t ** anap)
 {
-	Float32 coeff[5];
-	Float32 gcode0, cod_gain, en = 0;
-	Word32 i, exp, frac, qua_ener_index;
+	float coeff[5];
+	float gcode0, cod_gain, en = 0;
+	int32_t i, exp, frac, qua_ener_index;
 
 	if (mode == MR475) {
 		if (even_subframe != 0) {
@@ -8329,7 +8329,7 @@ static void gainQuant(enum Mode mode, Word32 even_subframe, Word32 *
 			gc_pred(past_qua_en, mode, code, sf0_gcode0_exp,
 				sf0_gcode0_fra, &en);
 			gcode0 =
-			    (Float32) Pow2(*sf0_gcode0_exp, *sf0_gcode0_fra);
+			    (float) Pow2(*sf0_gcode0_exp, *sf0_gcode0_fra);
 
 			/*
 			 * calculate energy coefficients for quantization
@@ -8341,7 +8341,7 @@ static void gainQuant(enum Mode mode, Word32 even_subframe, Word32 *
 
 			/* store optimum codebook gain */
 			*gain_cod = cod_gain;
-			*sf0_target_en = (Float32) Dotproduct40(xn, xn);
+			*sf0_target_en = (float) Dotproduct40(xn, xn);
 
 			/*
 			 * calculate optimum codebook gain and update
@@ -8361,7 +8361,7 @@ static void gainQuant(enum Mode mode, Word32 even_subframe, Word32 *
 			/* calculate energy coefficients for quantization */
 			calc_filt_energies(mode, xn, xn2, y1, y2, gCoeff, coeff,
 					   &cod_gain);
-			en = (Float32) Dotproduct40(xn, xn);
+			en = (float) Dotproduct40(xn, xn);
 
 			/* run real (4-dim) quantizer and update real gain predictor */
 			**gain_idx_ptr =
@@ -8388,13 +8388,13 @@ static void gainQuant(enum Mode mode, Word32 even_subframe, Word32 *
 			 * codevector
 			 */
 
-			gcode0 = (Float32) Pow2(exp, frac);
+			gcode0 = (float) Pow2(exp, frac);
 			/* saturation at decoder */
 			if (gcode0 > 2047.9375F)
 				gcode0 = 2047.9375F;
 
 			*gain_cod =
-			    (Float32) (Dotproduct40(xn2, y2) /
+			    (float) (Dotproduct40(xn2, y2) /
 				       (Dotproduct40(y2, y2) + 0.01F));
 
 			if (*gain_cod < 0)
@@ -8491,13 +8491,13 @@ static void gainQuant(enum Mode mode, Word32 even_subframe, Word32 *
  * Returns:
  *    void
  */
-static void subframePostProc(Float32 * speech, Word16 i_subfr, Float32 gain_pit,
-			     Float32 gain_code, Float32 * a_q, Float32 synth[],
-			     Float32 xn[], Float32 code[], Float32 y1[],
-			     Float32 y2[], Float32 * mem_syn, Float32 * mem_err,
-			     Float32 * mem_w0, Float32 * exc, Float32 * sharp)
+static void subframePostProc(float * speech, int16_t i_subfr, float gain_pit,
+			     float gain_code, float * a_q, float synth[],
+			     float xn[], float code[], float y1[],
+			     float y2[], float * mem_syn, float * mem_err,
+			     float * mem_w0, float * exc, float * sharp)
 {
-	Word32 i, j;
+	int32_t i, j;
 
 	/*
 	 * Update pitch sharpening "sharp" with quantized gain_pit
@@ -8510,19 +8510,19 @@ static void subframePostProc(Float32 * speech, Word16 i_subfr, Float32 gain_pit,
 	/* Find the total excitation */
 	for (i = 0; i < L_SUBFR; i += 4) {
 		exc[i + i_subfr] =
-		    (Float32)
+		    (float)
 		    floor((gain_pit * exc[i + i_subfr] + gain_code * code[i]) +
 			  0.5F);
 		exc[i + i_subfr + 1] =
-		    (Float32)
+		    (float)
 		    floor((gain_pit * exc[i + i_subfr + 1] +
 			   gain_code * code[i + 1]) + 0.5F);
 		exc[i + i_subfr + 2] =
-		    (Float32)
+		    (float)
 		    floor((gain_pit * exc[i + i_subfr + 2] +
 			   gain_code * code[i + 2]) + 0.5F);
 		exc[i + i_subfr + 3] =
-		    (Float32)
+		    (float)
 		    floor((gain_pit * exc[i + i_subfr + 3] +
 			   gain_code * code[i + 3]) + 0.5F);
 	}
@@ -8554,10 +8554,10 @@ static void subframePostProc(Float32 * speech, Word16 i_subfr, Float32 gain_pit,
  * Returns:
  *    void
  */
-static void Convolve(Float32 x[], Float32 h[], Float32 y[])
+static void Convolve(float x[], float h[], float y[])
 {
-	Word32 i, n;
-	Float32 s;
+	int32_t i, n;
+	float s;
 
 	for (n = 0; n < L_SUBFR; n++) {
 		s = 0.0F;
@@ -8586,10 +8586,10 @@ static void Convolve(Float32 x[], Float32 h[], Float32 y[])
  * Returns:
  *    compute_new_sid_possible
  */
-static Word16 tx_dtx_handler(Word16 vad_flag, Word16 * decAnaElapsedCount,
-			     Word16 * dtxHangoverCount, enum Mode *used_mode)
+static int16_t tx_dtx_handler(int16_t vad_flag, int16_t * decAnaElapsedCount,
+			     int16_t * dtxHangoverCount, enum Mode *used_mode)
 {
-	Word16 compute_new_sid_possible;
+	int16_t compute_new_sid_possible;
 
 	/* this state machine is in synch with the GSMEFR txDtx machine */
 	*decAnaElapsedCount += 1;
@@ -8658,10 +8658,10 @@ static Word16 tx_dtx_handler(Word16 vad_flag, Word16 * decAnaElapsedCount,
  * Returns:
  *    void
  */
-static void dtx_buffer(Word16 * hist_ptr, Float32 * lsp_hist, Float32 lsp_new[],
-		       Float32 speech[], Float32 * log_en_hist)
+static void dtx_buffer(int16_t * hist_ptr, float * lsp_hist, float lsp_new[],
+		       float speech[], float * log_en_hist)
 {
-	Float64 frame_en;
+	double frame_en;
 
 	/* update pointer to circular buffer */
 	*hist_ptr += 1;
@@ -8671,7 +8671,7 @@ static void dtx_buffer(Word16 * hist_ptr, Float32 * lsp_hist, Float32 lsp_new[],
 	}
 
 	/* copy lsp vector into buffer */
-	memcpy(&lsp_hist[*hist_ptr * M], lsp_new, sizeof(Float32) * M);
+	memcpy(&lsp_hist[*hist_ptr * M], lsp_new, sizeof(float) * M);
 
 	/* compute log energy based on frame energy */
 	frame_en = Dotproduct40(speech, speech);
@@ -8680,7 +8680,7 @@ static void dtx_buffer(Word16 * hist_ptr, Float32 * lsp_hist, Float32 lsp_new[],
 	frame_en += Dotproduct40(&speech[120], &speech[120]);
 
 	if (frame_en > 1) {
-		log_en_hist[*hist_ptr] = (Float32) (log10(frame_en * 0.00625F) *
+		log_en_hist[*hist_ptr] = (float) (log10(frame_en * 0.00625F) *
 						    1.660964F);
 	} else {
 		log_en_hist[*hist_ptr] = -3.660965F;
@@ -8718,13 +8718,13 @@ static void dtx_buffer(Word16 * hist_ptr, Float32 * lsp_hist, Float32 lsp_new[],
  * Returns:
  *    void
  */
-static Word32 dtx_enc(Word16 * log_en_index, Float32 log_en_hist[], Float32
-		      lsp_hist[], Word16 * lsp_index,
-		      Word32 * init_lsf_vq_index, Word16 compute_sid_flag,
-		      Float32 past_rq[], Word32 * past_qua_en, Word16 ** anap)
+static int32_t dtx_enc(int16_t * log_en_index, float log_en_hist[], float
+		      lsp_hist[], int16_t * lsp_index,
+		      int32_t * init_lsf_vq_index, int16_t compute_sid_flag,
+		      float past_rq[], int32_t * past_qua_en, int16_t ** anap)
 {
-	Float32 log_en, lsf[M], lsp[M], lsp_q[M];
-	Word32 i, j;
+	float log_en, lsf[M], lsp[M], lsp_q[M];
+	int32_t i, j;
 
 	/* VOX mode computation of SID parameters */
 	if ((compute_sid_flag != 0)) {
@@ -8733,7 +8733,7 @@ static Word32 dtx_enc(Word16 * log_en_index, Float32 log_en_hist[], Float32
 		 * compute immediately after a talk spurt
 		 */
 		log_en = 0;
-		memzero(lsp, M * sizeof(Float32));
+		memzero(lsp, M * sizeof(float));
 
 		/* average energy and lsp */
 		for (i = 0; i < DTX_HIST_SIZE; i++) {
@@ -8752,9 +8752,9 @@ static Word32 dtx_enc(Word16 * log_en_index, Float32 log_en_hist[], Float32
 
 		/*  quantize logarithmic energy to 6 bits */
 		log_en = log_en + 2.5F;
-		*log_en_index = (Word16) ((log_en * 4) + 0.5F);	/* 6 bits */
+		*log_en_index = (int16_t) ((log_en * 4) + 0.5F);	/* 6 bits */
 
-		/* *log_en_index = ( Word16 )( ( log_en + 2.5F + 0.125F ) * 4.0F ); */
+		/* *log_en_index = ( int16_t )( ( log_en + 2.5F + 0.125F ) * 4.0F ); */
 		if (*log_en_index > 63) {
 			*log_en_index = 63;
 		}
@@ -8802,7 +8802,7 @@ static Word32 dtx_enc(Word16 * log_en_index, Float32 log_en_hist[], Float32
 	}
 
 	/* 3 bits */
-	*(*anap)++ = (Word16) * init_lsf_vq_index;
+	*(*anap)++ = (int16_t) * init_lsf_vq_index;
 
 	/* 8 bits */
 	*(*anap)++ = lsp_index[0];
@@ -8836,9 +8836,9 @@ static Word32 dtx_enc(Word16 * log_en_index, Float32 log_en_hist[], Float32
  *    void
  */
 #ifndef VAD2
-static void complex_estimate_adapt(vadState * st, Word16 low_power)
+static void complex_estimate_adapt(vadState * st, int16_t low_power)
 {
-	Float32 alpha;
+	float alpha;
 
 	/* adapt speed on own state */
 	/* decrease */
@@ -8896,7 +8896,7 @@ static void complex_estimate_adapt(vadState * st, Word16 low_power)
  *    void
  */
 #ifndef VAD2
-static Word32 complex_vad(vadState * st, Word16 low_power)
+static int32_t complex_vad(vadState * st, int16_t low_power)
 {
 	st->complex_high = st->complex_high >> 1;
 	st->complex_low = st->complex_low >> 1;
@@ -8916,7 +8916,7 @@ static Word32 complex_vad(vadState * st, Word16 low_power)
 	} else {
 		st->complex_hang_timer = 0;
 	}
-	return (Word16) (((st->complex_high & 0x00007f80) == 0x00007f80)
+	return (int16_t) (((st->complex_high & 0x00007f80) == 0x00007f80)
 			 || ((st->complex_low & 0x00007fff) == 0x00007fff));
 }
 #endif
@@ -8941,11 +8941,11 @@ static Word32 complex_vad(vadState * st, Word16 low_power)
  *    void
  */
 #ifndef VAD2
-static void update_cntrl(vadState * st, Float32 level[])
+static void update_cntrl(vadState * st, float level[])
 {
-	Float32 stat_rat, num, denom;
-	Float32 alpha;
-	Word32 i;
+	float stat_rat, num, denom;
+	float alpha;
+	int32_t i;
 
 	/*
 	 * handle highband complex signal input  separately
@@ -9043,10 +9043,10 @@ static void update_cntrl(vadState * st, Float32 level[])
  *    void
  */
 #ifndef VAD2
-static void noise_estimate_update(vadState * st, Float32 level[])
+static void noise_estimate_update(vadState * st, float level[])
 {
-	Float32 alpha_up, alpha_down, bckr_add;
-	Word32 i;
+	float alpha_up, alpha_down, bckr_add;
+	int32_t i;
 
 	/* Control update of bckr_est[] */
 	update_cntrl(st, level);
@@ -9071,7 +9071,7 @@ static void noise_estimate_update(vadState * st, Float32 level[])
 
 	/* Update noise estimate (bckr_est) */
 	for (i = 0; i < COMPLEN; i++) {
-		Float32 temp;
+		float temp;
 
 		temp = st->old_level[i] - st->bckr_est[i];
 
@@ -9127,10 +9127,10 @@ static void noise_estimate_update(vadState * st, Float32 level[])
  *    VAD_flag indicating final VAD decision
  */
 #ifndef VAD2
-static Word16 hangover_addition(vadState * st, Float32 noise_level, Word16
+static int16_t hangover_addition(vadState * st, float noise_level, int16_t
 				low_power)
 {
-	Word16 hang_len, burst_len;
+	int16_t hang_len, burst_len;
 
 	/*
 	 * Calculate burst_len and hang_len
@@ -9217,12 +9217,12 @@ static Word16 hangover_addition(vadState * st, Float32 noise_level, Word16
  *    VAD_flag indicating final VAD decision
  */
 #ifndef VAD2
-static Word16 vad_decision(vadState * st, Float32 level[COMPLEN], Float32
+static int16_t vad_decision(vadState * st, float level[COMPLEN], float
 			   pow_sum)
 {
-	Float32 snr_sum, temp, vad_thr, noise_level;
-	Word32 i;
-	Word16 low_power_flag;
+	float snr_sum, temp, vad_thr, noise_level;
+	int32_t i;
+	int16_t low_power_flag;
 
 	/*
 	 * Calculate squared sum of the input levels (level)
@@ -9314,23 +9314,23 @@ static Word16 vad_decision(vadState * st, Float32 level[COMPLEN], Float32
  *    signal level
  */
 #ifndef VAD2
-static Float32 level_calculation(Float32 data[], Float32 * sub_level, Word16
-				 count1, Word16 count2, Word16 ind_m,
-				 Word16 ind_a, Word16 scale)
+static float level_calculation(float data[], float * sub_level, int16_t
+				 count1, int16_t count2, int16_t ind_m,
+				 int16_t ind_a, int16_t scale)
 {
-	Float32 level, temp1;
-	Word32 i;
+	float level, temp1;
+	int32_t i;
 
 	temp1 = 0;
 
 	for (i = count1; i < count2; i++) {
-		temp1 += (Float32) fabs(data[ind_m * i + ind_a]);
+		temp1 += (float) fabs(data[ind_m * i + ind_a]);
 	}
 	level = temp1 + *sub_level;
 	*sub_level = temp1;
 
 	for (i = 0; i < count1; i++) {
-		level += (Float32) fabs(data[ind_m * i + ind_a]);
+		level += (float) fabs(data[ind_m * i + ind_a]);
 	}
 	return (scale * level);
 }
@@ -9352,9 +9352,9 @@ static Float32 level_calculation(Float32 data[], Float32 * sub_level, Word16
  *   void
  */
 #ifndef VAD2
-static void filter3(Float32 * in0, Float32 * in1, Float32 * data)
+static void filter3(float * in0, float * in1, float * data)
 {
-	Float32 temp1, temp2;
+	float temp1, temp2;
 
 	temp1 = *in1 - (COEFF3 * *data);
 	temp2 = *data + (COEFF3 * temp1);
@@ -9380,9 +9380,9 @@ static void filter3(Float32 * in0, Float32 * in1, Float32 * data)
  *   void
  */
 #ifndef VAD2
-static void filter5(Float32 * in0, Float32 * in1, Float32 data[])
+static void filter5(float * in0, float * in1, float data[])
 {
-	Float32 temp0, temp1, temp2;
+	float temp0, temp1, temp2;
 
 	temp0 = *in0 - (COEFF5_1 * data[0]);
 	temp1 = data[0] + (COEFF5_1 * temp0);
@@ -9413,11 +9413,11 @@ static void filter5(Float32 * in0, Float32 * in1, Float32 data[])
  *   void
  */
 #ifndef VAD2
-static void first_filter_stage(Float32 in[], Float32 out[], Float32 data[])
+static void first_filter_stage(float in[], float out[], float data[])
 {
-	Float32 temp0, temp1, temp2, temp3;
-	Float32 data0, data1;
-	Word32 i;
+	float temp0, temp1, temp2, temp3;
+	float data0, data1;
+	int32_t i;
 
 	data0 = data[0];
 	data1 = data[1];
@@ -9459,10 +9459,10 @@ static void first_filter_stage(Float32 in[], Float32 out[], Float32 data[])
  *    void
  */
 #ifndef VAD2
-static void filter_bank(vadState * st, Float32 in[], Float32 level[])
+static void filter_bank(vadState * st, float in[], float level[])
 {
-	Word32 i;
-	Float32 tmp_buf[FRAME_LEN];
+	int32_t i;
+	float tmp_buf[FRAME_LEN];
 
 	/* calculate the filter bank */
 	first_filter_stage(in, tmp_buf, st->a_data5[0]);
@@ -9554,11 +9554,11 @@ static void filter_bank(vadState * st, Float32 in[], Float32 level[])
  *    VAD Decision, 1 = speech, 0 = noise
  */
 #ifndef VAD2
-static Word16 vad(vadState * st, Float32 in_buf[])
+static int16_t vad(vadState * st, float in_buf[])
 {
-	Float32 level[COMPLEN];
-	Float32 pow_sum;
-	Word32 i;
+	float level[COMPLEN];
+	float pow_sum;
+	int32_t i;
 
 	/* Calculate power of the input frame. */
 	pow_sum = 0L;
@@ -9578,14 +9578,14 @@ static Word16 vad(vadState * st, Float32 in_buf[])
 	 * If input power is very low, clear pitch flag of the current frame
 	 */
 	if (pow_sum < POW_PITCH_THR) {
-		st->pitch = (Word16) (st->pitch & 0x3fff);
+		st->pitch = (int16_t) (st->pitch & 0x3fff);
 	}
 
 	/*
 	 * If input power is very low, clear complex flag of the "current" frame
 	 */
 	if (pow_sum < POW_COMPLEX_THR) {
-		st->complex_low = (Word16) (st->complex_low & 0x3fff);
+		st->complex_low = (int16_t) (st->complex_low & 0x3fff);
 	}
 
 	/*
@@ -9615,9 +9615,9 @@ static Word16 vad(vadState * st, Float32 in_buf[])
  *    Boolean voiced / unvoiced decision in state variable
  */
 #ifndef VAD2
-static void vad_pitch_detection(vadState * st, Word32 T_op[])
+static void vad_pitch_detection(vadState * st, int32_t T_op[])
 {
-	Word32 lagcount, i;
+	int32_t lagcount, i;
 
 	lagcount = 0;
 
@@ -9660,7 +9660,7 @@ static void vad_pitch_detection(vadState * st, Word32 T_op[])
  *     vadState
  *                     pointer to vadState state structure
  *     farray_ptr
- *                     pointer to Float32[80] input array
+ *                     pointer to float[80] input array
  *
  *   OUTPUTS:
  *
@@ -9668,7 +9668,7 @@ static void vad_pitch_detection(vadState * st, Word32 T_op[])
  *
  *   RETURN VALUE:
  *
- *     Word16
+ *     int16_t
  *                     VAD(m) - two successive calls to vad2() yield
  *                     the VAD decision for the 20 ms frame:
  *                     VAD_flag = VAD(m-1) || VAD(m)
@@ -9676,7 +9676,7 @@ static void vad_pitch_detection(vadState * st, Word32 T_op[])
  *
  *************************************************************************/
 
-int vad2(vadState * st, Float32 * farray_ptr)
+int vad2(vadState * st, float * farray_ptr)
 {
 
 	/* Static variables */
@@ -9725,18 +9725,18 @@ int vad2(vadState * st, Float32 * farray_ptr)
 	};
 
 	/* hangover as a function of peak SNR (3 dB steps) */
-	static Word16 hangover_table[20] = {
+	static int16_t hangover_table[20] = {
 		30, 30, 30, 30, 30, 30, 28, 26, 24, 22, 20, 18, 16, 14, 12, 10,
 		    8, 8, 8, 8
 	};
 
 	/* burst sensitivity as a function of peak SNR (3 dB steps) */
-	static Word16 burstcount_table[20] = {
+	static int16_t burstcount_table[20] = {
 		8, 8, 8, 8, 8, 8, 8, 8, 7, 6, 5, 4, 4, 4, 4, 4, 4, 4, 4, 4
 	};
 
 	/* voice metric sensitivity as a function of peak SNR (3 dB steps) */
-	static Word16 vm_threshold_table[20] = {
+	static int16_t vm_threshold_table[20] = {
 		34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 40, 51, 71, 100,
 		    139, 191, 257, 337, 432
 	};
@@ -10311,9 +10311,9 @@ void fill_tbl()
  *
  *************************************************************************/
 
-void LTP_flag_update(vadState * st, Word16 mode)
+void LTP_flag_update(vadState * st, int16_t mode)
 {
-	Float32 thresh;
+	float thresh;
 
 	if ((mode == MR475) || (mode == MR515))
 		thresh = 0.55;
@@ -10352,51 +10352,51 @@ void LTP_flag_update(vadState * st, Word16 mode)
  * Returns:
  *    void
  */
-static void cod_amr(cod_amrState * st, enum Mode mode, Float32 new_speech[],
-		    Word16 ana[], enum Mode *used_mode, Float32 synth[])
+static void cod_amr(cod_amrState * st, enum Mode mode, float new_speech[],
+		    int16_t ana[], enum Mode *used_mode, float synth[])
 {
 	/* LPC coefficients */
-	Float32 A_t[(MP1) * 4];	/* A(z) unquantized for the 4 subframes */
-	Float32 Aq_t[(MP1) * 4];	/* A(z)   quantized for the 4 subframes */
-	Float32 *A, *Aq;	/* Pointer on Aq_t */
-	Float32 lsp_new[M];
+	float A_t[(MP1) * 4];	/* A(z) unquantized for the 4 subframes */
+	float Aq_t[(MP1) * 4];	/* A(z)   quantized for the 4 subframes */
+	float *A, *Aq;	/* Pointer on Aq_t */
+	float lsp_new[M];
 
 	/* Other vectors */
-	Float32 xn[L_SUBFR];	/* Target vector for pitch search */
-	Float32 xn2[L_SUBFR];	/* Target vector for codebook search */
-	Float32 code[L_SUBFR];	/* Fixed codebook excitation */
-	Float32 y1[L_SUBFR];	/* Filtered adaptive excitation */
-	Float32 y2[L_SUBFR];	/* Filtered fixed codebook excitation */
-	Float32 gCoeff[3];	/* Correlations between xn, y1, & y2: */
-	Float32 res[L_SUBFR];	/* Short term (LPC) prediction residual */
-	Float32 res2[L_SUBFR];	/* Long term (LTP) prediction residual */
+	float xn[L_SUBFR];	/* Target vector for pitch search */
+	float xn2[L_SUBFR];	/* Target vector for codebook search */
+	float code[L_SUBFR];	/* Fixed codebook excitation */
+	float y1[L_SUBFR];	/* Filtered adaptive excitation */
+	float y2[L_SUBFR];	/* Filtered fixed codebook excitation */
+	float gCoeff[3];	/* Correlations between xn, y1, & y2: */
+	float res[L_SUBFR];	/* Short term (LPC) prediction residual */
+	float res2[L_SUBFR];	/* Long term (LTP) prediction residual */
 
 	/* Vector and scalars needed for the MR475 */
-	Float32 xn_sf0[L_SUBFR];	/* Target vector for pitch search */
-	Float32 y2_sf0[L_SUBFR];	/* Filtered codebook innovation */
-	Float32 code_sf0[L_SUBFR];	/* Fixed codebook excitation */
-	Float32 h1_sf0[L_SUBFR];	/* The impulse response of sf0 */
-	Float32 mem_syn_save[M];	/* Filter memory */
-	Float32 mem_w0_save[M];	/* Filter memory */
-	Float32 mem_err_save[M];	/* Filter memory */
-	Float32 sharp_save = 0;	/* Sharpening */
-	Float32 gain_pit_sf0;	/* Quantized pitch gain for sf0 */
-	Float32 gain_code_sf0;	/* Quantized codebook gain for sf0 */
-	Word16 i_subfr_sf0 = 0;	/* Position in exc[] for sf0 */
+	float xn_sf0[L_SUBFR];	/* Target vector for pitch search */
+	float y2_sf0[L_SUBFR];	/* Filtered codebook innovation */
+	float code_sf0[L_SUBFR];	/* Fixed codebook excitation */
+	float h1_sf0[L_SUBFR];	/* The impulse response of sf0 */
+	float mem_syn_save[M];	/* Filter memory */
+	float mem_w0_save[M];	/* Filter memory */
+	float mem_err_save[M];	/* Filter memory */
+	float sharp_save = 0;	/* Sharpening */
+	float gain_pit_sf0;	/* Quantized pitch gain for sf0 */
+	float gain_code_sf0;	/* Quantized codebook gain for sf0 */
+	int16_t i_subfr_sf0 = 0;	/* Position in exc[] for sf0 */
 
 	/* Scalars & Flags */
-	Float32 gain_pit, gain_code;
-	Float32 gp_limit;	/* pitch gain limit value */
-	Word32 T0_sf0 = 0;	/* Integer pitch lag of sf0 */
-	Word32 T0_frac_sf0 = 0;	/* Fractional pitch lag of sf0 */
-	Word32 T0, T0_frac;
-	Word32 T_op[2];
-	Word32 evenSubfr;
-	Word32 i;
-	Word16 i_subfr, subfrNr;
-	Word16 lsp_flag = 0;	/* indicates resonance in LPC filter */
-	Word16 compute_sid_flag;
-	Word16 vad_flag;
+	float gain_pit, gain_code;
+	float gp_limit;	/* pitch gain limit value */
+	int32_t T0_sf0 = 0;	/* Integer pitch lag of sf0 */
+	int32_t T0_frac_sf0 = 0;	/* Fractional pitch lag of sf0 */
+	int32_t T0, T0_frac;
+	int32_t T_op[2];
+	int32_t evenSubfr;
+	int32_t i;
+	int16_t i_subfr, subfrNr;
+	int16_t lsp_flag = 0;	/* indicates resonance in LPC filter */
+	int16_t compute_sid_flag;
+	int16_t vad_flag;
 
 	memcpy(st->new_speech, new_speech, L_FRAME << 2);
 
@@ -10410,7 +10410,7 @@ static void cod_amr(cod_amrState * st, enum Mode mode, Float32 new_speech[],
 		vad_flag = vad(st->vadSt, st->new_speech);
 #endif
 		/* force VAD on   */
-		if (((Word16) (*used_mode)) < 0)	//to fucking reference coder: enum Mode not be negative!!!
+		if (((int16_t) (*used_mode)) < 0)	//to fucking reference coder: enum Mode not be negative!!!
 			vad_flag = 1;
 
 		*used_mode = mode;
@@ -10730,7 +10730,7 @@ static void cod_amr(cod_amrState * st, enum Mode mode, Float32 new_speech[],
  * Returns:
  *
  */
-static Word32 Pre_Process_reset(Pre_ProcessState * state)
+static int32_t Pre_Process_reset(Pre_ProcessState * state)
 {
 	if (state == (Pre_ProcessState *) NULL) {
 		fprintf(stderr, "Pre_Process_reset: invalid parameter\n");
@@ -10780,7 +10780,7 @@ static void Pre_Process_exit(Pre_ProcessState ** state)
  * Returns:
  *    succeed = 0
  */
-static Word32 Pre_Process_init(Pre_ProcessState ** state)
+static int32_t Pre_Process_init(Pre_ProcessState ** state)
 {
 	Pre_ProcessState *s;
 
@@ -10832,19 +10832,19 @@ static Word32 Pre_Process_init(Pre_ProcessState ** state)
  * Returns:
  *    void
  */
-static void Pre_Process(Float32 * y2, Float32 * y1, Float32 * x0, Float32
-			* x1, Word16 * speech, Float32 * f_speech)
+static void Pre_Process(float * y2, float * y1, float * x0, float
+			* x1, int16_t * speech, float * f_speech)
 {
-	Word32 i;
-	Float32 x2;
-	Float32 tmp;
+	int32_t i;
+	float x2;
+	float tmp;
 
 	for (i = 0; i < 160; i++) {
 		x2 = *x1;
 		*x1 = *x0;
 		*x0 = speech[i];
 		tmp =
-		    (Float32) (0.4636230465 * *x0 - 0.92724705 * *x1 +
+		    (float) (0.4636230465 * *x0 - 0.92724705 * *x1 +
 			       0.4636234515 * x2 + 1.906005859 * *y1 -
 			       0.911376953 * *y2);
 		f_speech[i] = tmp;
@@ -10870,9 +10870,9 @@ static void Pre_Process(Float32 * y2, Float32 * y1, Float32 * x0, Float32
  * Returns:
  *    void
  */
-static void cod_amr_reset(cod_amrState * s, Word32 dtx)
+static void cod_amr_reset(cod_amrState * s, int32_t dtx)
 {
-	Word32 i;
+	int32_t i;
 
 	/* reset DTX */
 	s->dtx = dtx;
@@ -10881,7 +10881,7 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
 	s->clLtpSt->pitchSt->T0_prev_subframe = 0;
 
 	/* reset Q_plsfState */
-	memzero(s->lspSt->qSt->past_rq, M * sizeof(Float32));
+	memzero(s->lspSt->qSt->past_rq, M * sizeof(float));
 	memcpy(s->lspSt->lsp_old, lsp_init_data, sizeof(lsp_init_data));
 	memcpy(s->lspSt->lsp_old_q, lsp_init_data, sizeof(lsp_init_data));
 
@@ -10900,11 +10900,11 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
 	s->gainQuantSt->adaptSt->prev_alpha = 0.0F;
 	s->gainQuantSt->adaptSt->prev_gc = 0.0F;
 	memzero(s->gainQuantSt->adaptSt->ltpg_mem,
-		LTPG_MEM_SIZE * sizeof(Float32));
+		LTPG_MEM_SIZE * sizeof(float));
 	s->gainQuantSt->sf0_gcode0_exp = 0;
 	s->gainQuantSt->sf0_gcode0_fra = 0;
 	s->gainQuantSt->sf0_target_en = 0.0F;
-	memzero(s->gainQuantSt->sf0_coeff, 5 * sizeof(Float32));
+	memzero(s->gainQuantSt->sf0_coeff, 5 * sizeof(float));
 	s->gainQuantSt->gain_idx_ptr = NULL;
 
 	/* reset pitchOLWghtState */
@@ -10914,11 +10914,11 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
 
 	/* reset tonStabState */
 	s->tonStabSt->count = 0;
-	memzero(s->tonStabSt->gp, N_FRAME * sizeof(Float32));
+	memzero(s->tonStabSt->gp, N_FRAME * sizeof(float));
 
 	/* reset LevinsonState */
 	s->lpcSt->LevinsonSt->old_A[0] = 1.0F;
-	memzero(&s->lpcSt->LevinsonSt->old_A[1], M * sizeof(Float32));
+	memzero(&s->lpcSt->LevinsonSt->old_A[1], M * sizeof(float));
 
 #ifdef VAD2
 	/* reset vadState */
@@ -10989,9 +10989,9 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
 
 	for (i = 0; i < DTX_HIST_SIZE; i++) {
 		memcpy(&s->dtxEncSt->lsp_hist[i * M], lsp_init_data,
-		       sizeof(Float32) * M);
+		       sizeof(float) * M);
 	}
-	memzero(s->dtxEncSt->log_en_hist, M * sizeof(Float32));
+	memzero(s->dtxEncSt->log_en_hist, M * sizeof(float));
 	s->dtxEncSt->dtxHangoverCount = DTX_HANG_CONST;
 	s->dtxEncSt->decAnaElapsedCount = DTX_ELAPSED_FRAMES_THRESH;
 
@@ -11014,15 +11014,15 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
 	s->h1 = &s->hvec[L_SUBFR];
 
 	/* Static vectors to zero */
-	memzero(s->old_speech, L_TOTAL * sizeof(Float32));
-	memzero(s->old_exc, (PIT_MAX + L_INTERPOL) * sizeof(Float32));
-	memzero(s->old_wsp, PIT_MAX * sizeof(Float32));
-	memzero(s->mem_syn, M * sizeof(Float32));
-	memzero(s->mem_w, M * sizeof(Float32));
-	memzero(s->mem_w0, M * sizeof(Float32));
-	memzero(s->mem_err, M * sizeof(Float32));
-	memzero(s->ai_zero, L_SUBFR * sizeof(Float32));
-	memzero(s->hvec, L_SUBFR * sizeof(Float32));
+	memzero(s->old_speech, L_TOTAL * sizeof(float));
+	memzero(s->old_exc, (PIT_MAX + L_INTERPOL) * sizeof(float));
+	memzero(s->old_wsp, PIT_MAX * sizeof(float));
+	memzero(s->mem_syn, M * sizeof(float));
+	memzero(s->mem_w, M * sizeof(float));
+	memzero(s->mem_w0, M * sizeof(float));
+	memzero(s->mem_err, M * sizeof(float));
+	memzero(s->ai_zero, L_SUBFR * sizeof(float));
+	memzero(s->hvec, L_SUBFR * sizeof(float));
 
 	for (i = 0; i < 5; i++) {
 		s->old_lags[i] = 40;
@@ -11044,7 +11044,7 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
  * Returns:
  *    succeed = 0
  */
-static Word32 cod_amr_init(cod_amrState ** state, Word32 dtx)
+static int32_t cod_amr_init(cod_amrState ** state, int32_t dtx)
 {
 	cod_amrState *s;
 
@@ -11331,18 +11331,18 @@ void Speech_Encode_Frame_exit(void **st)
  * Returns:
  *    Void
  */
-void Speech_Encode_Frame(void *st, enum Mode mode, Word16 * new_speech, Word16 *
+void Speech_Encode_Frame(void *st, enum Mode mode, int16_t * new_speech, int16_t *
 			 prm, enum Mode *used_mode)
 {
-	Float32 syn[L_FRAME];	/* Buffer for synthesis speech */
-	Float32 speech[160];
-	Word32 i;
+	float syn[L_FRAME];	/* Buffer for synthesis speech */
+	float speech[160];
+	int32_t i;
 
 	Speech_Encode_FrameState *state;
 	state = (Speech_Encode_FrameState *) st;
 
 	for (i = 0; i < 160; i++) {
-		new_speech[i] = (Word16) (new_speech[i] & 0xfff8);
+		new_speech[i] = (int16_t) (new_speech[i] & 0xfff8);
 	}
 
 	/* filter + downscaling */
