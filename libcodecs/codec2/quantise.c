@@ -504,7 +504,7 @@ void lspjvm_quantise(float *x, float *xq, int ndim)
 	const float *codebook2 = lsp_cbjvm[1].cb;
 	const float *codebook3 = lsp_cbjvm[2].cb;
 
-	memzero(err, LPC_ORD);
+	memzero(err, LPC_ORD * sizeof(float));
 
 	w[0] = MIN(x[0], x[1] - x[0]);
 	for (i = 1; i < ndim - 1; i++)
@@ -1491,7 +1491,7 @@ void encode_lsps_vq(int *indexes, float *x, float *xq, int ndim)
 	const float *codebook2 = lsp_cbjvm[1].cb;
 	const float *codebook3 = lsp_cbjvm[2].cb;
 
-	memzero(err, LPC_ORD);
+	memzero(err, LPC_ORD * sizeof(float));
 
 	assert(ndim <= LPC_ORD);
 
