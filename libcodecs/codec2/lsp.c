@@ -254,32 +254,25 @@ int lpc_to_lspc(float *a, int lpcrdr, float *freq, int nb, float delta)
 
 \*---------------------------------------------------------------------------*/
 
-void lsp_to_lpcc(float *lsp, float *ak, int lpcrdr)
+void lsp_to_lpcc(float *lsp, float *ak, unsigned int lpcrdr)
 /*  float *freq         array of LSP frequencies in radians     	*/
 /*  float *ak 		array of LPC coefficients 			*/
 /*  int lpcrdr  	order of LPC coefficients 			*/
 {
-	int i, j;
+	unsigned int i, j;
 	float xout1, xout2, xin1, xin2;
 	float *pw, *n1, *n2, *n3, *n4 = 0;
-	int m = lpcrdr / 2;
+	unsigned int m = lpcrdr / 2;
 	float freq[LSP_MAX_ORDER];
 	float Wp[(LSP_MAX_ORDER * 4) + 2];
 
-	memzero(freq, LSP_MAX_ORDER);
+	memzero(freq, LSP_MAX_ORDER * sizeof(float));
+	memzero(Wp, ((LSP_MAX_ORDER * 4) + 2) * sizeof(float));
 
 	/* convert from radians to the x=cos(w) domain */
 
 	for (i = 0; i < lpcrdr; i++)
 		freq[i] = cos(lsp[i]);
-
-	pw = Wp;
-
-	/* initialise contents of array */
-
-	for (i = 0; i <= 4 * m + 1; i++) {	/* set contents of buffer to 0 */
-		*pw++ = 0.0;
-	}
 
 	/* Set pointers up */
 
@@ -291,7 +284,7 @@ void lsp_to_lpcc(float *lsp, float *ak, int lpcrdr)
 	   in form 1 - 2xz(-1) +z(-2), where x is the LSP coefficient */
 
 	for (j = 0; j <= lpcrdr; j++) {
-		for (i = 0; i < m; i++) {
+		for (i = 0; i <= m - 1; i++) {
 			n1 = pw + (i * 4);
 			n2 = n1 + 1;
 			n3 = n2 + 1;

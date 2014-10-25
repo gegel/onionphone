@@ -33,6 +33,6 @@
 #define __LSP__
 
 int lpc_to_lspc(float *a, int lpcrdr, float *freq, int nb, float delta);
-void lsp_to_lpcc(float *freq, float *ak, int lpcrdr);
+void lsp_to_lpcc(float *freq, float *ak, unsigned int lpcrdr);
 
 #endif
