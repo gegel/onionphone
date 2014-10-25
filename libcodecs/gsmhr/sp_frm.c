@@ -4955,9 +4955,9 @@ void pitchLags(Shortword swBestIntLag,
  |_________________________________________________________________________|
 */
 
-	memzero(pswLPeaks, 2 * LMAX / LMIN);
-	memzero(pswCPeaks, 2 * LMAX / LMIN);
-	memzero(pswGPeaks, 2 * LMAX / LMIN);
+	memzero(pswLPeaks, (2 * LMAX / LMIN) * sizeof(Shortword));
+	memzero(pswCPeaks, (2 * LMAX / LMIN) * sizeof(Shortword));
+	memzero(pswGPeaks, (2 * LMAX / LMIN) * sizeof(Shortword));
 
 	/* Get array of valid lags within one integer lag of the best open-loop */
 	/* integer lag; get the corresponding interpolated C and G arrays;      */
