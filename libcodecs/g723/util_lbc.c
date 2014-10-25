@@ -522,7 +522,7 @@ void Line_Pack(LINEDEF * Line, char *Vout, int16_t Ftyp)
 			Bsp = Par2Ser(Temp, Bsp, 6);
 
 			Temp = (int32_t) (*Line).Sfs[3].Pamp;
-			Bsp = Par2Ser(Temp, Bsp, 5);
+			Par2Ser(Temp, Bsp, 5);
 		}
 
 		/* Low rate only part */
@@ -551,7 +551,7 @@ void Line_Pack(LINEDEF * Line, char *Vout, int16_t Ftyp)
 
 		/* Do Sid frame gain */
 		Temp = (int32_t) (*Line).Sfs[0].Mamp;
-		Bsp = Par2Ser(Temp, Bsp, 6);
+		Par2Ser(Temp, Bsp, 6);
 	}
 
 	/* Write out active frames */
