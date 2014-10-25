@@ -1059,7 +1059,7 @@ void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
 	Word16 off_filt;
 
 	memzero(CorBuf,
-		4 * (2 * ClPitchOrd + ClPitchOrd * (ClPitchOrd - 1) / 2));
+		4 * (2 * ClPitchOrd + ClPitchOrd * (ClPitchOrd - 1) / 2) * sizeof(Word32));
 
 	/* Init constants */
 	Olp = (*Line).Olp[g723_shr(Sfc, (Word16) 1)];
