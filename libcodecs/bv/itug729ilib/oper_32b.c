@@ -66,7 +66,7 @@ void L_Extract(int32_t L_32, int16_t * hi, int16_t * lo)
  |                                                                           |
  |   Return Value :                                                          |
  |                                                                           |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_32 <= 0x7fff fff0.                   |
  |                                                                           |
  |___________________________________________________________________________|
@@ -156,7 +156,7 @@ int32_t Mpy_32_16(int16_t hi, int16_t lo, int16_t n)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_num                                                                  |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x0000 0000 < L_num < L_denom                         |
  |                                                                           |
  |    L_denom = denom_hi<<16 + denom_lo<<1      (DPF)                        |
@@ -171,7 +171,7 @@ int32_t Mpy_32_16(int16_t hi, int16_t lo, int16_t n)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_div                                                                  |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x0000 0000 <= L_div <= 0x7fff ffff.                  |
  |             It's a Q31 value                                              |
  |                                                                           |
