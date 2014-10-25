@@ -895,7 +895,7 @@ void AMR475_decode(void *st, UWord8 * serial, Word16 * synth, int bfi)
 		frame_type = RX_SPEECH_BAD;	//set type for CN generation
 
 	//unpack bits ro parameters
-	memzero(prm, 2 * PRMNO_MR475);
+	memzero(prm, PRMNO_MR475 * sizeof(Word16));
 	if (speech_mode == MRDTX)	//for sid frame (5 bytes)
 	{
 		bits = 5;	//reserve 5 bits for SID flag and counter)
@@ -1011,7 +1011,7 @@ void AMR_decode(void *st, UWord8 mode, UWord8 * serial, Word16 * synth, int bfi)
 		frame_type = RX_SPEECH_BAD;	//set type for CN generation
 
 	//unpack bits ro parameters
-	memzero(prm, 2 * prmno);
+	memzero(prm, PRMNO_MR122 * sizeof(Word16));
 	if (speech_mode == MRDTX)	//for sid frame (5 bytes)
 	{
 		bits = 5;	//reserve 5 bits for SID flag and counter)
