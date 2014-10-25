@@ -42,8 +42,8 @@ WebRtc_Word16 WebRtcSpl_LevinsonDurbin(WebRtc_Word32 * R, WebRtc_Word16 * A,
 	WebRtc_Word32 temp1W32, temp2W32, temp3W32;
 	WebRtc_Word16 norm;
 
-	memzero(R_hi, SPL_LEVINSON_MAXORDER + 1);
-	memzero(R_low, SPL_LEVINSON_MAXORDER + 1);
+	memzero(R_hi, (SPL_LEVINSON_MAXORDER + 1) * sizeof(WebRtc_Word16));
+	memzero(R_low, (SPL_LEVINSON_MAXORDER + 1) * sizeof(WebRtc_Word16));
 
 	// Normalize the autocorrelation R[0]...R[order+1]
 
