@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -37,47 +39,44 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _MAT_LIB_H_
 #define _MAT_LIB_H_
 
+Shortword *v_add(Shortword vec1[], const Shortword vec2[], Shortword n);
 
-Shortword	*v_add(Shortword vec1[], const Shortword vec2[], Shortword n);
+Longword *L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n);
 
-Longword	*L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n);
+Shortword *v_equ(Shortword vec1[], const Shortword v2[], Shortword n);
 
-Shortword	*v_equ(Shortword vec1[], const Shortword v2[], Shortword n);
+Shortword *v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
+		     Shortword n);
 
-Shortword	*v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
-					   Shortword n);
+Longword *L_v_equ(Longword L_vec1[], Longword L_vec2[], Shortword n);
 
-Longword	*L_v_equ(Longword L_vec1[], Longword L_vec2[], Shortword n);
+Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
+		  Shortword qvec1, Shortword qvec2, Shortword qout);
 
-Shortword	v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
-					Shortword qvec1, Shortword qvec2, Shortword qout);
+Longword L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
+		   Shortword qvec1, Shortword qvec2, Shortword qout);
 
-Longword	L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
-					  Shortword qvec1, Shortword qvec2, Shortword qout);
+Shortword v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
+		  Shortword qout);
 
-Shortword	v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
-					Shortword qout);
+Longword L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
+		   Shortword qout);
 
-Longword	L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
-					  Shortword qout);
+Shortword *v_scale(Shortword vec1[], Shortword scale, Shortword n);
 
-Shortword	*v_scale(Shortword vec1[], Shortword scale, Shortword n);
+Shortword *v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
+		       Shortword shift);
 
-Shortword	*v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
-						 Shortword shift);
+Shortword *v_sub(Shortword vec1[], const Shortword vec2[], Shortword n);
 
-Shortword	*v_sub(Shortword vec1[], const Shortword vec2[], Shortword n);
+Shortword *v_zap(Shortword vec1[], Shortword n);
 
-Shortword	*v_zap(Shortword vec1[], Shortword n);
+Longword *L_v_zap(Longword L_vec1[], Shortword n);
 
-Longword	*L_v_zap(Longword L_vec1[], Shortword n);
+Shortword *v_get(Shortword n);
 
-Shortword	*v_get(Shortword n);
+Longword *L_v_get(Shortword n);
 
-Longword	*L_v_get(Shortword n);
-
-void	v_free(void *v);
-
+void v_free(void *v);
 
 #endif
-

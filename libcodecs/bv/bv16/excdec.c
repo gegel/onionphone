@@ -99,7 +99,7 @@ void excdec_w_synth(Word16 * xq,	/* (o) Q0 quantized signal vector              
 			fp1 = &ltsym[n - pp + 1];	// Q0
 			a1 = L_bv_mult(*fp1--, b[0]);	// Q16
 			a1 = bv_L_mac(a1, *fp1--, b[1]);
-			a1 = bv_L_mac(a1, *fp1--, b[2]);
+			a1 = bv_L_mac(a1, *fp1, b[2]);
 
 			/* Update long-term filter synthesis memory */
 			a0 = L_bv_add(a0, a1);

@@ -3490,7 +3490,7 @@ const struct lsp_codebook lsp_cbjnd[] = {
 	/* ../unittest/lspjnd5-10.txt */
 	{
 	 6,
-	 11.7181,
+	 (int)11.7181,
 	 3369,
 	 codes4},
 	{0, 0, 0, 0}

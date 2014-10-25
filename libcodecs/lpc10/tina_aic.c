@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* SpeedEdit 52,63,11,0,0,10,16,10 Updated 05/07/93 15:27:30 */
 #include "drivers.h"
 
@@ -13,41 +15,39 @@
 */
 
 void set_aic8k(params, channel, rx_length, tx_length)
-AIC_Attrs	*params;
+AIC_Attrs *params;
 int channel, rx_length, tx_length;
-  {
-  params->sync_isr = FALSE;		/* need asynch operation if RX_LEN != TX_LEN */
-  params->tx_only = FALSE;
-  params->rx_only = FALSE;
-  params->tx_size = tx_length;
-  params->rx_size = rx_length;
-  params->chan_id = (channel == 1 ? 1 : 0);
-  params->aic_regs.ra = 18;
-  params->aic_regs.rb = 36;
-  params->aic_regs.ta = 18;
-  params->aic_regs.tb = 36;
-  params->aic_regs.taP = 1;
-  params->aic_regs.raP = 1;
-  params->aic_regs.control = 0x0b9/* 0x099*/;
-  }
-	
-	
-  void set_aic16k(params, channel, rx_length, tx_length)
-	AIC_Attrs	*params;
-	int channel, rx_length, tx_length;
-  {
-		params->sync_isr = TRUE;
-		params->tx_only = FALSE;
-		params->rx_only = FALSE;
-		params->tx_size = tx_length;
-		params->rx_size = rx_length;
-		params->chan_id = (channel == 1 ? 1 : 0);
-		params->aic_regs.ra = 18;
-		params->aic_regs.rb = 18;
-		params->aic_regs.ta = 18;
-		params->aic_regs.tb = 18;
-		params->aic_regs.taP = 1;
-		params->aic_regs.raP = 1;
-		params->aic_regs.control = 0x0a9;
-  }
-	
+{
+	params->sync_isr = FALSE;	/* need asynch operation if RX_LEN != TX_LEN */
+	params->tx_only = FALSE;
+	params->rx_only = FALSE;
+	params->tx_size = tx_length;
+	params->rx_size = rx_length;
+	params->chan_id = (channel == 1 ? 1 : 0);
+	params->aic_regs.ra = 18;
+	params->aic_regs.rb = 36;
+	params->aic_regs.ta = 18;
+	params->aic_regs.tb = 36;
+	params->aic_regs.taP = 1;
+	params->aic_regs.raP = 1;
+	params->aic_regs.control = 0x0b9 /* 0x099 */ ;
+}
+
+void set_aic16k(params, channel, rx_length, tx_length)
+AIC_Attrs *params;
+int channel, rx_length, tx_length;
+{
+	params->sync_isr = TRUE;
+	params->tx_only = FALSE;
+	params->rx_only = FALSE;
+	params->tx_size = tx_length;
+	params->rx_size = rx_length;
+	params->chan_id = (channel == 1 ? 1 : 0);
+	params->aic_regs.ra = 18;
+	params->aic_regs.rb = 18;
+	params->aic_regs.ta = 18;
+	params->aic_regs.tb = 18;
+	params->aic_regs.taP = 1;
+	params->aic_regs.raP = 1;
+	params->aic_regs.control = 0x0a9;
+}

@@ -100,7 +100,7 @@ longword gsm_L_sub P2((a, b), longword a, longword b)
 		/* a<0, b>0 */
 
 		ulongword A = (ulongword) - (a + 1) + b;
-		return A >= MAX_LONGWORD ? MIN_LONGWORD : -A - 1;
+		return A >= MAX_LONGWORD ? MIN_LONGWORD : (longword)(-A - 1);
 	}
 }
 

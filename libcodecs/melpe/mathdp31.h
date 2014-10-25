@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard speech coder
@@ -30,10 +32,6 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef  _MATHDP31_H_
 #define  _MATHDP31_H_
 
-
 Longword L_mpy_ls(Longword L_var2, Shortword var1);
 
-
 #endif
-
-

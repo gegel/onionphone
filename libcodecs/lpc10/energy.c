@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /**********************************************************************
 *
 *	ENERGY Version 50
@@ -18,13 +20,12 @@
 
 void energy(int len, float speech[], float *rms)
 {
-int  i;
+	int i;
 
+	*rms = 0;
+	for (i = 1; i <= len; i++)
+		*rms += speech[i] * speech[i];
 
-*rms = 0;
-for(i=1;i<=len;i++)
-	*rms += speech[i]*speech[i];
-
-*rms = (float) sqrt( *rms / len );
+	*rms = (float)sqrt(*rms / len);
 
 }

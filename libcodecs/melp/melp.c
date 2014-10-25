@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*
 
 2.4 kbps MELP Proposed Federal Standard mf_speech coder
@@ -36,58 +38,54 @@ Group (phone 972 480 7442).
 
 /*  external memory */
 
-static struct mf_melp_param mf_melp_par;      /* melp parameters */
+static struct mf_melp_param mf_melp_par;	/* melp parameters */
 static float mf_fmf_speech[mf_FRAME];
 static unsigned int mf_ichbuf[CHSIZE];
 
 void melp_ini(void)
 {
-  mf_mf_melp_ana_init();
-  mf_mf_melp_syn_init();
+	mf_mf_melp_ana_init();
+	mf_mf_melp_syn_init();
 }
 
-
 //MELP encode
-void
-melp_enc(unsigned char* bits, short* mf_speech)
+void melp_enc(unsigned char *bits, short *mf_speech)
 {
- int i;
- mf_melp_par.chptr = mf_ichbuf;
- mf_melp_par.chbit = 0;
- 
- for(i=0;i<mf_FRAME;i++) mf_fmf_speech[i]=mf_speech[i];
- mf_melp_ana(mf_fmf_speech, &mf_melp_par);
- bits[0]=(0x3F&mf_ichbuf[0])|(0xC0&(mf_ichbuf[7]<<6));
- bits[1]=(0x3F&mf_ichbuf[1])|(0xC0&(mf_ichbuf[7]<<4));
- bits[2]=(0x3F&mf_ichbuf[2])|(0xC0&(mf_ichbuf[7]<<2));
- bits[3]=(0x3F&mf_ichbuf[3])|(0xC0&(mf_ichbuf[8]<<6));
- bits[4]=(0x3F&mf_ichbuf[4])|(0xC0&(mf_ichbuf[8]<<4));
- bits[5]=(0x3F&mf_ichbuf[5])|(0xC0&(mf_ichbuf[8]<<2));
- bits[6]=(0x3F&mf_ichbuf[6]);
+	int i;
+	mf_melp_par.chptr = mf_ichbuf;
+	mf_melp_par.chbit = 0;
+
+	for (i = 0; i < mf_FRAME; i++)
+		mf_fmf_speech[i] = mf_speech[i];
+	mf_melp_ana(mf_fmf_speech, &mf_melp_par);
+	bits[0] = (0x3F & mf_ichbuf[0]) | (0xC0 & (mf_ichbuf[7] << 6));
+	bits[1] = (0x3F & mf_ichbuf[1]) | (0xC0 & (mf_ichbuf[7] << 4));
+	bits[2] = (0x3F & mf_ichbuf[2]) | (0xC0 & (mf_ichbuf[7] << 2));
+	bits[3] = (0x3F & mf_ichbuf[3]) | (0xC0 & (mf_ichbuf[8] << 6));
+	bits[4] = (0x3F & mf_ichbuf[4]) | (0xC0 & (mf_ichbuf[8] << 4));
+	bits[5] = (0x3F & mf_ichbuf[5]) | (0xC0 & (mf_ichbuf[8] << 2));
+	bits[6] = (0x3F & mf_ichbuf[6]);
 }
 
 //MELP decode
-void 
-melp_dec(short* mf_speech, unsigned char* bits)
+void melp_dec(short *mf_speech, unsigned char *bits)
 {
- int i;
+	int i;
 
- mf_melp_par.chptr = mf_ichbuf;
- mf_melp_par.chbit = 0;
+	mf_melp_par.chptr = mf_ichbuf;
+	mf_melp_par.chbit = 0;
 
- mf_ichbuf[0]=0x3F&bits[0];
- mf_ichbuf[1]=0x3F&bits[1];
- mf_ichbuf[2]=0x3F&bits[2];
- mf_ichbuf[3]=0x3F&bits[3];
- mf_ichbuf[4]=0x3F&bits[4];
- mf_ichbuf[5]=0x3F&bits[5];
- mf_ichbuf[6]=0x3F&bits[6];
- mf_ichbuf[7]=(bits[0]>>6)|(bits[1]>>4)|(bits[2]>>2);
- mf_ichbuf[8]=(bits[3]>>6)|(bits[4]>>4)|(bits[5]>>2);
+	mf_ichbuf[0] = 0x3F & bits[0];
+	mf_ichbuf[1] = 0x3F & bits[1];
+	mf_ichbuf[2] = 0x3F & bits[2];
+	mf_ichbuf[3] = 0x3F & bits[3];
+	mf_ichbuf[4] = 0x3F & bits[4];
+	mf_ichbuf[5] = 0x3F & bits[5];
+	mf_ichbuf[6] = 0x3F & bits[6];
+	mf_ichbuf[7] = (bits[0] >> 6) | (bits[1] >> 4) | (bits[2] >> 2);
+	mf_ichbuf[8] = (bits[3] >> 6) | (bits[4] >> 4) | (bits[5] >> 2);
 
- mf_melp_syn(&mf_melp_par,mf_fmf_speech);
- for(i=0;i<mf_FRAME;i++) mf_speech[i]=(int)mf_fmf_speech[i]; 
+	mf_melp_syn(&mf_melp_par, mf_fmf_speech);
+	for (i = 0; i < mf_FRAME; i++)
+		mf_speech[i] = (int)mf_fmf_speech[i];
 }
-
-
-

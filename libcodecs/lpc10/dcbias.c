@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /**********************************************************************
 *
 *	DCBIAS Version 50
@@ -16,20 +18,19 @@
 
 void dcbias(int len, float *speech, float *sigout)
 {
-int i;
-float bias;
-register float *ptr1, *ptr2;
+	int i;
+	float bias;
+	register float *ptr1, *ptr2;
 
-bias = 0;
-ptr1 = speech+1;
-for(i=1;i<=len;i++)	
-	bias = bias + *ptr1++;
+	bias = 0;
+	ptr1 = speech + 1;
+	for (i = 1; i <= len; i++)
+		bias = bias + *ptr1++;
 
-bias = bias/len;
-ptr1 = sigout+1;
-ptr2 = speech+1;
-for(i=1;i<=len;i++)
-	*ptr1++ = *ptr2++ - bias;
-
+	bias = bias / len;
+	ptr1 = sigout + 1;
+	ptr2 = speech + 1;
+	for (i = 1; i <= len; i++)
+		*ptr1++ = *ptr2++ - bias;
 
 }
