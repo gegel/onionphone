@@ -26,6 +26,7 @@
   $Log$
 ******************************************************************************/
 
+#include <ophtools.h>
 #include "ophint.h"
 #include "bvcommon.h"
 #include "bv16cnst.h"
@@ -52,6 +53,7 @@ void postfilter(Word16 * s,	/* input : quantized speech signal         */
 	Word32 step, delta;
 	Word16 bi0, bi1c, bi1p;
 
+	memzero(buf, (MAXPP + FRSZ) * sizeof(Word16));
 	ps = s + XQOFF;
 
    /********************************************************************/
