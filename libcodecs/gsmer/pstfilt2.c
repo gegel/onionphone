@@ -10,7 +10,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "sig_proc.h"
 #include "count.h"
@@ -36,20 +36,20 @@
 
  /* inverse filtered w_w_synthesis */
 
-static Word16 w_res2[L_SUBFR];
+static int16_t w_res2[L_SUBFR];
 
  /* memory of filter 1/A(z/0.75) */
 
-static Word16 w_w_mem_w_syn_pst[M];
+static int16_t w_w_mem_w_syn_pst[M];
 
  /* Spectral expansion factors */
 
-const Word16 w_F_gamma3[M] = {
+const int16_t w_F_gamma3[M] = {
 	22938, 16057, 11240, 7868, 5508,
 	3856, 2699, 1889, 1322, 925
 };
 
-const Word16 w_F_gamma4[M] = {
+const int16_t w_F_gamma4[M] = {
 	24576, 18432, 13824, 10368, 7776,
 	5832, 4374, 3281, 2461, 1846
 };
@@ -86,24 +86,24 @@ void w_Init_w_Post_Filter(void)
  *
  *************************************************************************/
 
-void w_Post_Filter(Word16 * w_syn,	/* in/out: w_w_synthesis w_speech (postfiltered is output)    */
-		   Word16 * Az_4	/* input: interpolated LPC parameters in all w_subframes  */
+void w_Post_Filter(int16_t * w_syn,	/* in/out: w_w_synthesis w_speech (postfiltered is output)    */
+		   int16_t * Az_4	/* input: interpolated LPC parameters in all w_subframes  */
     )
 {
     /*-------------------------------------------------------------------*
      *           Declaration of parameters                               *
      *-------------------------------------------------------------------*/
 
-	Word16 w_syn_pst[L_FRAME];	/* post filtered w_w_synthesis w_speech   */
-	Word16 Ap3[MP1], Ap4[MP1];	/* bandwidth expanded LP parameters */
-	Word16 *Az;		/* pointer to Az_4:                 */
+	int16_t w_syn_pst[L_FRAME];	/* post filtered w_w_synthesis w_speech   */
+	int16_t Ap3[MP1], Ap4[MP1];	/* bandwidth expanded LP parameters */
+	int16_t *Az;		/* pointer to Az_4:                 */
 	/*  LPC parameters in each w_subframe */
-	Word16 i_w_subfr;	/* index for beginning of w_subframe  */
-	Word16 h[L_H];
+	int16_t i_w_subfr;	/* index for beginning of w_subframe  */
+	int16_t h[L_H];
 
-	Word16 i;
-	Word16 temp1, temp2;
-	Word32 L_tmp;
+	int16_t i;
+	int16_t temp1, temp2;
+	int32_t L_tmp;
 
     /*-----------------------------------------------------*
      * Post filtering                                      *

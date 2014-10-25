@@ -16,20 +16,19 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 #include "cnst.h"
 
-Word16 w_G_code(		/* out   : Gain of innovation code         */
-		       Word16 xn2[],	/* in    : target vector                   */
-		       Word16 y2[]	/* in    : filtered innovation vector      */
+int16_t w_G_code(int16_t xn2[],	/* in    : target vector                   */
+		       int16_t y2[]	/* in    : filtered innovation vector      */
     )
 {
-	Word16 i;
-	Word16 xy, yy, exp_xy, exp_yy, gain;
-	Word16 scal_y2[L_SUBFR];
-	Word32 s;
+	int16_t i;
+	int16_t xy, yy, exp_xy, exp_yy, gain;
+	int16_t scal_y2[L_SUBFR];
+	int32_t s;
 
 	/* Scale down Y[] by 2 to avoid overflow */
 
@@ -49,7 +48,7 @@ Word16 w_G_code(		/* out   : Gain of innovation code         */
 	/* If (xy < 0) gain = 0  */
 
 	if (xy <= 0)
-		return ((Word16) 0);
+		return ((int16_t) 0);
 
 	/* Compute scalar product <Y[],Y[]> */
 

@@ -14,7 +14,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
@@ -22,15 +22,15 @@
 
 /* local function */
 
-static void w_Get_lsp_pol(Word16 * lsp, Word32 * f);
+static void w_Get_lsp_pol(int16_t * lsp, int32_t * f);
 
-void w_Lsp_Az(Word16 lsp[],	/* (i)  : line spectral frequencies            */
-	      Word16 a[]	/* (o)  : w_predictor coefficients (order = 10)  */
+void w_Lsp_Az(int16_t lsp[],	/* (i)  : line spectral frequencies            */
+	      int16_t a[]	/* (o)  : w_predictor coefficients (order = 10)  */
     )
 {
-	Word16 i, j;
-	Word32 f1[6], f2[6];
-	Word32 t0;
+	int16_t i, j;
+	int32_t f1[6], f2[6];
+	int32_t t0;
 
 	w_Get_lsp_pol(&lsp[0], f1);
 	w_Get_lsp_pol(&lsp[1], f2);
@@ -83,15 +83,15 @@ void w_Lsp_Az(Word16 lsp[],	/* (i)  : line spectral frequencies            */
  *
  *************************************************************************/
 
-static void w_Get_lsp_pol(Word16 * lsp, Word32 * f)
+static void w_Get_lsp_pol(int16_t * lsp, int32_t * f)
 {
-	Word16 i, j, hi, lo;
-	Word32 t0;
+	int16_t i, j, hi, lo;
+	int32_t t0;
 
 	/* f[0] = 1.0;             */
 	*f = w_L_w_mult(4096, 2048);
 	f++;
-	*f = w_L_msu((Word32) 0, *lsp, 512);	/* f[1] =  -2.0 * lsp[0];  */
+	*f = w_L_msu((int32_t) 0, *lsp, 512);	/* f[1] =  -2.0 * lsp[0];  */
 	f++;
 	lsp += 2;		/* Advance lsp pointer     */
 

@@ -1,6 +1,6 @@
 /* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "sig_proc.h"
 #include "count.h"
@@ -12,39 +12,39 @@
 
 /* local functions */
 
-void er_w_cor_h_x(Word16 h[],	/* (i)  : impulse response of weighted w_w_synthesis filter */
-		  Word16 x[],	/* (i)  : target                                        */
-		  Word16 dn[]	/* (o)  : correlation between target and h[]            */
+void er_w_cor_h_x(int16_t h[],	/* (i)  : impulse response of weighted w_w_synthesis filter */
+		  int16_t x[],	/* (i)  : target                                        */
+		  int16_t dn[]	/* (o)  : correlation between target and h[]            */
     );
 
-void w_set_sign(Word16 dn[],	/* (i/o)  : correlation between target and h[]       */
-		Word16 cn[],	/* (i)  : residual after long term w_prediction        */
-		Word16 sign[],	/* (o)  : sign of d[n]                               */
-		Word16 pos_max[],	/* (o)  : position of maximum of dn[]                */
-		Word16 ipos[]	/* (o)  : starting position for each pulse           */
+void w_set_sign(int16_t dn[],	/* (i/o)  : correlation between target and h[]       */
+		int16_t cn[],	/* (i)  : residual after long term w_prediction        */
+		int16_t sign[],	/* (o)  : sign of d[n]                               */
+		int16_t pos_max[],	/* (o)  : position of maximum of dn[]                */
+		int16_t ipos[]	/* (o)  : starting position for each pulse           */
     );
 
-void w_cor_h(Word16 h[],	/* (i)  : impulse response of weighted w_w_synthesis
+void w_cor_h(int16_t h[],	/* (i)  : impulse response of weighted w_w_synthesis
 				   filter */
-	     Word16 sign[],	/* (i)  : sign of d[n]                             */
-	     Word16 rr[][L_CODE]	/* (o)  : matrix of autocorrelation                */
+	     int16_t sign[],	/* (i)  : sign of d[n]                             */
+	     int16_t rr[][L_CODE]	/* (o)  : matrix of autocorrelation                */
     );
-void w_search_10i40(Word16 dn[],	/* (i) : correlation between target and h[]       */
-		    Word16 rr[][L_CODE],	/* (i) : matrix of autocorrelation                */
-		    Word16 ipos[],	/* (i) : starting position for each pulse         */
-		    Word16 pos_max[],	/* (i) : position of maximum of dn[]              */
-		    Word16 codvec[]	/* (o) : algebraic codebook vector                */
+void w_search_10i40(int16_t dn[],	/* (i) : correlation between target and h[]       */
+		    int16_t rr[][L_CODE],	/* (i) : matrix of autocorrelation                */
+		    int16_t ipos[],	/* (i) : starting position for each pulse         */
+		    int16_t pos_max[],	/* (i) : position of maximum of dn[]              */
+		    int16_t codvec[]	/* (o) : algebraic codebook vector                */
     );
-void w_build_code(Word16 codvec[],	/* (i)  : algebraic codebook vector                   */
-		  Word16 sign[],	/* (i)  : sign of dn[]                                */
-		  Word16 cod[],	/* (o)  : algebraic (fixed) codebook w_excitation       */
-		  Word16 h[],	/* (i)  : impulse response of weighted w_w_synthesis filter */
-		  Word16 y[],	/* (o)  : filtered fixed codebook w_excitation           */
-		  Word16 indx[]	/* (o)  : index of 10 pulses (position+sign+ampl)*10   */
+void w_build_code(int16_t codvec[],	/* (i)  : algebraic codebook vector                   */
+		  int16_t sign[],	/* (i)  : sign of dn[]                                */
+		  int16_t cod[],	/* (o)  : algebraic (fixed) codebook w_excitation       */
+		  int16_t h[],	/* (i)  : impulse response of weighted w_w_synthesis filter */
+		  int16_t y[],	/* (o)  : filtered fixed codebook w_excitation           */
+		  int16_t indx[]	/* (o)  : index of 10 pulses (position+sign+ampl)*10   */
     );
 
-void w_q_p(Word16 * ind,	/* Pulse position                                        */
-	   Word16 n		/* Pulse number                                          */
+void w_q_p(int16_t * ind,	/* Pulse position                                        */
+	   int16_t n		/* Pulse number                                          */
     );
 
 /*************************************************************************
@@ -74,18 +74,18 @@ void w_q_p(Word16 * ind,	/* Pulse position                                      
  *
  *************************************************************************/
 
-void w_code_10i40_35bits(Word16 x[],	/* (i)   : target vector                                 */
-			 Word16 cn[],	/* (i)   : residual after long term w_prediction           */
-			 Word16 h[],	/* (i)   : impulse response of weighted w_w_synthesis filter
+void w_code_10i40_35bits(int16_t x[],	/* (i)   : target vector                                 */
+			 int16_t cn[],	/* (i)   : residual after long term w_prediction           */
+			 int16_t h[],	/* (i)   : impulse response of weighted w_w_synthesis filter
 					   h[-w_L_w_subfr..-1] must be set to w_zero           */
-			 Word16 cod[],	/* (o)   : algebraic (fixed) codebook w_excitation         */
-			 Word16 y[],	/* (o)   : filtered fixed codebook w_excitation            */
-			 Word16 indx[]	/* (o)   : index of 10 pulses (sign + position)          */
+			 int16_t cod[],	/* (o)   : algebraic (fixed) codebook w_excitation         */
+			 int16_t y[],	/* (o)   : filtered fixed codebook w_excitation            */
+			 int16_t indx[]	/* (o)   : index of 10 pulses (sign + position)          */
     )
 {
-	Word16 ipos[NB_PULSE], pos_max[NB_TRACK], codvec[NB_PULSE];
-	Word16 dn[L_CODE], sign[L_CODE];
-	Word16 rr[L_CODE][L_CODE], i;
+	int16_t ipos[NB_PULSE], pos_max[NB_TRACK], codvec[NB_PULSE];
+	int16_t dn[L_CODE], sign[L_CODE];
+	int16_t rr[L_CODE][L_CODE], i;
 
 	er_w_cor_h_x(h, x, dn);
 	w_set_sign(dn, cn, sign, pos_max, ipos);
@@ -113,13 +113,13 @@ void w_code_10i40_35bits(Word16 x[],	/* (i)   : target vector                   
  *    to each position track does not w_saturate.
  *
  *************************************************************************/
-void er_w_cor_h_x(Word16 h[],	/* (i)   : impulse response of weighted w_w_synthesis filter */
-		  Word16 x[],	/* (i)   : target                                        */
-		  Word16 dn[]	/* (o)   : correlation between target and h[]            */
+void er_w_cor_h_x(int16_t h[],	/* (i)   : impulse response of weighted w_w_synthesis filter */
+		  int16_t x[],	/* (i)   : target                                        */
+		  int16_t dn[]	/* (o)   : correlation between target and h[]            */
     )
 {
-	Word16 i, j, k;
-	Word32 s, y32[L_CODE], max, tot;
+	int16_t i, j, k;
+	int32_t s, y32[L_CODE], max, tot;
 
 	/* first keep the result on 32 bits and find absolute maximum */
 
@@ -136,7 +136,7 @@ void er_w_cor_h_x(Word16 h[],	/* (i)   : impulse response of weighted w_w_synthe
 
 			s = w_L_abs(s);
 
-			if (w_L_w_sub(s, max) > (Word32) 0L)
+			if (w_L_w_sub(s, max) > (int32_t) 0L)
 				max = s;
 		}
 		tot = L_w_add(tot, w_L_w_shr(max, 1));
@@ -160,17 +160,17 @@ void er_w_cor_h_x(Word16 h[],	/* (i)   : impulse response of weighted w_w_synthe
  *
  *************************************************************************/
 
-void w_set_sign(Word16 dn[],	/* (i/o): correlation between target and h[]         */
-		Word16 cn[],	/* (i)  : residual after long term w_prediction        */
-		Word16 sign[],	/* (o)  : sign of d[n]                               */
-		Word16 pos_max[],	/* (o)  : position of maximum correlation            */
-		Word16 ipos[]	/* (o)  : starting position for each pulse           */
+void w_set_sign(int16_t dn[],	/* (i/o): correlation between target and h[]         */
+		int16_t cn[],	/* (i)  : residual after long term w_prediction        */
+		int16_t sign[],	/* (o)  : sign of d[n]                               */
+		int16_t pos_max[],	/* (o)  : position of maximum correlation            */
+		int16_t ipos[]	/* (o)  : starting position for each pulse           */
     )
 {
-	Word16 i, j;
-	Word16 val, cor, k_cn, k_dn, max, max_of_all, pos = 0;
-	Word16 en[L_CODE];	/* correlation vector */
-	Word32 s;
+	int16_t i, j;
+	int16_t val, cor, k_cn, k_dn, max, max_of_all, pos = 0;
+	int16_t en[L_CODE];	/* correlation vector */
+	int32_t s;
 
 	/* calculate energy for normalization of cn[] and dn[] */
 
@@ -247,12 +247,12 @@ void w_set_sign(Word16 dn[],	/* (i/o): correlation between target and h[]       
 	}
 }
 
-void w_q_p(Word16 * ind,	/* Pulse position */
-	   Word16 n		/* Pulse number   */
+void w_q_p(int16_t * ind,	/* Pulse position */
+	   int16_t n		/* Pulse number   */
     )
 {
-	static const Word16 gray[8] = { 0, 1, 3, 2, 6, 4, 5, 7 };
-	Word16 tmp;
+	static const int16_t gray[8] = { 0, 1, 3, 2, 6, 4, 5, 7 };
+	int16_t tmp;
 
 	tmp = *ind;
 
@@ -281,14 +281,14 @@ void w_q_p(Word16 * ind,	/* Pulse position */
  *
  *************************************************************************/
 
-void w_cor_h(Word16 h[],	/* (i) : impulse response of weighted w_w_synthesis
+void w_cor_h(int16_t h[],	/* (i) : impulse response of weighted w_w_synthesis
 				   filter                                  */
-	     Word16 sign[],	/* (i) : sign of d[n]                            */
-	     Word16 rr[][L_CODE]	/* (o) : matrix of autocorrelation               */
+	     int16_t sign[],	/* (i) : sign of d[n]                            */
+	     int16_t rr[][L_CODE]	/* (o) : matrix of autocorrelation               */
     )
 {
-	Word16 i, j, k, dec, h2[L_CODE];
-	Word32 s;
+	int16_t i, j, k, dec, h2[L_CODE];
+	int32_t s;
 
 	/* Scaling for maximum precision */
 
@@ -343,27 +343,27 @@ void w_cor_h(Word16 h[],	/* (i) : impulse response of weighted w_w_synthesis
  *
  *************************************************************************/
 
-#define _1_2    (Word16)(32768L/2)
-#define _1_4    (Word16)(32768L/4)
-#define _1_8    (Word16)(32768L/8)
-#define _1_16   (Word16)(32768L/16)
-#define _1_32   (Word16)(32768L/32)
-#define _1_64   (Word16)(32768L/64)
-#define _1_128  (Word16)(32768L/128)
+#define _1_2    (int16_t)(32768L/2)
+#define _1_4    (int16_t)(32768L/4)
+#define _1_8    (int16_t)(32768L/8)
+#define _1_16   (int16_t)(32768L/16)
+#define _1_32   (int16_t)(32768L/32)
+#define _1_64   (int16_t)(32768L/64)
+#define _1_128  (int16_t)(32768L/128)
 
-void w_search_10i40(Word16 dn[],	/* (i) : correlation between target and h[]        */
-		    Word16 rr[][L_CODE],	/* (i) : matrix of autocorrelation                 */
-		    Word16 ipos[],	/* (i) : starting position for each pulse          */
-		    Word16 pos_max[],	/* (i) : position of maximum of dn[]               */
-		    Word16 codvec[]	/* (o) : algebraic codebook vector                 */
+void w_search_10i40(int16_t dn[],	/* (i) : correlation between target and h[]        */
+		    int16_t rr[][L_CODE],	/* (i) : matrix of autocorrelation                 */
+		    int16_t ipos[],	/* (i) : starting position for each pulse          */
+		    int16_t pos_max[],	/* (i) : position of maximum of dn[]               */
+		    int16_t codvec[]	/* (o) : algebraic codebook vector                 */
     )
 {
-	Word16 i0, i1, i2, i3, i4, i5, i6, i7, i8, i9;
-	Word16 i, j, k, pos, ia, ib;
-	Word16 psk, ps, ps0, ps1, ps2, sq, sq2;
-	Word16 alpk, alp, alp_16;
-	Word16 rrv[L_CODE];
-	Word32 s, alp0, alp1, alp2;
+	int16_t i0, i1, i2, i3, i4, i5, i6, i7, i8, i9;
+	int16_t i, j, k, pos, ia, ib;
+	int16_t psk, ps, ps0, ps1, ps2, sq, sq2;
+	int16_t alpk, alp, alp_16;
+	int16_t rrv[L_CODE];
+	int32_t s, alp0, alp1, alp2;
 
 	/* fix i0 on maximum of correlation position */
 
@@ -695,17 +695,17 @@ void w_search_10i40(Word16 dn[],	/* (i) : correlation between target and h[]    
  *
  *************************************************************************/
 
-void w_build_code(Word16 codvec[],	/* (i)  : position of pulses                           */
-		  Word16 sign[],	/* (i)  : sign of d[n]                                 */
-		  Word16 cod[],	/* (o)  : innovative code vector                       */
-		  Word16 h[],	/* (i)  : impulse response of weighted w_w_synthesis filter */
-		  Word16 y[],	/* (o)  : filtered innovative code                     */
-		  Word16 indx[]	/* (o)  : index of 10 pulses (sign+position)           */
+void w_build_code(int16_t codvec[],	/* (i)  : position of pulses                           */
+		  int16_t sign[],	/* (i)  : sign of d[n]                                 */
+		  int16_t cod[],	/* (o)  : innovative code vector                       */
+		  int16_t h[],	/* (i)  : impulse response of weighted w_w_synthesis filter */
+		  int16_t y[],	/* (o)  : filtered innovative code                     */
+		  int16_t indx[]	/* (o)  : index of 10 pulses (sign+position)           */
     )
 {
-	Word16 i, j, k, track, index, _sign[NB_PULSE];
-	Word16 *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8, *p9;
-	Word32 s;
+	int16_t i, j, k, track, index, _sign[NB_PULSE];
+	int16_t *p0, *p1, *p2, *p3, *p4, *p5, *p6, *p7, *p8, *p9;
+	int32_t s;
 
 	for (i = 0; i < L_CODE; i++) {
 		cod[i] = 0;

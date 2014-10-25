@@ -20,21 +20,21 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
 #include "log2.tab"		/* Table for w_Log2() */
 
-void w_Log2(Word32 L_x,		/* (i) : input value                                 */
-	    Word16 * exponent,	/* (o) : Integer part of w_Log2.   (range: 0<=val<=30) */
-	    Word16 * fraction	/* (o) : Fractional part of w_Log2. (range: 0<=val<1) */
+void w_Log2(int32_t L_x,		/* (i) : input value                                 */
+	    int16_t * exponent,	/* (o) : Integer part of w_Log2.   (range: 0<=val<=30) */
+	    int16_t * fraction	/* (o) : Fractional part of w_Log2. (range: 0<=val<1) */
     )
 {
-	Word16 exp, i, a, tmp;
-	Word32 L_y;
+	int16_t exp, i, a, tmp;
+	int32_t L_y;
 
-	if (L_x <= (Word32) 0) {
+	if (L_x <= (int32_t) 0) {
 		*exponent = 0;
 		*fraction = 0;
 		return;
@@ -48,7 +48,7 @@ void w_Log2(Word32 L_x,		/* (i) : input value                                 */
 	i = w_extract_h(L_x);	/* Extract b25-b31 */
 	L_x = w_L_w_shr(L_x, 1);
 	a = w_extract_l(L_x);	/* Extract b10-b24 of fraction */
-	a = a & (Word16) 0x7fff;
+	a = a & (int16_t) 0x7fff;
 
 	i = w_sub(i, 32);
 

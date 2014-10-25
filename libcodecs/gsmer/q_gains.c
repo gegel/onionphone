@@ -9,7 +9,7 @@
  * (in dB/(20*log10(2))) with mean removed.                                 *
  *-------------------------------------------------------------------------*/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
@@ -22,18 +22,17 @@
 
 /* past quantized energies.                               */
 /* initialized to -14.0/constant, constant = 20*Log10(2)   */
-Word16 w_past_qua_en[4];
+int16_t w_past_qua_en[4];
 
 /* MA w_prediction coeff */
-Word16 w_pred[4];
+int16_t w_pred[4];
 
-extern Word16 w_CN_w_excitation_gain, w_gain_code_old_tx[4 * DTX_HANGOVER];
+extern int16_t w_CN_w_excitation_gain, w_gain_code_old_tx[4 * DTX_HANGOVER];
 
-Word16 w_q_gain_pitch(		/* Return index of quantization */
-			     Word16 * gain	/* (i)  :  Pitch gain to quantize  */
+int16_t w_q_gain_pitch(int16_t * gain	/* (i)  :  Pitch gain to quantize  */
     )
 {
-	Word16 i, index, gain_q14, err, err_min;
+	int16_t i, index, gain_q14, err, err_min;
 
 	gain_q14 = w_shl(*gain, 2);
 
@@ -59,17 +58,16 @@ Word16 w_q_gain_pitch(		/* Return index of quantization */
 
 #define MEAN_ENER  783741L	/* 36/(20*log10(2))       */
 
-Word16 w_q_gain_code(		/* Return quantization index                  */
-			    Word16 code[],	/* (i)      : fixed codebook w_excitation       */
-			    Word16 lcode,	/* (i)      : codevector size                 */
-			    Word16 * gain,	/* (i/o)    : quantized fixed codebook gain   */
-			    Word16 w_txdtx_ctrl, Word16 i_w_subfr)
+int16_t w_q_gain_code(int16_t code[],	/* (i)      : fixed codebook w_excitation       */
+			    int16_t lcode,	/* (i)      : codevector size                 */
+			    int16_t * gain,	/* (i/o)    : quantized fixed codebook gain   */
+			    int16_t w_txdtx_ctrl, int16_t i_w_subfr)
 {
-	Word16 i, index = 0;
-	Word16 gcode0, err, err_min, exp, frac;
-	Word32 ener, ener_code;
-	Word16 aver_gain;
-	static Word16 w_gcode0_CN;
+	int16_t i, index = 0;
+	int16_t gcode0, err, err_min, exp, frac;
+	int32_t ener, ener_code;
+	int16_t aver_gain;
+	static int16_t w_gcode0_CN;
 
 	if ((w_txdtx_ctrl & TX_SP_FLAG) != 0) {
 

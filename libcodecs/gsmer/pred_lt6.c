@@ -15,7 +15,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
@@ -25,7 +25,7 @@
 
 /* 1/6 resolution interpolation filter  (-3 dB at 3600 Hz) */
 
-static const Word16 w_inter_6[FIR_SIZE] = {
+static const int16_t w_inter_6[FIR_SIZE] = {
 	29443,
 	28346, 25207, 20449, 14701, 8693, 3143,
 	-1352, -4402, -5865, -5850, -4673, -2783,
@@ -39,16 +39,16 @@ static const Word16 w_inter_6[FIR_SIZE] = {
 	73, 91, 89, 70, 38, 0
 };
 
-void w_Pred_lt_6(Word16 w_exc[],	/* in/out: w_excitation buffer */
-		 Word16 T0,	/* input : integer pitch lag */
-		 Word16 frac,	/* input : fraction of lag   */
-		 Word16 w_L_w_subfr	/* input : w_subframe size     */
+void w_Pred_lt_6(int16_t w_exc[],	/* in/out: w_excitation buffer */
+		 int16_t T0,	/* input : integer pitch lag */
+		 int16_t frac,	/* input : fraction of lag   */
+		 int16_t w_L_w_subfr	/* input : w_subframe size     */
     )
 {
-	Word16 i, j, k;
-	Word16 *x0, *x1, *x2;
-	const Word16 *c1, *c2;
-	Word32 s;
+	int16_t i, j, k;
+	int16_t *x0, *x1, *x2;
+	const int16_t *c1, *c2;
+	int32_t s;
 
 	x0 = &w_exc[-T0];
 

@@ -6,18 +6,18 @@
  * Preemphasis: filtering through 1 - g z^-1                           *
  *---------------------------------------------------------------------*/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
-Word16 w_mem_pre;
+int16_t w_mem_pre;
 
-void w_preemphasis(Word16 * signal,	/* (i/o)   : input signal overwritten by the output */
-		   Word16 g,	/* (i)     : w_preemphasis coefficient                */
-		   Word16 L	/* (i)     : size of filtering                      */
+void w_preemphasis(int16_t * signal,	/* (i/o)   : input signal overwritten by the output */
+		   int16_t g,	/* (i)     : w_preemphasis coefficient                */
+		   int16_t L	/* (i)     : size of filtering                      */
     )
 {
-	Word16 *p1, *p2, temp, i;
+	int16_t *p1, *p2, temp, i;
 
 	p1 = signal + L - 1;
 	p2 = p1 - 1;

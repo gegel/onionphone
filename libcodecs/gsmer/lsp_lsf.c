@@ -16,19 +16,19 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
 #include "lsp_lsf.tab"		/* Look-up w_table for transformations */
 
-void w_Lsf_lsp(Word16 lsf[],	/* (i) : lsf[m] normalized (range: 0.0<=val<=0.5) */
-	       Word16 lsp[],	/* (o) : lsp[m] (range: -1<=val<1)                */
-	       Word16 m		/* (i) : LPC order                                */
+void w_Lsf_lsp(int16_t lsf[],	/* (i) : lsf[m] normalized (range: 0.0<=val<=0.5) */
+	       int16_t lsp[],	/* (o) : lsp[m] (range: -1<=val<1)                */
+	       int16_t m		/* (i) : LPC order                                */
     )
 {
-	Word16 i, ind, offset;
-	Word32 L_tmp;
+	int16_t i, ind, offset;
+	int32_t L_tmp;
 
 	for (i = 0; i < m; i++) {
 		ind = w_shr(lsf[i], 8);	/* ind    = b8-b15 of lsf[i] */
@@ -44,13 +44,13 @@ void w_Lsf_lsp(Word16 lsf[],	/* (i) : lsf[m] normalized (range: 0.0<=val<=0.5) *
 	return;
 }
 
-void w_Lsp_lsf(Word16 lsp[],	/* (i)  : lsp[m] (range: -1<=val<1)                */
-	       Word16 lsf[],	/* (o)  : lsf[m] normalized (range: 0.0<=val<=0.5) */
-	       Word16 m		/* (i)  : LPC order                                */
+void w_Lsp_lsf(int16_t lsp[],	/* (i)  : lsp[m] (range: -1<=val<1)                */
+	       int16_t lsf[],	/* (o)  : lsf[m] normalized (range: 0.0<=val<=0.5) */
+	       int16_t m		/* (i)  : LPC order                                */
     )
 {
-	Word16 i, ind;
-	Word32 L_tmp;
+	int16_t i, ind;
+	int32_t L_tmp;
 
 	ind = 63;		/* begin at end of w_table -1 */
 

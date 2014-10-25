@@ -27,7 +27,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 #include "sig_proc.h"
@@ -37,25 +37,23 @@
 
 /* Locals functions */
 
-void w_Lsf_wt(Word16 * lsf,	/* input : LSF vector                    */
-	      Word16 * wf2	/* output: square of weighting factors   */
+void w_Lsf_wt(int16_t * lsf,	/* input : LSF vector                    */
+	      int16_t * wf2	/* output: square of weighting factors   */
     );
 
-Word16 Vq_w_subvec(		/* output: return quantization index     */
-			  Word16 * lsf_r1,	/* input : 1st LSF residual vector       */
-			  Word16 * lsf_r2,	/* input : and LSF residual vector       */
-			  const Word16 * dico,	/* input : quantization codebook         */
-			  Word16 * wf1,	/* input : 1st LSF weighting factors     */
-			  Word16 * wf2,	/* input : 2nd LSF weighting factors     */
-			  Word16 dico_size	/* input : size of quantization codebook */
+int16_t Vq_w_subvec(int16_t * lsf_r1,	/* input : 1st LSF residual vector       */
+			  int16_t * lsf_r2,	/* input : and LSF residual vector       */
+			  const int16_t * dico,	/* input : quantization codebook         */
+			  int16_t * wf1,	/* input : 1st LSF weighting factors     */
+			  int16_t * wf2,	/* input : 2nd LSF weighting factors     */
+			  int16_t dico_size	/* input : size of quantization codebook */
     );
-Word16 Vq_w_subvec_s(		/* output: return quantization index     */
-			    Word16 * lsf_r1,	/* input : 1st LSF residual vector       */
-			    Word16 * lsf_r2,	/* input : and LSF residual vector       */
-			    const Word16 * dico,	/* input : quantization codebook         */
-			    Word16 * wf1,	/* input : 1st LSF weighting factors     */
-			    Word16 * wf2,	/* input : 2nd LSF weighting factors     */
-			    Word16 dico_size	/* input : size of quantization codebook */
+int16_t Vq_w_subvec_s(int16_t * lsf_r1,	/* input : 1st LSF residual vector       */
+			    int16_t * lsf_r2,	/* input : and LSF residual vector       */
+			    const int16_t * dico,	/* input : quantization codebook         */
+			    int16_t * wf1,	/* input : 1st LSF weighting factors     */
+			    int16_t * wf2,	/* input : 2nd LSF weighting factors     */
+			    int16_t dico_size	/* input : size of quantization codebook */
     );
 /* M  ->order of linear w_prediction filter                      */
 /* LSF_GAP  -> Minimum distance between LSF after quantization */
@@ -70,23 +68,23 @@ Word16 Vq_w_subvec_s(		/* output: return quantization index     */
 
  /* Past quantized w_prediction w_error */
 
-Word16 w_past_r2_q[M];
+int16_t w_past_r2_q[M];
 
-extern Word16 w_lsf_old_tx[DTX_HANGOVER][M];
+extern int16_t w_lsf_old_tx[DTX_HANGOVER][M];
 
-void w_Q_plsf_5(Word16 * lsp1,	/* input : 1st LSP vector                     */
-		Word16 * lsp2,	/* input : 2nd LSP vector                     */
-		Word16 * lsp1_q,	/* output: quantized 1st LSP vector           */
-		Word16 * lsp2_q,	/* output: quantized 2nd LSP vector           */
-		Word16 * indice,	/* output: quantization indices of 5 matrices */
-		Word16 w_txdtx_ctrl	/* input : tx dtx control word                */
+void w_Q_plsf_5(int16_t * lsp1,	/* input : 1st LSP vector                     */
+		int16_t * lsp2,	/* input : 2nd LSP vector                     */
+		int16_t * lsp1_q,	/* output: quantized 1st LSP vector           */
+		int16_t * lsp2_q,	/* output: quantized 2nd LSP vector           */
+		int16_t * indice,	/* output: quantization indices of 5 matrices */
+		int16_t w_txdtx_ctrl	/* input : tx dtx control word                */
     )
 {
-	Word16 i;
-	Word16 lsf1[M], lsf2[M], wf1[M], wf2[M], lsf_p[M], lsf_r1[M], lsf_r2[M];
-	Word16 lsf1_q[M], lsf2_q[M];
-	Word16 lsf_aver[M];
-	static Word16 w_lsf_p_CN[M];
+	int16_t i;
+	int16_t lsf1[M], lsf2[M], wf1[M], wf2[M], lsf_p[M], lsf_r1[M], lsf_r2[M];
+	int16_t lsf1_q[M], lsf2_q[M];
+	int16_t lsf_aver[M];
+	static int16_t w_lsf_p_CN[M];
 
 	/* convert LSFs to normalize frequency domain 0..16384  */
 
@@ -203,18 +201,17 @@ void w_Q_plsf_5(Word16 * lsp1,	/* input : 1st LSP vector                     */
 
 /* Quantization of a 4 dimensional w_subvector */
 
-Word16 Vq_w_subvec(		/* output: return quantization index     */
-			  Word16 * lsf_r1,	/* input : 1st LSF residual vector       */
-			  Word16 * lsf_r2,	/* input : and LSF residual vector       */
-			  const Word16 * dico,	/* input : quantization codebook         */
-			  Word16 * wf1,	/* input : 1st LSF weighting factors     */
-			  Word16 * wf2,	/* input : 2nd LSF weighting factors     */
-			  Word16 dico_size	/* input : size of quantization codebook */
+int16_t Vq_w_subvec(int16_t * lsf_r1,	/* input : 1st LSF residual vector       */
+			  int16_t * lsf_r2,	/* input : and LSF residual vector       */
+			  const int16_t * dico,	/* input : quantization codebook         */
+			  int16_t * wf1,	/* input : 1st LSF weighting factors     */
+			  int16_t * wf2,	/* input : 2nd LSF weighting factors     */
+			  int16_t dico_size	/* input : size of quantization codebook */
     )
 {
-	Word16 i, index = 0, temp = 0;
-	const Word16 *p_dico;
-	Word32 dist_min, dist;
+	int16_t i, index = 0, temp = 0;
+	const int16_t *p_dico;
+	int32_t dist_min, dist;
 
 	dist_min = MAX_32;
 	p_dico = dico;
@@ -236,7 +233,7 @@ Word16 Vq_w_subvec(		/* output: return quantization index     */
 		temp = w_mult(wf2[1], temp);
 		dist = w_L_mac(dist, temp, temp);
 
-		if (w_L_w_sub(dist, dist_min) < (Word32) 0) {
+		if (w_L_w_sub(dist, dist_min) < (int32_t) 0) {
 			dist_min = dist;
 			index = i;
 		}
@@ -256,17 +253,16 @@ Word16 Vq_w_subvec(		/* output: return quantization index     */
 
 /* Quantization of a 4 dimensional w_subvector with a signed codebook */
 
-Word16 Vq_w_subvec_s(		/* output: return quantization index     */
-			    Word16 * lsf_r1,	/* input : 1st LSF residual vector       */
-			    Word16 * lsf_r2,	/* input : and LSF residual vector       */
-			    const Word16 * dico,	/* input : quantization codebook         */
-			    Word16 * wf1,	/* input : 1st LSF weighting factors     */
-			    Word16 * wf2,	/* input : 2nd LSF weighting factors     */
-			    Word16 dico_size)
+int16_t Vq_w_subvec_s(int16_t * lsf_r1,	/* input : 1st LSF residual vector       */
+			    int16_t * lsf_r2,	/* input : and LSF residual vector       */
+			    const int16_t * dico,	/* input : quantization codebook         */
+			    int16_t * wf1,	/* input : 1st LSF weighting factors     */
+			    int16_t * wf2,	/* input : 2nd LSF weighting factors     */
+			    int16_t dico_size)
 {				/* input : size of quantization codebook */
-	Word16 i, index = 0, sign = 0, temp = 0;
-	const Word16 *p_dico;
-	Word32 dist_min, dist;
+	int16_t i, index = 0, sign = 0, temp = 0;
+	const int16_t *p_dico;
+	int32_t dist_min, dist;
 
 	dist_min = MAX_32;
 	p_dico = dico;
@@ -290,7 +286,7 @@ Word16 Vq_w_subvec_s(		/* output: return quantization index     */
 		temp = w_mult(wf2[1], temp);
 		dist = w_L_mac(dist, temp, temp);
 
-		if (w_L_w_sub(dist, dist_min) < (Word32) 0) {
+		if (w_L_w_sub(dist, dist_min) < (int32_t) 0) {
 			dist_min = dist;
 			index = i;
 			sign = 0;
@@ -314,7 +310,7 @@ Word16 Vq_w_subvec_s(		/* output: return quantization index     */
 		temp = w_mult(wf2[1], temp);
 		dist = w_L_mac(dist, temp, temp);
 
-		if (w_L_w_sub(dist, dist_min) < (Word32) 0) {
+		if (w_L_w_sub(dist, dist_min) < (int32_t) 0) {
 			dist_min = dist;
 			index = i;
 			sign = 1;
@@ -377,11 +373,11 @@ Word16 Vq_w_subvec_s(		/* output: return quantization index     */
  *                                                                          *
  *--------------------------------------------------------------------------*/
 
-void w_Lsf_wt(Word16 * lsf,	/* input : LSF vector                  */
-	      Word16 * wf)
+void w_Lsf_wt(int16_t * lsf,	/* input : LSF vector                  */
+	      int16_t * wf)
 {				/* output: square of weighting factors */
-	Word16 temp;
-	Word16 i;
+	int16_t temp;
+	int16_t i;
 	/* wf[0] = lsf[1] - 0  */
 	wf[0] = lsf[1];
 	for (i = 1; i < 9; i++) {

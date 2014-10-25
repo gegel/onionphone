@@ -21,7 +21,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 #include "sig_proc.h"
@@ -29,18 +29,18 @@
 #define M   10			/* LP order */
 #define MP1 11			/* M+1 */
 
-void w_Int_lpc(Word16 w_lsp_old[],	/* input : LSP vector at the 4th w_subframe
+void w_Int_lpc(int16_t w_lsp_old[],	/* input : LSP vector at the 4th w_subframe
 					   of past frame    */
-	       Word16 lsp_mid[],	/* input : LSP vector at the 2nd w_subframe
+	       int16_t lsp_mid[],	/* input : LSP vector at the 2nd w_subframe
 					   of present frame */
-	       Word16 lsp_new[],	/* input : LSP vector at the 4th w_subframe of
+	       int16_t lsp_new[],	/* input : LSP vector at the 4th w_subframe of
 					   present frame */
-	       Word16 Az[]	/* output: interpolated LP parameters in
+	       int16_t Az[]	/* output: interpolated LP parameters in
 				   all w_subframes */
     )
 {
-	Word16 i;
-	Word16 lsp[M];
+	int16_t i;
+	int16_t lsp[M];
 
 	/*  lsp[i] = lsp_mid[i] * 0.5 + w_lsp_old[i] * 0.5 */
 
@@ -76,18 +76,18 @@ void w_Int_lpc(Word16 w_lsp_old[],	/* input : LSP vector at the 4th w_subframe
  * w_subframe 2 and 4 because it is already available.                    *
  *----------------------------------------------------------------------*/
 
-void w_w_Int_lpc2(Word16 w_lsp_old[],	/* input : LSP vector at the 4th w_subframe
+void w_w_Int_lpc2(int16_t w_lsp_old[],	/* input : LSP vector at the 4th w_subframe
 					   of past frame    */
-		  Word16 lsp_mid[],	/* input : LSP vector at the 2nd w_subframe
+		  int16_t lsp_mid[],	/* input : LSP vector at the 2nd w_subframe
 					   of present frame */
-		  Word16 lsp_new[],	/* input : LSP vector at the 4th w_subframe of
+		  int16_t lsp_new[],	/* input : LSP vector at the 4th w_subframe of
 					   present frame */
-		  Word16 Az[]	/* output: interpolated LP parameters
+		  int16_t Az[]	/* output: interpolated LP parameters
 				   in w_subframes 1 and 3 */
     )
 {
-	Word16 i;
-	Word16 lsp[M];
+	int16_t i;
+	int16_t lsp[M];
 
 	/*  lsp[i] = lsp_mid[i] * 0.5 + w_lsp_old[i] * 0.5 */
 

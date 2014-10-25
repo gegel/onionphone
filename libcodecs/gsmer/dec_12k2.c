@@ -16,7 +16,7 @@
  *
  ***************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "sig_proc.h"
 #include "count.h"
@@ -25,7 +25,7 @@
 
 #include "dtx.h"
 
-extern Word16 w_dtx_mode;
+extern int16_t w_dtx_mode;
 
 /*---------------------------------------------------------------*
  *   Decoder constant parameters (defined in "cnst.h")           *
@@ -47,21 +47,21 @@ extern Word16 w_dtx_mode;
 
  /* Excitation vector */
 
-static Word16 old_v_exc[L_FRAME + PIT_MAX + L_INTERPOL];
-static Word16 *v_exc;
+static int16_t old_v_exc[L_FRAME + PIT_MAX + L_INTERPOL];
+static int16_t *v_exc;
 
  /* Lsp (Line spectral pairs) */
 
-static Word16 v_lsp_old[M];
+static int16_t v_lsp_old[M];
 
  /* Filter's memory */
 
-static Word16 v_mem_v_syn[M];
+static int16_t v_mem_v_syn[M];
 
  /* Memories for bad frame handling */
 
-static Word16 w_prev_bf;
-static Word16 w_state;
+static int16_t w_prev_bf;
+static int16_t w_state;
 
 /***************************************************************************
  *
@@ -111,40 +111,40 @@ void Init_w_Decoder_12k2(void)
  *
  ***************************************************************************/
 
-void w_Decoder_12k2(Word16 w_parm[],	/* input : vector of w_w_synthesis parameters
+void w_Decoder_12k2(int16_t w_parm[],	/* input : vector of w_w_synthesis parameters
 					   w_parm[0] = bad frame indicator (bfi)       */
-		    Word16 w_w_synth[],	/* output: w_w_synthesis w_speech                  */
-		    Word16 A_t[],	/* output: decoded LP filter in 4 w_subframes  */
-		    Word16 TAF, Word16 SID_flag)
+		    int16_t w_w_synth[],	/* output: w_w_synthesis w_speech                  */
+		    int16_t A_t[],	/* output: decoded LP filter in 4 w_subframes  */
+		    int16_t TAF, int16_t SID_flag)
 {
 
 	/* LPC coefficients */
 
-	Word16 *Az;		/* Pointer on A_t */
+	int16_t *Az;		/* Pointer on A_t */
 
 	/* LSPs */
 
-	Word16 lsp_new[M];
-	Word16 lsp_mid[M];
+	int16_t lsp_new[M];
+	int16_t lsp_mid[M];
 
 	/* Algebraic codevector */
 
-	Word16 code[L_SUBFR];
+	int16_t code[L_SUBFR];
 
 	/* v_excitation */
 
-	Word16 v_excp[L_SUBFR];
+	int16_t v_excp[L_SUBFR];
 
 	/* Scalars */
 
-	Word16 i, i_w_subfr;
-	Word16 T0, T0_frac, index;
-	Word16 gain_pit, gain_code, bfi, pit_sharp;
-	Word16 temp;
-	Word32 L_temp;
+	int16_t i, i_w_subfr;
+	int16_t T0, T0_frac, index;
+	int16_t gain_pit, gain_code, bfi, pit_sharp;
+	int16_t temp;
+	int32_t L_temp;
 
-	extern Word16 w_rxdtx_ctrl, w_w_rx_dtx_w_state;
-	extern Word32 w_L_pn_seed_rx;
+	extern int16_t w_rxdtx_ctrl, w_w_rx_dtx_w_state;
+	extern int32_t w_L_pn_seed_rx;
 
 	/* Test bad frame indicator (bfi) */
 

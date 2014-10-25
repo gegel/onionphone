@@ -13,7 +13,7 @@
 
 /* Function Prototypes */
 
-Word16 w_encoder_homing_frame_w_test(Word16 input_frame[]);
+int16_t w_encoder_homing_frame_w_test(int16_t input_frame[]);
 
 void w_encoder_reset(void);
 

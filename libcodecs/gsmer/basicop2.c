@@ -14,7 +14,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 
 #if (WMOPS)
@@ -28,15 +28,15 @@ extern BASIC_OP w_counter;
  |   Local Functions                                                         |
  |___________________________________________________________________________|
 */
-Word16 w_saturate(Word32 L_var1);
+int16_t w_saturate(int32_t L_var1);
 
 /*___________________________________________________________________________
  |                                                                           |
  |   Constants and Globals                                                   |
  |___________________________________________________________________________|
 */
-Flag w_Overflow = 0;
-Flag w_Carry = 0;
+int w_Overflow = 0;
+int w_Carry = 0;
 
 /*___________________________________________________________________________
  |                                                                           |
@@ -55,7 +55,7 @@ Flag w_Carry = 0;
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -65,19 +65,19 @@ Flag w_Carry = 0;
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_saturate(Word32 L_var1)
+int16_t w_saturate(int32_t L_var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (L_var1 > 0X00007fffL) {
 		w_Overflow = 1;
 		var_out = MAX_16;
-	} else if (L_var1 < (Word32) 0xffff8000L) {
+	} else if (L_var1 < (int32_t) 0xffff8000L) {
 		w_Overflow = 1;
 		var_out = MIN_16;
 	} else {
@@ -106,11 +106,11 @@ Word16 w_saturate(Word32 L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -120,17 +120,17 @@ Word16 w_saturate(Word32 L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_add(Word16 var1, Word16 var2)
+int16_t w_add(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 L_sum;
+	int16_t var_out;
+	int32_t L_sum;
 
-	L_sum = (Word32) var1 + var2;
+	L_sum = (int32_t) var1 + var2;
 	var_out = w_saturate(L_sum);
 #if (WMOPS)
 	w_counter.w_add++;
@@ -153,11 +153,11 @@ Word16 w_add(Word16 var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -167,17 +167,17 @@ Word16 w_add(Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_sub(Word16 var1, Word16 var2)
+int16_t w_sub(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 L_diff;
+	int16_t var_out;
+	int32_t L_diff;
 
-	L_diff = (Word32) var1 - var2;
+	L_diff = (int32_t) var1 - var2;
 	var_out = w_saturate(L_diff);
 #if (WMOPS)
 	w_counter.w_sub++;
@@ -198,7 +198,7 @@ Word16 w_sub(Word16 var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -208,16 +208,16 @@ Word16 w_sub(Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_abs_s(Word16 var1)
+int16_t w_abs_s(int16_t var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
-	if (var1 == (Word16) 0X8000) {
+	if (var1 == (int16_t) 0X8000) {
 		var_out = MAX_16;
 	} else {
 		if (var1 < 0) {
@@ -248,11 +248,11 @@ Word16 w_abs_s(Word16 var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -262,15 +262,15 @@ Word16 w_abs_s(Word16 var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_shl(Word16 var1, Word16 var2)
+int16_t w_shl(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 result;
+	int16_t var_out;
+	int32_t result;
 
 	if (var2 < 0) {
 		var_out = w_shr(var1, -var2);
@@ -278,10 +278,10 @@ Word16 w_shl(Word16 var1, Word16 var2)
 		w_counter.w_shr--;
 #endif
 	} else {
-		result = (Word32) var1 *((Word32) 1 << var2);
+		result = (int32_t) var1 *((int32_t) 1 << var2);
 
 		if ((var2 > 15 && var1 != 0)
-		    || (result != (Word32) ((Word16) result))) {
+		    || (result != (int32_t) ((int16_t) result))) {
 			w_Overflow = 1;
 			var_out = (var1 > 0) ? MAX_16 : MIN_16;
 		} else {
@@ -313,11 +313,11 @@ Word16 w_shl(Word16 var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -327,14 +327,14 @@ Word16 w_shl(Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_shr(Word16 var1, Word16 var2)
+int16_t w_shr(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (var2 < 0) {
 		var_out = w_shl(var1, -var2);
@@ -375,11 +375,11 @@ Word16 w_shr(Word16 var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -389,22 +389,22 @@ Word16 w_shr(Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_mult(Word16 var1, Word16 var2)
+int16_t w_mult(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 L_product;
+	int16_t var_out;
+	int32_t L_product;
 
-	L_product = (Word32) var1 *(Word32) var2;
+	L_product = (int32_t) var1 *(int32_t) var2;
 
-	L_product = (L_product & (Word32) 0xffff8000L) >> 15;
+	L_product = (L_product & (int32_t) 0xffff8000L) >> 15;
 
-	if (L_product & (Word32) 0x00010000L)
-		L_product = L_product | (Word32) 0xffff0000L;
+	if (L_product & (int32_t) 0x00010000L)
+		L_product = L_product | (int32_t) 0xffff0000L;
 
 	var_out = w_saturate(L_product);
 #if (WMOPS)
@@ -429,11 +429,11 @@ Word16 w_mult(Word16 var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -443,18 +443,18 @@ Word16 w_mult(Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_w_mult(Word16 var1, Word16 var2)
+int32_t w_L_w_mult(int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
-	L_var_out = (Word32) var1 *(Word32) var2;
+	L_var_out = (int32_t) var1 *(int32_t) var2;
 
-	if (L_var_out != (Word32) 0x40000000L) {
+	if (L_var_out != (int32_t) 0x40000000L) {
 		L_var_out *= 2;
 	} else {
 		w_Overflow = 1;
@@ -481,7 +481,7 @@ Word32 w_L_w_mult(Word16 var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -491,14 +491,14 @@ Word32 w_L_w_mult(Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_negate(Word16 var1)
+int16_t w_negate(int16_t var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	var_out = (var1 == MIN_16) ? MAX_16 : -var1;
 #if (WMOPS)
@@ -520,7 +520,7 @@ Word16 w_negate(Word16 var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32 ) whose value falls in the |
+ |             32 bit long signed integer (int32_t ) whose value falls in the |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -530,16 +530,16 @@ Word16 w_negate(Word16 var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_extract_h(Word32 L_var1)
+int16_t w_extract_h(int32_t L_var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
-	var_out = (Word16) (L_var1 >> 16);
+	var_out = (int16_t) (L_var1 >> 16);
 #if (WMOPS)
 	w_counter.w_extract_h++;
 #endif
@@ -559,7 +559,7 @@ Word16 w_extract_h(Word32 L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32 ) whose value falls in the |
+ |             32 bit long signed integer (int32_t ) whose value falls in the |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -569,16 +569,16 @@ Word16 w_extract_h(Word32 L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_extract_l(Word32 L_var1)
+int16_t w_extract_l(int32_t L_var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
-	var_out = (Word16) L_var1;
+	var_out = (int16_t) L_var1;
 #if (WMOPS)
 	w_counter.w_extract_l++;
 #endif
@@ -601,7 +601,7 @@ Word16 w_extract_l(Word32 L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32 ) whose value falls in the |
+ |             32 bit long signed integer (int32_t ) whose value falls in the |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -611,17 +611,17 @@ Word16 w_extract_l(Word32 L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_round(Word32 L_var1)
+int16_t w_round(int32_t L_var1)
 {
-	Word16 var_out;
-	Word32 L_w_rounded;
+	int16_t var_out;
+	int32_t L_w_rounded;
 
-	L_w_rounded = L_w_add(L_var1, (Word32) 0x00008000L);
+	L_w_rounded = L_w_add(L_var1, (int32_t) 0x00008000L);
 #if (WMOPS)
 	w_counter.L_w_add--;
 #endif
@@ -647,15 +647,15 @@ Word16 w_round(Word32 L_var1)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -665,15 +665,15 @@ Word16 w_round(Word32 L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_mac(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t w_L_mac(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
-	Word32 L_product;
+	int32_t L_var_out;
+	int32_t L_product;
 
 	L_product = w_L_w_mult(var1, var2);
 #if (WMOPS)
@@ -701,15 +701,15 @@ Word32 w_L_mac(Word32 L_var3, Word16 var1, Word16 var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -719,15 +719,15 @@ Word32 w_L_mac(Word32 L_var3, Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_msu(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t w_L_msu(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
-	Word32 L_product;
+	int32_t L_var_out;
+	int32_t L_product;
 
 	L_product = w_L_w_mult(var1, var2);
 #if (WMOPS)
@@ -756,15 +756,15 @@ Word32 w_L_msu(Word32 L_var3, Word16 var1, Word16 var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -774,7 +774,7 @@ Word32 w_L_msu(Word32 L_var3, Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |                                                                           |
  |   Caution :                                                               |
@@ -784,9 +784,9 @@ Word32 w_L_msu(Word32 L_var3, Word16 var1, Word16 var2)
  |___________________________________________________________________________|
 */
 
-Word32 w_w_L_macNs(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t w_w_L_macNs(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = w_L_w_mult(var1, var2);
 #if (WMOPS)
@@ -815,15 +815,15 @@ Word32 w_w_L_macNs(Word32 L_var3, Word16 var1, Word16 var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -833,7 +833,7 @@ Word32 w_w_L_macNs(Word32 L_var3, Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |                                                                           |
  |   Caution :                                                               |
@@ -843,9 +843,9 @@ Word32 w_w_L_macNs(Word32 L_var3, Word16 var1, Word16 var2)
  |___________________________________________________________________________|
 */
 
-Word32 w_w_L_msuNs(Word32 L_var3, Word16 var1, Word16 var2)
+int32_t w_w_L_msuNs(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = w_L_w_mult(var1, var2);
 #if (WMOPS)
@@ -873,10 +873,10 @@ Word32 w_w_L_msuNs(Word32 L_var3, Word16 var1, Word16 var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
- |    L_var2   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var2   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -886,14 +886,14 @@ Word32 w_w_L_msuNs(Word32 L_var3, Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
 
-Word32 L_w_add(Word32 L_var1, Word32 L_var2)
+int32_t L_w_add(int32_t L_var1, int32_t L_var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = L_var1 + L_var2;
 
@@ -923,10 +923,10 @@ Word32 L_w_add(Word32 L_var1, Word32 L_var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
- |    L_var2   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var2   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -936,14 +936,14 @@ Word32 L_w_add(Word32 L_var1, Word32 L_var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_w_sub(Word32 L_var1, Word32 L_var2)
+int32_t w_L_w_sub(int32_t L_var1, int32_t L_var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = L_var1 - L_var2;
 
@@ -974,10 +974,10 @@ Word32 w_L_w_sub(Word32 L_var1, Word32 L_var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
- |    L_var2   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var2   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -987,7 +987,7 @@ Word32 w_L_w_sub(Word32 L_var1, Word32 L_var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |                                                                           |
  |   Caution :                                                               |
@@ -996,11 +996,11 @@ Word32 w_L_w_sub(Word32 L_var1, Word32 L_var2)
  |    operators which take into account its value.                           |
  |___________________________________________________________________________|
 */
-Word32 L_w_add_c(Word32 L_var1, Word32 L_var2)
+int32_t L_w_add_c(int32_t L_var1, int32_t L_var2)
 {
-	Word32 L_var_out;
-	Word32 L_w_test;
-	Flag carry_int = 0;
+	int32_t L_var_out;
+	int32_t L_w_test;
+	int carry_int = 0;
 
 	L_var_out = L_var1 + L_var2 + w_Carry;
 
@@ -1034,7 +1034,7 @@ Word32 L_w_add_c(Word32 L_var1, Word32 L_var2)
 			w_Overflow = 1;
 			w_Carry = carry_int;
 		} else {
-			if (L_w_test == (Word32) 0xFFFFFFFFL) {
+			if (L_w_test == (int32_t) 0xFFFFFFFFL) {
 				w_Carry = 1;
 			} else {
 				w_Carry = carry_int;
@@ -1065,10 +1065,10 @@ Word32 L_w_add_c(Word32 L_var1, Word32 L_var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
- |    L_var2   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var2   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1078,7 +1078,7 @@ Word32 L_w_add_c(Word32 L_var1, Word32 L_var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |                                                                           |
  |   Caution :                                                               |
@@ -1088,11 +1088,11 @@ Word32 L_w_add_c(Word32 L_var1, Word32 L_var2)
  |___________________________________________________________________________|
 */
 
-Word32 w_w_L_w_sub_c(Word32 L_var1, Word32 L_var2)
+int32_t w_w_L_w_sub_c(int32_t L_var1, int32_t L_var2)
 {
-	Word32 L_var_out;
-	Word32 L_w_test;
-	Flag carry_int = 0;
+	int32_t L_var_out;
+	int32_t L_w_test;
+	int carry_int = 0;
 
 	if (w_Carry) {
 		w_Carry = 0;
@@ -1109,7 +1109,7 @@ Word32 w_w_L_w_sub_c(Word32 L_var1, Word32 L_var2)
 			}
 		}
 	} else {
-		L_var_out = L_var1 - L_var2 - (Word32) 0X00000001L;
+		L_var_out = L_var1 - L_var2 - (int32_t) 0X00000001L;
 		L_w_test = L_var1 - L_var2;
 
 		if ((L_w_test < 0) && (L_var1 > 0) && (L_var2 < 0)) {
@@ -1149,7 +1149,7 @@ Word32 w_w_L_w_sub_c(Word32 L_var1, Word32 L_var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1159,14 +1159,14 @@ Word32 w_w_L_w_sub_c(Word32 L_var1, Word32 L_var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_w_negate(Word32 L_var1)
+int32_t w_L_w_negate(int32_t L_var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = (L_var1 == MIN_32) ? MAX_32 : -L_var1;
 #if (WMOPS)
@@ -1190,11 +1190,11 @@ Word32 w_L_w_negate(Word32 L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1204,23 +1204,23 @@ Word32 w_L_w_negate(Word32 L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_w_mult_r(Word16 var1, Word16 var2)
+int16_t w_w_mult_r(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
-	Word32 L_product_arr;
+	int16_t var_out;
+	int32_t L_product_arr;
 
-	L_product_arr = (Word32) var1 *(Word32) var2;	/* product */
-	L_product_arr += (Word32) 0x00004000L;	/* w_round */
-	L_product_arr &= (Word32) 0xffff8000L;
+	L_product_arr = (int32_t) var1 *(int32_t) var2;	/* product */
+	L_product_arr += (int32_t) 0x00004000L;	/* w_round */
+	L_product_arr &= (int32_t) 0xffff8000L;
 	L_product_arr >>= 15;	/* shift */
 
-	if (L_product_arr & (Word32) 0x00010000L) {	/* sign extend when necessary */
-		L_product_arr |= (Word32) 0xffff0000L;
+	if (L_product_arr & (int32_t) 0x00010000L) {	/* sign extend when necessary */
+		L_product_arr |= (int32_t) 0xffff0000L;
 	}
 	var_out = w_saturate(L_product_arr);
 #if (WMOPS)
@@ -1244,11 +1244,11 @@ Word16 w_w_mult_r(Word16 var1, Word16 var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1258,14 +1258,14 @@ Word16 w_w_mult_r(Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_w_shl(Word32 L_var1, Word16 var2)
+int32_t w_L_w_shl(int32_t L_var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	if (var2 <= 0) {
 		L_var_out = w_L_w_shr(L_var1, -var2);
@@ -1274,12 +1274,12 @@ Word32 w_L_w_shl(Word32 L_var1, Word16 var2)
 #endif
 	} else {
 		for (; var2 > 0; var2--) {
-			if (L_var1 > (Word32) 0X3fffffffL) {
+			if (L_var1 > (int32_t) 0X3fffffffL) {
 				w_Overflow = 1;
 				L_var_out = MAX_32;
 				break;
 			} else {
-				if (L_var1 < (Word32) 0xc0000000L) {
+				if (L_var1 < (int32_t) 0xc0000000L) {
 					w_Overflow = 1;
 					L_var_out = MIN_32;
 					break;
@@ -1310,11 +1310,11 @@ Word32 w_L_w_shl(Word32 L_var1, Word16 var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1324,14 +1324,14 @@ Word32 w_L_w_shl(Word32 L_var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_w_shr(Word32 L_var1, Word16 var2)
+int32_t w_L_w_shr(int32_t L_var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	if (var2 < 0) {
 		L_var_out = w_L_w_shl(L_var1, -var2);
@@ -1378,11 +1378,11 @@ Word32 w_L_w_shr(Word32 L_var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1392,14 +1392,14 @@ Word32 w_L_w_shr(Word32 L_var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_w_shr_r(Word16 var1, Word16 var2)
+int16_t w_w_shr_r(int16_t var1, int16_t var2)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (var2 > 15) {
 		var_out = 0;
@@ -1410,7 +1410,7 @@ Word16 w_w_shr_r(Word16 var1, Word16 var2)
 #endif
 
 		if (var2 > 0) {
-			if ((var1 & ((Word16) 1 << (var2 - 1))) != 0) {
+			if ((var1 & ((int16_t) 1 << (var2 - 1))) != 0) {
 				var_out++;
 			}
 		}
@@ -1437,15 +1437,15 @@ Word16 w_w_shr_r(Word16 var1, Word16 var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1455,20 +1455,20 @@ Word16 w_w_shr_r(Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 8000 <= L_var_out <= 0x0000 7fff.              |
  |___________________________________________________________________________|
 */
 
-Word16 w_mac_r(Word32 L_var3, Word16 var1, Word16 var2)
+int16_t w_mac_r(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	L_var3 = w_L_mac(L_var3, var1, var2);
 #if (WMOPS)
 	w_counter.w_L_mac--;
 #endif
-	L_var3 = L_w_add(L_var3, (Word32) 0x00008000L);
+	L_var3 = L_w_add(L_var3, (int32_t) 0x00008000L);
 #if (WMOPS)
 	w_counter.L_w_add--;
 #endif
@@ -1496,15 +1496,15 @@ Word16 w_mac_r(Word32 L_var3, Word16 var1, Word16 var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1514,20 +1514,20 @@ Word16 w_mac_r(Word32 L_var3, Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 8000 <= L_var_out <= 0x0000 7fff.              |
  |___________________________________________________________________________|
 */
 
-Word16 w_msu_r(Word32 L_var3, Word16 var1, Word16 var2)
+int16_t w_msu_r(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	L_var3 = w_L_msu(L_var3, var1, var2);
 #if (WMOPS)
 	w_counter.w_L_msu--;
 #endif
-	L_var3 = L_w_add(L_var3, (Word32) 0x00008000L);
+	L_var3 = L_w_add(L_var3, (int32_t) 0x00008000L);
 #if (WMOPS)
 	w_counter.L_w_add--;
 #endif
@@ -1553,7 +1553,7 @@ Word16 w_msu_r(Word32 L_var3, Word16 var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1563,16 +1563,16 @@ Word16 w_msu_r(Word32 L_var3, Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var_out <= 0x7fff 0000.                |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_deposit_h(Word16 var1)
+int32_t w_L_deposit_h(int16_t var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
-	L_var_out = (Word32) var1 << 16;
+	L_var_out = (int32_t) var1 << 16;
 #if (WMOPS)
 	w_counter.w_L_deposit_h++;
 #endif
@@ -1593,7 +1593,7 @@ Word32 w_L_deposit_h(Word16 var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1603,16 +1603,16 @@ Word32 w_L_deposit_h(Word16 var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0xFFFF 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_deposit_l(Word16 var1)
+int32_t w_L_deposit_l(int16_t var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
-	L_var_out = (Word32) var1;
+	L_var_out = (int32_t) var1;
 #if (WMOPS)
 	w_counter.w_L_deposit_l++;
 #endif
@@ -1642,11 +1642,11 @@ Word32 w_L_deposit_l(Word16 var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1656,14 +1656,14 @@ Word32 w_L_deposit_l(Word16 var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
 
-Word32 w_w_L_w_w_shr_r(Word32 L_var1, Word16 var2)
+int32_t w_w_L_w_w_shr_r(int32_t L_var1, int16_t var2)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	if (var2 > 31) {
 		L_var_out = 0;
@@ -1673,7 +1673,7 @@ Word32 w_w_L_w_w_shr_r(Word32 L_var1, Word16 var2)
 		w_counter.w_L_w_shr--;
 #endif
 		if (var2 > 0) {
-			if ((L_var1 & ((Word32) 1 << (var2 - 1))) != 0) {
+			if ((L_var1 & ((int32_t) 1 << (var2 - 1))) != 0) {
 				L_var_out++;
 			}
 		}
@@ -1698,7 +1698,7 @@ Word32 w_w_L_w_w_shr_r(Word32 L_var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1708,14 +1708,14 @@ Word32 w_w_L_w_w_shr_r(Word32 L_var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x0000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_abs(Word32 L_var1)
+int32_t w_L_abs(int32_t L_var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	if (L_var1 == MIN_32) {
 		L_var_out = MAX_32;
@@ -1749,7 +1749,7 @@ Word32 w_L_abs(Word32 L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1759,14 +1759,14 @@ Word32 w_L_abs(Word32 L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
 
-Word32 w_L_sat(Word32 L_var1)
+int32_t w_L_sat(int32_t L_var1)
 {
-	Word32 L_var_out;
+	int32_t L_var_out;
 
 	L_var_out = L_var1;
 
@@ -1805,7 +1805,7 @@ Word32 w_L_sat(Word32 L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1815,19 +1815,19 @@ Word32 w_L_sat(Word32 L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var_out <= 0x0000 000f.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_norm_s(Word16 var1)
+int16_t w_norm_s(int16_t var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (var1 == 0) {
 		var_out = 0;
 	} else {
-		if (var1 == (Word16) 0xffff) {
+		if (var1 == (int16_t) 0xffff) {
 			var_out = 15;
 		} else {
 			if (var1 < 0) {
@@ -1862,11 +1862,11 @@ Word16 w_norm_s(Word16 var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var1 <= var2 and var2 != 0.            |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : var1 <= var2 <= 0x0000 7fff and var2 != 0.            |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1876,18 +1876,18 @@ Word16 w_norm_s(Word16 var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var_out <= 0x0000 7fff.                |
  |             It's a Q15 value (point between b15 and b14).                 |
  |___________________________________________________________________________|
 */
 
-Word16 w_div_s(Word16 var1, Word16 var2)
+int16_t w_div_s(int16_t var1, int16_t var2)
 {
-	Word16 var_out = 0;
-	Word16 iteration;
-	Word32 L_num;
-	Word32 L_denom;
+	int16_t var_out = 0;
+	int16_t iteration;
+	int32_t L_num;
+	int32_t L_denom;
 
 	if ((var1 > var2) || (var1 < 0) || (var2 < 0)) {
 		printf("Division Error var1=%d  var2=%d\n", var1, var2);
@@ -1954,7 +1954,7 @@ Word16 w_div_s(Word16 var1, Word16 var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1964,25 +1964,25 @@ Word16 w_div_s(Word16 var1, Word16 var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var_out <= 0x0000 001f.                |
  |___________________________________________________________________________|
 */
 
-Word16 w_norm_l(Word32 L_var1)
+int16_t w_norm_l(int32_t L_var1)
 {
-	Word16 var_out;
+	int16_t var_out;
 
 	if (L_var1 == 0) {
 		var_out = 0;
 	} else {
-		if (L_var1 == (Word32) 0xffffffffL) {
+		if (L_var1 == (int32_t) 0xffffffffL) {
 			var_out = 31;
 		} else {
 			if (L_var1 < 0) {
 				L_var1 = ~L_var1;
 			}
-			for (var_out = 0; L_var1 < (Word32) 0x40000000L;
+			for (var_out = 0; L_var1 < (int32_t) 0x40000000L;
 			     var_out++) {
 				L_var1 <<= 1;
 			}

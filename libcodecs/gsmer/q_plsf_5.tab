@@ -7,7 +7,7 @@
 
 /* LSF means ->normalize frequency domain */
 
-static const Word16 w_mean_lsf[10] = {
+static const int16_t w_mean_lsf[10] = {
 	1384,
 	2077,
 	3420,
@@ -28,7 +28,7 @@ static const Word16 w_mean_lsf[10] = {
 #define DICO4_SIZE  256
 #define DICO5_SIZE  64
 
-static const Word16 w_dico1_lsf[DICO1_SIZE * 4] = {
+static const int16_t w_dico1_lsf[DICO1_SIZE * 4] = {
 	-451, -1065, -529, -1305,
 	-450, -756, -497, -863,
 	-384, -619, -413, -669,
@@ -159,7 +159,7 @@ static const Word16 w_dico1_lsf[DICO1_SIZE * 4] = {
 	1469, 2181, 1443, 2016
 };
 
-static const Word16 w_dico2_lsf[DICO2_SIZE * 4] = {
+static const int16_t w_dico2_lsf[DICO2_SIZE * 4] = {
 	-1631, -1600, -1796, -2290,
 	-1027, -1770, -1100, -2025,
 	-1277, -1388, -1367, -1534,
@@ -418,7 +418,7 @@ static const Word16 w_dico2_lsf[DICO2_SIZE * 4] = {
 	2374, 2787, 1821, 2788
 };
 
-static const Word16 w_dico3_lsf[DICO3_SIZE * 4] = {
+static const int16_t w_dico3_lsf[DICO3_SIZE * 4] = {
 	-1812, -2275, -1879, -2537,
 	-1640, -1848, -1695, -2004,
 	-1220, -1912, -1221, -2106,
@@ -677,7 +677,7 @@ static const Word16 w_dico3_lsf[DICO3_SIZE * 4] = {
 	2180, 1975, 2326, 2020
 };
 
-static const Word16 w_dico4_lsf[DICO4_SIZE * 4] = {
+static const int16_t w_dico4_lsf[DICO4_SIZE * 4] = {
 	-1857, -1681, -1857, -1755,
 	-2056, -1150, -2134, -1654,
 	-1619, -1099, -1704, -1131,
@@ -936,7 +936,7 @@ static const Word16 w_dico4_lsf[DICO4_SIZE * 4] = {
 	1716, 1376, 1948, 1465
 };
 
-static const Word16 w_dico5_lsf[DICO5_SIZE * 4] = {
+static const int16_t w_dico5_lsf[DICO5_SIZE * 4] = {
 	-1002, -929, -1096, -1203,
 	-641, -931, -604, -961,
 	-779, -673, -835, -788,

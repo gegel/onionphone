@@ -18,7 +18,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
@@ -28,32 +28,30 @@
 
 /* local function */
 
-static Word16 w_Lag_max(	/* output: lag found                              */
-			       Word16 scal_sig[],	/* input : scaled signal                          */
-			       Word16 scal_fac,	/* input : scaled signal factor                   */
-			       Word16 L_frame,	/* input : length of frame to compute pitch       */
-			       Word16 lag_max,	/* input : maximum lag                            */
-			       Word16 lag_min,	/* input : minimum lag                            */
-			       Word16 * cor_max);	/* output: normalized correlation of selected lag */
+static int16_t w_Lag_max(int16_t scal_sig[],	/* input : scaled signal                          */
+			       int16_t scal_fac,	/* input : scaled signal factor                   */
+			       int16_t L_frame,	/* input : length of frame to compute pitch       */
+			       int16_t lag_max,	/* input : maximum lag                            */
+			       int16_t lag_min,	/* input : minimum lag                            */
+			       int16_t * cor_max);	/* output: normalized correlation of selected lag */
 
-Word16 w_Pitch_ol(		/* output: open loop pitch lag                        */
-			 Word16 signal[],	/* input : signal used to compute the open loop pitch */
+int16_t w_Pitch_ol(int16_t signal[],	/* input : signal used to compute the open loop pitch */
 			 /*     signal[-pit_max] to signal[-1] should be known */
-			 Word16 pit_min,	/* input : minimum pitch lag                          */
-			 Word16 pit_max,	/* input : maximum pitch lag                          */
-			 Word16 L_frame	/* input : length of frame to compute pitch           */
+			 int16_t pit_min,	/* input : minimum pitch lag                          */
+			 int16_t pit_max,	/* input : maximum pitch lag                          */
+			 int16_t L_frame	/* input : length of frame to compute pitch           */
     )
 {
-	Word16 i, j;
-	Word16 max1, max2, max3;
-	Word16 p_max1, p_max2, p_max3;
-	Word32 t0;
+	int16_t i, j;
+	int16_t max1, max2, max3;
+	int16_t p_max1, p_max2, p_max3;
+	int32_t t0;
 
 	/* Scaled signal                                                */
 	/* Can be allocated with memory allocation of(pit_max+L_frame)  */
 
-	Word16 scaled_signal[512];
-	Word16 *scal_sig, scal_fac;
+	int16_t scaled_signal[512];
+	int16_t *scal_sig, scal_fac;
 
 	scal_sig = &scaled_signal[pit_max];
 
@@ -78,7 +76,7 @@ Word16 w_Pitch_ol(		/* output: open loop pitch lag                        */
 			scal_sig[i] = w_shr(signal[i], 3);
 		}
 		scal_fac = 3;
-	} else if (w_L_w_sub(t0, (Word32) 1048576L) < (Word32) 0)
+	} else if (w_L_w_sub(t0, (int32_t) 1048576L) < (int32_t) 0)
 		/* if (t0 < 2^20) */
 	{
 		for (i = -pit_max; i < L_frame; i++) {
@@ -143,19 +141,18 @@ Word16 w_Pitch_ol(		/* output: open loop pitch lag                        */
  *
  *************************************************************************/
 
-static Word16 w_Lag_max(	/* output: lag found                               */
-			       Word16 scal_sig[],	/* input : scaled signal.                          */
-			       Word16 scal_fac,	/* input : scaled signal factor.                   */
-			       Word16 L_frame,	/* input : length of frame to compute pitch        */
-			       Word16 lag_max,	/* input : maximum lag                             */
-			       Word16 lag_min,	/* input : minimum lag                             */
-			       Word16 * cor_max)
+static int16_t w_Lag_max(int16_t scal_sig[],	/* input : scaled signal.                          */
+			       int16_t scal_fac,	/* input : scaled signal factor.                   */
+			       int16_t L_frame,	/* input : length of frame to compute pitch        */
+			       int16_t lag_max,	/* input : maximum lag                             */
+			       int16_t lag_min,	/* input : minimum lag                             */
+			       int16_t * cor_max)
 {				/* output: normalized correlation of selected lag  */
-	Word16 i, j;
-	Word16 *p, *p1;
-	Word32 max, t0;
-	Word16 max_h, max_l, ener_h, ener_l;
-	Word16 p_max = 0;
+	int16_t i, j;
+	int16_t *p, *p1;
+	int32_t max, t0;
+	int16_t max_h, max_l, ener_h, ener_l;
+	int16_t p_max = 0;
 
 	max = MIN_32;
 

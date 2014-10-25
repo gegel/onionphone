@@ -15,23 +15,23 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
 #include "cnst.h"
 
-Word16 w_Autocorr(Word16 x[],	/* (i)    : Input signal                    */
-		  Word16 m,	/* (i)    : LPC order                       */
-		  Word16 r_h[],	/* (o)    : w_Autocorrelations  (msb)         */
-		  Word16 r_l[],	/* (o)    : w_Autocorrelations  (lsb)         */
-		  Word16 wind[]	/* (i)    : window for LPC analysis         */
+int16_t w_Autocorr(int16_t x[],	/* (i)    : Input signal                    */
+		  int16_t m,	/* (i)    : LPC order                       */
+		  int16_t r_h[],	/* (o)    : w_Autocorrelations  (msb)         */
+		  int16_t r_l[],	/* (o)    : w_Autocorrelations  (lsb)         */
+		  int16_t wind[]	/* (i)    : window for LPC analysis         */
     )
 {
-	Word16 i, j, norm;
-	Word16 y[L_WINDOW];
-	Word32 sum;
-	Word16 overfl, overfl_shft;
+	int16_t i, j, norm;
+	int16_t y[L_WINDOW];
+	int32_t sum;
+	int16_t overfl, overfl_shft;
 
 	/* Windowing of signal */
 

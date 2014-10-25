@@ -12,7 +12,7 @@
  * ( in dB/(20*log10(2)) ) with mean removed.
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
@@ -23,19 +23,19 @@
 #include "cnst.h"
 #include "dtx.h"
 
-extern Word16 w_gain_code_old_rx[4 * DTX_HANGOVER];
+extern int16_t w_gain_code_old_rx[4 * DTX_HANGOVER];
 
 /* Static variables for bad frame handling */
 
 /* Variables used by w_d_gain_pitch: */
-Word16 w_pbuf[5], w_w_past_gain_pit, w_prev_gp;
+int16_t w_pbuf[5], w_w_past_gain_pit, w_prev_gp;
 
 /* Variables used by w_d_gain_code: */
-Word16 w_gbuf[5], w_w_past_gain_code, w_prev_gc;
+int16_t w_gbuf[5], w_w_past_gain_code, w_prev_gc;
 
 /* Static variables for CNI (used by w_d_gain_code) */
 
-Word16 w_gcode0_CN, w_gain_code_old_CN, w_gain_code_new_CN,
+int16_t w_gcode0_CN, w_gain_code_old_CN, w_gain_code_new_CN,
     w_gain_code_muting_CN;
 
 /* Memories of gain dequantization: */
@@ -43,10 +43,10 @@ Word16 w_gcode0_CN, w_gain_code_old_CN, w_gain_code_new_CN,
 /* past quantized energies.      */
 /* initialized to -14.0/constant, constant = 20*Log10(2) */
 
-Word16 v_past_qua_en[4];
+int16_t v_past_qua_en[4];
 
 /* MA v_prediction coeff   */
-Word16 v_pred[4];
+int16_t v_pred[4];
 
 /*************************************************************************
  *
@@ -58,12 +58,11 @@ Word16 v_pred[4];
  *             
  *************************************************************************/
 
-Word16 w_gmed5(			/* out      : index of the median value (0...4) */
-		      Word16 ind[]	/* in       : Past gain values                  */
+int16_t w_gmed5(int16_t ind[]	/* in       : Past gain values                  */
     )
 {
-	Word16 i, j, ix = 0, tmp[5];
-	Word16 max, tmp2[5];
+	int16_t i, j, ix = 0, tmp[5];
+	int16_t max, tmp2[5];
 
 	for (i = 0; i < 5; i++) {
 		tmp2[i] = ind[i];
@@ -98,18 +97,17 @@ Word16 w_gmed5(			/* out      : index of the median value (0...4) */
  *
  *************************************************************************/
 
-Word16 w_d_gain_pitch(		/* out      : quantized pitch gain           */
-			     Word16 index,	/* in       : index of quantization          */
-			     Word16 bfi,	/* in       : bad frame indicator (good = 0) */
-			     Word16 w_state,
-			     Word16 w_prev_bf, Word16 w_rxdtx_ctrl)
+int16_t w_d_gain_pitch(int16_t index,	/* in       : index of quantization          */
+			     int16_t bfi,	/* in       : bad frame indicator (good = 0) */
+			     int16_t w_state,
+			     int16_t w_prev_bf, int16_t w_rxdtx_ctrl)
 {
-	static const Word16 pdown[7] = {
+	static const int16_t pdown[7] = {
 		32767, 32112, 32112, 26214,
 		9830, 6553, 6553
 	};
 
-	Word16 gain, tmp, i;
+	int16_t gain, tmp, i;
 
 	if (bfi == 0) {
 
@@ -174,24 +172,24 @@ Word16 w_d_gain_pitch(		/* out      : quantized pitch gain           */
 /* MEAN_ENER = 36.0/constant, constant = 20*Log10(2)      */
 #define MEAN_ENER  783741L	/* 36/(20*log10(2))       */
 
-void w_d_gain_code(Word16 index,	/* input : received quantization index */
-		   Word16 code[],	/* input : innovation codevector       */
-		   Word16 lcode,	/* input : codevector length           */
-		   Word16 * gain_code,	/* output: decoded innovation gain     */
-		   Word16 bfi,	/* input : bad frame indicator         */
-		   Word16 w_state,
-		   Word16 w_prev_bf,
-		   Word16 w_rxdtx_ctrl,
-		   Word16 i_w_subfr, Word16 w_w_rx_dtx_w_state)
+void w_d_gain_code(int16_t index,	/* input : received quantization index */
+		   int16_t code[],	/* input : innovation codevector       */
+		   int16_t lcode,	/* input : codevector length           */
+		   int16_t * gain_code,	/* output: decoded innovation gain     */
+		   int16_t bfi,	/* input : bad frame indicator         */
+		   int16_t w_state,
+		   int16_t w_prev_bf,
+		   int16_t w_rxdtx_ctrl,
+		   int16_t i_w_subfr, int16_t w_w_rx_dtx_w_state)
 {
-	static const Word16 cdown[7] = {
+	static const int16_t cdown[7] = {
 		32767, 32112, 32112, 32112,
 		32112, 32112, 22937
 	};
 
-	Word16 i, tmp;
-	Word16 gcode0, exp, frac, av_v_pred_en;
-	Word32 ener, ener_code;
+	int16_t i, tmp;
+	int16_t gcode0, exp, frac, av_v_pred_en;
+	int32_t ener, ener_code;
 
 	if (((w_rxdtx_ctrl & RX_UPD_SID_QUANT_MEM) != 0) && (i_w_subfr == 0)) {
 		w_gcode0_CN = update_w_gcode0_CN(w_gain_code_old_rx);
