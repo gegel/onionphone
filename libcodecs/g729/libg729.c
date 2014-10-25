@@ -125,7 +125,7 @@ int g729enc(short *sp16, unsigned char *br)
 			br[i >> 3] |= g729_mo[i & 7];
 
 	//memcpy(br, g729_serial, 2*SERIAL_SIZE_E);
-	memzero(g729_serial, 2 * SERIAL_SIZE_E);
+	memzero(g729_serial, SERIAL_SIZE_E * sizeof(INT16));
 
 	return k;		//0-erasure, 2-SID, 8-G729D, 10-G729, 15-G729E
 
