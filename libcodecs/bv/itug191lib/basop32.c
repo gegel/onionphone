@@ -160,7 +160,7 @@ int bv_Carry = 0;
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -170,7 +170,7 @@ int bv_Carry = 0;
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -210,11 +210,11 @@ int16_t saturate(int32_t L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -224,7 +224,7 @@ int16_t saturate(int32_t L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -257,11 +257,11 @@ int16_t bv_add(int16_t var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -271,7 +271,7 @@ int16_t bv_add(int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -302,7 +302,7 @@ int16_t bv_sub(int16_t var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -312,7 +312,7 @@ int16_t bv_sub(int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -352,11 +352,11 @@ int16_t bv_abs_s(int16_t var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -366,7 +366,7 @@ int16_t bv_abs_s(int16_t var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -422,11 +422,11 @@ int16_t bv_shl(int16_t var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -436,7 +436,7 @@ int16_t bv_shl(int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -487,11 +487,11 @@ int16_t bv_shr(int16_t var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -501,7 +501,7 @@ int16_t bv_shr(int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -541,11 +541,11 @@ int16_t bv_mult(int16_t var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -555,7 +555,7 @@ int16_t bv_mult(int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
@@ -592,7 +592,7 @@ int32_t L_bv_mult(int16_t var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -602,7 +602,7 @@ int32_t L_bv_mult(int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -631,7 +631,7 @@ int16_t bv_negate(int16_t var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32 ) whose value falls in the |
+ |             32 bit long signed integer (int32_t ) whose value falls in the |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -641,7 +641,7 @@ int16_t bv_negate(int16_t var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -670,7 +670,7 @@ int16_t bv_extract_h(int32_t L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32 ) whose value falls in the |
+ |             32 bit long signed integer (int32_t ) whose value falls in the |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -680,7 +680,7 @@ int16_t bv_extract_h(int32_t L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -712,7 +712,7 @@ int16_t bv_extract_l(int32_t L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32 ) whose value falls in the |
+ |             32 bit long signed integer (int32_t ) whose value falls in the |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -722,7 +722,7 @@ int16_t bv_extract_l(int32_t L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -756,15 +756,15 @@ int16_t intround(int32_t L_var1)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -774,7 +774,7 @@ int16_t intround(int32_t L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
@@ -808,15 +808,15 @@ int32_t bv_L_mac(int32_t L_var3, int16_t var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -826,7 +826,7 @@ int32_t bv_L_mac(int32_t L_var3, int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
@@ -861,15 +861,15 @@ int32_t bv_L_msu(int32_t L_var3, int16_t var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -879,7 +879,7 @@ int32_t bv_L_msu(int32_t L_var3, int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |                                                                           |
  |   Caution :                                                               |
@@ -918,15 +918,15 @@ int32_t bv_bv_L_macNs(int32_t L_var3, int16_t var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -936,7 +936,7 @@ int32_t bv_bv_L_macNs(int32_t L_var3, int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |                                                                           |
  |   Caution :                                                               |
@@ -975,10 +975,10 @@ int32_t bv_bv_L_msuNs(int32_t L_var3, int16_t var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
- |    L_var2   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var2   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -988,7 +988,7 @@ int32_t bv_bv_L_msuNs(int32_t L_var3, int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
@@ -1024,10 +1024,10 @@ int32_t L_bv_add(int32_t L_var1, int32_t L_var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
- |    L_var2   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var2   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1037,7 +1037,7 @@ int32_t L_bv_add(int32_t L_var1, int32_t L_var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
@@ -1074,10 +1074,10 @@ int32_t L_bv_sub(int32_t L_var1, int32_t L_var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
- |    L_var2   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var2   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1087,7 +1087,7 @@ int32_t L_bv_sub(int32_t L_var1, int32_t L_var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |                                                                           |
  |   Caution :                                                               |
@@ -1165,10 +1165,10 @@ int32_t L_bv_add_c(int32_t L_var1, int32_t L_var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
- |    L_var2   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var2   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1178,7 +1178,7 @@ int32_t L_bv_add_c(int32_t L_var1, int32_t L_var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |                                                                           |
  |   Caution :                                                               |
@@ -1248,7 +1248,7 @@ int32_t L_bv_sub_c(int32_t L_var1, int32_t L_var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1258,7 +1258,7 @@ int32_t L_bv_sub_c(int32_t L_var1, int32_t L_var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
@@ -1289,11 +1289,11 @@ int32_t L_bv_negate(int32_t L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1303,7 +1303,7 @@ int32_t L_bv_negate(int32_t L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x8000 <= var_out <= 0x7fff.                          |
  |___________________________________________________________________________|
 */
@@ -1343,11 +1343,11 @@ int16_t bv_bv_mult_r(int16_t var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1357,7 +1357,7 @@ int16_t bv_bv_mult_r(int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
@@ -1412,11 +1412,11 @@ int32_t L_bv_shl(int32_t L_var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1426,7 +1426,7 @@ int32_t L_bv_shl(int32_t L_var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.              |
  |___________________________________________________________________________|
 */
@@ -1482,11 +1482,11 @@ int32_t L_bv_shr(int32_t L_var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1496,7 +1496,7 @@ int32_t L_bv_shr(int32_t L_var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -1542,15 +1542,15 @@ int16_t bv_bv_shr_r(int16_t var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1560,7 +1560,7 @@ int16_t bv_bv_shr_r(int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 8000 <= L_var_out <= 0x0000 7fff.              |
  |___________________________________________________________________________|
 */
@@ -1597,15 +1597,15 @@ int16_t bv_mac_r(int32_t L_var3, int16_t var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the  |
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.                 |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1615,7 +1615,7 @@ int16_t bv_mac_r(int32_t L_var3, int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 8000 <= L_var_out <= 0x0000 7fff.              |
  |___________________________________________________________________________|
 */
@@ -1650,7 +1650,7 @@ int16_t bv_msu_r(int32_t L_var3, int16_t var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1660,7 +1660,7 @@ int16_t bv_msu_r(int32_t L_var3, int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var_out <= 0x7fff 0000.                |
  |___________________________________________________________________________|
 */
@@ -1690,7 +1690,7 @@ int32_t bv_L_deposit_h(int16_t var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1700,7 +1700,7 @@ int32_t bv_L_deposit_h(int16_t var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0xFFFF 8000 <= var_out <= 0x0000 7fff.                |
  |___________________________________________________________________________|
 */
@@ -1739,11 +1739,11 @@ int32_t bv_L_deposit_l(int16_t var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1753,7 +1753,7 @@ int32_t bv_L_deposit_l(int16_t var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
@@ -1796,7 +1796,7 @@ int32_t L_bv_bv_shr_r(int32_t L_var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1806,7 +1806,7 @@ int32_t L_bv_bv_shr_r(int32_t L_var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x0000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
@@ -1846,7 +1846,7 @@ int32_t bv_L_abs(int32_t L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1856,7 +1856,7 @@ int32_t bv_L_abs(int32_t L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
@@ -1901,7 +1901,7 @@ int32_t bv_L_sat(int32_t L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1911,7 +1911,7 @@ int32_t bv_L_sat(int32_t L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var_out <= 0x0000 000f.                |
  |___________________________________________________________________________|
 */
@@ -1957,11 +1957,11 @@ int16_t bv_norm_s(int16_t var1)
  |   Inputs :                                                                |
  |                                                                           |
  |    var1                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var1 <= var2 and var2 != 0.            |
  |                                                                           |
  |    var2                                                                   |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : var1 <= var2 <= 0x0000 7fff and var2 != 0.            |
  |                                                                           |
  |   Outputs :                                                               |
@@ -1971,7 +1971,7 @@ int16_t bv_norm_s(int16_t var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var_out <= 0x0000 7fff.                |
  |             It's a Q15 value (point between b15 and b14).                 |
  |___________________________________________________________________________|
@@ -2045,7 +2045,7 @@ int16_t bv_div_s(int16_t var1, int16_t var2)
  |   Inputs :                                                                |
  |                                                                           |
  |    L_var1                                                                 |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
  |                                                                           |
  |   Outputs :                                                               |
@@ -2055,7 +2055,7 @@ int16_t bv_div_s(int16_t var1, int16_t var2)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x0000 0000 <= var_out <= 0x0000 001f.                |
  |___________________________________________________________________________|
 */
@@ -2113,10 +2113,10 @@ int16_t bv_norm_l(int32_t L_var1)
  |   Inputs :                                                                |
  |                                                                           |
  |   Lv                                                                      |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var1 <= 0x7fff ffff.                   |
  |   v                                                                       |
- |             16 bit short signed integer (Word16) whose value falls in the |
+ |             16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0x8000 <= var1 <= 0x7fff.                             |
  |                                                                           |
  |   Outputs :                                                               |
@@ -2126,7 +2126,7 @@ int16_t bv_norm_l(int32_t L_var1)
  |   Return Value :                                                          |
  |                                                                           |
  |    var_out                                                                |
- |             32 bit long signed integer (Word32) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var_out <= 0x7fff ffff.                |
  |                                                                           |
  |___________________________________________________________________________|
@@ -2167,12 +2167,12 @@ int32_t bv_L_mls(int32_t Lv, int16_t v)
 |   Inputs :                                                                |
 |                                                                           |
 |    L_var1                                                                 |
-|             32 bit long signed integer (Word32) whose value falls in the  |
+|             32 bit long signed integer (int32_t) whose value falls in the  |
 |             range : 0x0000 0000 <= var1 <= (var2 << 16)  and var2 != 0.   |
 |             L_var1 must be considered as a Q.31 value                     |
 |                                                                           |
 |    var2                                                                   |
-|             16 bit short signed integer (Word16) whose value falls in the |
+|             16 bit short signed integer (int16_t) whose value falls in the |
 |             range : var1 <= (var2<< 16) <= 0x7fff0000 and var2 != 0.      |
 |             var2 must be considered as a Q.15 value                       |
 |                                                                           |
@@ -2183,7 +2183,7 @@ int32_t bv_L_mls(int32_t Lv, int16_t v)
 |   Return Value :                                                          |
 |                                                                           |
 |    var_out                                                                |
-|             16 bit short signed integer (Word16) whose value falls in the |
+|             16 bit short signed integer (int16_t) whose value falls in the |
 |             range : 0x0000 0000 <= var_out <= 0x0000 7fff.                |
 |             It's a Q15 value (point between b15 and b14).                 |
 |___________________________________________________________________________|
@@ -2257,10 +2257,10 @@ int16_t bv_div_l(int32_t L_num, int16_t den)
 |   Inputs :                                                                |
 |                                                                           |
 |    a                                                                      |
-|             16 bit short signed integer (Word16).                         |
+|             16 bit short signed integer (int16_t).                         |
 |                                                                           |
 |    b                                                                      |
-|             16 bit short signed integer (Word16).                         |
+|             16 bit short signed integer (int16_t).                         |
 |                                                                           |
 |   Outputs :                                                               |
 |                                                                           |
@@ -2268,7 +2268,7 @@ int16_t bv_div_l(int32_t L_num, int16_t den)
 |                                                                           |
 |   Return Value :                                                          |
 |                                                                           |
-|             16 bit short signed integer (Word16). No overflow checks      |
+|             16 bit short signed integer (int16_t). No overflow checks      |
 |             are performed if ORIGINAL_G7231 is defined.                   |
 |___________________________________________________________________________|
 */
@@ -2306,16 +2306,16 @@ int16_t i_bv_mult(int16_t a, int16_t b)
  |
  |   Inputs :
  |
- |    var1     16 bit short signed integer (Word16) whose value falls in the
+ |    var1     16 bit short signed integer (int16_t) whose value falls in the
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.
  |
- |    var2     16 bit short signed integer (Word16) whose value falls in the
+ |    var2     16 bit short signed integer (int16_t) whose value falls in the
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.
  |
  |   Return Value :
  |
  |    L_var_out
- |             32 bit long signed integer (Word32) whose value falls in the
+ |             32 bit long signed integer (int32_t) whose value falls in the
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.
  |___________________________________________________________________________
 */
@@ -2345,19 +2345,19 @@ int32_t L_bv_mult0(int16_t var1, int16_t var2)
  |
  |   Inputs :
  |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.
  |
- |    var1     16 bit short signed integer (Word16) whose value falls in the
+ |    var1     16 bit short signed integer (int16_t) whose value falls in the
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.
  |
- |    var2     16 bit short signed integer (Word16) whose value falls in the
+ |    var2     16 bit short signed integer (int16_t) whose value falls in the
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.
  |
  |   Return Value :
  |
  |    L_var_out
- |             32 bit long signed integer (Word32) whose value falls in the
+ |             32 bit long signed integer (int32_t) whose value falls in the
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.
  |___________________________________________________________________________
 */
@@ -2391,19 +2391,19 @@ int32_t bv_L_mac0(int32_t L_var3, int16_t var1, int16_t var2)
  |
  |   Inputs :
  |
- |    L_var3   32 bit long signed integer (Word32) whose value falls in the
+ |    L_var3   32 bit long signed integer (int32_t) whose value falls in the
  |             range : 0x8000 0000 <= L_var3 <= 0x7fff ffff.
  |
- |    var1     16 bit short signed integer (Word16) whose value falls in the
+ |    var1     16 bit short signed integer (int16_t) whose value falls in the
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.
  |
- |    var2     16 bit short signed integer (Word16) whose value falls in the
+ |    var2     16 bit short signed integer (int16_t) whose value falls in the
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.
  |
  |   Return Value :
  |
  |    L_var_out
- |             32 bit long signed integer (Word32) whose value falls in the
+ |             32 bit long signed integer (int32_t) whose value falls in the
  |             range : 0x8000 0000 <= L_var_out <= 0x7fff ffff.
  |___________________________________________________________________________
 */
