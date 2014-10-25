@@ -46,7 +46,6 @@
 #include "../libcodecs/opus/include/opus.h"
 #include "../libcodecs/gsmhr/gsmhr.h"
 #include "../libcodecs/ilbc/ilbc.h"
-#include "../inc/ophint.h"
 #include "../libcodecs/bv/bv16/bvcommon.h"
 #include "../libcodecs/bv/bv16/bv16cnst.h"
 #include "../libcodecs/bv/bv16/bv16strct.h"
@@ -57,11 +56,6 @@
 #include "../libcodecs/speex/speex/speex.h"
 #include "../libcodecs/speex/speex/speex_preprocess.h"
 #include "../libcodecs/speex/speex/speex_resampler.h"
-
-
-//in interf_enc.h was commented stdint.h - not found in win32
-#define Word16 short
-#define UWord8 unsigned char
 
 #include "../libcodecs/amr/interf_enc.h"
 #include "../libcodecs/amr/interf_dec.h"
