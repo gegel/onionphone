@@ -11,7 +11,6 @@
 /*
 File : DACELPCP.C
 */
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "tabld8cp.h"
@@ -19,7 +18,7 @@ File : DACELPCP.C
 static void dec_pulses(int index,	/* (i)       : pulses index (4 or 7 bits)    */
 		       int track,	/* (i)       : track of the pulses           */
 		       int nb_of_pulses,	/* (i)       : 1 or 2 pulses                 */
-		       FLOAT cod[]	/* (i/o)     : algebraic codebook excitation */
+		       float cod[]	/* (i/o)     : algebraic codebook excitation */
     );
 
 /*-----------------------------------------------------------*
@@ -30,7 +29,7 @@ static void dec_pulses(int index,	/* (i)       : pulses index (4 or 7 bits)    *
 
 void decod_ACELP(int sign,	/* input : signs of 4 pulses     */
 		 int index,	/* input : positions of 4 pulses */
-		 FLOAT cod[]	/* output: innovative codevector */
+		 float cod[]	/* output: innovative codevector */
     )
 {
 	int pos[4];
@@ -67,9 +66,9 @@ void decod_ACELP(int sign,	/* input : signs of 4 pulses     */
 		sign >>= 1;
 
 		if (i != 0) {
-			cod[pos[j]] = (F) 1.0;
+			cod[pos[j]] = (float) 1.0;
 		} else {
-			cod[pos[j]] = (F) - 1.0;
+			cod[pos[j]] = (float) - 1.0;
 		}
 	}
 
@@ -77,14 +76,14 @@ void decod_ACELP(int sign,	/* input : signs of 4 pulses     */
 }
 
 void dec_ACELP_10i40_35bits(int *index,	/* (i): 5 words index (positions & sign)      */
-			    FLOAT cod[]	/* (o) : algebraic (fixed) codebook excitation */
+			    float cod[]	/* (o) : algebraic (fixed) codebook excitation */
     )
 {
 	int i, j;
 
 	/* decode the positions and signs of pulses and build the codeword */
 	for (i = 0; i < L_SUBFR; i++) {
-		cod[i] = (FLOAT) 0.;
+		cod[i] = (float) 0.;
 	}
 
 	for (j = 0; j < 5; j++) {
@@ -94,14 +93,14 @@ void dec_ACELP_10i40_35bits(int *index,	/* (i): 5 words index (positions & sign)
 }
 
 void dec_ACELP_12i40_44bits(int *index,	/* (i) : 5 words index (positions & sign)      */
-			    FLOAT cod[]	/* (o) : algebraic (fixed) codebook excitation */
+			    float cod[]	/* (o) : algebraic (fixed) codebook excitation */
     )
 {
 	int i, j, track;
 
 	/* decode the positions and signs of pulses and build the codeword */
 	for (i = 0; i < L_SUBFR; i++) {
-		cod[i] = (FLOAT) 0.;
+		cod[i] = (float) 0.;
 	}
 
 	track = (index[0] >> 10) & (int)7;
@@ -128,11 +127,11 @@ void dec_ACELP_12i40_44bits(int *index,	/* (i) : 5 words index (positions & sign
 static void dec_pulses(int index,	/* (i)       : pulses index (4 or 7 bits)    */
 		       int track,	/* (i)       : track of the pulses           */
 		       int nb_of_pulses,	/* (i)       : 1, 2 or 3 pulses              */
-		       FLOAT cod[]	/* (i/o)   : algebraic codebook excitation */
+		       float cod[]	/* (i/o)   : algebraic codebook excitation */
     )
 {
 	int i, pos1, pos2, pos3;
-	FLOAT sign;
+	float sign;
 
 	/* compute index i */
 	i = (int)((index & (int)7) * 5);
@@ -140,9 +139,9 @@ static void dec_pulses(int index,	/* (i)       : pulses index (4 or 7 bits)    *
 	i = (int)(index >> 3) & (int)1;
 
 	if (i == 0)
-		sign = (FLOAT) 1.;
+		sign = (float) 1.;
 	else
-		sign = (FLOAT) - 1.;
+		sign = (float) - 1.;
 
 	cod[pos1] = sign;
 
@@ -177,7 +176,7 @@ static void dec_pulses(int index,	/* (i)       : pulses index (4 or 7 bits)    *
 
 void decod_ACELP64(int sign,	/* input : signs of 2 pulses     */
 		   int index,	/* input : positions of 2 pulses */
-		   FLOAT cod[]	/* output: innovative codevector */
+		   float cod[]	/* output: innovative codevector */
     )
 {
 	int pos[2];
@@ -202,9 +201,9 @@ void decod_ACELP64(int sign,	/* input : signs of 2 pulses     */
 		sign >>= 1;
 
 		if (i != 0) {
-			cod[pos[j]] += (F) 1.0;
+			cod[pos[j]] += (float) 1.0;
 		} else {
-			cod[pos[j]] -= (F) 1.0;
+			cod[pos[j]] -= (float) 1.0;
 		}
 	}
 

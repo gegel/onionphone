@@ -15,8 +15,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "tab_ld8k.h"
 #include "ld8cp.h"
@@ -26,19 +24,19 @@
 #include "tab_dtx.h"
 
 /* local functions */
-static void Qnt_e(FLOAT * errlsf,	/* (i)  : error lsf vector             */
-		  FLOAT * weight,	/* (i)  : weighting vector             */
+static void Qnt_e(float * errlsf,	/* (i)  : error lsf vector             */
+		  float * weight,	/* (i)  : weighting vector             */
 		  int DIn,	/* (i)  : number of input candidates   */
-		  FLOAT * qlsf,	/* (o)  : quantized error lsf vector   */
+		  float * qlsf,	/* (o)  : quantized error lsf vector   */
 		  int *Pptr,	/* (o)  : predictor index              */
 		  int DOut,	/* (i)  : number of quantized vectors  */
 		  int *cluster,	/* (o)  : quantizer indices            */
 		  int *MS	/* (i)  : size of the quantizers       */
     );
 
-static void New_ML_search_1(FLOAT * d_data,	/* (i) : error vector             */
+static void New_ML_search_1(float * d_data,	/* (i) : error vector             */
 			    int J,	/* (i) : number of input vectors  */
-			    FLOAT * new_d_data,	/* (o) : output vector            */
+			    float * new_d_data,	/* (o) : output vector            */
 			    int K,	/* (i) : number of candidates     */
 			    int *best_indx,	/* (o) : best indices             */
 			    int *ptr_back,	/* (o) : pointer for backtracking */
@@ -46,10 +44,10 @@ static void New_ML_search_1(FLOAT * d_data,	/* (i) : error vector             */
 			    int MQ	/* (i) : size of quantizer        */
     );
 
-static void New_ML_search_2(FLOAT * d_data,	/* (i) : error vector             */
-			    FLOAT * weight,	/* (i) : weighting vector         */
+static void New_ML_search_2(float * d_data,	/* (i) : error vector             */
+			    float * weight,	/* (i) : weighting vector         */
 			    int J,	/* (i) : number of input vectors  */
-			    FLOAT * new_d_data,	/* (o) : output vector            */
+			    float * new_d_data,	/* (o) : output vector            */
 			    int K,	/* (i) : number of candidates     */
 			    int *best_indx,	/* (o) : best indices             */
 			    int *ptr_prd,	/* (i) : pointer for backtracking */
@@ -71,14 +69,14 @@ static void New_ML_search_2(FLOAT * d_data,	/* (i) : error vector             */
  *   ana[]         : indices                                       *
  *                                                                 *
  *-----------------------------------------------------------------*/
-void lsfq_noise(FLOAT * lsp, FLOAT * lspq, FLOAT freq_prev[MA_NP][M], int *ana)
+void lsfq_noise(float * lsp, float * lspq, float freq_prev[MA_NP][M], int *ana)
 {
 	int i, MS[MODE] = { 32, 16 }, Clust[MODE], mode;
-	FLOAT lsf[M], lsfq[M], weight[M], tmpbuf[M], errlsf[M * MODE];
+	float lsf[M], lsfq[M], weight[M], tmpbuf[M], errlsf[M * MODE];
 
 	/* convert lsp to lsf */
 	for (i = 0; i < M; i++)
-		lsf[i] = (FLOAT) acos(lsp[i]);
+		lsf[i] = (float) acos(lsp[i]);
 
 	/* spacing to ~100Hz */
 	if (lsf[0] < L_LIMIT)
@@ -111,7 +109,7 @@ void lsfq_noise(FLOAT * lsp, FLOAT * lspq, FLOAT freq_prev[MA_NP][M], int *ana)
 
 	/* guarantee minimum distance of 0.0012 between tmpbuf[j]
 	   and tmpbuf[j+1] */
-	lsp_expand_1_2(tmpbuf, (F) 0.0012);
+	lsp_expand_1_2(tmpbuf, (float) 0.0012);
 
 	/* compute the quantized lsf vector */
 	lsp_prev_compose(tmpbuf, lsfq, noise_fg[mode], freq_prev,
@@ -125,15 +123,15 @@ void lsfq_noise(FLOAT * lsp, FLOAT * lspq, FLOAT freq_prev[MA_NP][M], int *ana)
 
 	/* convert lsf to lsp */
 	for (i = 0; i < M; i++)
-		lspq[i] = (FLOAT) cos(lsfq[i]);
+		lspq[i] = (float) cos(lsfq[i]);
 
 	return;
 }
 
-static void Qnt_e(FLOAT * errlsf,	/* (i)  : error lsf vector             */
-		  FLOAT * weight,	/* (i)  : weighting vector             */
+static void Qnt_e(float * errlsf,	/* (i)  : error lsf vector             */
+		  float * weight,	/* (i)  : weighting vector             */
 		  int DIn,	/* (i)  : number of input candidates   */
-		  FLOAT * qlsf,	/* (o)  : quantized error lsf vector   */
+		  float * qlsf,	/* (o)  : quantized error lsf vector   */
 		  int *Pptr,	/* (o)  : predictor index              */
 		  int DOut,	/* (i)  : number of quantized vectors  */
 		  int *cluster,	/* (o)  : quantizer indices            */
@@ -142,7 +140,7 @@ static void Qnt_e(FLOAT * errlsf,	/* (i)  : error lsf vector             */
 {
 	int best_indx[2][R_LSFQ];
 	int ptr_back[2][R_LSFQ], ptr, i;
-	FLOAT d_data[2][R_LSFQ * M];
+	float d_data[2][R_LSFQ * M];
 
 	New_ML_search_1(errlsf, DIn, d_data[0], 4, best_indx[0], ptr_back[0],
 			PtrTab_1, MS[0]);
@@ -166,9 +164,9 @@ static void Qnt_e(FLOAT * errlsf,	/* (i)  : error lsf vector             */
 
 }
 
-static void New_ML_search_1(FLOAT * d_data,	/* (i) : error vector             */
+static void New_ML_search_1(float * d_data,	/* (i) : error vector             */
 			    int J,	/* (i) : number of input vectors  */
-			    FLOAT * new_d_data,	/* (o) : output vector            */
+			    float * new_d_data,	/* (o) : output vector            */
 			    int K,	/* (i) : number of candidates     */
 			    int *best_indx,	/* (o) : best indices             */
 			    int *ptr_back,	/* (o) : pointer for backtracking */
@@ -177,7 +175,7 @@ static void New_ML_search_1(FLOAT * d_data,	/* (i) : error vector             */
     )
 {
 	int m, l, p, q, min_indx_p[R_LSFQ], min_indx_m[R_LSFQ];
-	FLOAT sum[R_LSFQ * R_LSFQ], min[R_LSFQ];
+	float sum[R_LSFQ * R_LSFQ], min[R_LSFQ];
 
 	for (q = 0; q < K; q++) {
 		min[q] = FLT_MAX_G729;
@@ -186,7 +184,7 @@ static void New_ML_search_1(FLOAT * d_data,	/* (i) : error vector             */
 	/* compute the errors */
 	for (p = 0; p < J; p++) {
 		for (m = 0; m < MQ; m++) {
-			sum[p * MQ + m] = (F) 0.0;
+			sum[p * MQ + m] = (float) 0.0;
 			for (l = 0; l < M; l++) {
 				sum[p * MQ + m] +=
 				    sqr(d_data[p * M + l] -
@@ -225,10 +223,10 @@ static void New_ML_search_1(FLOAT * d_data,	/* (i) : error vector             */
 	return;
 }
 
-static void New_ML_search_2(FLOAT * d_data,	/* (i) : error vector             */
-			    FLOAT * weight,	/* (i) : weighting vector         */
+static void New_ML_search_2(float * d_data,	/* (i) : error vector             */
+			    float * weight,	/* (i) : weighting vector         */
 			    int J,	/* (i) : number of input vectors  */
-			    FLOAT * new_d_data,	/* (o) : output vector            */
+			    float * new_d_data,	/* (o) : output vector            */
 			    int K,	/* (i) : number of candidates     */
 			    int *best_indx,	/* (o) : best indices             */
 			    int *ptr_prd,	/* (i) : pointer for backtracking */
@@ -240,8 +238,8 @@ static void New_ML_search_2(FLOAT * d_data,	/* (i) : error vector             */
 	int m, l, p, q;
 	int min_indx_p[R_LSFQ];
 	int min_indx_m[R_LSFQ];
-	FLOAT sum[R_LSFQ * R_LSFQ];
-	FLOAT min[R_LSFQ];
+	float sum[R_LSFQ * R_LSFQ];
+	float min[R_LSFQ];
 
 	for (q = 0; q < K; q++)
 		min[q] = FLT_MAX_G729;
@@ -249,7 +247,7 @@ static void New_ML_search_2(FLOAT * d_data,	/* (i) : error vector             */
 	/* compute the errors */
 	for (p = 0; p < J; p++) {
 		for (m = 0; m < MQ; m++) {
-			sum[p * MQ + m] = (F) 0.0;
+			sum[p * MQ + m] = (float) 0.0;
 			for (l = 0; l < M / 2; l++) {
 				sum[p * MQ + m] +=
 				    weight[l] *

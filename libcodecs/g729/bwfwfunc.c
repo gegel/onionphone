@@ -13,8 +13,6 @@
 
 #include <stdio.h>
 #include <math.h>
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "tabld8cp.h"
@@ -61,33 +59,33 @@ void tst_bwd_dominant(int *bwd_dominant,	/* O   Dominant backward mode indicatio
 	return;
 }
 
-void int_bwd(FLOAT * a_bwd,	/* I/O   LPC backward filter */
-	     FLOAT * prev_filter,	/* I previous frame filter */
-	     FLOAT * C_int	/* I/O interpolation coefficient */
+void int_bwd(float * a_bwd,	/* I/O   LPC backward filter */
+	     float * prev_filter,	/* I previous frame filter */
+	     float * C_int	/* I/O interpolation coefficient */
     )
 {
 
 	int i;
-	FLOAT tmp1, tmp2;
-	FLOAT *pa_bwd;
-	FLOAT C_int_loc;
+	float tmp1, tmp2;
+	float *pa_bwd;
+	float C_int_loc;
 
 	pa_bwd = a_bwd + M_BWDP1;
 
 	/* Calculate the interpolated filters  */
 	/* ----------------------------------  */
-	C_int_loc = *C_int - (F) 0.1;
+	C_int_loc = *C_int - (float) 0.1;
 	if (C_int_loc < 0)
 		C_int_loc = 0;
 
 	for (i = 0; i < M_BWDP1; i++) {
-		tmp1 = pa_bwd[i] * ((F) 1. - C_int_loc);
+		tmp1 = pa_bwd[i] * ((float) 1. - C_int_loc);
 		tmp2 = prev_filter[i] * C_int_loc;
 		pa_bwd[i] = tmp1 + tmp2;
 	}
 
 	for (i = 0; i < M_BWDP1; i++) {
-		a_bwd[i] = (F) 0.5 *(pa_bwd[i] + prev_filter[i]);
+		a_bwd[i] = (float) 0.5 *(pa_bwd[i] + prev_filter[i]);
 	}
 
 	*C_int = C_int_loc;
@@ -100,33 +98,33 @@ void int_bwd(FLOAT * a_bwd,	/* I/O   LPC backward filter */
 /*                        COMPUTATION OF THE ENERGY                       */
 /*                                                                        */
 /* ---------------------------------------------------------------------- */
-FLOAT ener_dB(FLOAT * synth, int L)
+float ener_dB(float * synth, int L)
 {
 
 	int i;
-	FLOAT energy;
-	FLOAT tmp, edB;
-	INT32 k, Ltmp;
+	float energy;
+	float tmp, edB;
+	int32_t k, Ltmp;
 	int n;
 
-	for (i = 0, energy = (F) 0.0001; i < L; i++) {
+	for (i = 0, energy = (float) 0.0001; i < L; i++) {
 		energy += synth[i] * synth[i];
 	}
-	edB = (FLOAT) log10(energy);
+	edB = (float) log10(energy);
 	tmp = edB * INV_LOG2;
 	n = (int)tmp;
-	if (tmp >= (F) 4.) {
-		if (energy > (F) 2147483647.)
-			energy = (F) 93.1814;
+	if (tmp >= (float) 4.) {
+		if (energy > (float) 2147483647.)
+			energy = (float) 93.1814;
 		else {
-			k = (INT32) energy;
+			k = (int32_t) energy;
 			Ltmp = -(1L << (n - 4));
 			k &= Ltmp;
-			tmp = (FLOAT) k;
-			energy = (F) 10. *(FLOAT) log10(tmp);
+			tmp = (float) k;
+			energy = (float) 10. *(float) log10(tmp);
 		}
 	} else
-		energy = (F) 0.005;
+		energy = (float) 0.005;
 
 	return (energy);
 }
@@ -147,14 +145,14 @@ FLOAT ener_dB(FLOAT * synth, int L)
 /*------------------------------------------------------------------------------*/
 /* Compute the autocorrelation of speech using hybrid window    (as in G.728)   */
 /*------------------------------------------------------------------------------*/
-void autocorr_hyb_window(FLOAT * x,	/* (in)     synthetized speech signal */
-			 FLOAT * r_bwd,	/* (out)    Autocorrelations    */
-			 FLOAT * rexp	/* (in/out) */
+void autocorr_hyb_window(float * x,	/* (in)     synthetized speech signal */
+			 float * r_bwd,	/* (out)    Autocorrelations    */
+			 float * rexp	/* (in/out) */
     )
 {
-	FLOAT tmp;
+	float tmp;
 	int i, n, k;
-	FLOAT w_s[L_ANA_BWD];
+	float w_s[L_ANA_BWD];
 
 	for (n = L_ANA_BWD_M1, k = 0; n >= 0; n--, k++)
 		w_s[n] = x[n] * hw[k];
@@ -183,7 +181,7 @@ void autocorr_hyb_window(FLOAT * x,	/* (in)     synthetized speech signal */
 /*           (values of lag_h_bwd and lag_l_bwd in tab_ld8k.h)            */
 /*                                                                        */
 /* ---------------------------------------------------------------------- */
-void glag_window_bwd(FLOAT * r_bwd)
+void glag_window_bwd(float * r_bwd)
 {
 
 	int i;
@@ -193,7 +191,7 @@ void glag_window_bwd(FLOAT * r_bwd)
 		r_bwd[i] *= lag_bwd[i - 1];
 	}
 
-	if (r_bwd[0] < (F) 1.0)
-		r_bwd[0] = (F) 1.0;
+	if (r_bwd[0] < (float) 1.0)
+		r_bwd[0] = (float) 1.0;
 	return;
 }

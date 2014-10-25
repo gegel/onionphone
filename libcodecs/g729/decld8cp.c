@@ -15,8 +15,6 @@
 /*-----------------------------------------------------------------*
 *   Functions init_decod_ld8c  and decod_ld8c                     *
 *-----------------------------------------------------------------*/
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "dtx.h"
@@ -40,56 +38,56 @@
 *--------------------------------------------------------*/
 
 /* Excitation vector */
-static FLOAT old_exc[L_FRAME + PIT_MAX + L_INTERPOL];
-static FLOAT *exc;
+static float old_exc[L_FRAME + PIT_MAX + L_INTERPOL];
+static float *exc;
 
 /* Lsp (Line spectral pairs) */
-static FLOAT lsp_old[M] = {
-	(F) 0.9595, (F) 0.8413, (F) 0.6549, (F) 0.4154, (F) 0.1423,
-	(F) - 0.1423, (F) - 0.4154, (F) - 0.6549, (F) - 0.8413, (F) - 0.9595
+static float lsp_old[M] = {
+	(float) 0.9595, (float) 0.8413, (float) 0.6549, (float) 0.4154, (float) 0.1423,
+	(float) - 0.1423, (float) - 0.4154, (float) - 0.6549, (float) - 0.8413, (float) - 0.9595
 };
 
-static FLOAT mem_syn[M_BWD];	/* Filter's memory */
+static float mem_syn[M_BWD];	/* Filter's memory */
 
-static FLOAT sharp;		/* pitch sharpening of previous fr */
-static FLOAT gain_code;		/* fixed codebook gain */
-static FLOAT gain_pitch;	/* adaptive codebook gain */
+static float sharp;		/* pitch sharpening of previous fr */
+static float gain_code;		/* fixed codebook gain */
+static float gain_pitch;	/* adaptive codebook gain */
 static int prev_t0;		/* integer delay of previous frame    */
 static int prev_t0_frac;	/* integer delay of previous frame    */
 
 /* for G.729B */
-static INT16 seed_fer;
+static int16_t seed_fer;
 /* CNG variables */
 static int past_ftyp;
-static INT16 seed;
-static FLOAT sid_sav;
+static int16_t seed;
+static float sid_sav;
 
 /* for the backward analysis */
-static FLOAT rexp[M_BWDP1];
-static FLOAT A_bwd_mem[M_BWDP1];
-static FLOAT A_t_bwd_mem[M_BWDP1];
+static float rexp[M_BWDP1];
+static float A_bwd_mem[M_BWDP1];
+static float A_t_bwd_mem[M_BWDP1];
 static int prev_voicing, prev_bfi, prev_lp_mode;
-static FLOAT c_fe, c_int;
-static FLOAT prev_filter[M_BWDP1];	/* Previous selected filter */
+static float c_fe, c_int;
+static float prev_filter[M_BWDP1];	/* Previous selected filter */
 static int prev_pitch;
 static int stat_pitch;
 static int pitch_sta, frac_sta;
 
 /* Last backward A(z) for case of unstable filter */
-static FLOAT old_A_bwd[M_BWDP1];
-static FLOAT old_rc_bwd[2];
+static float old_A_bwd[M_BWDP1];
+static float old_rc_bwd[2];
 
-static FLOAT gain_pit_mem;
-static FLOAT gain_cod_mem;
-static FLOAT c_muting;
+static float gain_pit_mem;
+static float gain_cod_mem;
+static float c_muting;
 static int count_bfi;
 static int stat_bwd;
 
-static FLOAT freq_prev[MA_NP][M];
+static float freq_prev[MA_NP][M];
 
 /* static memory for frame erase operation */
 static int prev_ma;		/* previous MA prediction coef. */
-static FLOAT prev_lsp[M];	/* previous LSP vector */
+static float prev_lsp[M];	/* previous LSP vector */
 
 /*--------------------------------------------------------------------------
 * init_decod_ld8c - Initialization of variables for the decoder section.
@@ -107,40 +105,40 @@ void init_decod_ld8c(void)
 	sharp = SHARPMIN;
 	prev_t0 = 60;
 	prev_t0_frac = 0;
-	gain_code = (F) 0.;
-	gain_pitch = (F) 0.;
+	gain_code = (float) 0.;
+	gain_pitch = (float) 0.;
 
 	lsp_decw_resete(freq_prev, prev_lsp, &prev_ma);
 
 	set_zero(A_bwd_mem, M_BWDP1);
 	set_zero(A_t_bwd_mem, M_BWDP1);
-	A_bwd_mem[0] = (F) 1.;
-	A_t_bwd_mem[0] = (F) 1.;
+	A_bwd_mem[0] = (float) 1.;
+	A_t_bwd_mem[0] = (float) 1.;
 
 	prev_voicing = 0;
 	prev_bfi = 0;
 	prev_lp_mode = 0;
-	c_fe = (F) 0.;
-	c_int = (F) 1.1;	/* Filter interpolation parameter */
+	c_fe = (float) 0.;
+	c_int = (float) 1.1;	/* Filter interpolation parameter */
 	set_zero(prev_filter, M_BWDP1);
-	prev_filter[0] = (F) 1.;
+	prev_filter[0] = (float) 1.;
 	prev_pitch = 30;
 	stat_pitch = 0;
 	set_zero(old_A_bwd, M_BWDP1);
 	set_zero(rexp, M_BWDP1);
-	old_A_bwd[0] = (F) 1.;
+	old_A_bwd[0] = (float) 1.;
 	set_zero(old_rc_bwd, 2);
-	gain_pit_mem = (F) 0.;
-	gain_cod_mem = (F) 0.;
-	c_muting = (F) 1.;
+	gain_pit_mem = (float) 0.;
+	gain_cod_mem = (float) 0.;
+	c_muting = (float) 1.;
 	count_bfi = 0;
 	stat_bwd = 0;
 
 	/* for G.729B */
-	seed_fer = (INT16) 21845;
+	seed_fer = (int16_t) 21845;
 	past_ftyp = 3;
 	seed = INIT_SEED;
-	sid_sav = (FLOAT) 0.;
+	sid_sav = (float) 0.;
 	init_lsfq_noise();
 
 	return;
@@ -153,8 +151,8 @@ void init_decod_ld8c(void)
 void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 				   parm[0] = bad frame indicator (bfi)    */
 		int voicing,	/* (i)   : voicing decision from previous frame */
-		FLOAT synth_buf[],	/* (i/o) : synthesis speech                     */
-		FLOAT Az_dec[],	/* (o)   : decoded LP filter in 2 subframes     */
+		float synth_buf[],	/* (i/o) : synthesis speech                     */
+		float Az_dec[],	/* (o)   : decoded LP filter in 2 subframes     */
 		int *t0_first,	/* (o)   : decoded pitch lag in first subframe  */
 		int *bwd_dominant,	/* (o)   : bwd dominant indicator               */
 		int *m_pst,	/* (o)   : LPC order for postfilter             */
@@ -166,29 +164,29 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 	int t0, t0_frac, index;
 	int bfi;
 	int lp_mode;		/* Backward / Forward mode indication */
-	FLOAT g_p, g_c;		/* fixed and adaptive codebook gain */
+	float g_p, g_c;		/* fixed and adaptive codebook gain */
 	int bad_pitch;		/* bad pitch indicator */
-	FLOAT tmp;
-	FLOAT energy;
+	float tmp;
+	float energy;
 	int rate;
 
 	/* Tables */
-	FLOAT A_t_bwd[2 * M_BWDP1];	/* LPC Backward filter */
-	FLOAT A_t_fwd[2 * MP1];	/* LPC Forward filter */
-	FLOAT rc_bwd[M_BWD];	/* LPC backward reflection coefficients */
-	FLOAT r_bwd[M_BWDP1];	/* Autocorrelations (backward) */
-	FLOAT lsp_new[M];	/* LSPs             */
-	FLOAT code[L_SUBFR];	/* ACELP codevector */
-	FLOAT exc_phdisp[L_SUBFR];	/* excitation after phase dispersion */
-	FLOAT *pA_t;		/* Pointer on A_t   */
+	float A_t_bwd[2 * M_BWDP1];	/* LPC Backward filter */
+	float A_t_fwd[2 * MP1];	/* LPC Forward filter */
+	float rc_bwd[M_BWD];	/* LPC backward reflection coefficients */
+	float r_bwd[M_BWDP1];	/* Autocorrelations (backward) */
+	float lsp_new[M];	/* LSPs             */
+	float code[L_SUBFR];	/* ACELP codevector */
+	float exc_phdisp[L_SUBFR];	/* excitation after phase dispersion */
+	float *pA_t;		/* Pointer on A_t   */
 	int stationnary;
 	int m_aq;
-	FLOAT *synth;
+	float *synth;
 	int sat_filter;
 
 	/* for G.729B */
 	int ftyp;
-	FLOAT lsfq_mem[MA_NP][M];
+	float lsfq_mem[MA_NP][M];
 
 	synth = synth_buf + MEM_SYN_BWD;
 
@@ -233,7 +231,7 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 			voicing = prev_voicing;
 	}
 	if (bfi == 0) {
-		c_muting = (F) 1.;
+		c_muting = (float) 1.;
 		count_bfi = 0;
 	}
 
@@ -253,7 +251,7 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 		/* Tests saturation of A_t_bwd */
 		sat_filter = 0;
 		for (i = M_BWDP1; i < 2 * M_BWDP1; i++)
-			if (A_t_bwd[i] >= (F) 8.)
+			if (A_t_bwd[i] >= (float) 8.)
 				sat_filter = 1;
 		if (sat_filter == 1)
 			copy(A_t_bwd_mem, &A_t_bwd[M_BWDP1], M_BWDP1);
@@ -270,11 +268,11 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 	copy(&synth_buf[L_FRAME], &synth_buf[0], MEM_SYN_BWD);
 
 	if (lp_mode == 1) {
-		if ((c_fe != (F) 0.)) {
+		if ((c_fe != (float) 0.)) {
 			/* Interpolation of the backward filter after a bad frame */
 			/* A_t_bwd(z) = c_fe . A_bwd_mem(z) + (1 - c_fe) . A_t_bwd(z) */
 			/* ---------------------------------------------------------- */
-			tmp = (F) 1. - c_fe;
+			tmp = (float) 1. - c_fe;
 			pA_t = A_t_bwd + M_BWDP1;
 			for (i = 0; i < M_BWDP1; i++) {
 				pA_t[i] *= tmp;
@@ -311,7 +309,7 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 			pA_t += MP1;
 		}
 		sharp = SHARPMIN;
-		c_int = (F) 1.1;
+		c_int = (float) 1.1;
 		/* for gain decoding in case of frame erasure */
 		stat_bwd = 0;
 		/* for pitch tracking  in case of frame erasure */
@@ -319,7 +317,7 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 		/* update the previous filter for the next frame */
 		copy(&A_t_fwd[MP1], prev_filter, MP1);
 		for (i = MP1; i < M_BWDP1; i++)
-			prev_filter[i] = (F) 0.;
+			prev_filter[i] = (float) 0.;
 	}
 
     /***************************/
@@ -348,13 +346,13 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 			/* update the LSFs for the next frame */
 			copy(lsp_new, lsp_old, M);
 
-			c_int = (F) 1.1;
+			c_int = (float) 1.1;
 			pA_t = A_t_fwd;
 			m_aq = M;
 			/* update the previous filter for the next frame */
 			copy(&A_t_fwd[MP1], prev_filter, MP1);
 			for (i = MP1; i < M_BWDP1; i++)
-				prev_filter[i] = (F) 0.;
+				prev_filter[i] = (float) 0.;
 		} else {
 			int_bwd(A_t_bwd, prev_filter, &c_int);
 			pA_t = A_t_bwd;
@@ -536,11 +534,11 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 			if (bfi != 0) {	/* Bad frame */
 				count_bfi++;
 				if (voicing == 0) {
-					g_p = (F) 0.;
+					g_p = (float) 0.;
 					g_c = gain_code;
 				} else {
 					g_p = gain_pitch;
-					g_c = (F) 0.;
+					g_c = (float) 0.;
 				}
 			} else {
 				g_p = gain_pitch;
@@ -580,7 +578,7 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
      *  For G729b
      *-----------*/
 	if (bfi == 0) {
-		sid_sav = (FLOAT) 0.0;
+		sid_sav = (float) 0.0;
 		for (i = 0; i < L_FRAME; i++) {
 			sid_sav += exc[i] * exc[i];
 		}
@@ -591,7 +589,7 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
      *  For G729E
      *-----------*/
 	energy = ener_dB(synth, L_FRAME);
-	if (energy >= (F) 40.)
+	if (energy >= (float) 40.)
 		tst_bwd_dominant(bwd_dominant, lp_mode);
 
     /*--------------------------------------------------*
@@ -613,15 +611,15 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 	prev_voicing = voicing;
 
 	if (bfi != 0)
-		c_fe = (F) 1.;
+		c_fe = (float) 1.;
 	else {
 		if (lp_mode == 0)
 			c_fe = 0;
 		else {
 			if (*bwd_dominant == 1)
-				c_fe -= (F) 0.1;
+				c_fe -= (float) 0.1;
 			else
-				c_fe -= (F) 0.5;
+				c_fe -= (float) 0.5;
 			if (c_fe < 0)
 				c_fe = 0;
 		}

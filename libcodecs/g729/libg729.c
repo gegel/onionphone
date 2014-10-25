@@ -31,8 +31,6 @@
 #include <stdio.h>
 #include <string.h>
 #include <ophtools.h>
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "dtx.h"
@@ -41,18 +39,18 @@
 extern unsigned _stklen = 48000U;
 #endif
 
-extern FLOAT *new_speech;	/* Pointer to new speech data   */
+extern float *new_speech;	/* Pointer to new speech data   */
 static int g729_prm[PRM_SIZE_E + 1];	/* Analysis parameters.                  */
-static INT16 g729_serial[SERIAL_SIZE_E];	/* Output bitstream buffer */
+static int16_t g729_serial[SERIAL_SIZE_E];	/* Output bitstream buffer */
 static int g729_frame;		/* frame counter for VAD */
 static int g729_dtx_enable;
 static int g729_rate;
 
-static FLOAT synth_buf[L_ANA_BWD];	/* Synthesis */
+static float synth_buf[L_ANA_BWD];	/* Synthesis */
 static int parm[PRM_SIZE_E + 3];	/* Synthesis parameters */
-static FLOAT pst_out[L_FRAME];	/* Postfilter output */
-static FLOAT *synth;
-static FLOAT Az_dec[M_BWDP1 * 2];	/* Decoded Az for post-filter  */
+static float pst_out[L_FRAME];	/* Postfilter output */
+static float *synth;
+static float Az_dec[M_BWDP1 * 2];	/* Decoded Az for post-filter  */
 static int T0_first;		/* Pitch lag in 1st subframe   */
 static int bwd_dominant;
 static int m_pst;
@@ -60,10 +58,10 @@ static int g729_voicing;	/* voicing from previous frame */
 static int Vad;
 static int long_h_st;
 static int sf_voic;		/* voicing for subframe        */
-static FLOAT *ptr_Az;
-static FLOAT ga1_post;
-static FLOAT ga2_post;
-static FLOAT ga_harm;
+static float *ptr_Az;
+static float ga1_post;
+static float ga2_post;
+static float ga_harm;
 
 const unsigned char g729_mo[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 
@@ -86,7 +84,7 @@ void g729ini(int rate, int dtx)
 	//Initialization of decoder
 	g729_voicing = 60;
 	for (i = 0; i < L_ANA_BWD; i++)
-		synth_buf[i] = (F) 0.;
+		synth_buf[i] = (float) 0.;
 	synth = synth_buf + MEM_SYN_BWD;
 	init_decod_ld8c();
 	init_post_filter();
@@ -109,7 +107,7 @@ int g729enc(short *sp16, unsigned char *br)
 	else
 		g729_frame++;
 	for (i = 0; i < L_FRAME; i++)
-		new_speech[i] = (FLOAT) sp16[i];
+		new_speech[i] = (float) sp16[i];
 	pre_process(new_speech, L_FRAME);
 	coder_ld8c(g729_prm, g729_frame, g729_dtx_enable, g729_rate);
 	prm2bits_ld8c(g729_prm, g729_serial);
@@ -160,7 +158,7 @@ void g729dec(unsigned char *br, short *sp16)
 
 	bits2prm_ld8c(&g729_serial[1], parm);
 
-	if ((serial_size == 80)) {
+	if (serial_size == 80) {
 		parm[5] = check_parity_pitch(parm[4], parm[5]);
 	} else if (serial_size == 118) {
 		/* ------------------------------------------------------------------ */
@@ -219,23 +217,23 @@ void g729dec(unsigned char *br, short *sp16)
 		long_h_st = LONG_H_ST_E;
 		/* If backward mode is dominant => progressively reduce postfiltering */
 		if ((parm[2] == 1) && (bwd_dominant == 1)) {
-			ga_harm -= (F) 0.0125;
+			ga_harm -= (float) 0.0125;
 			if (ga_harm < 0)
 				ga_harm = 0;
-			ga1_post -= (F) 0.035;
+			ga1_post -= (float) 0.035;
 			if (ga1_post < 0)
 				ga1_post = 0;
-			ga2_post -= (F) 0.0325;
+			ga2_post -= (float) 0.0325;
 			if (ga2_post < 0)
 				ga2_post = 0;
 		} else {
-			ga_harm += (F) 0.0125;
+			ga_harm += (float) 0.0125;
 			if (ga_harm > GAMMA_HARM_E)
 				ga_harm = GAMMA_HARM_E;
-			ga1_post += (F) 0.035;
+			ga1_post += (float) 0.035;
 			if (ga1_post > GAMMA1_PST_E)
 				ga1_post = GAMMA1_PST_E;
-			ga2_post += (F) 0.0325;
+			ga2_post += (float) 0.0325;
 			if (ga2_post > GAMMA2_PST_E)
 				ga2_post = GAMMA2_PST_E;
 		}

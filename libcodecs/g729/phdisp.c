@@ -11,7 +11,6 @@
 /*
  File : PHDISP.C
  */
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "tabld8cp.h"
@@ -21,17 +20,17 @@
 *-----------------------------------------------------------*/
 
 static int prevDispState = 0;
-static FLOAT gainMem[6] =
-    { (F) 0.0, (F) 0.0, (F) 0.0, (F) 0.0, (F) 0.0, (F) 0.0 };
-static FLOAT prevCbGain = (F) 0.0;
+static float gainMem[6] =
+    { (float) 0.0, (float) 0.0, (float) 0.0, (float) 0.0, (float) 0.0, (float) 0.0 };
+static float prevCbGain = (float) 0.0;
 static int onset = 0;
 
 /*-----------------------------------------------------------*
 * Update_PhDisp- Updates state machine for phase dispersion     *
 * in 6.4 kbps mode, when running in others modes.          *
 *-----------------------------------------------------------*/
-void Update_PhDisp(FLOAT ltpGain,	/* (i)  : pitch gain                  */
-		   FLOAT cbGain	/* (i)  : codebook gain               */
+void Update_PhDisp(float ltpGain,	/* (i)  : pitch gain                  */
+		   float cbGain	/* (i)  : codebook gain               */
     )
 {
 	int i;
@@ -49,15 +48,15 @@ void Update_PhDisp(FLOAT ltpGain,	/* (i)  : pitch gain                  */
 /*-----------------------------------------------------------*
 * PhDisp - phase dispersion  in 6.4 kbps mode               *
 *-----------------------------------------------------------*/
-void PhDisp(FLOAT x[],		/* input : excitation signal                */
-	    FLOAT x_phdisp[],	/* output : excitation signal after phase dispersion */
-	    FLOAT cbGain, FLOAT ltpGainQ, FLOAT inno[]
+void PhDisp(float x[],		/* input : excitation signal                */
+	    float x_phdisp[],	/* output : excitation signal after phase dispersion */
+	    float cbGain, float ltpGainQ, float inno[]
     )
 {
 	int i;
 
-	FLOAT ScaledLtpEx[L_SUBFR];
-	FLOAT inno_sav[L_SUBFR];
+	float ScaledLtpEx[L_SUBFR];
+	float inno_sav[L_SUBFR];
 	int ps_poss[L_SUBFR];
 	int nze, nPulse, i1, i2, ppos;
 	int dispState;
@@ -66,7 +65,7 @@ void PhDisp(FLOAT x[],		/* input : excitation signal                */
 	for (i = 0; i < L_SUBFR; i++) {
 		ScaledLtpEx[i] = x[i] - cbGain * inno[i];
 		inno_sav[i] = inno[i];
-		inno[i] = (F) 0.0;
+		inno[i] = (float) 0.0;
 	}
 
 	nze = 0;
@@ -74,9 +73,9 @@ void PhDisp(FLOAT x[],		/* input : excitation signal                */
 		if (inno_sav[i])
 			ps_poss[nze++] = i;
 	}
-	if (ltpGainQ <= (F) 0.6) {
+	if (ltpGainQ <= (float) 0.6) {
 		dispState = 0;
-	} else if ((ltpGainQ > (F) 0.6) && (ltpGainQ < (F) 0.9)) {
+	} else if ((ltpGainQ > (float) 0.6) && (ltpGainQ < (float) 0.9)) {
 		dispState = 1;
 	} else {
 		dispState = 2;
@@ -87,7 +86,7 @@ void PhDisp(FLOAT x[],		/* input : excitation signal                */
 	}
 	gainMem[0] = ltpGainQ;
 
-	if (cbGain > (F) 2.0 * prevCbGain)
+	if (cbGain > (float) 2.0 * prevCbGain)
 		onset = 2;
 	else {
 		if (onset)
@@ -96,7 +95,7 @@ void PhDisp(FLOAT x[],		/* input : excitation signal                */
 
 	i1 = 0;
 	for (i = 0; i < 6; i++) {
-		if (gainMem[i] < (F) 0.6)
+		if (gainMem[i] < (float) 0.6)
 			i1 += 1;
 	}
 	if (i1 > 2 && !onset)

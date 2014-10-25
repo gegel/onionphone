@@ -17,8 +17,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "vad.h"
 #include "dtx.h"
@@ -26,22 +24,22 @@
 #include "tab_dtx.h"
 
 /* Local function */
-static int quant_Energy(FLOAT ener,	/* (i)  : Energy                 */
-			FLOAT * enerq	/* (o)  : quantized energy in dB */
+static int quant_Energy(float ener,	/* (i)  : Energy                 */
+			float * enerq	/* (o)  : quantized energy in dB */
     );
 
 /*-------------------------------------------------------------------*
 * Function  Qua_Sidgain                                             *
 *           ~~~~~~~~~~~                                             *
 *-------------------------------------------------------------------*/
-void qua_Sidgain(FLOAT * ener,	/* (i)   array of energies                   */
+void qua_Sidgain(float * ener,	/* (i)   array of energies                   */
 		 int nb_ener,	/* (i)   number of energies or               */
-		 FLOAT * enerq,	/* (o)   decoded energies in dB              */
+		 float * enerq,	/* (o)   decoded energies in dB              */
 		 int *idx	/* (o)   SID gain quantization index         */
     )
 {
 	int i;
-	FLOAT avr_ener;
+	float avr_ener;
 
 	if (nb_ener == 0) {
 		/* Quantize energy saved for frame erasure case                */
@@ -55,7 +53,7 @@ void qua_Sidgain(FLOAT * ener,	/* (i)   array of energies                   */
 		 * avr_ener = fact[nb_ener] x SUM(i=0->nb_ener-1) ener[i]
 		 * with fact[nb_ener] =  fact_ener / nb_ener x L_FRAME x nbAcf
 		 */
-		avr_ener = (F) 0.;
+		avr_ener = (float) 0.;
 		for (i = 0; i < nb_ener; i++) {
 			avr_ener += ener[i];
 		}
@@ -68,41 +66,41 @@ void qua_Sidgain(FLOAT * ener,	/* (i)   array of energies                   */
 }
 
 /* Local function */
-static int quant_Energy(FLOAT ener,	/* (i)  : Energy                 */
-			FLOAT * enerq	/* (o)  : quantized energy in dB */
+static int quant_Energy(float ener,	/* (i)  : Energy                 */
+			float * enerq	/* (o)  : quantized energy in dB */
     )
 {
-	FLOAT ener_dB;
+	float ener_dB;
 	int index;
 
 	if (ener <= MIN_ENER) {	/* MIN_ENER <=> -8dB */
-		*enerq = (F) - 12.;
+		*enerq = (float) - 12.;
 		return (0);
 	}
 
-	ener_dB = (F) 10. *(FLOAT) log10(ener);
+	ener_dB = (float) 10. *(float) log10(ener);
 
-	if (ener_dB <= (F) - 8.) {
-		*enerq = (F) - 12.;
+	if (ener_dB <= (float) - 8.) {
+		*enerq = (float) - 12.;
 		return (0);
 	}
 
-	if (ener_dB >= (F) 65.) {
-		*enerq = (F) 66.;
+	if (ener_dB >= (float) 65.) {
+		*enerq = (float) 66.;
 		return (31);
 	}
 
-	if (ener_dB <= (F) 14.) {
-		index = (int)((ener_dB + (F) 10.) * 0.25);
+	if (ener_dB <= (float) 14.) {
+		index = (int)((ener_dB + (float) 10.) * 0.25);
 		if (index < 1)
 			index = 1;
-		*enerq = (F) 4. *(FLOAT) index - (F) 8.;
+		*enerq = (float) 4. *(float) index - (float) 8.;
 		return (index);
 	}
 
-	index = (int)((ener_dB - (F) 3.) * 0.5);
+	index = (int)((ener_dB - (float) 3.) * 0.5);
 	if (index < 6)
 		index = 6;
-	*enerq = (F) 2. *(FLOAT) index + (F) 4.;
+	*enerq = (float) 2. *(float) index + (float) 4.;
 	return (index);
 }

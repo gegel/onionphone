@@ -16,32 +16,31 @@
 /*           Long Term Prediction Routines                                   */
 /*****************************************************************************/
 #include <math.h>
-#include "ophint.h"
 #include "ld8k.h"
 #include "tab_ld8k.h"
 #include "ld8cp.h"
 
 /* prototypes for local functions */
-static void norm_corr(FLOAT exc[], FLOAT xn[], FLOAT h[], int l_subfr,
-		      int t_min, int t_max, FLOAT corr_norm[]);
-static FLOAT interpol_3(FLOAT cor[], int frac);
-static int lag_max(FLOAT signal[], int L_frame, int pit_max,
-		   int pit_min, FLOAT * cor_max);
-static FLOAT inv_sqrt(FLOAT x);
+static void norm_corr(float exc[], float xn[], float h[], int l_subfr,
+		      int t_min, int t_max, float corr_norm[]);
+static float interpol_3(float cor[], int frac);
+static int lag_max(float signal[], int L_frame, int pit_max,
+		   int pit_min, float * cor_max);
+static float inv_sqrt(float x);
 
 /*----------------------------------------------------------------------------
  * pitch_ol -  compute the open loop pitch lag
  *----------------------------------------------------------------------------
  */
 int pitch_ol(			/* output: open-loop pitch lag */
-		    FLOAT signal[],	/* input : signal to compute pitch  */
+		    float signal[],	/* input : signal to compute pitch  */
 		    /*         s[-PIT_MAX : l_frame-1]  */
 		    int pit_min,	/* input : minimum pitch lag                          */
 		    int pit_max,	/* input : maximum pitch lag                          */
 		    int l_frame	/* input : error minimization window */
     )
 {
-	FLOAT max1, max2, max3;
+	float max1, max2, max3;
 	int p_max1, p_max2, p_max3;
 
     /*--------------------------------------------------------------------*
@@ -79,17 +78,17 @@ int pitch_ol(			/* output: open-loop pitch lag */
 *----------------------------------------------------------------------------
 */
 static int lag_max(		/* output: lag found */
-			  FLOAT signal[],	/* input : Signal to compute the open loop pitch
+			  float signal[],	/* input : Signal to compute the open loop pitch
 						   signal[-142:-1] should be known.       */
 			  int l_frame,	/* input : Length of frame to compute pitch       */
 			  int lagmax,	/* input : maximum lag                            */
 			  int lagmin,	/* input : minimum lag                            */
-			  FLOAT * cor_max	/* input : normalized correlation of selected lag */
+			  float * cor_max	/* input : normalized correlation of selected lag */
     )
 {
 	int i, j;
-	FLOAT *p, *p1;
-	FLOAT max, t0;
+	float *p, *p1;
+	float max, t0;
 	int p_max;
 
 	max = FLT_MIN_G729;
@@ -98,7 +97,7 @@ static int lag_max(		/* output: lag found */
 	for (i = lagmax; i >= lagmin; i--) {
 		p = signal;
 		p1 = &signal[-i];
-		t0 = (F) 0.0;
+		t0 = (float) 0.0;
 
 		for (j = 0; j < l_frame; j++) {
 			t0 += *p++ * *p1++;
@@ -112,7 +111,7 @@ static int lag_max(		/* output: lag found */
 
 	/* compute energy */
 
-	t0 = (F) 0.01;		/* to avoid division by zero */
+	t0 = (float) 0.01;		/* to avoid division by zero */
 	p = &signal[-p_max];
 	for (i = 0; i < l_frame; i++, p++) {
 		t0 += *p * *p;
@@ -129,9 +128,9 @@ static int lag_max(		/* output: lag found */
 *----------------------------------------------------------------------------
 */
 int pitch_fr3cp(		/* output: integer part of pitch period        */
-		       FLOAT exc[],	/* input : excitation buffer                   */
-		       FLOAT xn[],	/* input : target vector                       */
-		       FLOAT h[],	/* input : impulse response of filters.        */
+		       float exc[],	/* input : excitation buffer                   */
+		       float xn[],	/* input : target vector                       */
+		       float h[],	/* input : impulse response of filters.        */
 		       int l_subfr,	/* input : Length of frame to compute pitch    */
 		       int t0_min,	/* input : minimum value in the searched range */
 		       int t0_max,	/* input : maximum value in the searched range */
@@ -141,10 +140,10 @@ int pitch_fr3cp(		/* output: integer part of pitch period        */
 {
 	int i, frac;
 	int lag, t_min, t_max;
-	FLOAT max;
-	FLOAT corr_int;
-	FLOAT corr_v[10 + 2 * L_INTER4];	/* size: 2*L_INTER4+t0_max-t0_min+1 */
-	FLOAT *corr;
+	float max;
+	float corr_int;
+	float corr_v[10 + 2 * L_INTER4];	/* size: 2*L_INTER4+t0_max-t0_min+1 */
+	float *corr;
 
 	int midLag;
 
@@ -263,21 +262,21 @@ int pitch_fr3cp(		/* output: integer part of pitch period        */
 *             the filtered past excitation.
 *----------------------------------------------------------------------------
 */
-static void norm_corr(FLOAT exc[],	/* input : excitation buffer */
-		      FLOAT xn[],	/* input : target vector */
-		      FLOAT h[],	/* input : imp response of synth and weighting flt */
+static void norm_corr(float exc[],	/* input : excitation buffer */
+		      float xn[],	/* input : target vector */
+		      float h[],	/* input : imp response of synth and weighting flt */
 		      int l_subfr,	/* input : Length of frame to compute pitch */
 		      int t_min,	/* input : minimum value of searched range */
 		      int t_max,	/* input : maximum value of search range */
-		      FLOAT corr_norm[]	/* output: normalized correlation (correlation 
+		      float corr_norm[]	/* output: normalized correlation (correlation 
 					   between target and filtered excitation 
 					   divided by the square root of energy of 
 					   filtered excitation) */
     )
 {
 	int i, j, k;
-	FLOAT excf[L_SUBFR];	/* filtered past excitation */
-	FLOAT alp, s, norm;
+	float excf[L_SUBFR];	/* filtered past excitation */
+	float alp, s, norm;
 
 	k = -t_min;
 
@@ -287,14 +286,14 @@ static void norm_corr(FLOAT exc[],	/* input : excitation buffer */
 	/* loop for every possible period */
 	for (i = t_min; i <= t_max; i++) {
 		/* Compute 1/sqrt(energie of excf[]) */
-		alp = (F) 0.01;
+		alp = (float) 0.01;
 		for (j = 0; j < l_subfr; j++)
 			alp += excf[j] * excf[j];
 
 		norm = inv_sqrt(alp);
 
 		/* Compute correlation between xn[] and excf[] */
-		s = (F) 0.0;
+		s = (float) 0.0;
 		for (j = 0; j < l_subfr; j++)
 			s += xn[j] * excf[j];
 
@@ -318,32 +317,32 @@ static void norm_corr(FLOAT exc[],	/* input : excitation buffer */
 * g_pitch - compute adaptive codebook gain and compute <y1,y1> , -2<xn,y1>
 *----------------------------------------------------------------------------
 */
-FLOAT g_pitch(			/* output: pitch gain */
-		     FLOAT xn[],	/* input : target vector */
-		     FLOAT y1[],	/* input : filtered adaptive codebook vector */
-		     FLOAT g_coeff[],	/* output: <y1,y1> and -2<xn,y1> */
+float g_pitch(			/* output: pitch gain */
+		     float xn[],	/* input : target vector */
+		     float y1[],	/* input : filtered adaptive codebook vector */
+		     float g_coeff[],	/* output: <y1,y1> and -2<xn,y1> */
 		     int l_subfr	/* input : vector dimension */
     )
 {
-	FLOAT xy, yy, gain;
+	float xy, yy, gain;
 	int i;
 
-	xy = (F) 0.0;
+	xy = (float) 0.0;
 	for (i = 0; i < l_subfr; i++) {
 		xy += xn[i] * y1[i];
 	}
-	yy = (F) 0.01;
+	yy = (float) 0.01;
 	for (i = 0; i < l_subfr; i++) {
 		yy += y1[i] * y1[i];	/* energy of filtered excitation */
 	}
 	g_coeff[0] = yy;
-	g_coeff[1] = (F) - 2.0 * xy + (F) 0.01;
+	g_coeff[1] = (float) - 2.0 * xy + (float) 0.01;
 
 	/* find pitch gain and bound it by [0,1.2] */
 	gain = xy / yy;
 
-	if (gain < (F) 0.0)
-		gain = (F) 0.0;
+	if (gain < (float) 0.0)
+		gain = (float) 0.0;
 	if (gain > GAIN_PIT_MAX)
 		gain = GAIN_PIT_MAX;
 
@@ -428,13 +427,13 @@ int enc_lag3cp(			/* output: Return index of encoding */
 * interpol_3 - For interpolating the normalized correlation
 *----------------------------------------------------------------------------
 */
-static FLOAT interpol_3(	/* output: interpolated value */
-			       FLOAT * x,	/* input : function to be interpolated */
+static float interpol_3(	/* output: interpolated value */
+			       float * x,	/* input : function to be interpolated */
 			       int frac	/* input : fraction value to evaluate */
     )
 {
 	int i;
-	FLOAT s, *x1, *x2, *c1, *c2;
+	float s, *x1, *x2, *c1, *c2;
 
 	if (frac < 0) {
 		frac += UP_SAMP;
@@ -445,7 +444,7 @@ static FLOAT interpol_3(	/* output: interpolated value */
 	c1 = &inter_3[frac];
 	c2 = &inter_3[UP_SAMP - frac];
 
-	s = (F) 0.0;
+	s = (float) 0.0;
 	for (i = 0; i < L_INTER4; i++, c1 += UP_SAMP, c2 += UP_SAMP)
 		s += (*x1--) * (*c1) + (*x2++) * (*c2);
 
@@ -456,9 +455,9 @@ static FLOAT interpol_3(	/* output: interpolated value */
 * inv_sqrt - compute y = 1 / sqrt(x)
 *----------------------------------------------------------------------------
 */
-static FLOAT inv_sqrt(		/* output: 1/sqrt(x) */
-			     FLOAT x	/* input : value of x */
+static float inv_sqrt(		/* output: 1/sqrt(x) */
+			     float x	/* input : value of x */
     )
 {
-	return ((F) 1.0 / (FLOAT) sqrt((double)x));
+	return ((float) 1.0 / (float) sqrt((double)x));
 }

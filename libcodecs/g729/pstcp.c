@@ -20,7 +20,6 @@
 #include <math.h>
 
 /**** Prototypes                                                        */
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "tab_ld8k.h"
@@ -28,34 +27,34 @@
 /* Prototypes for local functions */
 /**********************************/
 
-static void pst_ltpe(int t0, FLOAT * ptr_sig_in,
-		     FLOAT * ptr_sig_pst0, int *vo, FLOAT gamma_harm);
-static void search_del(int t0, FLOAT * ptr_sig_in, int *ltpdel, int *phase,
-		       FLOAT * num_gltp, FLOAT * den_gltp, FLOAT * y_up,
+static void pst_ltpe(int t0, float * ptr_sig_in,
+		     float * ptr_sig_pst0, int *vo, float gamma_harm);
+static void search_del(int t0, float * ptr_sig_in, int *ltpdel, int *phase,
+		       float * num_gltp, float * den_gltp, float * y_up,
 		       int *off_yup);
-static void filt_plt(FLOAT * s_in, FLOAT * s_ltp, FLOAT * s_out,
-		     FLOAT gain_plt);
-static void compute_ltp_l(FLOAT * s_in, int ltpdel, int phase, FLOAT * y_up,
-			  FLOAT * num, FLOAT * den);
-static int select_ltp(FLOAT num1, FLOAT den1, FLOAT num2, FLOAT den2);
-static void calc_st_filte(FLOAT * apond2, FLOAT * apond1, FLOAT * parcor0,
-			  FLOAT * signal_ltp0_ptr, int long_h_st, int m_pst);
-static void filt_mu(FLOAT * sig_in, FLOAT * sig_out, FLOAT parcor0);
-static void calc_rc0_he(FLOAT * h, FLOAT * rc0, int long_h_st);
-static void scale_st(FLOAT * sig_in, FLOAT * sig_out, FLOAT * gain_prec);
+static void filt_plt(float * s_in, float * s_ltp, float * s_out,
+		     float gain_plt);
+static void compute_ltp_l(float * s_in, int ltpdel, int phase, float * y_up,
+			  float * num, float * den);
+static int select_ltp(float num1, float den1, float num2, float den2);
+static void calc_st_filte(float * apond2, float * apond1, float * parcor0,
+			  float * signal_ltp0_ptr, int long_h_st, int m_pst);
+static void filt_mu(float * sig_in, float * sig_out, float parcor0);
+static void calc_rc0_he(float * h, float * rc0, int long_h_st);
+static void scale_st(float * sig_in, float * sig_out, float * gain_prec);
 
 /* Arrays */
-static FLOAT apond2[LONG_H_ST_E];	/* s.t. numerator coeff.        */
-static FLOAT mem_stp[M_BWD];	/* s.t. postfilter memory       */
-static FLOAT mem_zero[M_BWD];	/* null memory to compute h_st  */
-static FLOAT res2[SIZ_RES2];	/* A(gamma2) residual           */
+static float apond2[LONG_H_ST_E];	/* s.t. numerator coeff.        */
+static float mem_stp[M_BWD];	/* s.t. postfilter memory       */
+static float mem_zero[M_BWD];	/* null memory to compute h_st  */
+static float res2[SIZ_RES2];	/* A(gamma2) residual           */
 
 /* pointers */
-FLOAT *res2_ptr;
-FLOAT *ptr_mem_stp;
+float *res2_ptr;
+float *ptr_mem_stp;
 
 /* Variables */
-FLOAT gain_prec;
+float gain_prec;
 
 /************************************************************************/
 /****   Short term postfilter :                                     *****/
@@ -89,24 +88,24 @@ void init_post_filter(void)
 
 	/* res2 =  A(gamma2) residual */
 	for (i = 0; i < MEM_RES2; i++)
-		res2[i] = (F) 0.;
+		res2[i] = (float) 0.;
 	res2_ptr = res2 + MEM_RES2;
 
 	/* 1/A(gamma1) memory */
 	for (i = 0; i < M_BWD; i++)
-		mem_stp[i] = (F) 0.;
+		mem_stp[i] = (float) 0.;
 	ptr_mem_stp = mem_stp + M_BWD - 1;
 
 	/* fill apond2[M+1->long_h_st-1] with zeroes */
 	for (i = M_BWDP1; i < LONG_H_ST_E; i++)
-		apond2[i] = (F) 0.;
+		apond2[i] = (float) 0.;
 
 	/* null memory to compute i.r. of A(gamma2)/A(gamma1) */
 	for (i = 0; i < M_BWD; i++)
-		mem_zero[i] = (F) 0.;
+		mem_zero[i] = (float) 0.;
 
 	/* for gain adjustment */
-	gain_prec = (F) 1.;
+	gain_prec = (float) 1.;
 
 	return;
 }
@@ -116,23 +115,23 @@ void init_post_filter(void)
  *----------------------------------------------------------------------------
  */
 void poste(int t0,		/* input : pitch delay given by coder */
-	   FLOAT * signal_ptr,	/* input : input signal (pointer to current subframe */
-	   FLOAT * coeff,	/* input : LPC coefficients for current subframe */
-	   FLOAT * sig_out,	/* output: postfiltered output */
+	   float * signal_ptr,	/* input : input signal (pointer to current subframe */
+	   float * coeff,	/* input : LPC coefficients for current subframe */
+	   float * sig_out,	/* output: postfiltered output */
 	   int *vo,		/* output: voicing decision 0 = uv,  > 0 delay */
-	   FLOAT gamma1,	/* input: short term postfilt. den. weighting factor */
-	   FLOAT gamma2,	/* input: short term postfilt. num. weighting factor */
-	   FLOAT gamma_harm,	/* input: long term postfilter weighting factor */
+	   float gamma1,	/* input: short term postfilt. den. weighting factor */
+	   float gamma2,	/* input: short term postfilt. num. weighting factor */
+	   float gamma_harm,	/* input: long term postfilter weighting factor */
 	   int long_h_st,	/* input: impulse response length */
 	   int m_pst,		/* input:  LPC order */
 	   int Vad		/* input : VAD information (frame type)  */
     ) {
 
 	/* Local variables and arrays */
-	FLOAT apond1[M_BWDP1];	/* s.t. denominator coeff.      */
-	FLOAT sig_ltp[L_SUBFRP1];	/* H0 output signal             */
-	FLOAT *sig_ltp_ptr;
-	FLOAT parcor0;
+	float apond1[M_BWDP1];	/* s.t. denominator coeff.      */
+	float sig_ltp[L_SUBFRP1];	/* H0 output signal             */
+	float *sig_ltp_ptr;
+	float parcor0;
 
 	/* Compute weighted LPC coefficients */
 	weight_az(coeff, gamma1, m_pst, apond1);
@@ -181,20 +180,20 @@ void poste(int t0,		/* input : pitch delay given by coder */
  *----------------------------------------------------------------------------
  */
 static void pst_ltpe(int t0,	/* input : pitch delay given by coder */
-		     FLOAT * ptr_sig_in,	/* input : postfilter input filter (residu2) */
-		     FLOAT * ptr_sig_pst0,	/* output: harmonic postfilter output */
+		     float * ptr_sig_in,	/* input : postfilter input filter (residu2) */
+		     float * ptr_sig_pst0,	/* output: harmonic postfilter output */
 		     int *vo,	/* output: voicing decision 0 = uv,  > 0 delay */
-		     FLOAT gamma_harm	/* input: harmonic postfilter coefficient */
+		     float gamma_harm	/* input: harmonic postfilter coefficient */
     )
 {
 
 /**** Declare variables                                 */
 	int ltpdel, phase;
-	FLOAT num_gltp, den_gltp;
-	FLOAT num2_gltp, den2_gltp;
-	FLOAT gain_plt;
-	FLOAT y_up[SIZ_Y_UP];
-	FLOAT *ptr_y_up;
+	float num_gltp, den_gltp;
+	float num2_gltp, den2_gltp;
+	float gain_plt;
+	float y_up[SIZ_Y_UP];
+	float *ptr_y_up;
 	int off_yup;
 
 	/* Sub optimal delay search */
@@ -202,7 +201,7 @@ static void pst_ltpe(int t0,	/* input : pitch delay given by coder */
 		   y_up, &off_yup);
 	*vo = ltpdel;
 
-	if (num_gltp == (F) 0.) {
+	if (num_gltp == (float) 0.) {
 		copy(ptr_sig_in, ptr_sig_pst0, L_SUBFR);
 	}
 
@@ -236,7 +235,7 @@ static void pst_ltpe(int t0,	/* input : pitch delay given by coder */
 			if (gamma_harm == GAMMA_HARM)
 				gain_plt = MIN_GPLT;
 			else
-				gain_plt = (F) 1. / ((F) 1. + gamma_harm);
+				gain_plt = (float) 1. / ((float) 1. + gamma_harm);
 		} else {
 			gain_plt =
 			    den_gltp / (den_gltp + gamma_harm * num_gltp);
@@ -255,44 +254,44 @@ static void pst_ltpe(int t0,	/* input : pitch delay given by coder */
  *----------------------------------------------------------------------------
  */
 static void search_del(int t0,	/* input : pitch delay given by coder */
-		       FLOAT * ptr_sig_in,	/* input : input signal (with delay line) */
+		       float * ptr_sig_in,	/* input : input signal (with delay line) */
 		       int *ltpdel,	/* output: delay = *ltpdel - *phase / f_up */
 		       int *phase,	/* output: phase */
-		       FLOAT * num_gltp,	/* output: numerator of LTP gain */
-		       FLOAT * den_gltp,	/* output: denominator of LTP gain */
-		       FLOAT * y_up,	/*       : */
+		       float * num_gltp,	/* output: numerator of LTP gain */
+		       float * den_gltp,	/* output: denominator of LTP gain */
+		       float * y_up,	/*       : */
 		       int *off_yup	/*       : */
     )
 {
 	/* pointers on tables of constants */
-	FLOAT *ptr_h;
+	float *ptr_h;
 
 	/* Variables and local arrays */
-	FLOAT tab_den0[F_UP_PST - 1], tab_den1[F_UP_PST - 1];
-	FLOAT *ptr_den0, *ptr_den1;
-	FLOAT *ptr_sig_past, *ptr_sig_past0;
-	FLOAT *ptr1;
+	float tab_den0[F_UP_PST - 1], tab_den1[F_UP_PST - 1];
+	float *ptr_den0, *ptr_den1;
+	float *ptr_sig_past, *ptr_sig_past0;
+	float *ptr1;
 
 	int i, n, ioff, i_max;
-	FLOAT ener, num, numsq, den0, den1;
-	FLOAT den_int, num_int;
-	FLOAT den_max, num_max, numsq_max;
+	float ener, num, numsq, den0, den1;
+	float den_int, num_int;
+	float den_max, num_max, numsq_max;
 	int phi_max;
 	int lambda, phi;
-	FLOAT temp0, temp1;
-	FLOAT *ptr_y_up;
+	float temp0, temp1;
+	float *ptr_y_up;
 
     /*****************************************/
 	/* Compute current signal energy         */
     /*****************************************/
 
-	ener = (F) 0.;
+	ener = (float) 0.;
 	for (i = 0; i < L_SUBFR; i++) {
 		ener += ptr_sig_in[i] * ptr_sig_in[i];
 	}
-	if (ener < (F) 0.1) {
-		*num_gltp = (F) 0.;
-		*den_gltp = (F) 1.;
+	if (ener < (float) 0.1) {
+		*num_gltp = (float) 0.;
+		*den_gltp = (float) 1.;
 		*ltpdel = 0;
 		*phase = 0;
 		return;
@@ -307,12 +306,12 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
 
 	ptr_sig_past = ptr_sig_in - lambda;
 
-	num_int = (F) - 1.0e30;
+	num_int = (float) - 1.0e30;
 
 	/* initialization used only to suppress Microsoft Visual C++ warnings */
 	i_max = 0;
 	for (i = 0; i < 3; i++) {
-		num = (F) 0.;
+		num = (float) 0.;
 		for (n = 0; n < L_SUBFR; n++) {
 			num += ptr_sig_in[n] * ptr_sig_past[n];
 		}
@@ -322,9 +321,9 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
 		}
 		ptr_sig_past--;
 	}
-	if (num_int <= (F) 0.) {
-		*num_gltp = (F) 0.;
-		*den_gltp = (F) 1.;
+	if (num_int <= (float) 0.) {
+		*num_gltp = (float) 0.;
+		*den_gltp = (float) 1.;
 		*ltpdel = 0;
 		*phase = 0;
 		return;
@@ -333,13 +332,13 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
 	/* Calculates denominator for lambda_max */
 	lambda += i_max;
 	ptr_sig_past = ptr_sig_in - lambda;
-	den_int = (F) 0.;
+	den_int = (float) 0.;
 	for (n = 0; n < L_SUBFR; n++) {
 		den_int += ptr_sig_past[n] * ptr_sig_past[n];
 	}
-	if (den_int < (F) 0.1) {
-		*num_gltp = (F) 0.;
-		*den_gltp = (F) 1.;
+	if (den_int < (float) 0.1) {
+		*num_gltp = (float) 0.;
+		*den_gltp = (float) 1.;
 		*ltpdel = 0;
 		*phase = 0;
 		return;
@@ -366,7 +365,7 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
 		/* computes y_up[n] */
 		for (n = 0; n <= L_SUBFR; n++) {
 			ptr1 = ptr_sig_past++;
-			temp0 = (F) 0.;
+			temp0 = (float) 0.;
 			for (i = 0; i < LH2_S; i++) {
 				temp0 += ptr_h[i] * ptr1[-i];
 			}
@@ -376,7 +375,7 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
 		/* recursive computation of den0 (lambda_max+1) and den1 (lambda_max) */
 
 		/* common part to den0 and den1 */
-		temp0 = (F) 0.;
+		temp0 = (float) 0.;
 		for (n = 1; n < L_SUBFR; n++) {
 			temp0 += ptr_y_up[n] * ptr_y_up[n];
 		}
@@ -401,9 +400,9 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
 		ptr_y_up += L_SUBFRP1;
 		ptr_h += LH2_S;
 	}
-	if (den_max < (F) 0.1) {
-		*num_gltp = (F) 0.;
-		*den_gltp = (F) 1.;
+	if (den_max < (float) 0.1) {
+		*num_gltp = (float) 0.;
+		*den_gltp = (float) 1.;
 		*ltpdel = 0;
 		*phase = 0;
 		return;
@@ -431,12 +430,12 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
 	for (phi = 1; phi < F_UP_PST; phi++) {
 
 		/* computes num for lambda_max+1 - phi/F_UP_PST */
-		num = (F) 0.;
+		num = (float) 0.;
 		for (n = 0; n < L_SUBFR; n++) {
 			num += ptr_sig_in[n] * ptr_y_up[n];
 		}
-		if (num < (F) 0.)
-			num = (F) 0.;
+		if (num < (float) 0.)
+			num = (float) 0.;
 		numsq = num * num;
 
 		/* selection if num/sqrt(den0) max */
@@ -453,12 +452,12 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
 
 		/* computes num for lambda_max - phi/F_UP_PST */
 		ptr_y_up++;
-		num = (F) 0.;
+		num = (float) 0.;
 		for (n = 0; n < L_SUBFR; n++) {
 			num += ptr_sig_in[n] * ptr_y_up[n];
 		}
-		if (num < (F) 0.)
-			num = (F) 0.;
+		if (num < (float) 0.)
+			num = (float) 0.;
 		numsq = num * num;
 
 		/* selection if num/sqrt(den1) max */
@@ -479,9 +478,9 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
     /*** test if normalised crit0[iopt] > THRESCRIT  ***/
     /***************************************************/
 
-	if ((num_max == (F) 0.) || (den_max <= (F) 0.1)) {
-		*num_gltp = (F) 0.;
-		*den_gltp = (F) 1.;
+	if ((num_max == (float) 0.) || (den_max <= (float) 0.1)) {
+		*num_gltp = (float) 0.;
+		*den_gltp = (float) 1.;
 		*ltpdel = 0;
 		*phase = 0;
 		return;
@@ -497,8 +496,8 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
 		*num_gltp = num_max;
 		*den_gltp = den_max;
 	} else {
-		*num_gltp = (F) 0.;
-		*den_gltp = (F) 1.;
+		*num_gltp = (float) 0.;
+		*den_gltp = (float) 1.;
 		*ltpdel = 0;
 		*phase = 0;
 	}
@@ -509,17 +508,17 @@ static void search_del(int t0,	/* input : pitch delay given by coder */
  *  filt_plt -  ltp  postfilter
  *----------------------------------------------------------------------------
  */
-static void filt_plt(FLOAT * s_in,	/* input : input signal with past */
-		     FLOAT * s_ltp,	/* input : filtered signal with gain 1 */
-		     FLOAT * s_out,	/* output: output signal */
-		     FLOAT gain_plt	/* input : filter gain  */
+static void filt_plt(float * s_in,	/* input : input signal with past */
+		     float * s_ltp,	/* input : filtered signal with gain 1 */
+		     float * s_out,	/* output: output signal */
+		     float gain_plt	/* input : filter gain  */
     )
 {
 	/* Local variables */
 	int n;
-	FLOAT gain_plt_1;
+	float gain_plt_1;
 
-	gain_plt_1 = (F) 1. - gain_plt;
+	gain_plt_1 = (float) 1. - gain_plt;
 
 	for (n = 0; n < L_SUBFR; n++) {
 		s_out[n] = gain_plt * s_in[n] + gain_plt_1 * s_ltp[n];
@@ -534,20 +533,20 @@ static void filt_plt(FLOAT * s_in,	/* input : input signal with past */
  *                  with long interpolation filter
  *----------------------------------------------------------------------------
  */
-static void compute_ltp_l(FLOAT * s_in,	/* input signal with past */
+static void compute_ltp_l(float * s_in,	/* input signal with past */
 			  int ltpdel,	/* delay factor */
 			  int phase,	/* phase factor */
-			  FLOAT * y_up,	/* delayed signal */
-			  FLOAT * num,	/* numerator of LTP gain */
-			  FLOAT * den	/* denominator of LTP gain */
+			  float * y_up,	/* delayed signal */
+			  float * num,	/* numerator of LTP gain */
+			  float * den	/* denominator of LTP gain */
     )
 {
 	/* Pointer on table of constants */
-	FLOAT *ptr_h;
+	float *ptr_h;
 
 	/* Local variables */
 	int n, i;
-	FLOAT *ptr2, temp;
+	float *ptr2, temp;
 
 	/* Filtering with long filter */
 	ptr_h = tab_hup_l + (phase - 1) * LH2_L;
@@ -555,7 +554,7 @@ static void compute_ltp_l(FLOAT * s_in,	/* input signal with past */
 
 	/* Compute y_up */
 	for (n = 0; n < L_SUBFR; n++) {
-		temp = (F) 0.;
+		temp = (float) 0.;
 		for (i = 0; i < LH2_L; i++) {
 			temp += ptr_h[i] * *ptr2--;
 		}
@@ -564,14 +563,14 @@ static void compute_ltp_l(FLOAT * s_in,	/* input signal with past */
 	}
 
 	/* Compute num */
-	*num = (F) 0.;
+	*num = (float) 0.;
 	for (n = 0; n < L_SUBFR; n++) {
 		*num += y_up[n] * s_in[n];
 	}
-	if (*num < (F) 0.0)
-		*num = (F) 0.0;
+	if (*num < (float) 0.0)
+		*num = (float) 0.0;
 
-	*den = (F) 0.;
+	*den = (float) 0.;
 	/* Compute den */
 	for (n = 0; n < L_SUBFR; n++) {
 		*den += y_up[n] * y_up[n];
@@ -587,13 +586,13 @@ static void compute_ltp_l(FLOAT * s_in,	/* input signal with past */
  *----------------------------------------------------------------------------
  */
 static int select_ltp(		/* output : 1 = 1st gain, 2 = 2nd gain */
-			     FLOAT num1,	/* input : numerator of gain1 */
-			     FLOAT den1,	/* input : denominator of gain1 */
-			     FLOAT num2,	/* input : numerator of gain2 */
-			     FLOAT den2	/* input : denominator of gain2 */
+			     float num1,	/* input : numerator of gain1 */
+			     float den1,	/* input : denominator of gain1 */
+			     float num2,	/* input : numerator of gain2 */
+			     float den2	/* input : denominator of gain2 */
     )
 {
-	if (den2 == (F) 0.) {
+	if (den2 == (float) 0.) {
 		return (1);
 	}
 	if (num2 * num2 * den1 > num1 * num1 * den2) {
@@ -609,16 +608,16 @@ static int select_ltp(		/* output : 1 = 1st gain, 2 = 2nd gain */
  *                    SUMn  (abs (h[n])) and computes parcor0
  *----------------------------------------------------------------------------
  */
-static void calc_st_filte(FLOAT * apond2,	/* input : coefficients of numerator */
-			  FLOAT * apond1,	/* input : coefficients of denominator */
-			  FLOAT * parcor0,	/* output: 1st parcor calcul. on composed filter */
-			  FLOAT * sig_ltp_ptr,	/* in/out: input of 1/A(gamma1) : scaled by 1/g0 */
+static void calc_st_filte(float * apond2,	/* input : coefficients of numerator */
+			  float * apond1,	/* input : coefficients of denominator */
+			  float * parcor0,	/* output: 1st parcor calcul. on composed filter */
+			  float * sig_ltp_ptr,	/* in/out: input of 1/A(gamma1) : scaled by 1/g0 */
 			  int long_h_st,	/* input : impulse response length                   */
 			  int m_pst	/* input : LPC order    */
     )
 {
-	FLOAT h[LONG_H_ST_E];
-	FLOAT g0, temp;
+	float h[LONG_H_ST_E];
+	float g0, temp;
 	int i;
 
 	/* compute i.r. of composed filter apond2 / apond1 */
@@ -628,14 +627,14 @@ static void calc_st_filte(FLOAT * apond2,	/* input : coefficients of numerator *
 	calc_rc0_he(h, parcor0, long_h_st);
 
 	/* compute g0 */
-	g0 = (F) 0.;
+	g0 = (float) 0.;
 	for (i = 0; i < long_h_st; i++) {
-		g0 += (FLOAT) fabs(h[i]);
+		g0 += (float) fabs(h[i]);
 	}
 
 	/* Scale signal input of 1/A(gamma1) */
-	if (g0 > (F) 1.) {
-		temp = (F) 1. / g0;
+	if (g0 > (float) 1.) {
+		temp = (float) 1. / g0;
 		for (i = 0; i < L_SUBFR; i++) {
 			sig_ltp_ptr[i] = sig_ltp_ptr[i] * temp;
 		}
@@ -647,24 +646,24 @@ static void calc_st_filte(FLOAT * apond2,	/* input : coefficients of numerator *
  * calc_rc0_h - computes 1st parcor from composed filter impulse response
  *----------------------------------------------------------------------------
  */
-static void calc_rc0_he(FLOAT * h,	/* input : impulse response of composed filter */
-			FLOAT * rc0,	/* output: 1st parcor */
+static void calc_rc0_he(float * h,	/* input : impulse response of composed filter */
+			float * rc0,	/* output: 1st parcor */
 			int long_h_st	/*input : impulse response length */
     )
 {
-	FLOAT acf0, acf1;
-	FLOAT temp, temp2;
-	FLOAT *ptrs;
+	float acf0, acf1;
+	float temp, temp2;
+	float *ptrs;
 	int i;
 
 	/* computation of the autocorrelation function acf */
-	temp = (F) 0.;
+	temp = (float) 0.;
 	for (i = 0; i < long_h_st; i++) {
 		temp += h[i] * h[i];
 	}
 	acf0 = temp;
 
-	temp = (F) 0.;
+	temp = (float) 0.;
 	ptrs = h;
 	for (i = 0; i < long_h_st - 1; i++) {
 		temp2 = *ptrs++;
@@ -673,15 +672,15 @@ static void calc_rc0_he(FLOAT * h,	/* input : impulse response of composed filte
 	acf1 = temp;
 
 	/* Initialisation of the calculation */
-	if (acf0 == (F) 0.) {
-		*rc0 = (F) 0.;
+	if (acf0 == (float) 0.) {
+		*rc0 = (float) 0.;
 		return;
 	}
 
 	/* Compute 1st parcor */
     /**********************/
-	if (acf0 < (FLOAT) fabs(acf1)) {
-		*rc0 = (F) 0.0;
+	if (acf0 < (float) fabs(acf1)) {
+		*rc0 = (float) 0.0;
 		return;
 	}
 	*rc0 = -acf1 / acf0;
@@ -694,21 +693,21 @@ static void calc_rc0_he(FLOAT * h,	/* input : impulse response of composed filte
  *   computes y[n] = (1/1-|mu|) (x[n]+mu*x[n-1])
  *----------------------------------------------------------------------------
  */
-static void filt_mu(FLOAT * sig_in,	/* input : input signal (beginning at sample -1) */
-		    FLOAT * sig_out,	/* output: output signal */
-		    FLOAT parcor0	/* input : parcor0 (mu = parcor0 * gamma3) */
+static void filt_mu(float * sig_in,	/* input : input signal (beginning at sample -1) */
+		    float * sig_out,	/* output: output signal */
+		    float parcor0	/* input : parcor0 (mu = parcor0 * gamma3) */
     )
 {
 	int n;
-	FLOAT mu, ga, temp;
-	FLOAT *ptrs;
+	float mu, ga, temp;
+	float *ptrs;
 
-	if (parcor0 > (F) 0.) {
+	if (parcor0 > (float) 0.) {
 		mu = parcor0 * GAMMA3_PLUS;
 	} else {
 		mu = parcor0 * GAMMA3_MINUS;
 	}
-	ga = (F) 1. / ((F) 1. - (FLOAT) fabs(mu));
+	ga = (float) 1. / ((float) 1. - (float) fabs(mu));
 
 	ptrs = sig_in;		/* points on sig_in(-1) */
 	for (n = 0; n < L_SUBFR; n++) {
@@ -724,30 +723,30 @@ static void filt_mu(FLOAT * sig_in,	/* input : input signal (beginning at sample
  *   gain[n] = AGC_FAC * gain[n-1] + (1 - AGC_FAC) g_in/g_out
  *----------------------------------------------------------------------------
  */
-void scale_st(FLOAT * sig_in,	/* input : postfilter input signal */
-	      FLOAT * sig_out,	/* in/out: postfilter output signal */
-	      FLOAT * gain_prec	/* in/out: last value of gain for subframe */
+void scale_st(float * sig_in,	/* input : postfilter input signal */
+	      float * sig_out,	/* in/out: postfilter output signal */
+	      float * gain_prec	/* in/out: last value of gain for subframe */
     )
 {
 	int i;
-	FLOAT gain_in, gain_out;
-	FLOAT g0, gain;
+	float gain_in, gain_out;
+	float g0, gain;
 
 	/* compute input gain */
-	gain_in = (F) 0.;
+	gain_in = (float) 0.;
 	for (i = 0; i < L_SUBFR; i++) {
-		gain_in += (FLOAT) fabs(sig_in[i]);
+		gain_in += (float) fabs(sig_in[i]);
 	}
-	if (gain_in == (F) 0.) {
-		g0 = (F) 0.;
+	if (gain_in == (float) 0.) {
+		g0 = (float) 0.;
 	} else {
 		/* Compute output gain */
-		gain_out = (F) 0.;
+		gain_out = (float) 0.;
 		for (i = 0; i < L_SUBFR; i++) {
-			gain_out += (FLOAT) fabs(sig_out[i]);
+			gain_out += (float) fabs(sig_out[i]);
 		}
-		if (gain_out == (F) 0.) {
-			*gain_prec = (F) 0.;
+		if (gain_out == (float) 0.) {
+			*gain_prec = (float) 0.;
 			return;
 		}
 

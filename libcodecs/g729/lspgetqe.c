@@ -11,8 +11,6 @@
 /*
  File : LSPGETQE.C
 */
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 
@@ -20,20 +18,20 @@
  * lsp_get_quant - reconstruct quantized LSP parameter and check the stabilty
  *----------------------------------------------------------------------------
  */
-void lsp_get_quante(FLOAT lspcb1[][M],	/*input : first stage LSP codebook     */
-		    FLOAT lspcb2[][M],	/*input : Second stage LSP codebook    */
+void lsp_get_quante(float lspcb1[][M],	/*input : first stage LSP codebook     */
+		    float lspcb2[][M],	/*input : Second stage LSP codebook    */
 		    int code0,	/*input : selected code of first stage */
 		    int code1,	/*input : selected code of second stage */
 		    int code2,	/*input : selected code of second stage */
-		    FLOAT fg[][M],	/*input : MA prediction coef.          */
-		    FLOAT freq_prev[][M],	/*input : previous LSP vector          */
-		    FLOAT lspq[],	/*output: quantized LSP parameters     */
-		    FLOAT fg_sum[],	/*input : present MA prediction coef.  */
-		    FLOAT freq_cur[]	/* (o)  : current LSP MA vector        */
+		    float fg[][M],	/*input : MA prediction coef.          */
+		    float freq_prev[][M],	/*input : previous LSP vector          */
+		    float lspq[],	/*output: quantized LSP parameters     */
+		    float fg_sum[],	/*input : present MA prediction coef.  */
+		    float freq_cur[]	/* (o)  : current LSP MA vector        */
     )
 {
 	int j;
-	FLOAT buf[M];
+	float buf[M];
 
 	for (j = 0; j < NC; j++)
 		buf[j] = lspcb1[code0][j] + lspcb2[code1][j];
@@ -59,15 +57,15 @@ void lsp_get_quante(FLOAT lspcb1[][M],	/*input : first stage LSP codebook     */
 * lsp_expand_1  - check for lower (0-4)
 *----------------------------------------------------------------------------
 */
-void lsp_expand_1(FLOAT buf[],	/* in/out: lsp vectors  */
-		  FLOAT gap)
+void lsp_expand_1(float buf[],	/* in/out: lsp vectors  */
+		  float gap)
 {
 	int j;
-	FLOAT diff, tmp;
+	float diff, tmp;
 
 	for (j = 1; j < NC; j++) {
 		diff = buf[j - 1] - buf[j];
-		tmp = (diff + gap) * (F) 0.5;
+		tmp = (diff + gap) * (float) 0.5;
 		if (tmp > 0) {
 			buf[j - 1] -= tmp;
 			buf[j] += tmp;
@@ -80,15 +78,15 @@ void lsp_expand_1(FLOAT buf[],	/* in/out: lsp vectors  */
 * lsp_expand_2 - check for higher (5-9)
 *----------------------------------------------------------------------------
 */
-void lsp_expand_2(FLOAT buf[],	/*in/out: lsp vectors  */
-		  FLOAT gap)
+void lsp_expand_2(float buf[],	/*in/out: lsp vectors  */
+		  float gap)
 {
 	int j;
-	FLOAT diff, tmp;
+	float diff, tmp;
 
 	for (j = NC; j < M; j++) {
 		diff = buf[j - 1] - buf[j];
-		tmp = (diff + gap) * (F) 0.5;
+		tmp = (diff + gap) * (float) 0.5;
 		if (tmp > 0) {
 			buf[j - 1] -= tmp;
 			buf[j] += tmp;
@@ -101,16 +99,16 @@ void lsp_expand_2(FLOAT buf[],	/*in/out: lsp vectors  */
 * lsp_expand_1_2 - ..
 *----------------------------------------------------------------------------
 */
-void lsp_expand_1_2(FLOAT buf[],	/*in/out: LSP parameters  */
-		    FLOAT gap	/*input      */
+void lsp_expand_1_2(float buf[],	/*in/out: LSP parameters  */
+		    float gap	/*input      */
     )
 {
 	int j;
-	FLOAT diff, tmp;
+	float diff, tmp;
 
 	for (j = 1; j < M; j++) {
 		diff = buf[j - 1] - buf[j];
-		tmp = (diff + gap) * (F) 0.5;
+		tmp = (diff + gap) * (float) 0.5;
 		if (tmp > 0) {
 			buf[j - 1] -= tmp;
 			buf[j] += tmp;
@@ -126,11 +124,11 @@ Functions which use previous LSP parameter (freq_prev).
 /*
 compose LSP parameter from elementary LSP with previous LSP.
 */
-void lsp_prev_compose(FLOAT lsp_ele[],	/* (i)  : LSP vectors                 */
-		      FLOAT lsp[],	/* (o)  : quantized LSP parameters    */
-		      FLOAT fg[][M],	/* (i)  : MA prediction coef.         */
-		      FLOAT freq_prev[][M],	/* (i)  : previous LSP vector         */
-		      FLOAT fg_sum[]	/* (i)  : present MA prediction coef. */
+void lsp_prev_compose(float lsp_ele[],	/* (i)  : LSP vectors                 */
+		      float lsp[],	/* (o)  : quantized LSP parameters    */
+		      float fg[][M],	/* (i)  : MA prediction coef.         */
+		      float freq_prev[][M],	/* (i)  : previous LSP vector         */
+		      float fg_sum[]	/* (i)  : present MA prediction coef. */
     )
 {
 	int j, k;
@@ -146,11 +144,11 @@ void lsp_prev_compose(FLOAT lsp_ele[],	/* (i)  : LSP vectors                 */
 /*
 extract elementary LSP from composed LSP with previous LSP
 */
-void lsp_prev_extract(FLOAT lsp[M],	/* (i)  : unquantized LSP parameters  */
-		      FLOAT lsp_ele[M],	/* (o)  : target vector               */
-		      FLOAT fg[MA_NP][M],	/* (i)  : MA prediction coef.         */
-		      FLOAT freq_prev[MA_NP][M],	/* (i)  : previous LSP vector         */
-		      FLOAT fg_sum_inv[M]	/* (i)  : inverse previous LSP vector */
+void lsp_prev_extract(float lsp[M],	/* (i)  : unquantized LSP parameters  */
+		      float lsp_ele[M],	/* (o)  : target vector               */
+		      float fg[MA_NP][M],	/* (i)  : MA prediction coef.         */
+		      float freq_prev[MA_NP][M],	/* (i)  : previous LSP vector         */
+		      float fg_sum_inv[M]	/* (i)  : inverse previous LSP vector */
     )
 {
 	int j, k;
@@ -169,8 +167,8 @@ void lsp_prev_extract(FLOAT lsp[M],	/* (i)  : unquantized LSP parameters  */
 /*
 update previous LSP parameter
 */
-void lsp_prev_update(FLOAT lsp_ele[M],	/* input : LSP vectors           */
-		     FLOAT freq_prev[MA_NP][M]	/* input/output: previous LSP vectors  */
+void lsp_prev_update(float lsp_ele[M],	/* input : LSP vectors           */
+		     float freq_prev[MA_NP][M]	/* input/output: previous LSP vectors  */
     )
 {
 	int k;
@@ -186,15 +184,15 @@ void lsp_prev_update(FLOAT lsp_ele[M],	/* input : LSP vectors           */
 * lsp_stability - check stability of lsp coefficients
 *----------------------------------------------------------------------------
 */
-void lsp_stability(FLOAT buf[]	/*in/out: LSP parameters  */
+void lsp_stability(float buf[]	/*in/out: LSP parameters  */
     )
 {
 	int j;
-	FLOAT diff, tmp;
+	float diff, tmp;
 
 	for (j = 0; j < M - 1; j++) {
 		diff = buf[j + 1] - buf[j];
-		if (diff < (F) 0.) {
+		if (diff < (float) 0.) {
 			tmp = buf[j + 1];
 			buf[j + 1] = buf[j];
 			buf[j] = tmp;

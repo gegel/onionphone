@@ -13,23 +13,22 @@
  */
 
 #include <math.h>
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "tab_ld8k.h"
 #include "tabld8cp.h"
 
 /* Prototype definitions of static functions */
-static void lsp_iqua_cse(int prm[], FLOAT lsp_q[], int erase,
-			 FLOAT freq_prev[MA_NP][M], FLOAT prev_lsp[],
+static void lsp_iqua_cse(int prm[], float lsp_q[], int erase,
+			 float freq_prev[MA_NP][M], float prev_lsp[],
 			 int *prev_ma);
 
 /*----------------------------------------------------------------------------
  * Lsp_decw_reset -   set the previous LSP vectors
  *----------------------------------------------------------------------------
  */
-void lsp_decw_resete(FLOAT freq_prev[MA_NP][M],	/* (o) : previous LSP MA vector        */
-		     FLOAT prev_lsp[],	/* (o) : previous LSP vector        */
+void lsp_decw_resete(float freq_prev[MA_NP][M],	/* (o) : previous LSP MA vector        */
+		     float prev_lsp[],	/* (o) : previous LSP vector        */
 		     int *prev_ma	/* previous MA prediction coef. */
     )
 {
@@ -50,10 +49,10 @@ void lsp_decw_resete(FLOAT freq_prev[MA_NP][M],	/* (o) : previous LSP MA vector 
 *----------------------------------------------------------------------------
 */
 static void lsp_iqua_cse(int prm[],	/* input : codes of the selected LSP */
-			 FLOAT lsp_q[],	/* output: Quantized LSP parameters  */
+			 float lsp_q[],	/* output: Quantized LSP parameters  */
 			 int erase,	/* input : frame erase information   */
-			 FLOAT freq_prev[MA_NP][M],	/* (i/o) : previous LSP MA vector        */
-			 FLOAT prev_lsp[],	/* (i/o) : previous LSP vector        */
+			 float freq_prev[MA_NP][M],	/* (i/o) : previous LSP MA vector        */
+			 float prev_lsp[],	/* (i/o) : previous LSP vector        */
 			 int *prev_ma	/* (i/o) previous MA prediction coef. */
     )
 {
@@ -61,13 +60,13 @@ static void lsp_iqua_cse(int prm[],	/* input : codes of the selected LSP */
 	int code0;
 	int code1;
 	int code2;
-	FLOAT buf[M];
+	float buf[M];
 
 	if (erase == 0) {	/* Not frame erasure */
 		mode_index = (prm[0] >> NC0_B) & 1;
-		code0 = prm[0] & (INT16) (NC0 - 1);
-		code1 = (prm[1] >> NC1_B) & (INT16) (NC1 - 1);
-		code2 = prm[1] & (INT16) (NC1 - 1);
+		code0 = prm[0] & (int16_t) (NC0 - 1);
+		code1 = (prm[1] >> NC1_B) & (int16_t) (NC1 - 1);
+		code2 = prm[1] & (int16_t) (NC1 - 1);
 
 		lsp_get_quante(lspcb1, lspcb2, code0, code1, code2,
 			       fg[mode_index], freq_prev, lsp_q,
@@ -92,10 +91,10 @@ static void lsp_iqua_cse(int prm[],	/* input : codes of the selected LSP */
 *----------------------------------------------------------------------------
 */
 void d_lspe(int prm[],		/* (i)  : indexes of the selected LSP */
-	    FLOAT lsp_q[],	/* (o)  : Quantized LSP parameters    */
+	    float lsp_q[],	/* (o)  : Quantized LSP parameters    */
 	    int erase,		/* (i)  : frame erase information     */
-	    FLOAT freq_prev[MA_NP][M],	/* (i/o): previous LSP MA vector      */
-	    FLOAT prev_lsp[],	/* (i/o): previous LSP vector         */
+	    float freq_prev[MA_NP][M],	/* (i/o): previous LSP MA vector      */
+	    float prev_lsp[],	/* (i/o): previous LSP vector         */
 	    int *prev_ma	/* (i/o): previous MA prediction coef. */
     )
 {
@@ -105,7 +104,7 @@ void d_lspe(int prm[],		/* (i)  : indexes of the selected LSP */
 	/* Convert LSFs to LSPs */
 
 	for (i = 0; i < M; i++)
-		lsp_q[i] = (FLOAT) cos(lsp_q[i]);
+		lsp_q[i] = (float) cos(lsp_q[i]);
 
 	return;
 }
