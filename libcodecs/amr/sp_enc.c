@@ -8733,7 +8733,7 @@ static Word32 dtx_enc(Word16 * log_en_index, Float32 log_en_hist[], Float32
 		 * compute immediately after a talk spurt
 		 */
 		log_en = 0;
-		memzero(lsp, sizeof(Float32) * M);
+		memzero(lsp, M * sizeof(Float32));
 
 		/* average energy and lsp */
 		for (i = 0; i < DTX_HIST_SIZE; i++) {
@@ -10881,7 +10881,7 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
 	s->clLtpSt->pitchSt->T0_prev_subframe = 0;
 
 	/* reset Q_plsfState */
-	memzero(s->lspSt->qSt->past_rq, sizeof(Float32) * M);
+	memzero(s->lspSt->qSt->past_rq, M * sizeof(Float32));
 	memcpy(s->lspSt->lsp_old, lsp_init_data, sizeof(lsp_init_data));
 	memcpy(s->lspSt->lsp_old_q, lsp_init_data, sizeof(lsp_init_data));
 
@@ -10900,11 +10900,11 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
 	s->gainQuantSt->adaptSt->prev_alpha = 0.0F;
 	s->gainQuantSt->adaptSt->prev_gc = 0.0F;
 	memzero(s->gainQuantSt->adaptSt->ltpg_mem,
-		sizeof(Float32) * LTPG_MEM_SIZE);
+		LTPG_MEM_SIZE * sizeof(Float32));
 	s->gainQuantSt->sf0_gcode0_exp = 0;
 	s->gainQuantSt->sf0_gcode0_fra = 0;
 	s->gainQuantSt->sf0_target_en = 0.0F;
-	memzero(s->gainQuantSt->sf0_coeff, sizeof(Float32) * 5);
+	memzero(s->gainQuantSt->sf0_coeff, 5 * sizeof(Float32));
 	s->gainQuantSt->gain_idx_ptr = NULL;
 
 	/* reset pitchOLWghtState */
@@ -10914,11 +10914,11 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
 
 	/* reset tonStabState */
 	s->tonStabSt->count = 0;
-	memzero(s->tonStabSt->gp, sizeof(Float32) * N_FRAME);
+	memzero(s->tonStabSt->gp, N_FRAME * sizeof(Float32));
 
 	/* reset LevinsonState */
 	s->lpcSt->LevinsonSt->old_A[0] = 1.0F;
-	memzero(&s->lpcSt->LevinsonSt->old_A[1], sizeof(Float32) * M);
+	memzero(&s->lpcSt->LevinsonSt->old_A[1], M * sizeof(Float32));
 
 #ifdef VAD2
 	/* reset vadState */
@@ -11014,15 +11014,15 @@ static void cod_amr_reset(cod_amrState * s, Word32 dtx)
 	s->h1 = &s->hvec[L_SUBFR];
 
 	/* Static vectors to zero */
-	memzero(s->old_speech, sizeof(Float32) * L_TOTAL);
-	memzero(s->old_exc, sizeof(Float32) * (PIT_MAX + L_INTERPOL));
-	memzero(s->old_wsp, sizeof(Float32) * PIT_MAX);
-	memzero(s->mem_syn, sizeof(Float32) * M);
-	memzero(s->mem_w, sizeof(Float32) * M);
-	memzero(s->mem_w0, sizeof(Float32) * M);
-	memzero(s->mem_err, sizeof(Float32) * M);
-	memzero(s->ai_zero, sizeof(Float32) * L_SUBFR);
-	memzero(s->hvec, sizeof(Float32) * L_SUBFR);
+	memzero(s->old_speech, L_TOTAL * sizeof(Float32));
+	memzero(s->old_exc, (PIT_MAX + L_INTERPOL) * sizeof(Float32));
+	memzero(s->old_wsp, PIT_MAX * sizeof(Float32));
+	memzero(s->mem_syn, M * sizeof(Float32));
+	memzero(s->mem_w, M * sizeof(Float32));
+	memzero(s->mem_w0, M * sizeof(Float32));
+	memzero(s->mem_err, M * sizeof(Float32));
+	memzero(s->ai_zero, L_SUBFR * sizeof(Float32));
+	memzero(s->hvec, L_SUBFR * sizeof(Float32));
 
 	for (i = 0; i < 5; i++) {
 		s->old_lags[i] = 40;
