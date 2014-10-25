@@ -55,7 +55,7 @@
 *     The following is the bit table within the bit structure for 
 *     BroadVoice16
 *
-*     Word16  bit_table[] = {
+*     int16_t  bit_table[] = {
 *        7, 7,                           // LSP 
 *        7,                              // Pitch Lag 
 *        5,                              // Pitch Gain 
@@ -162,7 +162,7 @@ void BV16_BitPack(uint8_t * PackedStream, struct BV16_Bit_Stream *BitStruct)
 *     The following is the bit table within the bit structure for 
 *     BroadVoice16
 *
-*     Word16  bit_table[] = {
+*     int16_t  bit_table[] = {
 *        7, 7,                           // LSP 
 *        7,                              // Pitch Lag 
 *        5,                              // Pitch Gain 
