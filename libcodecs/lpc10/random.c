@@ -37,8 +37,6 @@ int Rrandom(void)
 	if (((unsigned short)y[k]) > 32767)	/* to make 16 bit rollover to -/+ */
 #endif
 		y[k] = -(32768 - (y[k] & 32767));
-	if (y[k] < -32768)
-		y[k] = y[k] & 32767;
 
 	the_random = y[k];
 	k--;
