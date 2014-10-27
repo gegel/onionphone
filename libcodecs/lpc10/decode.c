@@ -84,8 +84,8 @@ int abit[5] = { 2, 4, 8, 16, 32 };
 
 extern int drc[3][MAXORD], dpit[3], drms[3];
 
-void decode(int ipitv, int *irms, int irc[MAXORD],
-	    int voice[2], int *pitch, float *rms, float rc[ORDER])
+void decode(int ipitv, int *irms, int irc[MAXORD + 1],
+	    int voice[3], int *pitch, float *rms, float rc[ORDER + 1])
 {
 	int ivoic;
 	static int ivp2h = 0, erate = 0, iovoic = 0;
