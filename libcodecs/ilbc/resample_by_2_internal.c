@@ -183,8 +183,6 @@ void WebRtcSpl_DownBy2ShortToInt(const int16_t * in,
 		// divide by two and store temporarily
 		out[i] += (state[7] >> 1);
 	}
-
-	in--;
 }
 
 //
