@@ -66,91 +66,93 @@
 
 #include "g723_const.h"
 #include "lbccodec.h"
-extern Word32 g723_L_mac(Word32 L_var3, Word16 var1, Word16 var2);	/* Mac,    1 */
-extern Word16 g723_sub(Word16 var1, Word16 var2);	/* Short sub,           1 */
-extern Word32 g723_L_msu(Word32 L_var3, Word16 var1, Word16 var2);	/* Msu,    1 */
-extern Word16 g723_norm_l(Word32 L_var1);	/* Long norm,            30 */
-extern Word32 L_g723_shl(Word32 L_var1, Word16 var2);	/* Long shift left,     2 */
-extern Word16 g723_shl(Word16 var1, Word16 var2);	/* Short shift left,    1 */
-//extern Word32 L_g723_shl(Word32 L_var1, Word16 var2); /* Long shift left,     2 */
-extern Word16 round_(Word32 L_var1);	/* Round,               1 */
-extern Word16 g723_mult_r(Word16 var1, Word16 var2);	/* Mult with round,     2 */
-//extern Word16 shr_r(Word16 var1, Word16 var2);/* Shift right with round, 2 */
-//extern Word16 g723_mac_r(Word32 L_var3, Word16 var1, Word16 var2);
-//extern Word16 g723_msu_r(Word32 L_var3, Word16 var1, Word16 var2);
-extern Word32 L_g723_mult(Word16 var1, Word16 var2);	/* Long mult,           1 */
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
-extern Word32 L_g723_add(Word32 L_var1, Word32 L_var2);	/* Long add,        2 */
-extern Word16 g723_extract_h(Word32 L_var1);	/* Extract high,        1 */
-extern Word16 g723_shr(Word16 var1, Word16 var2);	/* Short shift right,   1 */
-//extern Word16 shr_r(Word16 var1, Word16 var2);/* Shift right with round, 2 */
-extern Word32 L_g723_negate(Word32 L_var1);	/* Long negate,     2 */
-extern Word32 L_g723_shr(Word32 L_var1, Word16 var2);	/* Long shift right,    2 */
-extern Word32 g723_L_abs(Word32 L_var1);	/* Long abs,              3 */
-extern Word16 g723_mult_r(Word16 var1, Word16 var2);	/* Mult with round,     2 */
-extern Word32 L_g723_sub(Word32 L_var1, Word32 L_var2);	/* Long sub,        2 */
-extern Word16 div_s(Word16 var1, Word16 var2);	/* Short division,       18 */
-extern Word32 g723_L_deposit_h(Word16 var1);	/* 16 bit var1 -> MSB,     2 */
-extern Word16 i_g723_mult(Word16 a, Word16 b);
+extern int32_t g723_L_mac(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac,    1 */
+extern int16_t g723_sub(int16_t var1, int16_t var2);	/* Short sub,           1 */
+extern int32_t g723_L_msu(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu,    1 */
+extern int16_t g723_norm_l(int32_t L_var1);	/* Long norm,            30 */
+extern int32_t L_g723_shl(int32_t L_var1, int16_t var2);	/* Long shift left,     2 */
+extern int16_t g723_shl(int16_t var1, int16_t var2);	/* Short shift left,    1 */
+//extern int32_t L_g723_shl(int32_t L_var1, int16_t var2); /* Long shift left,     2 */
+extern int16_t round_(int32_t L_var1);	/* Round,               1 */
+extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
+//extern int16_t shr_r(int16_t var1, int16_t var2);/* Shift right with round, 2 */
+//extern int16_t g723_mac_r(int32_t L_var3, int16_t var1, int16_t var2);
+//extern int16_t g723_msu_r(int32_t L_var3, int16_t var1, int16_t var2);
+extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
+extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
+extern int16_t g723_extract_h(int32_t L_var1);	/* Extract high,        1 */
+extern int16_t g723_shr(int16_t var1, int16_t var2);	/* Short shift right,   1 */
+//extern int16_t shr_r(int16_t var1, int16_t var2);/* Shift right with round, 2 */
+extern int32_t L_g723_negate(int32_t L_var1);	/* Long negate,     2 */
+extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
+extern int32_t g723_L_abs(int32_t L_var1);	/* Long abs,              3 */
+extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
+extern int32_t L_g723_sub(int32_t L_var1, int32_t L_var2);	/* Long sub,        2 */
+extern int16_t div_s(int16_t var1, int16_t var2);	/* Short division,       18 */
+extern int32_t g723_L_deposit_h(int16_t var1);	/* 16 bit var1 -> MSB,     2 */
+extern int16_t i_g723_mult(int16_t a, int16_t b);
 
-extern Word16 g723_mult(Word16 var1, Word16 var2);	/* Short mult,          1 */
-extern Word16 Test_Err(Word16 Lag1, Word16 Lag2);
+extern int16_t g723_mult(int16_t var1, int16_t var2);	/* Short mult,          1 */
+extern int16_t Test_Err(int16_t Lag1, int16_t Lag2);
 
-//extern void  Gen_Trn( Word16 *Dst, Word16 *Src, Word16 Olp );
-//extern Word16 search_T0 ( Word16 T0, Word16 Gid, Word16 *gain_T0);
-extern Word16 g723_extract_l(Word32 L_var1);	/* Extract low,         1 */
-extern Word16 g723_negate(Word16 var1);	/* Short negate,        1 */
-extern Word16 g723_abs_s(Word16 var1);	/* Short abs,           1 */
+//extern void  Gen_Trn( int16_t *Dst, int16_t *Src, int16_t Olp );
+//extern int16_t search_T0 ( int16_t T0, int16_t Gid, int16_t *gain_T0);
+extern int16_t g723_extract_l(int32_t L_var1);	/* Extract low,         1 */
+extern int16_t g723_negate(int16_t var1);	/* Short negate,        1 */
+extern int16_t g723_abs_s(int16_t var1);	/* Short abs,           1 */
 
-extern Word32 CombinatorialTable[MaxPulseNum][SubFrLen / Sgrid];
-extern Word16 Nb_puls[4];
-extern Word32 MaxPosTable[4];
-extern Word16 LpfConstTable[2];
-extern Word16 FcbkGainTable[NumOfGainLev];
-extern Word16 epsi170[170];
-extern Word16 gain170[170];
-extern Word16 tabgain170[170];
+extern int32_t CombinatorialTable[MaxPulseNum][SubFrLen / Sgrid];
+extern int16_t Nb_puls[4];
+extern int32_t MaxPosTable[4];
+extern int16_t LpfConstTable[2];
+extern int16_t FcbkGainTable[NumOfGainLev];
+extern int16_t epsi170[170];
+extern int16_t gain170[170];
+extern int16_t tabgain170[170];
 
-extern Word16 div_l(Word32, Word16);
-extern Word16 Sqrt_lbc(Word32 Num);
+extern int16_t div_l(int32_t, int16_t);
+extern int16_t Sqrt_lbc(int32_t Num);
 
-extern Word16 Rand_lbc(Word16 * p);
-extern Word16 Vec_Norm(Word16 * Vect, Word16 Len);
-extern Word16 *AcbkGainTablePtr[2];
+extern int16_t Rand_lbc(int16_t * p);
+extern int16_t Vec_Norm(int16_t * Vect, int16_t Len);
+extern int16_t *AcbkGainTablePtr[2];
 extern enum Crate WrkRate;
 
-Word16 Estim_Pitch(Word16 * Dpnt, Word16 Start);
-PWDEF Comp_Pw(Word16 * Dpnt, Word16 Start, Word16 Olp);
-void Filt_Pw(Word16 * DataBuff, Word16 * Dpnt, Word16 Start, PWDEF Pw);
-void Find_Fcbk(Word16 * Dpnt, Word16 * ImpResp, LINEDEF * Line, Word16 Sfc);
-void Gen_Trn(Word16 * Dst, Word16 * Src, Word16 Olp);
-void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
-	       Word16 Olp);
-void Fcbk_Pack(Word16 * Dpnt, SFSDEF * Sfs, BESTDEF * Best, Word16 Np);
-void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc);
-void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
-	       * Line, Word16 Sfc);
-void Get_Rez(Word16 * Tv, Word16 * PrevExc, Word16 Lag);
-void Decod_Acbk(Word16 * Tv, Word16 * PrevExc, Word16 Olp, Word16 Lid,
-		Word16 Gid);
-Word16 Comp_Info(Word16 * Buff, Word16 Olp, Word16 * Gain, Word16 * ShGain);
-void Regen(Word16 * DataBuff, Word16 * Buff, Word16 Lag, Word16 Gain,
-	   Word16 Ecount, Word16 * Sd);
-PFDEF Comp_Lpf(Word16 * Buff, Word16 Olp, Word16 Sfc);
-Word16 Find_B(Word16 * Buff, Word16 Olp, Word16 Sfc);
-Word16 Find_F(Word16 * Buff, Word16 Olp, Word16 Sfc);
-PFDEF Get_Ind(Word16 Ind, Word16 Ten, Word16 Ccr, Word16 Enr);
-void Filt_Lpf(Word16 * Tv, Word16 * Buff, PFDEF Pf, Word16 Sfc);
+int16_t Estim_Pitch(int16_t * Dpnt, int16_t Start);
+PWDEF Comp_Pw(int16_t * Dpnt, int16_t Start, int16_t Olp);
+void Filt_Pw(int16_t * DataBuff, int16_t * Dpnt, int16_t Start, PWDEF Pw);
+void Find_Fcbk(int16_t * Dpnt, int16_t * ImpResp, LINEDEF * Line,
+	       int16_t Sfc);
+void Gen_Trn(int16_t * Dst, int16_t * Src, int16_t Olp);
+void Find_Best(BESTDEF * Best, int16_t * Tv, int16_t * ImpResp, int16_t Np,
+	       int16_t Olp);
+void Fcbk_Pack(int16_t * Dpnt, SFSDEF * Sfs, BESTDEF * Best, int16_t Np);
+void Fcbk_Unpk(int16_t * Tv, SFSDEF Sfs, int16_t Olp, int16_t Sfc);
+void Find_Acbk(int16_t * Tv, int16_t * ImpResp, int16_t * PrevExc, LINEDEF
+	       * Line, int16_t Sfc);
+void Get_Rez(int16_t * Tv, int16_t * PrevExc, int16_t Lag);
+void Decod_Acbk(int16_t * Tv, int16_t * PrevExc, int16_t Olp, int16_t Lid,
+		int16_t Gid);
+int16_t Comp_Info(int16_t * Buff, int16_t Olp, int16_t * Gain,
+		  int16_t * ShGain);
+void Regen(int16_t * DataBuff, int16_t * Buff, int16_t Lag, int16_t Gain,
+	   int16_t Ecount, int16_t * Sd);
+PFDEF Comp_Lpf(int16_t * Buff, int16_t Olp, int16_t Sfc);
+int16_t Find_B(int16_t * Buff, int16_t Olp, int16_t Sfc);
+int16_t Find_F(int16_t * Buff, int16_t Olp, int16_t Sfc);
+PFDEF Get_Ind(int16_t Ind, int16_t Ten, int16_t Ccr, int16_t Enr);
+void Filt_Lpf(int16_t * Tv, int16_t * Buff, PFDEF Pf, int16_t Sfc);
 void reset_max_time(void);
-Word16 search_T0(Word16 T0, Word16 Gid, Word16 * gain_T0);
-Word16 ACELP_LBC_code(Word16 X[], Word16 h[], Word16 T0, Word16 code[],
-		      Word16 * gain, Word16 * shift, Word16 * sign,
-		      Word16 gain_T0);
-void Cor_h(Word16 * H, Word16 * rr);
-void Cor_h_X(Word16 h[], Word16 X[], Word16 D[]);
-Word16 D4i64_LBC(Word16 Dn[], Word16 rr[], Word16 h[], Word16 cod[],
-		 Word16 y[], Word16 * code_shift, Word16 * sign);
-Word16 G_code(Word16 X[], Word16 Y[], Word16 * gain_q);
+int16_t search_T0(int16_t T0, int16_t Gid, int16_t * gain_T0);
+int16_t ACELP_LBC_code(int16_t X[], int16_t h[], int16_t T0, int16_t code[],
+		      int16_t * gain, int16_t * shift, int16_t * sign,
+		      int16_t gain_T0);
+void Cor_h(int16_t * H, int16_t * rr);
+void Cor_h_X(int16_t h[], int16_t X[], int16_t D[]);
+int16_t D4i64_LBC(int16_t Dn[], int16_t rr[], int16_t h[], int16_t cod[],
+		 int16_t y[], int16_t * code_shift, int16_t * sign);
+int16_t G_code(int16_t X[], int16_t Y[], int16_t * gain_q);
 
 /*
 **
@@ -165,43 +167,43 @@ Word16 G_code(Word16 X[], Word16 Y[], Word16 * gain_q);
 **
 ** Arguments:
 **
-**  Word16 *Dpnt    Perceptually weighted speech
-**  Word16 Start    Starting index defining the subframes under study
+**  int16_t *Dpnt    Perceptually weighted speech
+**  int16_t Start    Starting index defining the subframes under study
 **
 ** Outputs:
 **
 ** Return value:
 **
-**  Word16      Open loop pitch period
+**  int16_t      Open loop pitch period
 **
 */
-Word16 Estim_Pitch(Word16 * Dpnt, Word16 Start)
+int16_t Estim_Pitch(int16_t * Dpnt, int16_t Start)
 {
 	int i, j;
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
-	Word16 Exp, Tmp;
-	Word16 Ccr, Enr;
+	int16_t Exp, Tmp;
+	int16_t Ccr, Enr;
 
-	Word16 Indx = (Word16) PitchMin;
+	int16_t Indx = (int16_t) PitchMin;
 
-	Word16 Mxp = (Word16) 30;
-	Word16 Mcr = (Word16) 0x4000;
-	Word16 Mnr = (Word16) 0x7fff;
+	int16_t Mxp = (int16_t) 30;
+	int16_t Mcr = (int16_t) 0x4000;
+	int16_t Mnr = (int16_t) 0x7fff;
 
-	Word16 Pr;
+	int16_t Pr;
 
 	/* Init the energy estimate */
-	Pr = Start - (Word16) PitchMin + (Word16) 1;
-	Acc1 = (Word32) 0;
+	Pr = Start - (int16_t) PitchMin + (int16_t) 1;
+	Acc1 = (int32_t) 0;
 	for (j = 0; j < 2 * SubFrLen; j++)
 		Acc1 = g723_L_mac(Acc1, Dpnt[Pr + j], Dpnt[Pr + j]);
 
 	/* Main Olp search loop */
 	for (i = PitchMin; i <= PitchMax - 3; i++) {
 
-		Pr = g723_sub(Pr, (Word16) 1);
+		Pr = g723_sub(Pr, (int16_t) 1);
 
 		/* Energy update */
 		Acc1 =
@@ -210,16 +212,16 @@ Word16 Estim_Pitch(Word16 * Dpnt, Word16 Start)
 		Acc1 = g723_L_mac(Acc1, Dpnt[Pr], Dpnt[Pr]);
 
 		/*  Compute the cross */
-		Acc0 = (Word32) 0;
+		Acc0 = (int32_t) 0;
 		for (j = 0; j < 2 * SubFrLen; j++)
 			Acc0 = g723_L_mac(Acc0, Dpnt[Start + j], Dpnt[Pr + j]);
 
-		if (Acc0 > (Word32) 0) {
+		if (Acc0 > (int32_t) 0) {
 
 			/* Compute Exp and mant of the cross */
 			Exp = g723_norm_l(Acc0);
 			Acc0 = L_g723_shl(Acc0, Exp);
-			Exp = g723_shl(Exp, (Word16) 1);
+			Exp = g723_shl(Exp, (int16_t) 1);
 			Ccr = round_(Acc0);
 			Acc0 = L_g723_mult(Ccr, Ccr);
 			Ccr = g723_norm_l(Acc0);
@@ -235,14 +237,14 @@ Word16 Estim_Pitch(Word16 * Dpnt, Word16 Start)
 			Enr = round_(Acc0);
 
 			if (Ccr >= Enr) {
-				Exp = g723_sub(Exp, (Word16) 1);
-				Ccr = g723_shr(Ccr, (Word16) 1);
+				Exp = g723_sub(Exp, (int16_t) 1);
+				Ccr = g723_shr(Ccr, (int16_t) 1);
 			}
 
 			if (Exp <= Mxp) {
 
 				if ((Exp + 1) < Mxp) {
-					Indx = (Word16) i;
+					Indx = (int16_t) i;
 					Mxp = Exp;
 					Mcr = Ccr;
 					Mnr = Enr;
@@ -250,18 +252,18 @@ Word16 Estim_Pitch(Word16 * Dpnt, Word16 Start)
 				}
 
 				if ((Exp + 1) == Mxp)
-					Tmp = g723_shr(Mcr, (Word16) 1);
+					Tmp = g723_shr(Mcr, (int16_t) 1);
 				else
 					Tmp = Mcr;
 
 				/* Compare with equal exponents */
 				Acc0 = L_g723_mult(Ccr, Mnr);
 				Acc0 = g723_L_msu(Acc0, Enr, Tmp);
-				if (Acc0 > (Word32) 0) {
+				if (Acc0 > (int32_t) 0) {
 
-					if (((Word16) i - Indx) <
-					    (Word16) PitchMin) {
-						Indx = (Word16) i;
+					if (((int16_t) i - Indx) <
+					    (int16_t) PitchMin) {
+						Indx = (int16_t) i;
 						Mxp = Exp;
 						Mcr = Ccr;
 						Mnr = Enr;
@@ -272,13 +274,13 @@ Word16 Estim_Pitch(Word16 * Dpnt, Word16 Start)
 						Acc0 =
 						    L_g723_negate(L_g723_shr
 								  (Acc0,
-								   (Word16) 2));
+								   (int16_t) 2));
 						Acc0 =
 						    g723_L_mac(Acc0, Ccr, Mnr);
 						Acc0 =
 						    g723_L_msu(Acc0, Enr, Tmp);
-						if (Acc0 > (Word32) 0) {
-							Indx = (Word16) i;
+						if (Acc0 > (int32_t) 0) {
+							Indx = (int16_t) i;
 							Mxp = Exp;
 							Mcr = Ccr;
 							Mnr = Enr;
@@ -305,42 +307,42 @@ Word16 Estim_Pitch(Word16 * Dpnt, Word16 Start)
 **
 ** Arguments:
 **
-**  Word16 *Dpnt    Formant perceptually weighted speech
-**  Word16 Start
-**  Word16 Olp      Open loop pitch lag
+**  int16_t *Dpnt    Formant perceptually weighted speech
+**  int16_t Start
+**  int16_t Olp      Open loop pitch lag
 **
 ** Outputs:         None
 **
 ** Return value:
 **
-**  PWDEF   Word16  Indx  lag of the harmonic noise shaping filter
-**          Word16  Gain  gain of the harmonic noise shaping filter
+**  PWDEF   int16_t  Indx  lag of the harmonic noise shaping filter
+**          int16_t  Gain  gain of the harmonic noise shaping filter
 **
 */
-PWDEF Comp_Pw(Word16 * Dpnt, Word16 Start, Word16 Olp)
+PWDEF Comp_Pw(int16_t * Dpnt, int16_t Start, int16_t Olp)
 {
 
 	int i, j;
 
-	Word32 Lcr[15];
-	Word16 Scr[15];
+	int32_t Lcr[15];
+	int16_t Scr[15];
 	PWDEF Pw;
 
-	Word32 Acc0, Acc1;
-	Word16 Exp;
+	int32_t Acc0, Acc1;
+	int16_t Exp;
 
-	Word16 Ccr, Enr;
-	Word16 Mcr, Mnr;
+	int16_t Ccr, Enr;
+	int16_t Mcr, Mnr;
 
 	/* Compute and save target energy */
-	Lcr[0] = (Word32) 0;
+	Lcr[0] = (int32_t) 0;
 	for (i = 0; i < SubFrLen; i++)
 		Lcr[0] = g723_L_mac(Lcr[0], Dpnt[Start + i], Dpnt[Start + i]);
 
 	/* Compute all Crosses and energys */
 	for (i = 0; i <= 2 * PwRange; i++) {
 
-		Acc1 = Acc0 = (Word32) 0;
+		Acc1 = Acc0 = (int32_t) 0;
 		for (j = 0; j < SubFrLen; j++) {
 			Acc0 = g723_L_mac(Acc0, Dpnt[Start + j],
 					  Dpnt[Start - (Olp - PwRange + i) +
@@ -357,7 +359,7 @@ PWDEF Comp_Pw(Word16 * Dpnt, Word16 Start, Word16 Olp)
 	}
 
 	/* Normalize to maximum */
-	Acc1 = (Word32) 0;
+	Acc1 = (int32_t) 0;
 	for (i = 0; i < 15; i++) {
 		Acc0 = Lcr[i];
 		Acc0 = g723_L_abs(Acc0);
@@ -373,18 +375,18 @@ PWDEF Comp_Pw(Word16 * Dpnt, Word16 Start, Word16 Olp)
 	}
 
 	/* Find the best pair */
-	Pw.Indx = (Word16) - 1;
-	Pw.Gain = (Word16) 0;
+	Pw.Indx = (int16_t) - 1;
+	Pw.Gain = (int16_t) 0;
 
-	Mcr = (Word16) 1;
-	Mnr = (Word16) 0x7fff;
+	Mcr = (int16_t) 1;
+	Mnr = (int16_t) 0x7fff;
 
 	for (i = 0; i <= 2 * PwRange; i++) {
 
 		Enr = Scr[2 * i + 1];
 		Ccr = Scr[2 * i + 2];
 
-		if (Ccr <= (Word16) 0)
+		if (Ccr <= (int16_t) 0)
 			continue;
 
 		Exp = g723_mult_r(Ccr, Ccr);
@@ -393,10 +395,10 @@ PWDEF Comp_Pw(Word16 * Dpnt, Word16 Start, Word16 Olp)
 		Acc0 = L_g723_mult(Exp, Mnr);
 		Acc0 = g723_L_msu(Acc0, Enr, Mcr);
 
-		if (Acc0 > (Word32) 0) {
+		if (Acc0 > (int32_t) 0) {
 			Mcr = Exp;
 			Mnr = Enr;
-			Pw.Indx = (Word16) i;
+			Pw.Indx = (int16_t) i;
 		}
 	}
 
@@ -408,13 +410,13 @@ PWDEF Comp_Pw(Word16 * Dpnt, Word16 Start, Word16 Olp)
 	/* Check the db limit */
 	Acc0 = L_g723_mult(Scr[0], Mnr);
 	Acc1 = Acc0;
-	Acc0 = L_g723_shr(Acc0, (Word16) 2);
-	Acc1 = L_g723_shr(Acc1, (Word16) 3);
+	Acc0 = L_g723_shr(Acc0, (int16_t) 2);
+	Acc1 = L_g723_shr(Acc1, (int16_t) 3);
 	Acc0 = L_g723_add(Acc0, Acc1);
 	Acc1 = L_g723_mult(Scr[2 * Pw.Indx + 2], Scr[2 * Pw.Indx + 2]);
 	Acc0 = L_g723_sub(Acc0, Acc1);
 
-	if (Acc0 < (Word32) 0) {
+	if (Acc0 < (int32_t) 0) {
 
 		Exp = Scr[2 * Pw.Indx + 2];
 
@@ -443,23 +445,23 @@ PWDEF Comp_Pw(Word16 * Dpnt, Word16 Start, Word16 Olp)
 **
 ** Arguments:
 **
-**  Word16 *DataBuff    Target vector
-**  Word16 *Dpnt        Formant perceptually weighted speech
-**  Word16 Start
+**  int16_t *DataBuff    Target vector
+**  int16_t *Dpnt        Formant perceptually weighted speech
+**  int16_t Start
 **  PWDEF   Pw          Parameters of the harmonic noise shaping filter
 **
 ** Outputs:
 **
-**  Word16 *DataBuff    Target vector
+**  int16_t *DataBuff    Target vector
 **
 ** Return value:        None
 **
 */
-void Filt_Pw(Word16 * DataBuff, Word16 * Dpnt, Word16 Start, PWDEF Pw)
+void Filt_Pw(int16_t * DataBuff, int16_t * Dpnt, int16_t Start, PWDEF Pw)
 {
 	int i;
 
-	Word32 Acc0;
+	int32_t Acc0;
 
 	/* Perform the harmonic weighting */
 	for (i = 0; i < SubFrLen; i++) {
@@ -467,7 +469,7 @@ void Filt_Pw(Word16 * DataBuff, Word16 * Dpnt, Word16 Start, PWDEF Pw)
 		Acc0 =
 		    g723_L_msu(Acc0, Pw.Gain,
 			       Dpnt[PitchMax + Start - Pw.Indx + i]);
-		DataBuff[Start + (Word16) i] = round_(Acc0);
+		DataBuff[Start + (int16_t) i] = round_(Acc0);
 	}
 
 	return;
@@ -484,24 +486,25 @@ void Filt_Pw(Word16 * DataBuff, Word16 * Dpnt, Word16 Start, PWDEF Pw)
 **
 ** Arguments:
 **
-**  Word16 *Dpnt    Target vector
-**  Word16 *ImpResp Impulse response of the synthesis filter
+**  int16_t *Dpnt    Target vector
+**  int16_t *ImpResp Impulse response of the synthesis filter
 **  LineDef *Line   Excitation parameters for one subframe
-**  Word16 Sfc      Subframe index
+**  int16_t Sfc      Subframe index
 **
 ** Outputs:
 **
-**  Word16 *Dpnt    Excitation vector
+**  int16_t *Dpnt    Excitation vector
 **  LINEDEF *Line   Fixed codebook parameters for one subframe
 **
 ** Return value:        None
 **
 */
-void Find_Fcbk(Word16 * Dpnt, Word16 * ImpResp, LINEDEF * Line, Word16 Sfc)
+void Find_Fcbk(int16_t * Dpnt, int16_t * ImpResp, LINEDEF * Line,
+	       int16_t Sfc)
 {
 	int i;
-	Word16 T0_acelp, gain_T0;
-	Word16 Srate;
+	int16_t T0_acelp, gain_T0;
+	int16_t Srate;
 
 	BESTDEF Best;
 
@@ -510,24 +513,24 @@ void Find_Fcbk(Word16 * Dpnt, Word16 * ImpResp, LINEDEF * Line, Word16 Sfc)
 	case Rate63:{
 
 			Srate = Nb_puls[(int)Sfc];
-			Best.MaxErr = (Word32) 0xc0000000L;
+			Best.MaxErr = (int32_t) 0xc0000000L;
 			Find_Best(&Best, Dpnt, ImpResp, Srate,
-				  (Word16) SubFrLen);
-			if ((*Line).Olp[Sfc >> 1] < (Word16) (SubFrLen - 2)) {
+				  (int16_t) SubFrLen);
+			if ((*Line).Olp[Sfc >> 1] < (int16_t) (SubFrLen - 2)) {
 				Find_Best(&Best, Dpnt, ImpResp, Srate,
 					  (*Line).Olp[Sfc >> 1]);
 			}
 
 			/* Reconstruct the excitation */
 			for (i = 0; i < SubFrLen; i++)
-				Dpnt[i] = (Word16) 0;
+				Dpnt[i] = (int16_t) 0;
 			for (i = 0; i < Srate; i++)
 				Dpnt[Best.Ploc[i]] = Best.Pamp[i];
 
 			/* Code the excitation */
 			Fcbk_Pack(Dpnt, &((*Line).Sfs[Sfc]), &Best, Srate);
 
-			if (Best.UseTrn == (Word16) 1)
+			if (Best.UseTrn == (int16_t) 1)
 				Gen_Trn(Dpnt, Dpnt, (*Line).Olp[Sfc >> 1]);
 
 			break;
@@ -535,7 +538,7 @@ void Find_Fcbk(Word16 * Dpnt, Word16 * ImpResp, LINEDEF * Line, Word16 Sfc)
 
 	case Rate53:{
 
-			T0_acelp = search_T0((Word16)
+			T0_acelp = search_T0((int16_t)
 					     ((*Line).Olp[Sfc >> 1] - 1 +
 					      (*Line).Sfs[Sfc].AcLg),
 					     (*Line).Sfs[Sfc].AcGn, &gain_T0);
@@ -566,24 +569,24 @@ void Find_Fcbk(Word16 * Dpnt, Word16 * ImpResp, LINEDEF * Line, Word16 Sfc)
 **
 ** Arguments:
 **
-**  Word16 *Dst     Fixed codebook excitation vector with  train of Dirac
-**  Word16 *Src     Fixed codebook excitation vector without train of Dirac
-**  Word16 Olp      Closed-loop pitch lag of subframe 0 (for subframes 0 & 1)
+**  int16_t *Dst     Fixed codebook excitation vector with  train of Dirac
+**  int16_t *Src     Fixed codebook excitation vector without train of Dirac
+**  int16_t Olp      Closed-loop pitch lag of subframe 0 (for subframes 0 & 1)
 **                  Closed-loop pitch lag of subframe 2 (for subframes 2 & 3)
 **
 ** Outputs:
 **
-**  Word16 *Dst     excitation vector
+**  int16_t *Dst     excitation vector
 **
 ** Return value:    None
 **
 */
-void Gen_Trn(Word16 * Dst, Word16 * Src, Word16 Olp)
+void Gen_Trn(int16_t * Dst, int16_t * Src, int16_t Olp)
 {
 	int i;
 
-	Word16 Tmp0, Tmp1;
-	Word16 Tmp[SubFrLen];
+	int16_t Tmp0, Tmp1;
+	int16_t Tmp[SubFrLen];
 
 	Tmp0 = Olp;
 
@@ -619,10 +622,10 @@ void Gen_Trn(Word16 * Dst, Word16 * Src, Word16 Olp)
 ** Arguments:
 **
 **  BESTDEF *Best   Parameters of the best excitation model
-**  Word16 *Tv      Target vector
-**  Word16 *ImpResp Impulse response of the combined filter
-**  Word16 Np       Number of pulses (6 for even subframes; 5 for odd subframes)
-**  Word16 Olp      Closed-loop pitch lag of subframe 0 (for subframes 0 & 1)
+**  int16_t *Tv      Target vector
+**  int16_t *ImpResp Impulse response of the combined filter
+**  int16_t Np       Number of pulses (6 for even subframes; 5 for odd subframes)
+**  int16_t Olp      Closed-loop pitch lag of subframe 0 (for subframes 0 & 1)
 **                  Closed-loop pitch lag of subframe 2 (for subframes 2 & 3)
 **
 ** Outputs:
@@ -632,40 +635,40 @@ void Gen_Trn(Word16 * Dst, Word16 * Src, Word16 Olp)
 ** Return value:    None
 **
 */
-void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
-	       Word16 Olp)
+void Find_Best(BESTDEF * Best, int16_t * Tv, int16_t * ImpResp, int16_t Np,
+	       int16_t Olp)
 {
 
 	int i, j, k, l;
 	BESTDEF Temp;
 
-	Word16 Exp;
-	Word16 MaxAmpId;
-	Word16 MaxAmp;
-	Word32 Acc0, Acc1, Acc2;
+	int16_t Exp;
+	int16_t MaxAmpId;
+	int16_t MaxAmp;
+	int32_t Acc0, Acc1, Acc2;
 
-	Word16 Imr[SubFrLen];
-	Word16 OccPos[SubFrLen];
-	Word16 ImrCorr[SubFrLen];
-	Word32 ErrBlk[SubFrLen];
-	Word32 WrkBlk[SubFrLen];
+	int16_t Imr[SubFrLen];
+	int16_t OccPos[SubFrLen];
+	int16_t ImrCorr[SubFrLen];
+	int32_t ErrBlk[SubFrLen];
+	int32_t WrkBlk[SubFrLen];
 
 	/* Update Impulse response */
-	if (Olp < (Word16) (SubFrLen - 2)) {
-		Temp.UseTrn = (Word16) 1;
+	if (Olp < (int16_t) (SubFrLen - 2)) {
+		Temp.UseTrn = (int16_t) 1;
 		Gen_Trn(Imr, ImpResp, Olp);
 	} else {
-		Temp.UseTrn = (Word16) 0;
+		Temp.UseTrn = (int16_t) 0;
 		for (i = 0; i < SubFrLen; i++)
 			Imr[i] = ImpResp[i];
 	}
 
 	/* Scale Imr to avoid overflow */
 	for (i = 0; i < SubFrLen; i++)
-		OccPos[i] = g723_shr(Imr[i], (Word16) 1);
+		OccPos[i] = g723_shr(Imr[i], (int16_t) 1);
 
 	/* Compute Imr AutoCorr function */
-	Acc0 = (Word32) 0;
+	Acc0 = (int32_t) 0;
 	for (i = 0; i < SubFrLen; i++)
 		Acc0 = g723_L_mac(Acc0, OccPos[i], OccPos[i]);
 
@@ -675,7 +678,7 @@ void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
 
 	/* Compute all the other */
 	for (i = 1; i < SubFrLen; i++) {
-		Acc0 = (Word32) 0;
+		Acc0 = (int32_t) 0;
 		for (j = i; j < SubFrLen; j++)
 			Acc0 = g723_L_mac(Acc0, OccPos[j], OccPos[j - i]);
 		Acc0 = L_g723_shl(Acc0, Exp);
@@ -685,7 +688,7 @@ void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
 	/* Cross correlation with the signal */
 	Exp = g723_sub(Exp, 4);
 	for (i = 0; i < SubFrLen; i++) {
-		Acc0 = (Word32) 0;
+		Acc0 = (int32_t) 0;
 		for (j = i; j < SubFrLen; j++)
 			Acc0 = g723_L_mac(Acc0, Tv[j], Imr[j - i]);
 		ErrBlk[i] = L_g723_shl(Acc0, Exp);
@@ -694,22 +697,22 @@ void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
 	/* Search for the best sequence */
 	for (k = 0; k < Sgrid; k++) {
 
-		Temp.GridId = (Word16) k;
+		Temp.GridId = (int16_t) k;
 
 		/* Find maximum amplitude */
-		Acc1 = (Word32) 0;
+		Acc1 = (int32_t) 0;
 		for (i = k; i < SubFrLen; i += Sgrid) {
 			Acc0 = g723_L_abs(ErrBlk[i]);
 			if (Acc0 >= Acc1) {
 				Acc1 = Acc0;
-				Temp.Ploc[0] = (Word16) i;
+				Temp.Ploc[0] = (int16_t) i;
 			}
 		}
 
 		/* Quantize the maximum amplitude */
 		Acc2 = Acc1;
-		Acc1 = (Word32) 0x40000000L;
-		MaxAmpId = (Word16) (NumOfGainLev - MlqSteps);
+		Acc1 = (int32_t) 0x40000000L;
+		MaxAmpId = (int16_t) (NumOfGainLev - MlqSteps);
 
 		for (i = MaxAmpId; i >= MlqSteps; i--) {
 			Acc0 = L_g723_mult(FcbkGainTable[i], ImrCorr[0]);
@@ -717,7 +720,7 @@ void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
 			Acc0 = g723_L_abs(Acc0);
 			if (Acc0 < Acc1) {
 				Acc1 = Acc0;
-				MaxAmpId = (Word16) i;
+				MaxAmpId = (int16_t) i;
 			}
 		}
 		MaxAmpId--;
@@ -726,33 +729,33 @@ void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
 
 			for (j = k; j < SubFrLen; j += Sgrid) {
 				WrkBlk[j] = ErrBlk[j];
-				OccPos[j] = (Word16) 0;
+				OccPos[j] = (int16_t) 0;
 			}
-			Temp.MampId = MaxAmpId - (Word16) MlqSteps + (Word16) i;
+			Temp.MampId = MaxAmpId - (int16_t) MlqSteps + (int16_t) i;
 
 			MaxAmp = FcbkGainTable[Temp.MampId];
 
-			if (WrkBlk[Temp.Ploc[0]] >= (Word32) 0)
+			if (WrkBlk[Temp.Ploc[0]] >= (int32_t) 0)
 				Temp.Pamp[0] = MaxAmp;
 			else
 				Temp.Pamp[0] = g723_negate(MaxAmp);
 
-			OccPos[Temp.Ploc[0]] = (Word16) 1;
+			OccPos[Temp.Ploc[0]] = (int16_t) 1;
 
 			for (j = 1; j < Np; j++) {
 
-				Acc1 = (Word32) 0xc0000000L;
+				Acc1 = (int32_t) 0xc0000000L;
 
 				for (l = k; l < SubFrLen; l += Sgrid) {
 
-					if (OccPos[l] != (Word16) 0)
+					if (OccPos[l] != (int16_t) 0)
 						continue;
 
 					Acc0 = WrkBlk[l];
 					Acc0 =
 					    g723_L_msu(Acc0, Temp.Pamp[j - 1],
 						       ImrCorr[g723_abs_s
-							       ((Word16)
+							       ((int16_t)
 								(l -
 								 Temp.Ploc[j -
 									   1]))]);
@@ -760,43 +763,43 @@ void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
 					Acc0 = g723_L_abs(Acc0);
 					if (Acc0 > Acc1) {
 						Acc1 = Acc0;
-						Temp.Ploc[j] = (Word16) l;
+						Temp.Ploc[j] = (int16_t) l;
 					}
 				}
 
-				if (WrkBlk[Temp.Ploc[j]] >= (Word32) 0)
+				if (WrkBlk[Temp.Ploc[j]] >= (int32_t) 0)
 					Temp.Pamp[j] = MaxAmp;
 				else
 					Temp.Pamp[j] = g723_negate(MaxAmp);
 
-				OccPos[Temp.Ploc[j]] = (Word16) 1;
+				OccPos[Temp.Ploc[j]] = (int16_t) 1;
 			}
 
 			/* Compute error vector */
 			for (j = 0; j < SubFrLen; j++)
-				OccPos[j] = (Word16) 0;
+				OccPos[j] = (int16_t) 0;
 
 			for (j = 0; j < Np; j++)
 				OccPos[Temp.Ploc[j]] = Temp.Pamp[j];
 
 			for (l = SubFrLen - 1; l >= 0; l--) {
-				Acc0 = (Word32) 0;
+				Acc0 = (int32_t) 0;
 				for (j = 0; j <= l; j++)
 					Acc0 =
 					    g723_L_mac(Acc0, OccPos[j],
 						       Imr[l - j]);
-				Acc0 = L_g723_shl(Acc0, (Word16) 2);
+				Acc0 = L_g723_shl(Acc0, (int16_t) 2);
 				OccPos[l] = g723_extract_h(Acc0);
 			}
 
 			/* Evaluate error */
-			Acc1 = (Word32) 0;
+			Acc1 = (int32_t) 0;
 			for (j = 0; j < SubFrLen; j++) {
 				Acc1 = g723_L_mac(Acc1, Tv[j], OccPos[j]);
 				Acc0 = L_g723_mult(OccPos[j], OccPos[j]);
 				Acc1 =
 				    L_g723_sub(Acc1,
-					       L_g723_shr(Acc0, (Word16) 1));
+					       L_g723_shr(Acc0, (int16_t) 1));
 			}
 
 			if (Acc1 > (*Best).MaxErr) {
@@ -827,10 +830,10 @@ void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
 **
 ** Arguments:
 **
-**  Word16 *Dpnt    Excitation vector
+**  int16_t *Dpnt    Excitation vector
 **  SFSDEF *Sfs     Encoded parameters of the excitation model
 **  BESTDEF *Best   Parameters of the best excitation model
-**  Word16 Np       Number of pulses (6 for even subframes; 5 for odd subframes)
+**  int16_t Np       Number of pulses (6 for even subframes; 5 for odd subframes)
 **
 ** Outputs:
 **
@@ -839,25 +842,26 @@ void Find_Best(BESTDEF * Best, Word16 * Tv, Word16 * ImpResp, Word16 Np,
 ** Return value:    None
 **
 */
-void Fcbk_Pack(Word16 * Dpnt, SFSDEF * Sfs, BESTDEF * Best, Word16 Np)
+void Fcbk_Pack(int16_t * Dpnt, SFSDEF * Sfs, BESTDEF * Best, int16_t Np)
 {
 	int i, j;
 
 	/* Code the amplitudes and positions */
 	j = MaxPulseNum - (int)Np;
 
-	(*Sfs).Pamp = (Word16) 0;
-	(*Sfs).Ppos = (Word32) 0;
+	(*Sfs).Pamp = (int16_t) 0;
+	(*Sfs).Ppos = (int32_t) 0;
 
 	for (i = 0; i < SubFrLen / Sgrid; i++) {
 
-		if (Dpnt[(int)(*Best).GridId + Sgrid * i] == (Word16) 0)
+		if (Dpnt[(int)(*Best).GridId + Sgrid * i] == (int16_t) 0)
 			(*Sfs).Ppos =
 			    L_g723_add((*Sfs).Ppos, CombinatorialTable[j][i]);
 		else {
-			(*Sfs).Pamp = g723_shl((*Sfs).Pamp, (Word16) 1);
-			if (Dpnt[(int)(*Best).GridId + Sgrid * i] < (Word16) 0)
-				(*Sfs).Pamp = g723_add((*Sfs).Pamp, (Word16) 1);
+			(*Sfs).Pamp = g723_shl((*Sfs).Pamp, (int16_t) 1);
+			if (Dpnt[(int)(*Best).GridId + Sgrid * i] < (int16_t) 0)
+				(*Sfs).Pamp = g723_add((*Sfs).Pamp,
+						       (int16_t) 1);
 
 			j++;
 			/* Check for end */
@@ -885,27 +889,27 @@ void Fcbk_Pack(Word16 * Dpnt, SFSDEF * Sfs, BESTDEF * Best, Word16 Np)
 **
 ** Arguments:
 **
-**  Word16 *Tv      Decoded excitation vector
+**  int16_t *Tv      Decoded excitation vector
 **  SFSDEF Sfs      Encoded parameters of the excitation (for one subframe)
-**  Word16 Olp      Closed loop adaptive pitch lag
-**  Word16 Sfc      Subframe index
+**  int16_t Olp      Closed loop adaptive pitch lag
+**  int16_t Sfc      Subframe index
 **
 ** Outputs:
 **
-**  Word16 *Tv      Decoded excitation vector
+**  int16_t *Tv      Decoded excitation vector
 **
 ** Return value:    None
 **
 */
-void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc)
+void Fcbk_Unpk(int16_t * Tv, SFSDEF Sfs, int16_t Olp, int16_t Sfc)
 {
 	int i, j;
 
-	Word32 Acc0;
-	Word16 Np;
-	Word16 Tv_tmp[SubFrLen + 4];
-	Word16 acelp_gain, acelp_sign, acelp_shift, acelp_pos;
-	Word16 offset, ipos, T0_acelp, gain_T0;
+	int32_t Acc0;
+	int16_t Np;
+	int16_t Tv_tmp[SubFrLen + 4];
+	int16_t acelp_gain, acelp_sign, acelp_shift, acelp_pos;
+	int16_t offset, ipos, T0_acelp, gain_T0;
 
 	switch (WrkRate) {
 	case Rate63:{
@@ -913,7 +917,7 @@ void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc)
 			Np = Nb_puls[(int)Sfc];
 
 			for (i = 0; i < SubFrLen; i++)
-				Tv[i] = (Word16) 0;
+				Tv[i] = (int16_t) 0;
 
 			if (Sfs.Ppos >= MaxPosTable[Sfc])
 				return;
@@ -928,7 +932,7 @@ void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc)
 				Acc0 =
 				    L_g723_sub(Acc0, CombinatorialTable[j][i]);
 
-				if (Acc0 < (Word32) 0) {
+				if (Acc0 < (int32_t) 0) {
 					Acc0 =
 					    L_g723_add(Acc0,
 						       CombinatorialTable[j]
@@ -936,7 +940,7 @@ void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc)
 					j++;
 					if ((Sfs.
 					     Pamp & (1 << (MaxPulseNum - j))) !=
-					    (Word16) 0)
+					    (int16_t) 0)
 						Tv[(int)Sfs.Grid + Sgrid * i] =
 						    -FcbkGainTable[Sfs.Mamp];
 					else
@@ -948,14 +952,14 @@ void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc)
 				}
 			}
 
-			if (Sfs.Tran == (Word16) 1)
+			if (Sfs.Tran == (int16_t) 1)
 				Gen_Trn(Tv, Tv, Olp);
 			break;
 		}
 
 	case Rate53:{
 			for (i = 0; i < SubFrLen + 4; i++)
-				Tv_tmp[i] = (Word16) 0;
+				Tv_tmp[i] = (int16_t) 0;
 
 			/* decoding gain */
 			acelp_gain = FcbkGainTable[Sfs.Mamp];
@@ -968,7 +972,7 @@ void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc)
 
 			offset = 0;
 			for (i = 0; i < 4; i++) {
-				ipos = (acelp_pos & (Word16) 0x0007);
+				ipos = (acelp_pos & (int16_t) 0x0007);
 				ipos = g723_shl(ipos, 3) + acelp_shift + offset;
 				if ((acelp_sign & 1) == 1) {
 					Tv_tmp[ipos] = acelp_gain;
@@ -982,7 +986,8 @@ void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc)
 			for (i = 0; i < SubFrLen; i++)
 				Tv[i] = Tv_tmp[i];
 			T0_acelp =
-			    search_T0((Word16) (Olp - 1 + Sfs.AcLg), Sfs.AcGn,
+			    search_T0((int16_t) (Olp - 1 + Sfs.AcLg),
+				      Sfs.AcGn,
 				      &gain_T0);
 			if (T0_acelp < SubFrLen - 2) {
 				/* code[i] += 0.8 * code[i-Olp] */
@@ -1019,71 +1024,72 @@ void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc)
 **
 ** Arguments:
 **
-**  Word16 *Tv      Target vector
-**  Word16 *ImpResp Impulse response of the combined filter
-**  Word16 *PrevExc Previous excitation vector
+**  int16_t *Tv      Target vector
+**  int16_t *ImpResp Impulse response of the combined filter
+**  int16_t *PrevExc Previous excitation vector
 **  LINEDEF *Line   Contains pitch related parameters (open/closed loop lag, gain)
-**  Word16 Sfc      Subframe index
+**  int16_t Sfc      Subframe index
 **
 ** Outputs:
 **
-**  Word16 *Tv     Residual vector
+**  int16_t *Tv     Residual vector
 **  LINEDEF *Line  Contains pitch related parameters (closed loop lag, gain)
 **
 ** Return value:    None
 **
 */
-void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
-	       * Line, Word16 Sfc)
+void Find_Acbk(int16_t * Tv, int16_t * ImpResp, int16_t * PrevExc, LINEDEF
+	       * Line, int16_t Sfc)
 {
 	int i, j, k, l;
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
-	Word16 RezBuf[SubFrLen + ClPitchOrd - 1];
-	Word16 FltBuf[ClPitchOrd][SubFrLen];
-	Word32 CorBuf[4 * (2 * ClPitchOrd + ClPitchOrd * (ClPitchOrd - 1) / 2)];
-	Word32 *lPnt;
+	int16_t RezBuf[SubFrLen + ClPitchOrd - 1];
+	int16_t FltBuf[ClPitchOrd][SubFrLen];
+	int32_t CorBuf[4 * (2 * ClPitchOrd + ClPitchOrd * (ClPitchOrd - 1) / 2)];
+	int32_t *lPnt;
 
-	Word16 CorVct[4 * (2 * ClPitchOrd + ClPitchOrd * (ClPitchOrd - 1) / 2)];
-	Word16 *sPnt;
+	int16_t CorVct[4 * (2 * ClPitchOrd + ClPitchOrd * (ClPitchOrd - 1) / 2)];
+	int16_t *sPnt;
 
-	Word16 Olp;
-	Word16 Lid;
-	Word16 Gid;
-	Word16 Hb;
-	Word16 Exp;
-	Word16 Bound[2];
+	int16_t Olp;
+	int16_t Lid;
+	int16_t Gid;
+	int16_t Hb;
+	int16_t Exp;
+	int16_t Bound[2];
 
-	Word16 Lag1, Lag2;
-	Word16 off_filt;
+	int16_t Lag1, Lag2;
+	int16_t off_filt;
 
 	memzero(CorBuf,
-		4 * (2 * ClPitchOrd + ClPitchOrd * (ClPitchOrd - 1) / 2));
+		4 * (2 * ClPitchOrd + ClPitchOrd * (ClPitchOrd - 1) / 2) * sizeof(int32_t));
 
 	/* Init constants */
-	Olp = (*Line).Olp[g723_shr(Sfc, (Word16) 1)];
-	Lid = (Word16) Pstep;
-	Gid = (Word16) 0;
-	Hb = (Word16) 3 + (Sfc & (Word16) 1);
+	Olp = (*Line).Olp[g723_shr(Sfc, (int16_t) 1)];
+	Lid = (int16_t) Pstep;
+	Gid = (int16_t) 0;
+	Hb = (int16_t) 3 + (Sfc & (int16_t) 1);
 
 	/* For even frames only */
-	if ((Sfc & (Word16) 1) == (Word16) 0) {
-		if (Olp == (Word16) PitchMin)
-			Olp = g723_add(Olp, (Word16) 1);
-		if (Olp > (Word16) (PitchMax - 5))
-			Olp = (Word16) (PitchMax - 5);
+	if ((Sfc & (int16_t) 1) == (int16_t) 0) {
+		if (Olp == (int16_t) PitchMin)
+			Olp = g723_add(Olp, (int16_t) 1);
+		if (Olp > (int16_t) (PitchMax - 5))
+			Olp = (int16_t) (PitchMax - 5);
 	}
 
 	lPnt = CorBuf;
 	for (k = 0; k < (int)Hb; k++) {
 
 		/* Get residual from the excitation buffer */
-		Get_Rez(RezBuf, PrevExc, (Word16) (Olp - (Word16) Pstep + k));
+		Get_Rez(RezBuf, PrevExc,
+			(int16_t) (Olp - (int16_t) Pstep + k));
 
 		/* Filter the last one using the impulse response */
 		for (i = 0; i < SubFrLen; i++) {
-			Acc0 = (Word32) 0;
+			Acc0 = (int32_t) 0;
 			for (j = 0; j <= i; j++)
 				Acc0 =
 				    g723_L_mac(Acc0, RezBuf[ClPitchOrd - 1 + j],
@@ -1093,7 +1099,8 @@ void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
 
 		/* Update all the others */
 		for (i = ClPitchOrd - 2; i >= 0; i--) {
-			FltBuf[i][0] = g723_mult_r(RezBuf[i], (Word16) 0x2000);
+			FltBuf[i][0] = g723_mult_r(RezBuf[i],
+						   (int16_t) 0x2000);
 			for (j = 1; j < SubFrLen; j++) {
 				Acc0 = g723_L_deposit_h(FltBuf[i + 1][j - 1]);
 				Acc0 = g723_L_mac(Acc0, RezBuf[i], ImpResp[j]);
@@ -1103,19 +1110,19 @@ void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
 
 		/* Compute the cross with the signal */
 		for (i = 0; i < ClPitchOrd; i++) {
-			Acc1 = (Word32) 0;
+			Acc1 = (int32_t) 0;
 			for (j = 0; j < SubFrLen; j++) {
 				Acc0 = L_g723_mult(Tv[j], FltBuf[i][j]);
 				Acc1 =
 				    L_g723_add(Acc1,
-					       L_g723_shr(Acc0, (Word16) 1));
+					       L_g723_shr(Acc0, (int16_t) 1));
 			}
-			*lPnt++ = L_g723_shl(Acc1, (Word16) 1);
+			*lPnt++ = L_g723_shl(Acc1, (int16_t) 1);
 		}
 
 		/* Compute the energies */
 		for (i = 0; i < ClPitchOrd; i++) {
-			Acc1 = (Word32) 0;
+			Acc1 = (int32_t) 0;
 			for (j = 0; j < SubFrLen; j++)
 				Acc1 =
 				    g723_L_mac(Acc1, FltBuf[i][j],
@@ -1126,7 +1133,7 @@ void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
 		/* Compute the between crosses */
 		for (i = 1; i < ClPitchOrd; i++) {
 			for (j = 0; j < i; j++) {
-				Acc1 = (Word32) 0;
+				Acc1 = (int32_t) 0;
 				for (l = 0; l < SubFrLen; l++) {
 					Acc0 =
 					    L_g723_mult(FltBuf[i][l],
@@ -1134,15 +1141,15 @@ void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
 					Acc1 =
 					    L_g723_add(Acc1,
 						       L_g723_shr(Acc0,
-								  (Word16) 1));
+								  (int16_t) 1));
 				}
-				*lPnt++ = L_g723_shl(Acc1, (Word16) 2);
+				*lPnt++ = L_g723_shl(Acc1, (int16_t) 2);
 			}
 		}
 	}
 
 	/* Find Max and normalize */
-	Acc1 = (Word32) 0;
+	Acc1 = (int32_t) 0;
 	for (i = 0; i < Hb * 20; i++) {
 		Acc0 = g723_L_abs(CorBuf[i]);
 		if (Acc0 > Acc1)
@@ -1157,8 +1164,8 @@ void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
 	}
 
 	/* Test potential error */
-	Lag1 = Olp - (Word16) Pstep;
-	Lag2 = Olp - (Word16) Pstep + Hb - (Word16) 1;
+	Lag1 = Olp - (int16_t) Pstep;
+	Lag2 = Olp - (int16_t) Pstep + Hb - (int16_t) 1;
 	off_filt = Test_Err(Lag1, Lag2);
 	Bound[0] = NbFilt085_min + g723_shl(off_filt, 2);
 	if (Bound[0] > NbFilt085)
@@ -1168,14 +1175,14 @@ void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
 		Bound[1] = NbFilt170;
 
 	/* Init the search loop */
-	Acc1 = (Word32) 0;
+	Acc1 = (int32_t) 0;
 
 	for (k = 0; k < (int)Hb; k++) {
 
 		/* Select Quantization tables */
 		l = 0;
 		if (WrkRate == Rate63) {
-			if ((Sfc & (Word16) 1) == (Word16) 0) {
+			if ((Sfc & (int16_t) 1) == (int16_t) 0) {
 				if ((int)Olp - Pstep + k >= SubFrLen - 2)
 					l++;
 			} else {
@@ -1190,44 +1197,44 @@ void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
 
 		for (i = 0; i < (int)Bound[l]; i++) {
 
-			Acc0 = (Word32) 0;
+			Acc0 = (int32_t) 0;
 			for (j = 0; j < 20; j++)
 				Acc0 =
 				    L_g723_add(Acc0,
 					       L_g723_shr(L_g723_mult
 							  (CorVct[k * 20 + j],
 							   *sPnt++),
-							  (Word16) 1));
+							  (int16_t) 1));
 
 			if (Acc0 > Acc1) {
 				Acc1 = Acc0;
-				Gid = (Word16) i;
-				Lid = (Word16) k;
+				Gid = (int16_t) i;
+				Lid = (int16_t) k;
 			}
 		}
 	}
 
 	/* Modify Olp for even sub frames */
-	if ((Sfc & (Word16) 1) == (Word16) 0) {
-		Olp = Olp - (Word16) Pstep + Lid;
-		Lid = (Word16) Pstep;
+	if ((Sfc & (int16_t) 1) == (int16_t) 0) {
+		Olp = Olp - (int16_t) Pstep + Lid;
+		Lid = (int16_t) Pstep;
 	}
 
 	/* Save Gains and Olp */
 	(*Line).Sfs[Sfc].AcLg = Lid;
 	(*Line).Sfs[Sfc].AcGn = Gid;
-	(*Line).Olp[g723_shr(Sfc, (Word16) 1)] = Olp;
+	(*Line).Olp[g723_shr(Sfc, (int16_t) 1)] = Olp;
 
 	/* Decode the Acbk contribution and subtract it */
 	Decod_Acbk(RezBuf, PrevExc, Olp, Lid, Gid);
 
 	for (i = 0; i < SubFrLen; i++) {
 		Acc0 = g723_L_deposit_h(Tv[i]);
-		Acc0 = L_g723_shr(Acc0, (Word16) 1);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 1);
 
 		for (j = 0; j <= i; j++)
 			Acc0 = g723_L_msu(Acc0, RezBuf[j], ImpResp[i - j]);
-		Acc0 = L_g723_shl(Acc0, (Word16) 1);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 1);
 		Tv[i] = round_(Acc0);
 	}
 
@@ -1245,18 +1252,18 @@ void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc, LINEDEF
 **
 ** Arguments:
 **
-**  Word16 *Tv      delayed excitation
-**  Word16 *PrevExc Previous excitation vector
-**  Word16 Lag      Closed loop pitch lag
+**  int16_t *Tv      delayed excitation
+**  int16_t *PrevExc Previous excitation vector
+**  int16_t Lag      Closed loop pitch lag
 **
 ** Outputs:
 **
-**  Word16 *Tv      delayed excitation
+**  int16_t *Tv      delayed excitation
 **
 ** Return value:    None
 **
 */
-void Get_Rez(Word16 * Tv, Word16 * PrevExc, Word16 Lag)
+void Get_Rez(int16_t * Tv, int16_t * PrevExc, int16_t Lag)
 {
 	int i;
 
@@ -1286,35 +1293,35 @@ void Get_Rez(Word16 * Tv, Word16 * PrevExc, Word16 Lag)
 **
 ** Arguments:
 **
-**  Word16 *Tv      Reconstructed excitation vector
-**  Word16 *PrevExc Previous excitation vector
-**  Word16 Olp      closed-loop pitch period
-**  Word16 Lid      Jitter around pitch period
-**  Word16 Gid      Gain vector index in 5- dimensional
+**  int16_t *Tv      Reconstructed excitation vector
+**  int16_t *PrevExc Previous excitation vector
+**  int16_t Olp      closed-loop pitch period
+**  int16_t Lid      Jitter around pitch period
+**  int16_t Gid      Gain vector index in 5- dimensional
 **                      adaptive gain vector codebook
 **
 ** Outputs:
 **
-**  Word16 *Tv      Reconstructed excitation vector
+**  int16_t *Tv      Reconstructed excitation vector
 **
 ** Return value:    None
 **
 */
-void Decod_Acbk(Word16 * Tv, Word16 * PrevExc, Word16 Olp, Word16 Lid,
-		Word16 Gid)
+void Decod_Acbk(int16_t * Tv, int16_t * PrevExc, int16_t Olp, int16_t Lid,
+		int16_t Gid)
 {
 	int i, j;
 
-	Word32 Acc0;
-	Word16 RezBuf[SubFrLen + ClPitchOrd - 1];
-	Word16 *sPnt;
+	int32_t Acc0;
+	int16_t RezBuf[SubFrLen + ClPitchOrd - 1];
+	int16_t *sPnt;
 
-	Get_Rez(RezBuf, PrevExc, (Word16) (Olp - (Word16) Pstep + Lid));
+	Get_Rez(RezBuf, PrevExc, (int16_t) (Olp - (int16_t) Pstep + Lid));
 
 	/* Select Quantization tables */
 	i = 0;
 	if (WrkRate == Rate63) {
-		if (Olp >= (Word16) (SubFrLen - 2))
+		if (Olp >= (int16_t) (SubFrLen - 2))
 			i++;
 	} else {
 		i = 1;
@@ -1324,10 +1331,10 @@ void Decod_Acbk(Word16 * Tv, Word16 * PrevExc, Word16 Olp, Word16 Lid,
 	sPnt += (int)Gid *20;
 
 	for (i = 0; i < SubFrLen; i++) {
-		Acc0 = (Word32) 0;
+		Acc0 = (int32_t) 0;
 		for (j = 0; j < ClPitchOrd; j++)
 			Acc0 = g723_L_mac(Acc0, RezBuf[i + j], sPnt[j]);
-		Acc0 = L_g723_shl(Acc0, (Word16) 1);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 1);
 		Tv[i] = round_(Acc0);
 	}
 
@@ -1349,38 +1356,39 @@ void Decod_Acbk(Word16 * Tv, Word16 * PrevExc, Word16 Olp, Word16 Lid,
 **
 ** Arguments:
 **
-**  Word16 *Buff  decoded excitation
-**  Word16 Olp    Decoded pitch lag
+**  int16_t *Buff  decoded excitation
+**  int16_t Olp    Decoded pitch lag
 **
 ** Outputs: None
 **
 ** Return value:
 **
-**      Word16   Estimated pitch value
+**      int16_t   Estimated pitch value
 */
-Word16 Comp_Info(Word16 * Buff, Word16 Olp, Word16 * Gain, Word16 * ShGain)
+int16_t Comp_Info(int16_t * Buff, int16_t Olp, int16_t * Gain,
+		  int16_t * ShGain)
 {
 	int i, j;
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
-	Word16 Tenr;
-	Word16 Ccr, Enr;
-	Word16 Indx;
+	int16_t Tenr;
+	int16_t Ccr, Enr;
+	int16_t Indx;
 
 	/* Normalize the excitation */
-	*ShGain = Vec_Norm(Buff, (Word16) (PitchMax + Frame));
+	*ShGain = Vec_Norm(Buff, (int16_t) (PitchMax + Frame));
 
-	if (Olp > (Word16) (PitchMax - 3))
-		Olp = (Word16) (PitchMax - 3);
+	if (Olp > (int16_t) (PitchMax - 3))
+		Olp = (int16_t) (PitchMax - 3);
 
 	Indx = Olp;
 
-	Acc1 = (Word32) 0;
+	Acc1 = (int32_t) 0;
 
 	for (i = (int)Olp - 3; i <= (int)Olp + 3; i++) {
 
-		Acc0 = (Word32) 0;
+		Acc0 = (int32_t) 0;
 		for (j = 0; j < 2 * SubFrLen; j++)
 			Acc0 =
 			    g723_L_mac(Acc0,
@@ -1391,12 +1399,12 @@ Word16 Comp_Info(Word16 * Buff, Word16 Olp, Word16 * Gain, Word16 * ShGain)
 
 		if (Acc0 > Acc1) {
 			Acc1 = Acc0;
-			Indx = (Word16) i;
+			Indx = (int16_t) i;
 		}
 	}
 
 	/* Compute target energy */
-	Acc0 = (Word32) 0;
+	Acc0 = (int32_t) 0;
 	for (j = 0; j < 2 * SubFrLen; j++)
 		Acc0 =
 		    g723_L_mac(Acc0, Buff[PitchMax + Frame - 2 * SubFrLen + j],
@@ -1405,7 +1413,7 @@ Word16 Comp_Info(Word16 * Buff, Word16 Olp, Word16 * Gain, Word16 * ShGain)
 	*Gain = Tenr;
 
 	/* Compute best energy */
-	Acc0 = (Word32) 0;
+	Acc0 = (int32_t) 0;
 	for (j = 0; j < 2 * SubFrLen; j++)
 		Acc0 =
 		    g723_L_mac(Acc0,
@@ -1416,20 +1424,20 @@ Word16 Comp_Info(Word16 * Buff, Word16 Olp, Word16 * Gain, Word16 * ShGain)
 
 	Ccr = round_(Acc1);
 
-	if (Ccr <= (Word16) 0)
-		return (Word16) 0;
+	if (Ccr <= (int16_t) 0)
+		return (int16_t) 0;
 
 	Enr = round_(Acc0);
 
 	Acc0 = L_g723_mult(Enr, Tenr);
-	Acc0 = L_g723_shr(Acc0, (Word16) 3);
+	Acc0 = L_g723_shr(Acc0, (int16_t) 3);
 
 	Acc0 = g723_L_msu(Acc0, Ccr, Ccr);
 
-	if (Acc0 < (Word32) 0)
+	if (Acc0 < (int32_t) 0)
 		return Indx;
 	else
-		return (Word16) 0;
+		return (int16_t) 0;
 }
 
 /*
@@ -1447,35 +1455,35 @@ Word16 Comp_Info(Word16 * Buff, Word16 Olp, Word16 * Gain, Word16 * ShGain)
 **
 ** Arguments:
 **
-**  Word16 *DataBuff  current subframe decoded excitation
-**  Word16 *Buff     past decoded excitation
-**  Word16 Lag       Decoded pitch lag from previous frame
-**  Word16 Gain      Interpolated gain from previous frames
-**  Word16 Ecount    Number of erased frames
-**  Word16 *Sd       Random number used in unvoiced cases
+**  int16_t *DataBuff  current subframe decoded excitation
+**  int16_t *Buff     past decoded excitation
+**  int16_t Lag       Decoded pitch lag from previous frame
+**  int16_t Gain      Interpolated gain from previous frames
+**  int16_t Ecount    Number of erased frames
+**  int16_t *Sd       Random number used in unvoiced cases
 **
 ** Outputs:
 **
-**  Word16 *DataBuff current subframe decoded excitation
-**  Word16 *Buff     updated past excitation
+**  int16_t *DataBuff current subframe decoded excitation
+**  int16_t *Buff     updated past excitation
 **
 ** Return value:    None
 **
 */
-void Regen(Word16 * DataBuff, Word16 * Buff, Word16 Lag, Word16 Gain,
-	   Word16 Ecount, Word16 * Sd)
+void Regen(int16_t * DataBuff, int16_t * Buff, int16_t Lag, int16_t Gain,
+	   int16_t Ecount, int16_t * Sd)
 {
 	int i;
 
 	/* Test for clearing */
-	if (Ecount >= (Word16) ErrMaxNum) {
+	if (Ecount >= (int16_t) ErrMaxNum) {
 		for (i = 0; i < Frame; i++)
-			DataBuff[i] = (Word16) 0;
+			DataBuff[i] = (int16_t) 0;
 		for (i = 0; i < Frame + PitchMax; i++)
-			Buff[i] = (Word16) 0;
+			Buff[i] = (int16_t) 0;
 	} else {
 		/* Interpolate accordingly to the voicing estimation */
-		if (Lag != (Word16) 0) {
+		if (Lag != (int16_t) 0) {
 			/* Voiced case */
 			for (i = 0; i < Frame; i++)
 				Buff[PitchMax + i] =
@@ -1483,14 +1491,14 @@ void Regen(Word16 * DataBuff, Word16 * Buff, Word16 Lag, Word16 Gain,
 			for (i = 0; i < Frame; i++)
 				DataBuff[i] = Buff[PitchMax + i] =
 				    g723_mult(Buff[PitchMax + i],
-					      (Word16) 0x6000);
+					      (int16_t) 0x6000);
 		} else {
 			/* Unvoiced case */
 			for (i = 0; i < Frame; i++)
 				DataBuff[i] = g723_mult(Gain, Rand_lbc(Sd));
 			/* Clear buffer to reset memory */
 			for (i = 0; i < Frame + PitchMax; i++)
-				Buff[i] = (Word16) 0;
+				Buff[i] = (int16_t) 0;
 		}
 	}
 
@@ -1511,9 +1519,9 @@ void Regen(Word16 * DataBuff, Word16 * Buff, Word16 Lag, Word16 Gain,
 **
 ** Arguments:
 **
-**  Word16 *Buff    decoded excitation
-**  Word16 Olp      Decoded pitch lag
-**  Word16 Sfc      Subframe index
+**  int16_t *Buff    decoded excitation
+**  int16_t Olp      Decoded pitch lag
+**  int16_t Sfc      Subframe index
 **
 ** Outputs:
 **
@@ -1524,42 +1532,42 @@ void Regen(Word16 * DataBuff, Word16 * Buff, Word16 Lag, Word16 Gain,
 **                                           PF.ScGn    Pitch Postfilter scaling gain
 **                                           PF.Indx    Pitch postfilter lag
 */
-PFDEF Comp_Lpf(Word16 * Buff, Word16 Olp, Word16 Sfc)
+PFDEF Comp_Lpf(int16_t * Buff, int16_t Olp, int16_t Sfc)
 {
 	int i, j;
 
 	PFDEF Pf;
-	Word32 Lcr[5];
-	Word16 Scr[5];
-	Word16 Bindx, Findx;
-	Word16 Exp;
+	int32_t Lcr[5];
+	int16_t Scr[5];
+	int16_t Bindx, Findx;
+	int16_t Exp;
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
 	/* Initialize */
-	Pf.Indx = (Word16) 0;
-	Pf.Gain = (Word16) 0;
-	Pf.ScGn = (Word16) 0x7fff;
+	Pf.Indx = (int16_t) 0;
+	Pf.Gain = (int16_t) 0;
+	Pf.ScGn = (int16_t) 0x7fff;
 
 	/* Find both indices */
 	Bindx = Find_B(Buff, Olp, Sfc);
 	Findx = Find_F(Buff, Olp, Sfc);
 
 	/* Combine the results */
-	if ((Bindx == (Word16) 0) && (Findx == (Word16) 0))
+	if ((Bindx == (int16_t) 0) && (Findx == (int16_t) 0))
 		return Pf;
 
 	/* Compute target energy */
-	Acc0 = (Word32) 0;
+	Acc0 = (int32_t) 0;
 	for (j = 0; j < SubFrLen; j++)
 		Acc0 =
 		    g723_L_mac(Acc0, Buff[PitchMax + (int)Sfc * SubFrLen + j],
 			       Buff[PitchMax + (int)Sfc * SubFrLen + j]);
 	Lcr[0] = Acc0;
 
-	if (Bindx != (Word16) 0) {
-		Acc0 = (Word32) 0;
-		Acc1 = (Word32) 0;
+	if (Bindx != (int16_t) 0) {
+		Acc0 = (int32_t) 0;
+		Acc1 = (int32_t) 0;
 		for (j = 0; j < SubFrLen; j++) {
 			Acc0 =
 			    g723_L_mac(Acc0,
@@ -1576,13 +1584,13 @@ PFDEF Comp_Lpf(Word16 * Buff, Word16 Olp, Word16 Sfc)
 		Lcr[1] = Acc0;
 		Lcr[2] = Acc1;
 	} else {
-		Lcr[1] = (Word32) 0;
-		Lcr[2] = (Word32) 0;
+		Lcr[1] = (int32_t) 0;
+		Lcr[2] = (int32_t) 0;
 	}
 
-	if (Findx != (Word16) 0) {
-		Acc0 = (Word32) 0;
-		Acc1 = (Word32) 0;
+	if (Findx != (int16_t) 0) {
+		Acc0 = (int32_t) 0;
+		Acc1 = (int32_t) 0;
 		for (j = 0; j < SubFrLen; j++) {
 			Acc0 =
 			    g723_L_mac(Acc0,
@@ -1599,8 +1607,8 @@ PFDEF Comp_Lpf(Word16 * Buff, Word16 Olp, Word16 Sfc)
 		Lcr[3] = Acc0;
 		Lcr[4] = Acc1;
 	} else {
-		Lcr[3] = (Word32) 0;
-		Lcr[4] = (Word32) 0;
+		Lcr[3] = (int32_t) 0;
+		Lcr[4] = (int32_t) 0;
 	}
 
 	/* Normalize and convert to shorts */
@@ -1618,13 +1626,13 @@ PFDEF Comp_Lpf(Word16 * Buff, Word16 Olp, Word16 Sfc)
 	}
 
 	/* Select the best pair */
-	if ((Bindx != (Word16) 0) && (Findx == (Word16) 0))
+	if ((Bindx != (int16_t) 0) && (Findx == (int16_t) 0))
 		Pf = Get_Ind(Bindx, Scr[0], Scr[1], Scr[2]);
 
-	if ((Bindx == (Word16) 0) && (Findx != (Word16) 0))
+	if ((Bindx == (int16_t) 0) && (Findx != (int16_t) 0))
 		Pf = Get_Ind(Findx, Scr[0], Scr[3], Scr[4]);
 
-	if ((Bindx != (Word16) 0) && (Findx != (Word16) 0)) {
+	if ((Bindx != (int16_t) 0) && (Findx != (int16_t) 0)) {
 		Exp = g723_mult_r(Scr[1], Scr[1]);
 		Acc0 = L_g723_mult(Exp, Scr[4]);
 		Exp = g723_mult_r(Scr[3], Scr[3]);
@@ -1652,32 +1660,32 @@ PFDEF Comp_Lpf(Word16 * Buff, Word16 Olp, Word16 Sfc)
 **
 ** Arguments:
 **
-**  Word16 *Buff    decoded excitation
-**  Word16 Olp      Decoded pitch lag
-**  Word16 Sfc      Subframe index
+**  int16_t *Buff    decoded excitation
+**  int16_t Olp      Decoded pitch lag
+**  int16_t Sfc      Subframe index
 **
 ** Outputs:     None
 **
 ** Return value:
 **
-**  Word16   Pitch postfilter backward lag
+**  int16_t   Pitch postfilter backward lag
 */
-Word16 Find_B(Word16 * Buff, Word16 Olp, Word16 Sfc)
+int16_t Find_B(int16_t * Buff, int16_t Olp, int16_t Sfc)
 {
 	int i, j;
 
-	Word16 Indx = 0;
+	int16_t Indx = 0;
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
-	if (Olp > (Word16) (PitchMax - 3))
-		Olp = (Word16) (PitchMax - 3);
+	if (Olp > (int16_t) (PitchMax - 3))
+		Olp = (int16_t) (PitchMax - 3);
 
-	Acc1 = (Word32) 0;
+	Acc1 = (int32_t) 0;
 
 	for (i = (int)Olp - 3; i <= (int)Olp + 3; i++) {
 
-		Acc0 = (Word32) 0;
+		Acc0 = (int32_t) 0;
 		for (j = 0; j < SubFrLen; j++)
 			Acc0 =
 			    g723_L_mac(Acc0,
@@ -1686,7 +1694,7 @@ Word16 Find_B(Word16 * Buff, Word16 Olp, Word16 Sfc)
 					    j]);
 		if (Acc0 > Acc1) {
 			Acc1 = Acc0;
-			Indx = -(Word16) i;
+			Indx = -(int16_t) i;
 		}
 	}
 	return Indx;
@@ -1706,32 +1714,32 @@ Word16 Find_B(Word16 * Buff, Word16 Olp, Word16 Sfc)
 **
 ** Arguments:
 **
-**  Word16 *Buff    decoded excitation
-**  Word16 Olp      Decoded pitch lag
-**  Word16 Sfc      Subframe index
+**  int16_t *Buff    decoded excitation
+**  int16_t Olp      Decoded pitch lag
+**  int16_t Sfc      Subframe index
 **
 ** Outputs:     None
 **
 ** Return value:
 **
-**  Word16    Pitch postfilter forward lag
+**  int16_t    Pitch postfilter forward lag
 */
-Word16 Find_F(Word16 * Buff, Word16 Olp, Word16 Sfc)
+int16_t Find_F(int16_t * Buff, int16_t Olp, int16_t Sfc)
 {
 	int i, j;
 
-	Word16 Indx = 0;
+	int16_t Indx = 0;
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
-	if (Olp > (Word16) (PitchMax - 3))
-		Olp = (Word16) (PitchMax - 3);
+	if (Olp > (int16_t) (PitchMax - 3))
+		Olp = (int16_t) (PitchMax - 3);
 
-	Acc1 = (Word32) 0;
+	Acc1 = (int32_t) 0;
 
 	for (i = Olp - 3; i <= Olp + 3; i++) {
 
-		Acc0 = (Word32) 0;
+		Acc0 = (int32_t) 0;
 		if (((int)Sfc * SubFrLen + SubFrLen + i) <= Frame) {
 			for (j = 0; j < SubFrLen; j++)
 				Acc0 =
@@ -1745,7 +1753,7 @@ Word16 Find_F(Word16 * Buff, Word16 Olp, Word16 Sfc)
 
 		if (Acc0 > Acc1) {
 			Acc1 = Acc0;
-			Indx = (Word16) i;
+			Indx = (int16_t) i;
 		}
 	}
 
@@ -1769,25 +1777,25 @@ Word16 Find_F(Word16 * Buff, Word16 Olp, Word16 Sfc)
 **
 ** Arguments:
 **
-**  Word16 Ind      Pitch postfilter lag
-**  Word16 Ten      energy of the current subframe excitation vector
-**  Word16 Ccr      Crosscorrelation of the excitation
-**  Word16 Enr      Energy of the (backward or forward) "delayed" excitation
+**  int16_t Ind      Pitch postfilter lag
+**  int16_t Ten      energy of the current subframe excitation vector
+**  int16_t Ccr      Crosscorrelation of the excitation
+**  int16_t Enr      Energy of the (backward or forward) "delayed" excitation
 **
 ** Outputs:     None
 **
 ** Return value:
 **
 **  PFDEF
-**         Word16   Indx    Pitch postfilter lag
-**         Word16   Gain    Pitch postfilter gain
-**         Word16   ScGn    Pitch postfilter scaling gain
+**         int16_t   Indx    Pitch postfilter lag
+**         int16_t   Gain    Pitch postfilter gain
+**         int16_t   ScGn    Pitch postfilter scaling gain
 **
 */
-PFDEF Get_Ind(Word16 Ind, Word16 Ten, Word16 Ccr, Word16 Enr)
+PFDEF Get_Ind(int16_t Ind, int16_t Ten, int16_t Ccr, int16_t Enr)
 {
-	Word32 Acc0, Acc1;
-	Word16 Exp;
+	int32_t Acc0, Acc1;
+	int16_t Exp;
 
 	PFDEF Pf;
 
@@ -1795,7 +1803,7 @@ PFDEF Get_Ind(Word16 Ind, Word16 Ten, Word16 Ccr, Word16 Enr)
 
 	/* Check valid gain */
 	Acc0 = L_g723_mult(Ten, Enr);
-	Acc0 = L_g723_shr(Acc0, (Word16) 2);
+	Acc0 = L_g723_shr(Acc0, (int16_t) 2);
 	Acc1 = L_g723_mult(Ccr, Ccr);
 
 	if (Acc1 > Acc0) {
@@ -1809,28 +1817,28 @@ PFDEF Get_Ind(Word16 Ind, Word16 Ten, Word16 Ccr, Word16 Enr)
 		}
 		/* Compute scaling gain */
 		Acc0 = g723_L_deposit_h(Ten);
-		Acc0 = L_g723_shr(Acc0, (Word16) 1);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 1);
 		Acc0 = g723_L_mac(Acc0, Ccr, Pf.Gain);
 		Exp = g723_mult(Pf.Gain, Pf.Gain);
 		Acc1 = L_g723_mult(Enr, Exp);
-		Acc1 = L_g723_shr(Acc1, (Word16) 1);
+		Acc1 = L_g723_shr(Acc1, (int16_t) 1);
 		Acc0 = L_g723_add(Acc0, Acc1);
 		Exp = round_(Acc0);
 
 		Acc1 = g723_L_deposit_h(Ten);
 		Acc0 = g723_L_deposit_h(Exp);
-		Acc1 = L_g723_shr(Acc1, (Word16) 1);
+		Acc1 = L_g723_shr(Acc1, (int16_t) 1);
 
 		if (Acc1 >= Acc0)
-			Exp = (Word16) 0x7fff;
+			Exp = (int16_t) 0x7fff;
 		else
 			Exp = div_l(Acc1, Exp);
 
 		Acc0 = g723_L_deposit_h(Exp);
 		Pf.ScGn = Sqrt_lbc(Acc0);
 	} else {
-		Pf.Gain = (Word16) 0;
-		Pf.ScGn = (Word16) 0x7fff;
+		Pf.Gain = (int16_t) 0;
+		Pf.ScGn = (int16_t) 0x7fff;
 	}
 
 	Pf.Gain = g723_mult(Pf.Gain, Pf.ScGn);
@@ -1848,23 +1856,23 @@ PFDEF Get_Ind(Word16 Ind, Word16 Ten, Word16 Ccr, Word16 Enr)
 **
 ** Arguments:
 **
-**  Word16 *Tv      Pitch postfiltered excitation
-**  Word16 *Buff    decoded excitation
+**  int16_t *Tv      Pitch postfiltered excitation
+**  int16_t *Buff    decoded excitation
 **  PFDEF Pf        Pitch postfilter parameters
-**  Word16 Sfc      Subframe index
+**  int16_t Sfc      Subframe index
 **
 ** Outputs:
 **
-**  Word16 *Tv      Pitch postfiltered excitation
+**  int16_t *Tv      Pitch postfiltered excitation
 **
 ** Return value: None
 **
 */
-void Filt_Lpf(Word16 * Tv, Word16 * Buff, PFDEF Pf, Word16 Sfc)
+void Filt_Lpf(int16_t * Tv, int16_t * Buff, PFDEF Pf, int16_t Sfc)
 {
 	int i;
 
-	Word32 Acc0;
+	int32_t Acc0;
 
 	for (i = 0; i < SubFrLen; i++) {
 		Acc0 =
@@ -1890,41 +1898,41 @@ void Filt_Lpf(Word16 * Tv, Word16 * Buff, PFDEF Pf, Word16 Sfc)
 **
 ** Arguments:
 **
-**   Word16 X[]              Target vector.     (in Q0)
-**   Word16 h[]              Impulse response.  (in Q12)
-**   Word16 T0               Pitch period.
-**   Word16 code[]           Innovative vector.        (in Q12)
-**   Word16 gain             Innovative vector gain.   (in Q0)
-**   Word16 sign             Signs of the 4 pulses.
-**   Word16 shift            Shift of the innovative vector
-**   Word16 gain_T0          Gain for pitch synchronous fiter
+**   int16_t X[]              Target vector.     (in Q0)
+**   int16_t h[]              Impulse response.  (in Q12)
+**   int16_t T0               Pitch period.
+**   int16_t code[]           Innovative vector.        (in Q12)
+**   int16_t gain             Innovative vector gain.   (in Q0)
+**   int16_t sign             Signs of the 4 pulses.
+**   int16_t shift            Shift of the innovative vector
+**   int16_t gain_T0          Gain for pitch synchronous fiter
 **
 ** Inputs :
 **
-**   Word16 X[]              Target vector.     (in Q0)
-**   Word16 h[]              Impulse response.  (in Q12)
-**   Word16 T0               Pitch period.
-**   Word16 gain_T0          Gain for pitch synchronous fiter
+**   int16_t X[]              Target vector.     (in Q0)
+**   int16_t h[]              Impulse response.  (in Q12)
+**   int16_t T0               Pitch period.
+**   int16_t gain_T0          Gain for pitch synchronous fiter
 **
 ** Outputs:
 **
-**   Word16 code[]           Innovative vector.        (in Q12)
-**   Word16 gain             Innovative vector gain.   (in Q0)
-**   Word16 sign             Signs of the 4 pulses.
-**   Word16 shift            Shift of the innovative vector.
+**   int16_t code[]           Innovative vector.        (in Q12)
+**   int16_t gain             Innovative vector gain.   (in Q0)
+**   int16_t sign             Signs of the 4 pulses.
+**   int16_t shift            Shift of the innovative vector.
 **
 ** Return value:
 **
-**   Word16 index            Innovative codebook index
+**   int16_t index            Innovative codebook index
 **
 */
-Word16 ACELP_LBC_code(Word16 X[], Word16 h[], Word16 T0, Word16 code[],
-		      Word16 * ind_gain, Word16 * shift, Word16 * sign,
-		      Word16 gain_T0)
+int16_t ACELP_LBC_code(int16_t X[], int16_t h[], int16_t T0, int16_t code[],
+		      int16_t * ind_gain, int16_t * shift, int16_t * sign,
+		      int16_t gain_T0)
 {
-	Word16 i, index, gain_q;
-	Word16 Dn[SubFrLen2], tmp_code[SubFrLen2];
-	Word16 rr[DIM_RR];
+	int16_t i, index, gain_q;
+	int16_t Dn[SubFrLen2], tmp_code[SubFrLen2];
+	int16_t rr[DIM_RR];
 
 	/*
 	 * Include fixed-gain pitch contribution into impulse resp. h[]
@@ -1983,27 +1991,27 @@ Word16 ACELP_LBC_code(Word16 X[], Word16 h[], Word16 T0, Word16 code[],
 **
 ** Arguments:
 **
-**  Word16 h[]              Impulse response.
-**  Word16 rr[]             Correlations.
+**  int16_t h[]              Impulse response.
+**  int16_t rr[]             Correlations.
 **
 **  Outputs:
 **
-**  Word16 rr[]             Correlations.
+**  int16_t rr[]             Correlations.
 **
 **  Return value :          None
 */
-void Cor_h(Word16 * H, Word16 * rr)
+void Cor_h(int16_t * H, int16_t * rr)
 {
-	Word16 *rri0i0, *rri1i1, *rri2i2, *rri3i3;
-	Word16 *rri0i1, *rri0i2, *rri0i3;
-	Word16 *rri1i2, *rri1i3, *rri2i3;
+	int16_t *rri0i0, *rri1i1, *rri2i2, *rri3i3;
+	int16_t *rri0i1, *rri0i2, *rri0i3;
+	int16_t *rri1i2, *rri1i3, *rri2i3;
 
-	Word16 *p0, *p1, *p2, *p3;
+	int16_t *p0, *p1, *p2, *p3;
 
-	Word16 *ptr_hd, *ptr_hf, *ptr_h1, *ptr_h2;
-	Word32 cor;
-	Word16 i, k, ldec, l_fin_sup, l_fin_inf;
-	Word16 h[SubFrLen2];
+	int16_t *ptr_hd, *ptr_hf, *ptr_h1, *ptr_h2;
+	int32_t cor;
+	int16_t i, k, ldec, l_fin_sup, l_fin_inf;
+	int16_t h[SubFrLen2];
 
 	/* Scaling for maximum precision */
 
@@ -2080,7 +2088,7 @@ void Cor_h(Word16 * H, Word16 * rr)
 	 */
 
 	l_fin_sup = MSIZE - 1;
-	l_fin_inf = l_fin_sup - (Word16) 1;
+	l_fin_inf = l_fin_sup - (int16_t) 1;
 	ldec = NB_POS + 1;
 
 	ptr_hd = h;
@@ -2096,7 +2104,7 @@ void Cor_h(Word16 * H, Word16 * rr)
 		ptr_h1 = ptr_hd;
 		ptr_h2 = ptr_hf;
 
-		for (i = k + (Word16) 1; i < NB_POS; i++) {
+		for (i = k + (int16_t) 1; i < NB_POS; i++) {
 
 			cor = g723_L_mac(cor, *ptr_h1, *ptr_h2);
 			ptr_h1++;
@@ -2171,7 +2179,7 @@ void Cor_h(Word16 * H, Word16 * rr)
 	ptr_hd = h;
 	ptr_hf = ptr_hd + 4;
 	l_fin_sup = MSIZE - 1;
-	l_fin_inf = l_fin_sup - (Word16) 1;
+	l_fin_inf = l_fin_sup - (int16_t) 1;
 	for (k = 0; k < NB_POS; k++) {
 		p3 = rri1i3 + l_fin_sup;
 		p2 = rri0i2 + l_fin_sup;
@@ -2181,7 +2189,7 @@ void Cor_h(Word16 * H, Word16 * rr)
 		cor = 0;
 		ptr_h1 = ptr_hd;
 		ptr_h2 = ptr_hf;
-		for (i = k + (Word16) 1; i < NB_POS; i++) {
+		for (i = k + (int16_t) 1; i < NB_POS; i++) {
 			cor = g723_L_mac(cor, *ptr_h1, *ptr_h2);
 			ptr_h1++;
 			ptr_h2++;
@@ -2247,7 +2255,7 @@ void Cor_h(Word16 * H, Word16 * rr)
 	ptr_hd = h;
 	ptr_hf = ptr_hd + 6;
 	l_fin_sup = MSIZE - 1;
-	l_fin_inf = l_fin_sup - (Word16) 1;
+	l_fin_inf = l_fin_sup - (int16_t) 1;
 	for (k = 0; k < NB_POS; k++) {
 
 		p3 = rri0i3 + l_fin_sup;
@@ -2258,7 +2266,7 @@ void Cor_h(Word16 * H, Word16 * rr)
 		ptr_h1 = ptr_hd;
 		ptr_h2 = ptr_hf;
 		cor = 0;
-		for (i = k + (Word16) 1; i < NB_POS; i++) {
+		for (i = k + (int16_t) 1; i < NB_POS; i++) {
 
 			cor = g723_L_mac(cor, *ptr_h1, *ptr_h2);
 			ptr_h1++;
@@ -2324,21 +2332,21 @@ void Cor_h(Word16 * H, Word16 * rr)
 **
 ** Arguments:
 **
-**      Word16 h[]              Impulse response.
-**      Word16 X[]              Target vector.
-**      Word16 D[]              Correlations.
+**      int16_t h[]              Impulse response.
+**      int16_t X[]              Target vector.
+**      int16_t D[]              Correlations.
 **
 **  Outputs:
 **
-**      Word16 D[]              Correlations.
+**      int16_t D[]              Correlations.
 **
 **  Return value:           None
 */
-void Cor_h_X(Word16 h[], Word16 X[], Word16 D[])
+void Cor_h_X(int16_t h[], int16_t X[], int16_t D[])
 {
-	Word16 i, j;
-	Word32 s, max;
-	Word32 y32[SubFrLen];
+	int16_t i, j;
+	int32_t s, max;
+	int32_t y32[SubFrLen];
 
 	/* first keep the result on 32 bits and find absolute maximum */
 
@@ -2387,12 +2395,12 @@ void Cor_h_X(Word16 h[], Word16 X[], Word16 D[])
 **
 **  Outputs:
 **
-**      Word16          extra
+**      int16_t          extra
 **
 **  Return value:           None
 **
 */
-static Word16 extra;
+static int16_t extra;
 void reset_max_time(void)
 {
 	extra = 120;
@@ -2425,46 +2433,46 @@ void reset_max_time(void)
 **
 **  Input arguments:
 **
-**      Word16 Dn[]       Correlation between target vector and impulse response h[]
-**      Word16 rr[]       Correlations of impulse response h[]
-**      Word16 h[]        Impulse response of filters
+**      int16_t Dn[]       Correlation between target vector and impulse response h[]
+**      int16_t rr[]       Correlations of impulse response h[]
+**      int16_t h[]        Impulse response of filters
 **
 **  Output arguments:
 **
-**      Word16 cod[]      Selected algebraic codeword
-**      Word16 y[]        Filtered codeword
-**      Word16 code_shift Shift of the codeword
-**      Word16 sign       Signs of the 4 pulses.
+**      int16_t cod[]      Selected algebraic codeword
+**      int16_t y[]        Filtered codeword
+**      int16_t code_shift Shift of the codeword
+**      int16_t sign       Signs of the 4 pulses.
 **
 **  Return value:
 **
-**      Word16   Index of selected codevector
+**      int16_t   Index of selected codevector
 **
 */
-Word16 D4i64_LBC(Word16 Dn[], Word16 rr[], Word16 h[], Word16 cod[],
-		 Word16 y[], Word16 * code_shift, Word16 * sign)
+int16_t D4i64_LBC(int16_t Dn[], int16_t rr[], int16_t h[], int16_t cod[],
+		 int16_t y[], int16_t * code_shift, int16_t * sign)
 {
-	Word16 i0, i1, i2, i3, ip0, ip1, ip2, ip3;
-	Word16 i, j, time;
-	Word16 shif, shift;
-	Word16 ps0, ps1, ps2, ps3, alp, alp0;
-	Word32 alp1, alp2, alp3, L32;
-	Word16 ps0a, ps1a, ps2a;
-	Word16 ps3c, psc, alpha;
-	Word16 means, max0, max1, max2, thres;
+	int16_t i0, i1, i2, i3, ip0, ip1, ip2, ip3;
+	int16_t i, j, time;
+	int16_t shif, shift;
+	int16_t ps0, ps1, ps2, ps3, alp, alp0;
+	int32_t alp1, alp2, alp3, L32;
+	int16_t ps0a, ps1a, ps2a;
+	int16_t ps3c, psc, alpha;
+	int16_t means, max0, max1, max2, thres;
 
-	Word16 *rri0i0, *rri1i1, *rri2i2, *rri3i3;
-	Word16 *rri0i1, *rri0i2, *rri0i3;
-	Word16 *rri1i2, *rri1i3, *rri2i3;
+	int16_t *rri0i0, *rri1i1, *rri2i2, *rri3i3;
+	int16_t *rri0i1, *rri0i2, *rri0i3;
+	int16_t *rri1i2, *rri1i3, *rri2i3;
 
-	Word16 *ptr_ri0i0, *ptr_ri1i1, *ptr_ri2i2, *ptr_ri3i3;
-	Word16 *ptr_ri0i1, *ptr_ri0i2, *ptr_ri0i3;
-	Word16 *ptr_ri1i2, *ptr_ri1i3, *ptr_ri2i3;
+	int16_t *ptr_ri0i0, *ptr_ri1i1, *ptr_ri2i2, *ptr_ri3i3;
+	int16_t *ptr_ri0i1, *ptr_ri0i2, *ptr_ri0i3;
+	int16_t *ptr_ri1i2, *ptr_ri1i3, *ptr_ri2i3;
 
-	Word16 *ptr1_ri0i1, *ptr1_ri0i2, *ptr1_ri0i3;
-	Word16 *ptr1_ri1i2, *ptr1_ri1i3, *ptr1_ri2i3;
+	int16_t *ptr1_ri0i1, *ptr1_ri0i2, *ptr1_ri0i3;
+	int16_t *ptr1_ri1i2, *ptr1_ri1i3, *ptr1_ri2i3;
 
-	Word16 p_sign[SubFrLen2 / 2];
+	int16_t p_sign[SubFrLen2 / 2];
 
 	/* Init pointers */
 
@@ -2883,24 +2891,24 @@ Word16 D4i64_LBC(Word16 Dn[], Word16 rr[], Word16 h[], Word16 cod[],
 **
 ** Input arguments:
 **
-**      Word16 X[]        Code target.  (in Q0)
-**      Word16 Y[]        Filtered innovation code. (in Q12)
+**      int16_t X[]        Code target.  (in Q0)
+**      int16_t Y[]        Filtered innovation code. (in Q12)
 **
 ** Output:
 **
-**      Word16 *gain_q    Gain of innovation code.  (in Q0)
+**      int16_t *gain_q    Gain of innovation code.  (in Q0)
 **
 **  Return value:
 **
-**      Word16  index of innovation code gain
+**      int16_t  index of innovation code gain
 **
 */
-Word16 G_code(Word16 X[], Word16 Y[], Word16 * gain_q)
+int16_t G_code(int16_t X[], int16_t Y[], int16_t * gain_q)
 {
-	Word16 i;
-	Word16 xy, yy, exp_xy, exp_yy, gain, gain_nq;
-	Word32 L_xy, L_yy;
-	Word16 dist, dist_min;
+	int16_t i;
+	int16_t xy, yy, exp_xy, exp_yy, gain, gain_nq;
+	int32_t L_xy, L_yy;
+	int16_t dist, dist_min;
 
 	/* Scale down Y[] by 8 to avoid overflow */
 	for (i = 0; i < SubFrLen; i++)
@@ -2937,7 +2945,7 @@ Word16 G_code(Word16 X[], Word16 Y[], Word16 * gain_q)
 
 	gain_nq = g723_shr(gain_nq, i);
 
-	gain = (Word16) 0;
+	gain = (int16_t) 0;
 	dist_min = g723_sub(gain_nq, FcbkGainTable[0]);
 	dist_min = g723_abs_s(dist_min);
 	for (i = 1; i < NumOfGainLev; i++) {
@@ -2945,7 +2953,7 @@ Word16 G_code(Word16 X[], Word16 Y[], Word16 * gain_q)
 		dist = g723_abs_s(dist);
 		if (dist < dist_min) {
 			dist_min = dist;
-			gain = (Word16) i;
+			gain = (int16_t) i;
 		}
 	}
 	*gain_q = FcbkGainTable[gain];
@@ -2963,22 +2971,22 @@ Word16 G_code(Word16 X[], Word16 Y[], Word16 * gain_q)
 **
 **  Arguments:
 **
-**      Word16 T0         Decoded pitch lag
-**      Word16 Gid        Gain vector index in the adaptive gain vector codebook
-**      Word16 *gain_T0   Pitch synchronous gain
+**      int16_t T0         Decoded pitch lag
+**      int16_t Gid        Gain vector index in the adaptive gain vector codebook
+**      int16_t *gain_T0   Pitch synchronous gain
 **
 **  Outputs:
 **
-**      Word16 *gain_T0   Pitch synchronous filter gain
+**      int16_t *gain_T0   Pitch synchronous filter gain
 **
 **  Return Value:
 **
-**      Word16 T0_mod     Pitch synchronous filter lag
+**      int16_t T0_mod     Pitch synchronous filter lag
 */
-Word16 search_T0(Word16 T0, Word16 Gid, Word16 * gain_T0)
+int16_t search_T0(int16_t T0, int16_t Gid, int16_t * gain_T0)
 {
 
-	Word16 T0_mod;
+	int16_t T0_mod;
 
 	T0_mod = T0 + epsi170[Gid];
 	*gain_T0 = gain170[Gid];

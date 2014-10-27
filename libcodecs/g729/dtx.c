@@ -16,8 +16,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "tab_ld8k.h"
 #include "ld8cp.h"
@@ -27,25 +25,25 @@
 #include "sid.h"
 
 /* Static Variables */
-static FLOAT lspSid_q[M];
-static FLOAT pastCoeff[MP1];
-static FLOAT RCoeff[MP1];
-static FLOAT Acf[SIZ_ACF];
-static FLOAT sumAcf[SIZ_SUMACF];
-static FLOAT ener[NB_GAIN];
+static float lspSid_q[M];
+static float pastCoeff[MP1];
+static float RCoeff[MP1];
+static float Acf[SIZ_ACF];
+static float sumAcf[SIZ_SUMACF];
+static float ener[NB_GAIN];
 static int fr_cur;
-static FLOAT cur_gain;
+static float cur_gain;
 static int nb_ener;
-static FLOAT sid_gain;
+static float sid_gain;
 static int flag_chang;
-static FLOAT prev_energy;
+static float prev_energy;
 static int count_fr0;
 
 /* Local functions */
-static void calc_pastfilt(FLOAT * Coeff, FLOAT old_A[], FLOAT old_rc[]);
-static void calc_RCoeff(FLOAT * Coeff, FLOAT * RCoeff);
-static int cmp_filt(FLOAT * RCoeff, FLOAT * acf, FLOAT alpha, FLOAT Thresh);
-static void calc_sum_acf(FLOAT * acf, FLOAT * sum, int nb);
+static void calc_pastfilt(float * Coeff, float old_A[], float old_rc[]);
+static void calc_RCoeff(float * Coeff, float * RCoeff);
+static int cmp_filt(float * RCoeff, float * acf, float alpha, float Thresh);
+static void calc_sum_acf(float * acf, float * sum, int nb);
 static void update_sumAcf(void);
 
 /*-----------------------------------------------------------*
@@ -58,13 +56,13 @@ void init_cod_cng(void)
 	int i;
 
 	for (i = 0; i < SIZ_SUMACF; i++)
-		sumAcf[i] = (F) 0.;
+		sumAcf[i] = (float) 0.;
 
 	for (i = 0; i < SIZ_ACF; i++)
-		Acf[i] = (F) 0.;
+		Acf[i] = (float) 0.;
 
 	for (i = 0; i < NB_GAIN; i++)
-		ener[i] = (F) 0.;
+		ener[i] = (float) 0.;
 
 	cur_gain = 0;
 	fr_cur = 0;
@@ -80,26 +78,26 @@ void init_cod_cng(void)
 *   encodes SID frames                                      *
 *   computes CNG excitation for encoder update              *
 *-----------------------------------------------------------*/
-void cod_cng(FLOAT * exc,	/* (i/o) : excitation array                     */
+void cod_cng(float * exc,	/* (i/o) : excitation array                     */
 	     int pastVad,	/* (i)   : previous VAD decision                */
-	     FLOAT * lsp_old_q,	/* (i/o) : previous quantized lsp               */
-	     FLOAT * old_A,	/* (i/o) : last stable filter LPC coefficients  */
-	     FLOAT * old_rc,	/* (i/o) : last stable filter Reflection coefficients. */
-	     FLOAT * Aq,	/* (o)   : set of interpolated LPC coefficients */
+	     float * lsp_old_q,	/* (i/o) : previous quantized lsp               */
+	     float * old_A,	/* (i/o) : last stable filter LPC coefficients  */
+	     float * old_rc,	/* (i/o) : last stable filter Reflection coefficients. */
+	     float * Aq,	/* (o)   : set of interpolated LPC coefficients */
 	     int *ana,		/* (o)   : coded SID parameters                 */
-	     FLOAT freq_prev[MA_NP][M],	/* (i/o) : previous LPS for quantization        */
-	     INT16 * seed	/* (i/o) : random generator seed                */
+	     float freq_prev[MA_NP][M],	/* (i/o) : previous LPS for quantization        */
+	     int16_t * seed	/* (i/o) : random generator seed                */
     )
 {
 	int i;
 
-	FLOAT curAcf[MP1];
-	FLOAT bid[MP1];
-	FLOAT curCoeff[MP1];
-	FLOAT lsp_new[M];
-	FLOAT *lpcCoeff;
+	float curAcf[MP1];
+	float bid[MP1];
+	float curCoeff[MP1];
+	float lsp_new[M];
+	float *lpcCoeff;
 	int cur_igain;
-	FLOAT energyq;
+	float energyq;
 
 	/* Update Ener */
 	for (i = NB_GAIN - 1; i >= 1; i--) {
@@ -110,8 +108,8 @@ void cod_cng(FLOAT * exc,	/* (i/o) : excitation array                     */
 	calc_sum_acf(Acf, curAcf, NB_CURACF);
 
 	/* Compute LPC coefficients and residual energy */
-	if (curAcf[0] == (F) 0.) {
-		ener[0] = (F) 0.;	/* should not happen */
+	if (curAcf[0] == (float) 0.) {
+		ener[0] = (float) 0.;	/* should not happen */
 	} else {
 		ener[0] = levinsone(M, curAcf, curCoeff, bid, old_A, old_rc);
 	}
@@ -135,7 +133,7 @@ void cod_cng(FLOAT * exc,	/* (i/o) : excitation array                     */
 		}
 
 		/* compare energy difference between current frame and last frame */
-		if ((FLOAT) fabs(prev_energy - energyq) > (F) 2.0)
+		if ((float) fabs(prev_energy - energyq) > (float) 2.0)
 			flag_chang = 1;
 
 		count_fr0++;
@@ -220,12 +218,12 @@ void cod_cng(FLOAT * exc,	/* (i/o) : excitation array                     */
 *   used for DTX/CNG                                        *
 *   If Vad=1 : updating of array sumAcf                     *
 *-----------------------------------------------------------*/
-void update_cng(FLOAT * r,	/* (i) :   frame autocorrelation               */
+void update_cng(float * r,	/* (i) :   frame autocorrelation               */
 		int Vad		/* (i) :   current Vad decision                */
     )
 {
 	int i;
-	FLOAT *ptr1, *ptr2;
+	float *ptr1, *ptr2;
 
 	/* Update Acf */
 	ptr1 = Acf + SIZ_ACF - 1;
@@ -257,36 +255,36 @@ void update_cng(FLOAT * r,	/* (i) :   frame autocorrelation               */
 
 /* Compute autocorr of LPC coefficients used for Itakura distance */
 /******************************************************************/
-static void calc_RCoeff(FLOAT * Coeff, FLOAT * RCoeff)
+static void calc_RCoeff(float * Coeff, float * RCoeff)
 {
 	int i, j;
-	FLOAT temp;
+	float temp;
 
 	/* RCoeff[0] = SUM(j=0->M) Coeff[j] ** 2 */
-	for (j = 0, temp = (F) 0.; j <= M; j++) {
+	for (j = 0, temp = (float) 0.; j <= M; j++) {
 		temp += Coeff[j] * Coeff[j];
 	}
 	RCoeff[0] = temp;
 
 	/* RCoeff[i] = SUM(j=0->M-i) Coeff[j] * Coeff[j+i] */
 	for (i = 1; i <= M; i++) {
-		for (j = 0, temp = (F) 0.; j <= M - i; j++) {
+		for (j = 0, temp = (float) 0.; j <= M - i; j++) {
 			temp += Coeff[j] * Coeff[j + i];
 		}
-		RCoeff[i] = (F) 2. *temp;
+		RCoeff[i] = (float) 2. *temp;
 	}
 	return;
 }
 
 /* Compute Itakura distance and compare to threshold */
 /*****************************************************/
-static int cmp_filt(FLOAT * RCoeff, FLOAT * acf, FLOAT alpha, FLOAT Thresh)
+static int cmp_filt(float * RCoeff, float * acf, float alpha, float Thresh)
 {
-	FLOAT temp1, temp2;
+	float temp1, temp2;
 	int i;
 	int diff;
 
-	temp1 = (F) 0.;
+	temp1 = (float) 0.;
 	for (i = 0; i <= M; i++) {
 		temp1 += RCoeff[i] * acf[i];
 	}
@@ -302,18 +300,18 @@ static int cmp_filt(FLOAT * RCoeff, FLOAT * acf, FLOAT alpha, FLOAT Thresh)
 
 /* Compute past average filter */
 /*******************************/
-static void calc_pastfilt(FLOAT * Coeff, FLOAT old_A[], FLOAT old_rc[])
+static void calc_pastfilt(float * Coeff, float old_A[], float old_rc[])
 {
 	int i;
-	FLOAT s_sumAcf[MP1];
-	FLOAT bid[M];
+	float s_sumAcf[MP1];
+	float bid[M];
 
 	calc_sum_acf(sumAcf, s_sumAcf, NB_SUMACF);
 
-	if (s_sumAcf[0] == (F) 0.) {
-		Coeff[0] = (F) 1.;
+	if (s_sumAcf[0] == (float) 0.) {
+		Coeff[0] = (float) 1.;
 		for (i = 1; i <= M; i++)
-			Coeff[i] = (F) 0.;
+			Coeff[i] = (float) 0.;
 		return;
 	}
 
@@ -325,7 +323,7 @@ static void calc_pastfilt(FLOAT * Coeff, FLOAT old_A[], FLOAT old_rc[])
 /*****************/
 static void update_sumAcf(void)
 {
-	FLOAT *ptr1, *ptr2;
+	float *ptr1, *ptr2;
 	int i;
 
     /*** Move sumAcf ***/
@@ -342,14 +340,14 @@ static void update_sumAcf(void)
 
 /* Compute sum of acfs (curAcf, sumAcf or s_sumAcf) */
 /****************************************************/
-static void calc_sum_acf(FLOAT * acf, FLOAT * sum, int nb)
+static void calc_sum_acf(float * acf, float * sum, int nb)
 {
 
-	FLOAT *ptr1;
+	float *ptr1;
 	int i, j;
 
 	for (j = 0; j < MP1; j++) {
-		sum[j] = (F) 0.;
+		sum[j] = (float) 0.;
 	}
 	ptr1 = acf;
 	for (i = 0; i < nb; i++) {

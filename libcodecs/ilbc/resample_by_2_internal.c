@@ -18,22 +18,22 @@
 #include "resample_by_2_internal.h"
 
 // allpass filter coefficients.
-static const WebRtc_Word16 kResampleAllpass[2][3] = {
+static const int16_t kResampleAllpass[2][3] = {
 	{821, 6110, 12382},
 	{3050, 9368, 15063}
 };
 
 //
 //   decimator
-// input:  WebRtc_Word32 (shifted 15 positions to the left, + offset 16384) OVERWRITTEN!
-// output: WebRtc_Word16 (saturated) (of length len/2)
+// input:  int32_t (shifted 15 positions to the left, + offset 16384) OVERWRITTEN!
+// output: int16_t (saturated) (of length len/2)
 // state:  filter state array; length = 8
 
-void WebRtcSpl_DownBy2IntToShort(WebRtc_Word32 * in, WebRtc_Word32 len,
-				 WebRtc_Word16 * out, WebRtc_Word32 * state)
+void WebRtcSpl_DownBy2IntToShort(int32_t * in, int32_t len,
+				 int16_t * out, int32_t * state)
 {
-	WebRtc_Word32 tmp0, tmp1, diff;
-	WebRtc_Word32 i;
+	int32_t tmp0, tmp1, diff;
+	int32_t i;
 
 	len >>= 1;
 
@@ -100,37 +100,37 @@ void WebRtcSpl_DownBy2IntToShort(WebRtc_Word32 * in, WebRtc_Word32 len,
 		// divide by two, add both allpass outputs and round
 		tmp0 = (in[i << 1] + in[(i << 1) + 1]) >> 15;
 		tmp1 = (in[(i << 1) + 2] + in[(i << 1) + 3]) >> 15;
-		if (tmp0 > (WebRtc_Word32) 0x00007FFF)
+		if (tmp0 > (int32_t) 0x00007FFF)
 			tmp0 = 0x00007FFF;
-		if (tmp0 < (WebRtc_Word32) 0xFFFF8000)
+		if (tmp0 < (int32_t) 0xFFFF8000)
 			tmp0 = 0xFFFF8000;
-		out[i] = (WebRtc_Word16) tmp0;
-		if (tmp1 > (WebRtc_Word32) 0x00007FFF)
+		out[i] = (int16_t) tmp0;
+		if (tmp1 > (int32_t) 0x00007FFF)
 			tmp1 = 0x00007FFF;
-		if (tmp1 < (WebRtc_Word32) 0xFFFF8000)
+		if (tmp1 < (int32_t) 0xFFFF8000)
 			tmp1 = 0xFFFF8000;
-		out[i + 1] = (WebRtc_Word16) tmp1;
+		out[i + 1] = (int16_t) tmp1;
 	}
 }
 
 //
 //   decimator
-// input:  WebRtc_Word16
-// output: WebRtc_Word32 (shifted 15 positions to the left, + offset 16384) (of length len/2)
+// input:  int16_t
+// output: int32_t (shifted 15 positions to the left, + offset 16384) (of length len/2)
 // state:  filter state array; length = 8
 
-void WebRtcSpl_DownBy2ShortToInt(const WebRtc_Word16 * in,
-				 WebRtc_Word32 len,
-				 WebRtc_Word32 * out, WebRtc_Word32 * state)
+void WebRtcSpl_DownBy2ShortToInt(const int16_t * in,
+				 int32_t len,
+				 int32_t * out, int32_t * state)
 {
-	WebRtc_Word32 tmp0, tmp1, diff;
-	WebRtc_Word32 i;
+	int32_t tmp0, tmp1, diff;
+	int32_t i;
 
 	len >>= 1;
 
 	// lower allpass filter (operates on even input samples)
 	for (i = 0; i < len; i++) {
-		tmp0 = ((WebRtc_Word32) in[i << 1] << 15) + (1 << 14);
+		tmp0 = ((int32_t) in[i << 1] << 15) + (1 << 14);
 		diff = tmp0 - state[1];
 		// scale down and round
 		diff = (diff + (1 << 13)) >> 14;
@@ -159,7 +159,7 @@ void WebRtcSpl_DownBy2ShortToInt(const WebRtc_Word16 * in,
 
 	// upper allpass filter (operates on odd input samples)
 	for (i = 0; i < len; i++) {
-		tmp0 = ((WebRtc_Word32) in[i << 1] << 15) + (1 << 14);
+		tmp0 = ((int32_t) in[i << 1] << 15) + (1 << 14);
 		diff = tmp0 - state[5];
 		// scale down and round
 		diff = (diff + (1 << 13)) >> 14;
@@ -189,18 +189,18 @@ void WebRtcSpl_DownBy2ShortToInt(const WebRtc_Word16 * in,
 
 //
 //   interpolator
-// input:  WebRtc_Word16
-// output: WebRtc_Word32 (normalized, not saturated) (of length len*2)
+// input:  int16_t
+// output: int32_t (normalized, not saturated) (of length len*2)
 // state:  filter state array; length = 8
-void WebRtcSpl_UpBy2ShortToInt(const WebRtc_Word16 * in, WebRtc_Word32 len,
-			       WebRtc_Word32 * out, WebRtc_Word32 * state)
+void WebRtcSpl_UpBy2ShortToInt(const int16_t * in, int32_t len,
+			       int32_t * out, int32_t * state)
 {
-	WebRtc_Word32 tmp0, tmp1, diff;
-	WebRtc_Word32 i;
+	int32_t tmp0, tmp1, diff;
+	int32_t i;
 
 	// upper allpass filter (generates odd output samples)
 	for (i = 0; i < len; i++) {
-		tmp0 = ((WebRtc_Word32) in[i] << 15) + (1 << 14);
+		tmp0 = ((int32_t) in[i] << 15) + (1 << 14);
 		diff = tmp0 - state[5];
 		// scale down and round
 		diff = (diff + (1 << 13)) >> 14;
@@ -229,7 +229,7 @@ void WebRtcSpl_UpBy2ShortToInt(const WebRtc_Word16 * in, WebRtc_Word32 len,
 
 	// lower allpass filter (generates even output samples)
 	for (i = 0; i < len; i++) {
-		tmp0 = ((WebRtc_Word32) in[i] << 15) + (1 << 14);
+		tmp0 = ((int32_t) in[i] << 15) + (1 << 14);
 		diff = tmp0 - state[1];
 		// scale down and round
 		diff = (diff + (1 << 13)) >> 14;
@@ -257,14 +257,14 @@ void WebRtcSpl_UpBy2ShortToInt(const WebRtc_Word16 * in, WebRtc_Word32 len,
 
 //
 //   interpolator
-// input:  WebRtc_Word32 (shifted 15 positions to the left, + offset 16384)
-// output: WebRtc_Word32 (shifted 15 positions to the left, + offset 16384) (of length len*2)
+// input:  int32_t (shifted 15 positions to the left, + offset 16384)
+// output: int32_t (shifted 15 positions to the left, + offset 16384) (of length len*2)
 // state:  filter state array; length = 8
-void WebRtcSpl_UpBy2IntToInt(const WebRtc_Word32 * in, WebRtc_Word32 len,
-			     WebRtc_Word32 * out, WebRtc_Word32 * state)
+void WebRtcSpl_UpBy2IntToInt(const int32_t * in, int32_t len,
+			     int32_t * out, int32_t * state)
 {
-	WebRtc_Word32 tmp0, tmp1, diff;
-	WebRtc_Word32 i;
+	int32_t tmp0, tmp1, diff;
+	int32_t i;
 
 	// upper allpass filter (generates odd output samples)
 	for (i = 0; i < len; i++) {
@@ -325,14 +325,14 @@ void WebRtcSpl_UpBy2IntToInt(const WebRtc_Word32 * in, WebRtc_Word32 len,
 
 //
 //   interpolator
-// input:  WebRtc_Word32 (shifted 15 positions to the left, + offset 16384)
-// output: WebRtc_Word16 (saturated) (of length len*2)
+// input:  int32_t (shifted 15 positions to the left, + offset 16384)
+// output: int16_t (saturated) (of length len*2)
 // state:  filter state array; length = 8
-void WebRtcSpl_UpBy2IntToShort(const WebRtc_Word32 * in, WebRtc_Word32 len,
-			       WebRtc_Word16 * out, WebRtc_Word32 * state)
+void WebRtcSpl_UpBy2IntToShort(const int32_t * in, int32_t len,
+			       int16_t * out, int32_t * state)
 {
-	WebRtc_Word32 tmp0, tmp1, diff;
-	WebRtc_Word32 i;
+	int32_t tmp0, tmp1, diff;
+	int32_t i;
 
 	// upper allpass filter (generates odd output samples)
 	for (i = 0; i < len; i++) {
@@ -359,11 +359,11 @@ void WebRtcSpl_UpBy2IntToShort(const WebRtc_Word32 * in, WebRtc_Word32 len,
 
 		// scale down, saturate and store
 		tmp1 = state[7] >> 15;
-		if (tmp1 > (WebRtc_Word32) 0x00007FFF)
+		if (tmp1 > (int32_t) 0x00007FFF)
 			tmp1 = 0x00007FFF;
-		if (tmp1 < (WebRtc_Word32) 0xFFFF8000)
+		if (tmp1 < (int32_t) 0xFFFF8000)
 			tmp1 = 0xFFFF8000;
-		out[i << 1] = (WebRtc_Word16) tmp1;
+		out[i << 1] = (int16_t) tmp1;
 	}
 
 	out++;
@@ -393,23 +393,23 @@ void WebRtcSpl_UpBy2IntToShort(const WebRtc_Word32 * in, WebRtc_Word32 len,
 
 		// scale down, saturate and store
 		tmp1 = state[3] >> 15;
-		if (tmp1 > (WebRtc_Word32) 0x00007FFF)
+		if (tmp1 > (int32_t) 0x00007FFF)
 			tmp1 = 0x00007FFF;
-		if (tmp1 < (WebRtc_Word32) 0xFFFF8000)
+		if (tmp1 < (int32_t) 0xFFFF8000)
 			tmp1 = 0xFFFF8000;
-		out[i << 1] = (WebRtc_Word16) tmp1;
+		out[i << 1] = (int16_t) tmp1;
 	}
 }
 
 //   lowpass filter
-// input:  WebRtc_Word16
-// output: WebRtc_Word32 (normalized, not saturated)
+// input:  int16_t
+// output: int32_t (normalized, not saturated)
 // state:  filter state array; length = 8
-void WebRtcSpl_LPBy2ShortToInt(const WebRtc_Word16 * in, WebRtc_Word32 len,
-			       WebRtc_Word32 * out, WebRtc_Word32 * state)
+void WebRtcSpl_LPBy2ShortToInt(const int16_t * in, int32_t len,
+			       int32_t * out, int32_t * state)
 {
-	WebRtc_Word32 tmp0, tmp1, diff;
-	WebRtc_Word32 i;
+	int32_t tmp0, tmp1, diff;
+	int32_t i;
 
 	len >>= 1;
 
@@ -440,13 +440,13 @@ void WebRtcSpl_LPBy2ShortToInt(const WebRtc_Word16 * in, WebRtc_Word32 len,
 
 		// scale down, round and store
 		out[i << 1] = state[3] >> 1;
-		tmp0 = ((WebRtc_Word32) in[i << 1] << 15) + (1 << 14);
+		tmp0 = ((int32_t) in[i << 1] << 15) + (1 << 14);
 	}
 	in--;
 
 	// upper allpass filter: even input -> even output samples
 	for (i = 0; i < len; i++) {
-		tmp0 = ((WebRtc_Word32) in[i << 1] << 15) + (1 << 14);
+		tmp0 = ((int32_t) in[i << 1] << 15) + (1 << 14);
 		diff = tmp0 - state[5];
 		// scale down and round
 		diff = (diff + (1 << 13)) >> 14;
@@ -476,7 +476,7 @@ void WebRtcSpl_LPBy2ShortToInt(const WebRtc_Word16 * in, WebRtc_Word32 len,
 
 	// lower allpass filter: even input -> odd output samples
 	for (i = 0; i < len; i++) {
-		tmp0 = ((WebRtc_Word32) in[i << 1] << 15) + (1 << 14);
+		tmp0 = ((int32_t) in[i << 1] << 15) + (1 << 14);
 		diff = tmp0 - state[9];
 		// scale down and round
 		diff = (diff + (1 << 13)) >> 14;
@@ -504,7 +504,7 @@ void WebRtcSpl_LPBy2ShortToInt(const WebRtc_Word16 * in, WebRtc_Word32 len,
 	// upper allpass filter: odd input -> odd output samples
 	in++;
 	for (i = 0; i < len; i++) {
-		tmp0 = ((WebRtc_Word32) in[i << 1] << 15) + (1 << 14);
+		tmp0 = ((int32_t) in[i << 1] << 15) + (1 << 14);
 		diff = tmp0 - state[13];
 		// scale down and round
 		diff = (diff + (1 << 13)) >> 14;
@@ -531,14 +531,14 @@ void WebRtcSpl_LPBy2ShortToInt(const WebRtc_Word16 * in, WebRtc_Word32 len,
 }
 
 //   lowpass filter
-// input:  WebRtc_Word32 (shifted 15 positions to the left, + offset 16384)
-// output: WebRtc_Word32 (normalized, not saturated)
+// input:  int32_t (shifted 15 positions to the left, + offset 16384)
+// output: int32_t (normalized, not saturated)
 // state:  filter state array; length = 8
-void WebRtcSpl_LPBy2IntToInt(const WebRtc_Word32 * in, WebRtc_Word32 len,
-			     WebRtc_Word32 * out, WebRtc_Word32 * state)
+void WebRtcSpl_LPBy2IntToInt(const int32_t * in, int32_t len,
+			     int32_t * out, int32_t * state)
 {
-	WebRtc_Word32 tmp0, tmp1, diff;
-	WebRtc_Word32 i;
+	int32_t tmp0, tmp1, diff;
+	int32_t i;
 
 	len >>= 1;
 

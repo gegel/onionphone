@@ -16,7 +16,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
 #include "count.h"
@@ -29,27 +29,27 @@
 
  /* Local functions */
 
-void w_Norm_Corr(Word16 w_exc[], Word16 xn[], Word16 h[], Word16 w_L_w_subfr,
-		 Word16 t_min, Word16 t_max, Word16 corr_norm[]);
+void w_Norm_Corr(int16_t w_exc[], int16_t xn[], int16_t h[],
+		 int16_t w_L_w_subfr,
+		 int16_t t_min, int16_t t_max, int16_t corr_norm[]);
 
-Word16 w_Pitch_fr6(		/* (o)     : pitch period.                          */
-			  Word16 w_exc[],	/* (i)     : w_excitation buffer                      */
-			  Word16 xn[],	/* (i)     : target vector                          */
-			  Word16 h[],	/* (i)     : impulse response of w_w_synthesis and
+int16_t w_Pitch_fr6(int16_t w_exc[],	/* (i)     : w_excitation buffer                      */
+			  int16_t xn[],	/* (i)     : target vector                          */
+			  int16_t h[],	/* (i)     : impulse response of w_w_synthesis and
 					   weighting filters                     */
-			  Word16 w_L_w_subfr,	/* (i)     : Length of w_subframe                     */
-			  Word16 t0_min,	/* (i)     : minimum value in the searched range.   */
-			  Word16 t0_max,	/* (i)     : maximum value in the searched range.   */
-			  Word16 i_w_subfr,	/* (i)     : indicator for first w_subframe.          */
-			  Word16 * pit_frac	/* (o)     : chosen fraction.                       */
+			  int16_t w_L_w_subfr,	/* (i)     : Length of w_subframe                     */
+			  int16_t t0_min,	/* (i)     : minimum value in the searched range.   */
+			  int16_t t0_max,	/* (i)     : maximum value in the searched range.   */
+			  int16_t i_w_subfr,	/* (i)     : indicator for first w_subframe.          */
+			  int16_t * pit_frac	/* (o)     : chosen fraction.                       */
     )
 {
-	Word16 i;
-	Word16 t_min, t_max;
-	Word16 max, lag, frac;
-	Word16 *corr;
-	Word16 corr_int;
-	Word16 corr_v[40];	/* Total length = t0_max-t0_min+1+2*L_inter */
+	int16_t i;
+	int16_t t_min, t_max;
+	int16_t max, lag, frac;
+	int16_t *corr;
+	int16_t corr_int;
+	int16_t corr_v[40];	/* Total length = t0_max-t0_min+1+2*L_inter */
 
 	/* Find interval to compute normalized correlation */
 
@@ -125,16 +125,16 @@ Word16 w_Pitch_fr6(		/* (o)     : pitch period.                          */
  *************************************************************************/
 
 void
-w_Norm_Corr(Word16 w_exc[], Word16 xn[], Word16 h[], Word16 w_L_w_subfr,
-	    Word16 t_min, Word16 t_max, Word16 corr_norm[])
+w_Norm_Corr(int16_t w_exc[], int16_t xn[], int16_t h[], int16_t w_L_w_subfr,
+	    int16_t t_min, int16_t t_max, int16_t corr_norm[])
 {
-	Word16 i, j, k;
-	Word16 corr_h, corr_l, norm_h, w_norm_l;
-	Word32 s;
+	int16_t i, j, k;
+	int16_t corr_h, corr_l, norm_h, w_norm_l;
+	int32_t s;
 
 	/* Usally dynamic allocation of (w_L_w_subfr) */
-	Word16 w_excf[80];
-	Word16 scaling, h_fac, *s_w_excf, scaled_w_excf[80];
+	int16_t w_excf[80];
+	int16_t scaling, h_fac, *s_w_excf, scaled_w_excf[80];
 
 	k = -t_min;
 

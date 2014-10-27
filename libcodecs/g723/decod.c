@@ -28,39 +28,42 @@
 #include "g723_const.h"
 #include "lbccodec.h"
 
-extern Flag UsePf;
-extern Word16 LspDcTable[LpcOrder];
+extern int UsePf;
+extern int16_t LspDcTable[LpcOrder];
 
-extern LINEDEF Line_Unpk(char *Vinp, Word16 * Ftyp, Word16 Crc);
-extern void Dec_Cng(Word16 Ftyp, LINEDEF * Line, Word16 * DataExc,
-		    Word16 * QntLpc);
+extern LINEDEF Line_Unpk(char *Vinp, int16_t * Ftyp, int16_t Crc);
+extern void Dec_Cng(int16_t Ftyp, LINEDEF * Line, int16_t * DataExc,
+		    int16_t * QntLpc);
 
 extern DECCNGDEF DecCng;
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
-//extern  Word32 L_g723_add(Word32 L_var1, Word32 L_var2);   /* Long add,        2 */
-extern void Lsp_Inq(Word16 * Lsp, Word16 * PrevLsp, Word32 LspId, Word16 Crc);
-extern void Lsp_Int(Word16 * QntLpc, Word16 * CurrLsp, Word16 * PrevLsp);
-extern Word16 g723_shr(Word16 var1, Word16 var2);	/* Short shift right,   1 */
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
+//extern  int32_t L_g723_add(int32_t L_var1, int32_t L_var2);   /* Long add,        2 */
+extern void Lsp_Inq(int16_t * Lsp, int16_t * PrevLsp, int32_t LspId,
+		    int16_t Crc);
+extern void Lsp_Int(int16_t * QntLpc, int16_t * CurrLsp, int16_t * PrevLsp);
+extern int16_t g723_shr(int16_t var1, int16_t var2);	/* Short shift right,   1 */
 
-extern Word16 FcbkGainTable[NumOfGainLev];
+extern int16_t FcbkGainTable[NumOfGainLev];
 
-extern Word16 g723_mult_r(Word16 var1, Word16 var2);	/* Mult with round,     2 */
-extern void Fcbk_Unpk(Word16 * Tv, SFSDEF Sfs, Word16 Olp, Word16 Sfc);
-extern Word16 g723_shl(Word16 var1, Word16 var2);	/* Short shift left,    1 */
-extern Word16 Comp_Info(Word16 * Buff, Word16 Olp, Word16 * Gain,
-			Word16 * ShGain);
-extern PFDEF Comp_Lpf(Word16 * Buff, Word16 Olp, Word16 Sfc);
-extern void Filt_Lpf(Word16 * Tv, Word16 * Buff, PFDEF Pf, Word16 Sfc);
-extern void Regen(Word16 * DataBuff, Word16 * Buff, Word16 Lag, Word16 Gain,
-		  Word16 Ecount, Word16 * Sd);
-extern void Decod_Acbk(Word16 * Tv, Word16 * PrevExc, Word16 Olp, Word16 Lid,
-		       Word16 Gid);
+extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
+extern void Fcbk_Unpk(int16_t * Tv, SFSDEF Sfs, int16_t Olp, int16_t Sfc);
+extern int16_t g723_shl(int16_t var1, int16_t var2);	/* Short shift left,    1 */
+extern int16_t Comp_Info(int16_t * Buff, int16_t Olp, int16_t * Gain,
+			int16_t * ShGain);
+extern PFDEF Comp_Lpf(int16_t * Buff, int16_t Olp, int16_t Sfc);
+extern void Filt_Lpf(int16_t * Tv, int16_t * Buff, PFDEF Pf, int16_t Sfc);
+extern void Regen(int16_t * DataBuff, int16_t * Buff, int16_t Lag,
+		  int16_t Gain,
+		  int16_t Ecount, int16_t * Sd);
+extern void Decod_Acbk(int16_t * Tv, int16_t * PrevExc, int16_t Olp,
+		       int16_t Lid,
+		       int16_t Gid);
 
-extern Word16 SyntIirDl[LpcOrder];
+extern int16_t SyntIirDl[LpcOrder];
 
-extern void Synt(Word16 * Dpnt, Word16 * Lpc);
-extern Word32 Spf(Word16 * Tv, Word16 * Lpc);
-extern void Scale(Word16 * Tv, Word32 Sen);
+extern void Synt(int16_t * Dpnt, int16_t * Lpc);
+extern int32_t Spf(int16_t * Tv, int16_t * Lpc);
+extern void Scale(int16_t * Tv, int32_t Sen);
 /*
    The following structure contains all the static decoder
       variables.
@@ -96,7 +99,7 @@ void Init_Decod()
 		DecStat.PrevLsp[i] = LspDcTable[i];
 
 	/* Initialize the gain scaling unit memory to a constant */
-	DecStat.Gain = (Word16) 0x1000;
+	DecStat.Gain = (int16_t) 0x1000;
 
 	return;
 }
@@ -112,36 +115,36 @@ void Init_Decod()
 **
 ** Arguments:
 **
-**  Word16 *DataBuff    Empty buffer
-**  Word16 Vinp[]       Encoded frame (22/26 bytes)
+**  int16_t *DataBuff    Empty buffer
+**  int16_t Vinp[]       Encoded frame (22/26 bytes)
 **
 
 ** Outputs:
 **
-**  Word16 DataBuff[]   Decoded frame (480 bytes)
+**  int16_t DataBuff[]   Decoded frame (480 bytes)
 **
 ** Return value:
 **
-**  Flag            Always True
+**  int            Always True
 **
 */
 
-Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc)
+int Decod(int16_t * DataBuff, char *Vinp, int16_t Crc)
 {
 	int i, j;
 
-	Word32 Senr;
-	Word16 QntLpc[SubFrames * LpcOrder];
-	Word16 AcbkCont[SubFrLen];
+	int32_t Senr;
+	int16_t QntLpc[SubFrames * LpcOrder];
+	int16_t AcbkCont[SubFrLen];
 
-	Word16 LspVect[LpcOrder];
-	Word16 Temp[PitchMax + Frame];
-	Word16 *Dpnt;
+	int16_t LspVect[LpcOrder];
+	int16_t Temp[PitchMax + Frame];
+	int16_t *Dpnt;
 
 	LINEDEF Line;
 	PFDEF Pf[SubFrames];
 
-	Word16 Ftyp;
+	int16_t Ftyp;
 
 	/*
 	 * Decode the packed bitstream for the frame.  (Text: Section 4;
@@ -152,7 +155,7 @@ Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc)
 	/*
 	 * Update the frame erasure count (Text: Section 3.10)
 	 */
-	if (Line.Crc != (Word16) 0) {
+	if (Line.Crc != (int16_t) 0) {
 		if (DecCng.PastFtyp == 1)
 			Ftyp = 1;	/* active */
 		else
@@ -170,13 +173,13 @@ Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc)
 		/*
 		 * Update the frame erasure count (Text: Section 3.10)
 		 */
-		if (Line.Crc != (Word16) 0)
-			DecStat.Ecount = g723_add(DecStat.Ecount, (Word16) 1);
+		if (Line.Crc != (int16_t) 0)
+			DecStat.Ecount = g723_add(DecStat.Ecount, (int16_t) 1);
 		else
-			DecStat.Ecount = (Word16) 0;
+			DecStat.Ecount = (int16_t) 0;
 
-		if (DecStat.Ecount > (Word16) ErrMaxNum)
-			DecStat.Ecount = (Word16) ErrMaxNum;
+		if (DecStat.Ecount > (int16_t) ErrMaxNum)
+			DecStat.Ecount = (int16_t) ErrMaxNum;
 
 		/*
 		 * Decode the LSP vector for subframe 3.  (Text: Section 3.2)
@@ -197,16 +200,16 @@ Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc)
 		 * In case of no erasure, update the interpolation gain memory.
 		 * Otherwise compute the interpolation gain (Text: Section 3.10)
 		 */
-		if (DecStat.Ecount == (Word16) 0) {
+		if (DecStat.Ecount == (int16_t) 0) {
 			DecStat.InterGain =
 			    g723_add(Line.Sfs[SubFrames - 2].Mamp,
 				     Line.Sfs[SubFrames - 1].Mamp);
 			DecStat.InterGain =
-			    g723_shr(DecStat.InterGain, (Word16) 1);
+			    g723_shr(DecStat.InterGain, (int16_t) 1);
 			DecStat.InterGain = FcbkGainTable[DecStat.InterGain];
 		} else
 			DecStat.InterGain =
-			    g723_mult_r(DecStat.InterGain, (Word16) 0x6000);
+			    g723_mult_r(DecStat.InterGain, (int16_t) 0x6000);
 
 		/*
 		 * Generate the excitation for the frame
@@ -216,14 +219,14 @@ Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc)
 
 		Dpnt = &Temp[PitchMax];
 
-		if (DecStat.Ecount == (Word16) 0) {
+		if (DecStat.Ecount == (int16_t) 0) {
 
 			for (i = 0; i < SubFrames; i++) {
 
 				/* Generate the fixed codebook excitation for a
 				   subframe. (Text: Section 3.5) */
 				Fcbk_Unpk(Dpnt, Line.Sfs[i], Line.Olp[i >> 1],
-					  (Word16) i);
+					  (int16_t) i);
 
 				/* Generate the adaptive codebook excitation for a
 				   subframe. (Text: Section 3.4) */
@@ -234,7 +237,8 @@ Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc)
 				/* Add the adaptive and fixed codebook contributions to
 				   generate the total excitation. */
 				for (j = 0; j < SubFrLen; j++) {
-					Dpnt[j] = g723_shl(Dpnt[j], (Word16) 1);
+					Dpnt[j] = g723_shl(Dpnt[j],
+							   (int16_t) 1);
 					Dpnt[j] =
 					    g723_add(Dpnt[j], AcbkCont[j]);
 				}
@@ -258,7 +262,7 @@ Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc)
 				for (i = 0; i < SubFrames; i++)
 					Pf[i] =
 					    Comp_Lpf(Temp, Line.Olp[i >> 1],
-						     (Word16) i);
+						     (int16_t) i);
 
 			/* Reload the original excitation */
 			for (j = 0; j < PitchMax; j++)
@@ -271,7 +275,7 @@ Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc)
 			if (UsePf)
 				for (i = 0; i < SubFrames; i++)
 					Filt_Lpf(DataBuff, Temp, Pf[i],
-						 (Word16) i);
+						 (int16_t) i);
 
 			/* Save Lsps --> LspSid */
 			for (i = 0; i < LpcOrder; i++)
@@ -320,5 +324,5 @@ Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc)
 
 		Dpnt += SubFrLen;
 	}
-	return (Flag) True;
+	return (int) True;
 }

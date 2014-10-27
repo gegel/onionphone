@@ -156,7 +156,7 @@ int closedLoopLagSearch(Shortword pswLagList[], int iNumLags,
  |_________________________________________________________________________|
 */
 
-	memzero(ppswTVect, N_SUB * S_LEN);
+	memzero(ppswTVect, (N_SUB * S_LEN) * sizeof(Shortword));
 
 	*pswLtpShift = 0;	/* Energy in weighted ltp vector =
 				 * [0..0x7ff] */
@@ -1978,7 +1978,7 @@ Shortword v_srch(Shortword pswWInput[], Shortword pswWBasisVecs[],
  |_________________________________________________________________________|
 */
 
-	memzero(pL_R, C_BITS_V);
+	memzero(pL_R, C_BITS_V * sizeof(Longword));
 
 	/* initialize variables based on voicing mode */
 	/* ------------------------------------------ */

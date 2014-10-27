@@ -28,8 +28,6 @@
  * Preprocessing of input speech.                                         *
  *   - 2nd order high pass filter with cut off frequency at 140 Hz.       *
  *-----------------------------------------------------------------------*/
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "tab_ld8k.h"
 
@@ -46,25 +44,25 @@
  *     a[3] = {0.10000000E+01, 0.19059465E+01, -0.91140240E+00};          *
 *-----------------------------------------------------------------------*/
 
-static FLOAT x0, x1;		/* high-pass fir memory          */
-static FLOAT y1, y2;		/* high-pass iir memory          */
+static float x0, x1;		/* high-pass fir memory          */
+static float y1, y2;		/* high-pass iir memory          */
 
 void init_pre_process(void
     )
 {
-	x0 = x1 = (F) 0.0;
-	y2 = y1 = (F) 0.0;
+	x0 = x1 = (float) 0.0;
+	y2 = y1 = (float) 0.0;
 
 	return;
 }
 
-void pre_process(FLOAT signal[],	/* (i/o)  : signal                     */
+void pre_process(float signal[],	/* (i/o)  : signal                     */
 		 int lg		/* (i)    : lenght of signal           */
     )
 {
 	int i;
-	FLOAT x2;
-	FLOAT y0;
+	float x2;
+	float y0;
 
 	for (i = 0; i < lg; i++) {
 		x2 = x1;

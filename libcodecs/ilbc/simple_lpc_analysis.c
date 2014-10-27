@@ -28,21 +28,21 @@
  *  lpc analysis (subrutine to LPCencode)
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_SimpleLpcAnalysis(WebRtc_Word16 * lsf,	/* (o) lsf coefficients */
-				     WebRtc_Word16 * data,	/* (i) new block of speech */
+void WebRtcIlbcfix_SimpleLpcAnalysis(int16_t * lsf,	/* (o) lsf coefficients */
+				     int16_t * data,	/* (i) new block of speech */
 				     iLBC_Enc_Inst_t * iLBCenc_inst
 				     /* (i/o) the encoder state structure */
     )
 {
 	int k;
 	int scale;
-	WebRtc_Word16 is;
-	WebRtc_Word16 stability;
+	int16_t is;
+	int16_t stability;
 	/* Stack based */
-	WebRtc_Word16 A[LPC_FILTERORDER + 1];
-	WebRtc_Word32 R[LPC_FILTERORDER + 1];
-	WebRtc_Word16 windowedData[BLOCKL_MAX];
-	WebRtc_Word16 rc[LPC_FILTERORDER];
+	int16_t A[LPC_FILTERORDER + 1];
+	int32_t R[LPC_FILTERORDER + 1];
+	int16_t windowedData[BLOCKL_MAX];
+	int16_t rc[LPC_FILTERORDER];
 
 	is = LPC_LOOKBACK + BLOCKL_MAX - iLBCenc_inst->blockl;
 	WEBRTC_SPL_MEMCPY_W16(iLBCenc_inst->lpc_buffer + is, data,
@@ -94,7 +94,7 @@ void WebRtcIlbcfix_SimpleLpcAnalysis(WebRtc_Word16 * lsf,	/* (o) lsf coefficient
 
 		/* Bandwidth expand the filter coefficients */
 		WebRtcIlbcfix_BwExpand(A, A,
-				       (WebRtc_Word16 *)
+				       (int16_t *)
 				       WebRtcIlbcfix_kLpcChirpSyntDenum,
 				       LPC_FILTERORDER + 1);
 

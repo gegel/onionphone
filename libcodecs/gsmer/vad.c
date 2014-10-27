@@ -42,7 +42,7 @@
  *
  **************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "cnst.h"
 #include "basic_op.h"
 #include "oper_32b.h"
@@ -82,17 +82,17 @@
 
 /* Static variables of VAD */
 
-static Word16 w_rvad[9], scal_w_rvad;
+static int16_t w_rvad[9], scal_w_rvad;
 static Pfloat w_thvad;
-static Word32 w_L_sacf[27];
-static Word32 w_L_sav0[36];
-static Word16 w_pt_sacf, w_pt_sav0;
-static Word32 w_L_lastdm;
-static Word16 w_adaptcount;
-static Word16 w_burstcount, w_hangcount;
-static Word16 oldlw_agcount, veryoldlw_agcount, w_oldlag;
+static int32_t w_L_sacf[27];
+static int32_t w_L_sav0[36];
+static int16_t w_pt_sacf, w_pt_sav0;
+static int32_t w_L_lastdm;
+static int16_t w_adaptcount;
+static int16_t w_burstcount, w_hangcount;
+static int16_t oldlw_agcount, veryoldlw_agcount, w_oldlag;
 
-Word16 w_ptch;
+int16_t w_ptch;
 
 /*************************************************************************
  *
@@ -105,7 +105,7 @@ Word16 w_ptch;
 
 void w_er_vad_reset()
 {
-	Word16 i;
+	int16_t i;
 
 	/* Initialize w_rvad variables */
 	w_rvad[0] = 0x6000;
@@ -167,12 +167,12 @@ void w_er_vad_reset()
  *
  ***************************************************************************/
 
-Word16 w_vad_computation(Word16 r_h[],
-			 Word16 r_l[],
-			 Word16 scal_acf, Word16 rc[], Word16 w_ptch)
+int16_t w_vad_computation(int16_t r_h[],
+			 int16_t r_l[],
+			 int16_t scal_acf, int16_t rc[], int16_t w_ptch)
 {
-	Word32 L_av0[9], L_av1[9];
-	Word16 vad, vvad, rav1[9], scal_rav1, stat, tone;
+	int32_t L_av0[9], L_av1[9];
+	int16_t vad, vvad, rav1[9], scal_rav1, stat, tone;
 	Pfloat acf0, pvad;
 
 	w_er_energy_computation(r_h, scal_acf, w_rvad, scal_w_rvad, &acf0,
@@ -208,13 +208,14 @@ Word16 w_vad_computation(Word16 r_h[],
  *
  ***************************************************************************/
 
-void w_er_energy_computation(Word16 r_h[],
-			     Word16 scal_acf,
-			     Word16 w_rvad[],
-			     Word16 scal_w_rvad, Pfloat * acf0, Pfloat * pvad)
+void w_er_energy_computation(int16_t r_h[],
+			     int16_t scal_acf,
+			     int16_t w_rvad[],
+			     int16_t scal_w_rvad, Pfloat * acf0,
+			     Pfloat * pvad)
 {
-	Word16 i, temp, norm_prod;
-	Word32 L_temp;
+	int16_t i, temp, norm_prod;
+	int32_t L_temp;
 
 	/* r[0] is always greater than w_zero (no need to w_test for r[0] == 0) */
 
@@ -265,14 +266,14 @@ void w_er_energy_computation(Word16 r_h[],
  *
  ***************************************************************************/
 
-void w_acf_averaging(Word16 r_h[],
-		     Word16 r_l[],
-		     Word16 scal_acf, Word32 L_av0[], Word32 L_av1[]
+void w_acf_averaging(int16_t r_h[],
+		     int16_t r_l[],
+		     int16_t scal_acf, int32_t L_av0[], int32_t L_av1[]
     )
 {
-	Word32 L_temp;
-	Word16 scale;
-	Word16 i;
+	int32_t L_temp;
+	int16_t scale;
+	int16_t i;
 
 	scale = w_add(9, scal_acf);
 
@@ -319,9 +320,10 @@ void w_acf_averaging(Word16 r_h[],
  *
  ***************************************************************************/
 
-void w_er_w_predictor_values(Word32 L_av1[], Word16 rav1[], Word16 * scal_rav1)
+void w_er_w_predictor_values(int32_t L_av1[], int16_t rav1[],
+			     int16_t * scal_rav1)
 {
-	Word16 vpar[8], aav1[9];
+	int16_t vpar[8], aav1[9];
 
 	w_er_schur_recursion(L_av1, vpar);
 	w_er_step_up(8, vpar, aav1);
@@ -345,11 +347,11 @@ void w_er_w_predictor_values(Word32 L_av1[], Word16 rav1[], Word16 * scal_rav1)
  *
  ***************************************************************************/
 
-void w_er_schur_recursion(Word32 L_av1[], Word16 vpar[]
+void w_er_schur_recursion(int32_t L_av1[], int16_t vpar[]
     )
 {
-	Word16 acf[9], pp[9], kk[9], temp;
-	Word16 i, k, m, n;
+	int16_t acf[9], pp[9], kk[9], temp;
+	int16_t i, k, m, n;
 
     /*** Schur recursion with 16-bit arithmetic ***/
 
@@ -427,12 +429,12 @@ void w_er_schur_recursion(Word32 L_av1[], Word16 vpar[]
  *
  ***************************************************************************/
 
-void w_er_step_up(Word16 np, Word16 vpar[], Word16 aav1[]
+void w_er_step_up(int16_t np, int16_t vpar[], int16_t aav1[]
     )
 {
-	Word32 L_coef[9], L_work[9];
-	Word16 temp;
-	Word16 i, m;
+	int32_t L_coef[9], L_work[9];
+	int16_t temp;
+	int16_t i, m;
 
     /*** Initialization of the step-up recursion ***/
 
@@ -479,10 +481,10 @@ void w_er_step_up(Word16 np, Word16 vpar[], Word16 aav1[]
  *
  ***************************************************************************/
 
-void w_er_compute_rav1(Word16 aav1[], Word16 rav1[], Word16 * scal_rav1)
+void w_er_compute_rav1(int16_t aav1[], int16_t rav1[], int16_t * scal_rav1)
 {
-	Word32 L_work[9];
-	Word16 i, k;
+	int32_t L_work[9];
+	int16_t i, k;
 
     /*** Computation of the rav1[0..8] ***/
 
@@ -524,12 +526,12 @@ void w_er_compute_rav1(Word16 aav1[], Word16 rav1[], Word16 * scal_rav1)
  *
  ***************************************************************************/
 
-Word16 w_er_spectral_comparison(Word16 rav1[], Word16 scal_rav1, Word32 L_av0[]
+int16_t w_er_spectral_comparison(int16_t rav1[], int16_t scal_rav1, int32_t L_av0[]
     )
 {
-	Word32 L_dm, L_sump, L_temp;
-	Word16 stat, sav0[9], shift, divshift, temp;
-	Word16 i;
+	int32_t L_dm, L_sump, L_temp;
+	int16_t stat, sav0[9], shift, divshift, temp;
+	int16_t i;
 
     /*** Re-normalize L_av0[0..8] ***/
 
@@ -641,21 +643,21 @@ Word16 w_er_spectral_comparison(Word16 rav1[], Word16 scal_rav1, Word32 L_av0[]
  *
  ***************************************************************************/
 
-void w_er_threshold_adaptation(Word16 stat,
-			       Word16 w_ptch,
-			       Word16 tone,
-			       Word16 rav1[],
-			       Word16 scal_rav1,
+void w_er_threshold_adaptation(int16_t stat,
+			       int16_t w_ptch,
+			       int16_t tone,
+			       int16_t rav1[],
+			       int16_t scal_rav1,
 			       Pfloat pvad,
 			       Pfloat acf0,
-			       Word16 w_rvad[],
-			       Word16 * scal_w_rvad, Pfloat * w_thvad)
+			       int16_t w_rvad[],
+			       int16_t * scal_w_rvad, Pfloat * w_thvad)
 {
-	Word16 comp, comp2;
-	Word32 L_temp;
-	Word16 temp;
+	int16_t comp, comp2;
+	int32_t L_temp;
+	int16_t temp;
 	Pfloat p_temp;
-	Word16 i;
+	int16_t i;
 
 	comp = 0;
 
@@ -850,11 +852,11 @@ void w_er_threshold_adaptation(Word16 stat,
  *
  ***************************************************************************/
 
-void w_er_tone_detection(Word16 rc[], Word16 * tone)
+void w_er_tone_detection(int16_t rc[], int16_t * tone)
 {
-	Word32 L_num, L_den, L_temp;
-	Word16 temp, w_prederr, a[3];
-	Word16 i;
+	int32_t L_num, L_den, L_temp;
+	int16_t temp, w_prederr, a[3];
+	int16_t i;
 
 	*tone = 0;
 
@@ -924,9 +926,9 @@ void w_er_tone_detection(Word16 rc[], Word16 * tone)
  *
  ***************************************************************************/
 
-Word16 w_er_vad_decision(Pfloat pvad, Pfloat w_thvad)
+int16_t w_er_vad_decision(Pfloat pvad, Pfloat w_thvad)
 {
-	Word16 vvad;
+	int16_t vvad;
 
 	if (w_sub(pvad.e, w_thvad.e) > 0) {
 		vvad = 1;
@@ -955,7 +957,7 @@ Word16 w_er_vad_decision(Pfloat pvad, Pfloat w_thvad)
  *
  ***************************************************************************/
 
-Word16 w_er_vad_hangover(Word16 vvad)
+int16_t w_er_vad_hangover(int16_t vvad)
 {
 
 	if (w_sub(vvad, 1) == 0) {
@@ -991,10 +993,10 @@ Word16 w_er_vad_hangover(Word16 vvad)
  *
  ***************************************************************************/
 
-void w_er_periodicity_update(Word16 lags[], Word16 * w_ptch)
+void w_er_periodicity_update(int16_t lags[], int16_t * w_ptch)
 {
-	Word16 minlag, maxlag, lw_agcount, temp;
-	Word16 i;
+	int16_t minlag, maxlag, lw_agcount, temp;
+	int16_t i;
 
     /*** Run loop for the two halves in the frame ***/
 

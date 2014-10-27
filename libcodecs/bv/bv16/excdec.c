@@ -27,31 +27,31 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "basop32.h"
 #include "utility.h"
 
-void excdec_w_synth(Word16 * xq,	/* (o) Q0 quantized signal vector               */
-		    Word16 * ltsym,	/* (i/o) Q0 quantized excitation signal vector  */
-		    Word16 * stsym,	/* (i/o) Q0 short-term predictor memory         */
-		    Word16 * idx,	/* (o) quantizer codebook index for uq[] vector */
-		    Word16 * b,	/* (i) Q15 coefficient of 3-tap pitch predictor */
-		    Word16 * cb,	/* (i) Q0 codebook                              */
-		    Word16 pp,	/* pitch period (# of 8 kHz samples)            */
-		    Word16 * aq,	/* (i) Q12 short-term predictor coefficients    */
-		    Word16 gain_exp,	/* gain_exp of current bv_sub-frame                */
-		    Word32 * EE)
+void excdec_w_synth(int16_t * xq,	/* (o) Q0 quantized signal vector               */
+		    int16_t * ltsym,	/* (i/o) Q0 quantized excitation signal vector  */
+		    int16_t * stsym,	/* (i/o) Q0 short-term predictor memory         */
+		    int16_t * idx,	/* (o) quantizer codebook index for uq[] vector */
+		    int16_t * b,	/* (i) Q15 coefficient of 3-tap pitch predictor */
+		    int16_t * cb,	/* (i) Q0 codebook                              */
+		    int16_t pp,	/* pitch period (# of 8 kHz samples)            */
+		    int16_t * aq,	/* (i) Q12 short-term predictor coefficients    */
+		    int16_t gain_exp,	/* gain_exp of current bv_sub-frame                */
+		    int32_t * EE)
 {
-	Word16 i, n, m, *ip, id;
-	Word16 *fp1, *fp2, *fp3;
-	Word32 a0;
-	Word16 tt;
-	Word32 E;
-	Word32 a1;
-	Word16 buf1[LPCO + FRSZ];	/* buffer for filter memory & signal     */
-	Word16 uq[VDIM];	/* selected codebook vector (incl. sign) */
+	int16_t i, n, m, *ip, id;
+	int16_t *fp1, *fp2, *fp3;
+	int32_t a0;
+	int16_t tt;
+	int32_t E;
+	int32_t a1;
+	int16_t buf1[LPCO + FRSZ];	/* buffer for filter memory & signal     */
+	int16_t uq[VDIM];	/* selected codebook vector (incl. sign) */
 
 	W16copy(buf1, stsym, LPCO);	/* buffer is used to avoid memory shifts */
 

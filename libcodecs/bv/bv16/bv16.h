@@ -29,11 +29,11 @@
 void Reset_BV16_Encoder(struct BV16_Encoder_State *cs);
 
 void BV16_Encode(struct BV16_Bit_Stream *bs,
-		 struct BV16_Encoder_State *cs, Word16 * inx);
+		 struct BV16_Encoder_State *cs, int16_t * inx);
 
 void Reset_BV16_Decoder(struct BV16_Decoder_State *ds);
 
 void BV16_Decode(struct BV16_Bit_Stream *bs,
-		 struct BV16_Decoder_State *ds, Word16 * xq);
+		 struct BV16_Decoder_State *ds, int16_t * xq);
 
-void BV16_PLC(struct BV16_Decoder_State *ds, Word16 * x);
+void BV16_PLC(struct BV16_Decoder_State *ds, int16_t * x);

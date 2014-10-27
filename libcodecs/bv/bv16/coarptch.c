@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -34,37 +34,37 @@
 #include "basop32.h"
 #include "../itug729ilib/oper_32b.h"
 
-Word16 coarsepitch(Word16 * xw,	/* (i) (normalized) weighted signal */
+int16_t coarsepitch(int16_t * xw,	/* (i) (normalized) weighted signal */
 		   struct BV16_Encoder_State *cstate)
 {				/* (i/o) Coder State */
 
-	Word16 s;		/* Q2 */
-	Word16 a, b;
-	Word16 im;
-	Word16 maxdev, flag, mpflag;
-	Word32 eni, deltae;
-	Word32 cc;
-	Word16 ah, al, bh, bl;
-	Word32 a0, a1, a2, a3;
-	Word32 *lp0;
-	Word16 exp, new_exp;
-	Word16 *fp0, *fp1, *fp2, *fp3, *sp;
-	Word16 *fp1_h, *fp1_l, *fp2_h, *fp2_l;
-	Word16 cor2max, cor2max_exp;
-	Word16 cor2m, cor2m_exp;
-	Word16 s0, t0, t1, exp0, exp1, e2, e3;
-	Word16 threshold;
-	Word16 mplth;		/* Q2 */
-	Word16 i, j, k, n, npeaks, imax, idx[MAXPPD - MINPPD + 1];
-	Word16 cpp;
-	Word16 plag[HMAXPPD], cor2[MAXPPD1], cor2_exp[MAXPPD1];
-	Word16 cor2i[HMAXPPD], cor2i_exp[HMAXPPD], xwd[LXD];
-	Word16 tmp_h[DFO + FRSZ], tmp_l[DFO + FRSZ];	/* DPF Q7 */
-	Word32 cor[MAXPPD1], energy[MAXPPD1], lxwd[FRSZD];
-	Word16 energy_man[MAXPPD1], energy_exp[MAXPPD1];
-	Word16 energyi_man[HMAXPPD], energyi_exp[HMAXPPD];
-	Word16 energym_man, energym_exp;
-	Word16 energymax_man, energymax_exp;
+	int16_t s;		/* Q2 */
+	int16_t a, b;
+	int16_t im;
+	int16_t maxdev, flag, mpflag;
+	int32_t eni, deltae;
+	int32_t cc;
+	int16_t ah, al, bh, bl;
+	int32_t a0, a1, a2, a3;
+	int32_t *lp0;
+	int16_t exp, new_exp;
+	int16_t *fp0, *fp1, *fp2, *fp3, *sp;
+	int16_t *fp1_h, *fp1_l, *fp2_h, *fp2_l;
+	int16_t cor2max, cor2max_exp;
+	int16_t cor2m, cor2m_exp;
+	int16_t s0, t0, t1, exp0, exp1, e2, e3;
+	int16_t threshold;
+	int16_t mplth;		/* Q2 */
+	int16_t i, j, k, n, npeaks, imax, idx[MAXPPD - MINPPD + 1];
+	int16_t cpp;
+	int16_t plag[HMAXPPD], cor2[MAXPPD1], cor2_exp[MAXPPD1];
+	int16_t cor2i[HMAXPPD], cor2i_exp[HMAXPPD], xwd[LXD];
+	int16_t tmp_h[DFO + FRSZ], tmp_l[DFO + FRSZ];	/* DPF Q7 */
+	int32_t cor[MAXPPD1], energy[MAXPPD1], lxwd[FRSZD];
+	int16_t energy_man[MAXPPD1], energy_exp[MAXPPD1];
+	int16_t energyi_man[HMAXPPD], energyi_exp[HMAXPPD];
+	int16_t energym_man, energym_exp;
+	int16_t energymax_man, energymax_exp;
 
 	/* Lowpass filter xw() to 800 hz; shift & output into xwd() */
 
@@ -269,8 +269,8 @@ Word16 coarsepitch(Word16 * xw,	/* (i) (normalized) weighted signal */
 	}
 
 	/* If program proceeds to here, there are 2 or more peaks */
-	cor2max = (Word16) 0x8000;
-	cor2max_exp = (Word16) 0;
+	cor2max = (int16_t) 0x8000;
+	cor2max_exp = (int16_t) 0;
 	energymax_man = 1;
 	energymax_exp = 0;
 
@@ -419,8 +419,8 @@ Word16 coarsepitch(Word16 * xw,	/* (i) (normalized) weighted signal */
 	/* Find the largest peak (if there is any) around the last pitch */
 	maxdev = bv_shr(cstate->cpplast, 2);	/* maximum deviation from last pitch */
 	im = -1;
-	cor2m = (Word16) 0x8000;
-	cor2m_exp = (Word16) 0;
+	cor2m = (int16_t) 0x8000;
+	cor2m_exp = (int16_t) 0;
 	energym_man = 1;
 	energym_exp = 0;
 

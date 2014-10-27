@@ -30,66 +30,66 @@
 #define  BV16STRCT_H
 
 struct BV16_Decoder_State {
-	Word16 stsym[LPCO];
-	Word16 ltsym[LTMOFF];
-	Word16 xq[XQOFF];
-	Word16 lsppm[LPCO * LSPPORDER];
-	Word16 lgpm[LGPORDER];
-	Word16 lsplast[LPCO];
-	Word32 prevlg[2];
-	Word32 lmax;
-	Word32 lmin;
-	Word32 lmean;
-	Word32 x1;
-	Word32 level;
-	Word16 pp_last;
-	Word16 cfecount;
-	Word16 ngfae;
-	Word16 bq_last[3];
-	Word16 nggalgc;
-	Word16 estl_alpha_min;
-	UWord32 idum;
-	Word16 per;		/* Q15 */
-	Word32 E;
-	Word16 atplc[LPCO + 1];
-	Word16 ma_a;
-	Word16 b_prv[2];
-	Word16 pp_prv;
+	int16_t stsym[LPCO];
+	int16_t ltsym[LTMOFF];
+	int16_t xq[XQOFF];
+	int16_t lsppm[LPCO * LSPPORDER];
+	int16_t lgpm[LGPORDER];
+	int16_t lsplast[LPCO];
+	int32_t prevlg[2];
+	int32_t lmax;
+	int32_t lmin;
+	int32_t lmean;
+	int32_t x1;
+	int32_t level;
+	int16_t pp_last;
+	int16_t cfecount;
+	int16_t ngfae;
+	int16_t bq_last[3];
+	int16_t nggalgc;
+	int16_t estl_alpha_min;
+	uint32_t idum;
+	int16_t per;		/* Q15 */
+	int32_t E;
+	int16_t atplc[LPCO + 1];
+	int16_t ma_a;
+	int16_t b_prv[2];
+	int16_t pp_prv;
 };
 
 struct BV16_Encoder_State {
-	Word32 prevlg[2];
-	Word32 lmax;
-	Word32 lmin;
-	Word32 lmean;
-	Word32 x1;
-	Word32 level;
-	Word16 x[XOFF];		/* Signal memory */
-	Word16 xwd[XDOFF];	/* Memory of DECF:1 decimated version of xw() */
-	Word16 xwd_exp;		/* or block floating-point in coarptch.c */
-	Word16 dq[XOFF];	/* Q0 - Quantized short-term pred error */
-	Word16 dfm_h[DFO + FRSZ];	/* Decimated xwd() filter memory */
-	Word16 dfm_l[DFO + FRSZ];
-	Word16 stwpm[LPCO];	/* Q0 - Short-term weighting all-pole filter memory */
-	Word16 stsym[LPCO];	/* Q0 - Short-term synthesis filter memory */
-	Word16 stnfz[NSTORDER];	/* Q0 - Short-term noise feedback filter memory - zero section */
-	Word16 stnfp[NSTORDER];	/* Q0 - Short-term noise feedback filter memory - pole section */
-	Word16 ltnfm[MAXPP1];	/* Q0 - Long-term noise feedback filter memory */
-	Word16 lsplast[LPCO];
-	Word16 lsppm[LPCO * LSPPORDER];	/* Q15 - LSP Predictor Memory */
-	Word16 lgpm[LGPORDER];	/* Q11 - Log-Gain Predictor Memory */
-	Word16 cpplast;		/* Pitch period pf the previous frame */
-	Word16 hpfzm[HPO];
-	Word16 hpfpm[2 * HPO];
-	Word16 old_A[1 + LPCO];	/* Q12 - LPC of previous frame */
+	int32_t prevlg[2];
+	int32_t lmax;
+	int32_t lmin;
+	int32_t lmean;
+	int32_t x1;
+	int32_t level;
+	int16_t x[XOFF];		/* Signal memory */
+	int16_t xwd[XDOFF];	/* Memory of DECF:1 decimated version of xw() */
+	int16_t xwd_exp;		/* or block floating-point in coarptch.c */
+	int16_t dq[XOFF];	/* Q0 - Quantized short-term pred error */
+	int16_t dfm_h[DFO + FRSZ];	/* Decimated xwd() filter memory */
+	int16_t dfm_l[DFO + FRSZ];
+	int16_t stwpm[LPCO];	/* Q0 - Short-term weighting all-pole filter memory */
+	int16_t stsym[LPCO];	/* Q0 - Short-term synthesis filter memory */
+	int16_t stnfz[NSTORDER];	/* Q0 - Short-term noise feedback filter memory - zero section */
+	int16_t stnfp[NSTORDER];	/* Q0 - Short-term noise feedback filter memory - pole section */
+	int16_t ltnfm[MAXPP1];	/* Q0 - Long-term noise feedback filter memory */
+	int16_t lsplast[LPCO];
+	int16_t lsppm[LPCO * LSPPORDER];	/* Q15 - LSP Predictor Memory */
+	int16_t lgpm[LGPORDER];	/* Q11 - Log-Gain Predictor Memory */
+	int16_t cpplast;		/* Pitch period pf the previous frame */
+	int16_t hpfzm[HPO];
+	int16_t hpfpm[2 * HPO];
+	int16_t old_A[1 + LPCO];	/* Q12 - LPC of previous frame */
 };
 
 struct BV16_Bit_Stream {
-	Word16 lspidx[2];
-	Word16 ppidx;
-	Word16 bqidx;
-	Word16 gidx;
-	Word16 qvidx[FRSZ / VDIM];
+	int16_t lspidx[2];
+	int16_t ppidx;
+	int16_t bqidx;
+	int16_t gidx;
+	int16_t qvidx[FRSZ / VDIM];
 };
 
 #endif				/* BV16STRCT_H */

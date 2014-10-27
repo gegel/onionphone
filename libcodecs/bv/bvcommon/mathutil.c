@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basop32.h"
 #include "mathutil.h"
 
@@ -39,13 +39,12 @@
 /*              and interpolation.                  */
 /****************************************************/
 
-Word32 Pow2(			/* Q0 output            */
-		   Word16 int_comp,	/* Q0 Integer part      */
-		   Word16 frac_comp	/* Q15 frac_compal part  */
+int32_t Pow2(int16_t int_comp,	/* Q0 Integer part      */
+		   int16_t frac_comp	/* Q15 frac_compal part  */
     )
 {
-	Word32 a0;
-	Word16 idx_frac, frac, bv_sub_frac, bv_sub_tab;
+	int32_t a0;
+	int16_t idx_frac, frac, bv_sub_frac, bv_sub_tab;
 
 	idx_frac = bv_shr(frac_comp, 9);	// for 65 entry table
 	bv_sub_frac = frac_comp & 0x01FF;	// bv_sub-frac_comp in Q9
@@ -69,13 +68,13 @@ Word32 Pow2(			/* Q0 output            */
 /* fraction = table look-up and interpolation of log2(man) */
 /***********************************************************/
 
-void Log2(Word32 x,		/* (i) input           */
-	  Word16 * int_comp,	/* Q0 integer part     */
-	  Word16 * frac_comp	/* Q15 fractional part */
+void Log2(int32_t x,		/* (i) input           */
+	  int16_t * int_comp,	/* Q0 integer part     */
+	  int16_t * frac_comp	/* Q15 fractional part */
     )
 {
-	Word16 exp, idx_man, bv_sub_man, bv_sub_tab;
-	Word32 a0;
+	int16_t exp, idx_man, bv_sub_man, bv_sub_tab;
+	int32_t a0;
 
 	if (x <= 0) {
 		*int_comp = 0;
@@ -85,7 +84,7 @@ void Log2(Word32 x,		/* (i) input           */
 		a0 = L_bv_shl(x, exp);	// Q30 mantissa, i.e. 1.xxx Q30
 
 		/* use table look-up of man in [1.0, 2.0[ Q30 */
-		a0 = L_bv_shr(L_bv_sub(a0, (Word32) 0x40000000), 8);	// Q16 index into table - note zero'ing of leading 1
+		a0 = L_bv_shr(L_bv_sub(a0, (int32_t) 0x40000000), 8);	// Q16 index into table - note zero'ing of leading 1
 		idx_man = bv_extract_h(a0);	// Q0 index into table
 		bv_sub_man = bv_extract_l(L_bv_shr((a0 & 0xFFFF), 1));	// Q15 fractional bv_sub_man
 		a0 = bv_L_deposit_h(tablog[idx_man]);	// Q31
@@ -104,10 +103,10 @@ void Log2(Word32 x,		/* (i) input           */
 /* table look-up with linear interpolation */
 /*******************************************/
 
-Word16 sqrts(Word16 x)
+int16_t sqrts(int16_t x)
 {
-	Word16 xb, y, exp, idx, bv_sub_frac, bv_sub_tab;
-	Word32 a0;
+	int16_t xb, y, exp, idx, bv_sub_frac, bv_sub_tab;
+	int32_t a0;
 
 	if (x <= 0) {
 		y = 0;
@@ -118,7 +117,7 @@ Word16 sqrts(Word16 x)
 		xb = bv_shl(x, exp);	// normalization of x
 		idx = bv_shr(xb, 9);	// for 65 entry table
 		a0 = bv_L_deposit_h(tabsqrt[idx]);	// Q31 table look-up value
-		bv_sub_frac = bv_shl((Word16) (xb & 0x01FF), 6);	// Q15 bv_sub-fraction
+		bv_sub_frac = bv_shl((int16_t) (xb & 0x01FF), 6);	// Q15 bv_sub-fraction
 		bv_sub_tab = bv_sub(tabsqrt[idx + 1], tabsqrt[idx]);	// Q15 table interval for interpolation
 		a0 = bv_L_mac(a0, bv_sub_frac, bv_sub_tab);	// Q31 linear interpolation between table entries
 		if (exp & 0x0001) {
@@ -142,10 +141,10 @@ Word16 sqrts(Word16 x)
 /* use bv_div_s for inverse                            */
 /****************************************************/
 
-void sqrt_i(Word16 x_man, Word16 x_exp, Word16 * y_man, Word16 * y_exp)
+void sqrt_i(int16_t x_man, int16_t x_exp, int16_t * y_man, int16_t * y_exp)
 {
-	Word16 x_manb, x_expb, y, exp, idx, bv_sub_frac, bv_sub_tab;
-	Word32 a0;
+	int16_t x_manb, x_expb, y, exp, idx, bv_sub_frac, bv_sub_tab;
+	int32_t a0;
 
 	if (x_man <= 0) {
 		*y_man = 0;
@@ -158,7 +157,7 @@ void sqrt_i(Word16 x_man, Word16 x_exp, Word16 * y_man, Word16 * y_exp)
 		x_expb = bv_sub(x_expb, 15);	// we need to take sqrt of 0-32767 number but table is for 0-1
 		idx = bv_shr(x_manb, 9);	// for 65 entry table
 		a0 = bv_L_deposit_h(tabsqrt[idx]);	// Q31 table look-up value
-		bv_sub_frac = bv_shl((Word16) (x_manb & 0x01FF), 6);	// Q15 bv_sub-fraction
+		bv_sub_frac = bv_shl((int16_t) (x_manb & 0x01FF), 6);	// Q15 bv_sub-fraction
 		bv_sub_tab = bv_sub(tabsqrt[idx + 1], tabsqrt[idx]);	// Q15 table interval for interpolation
 		a0 = bv_L_mac(a0, bv_sub_frac, bv_sub_tab);	// Q31 linear interpolation between table entries
 		exp = bv_norm_l(a0);	// exponent of a0

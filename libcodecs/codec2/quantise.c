@@ -504,7 +504,7 @@ void lspjvm_quantise(float *x, float *xq, int ndim)
 	const float *codebook2 = lsp_cbjvm[1].cb;
 	const float *codebook3 = lsp_cbjvm[2].cb;
 
-	memzero(err, LPC_ORD);
+	memzero(err, LPC_ORD * sizeof(float));
 
 	w[0] = MIN(x[0], x[1] - x[0]);
 	for (i = 1; i < ndim - 1; i++)
@@ -1249,7 +1249,7 @@ void encode_lsps_scalar(int indexes[], float lsp[], int order)
 	const float *cb;
 	float se = 0;
 
-	memzero(lsp_hz, LPC_MAX);
+	memzero(lsp_hz, LPC_MAX * sizeof(float));
 
 	/* convert from radians to Hz so we can use human readable
 	   frequencies */
@@ -1491,7 +1491,7 @@ void encode_lsps_vq(int *indexes, float *x, float *xq, int ndim)
 	const float *codebook2 = lsp_cbjvm[1].cb;
 	const float *codebook3 = lsp_cbjvm[2].cb;
 
-	memzero(err, LPC_ORD);
+	memzero(err, LPC_ORD * sizeof(float));
 
 	assert(ndim <= LPC_ORD);
 
@@ -1856,6 +1856,8 @@ void quantise_WoE(MODEL * model, float *e, float xq[])
 	float Wo_min = TWO_PI / P_MAX;
 	float Wo_max = TWO_PI / P_MIN;
 
+	assert(ndim == sizeof(x) / sizeof(x[0]));
+
 	x[0] = log10f((model->Wo / PI) * 4000.0 / 50.0) / log10f(2);
 	x[1] = 10.0 * log10f(1e-4 + *e);
 
@@ -1912,6 +1914,7 @@ int encode_WoE(MODEL * model, float e, float xq[])
 	int ndim = ge_cb[0].k;
 
 	assert((1 << WO_E_BITS) == nb_entries);
+	assert(ndim == sizeof(x) / sizeof(x[0]));
 
 	if (e < 0.0)
 		e = 0;		/* occasional small negative energies due LPC round off I guess */

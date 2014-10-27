@@ -18,41 +18,40 @@
  * Functions related to the quantization of LSP's           *
  *----------------------------------------------------------*/
 #include <math.h>
-#include "ophint.h"
 #include "ld8k.h"
 #include "tab_ld8k.h"
 #include "ld8cp.h"
 #include "tabld8cp.h"
 
 /* Prototype definitions of static functions */
-void get_wegt(FLOAT flsp[], FLOAT wegt[]);
-static void lsp_pre_select(FLOAT rbuf[], FLOAT lspcb1[][M], int *cand);
-static void lsp_select_1(FLOAT rbuf[], FLOAT lspcb1[], FLOAT wegt[],
-			 FLOAT lspcb2[][M], int *index);
-static void lsp_select_2(FLOAT rbuf[], FLOAT lspcb1[], FLOAT wegt[],
-			 FLOAT lspcb2[][M], int *index);
-static void lsp_last_select(FLOAT tdist[MODE], int *mode_index);
-static void lsp_get_tdist(FLOAT wegt[], FLOAT buf[],
-			  FLOAT * tdist, FLOAT rbuf[], FLOAT fg_sum[]);
-void qua_lspe(FLOAT lsp[],	/* (i) : Unquantized LSP            */
-	      FLOAT lsp_q[],	/* (o) : Quantized LSP              */
+void get_wegt(float flsp[], float wegt[]);
+static void lsp_pre_select(float rbuf[], float lspcb1[][M], int *cand);
+static void lsp_select_1(float rbuf[], float lspcb1[], float wegt[],
+			 float lspcb2[][M], int *index);
+static void lsp_select_2(float rbuf[], float lspcb1[], float wegt[],
+			 float lspcb2[][M], int *index);
+static void lsp_last_select(float tdist[MODE], int *mode_index);
+static void lsp_get_tdist(float wegt[], float buf[],
+			  float * tdist, float rbuf[], float fg_sum[]);
+void qua_lspe(float lsp[],	/* (i) : Unquantized LSP            */
+	      float lsp_q[],	/* (o) : Quantized LSP              */
 	      int ana[],	/* (o) : indexes                    */
-	      FLOAT freq_prev[MA_NP][M],	/* (i) : previous LSP MA vector        */
-	      FLOAT freq_cur[]	/* (o) : current LSP MA vector        */
+	      float freq_prev[MA_NP][M],	/* (i) : previous LSP MA vector        */
+	      float freq_cur[]	/* (o) : current LSP MA vector        */
     )
 {
 	int i;
-	FLOAT lsf[M], lsf_q[M];	/* domain 0.0<= lsf <PI */
+	float lsf[M], lsf_q[M];	/* domain 0.0<= lsf <PI */
 
 	/* Convert LSPs to LSFs */
 	for (i = 0; i < M; i++)
-		lsf[i] = (FLOAT) acos(lsp[i]);
+		lsf[i] = (float) acos(lsp[i]);
 
 	lsp_qua_cse(lsf, lsf_q, ana, freq_prev, freq_cur);
 
 	/* Convert LSFs to LSPs */
 	for (i = 0; i < M; i++)
-		lsp_q[i] = (FLOAT) cos(lsf_q[i]);
+		lsp_q[i] = (float) cos(lsf_q[i]);
 
 	return;
 }
@@ -61,7 +60,7 @@ void qua_lspe(FLOAT lsp[],	/* (i) : Unquantized LSP            */
 * lsp_encw_reset - set the previous LSP vector
 *----------------------------------------------------------------------------
 */
-void lsp_encw_resete(FLOAT freq_prev[MA_NP][M]	/* (i) : previous LSP MA vector        */
+void lsp_encw_resete(float freq_prev[MA_NP][M]	/* (i) : previous LSP MA vector        */
     )
 {
 	int i;
@@ -74,14 +73,14 @@ void lsp_encw_resete(FLOAT freq_prev[MA_NP][M]	/* (i) : previous LSP MA vector  
 * lsp_qua_cs - lsp quantizer
 *----------------------------------------------------------------------------
 */
-void lsp_qua_cse(FLOAT * flsp_in,	/*  input : Original LSP parameters      */
-		 FLOAT * lspq_out,	/*  output: Quantized LSP parameters     */
+void lsp_qua_cse(float * flsp_in,	/*  input : Original LSP parameters      */
+		 float * lspq_out,	/*  output: Quantized LSP parameters     */
 		 int *code,	/*  output: codes of the selected LSP    */
-		 FLOAT freq_prev[MA_NP][M],	/* (i)  : previous LSP MA vector        */
-		 FLOAT freq_cur[]	/* (o)  : current LSP MA vector        */
+		 float freq_prev[MA_NP][M],	/* (i)  : previous LSP MA vector        */
+		 float freq_cur[]	/* (o)  : current LSP MA vector        */
     )
 {
-	FLOAT wegt[M];		/* weight coef. */
+	float wegt[M];		/* weight coef. */
 
 	get_wegt(flsp_in, wegt);
 
@@ -94,26 +93,26 @@ void lsp_qua_cse(FLOAT * flsp_in,	/*  input : Original LSP parameters      */
 * relspwed -
 *----------------------------------------------------------------------------
 */
-void relspwede(FLOAT lsp[],	/*input: unquantized LSP parameters  */
-	       FLOAT wegt[],	/*input: weight coef.                */
-	       FLOAT lspq[],	/*output:quantized LSP parameters    */
-	       FLOAT lspcb1[][M],	/*input: first stage LSP codebook    */
-	       FLOAT lspcb2[][M],	/*input: Second stage LSP codebook   */
-	       FLOAT fg[MODE][MA_NP][M],	/*input: MA prediction coef.         */
-	       FLOAT freq_prev[MA_NP][M],	/*input: previous LSP vector         */
-	       FLOAT fg_sum[MODE][M],	/*input: present MA prediction coef. */
-	       FLOAT fg_sum_inv[MODE][M],	/*input: inverse coef.               */
+void relspwede(float lsp[],	/*input: unquantized LSP parameters  */
+	       float wegt[],	/*input: weight coef.                */
+	       float lspq[],	/*output:quantized LSP parameters    */
+	       float lspcb1[][M],	/*input: first stage LSP codebook    */
+	       float lspcb2[][M],	/*input: Second stage LSP codebook   */
+	       float fg[MODE][MA_NP][M],	/*input: MA prediction coef.         */
+	       float freq_prev[MA_NP][M],	/*input: previous LSP vector         */
+	       float fg_sum[MODE][M],	/*input: present MA prediction coef. */
+	       float fg_sum_inv[MODE][M],	/*input: inverse coef.               */
 	       int code_ana[],	/*output:codes of the selected LSP   */
-	       FLOAT freq_cur[]	/* (o) : current LSP MA vector        */
+	       float freq_cur[]	/* (o) : current LSP MA vector        */
     )
 {
 	int mode, j;
 	int index, mode_index;
 	int cand[MODE], cand_cur;
 	int tindex1[MODE], tindex2[MODE];
-	FLOAT tdist[MODE];
-	FLOAT rbuf[M];
-	FLOAT buf[M];
+	float tdist[MODE];
+	float rbuf[M];
+	float buf[M];
 
 	for (mode = 0; mode < MODE; mode++) {
 
@@ -169,19 +168,19 @@ void relspwede(FLOAT lsp[],	/*input: unquantized LSP parameters  */
 * lsp_pre_select - select the code of first stage lsp codebook
 *----------------------------------------------------------------------------
 */
-static void lsp_pre_select(FLOAT rbuf[],	/*input : target vetor             */
-			   FLOAT lspcb1[][M],	/*input : first stage lsp codebook */
+static void lsp_pre_select(float rbuf[],	/*input : target vetor             */
+			   float lspcb1[][M],	/*input : first stage lsp codebook */
 			   int *cand	/*output: selected code            */
     )
 {
 	int i, j;
-	FLOAT dmin, dist, temp;
+	float dmin, dist, temp;
 
 	/* calculate the distortion */
 	*cand = 0;
 	dmin = FLT_MAX_G729;
 	for (i = 0; i < NC0; i++) {
-		dist = (F) 0.;
+		dist = (float) 0.;
 		for (j = 0; j < M; j++) {
 			temp = rbuf[j] - lspcb1[i][j];
 			dist += temp * temp;
@@ -199,16 +198,16 @@ static void lsp_pre_select(FLOAT rbuf[],	/*input : target vetor             */
 * lsp_pre_select_1 - select the code of second stage lsp codebook (lower 0-4)
 *----------------------------------------------------------------------------
 */
-static void lsp_select_1(FLOAT rbuf[],	/*input : target vector            */
-			 FLOAT lspcb1[],	/*input : first stage lsp codebook */
-			 FLOAT wegt[],	/*input : weight coef.             */
-			 FLOAT lspcb2[][M],	/*input : second stage lsp codebook */
+static void lsp_select_1(float rbuf[],	/*input : target vector            */
+			 float lspcb1[],	/*input : first stage lsp codebook */
+			 float wegt[],	/*input : weight coef.             */
+			 float lspcb2[][M],	/*input : second stage lsp codebook */
 			 int *index	/*output: selected codebook index     */
     )
 {
 	int j, k1;
-	FLOAT buf[M];
-	FLOAT dist, dmin, tmp;
+	float buf[M];
+	float dist, dmin, tmp;
 
 	for (j = 0; j < NC; j++)
 		buf[j] = rbuf[j] - lspcb1[j];
@@ -217,7 +216,7 @@ static void lsp_select_1(FLOAT rbuf[],	/*input : target vector            */
 	dmin = FLT_MAX_G729;
 	for (k1 = 0; k1 < NC1; k1++) {
 		/* calculate the distortion */
-		dist = (F) 0.;
+		dist = (float) 0.;
 		for (j = 0; j < NC; j++) {
 			tmp = buf[j] - lspcb2[k1][j];
 			dist += wegt[j] * tmp * tmp;
@@ -235,16 +234,16 @@ static void lsp_select_1(FLOAT rbuf[],	/*input : target vector            */
 * lsp_pre_select_2 - select the code of second stage lsp codebook (higher 5-9)
 *----------------------------------------------------------------------------
 */
-static void lsp_select_2(FLOAT rbuf[],	/*input : target vector            */
-			 FLOAT lspcb1[],	/*input : first stage lsp codebook */
-			 FLOAT wegt[],	/*input : weighting coef.             */
-			 FLOAT lspcb2[][M],	/*input : second stage lsp codebook */
+static void lsp_select_2(float rbuf[],	/*input : target vector            */
+			 float lspcb1[],	/*input : first stage lsp codebook */
+			 float wegt[],	/*input : weighting coef.             */
+			 float lspcb2[][M],	/*input : second stage lsp codebook */
 			 int *index	/*output: selected codebook index    */
     )
 {
 	int j, k1;
-	FLOAT buf[M];
-	FLOAT dist, dmin, tmp;
+	float buf[M];
+	float dist, dmin, tmp;
 
 	for (j = NC; j < M; j++)
 		buf[j] = rbuf[j] - lspcb1[j];
@@ -252,7 +251,7 @@ static void lsp_select_2(FLOAT rbuf[],	/*input : target vector            */
 	*index = 0;
 	dmin = FLT_MAX_G729;
 	for (k1 = 0; k1 < NC1; k1++) {
-		dist = (F) 0.0;
+		dist = (float) 0.0;
 		for (j = NC; j < M; j++) {
 			tmp = buf[j] - lspcb2[k1][j];
 			dist += wegt[j] * tmp * tmp;
@@ -270,17 +269,17 @@ static void lsp_select_2(FLOAT rbuf[],	/*input : target vector            */
 * lsp_get_tdist - calculate the distortion
 *----------------------------------------------------------------------------
 */
-static void lsp_get_tdist(FLOAT wegt[],	/*input : weight coef.          */
-			  FLOAT buf[],	/*input : candidate LSP vector  */
-			  FLOAT * tdist,	/*output: distortion            */
-			  FLOAT rbuf[],	/*input : target vector         */
-			  FLOAT fg_sum[]	/*input : present MA prediction coef.  */
+static void lsp_get_tdist(float wegt[],	/*input : weight coef.          */
+			  float buf[],	/*input : candidate LSP vector  */
+			  float * tdist,	/*output: distortion            */
+			  float rbuf[],	/*input : target vector         */
+			  float fg_sum[]	/*input : present MA prediction coef.  */
     )
 {
 	int j;
-	FLOAT tmp;
+	float tmp;
 
-	*tdist = (F) 0.0;
+	*tdist = (float) 0.0;
 	for (j = 0; j < M; j++) {
 		tmp = (buf[j] - rbuf[j]) * fg_sum[j];
 		*tdist += wegt[j] * tmp * tmp;
@@ -292,7 +291,7 @@ static void lsp_get_tdist(FLOAT wegt[],	/*input : weight coef.          */
 * lsp_last_select - select the mode
 *----------------------------------------------------------------------------
 */
-static void lsp_last_select(FLOAT tdist[],	/*input : distortion         */
+static void lsp_last_select(float tdist[],	/*input : distortion         */
 			    int *mode_index	/*output: the selected mode  */
     )
 {
@@ -306,32 +305,32 @@ static void lsp_last_select(FLOAT tdist[],	/*input : distortion         */
 * get_wegt - compute lsp weights
 *----------------------------------------------------------------------------
 */
-void get_wegt(FLOAT flsp[],	/* input : M LSP parameters */
-	      FLOAT wegt[]	/* output: M weighting coefficients */
+void get_wegt(float flsp[],	/* input : M LSP parameters */
+	      float wegt[]	/* output: M weighting coefficients */
     )
 {
 	int i;
-	FLOAT tmp;
+	float tmp;
 
-	tmp = flsp[1] - PI04 - (F) 1.0;
-	if (tmp > (F) 0.0)
-		wegt[0] = (F) 1.0;
+	tmp = flsp[1] - PI04 - (float) 1.0;
+	if (tmp > (float) 0.0)
+		wegt[0] = (float) 1.0;
 	else
-		wegt[0] = tmp * tmp * (F) 10. + (F) 1.0;
+		wegt[0] = tmp * tmp * (float) 10. + (float) 1.0;
 
 	for (i = 1; i < M - 1; i++) {
-		tmp = flsp[i + 1] - flsp[i - 1] - (F) 1.0;
-		if (tmp > (F) 0.0)
-			wegt[i] = (F) 1.0;
+		tmp = flsp[i + 1] - flsp[i - 1] - (float) 1.0;
+		if (tmp > (float) 0.0)
+			wegt[i] = (float) 1.0;
 		else
-			wegt[i] = tmp * tmp * (F) 10. + (F) 1.0;
+			wegt[i] = tmp * tmp * (float) 10. + (float) 1.0;
 	}
 
-	tmp = PI92 - flsp[M - 2] - (F) 1.0;
-	if (tmp > (F) 0.0)
-		wegt[M - 1] = (F) 1.0;
+	tmp = PI92 - flsp[M - 2] - (float) 1.0;
+	if (tmp > (float) 0.0)
+		wegt[M - 1] = (float) 1.0;
 	else
-		wegt[M - 1] = tmp * tmp * (F) 10. + (F) 1.0;
+		wegt[M - 1] = tmp * tmp * (float) 10. + (float) 1.0;
 
 	wegt[4] *= CONST12;
 	wegt[5] *= CONST12;

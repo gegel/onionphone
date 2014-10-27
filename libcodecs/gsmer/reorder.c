@@ -10,17 +10,17 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
-void w_Reorder_lsf(Word16 * lsf,	/* (i/o)     : vector of LSFs   (range: 0<=val<=0.5) */
-		   Word16 min_dist,	/* (i)       : minimum required distance             */
-		   Word16 n	/* (i)       : LPC order                             */
+void w_Reorder_lsf(int16_t * lsf,	/* (i/o)     : vector of LSFs   (range: 0<=val<=0.5) */
+		   int16_t min_dist,	/* (i)       : minimum required distance             */
+		   int16_t n	/* (i)       : LPC order                             */
     )
 {
-	Word16 i;
-	Word16 lsf_min;
+	int16_t i;
+	int16_t lsf_min;
 
 	lsf_min = min_dist;
 	for (i = 0; i < n; i++) {

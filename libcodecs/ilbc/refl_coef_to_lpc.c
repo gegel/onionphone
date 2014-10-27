@@ -18,16 +18,16 @@
 
 #include "signal_processing_library.h"
 
-void WebRtcSpl_ReflCoefToLpc(G_CONST WebRtc_Word16 * k, int use_order,
-			     WebRtc_Word16 * a)
+void WebRtcSpl_ReflCoefToLpc(const int16_t * k, int use_order,
+			     int16_t * a)
 {
-	WebRtc_Word16 any[WEBRTC_SPL_MAX_LPC_ORDER + 1];
-	WebRtc_Word16 *aptr, *aptr2, *anyptr;
-	G_CONST WebRtc_Word16 *kptr;
+	int16_t any[WEBRTC_SPL_MAX_LPC_ORDER + 1];
+	int16_t *aptr, *aptr2, *anyptr;
+	const int16_t *kptr;
 	int m, i;
 
 	kptr = k;
-	*a = 4096;		// i.e., (Word16_MAX >> 3)+1.
+	*a = 4096;		// i.e., (int16_t_MAX >> 3)+1.
 	*any = *a;
 	a[1] = WEBRTC_SPL_RSHIFT_W16((*k), 3);
 
@@ -43,7 +43,7 @@ void WebRtcSpl_ReflCoefToLpc(G_CONST WebRtc_Word16 * k, int use_order,
 		for (i = 0; i < m; i++) {
 			*anyptr = (*aptr)
 			    +
-			    (WebRtc_Word16) WEBRTC_SPL_MUL_16_16_RSFT((*aptr2),
+			    (int16_t) WEBRTC_SPL_MUL_16_16_RSFT((*aptr2),
 								      (*kptr),
 								      15);
 			anyptr++;

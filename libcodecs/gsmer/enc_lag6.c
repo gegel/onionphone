@@ -38,21 +38,20 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
-Word16 w_Enc_lag6(		/* output: Return index of encoding     */
-			 Word16 T0,	/* input : Pitch delay                  */
-			 Word16 * T0_frac,	/* in/out: Fractional pitch delay       */
-			 Word16 * T0_min,	/* in/out: Minimum search delay         */
-			 Word16 * T0_max,	/* in/out: Maximum search delay         */
-			 Word16 pit_min,	/* input : Minimum pitch delay          */
-			 Word16 pit_max,	/* input : Maximum pitch delay          */
-			 Word16 pit_flag	/* input : Flag for 1st or 3rd w_subframe */
+int16_t w_Enc_lag6(int16_t T0,	/* input : Pitch delay                  */
+			 int16_t * T0_frac,	/* in/out: Fractional pitch delay       */
+			 int16_t * T0_min,	/* in/out: Minimum search delay         */
+			 int16_t * T0_max,	/* in/out: Maximum search delay         */
+			 int16_t pit_min,	/* input : Minimum pitch delay          */
+			 int16_t pit_max,	/* input : Maximum pitch delay          */
+			 int16_t pit_flag	/* input : Flag for 1st or 3rd w_subframe */
     )
 {
-	Word16 index, i;
+	int16_t index, i;
 
 	if (pit_flag == 0) {	/* if 1st or 3rd w_subframe */
 		/* encode pitch delay (with fraction) */

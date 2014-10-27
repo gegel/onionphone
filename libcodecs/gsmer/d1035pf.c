@@ -11,7 +11,7 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
@@ -19,12 +19,12 @@
 #define NB_PULSE  10		/* number of pulses  */
 #define NB_TRACK  5		/* number of track */
 
-void w_dec_10i40_35bits(Word16 index[],	/* (i)     : index of 10 pulses (sign+position)       */
-			Word16 cod[]	/* (o)     : algebraic (fixed) codebook w_excitation    */
+void w_dec_10i40_35bits(int16_t index[],	/* (i)     : index of 10 pulses (sign+position)       */
+			int16_t cod[]	/* (o)     : algebraic (fixed) codebook w_excitation    */
     )
 {
-	static const Word16 dgray[8] = { 0, 1, 3, 2, 5, 6, 4, 7 };
-	Word16 i, j, pos1, pos2, sign, tmp;
+	static const int16_t dgray[8] = { 0, 1, 3, 2, 5, 6, 4, 7 };
+	int16_t i, j, pos1, pos2, sign, tmp;
 
 	for (i = 0; i < L_CODE; i++) {
 		cod[i] = 0;

@@ -25,26 +25,26 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include <ophtools.h>
 #include "bvcommon.h"
 #include "basop32.h"
 
-void Levinson(Word32 r32[],	/* (i)  : r32[] double precision vector of autocorrelation coefficients   */
-	      Word16 a[],	/* (o)  : a[] in Q12 - LPC coefficients                                   */
-	      Word16 old_a[],	/* (i/o): old_a[] in Q12 - previous LPC coefficients                      */
-	      Word16 m		/* (i)  : LPC order                                                       */
+void Levinson(int32_t r32[],	/* (i)  : r32[] double precision vector of autocorrelation coefficients   */
+	      int16_t a[],	/* (o)  : a[] in Q12 - LPC coefficients                                   */
+	      int16_t old_a[],	/* (i/o): old_a[] in Q12 - previous LPC coefficients                      */
+	      int16_t m		/* (i)  : LPC order                                                       */
     )
 {
-	Word16 i, j, high, low, alpha_hi, alpha_lo, alpha_exp;
-	Word16 exp, r_hi[LPCO + 1], r_lo[LPCO + 1];
-	Word16 a_hi[LPCO + 1], a_lo[LPCO + 1], anew_hi[LPCO + 1],
+	int16_t i, j, high, low, alpha_hi, alpha_lo, alpha_exp;
+	int16_t exp, r_hi[LPCO + 1], r_lo[LPCO + 1];
+	int16_t a_hi[LPCO + 1], a_lo[LPCO + 1], anew_hi[LPCO + 1],
 	    anew_lo[LPCO + 1];
-	Word16 rc_hi, rc_lo;
-	Word32 a0, a1, alpha_man;
+	int16_t rc_hi, rc_lo;
+	int32_t a0, a1, alpha_man;
 
-	memzero(r_hi, LPCO + 1);
-	memzero(r_lo, LPCO + 1);
+	memzero(r_hi, (LPCO + 1) * sizeof(int16_t));
+	memzero(r_lo, (LPCO + 1) * sizeof(int16_t));
 
 	/* Normalization of autocorrelation coefficients */
 	exp = bv_norm_l(r32[0]);

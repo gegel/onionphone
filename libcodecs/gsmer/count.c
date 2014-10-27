@@ -7,7 +7,7 @@
 *************************************************************************/
 
 #include <stdio.h>
-#include "ophint.h"
+#include <stdint.h>
 #include "count.h"
 
 /* Global w_counter variable for calculation of complexity weight */
@@ -24,31 +24,31 @@ const BASIC_OP w_op_weight = {
 
 #define NbFuncMax  1024
 
-static Word16 w_funcid, w_nbframe;
-static Word32 w_glob_w_wc, w_wc[NbFuncMax];
+static int16_t w_funcid, w_nbframe;
+static int32_t w_glob_w_wc, w_wc[NbFuncMax];
 static float w_total_wmops;
 
-static Word32 w_LastWOper;
+static int32_t w_LastWOper;
 
-Word32 w_TotalWeightedOperation()
+int32_t w_TotalWeightedOperation()
 {
-	Word16 i;
-	Word32 tot, *ptr, *ptr2;
+	int16_t i;
+	int32_t tot, *ptr, *ptr2;
 
 	tot = 0;
-	ptr = (Word32 *) & w_counter;
-	ptr2 = (Word32 *) & w_op_weight;
-	for (i = 0; (unsigned int)i < (sizeof(w_counter) / sizeof(Word32)); i++)
+	ptr = (int32_t *) & w_counter;
+	ptr2 = (int32_t *) & w_op_weight;
+	for (i = 0; (unsigned int)i < (sizeof(w_counter) / sizeof(int32_t)); i++)
 	{
 		tot += ((*ptr++) * (*ptr2++));
 	}
 
-	return ((Word32) tot);
+	return ((int32_t) tot);
 }
 
-Word32 w_DeltaWeightedOperation()
+int32_t w_DeltaWeightedOperation()
 {
-	Word32 NewWOper, delta;
+	int32_t NewWOper, delta;
 
 	NewWOper = w_TotalWeightedOperation();
 	delta = NewWOper - w_LastWOper;
@@ -83,12 +83,12 @@ void ww_logic32(void)
 
 void Init_WMOPS_w_counter(void)
 {
-	Word16 i;
+	int16_t i;
 
 	/* reset function weight operation w_counter variable */
 
 	for (i = 0; i < NbFuncMax; i++)
-		w_wc[i] = (Word32) 0;
+		w_wc[i] = (int32_t) 0;
 	w_glob_w_wc = 0;
 	w_nbframe = 0;
 	w_total_wmops = 0.0;
@@ -97,11 +97,11 @@ void Init_WMOPS_w_counter(void)
 
 void Reset_WMOPS_w_counter(void)
 {
-	Word16 i;
-	Word32 *ptr;
+	int16_t i;
+	int32_t *ptr;
 
-	ptr = (Word32 *) & w_counter;
-	for (i = 0; (unsigned int)i < (sizeof(w_counter) / sizeof(Word32)); i++)
+	ptr = (int32_t *) & w_counter;
+	for (i = 0; (unsigned int)i < (sizeof(w_counter) / sizeof(int32_t)); i++)
 	{
 		*ptr++ = 0;
 	}
@@ -110,9 +110,9 @@ void Reset_WMOPS_w_counter(void)
 	w_funcid = 0;		/* new frame, set function id to w_zero */
 }
 
-Word32 w_fw_wc(void)
+int32_t w_fw_wc(void)
 {				/* function worst case */
-	Word32 tot;
+	int32_t tot;
 
 	tot = w_DeltaWeightedOperation();
 	if (tot > w_wc[w_funcid])
@@ -123,10 +123,10 @@ Word32 w_fw_wc(void)
 	return (tot);
 }
 
-void w_WMOPS_output(Word16 w_dtx_mode)
+void w_WMOPS_output(int16_t w_dtx_mode)
 {
-	Word16 i;
-	Word32 tot, tot_w_wc;
+	int16_t i;
+	int32_t tot, tot_w_wc;
 
 	tot = w_TotalWeightedOperation();
 	if (tot > w_glob_w_wc)

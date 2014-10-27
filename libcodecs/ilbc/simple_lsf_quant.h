@@ -27,12 +27,12 @@
  *  lsf quantizer (subrutine to LPCencode)
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_SimpleLsfQ(WebRtc_Word16 * lsfdeq,	/* (o) dequantized lsf coefficients
+void WebRtcIlbcfix_SimpleLsfQ(int16_t * lsfdeq,	/* (o) dequantized lsf coefficients
 							   (dimension FILTERORDER) Q13 */
-			      WebRtc_Word16 * index,	/* (o) quantization index */
-			      WebRtc_Word16 * lsf,	/* (i) the lsf coefficient vector to be
+			      int16_t * index,	/* (o) quantization index */
+			      int16_t * lsf,	/* (i) the lsf coefficient vector to be
 							   quantized (dimension FILTERORDER) Q13 */
-			      WebRtc_Word16 lpc_n	/* (i) number of lsf sets to quantize */
+			      int16_t lpc_n	/* (i) number of lsf sets to quantize */
     );
 
 #endif

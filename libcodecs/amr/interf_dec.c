@@ -26,10 +26,10 @@
  * include files
  */
 #include <stdlib.h>
+#include <stdint.h>
 #include <stdio.h>
 #include <memory.h>
 #include "amr_speech_importance.h"
-#include "ophint.h"
 #include "sp_dec.h"
 #include "interf_rom.h"
 #include "rom_dec.h"
@@ -66,9 +66,9 @@ typedef
  * Returns:
  *    value
  */
-static Word16 Bin2Int(Word16 no_of_bits, Word16 * bitstream)
+static int16_t Bin2Int(int16_t no_of_bits, int16_t * bitstream)
 {
-	Word32 value, i, bit;
+	int32_t value, i, bit;
 
 	value = 0;
 
@@ -79,7 +79,7 @@ static Word16 Bin2Int(Word16 no_of_bits, Word16 * bitstream)
 		if (bit == 0x1)
 			value = value + 1;
 	}
-	return (Word16) (value);
+	return (int16_t) (value);
 }
 
 /*
@@ -98,9 +98,9 @@ static Word16 Bin2Int(Word16 no_of_bits, Word16 * bitstream)
  * Returns:
  *    void
  */
-static void Bits2Prm(enum Mode mode, Word16 bits[], Word16 prm[])
+static void Bits2Prm(enum Mode mode, int16_t bits[], int16_t prm[])
 {
-	Word32 i;
+	int32_t i;
 
 	switch (mode) {
 	case MR122:
@@ -189,12 +189,12 @@ static void Bits2Prm(enum Mode mode, Word16 bits[], Word16 prm[])
  * Returns:
  *    mode              used mode
  */
-enum Mode DecoderMMS(Word16 * param, UWord8 * stream, enum RXFrameType
-		     *frame_type, enum Mode *speech_mode, Word16 * q_bit)
+enum Mode DecoderMMS(int16_t * param, uint8_t * stream, enum RXFrameType
+		     *frame_type, enum Mode *speech_mode, int16_t * q_bit)
 {
 	enum Mode mode;
-	Word32 j;
-	Word16 *mask;
+	int32_t j;
+	int16_t *mask;
 
 	memzero(param, PRMNO_MR122 << 1);
 	*q_bit = 0x01 & (*stream >> 2);
@@ -376,12 +376,12 @@ enum Mode DecoderMMS(Word16 * param, UWord8 * stream, enum RXFrameType
  * Returns:
  *    mode              used mode
  */
-enum Mode Decoder3GPP(Word16 * param, UWord8 * stream, enum RXFrameType
+enum Mode Decoder3GPP(int16_t * param, uint8_t * stream, enum RXFrameType
 		      *frame_type, enum Mode *speech_mode)
 {
 	enum Mode mode;
-	Word32 j;
-	Word16 *mask;
+	int32_t j;
+	int16_t *mask;
 
 	memzero(param, PRMNO_MR122 << 1);
 	mode = 0xF & *stream;
@@ -640,11 +640,11 @@ void Decoder_Interface_exit(void *state)
  */
 void Decoder_Interface_Decode(void *st,
 #ifndef ETSI
-			      UWord8 * bits,
+			      uint8_t * bits,
 #else
-			      Word16 * bits,
+			      int16_t * bits,
 #endif
-			      Word16 * synth, int bfi)
+			      int16_t * synth, int bfi)
 {
 	enum Mode mode;		/* AMR mode */
 
@@ -652,19 +652,19 @@ void Decoder_Interface_Decode(void *st,
 	enum Mode speech_mode = MR475;	/* speech mode */
 #endif
 
-	Word16 prm[PRMNO_MR122];	/* AMR parameters */
+	int16_t prm[PRMNO_MR122];	/* AMR parameters */
 
 	enum RXFrameType frame_type;	/* frame type */
 	dec_interface_State *s;	/* pointer to structure */
 
-	const Word16 *homing;	/* pointer to homing frame */
-	Word16 homingSize;	/* frame size for homing frame */
-	Word32 i;		/* counter */
-	Word32 resetFlag = 1;	/* homing frame */
+	const int16_t *homing;	/* pointer to homing frame */
+	int16_t homingSize;	/* frame size for homing frame */
+	int32_t i;		/* counter */
+	int32_t resetFlag = 1;	/* homing frame */
 
 #ifndef ETSI
 #ifndef IF2
-	Word16 q_bit;
+	int16_t q_bit;
 #endif
 #endif
 
@@ -870,16 +870,16 @@ void Decoder_Interface_Decode(void *st,
 
 //decode using AMR475 mode and bfi flag=1 for bad frame
 //alternatively bad frame is synth=0 or four zeroes 
-void AMR475_decode(void *st, UWord8 * serial, Word16 * synth, int bfi)
+void AMR475_decode(void *st, uint8_t * serial, int16_t * synth, int bfi)
 {
 	enum Mode speech_mode = MR475;	/* speech mode */
 	enum RXFrameType frame_type = RX_SPEECH_GOOD;	/* frame type */
-	Word16 prm[PRMNO_MR475];	/* AMR parameters */
+	int16_t prm[PRMNO_MR475];	/* AMR parameters */
 	dec_interface_State *s;	/* pointer to structure */
-	Word32 i, j;		/* counter */
-	Word32 resetFlag = 1;	/* homing frame */
-	UWord8 temp[12] = { 0 };	//used if serial ommited
-	Word16 bits;
+	int32_t i, j;		/* counter */
+	int32_t resetFlag = 1;	/* homing frame */
+	uint8_t temp[12] = { 0 };	//used if serial ommited
+	int16_t bits;
 
 	s = (dec_interface_State *) st;	//state
 	if (!serial)
@@ -895,7 +895,7 @@ void AMR475_decode(void *st, UWord8 * serial, Word16 * synth, int bfi)
 		frame_type = RX_SPEECH_BAD;	//set type for CN generation
 
 	//unpack bits ro parameters
-	memzero(prm, 2 * PRMNO_MR475);
+	memzero(prm, PRMNO_MR475 * sizeof(int16_t));
 	if (speech_mode == MRDTX)	//for sid frame (5 bytes)
 	{
 		bits = 5;	//reserve 5 bits for SID flag and counter)
@@ -904,8 +904,8 @@ void AMR475_decode(void *st, UWord8 * serial, Word16 * synth, int bfi)
 			for (j = 0; j < bitno_MRDTX[i]; j++)	//read each bit 
 			{
 				if (serial[bits >> 3] &
-				    (((UWord8) 1) << (bits & 7)))
-					prm[i] |= ((Word16) 1 << j);
+				    (((uint8_t) 1) << (bits & 7)))
+					prm[i] |= ((int16_t) 1 << j);
 				bits++;
 			}
 		}
@@ -915,8 +915,8 @@ void AMR475_decode(void *st, UWord8 * serial, Word16 * synth, int bfi)
 		for (i = 0; i < PRMNO_MR475; i++) {
 			for (j = 0; j < bitno_MR475[i]; j++) {
 				if (serial[bits >> 3] &
-				    (((UWord8) 1) << (bits & 7)))
-					prm[i] |= ((Word16) 1 << j);
+				    (((uint8_t) 1) << (bits & 7)))
+					prm[i] |= ((int16_t) 1 << j);
 				bits++;
 			}
 		}
@@ -949,7 +949,7 @@ void AMR475_decode(void *st, UWord8 * serial, Word16 * synth, int bfi)
 
 //decode using mode and bfi flag=1 (for replace lossed packets)
 //or alternatively bad frame is synth=0 or four zeroes 
-void AMR_decode(void *st, UWord8 mode, UWord8 * serial, Word16 * synth, int bfi)
+void AMR_decode(void *st, uint8_t mode, uint8_t * serial, int16_t * synth, int bfi)
 {
 
 	/*  Modes list
@@ -964,37 +964,37 @@ void AMR_decode(void *st, UWord8 mode, UWord8 * serial, Word16 * synth, int bfi)
 	 */
 
 	//Homing frames length in bytes for each mode
-	UWord8 homing_size_m[8] = { 7, 7, 7, 7, 7, 8, 12, 18 };
+	uint8_t homing_size_m[8] = { 7, 7, 7, 7, 7, 8, 12, 18 };
 
 	//Pointers to homing frames patterns for each mode
-	const Word16 *dhf_m[8] = { dhf_MR475, dhf_MR515, dhf_MR59,
+	const int16_t *dhf_m[8] = { dhf_MR475, dhf_MR515, dhf_MR59,
 		dhf_MR67, dhf_MR74, dhf_MR795, dhf_MR102, dhf_MR122
 	};
 
 	//Number of parameters for each mode
-	UWord8 prmno_m[8] = { PRMNO_MR475, PRMNO_MR515, PRMNO_MR59,
+	uint8_t prmno_m[8] = { PRMNO_MR475, PRMNO_MR515, PRMNO_MR59,
 		PRMNO_MR67, PRMNO_MR74, PRMNO_MR795, PRMNO_MR102, PRMNO_MR122
 	};
 
 	//Number of bits in parameters for each mode
-	const Word16 *bitno_m[8] = { bitno_MR475, bitno_MR515, bitno_MR59,
+	const int16_t *bitno_m[8] = { bitno_MR475, bitno_MR515, bitno_MR59,
 		bitno_MR67, bitno_MR74, bitno_MR795, bitno_MR102, bitno_MR122
 	};
 
 //Set variables for current mode   
-	UWord8 homing_size = homing_size_m[mode];
-	const Word16 *dhf = dhf_m[mode];
-	UWord8 prmno = prmno_m[mode];
-	const Word16 *bitno = bitno_m[mode];
+	uint8_t homing_size = homing_size_m[mode];
+	const int16_t *dhf = dhf_m[mode];
+	uint8_t prmno = prmno_m[mode];
+	const int16_t *bitno = bitno_m[mode];
 
 	enum Mode speech_mode = mode;	/* speech mode */
 	enum RXFrameType frame_type = RX_SPEECH_GOOD;	/* frame type */
-	Word16 prm[PRMNO_MR122];	/* AMR parameters */
+	int16_t prm[PRMNO_MR122];	/* AMR parameters */
 	dec_interface_State *s;	/* pointer to structure */
-	Word32 i, j;		/* counters */
-	Word32 resetFlag = 1;	/* homing frame */
-	UWord8 temp[31] = { 0 };	//used if serial ommited
-	Word16 bits;		//bits counter
+	int32_t i, j;		/* counters */
+	int32_t resetFlag = 1;	/* homing frame */
+	uint8_t temp[31] = { 0 };	//used if serial ommited
+	int16_t bits;		//bits counter
 
 	s = (dec_interface_State *) st;	//state
 
@@ -1011,7 +1011,7 @@ void AMR_decode(void *st, UWord8 mode, UWord8 * serial, Word16 * synth, int bfi)
 		frame_type = RX_SPEECH_BAD;	//set type for CN generation
 
 	//unpack bits ro parameters
-	memzero(prm, 2 * prmno);
+	memzero(prm, PRMNO_MR122 * sizeof(int16_t));
 	if (speech_mode == MRDTX)	//for sid frame (5 bytes)
 	{
 		bits = 5;	//reserve 5 bits for SID flag and counter)
@@ -1020,8 +1020,8 @@ void AMR_decode(void *st, UWord8 mode, UWord8 * serial, Word16 * synth, int bfi)
 			for (j = 0; j < bitno_MRDTX[i]; j++)	//read each bit 
 			{
 				if (serial[bits >> 3] &
-				    (((UWord8) 1) << (bits & 7)))
-					prm[i] |= ((Word16) 1 << j);
+				    (((uint8_t) 1) << (bits & 7)))
+					prm[i] |= ((int16_t) 1 << j);
 				bits++;
 			}
 		}
@@ -1031,8 +1031,8 @@ void AMR_decode(void *st, UWord8 mode, UWord8 * serial, Word16 * synth, int bfi)
 		for (i = 0; i < prmno; i++) {
 			for (j = 0; j < bitno[i]; j++) {
 				if (serial[bits >> 3] &
-				    (((UWord8) 1) << (bits & 7)))
-					prm[i] |= ((Word16) 1 << j);
+				    (((uint8_t) 1) << (bits & 7)))
+					prm[i] |= ((int16_t) 1 << j);
 				bits++;
 			}
 		}

@@ -17,6 +17,6 @@
 #define         R_LSFQ 10
 
 void init_lsfq_noise(void);
-void lsfq_noise(FLOAT * lsp_new, FLOAT * lspq,
-		FLOAT freq_prev[MA_NP][M], int *idx);
-void sid_lsfq_decode(int *index, FLOAT * lspq, FLOAT freq_prev[MA_NP][M]);
+void lsfq_noise(float * lsp_new, float * lspq,
+		float freq_prev[MA_NP][M], int *idx);
+void sid_lsfq_decode(int *index, float * lspq, float freq_prev[MA_NP][M]);

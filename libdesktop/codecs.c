@@ -46,23 +46,16 @@
 #include "../libcodecs/opus/include/opus.h"
 #include "../libcodecs/gsmhr/gsmhr.h"
 #include "../libcodecs/ilbc/ilbc.h"
-#include "../inc/ophint.h"
 #include "../libcodecs/bv/bv16/bvcommon.h"
 #include "../libcodecs/bv/bv16/bv16cnst.h"
 #include "../libcodecs/bv/bv16/bv16strct.h"
 #include "../libcodecs/bv/bv16/bv16.h"
 #include "../libcodecs/bv/bv16/utility.h"
 #include "../libcodecs/bv/bv16/bitpack.h"
-#include "../libcodecs/bv/bv16/memutil.h"
 //*/
 #include "../libcodecs/speex/speex/speex.h"
 #include "../libcodecs/speex/speex/speex_preprocess.h"
 #include "../libcodecs/speex/speex/speex_resampler.h"
-
-
-//in interf_enc.h was commented stdint.h - not found in win32
-#define Word16 short
-#define UWord8 unsigned char
 
 #include "../libcodecs/amr/interf_enc.h"
 #include "../libcodecs/amr/interf_dec.h"
@@ -656,14 +649,14 @@ void ilbc_f(void)
 //ILBC encode 240 samples (30 mS) to 50 bytes
 int ilbc_e(unsigned char* buf, short* speech)
 {
-  return WebRtcIlbcfix_Encode(Enc_Inst, (WebRtc_Word16*)speech, (WebRtc_Word16)ilbc_frameLen, (WebRtc_Word16*)buf);
+  return WebRtcIlbcfix_Encode(Enc_Inst, (int16_t*)speech, (int16_t)ilbc_frameLen, (int16_t*)buf);
 }
 //*****************************************************************************
 //ILBC decode 50 bytes to 240 samples
 int ilbc_d(short* speech, unsigned char* buf)
 {
- WebRtc_Word16 speechType;
- WebRtcIlbcfix_Decode(Dec_Inst, (WebRtc_Word16*)buf, ilbc_frameLen==240 ? 50 : 38,  (WebRtc_Word16*)speech,&speechType);
+ int16_t speechType;
+ WebRtcIlbcfix_Decode(Dec_Inst, (int16_t*)buf, ilbc_frameLen==240 ? 50 : 38,  (int16_t*)speech,&speechType);
  return (int) speechType;
 }
 //*****************************************************************************

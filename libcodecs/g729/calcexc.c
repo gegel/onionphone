@@ -17,14 +17,12 @@ File : CALCEXC.C
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "dtx.h"
 
 /* Local functions */
-static FLOAT gauss(INT16 * seed);
+static float gauss(int16_t * seed);
 
 /*-----------------------------------------------------------*
 * procedure calc_exc_rand                                   *
@@ -32,26 +30,26 @@ static FLOAT gauss(INT16 * seed);
 *   Computes comfort noise excitation                       *
 *   for SID and not-transmitted frames                      *
 *-----------------------------------------------------------*/
-void calc_exc_rand(FLOAT cur_gain,	/* (i)   :   target sample gain                 */
-		   FLOAT * exc,	/* (i/o) :   excitation array                   */
-		   INT16 * seed,	/* (i)   :   current Vad decision               */
+void calc_exc_rand(float cur_gain,	/* (i)   :   target sample gain                 */
+		   float * exc,	/* (i/o) :   excitation array                   */
+		   int16_t * seed,	/* (i)   :   current Vad decision               */
 		   int flag_cod	/* (i)   :   encoder/decoder flag               */
     )
 {
-	FLOAT excg[L_SUBFR];
+	float excg[L_SUBFR];
 	int pos[4];
-	FLOAT sign[4];
-	FLOAT *cur_exc;
-	FLOAT gp, ener, fact, inter_exc, k, delta, x1, x2, g;
+	float sign[4];
+	float *cur_exc;
+	float gp, ener, fact, inter_exc, k, delta, x1, x2, g;
 	int i, i_subfr, t0, frac;
-	INT16 Gp, temp1, temp2;
+	int16_t Gp, temp1, temp2;
 
-	if (cur_gain == (F) 0.) {
+	if (cur_gain == (float) 0.) {
 
 		for (i = 0; i < L_FRAME; i++) {
-			exc[i] = (F) 0.;
+			exc[i] = (float) 0.;
 		}
-		gp = (F) 0.;
+		gp = (float) 0.;
 		t0 = L_SUBFR + 1;
 		if (flag_cod != FLAG_DEC) {
 			for (i_subfr = 0; i_subfr < L_FRAME; i_subfr += L_SUBFR) {
@@ -73,44 +71,44 @@ void calc_exc_rand(FLOAT cur_gain,	/* (i)   :   target sample gain              
 		/* generate random adaptive codebook & fixed codebook parameters */
 	/*****************************************************************/
 		temp1 = random_g729c(seed);
-		frac = (int)(temp1 & (INT16) 0x0003) - 1;
+		frac = (int)(temp1 & (int16_t) 0x0003) - 1;
 		if (frac == 2)
 			frac = 0;
 		temp1 >>= 2;
-		t0 = (int)(temp1 & (INT16) 0x003F) + 40;
+		t0 = (int)(temp1 & (int16_t) 0x003F) + 40;
 		temp1 >>= 6;
-		temp2 = (INT16) (temp1 & (INT16) 0x0007);
+		temp2 = (int16_t) (temp1 & (int16_t) 0x0007);
 		pos[0] = 5 * (int)temp2;
 		temp1 >>= 3;
-		temp2 = (INT16) (temp1 & (INT16) 0x0001);
-		sign[0] = (F) 2. *(FLOAT) temp2 - (F) 1.;
+		temp2 = (int16_t) (temp1 & (int16_t) 0x0001);
+		sign[0] = (float) 2. *(float) temp2 - (float) 1.;
 		temp1 >>= 1;
-		temp2 = (INT16) (temp1 & (INT16) 0x0007);
+		temp2 = (int16_t) (temp1 & (int16_t) 0x0007);
 		pos[1] = 5 * (int)temp2 + 1;
 		temp1 >>= 3;
-		temp2 = (INT16) (temp1 & (INT16) 0x0001);
-		sign[1] = (F) 2. *(FLOAT) temp2 - (F) 1.;
+		temp2 = (int16_t) (temp1 & (int16_t) 0x0001);
+		sign[1] = (float) 2. *(float) temp2 - (float) 1.;
 		temp1 = random_g729c(seed);
-		temp2 = (INT16) (temp1 & (INT16) 0x0007);
+		temp2 = (int16_t) (temp1 & (int16_t) 0x0007);
 		pos[2] = 5 * (int)temp2 + 1;
 		temp1 >>= 3;
-		temp2 = (INT16) (temp1 & (INT16) 0x0001);
-		sign[2] = (F) 2. *(FLOAT) temp2 - (F) 1.;
+		temp2 = (int16_t) (temp1 & (int16_t) 0x0001);
+		sign[2] = (float) 2. *(float) temp2 - (float) 1.;
 		temp1 >>= 1;
-		temp2 = (INT16) (temp1 & (INT16) 0x000F);
-		pos[3] = (int)(temp2 & (INT16) 0x0001) + 3;	/* j+3 */
+		temp2 = (int16_t) (temp1 & (int16_t) 0x000F);
+		pos[3] = (int)(temp2 & (int16_t) 0x0001) + 3;	/* j+3 */
 		temp2 >>= 1;
-		temp2 &= (INT16) 0x0007;
+		temp2 &= (int16_t) 0x0007;
 		pos[3] += 5 * (int)temp2;
 		temp1 >>= 4;
-		temp2 = (INT16) (temp1 & (INT16) 0x0001);
-		sign[3] = (F) 2. *(FLOAT) temp2 - (F) 1.;
-		Gp = (INT16) (random_g729c(seed) & (INT16) 0x1FFF);	/* < 0.5  */
-		gp = (FLOAT) Gp / (F) 16384.;
+		temp2 = (int16_t) (temp1 & (int16_t) 0x0001);
+		sign[3] = (float) 2. *(float) temp2 - (float) 1.;
+		Gp = (int16_t) (random_g729c(seed) & (int16_t) 0x1FFF);	/* < 0.5  */
+		gp = (float) Gp / (float) 16384.;
 
 		/* Generate gaussian excitation */
 	/********************************/
-		ener = (F) 0.;
+		ener = (float) 0.;
 		for (i = 0; i < L_SUBFR; i++) {
 			excg[i] = gauss(seed);
 			ener += excg[i] * excg[i];
@@ -119,7 +117,7 @@ void calc_exc_rand(FLOAT cur_gain,	/* (i)   :   target sample gain              
 		/*  Compute fact = alpha x cur_gain * sqrt(L_SUBFR / ener) */
 		/*  with alpha = 0.5, and multiply excg[] by fact          */
 		fact = NORM_GAUSS * cur_gain;
-		fact /= (FLOAT) sqrt(ener);
+		fact /= (float) sqrt(ener);
 		for (i = 0; i < L_SUBFR; i++) {
 			excg[i] *= fact;
 		}
@@ -130,7 +128,7 @@ void calc_exc_rand(FLOAT cur_gain,	/* (i)   :   target sample gain              
 
 		/* compute adaptive + gaussian exc -> cur_exc */
 	/**********************************************/
-		ener = (F) 0.;
+		ener = (float) 0.;
 		for (i = 0; i < L_SUBFR; i++) {
 			cur_exc[i] *= gp;
 			cur_exc[i] += excg[i];
@@ -145,37 +143,37 @@ void calc_exc_rand(FLOAT cur_gain,	/* (i)   :   target sample gain              
 	/**********************************************************/
 
 		/* Compute b = inter_exc */
-		inter_exc = (F) 0.;
+		inter_exc = (float) 0.;
 		for (i = 0; i < 4; i++) {
 			inter_exc += cur_exc[pos[i]] * sign[i];
 		}
 
 		/* Compute k = cur_gain x cur_gain x L_SUBFR */
-		k = cur_gain * cur_gain * (F) L_SUBFR;
+		k = cur_gain * cur_gain * (float) L_SUBFR;
 
 		/* Compute delta = b^2 - 4 c    */
 		/* with c = ener - k            */
-		delta = inter_exc * inter_exc - (F) 4. *(ener - k);
+		delta = inter_exc * inter_exc - (float) 4. *(ener - k);
 
-		if (delta < (F) 0.) {
+		if (delta < (float) 0.) {
 
 			/* adaptive excitation = 0 */
 			copy(excg, cur_exc, L_SUBFR);
-			inter_exc = (F) 0.;
+			inter_exc = (float) 0.;
 			for (i = 0; i < 4; i++) {
 				inter_exc += cur_exc[pos[i]] * sign[i];
 			}
 			/* Compute delta = b^2 - 4 c      */
 			/* with c = - k x (1- alpha^2)    */
 			delta = inter_exc * inter_exc + K0 * k;
-			gp = (F) 0.;
+			gp = (float) 0.;
 		}
 
-		delta = (FLOAT) sqrt(delta);
-		x1 = (delta - inter_exc) * (F) 0.25;
-		x2 = -(delta + inter_exc) * (F) 0.25;
-		g = ((FLOAT) fabs(x1) < (FLOAT) fabs(x2)) ? x1 : x2;
-		if (g >= (F) 0.) {
+		delta = (float) sqrt(delta);
+		x1 = (delta - inter_exc) * (float) 0.25;
+		x2 = -(delta + inter_exc) * (float) 0.25;
+		g = ((float) fabs(x1) < (float) fabs(x2)) ? x1 : x2;
+		if (g >= (float) 0.) {
 			if (g > G_MAX)
 				g = G_MAX;
 		} else {
@@ -191,7 +189,7 @@ void calc_exc_rand(FLOAT cur_gain,	/* (i)   :   target sample gain              
 		if (flag_cod != FLAG_DEC)
 			update_exc_err(gp, t0);
 		else {
-			if (g >= (F) 0.)
+			if (g >= (float) 0.)
 				Update_PhDisp(gp, g);
 			else
 				Update_PhDisp(gp, -g);
@@ -209,7 +207,7 @@ void calc_exc_rand(FLOAT cur_gain,	/* (i)   :   target sample gain              
 
 /* Gaussian generation */
 /***********************/
-static FLOAT gauss(INT16 * seed)
+static float gauss(int16_t * seed)
 {
 
     /****  Xi = uniform v.a. in [-32768, 32767]       ****/
@@ -217,15 +215,15 @@ static FLOAT gauss(INT16 * seed)
     /****  output : Z                                 ****/
 
 	int i;
-	INT16 temp;
-	INT32 L_acc, L_temp;
+	int16_t temp;
+	int32_t L_acc, L_temp;
 
 	L_acc = 0L;
 	for (i = 0; i < 12; i++) {
-		L_temp = (INT32) random_g729c(seed);
+		L_temp = (int32_t) random_g729c(seed);
 		L_acc += L_temp;
 	}
 	L_acc >>= 7;
-	temp = (INT16) L_acc;	/* Z x 512 */
-	return ((FLOAT) temp * (F) 0.001953125);	/* Z */
+	temp = (int16_t) L_acc;	/* Z x 512 */
+	return ((float) temp * (float) 0.001953125);	/* Z */
 }

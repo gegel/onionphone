@@ -25,40 +25,39 @@
 */
 
 #include <math.h>
-#include "ophint.h"
 #include "ld8k.h"
 
 static int smooth = 1;
-static FLOAT lar_old[2] = { (F) 0.0, (F) 0.0 };
+static float lar_old[2] = { (float) 0.0, (float) 0.0 };
 
 /*----------------------------------------------------------------------------
 * perc_var -adaptive bandwidth expansion for perceptual weighting filter
 *----------------------------------------------------------------------------
 */
-void perc_var(FLOAT * gamma1,	/* output: gamma1 value */
-	      FLOAT * gamma2,	/* output: gamma2 value */
-	      FLOAT * lsfint,	/* input : Interpolated lsf vector : 1st subframe */
-	      FLOAT * lsfnew,	/* input : lsf vector : 2nd subframe */
-	      FLOAT * r_c	/* input : Reflection coefficients */
+void perc_var(float * gamma1,	/* output: gamma1 value */
+	      float * gamma2,	/* output: gamma2 value */
+	      float * lsfint,	/* input : Interpolated lsf vector : 1st subframe */
+	      float * lsfnew,	/* input : lsf vector : 2nd subframe */
+	      float * r_c	/* input : Reflection coefficients */
     )
 {
-	FLOAT lar[4];
-	FLOAT *lar_new;
-	FLOAT *lsf;
-	FLOAT critlar0, critlar1;
-	FLOAT d_min, temp;
+	float lar[4];
+	float *lar_new;
+	float *lsf;
+	float critlar0, critlar1;
+	float d_min, temp;
 	int i, k;
 
 	lar_new = &lar[2];
 
 	/* reflection coefficients --> lar */
 	for (i = 0; i < 2; i++)
-		lar_new[i] = (FLOAT)
-		    log10((double)(((F) 1.0 + r_c[i]) / ((F) 1.0 - r_c[i])));
+		lar_new[i] = (float)
+		    log10((double)(((float) 1.0 + r_c[i]) / ((float) 1.0 - r_c[i])));
 
 	/* Interpolation of lar for the 1st subframe */
 	for (i = 0; i < 2; i++) {
-		lar[i] = (F) 0.5 *(lar_new[i] + lar_old[i]);
+		lar[i] = (float) 0.5 *(lar_new[i] + lar_old[i]);
 		lar_old[i] = lar_new[i];
 	}
 

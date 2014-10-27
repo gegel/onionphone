@@ -11,13 +11,13 @@
  *  Init_w_Coder_12k2(void):
  *      Initialization of variables for the coder section.
  *
- *  w_Coder_12k2(Word16 ana[], Word16 w_w_synth[]):
+ *  w_Coder_12k2(int16_t ana[], int16_t w_w_synth[]):
  *      Speech encoder routine operating on a frame basis.
  *
 
 ***************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "sig_proc.h"
 #include "count.h"
@@ -50,51 +50,51 @@
 
  /* Speech vector */
 
-static Word16 w_old_w_speech[L_TOTAL];
-static Word16 *w_speech, *w_p_window, *w_w_p_window_mid;
-Word16 *w_new_w_speech;		/* Global variable */
+static int16_t w_old_w_speech[L_TOTAL];
+static int16_t *w_speech, *w_p_window, *w_w_p_window_mid;
+int16_t *w_new_w_speech;		/* Global variable */
 
  /* Weight w_speech vector */
 
-static Word16 w_old_w_wsp[L_FRAME + PIT_MAX];
-static Word16 *w_wsp;
+static int16_t w_old_w_wsp[L_FRAME + PIT_MAX];
+static int16_t *w_wsp;
 
  /* Excitation vector */
 
-static Word16 old_w_exc[L_FRAME + PIT_MAX + L_INTERPOL];
-static Word16 *w_exc;
+static int16_t old_w_exc[L_FRAME + PIT_MAX + L_INTERPOL];
+static int16_t *w_exc;
 
  /* Zero vector */
 
-static Word16 w_ai_w_zero[L_SUBFR + MP1];
-static Word16 *w_zero;
+static int16_t w_ai_w_zero[L_SUBFR + MP1];
+static int16_t *w_zero;
 
  /* Impulse response vector */
 
-static Word16 *w_h1;
-static Word16 w_hvec[L_SUBFR * 2];
+static int16_t *w_h1;
+static int16_t w_hvec[L_SUBFR * 2];
 
  /* Spectral expansion factors */
 
-static const Word16 w_F_gamma1[M] = {
+static const int16_t w_F_gamma1[M] = {
 	29491, 26542, 23888, 21499, 19349,
 	17414, 15672, 14105, 12694, 11425
 };
 
-static const Word16 w_F_gamma2[M] = {
+static const int16_t w_F_gamma2[M] = {
 	19661, 11797, 7078, 4247, 2548,
 	1529, 917, 550, 330, 198
 };
 
  /* Lsp (Line spectral pairs) */
 
-static Word16 w_lsp_old[M];
-static Word16 w_w_lsp_old_q[M];
+static int16_t w_lsp_old[M];
+static int16_t w_w_lsp_old_q[M];
 
  /* Filter's memory */
 
-static Word16 w_mem_w_syn[M], w_w_mem_w0[M], w_mem_w[M];
-static Word16 w_mem_err[M + L_SUBFR], *w_error;
+static int16_t w_mem_w_syn[M], w_w_mem_w0[M], w_mem_w[M];
+static int16_t w_mem_err[M + L_SUBFR], *w_error;
 
 /***************************************************************************
  *  FUNCTION:   Init_w_Coder_12k2
@@ -184,44 +184,44 @@ void Init_w_Coder_12k2(void)
  *
  ***************************************************************************/
 
-void w_Coder_12k2(Word16 ana[],	/* output  : Analysis parameters */
-		  Word16 w_w_synth[]	/* output  : Local w_w_synthesis     */
+void w_Coder_12k2(int16_t ana[],	/* output  : Analysis parameters */
+		  int16_t w_w_synth[]	/* output  : Local w_w_synthesis     */
     )
 {
 	/* LPC coefficients */
 
-	Word16 r_l[MP1], r_h[MP1];	/* w_Autocorrelations lo and hi           */
-	Word16 A_t[(MP1) * 4];	/* A(z) unquantized for the 4 w_subframes */
-	Word16 Aq_t[(MP1) * 4];	/* A(z)   quantized for the 4 w_subframes */
-	Word16 Ap1[MP1];	/* A(z) with spectral expansion         */
-	Word16 Ap2[MP1];	/* A(z) with spectral expansion         */
-	Word16 *A, *Aq;		/* Pointer on A_t and Aq_t              */
-	Word16 lsp_new[M], lsp_new_q[M];	/* LSPs at 4th w_subframe                 */
-	Word16 lsp_mid[M], lsp_mid_q[M];	/* LSPs at 2nd w_subframe                 */
+	int16_t r_l[MP1], r_h[MP1];	/* w_Autocorrelations lo and hi           */
+	int16_t A_t[(MP1) * 4];	/* A(z) unquantized for the 4 w_subframes */
+	int16_t Aq_t[(MP1) * 4];	/* A(z)   quantized for the 4 w_subframes */
+	int16_t Ap1[MP1];	/* A(z) with spectral expansion         */
+	int16_t Ap2[MP1];	/* A(z) with spectral expansion         */
+	int16_t *A, *Aq;		/* Pointer on A_t and Aq_t              */
+	int16_t lsp_new[M], lsp_new_q[M];	/* LSPs at 4th w_subframe                 */
+	int16_t lsp_mid[M], lsp_mid_q[M];	/* LSPs at 2nd w_subframe                 */
 
 	/* Other vectors */
 
-	Word16 xn[L_SUBFR];	/* Target vector for pitch search        */
-	Word16 xn2[L_SUBFR];	/* Target vector for codebook search     */
-	Word16 w_res2[L_SUBFR];	/* Long term w_prediction residual         */
-	Word16 code[L_SUBFR];	/* Fixed codebook w_excitation             */
-	Word16 y1[L_SUBFR];	/* Filtered adaptive w_excitation          */
-	Word16 y2[L_SUBFR];	/* Filtered fixed codebook w_excitation    */
+	int16_t xn[L_SUBFR];	/* Target vector for pitch search        */
+	int16_t xn2[L_SUBFR];	/* Target vector for codebook search     */
+	int16_t w_res2[L_SUBFR];	/* Long term w_prediction residual         */
+	int16_t code[L_SUBFR];	/* Fixed codebook w_excitation             */
+	int16_t y1[L_SUBFR];	/* Filtered adaptive w_excitation          */
+	int16_t y2[L_SUBFR];	/* Filtered fixed codebook w_excitation    */
 
 	/* Scalars */
 
-	Word16 i, j, k, i_w_subfr;
-	Word16 T_op, T0 = 0, T0_min = 0, T0_max = 0, T0_frac = 0;
-	Word16 gain_pit, gain_code, pit_flag, pit_sharp = 0;
-	Word16 temp;
-	Word32 L_temp;
+	int16_t i, j, k, i_w_subfr;
+	int16_t T_op, T0 = 0, T0_min = 0, T0_max = 0, T0_frac = 0;
+	int16_t gain_pit, gain_code, pit_flag, pit_sharp = 0;
+	int16_t temp;
+	int32_t L_temp;
 
-	Word16 scal_acf, VAD_flag, lags[2], rc[4];
+	int16_t scal_acf, VAD_flag, lags[2], rc[4];
 
-	extern Word16 w_ptch;
-	extern Word16 w_txdtx_ctrl, w_CN_w_excitation_gain;
-	extern Word32 w_L_pn_seed_tx;
-	extern Word16 w_dtx_mode;
+	extern int16_t w_ptch;
+	extern int16_t w_txdtx_ctrl, w_CN_w_excitation_gain;
+	extern int32_t w_L_pn_seed_tx;
+	extern int16_t w_dtx_mode;
 
     /*----------------------------------------------------------------------*
      *  - Perform LPC analysis: (twice per frame)                           *

@@ -33,8 +33,8 @@ void WebRtcIlbcfix_AbsQuant(iLBC_Enc_Inst_t * iLBCenc_inst,
 			    iLBC_bits * iLBC_encbits,	/* (i/o) Encoded bits (outputs idxForMax
 							   and idxVec, uses state_first as
 							   input) */
-			    WebRtc_Word16 * in,	/* (i) vector to encode */
-			    WebRtc_Word16 * weightDenum	/* (i) denominator of synthesis filter */
+			    int16_t * in,	/* (i) vector to encode */
+			    int16_t * weightDenum	/* (i) denominator of synthesis filter */
     );
 
 #endif

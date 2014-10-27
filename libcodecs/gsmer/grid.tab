@@ -12,7 +12,7 @@
 
 #define w_grid_points 60
 
-static const Word16 w_grid[w_grid_points + 1] = {
+static const int16_t w_grid[w_grid_points + 1] = {
 	32760, 32723, 32588, 32364, 32051, 31651,
 	31164, 30591, 29935, 29196, 28377, 27481,
 	26509, 25465, 24351, 23170, 21926, 20621,

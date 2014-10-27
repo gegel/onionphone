@@ -26,22 +26,22 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
 #include "bv16externs.h"
 #include "basop32.h"
 
-void lspdec(Word16 * lspq,	/* Q15 */
-	    Word16 * lspidx, Word16 * lsppm,	/* Q15 */
-	    Word16 * lspq_last)
+void lspdec(int16_t * lspq,	/* Q15 */
+	    int16_t * lspidx, int16_t * lsppm,	/* Q15 */
+	    int16_t * lspq_last)
 {
-	Word32 a0;
-	Word16 elsp[LPCO], lspe[LPCO];
-	Word16 lspeq1[LPCO], lspeq2[LPCO];
-	Word16 *fp1, *fp2;
-	Word16 i, k, sign, idx, stbl;
+	int32_t a0;
+	int16_t elsp[LPCO], lspe[LPCO];
+	int16_t lspeq1[LPCO], lspeq2[LPCO];
+	int16_t *fp1, *fp2;
+	int16_t i, k, sign, idx, stbl;
 
 	/* Calculate estimated (ma-predicted) lsp vector */
 	fp1 = lspp;		/* Q14 */
@@ -61,7 +61,7 @@ void lspdec(Word16 * lspq,	/* Q15 */
 	idx = lspidx[1];
 	if (lspidx[1] >= LSPECBSZ2) {
 		sign = -1;
-		idx = bv_sub((Word16) (2 * LSPECBSZ2 - 1), idx);
+		idx = bv_sub((int16_t) (2 * LSPECBSZ2 - 1), idx);
 	} else
 		sign = 1;
 
@@ -113,13 +113,13 @@ void lspdec(Word16 * lspq,	/* Q15 */
 
 }
 
-void lspdecplc(Word16 * lspq,	/* Q15 */
-	       Word16 * lsppm)
+void lspdecplc(int16_t * lspq,	/* Q15 */
+	       int16_t * lsppm)
 {				/* Q15 */
-	Word32 a0;
-	Word16 elsp[LPCO];
-	Word16 *fp1, *fp2;
-	Word16 i, k;
+	int32_t a0;
+	int16_t elsp[LPCO];
+	int16_t *fp1, *fp2;
+	int16_t i, k;
 
 	/* Calculate estimated (ma-predicted) lsp vector */
 	fp1 = lspp;		/* Q14 */

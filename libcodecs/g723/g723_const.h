@@ -14,27 +14,7 @@
 #ifndef G723_CONST_H
 #define G723_CONST_H
 
-#if defined(__BORLANDC__) || defined (__WATCOMC__) || defined(_MSC_VER) || defined(__ZTC__) || defined(__HIGHC__)
-typedef long int Word32;
-typedef short int Word16;
-typedef short int Flag;
-#elif defined( __sun)
-typedef short Word16;
-typedef long Word32;
-typedef int Flag;
-#elif defined(__alpha)
-typedef short Word16;
-typedef int Word32;
-typedef int Flag;
-#elif defined(VMS) || defined(__VMS) || defined(VAX)
-typedef short Word16;
-typedef long Word32;
-typedef int Flag;
-#else
-typedef short Word16;
-typedef int Word32;
-typedef int Flag;
-#endif
+#include <stdint.h>
 
 //begain -----------------------------------add by haiping 2009-06-19
 //#define TEST_MIPS
@@ -79,32 +59,32 @@ typedef int Flag;
 
 __inline__
 __attribute__ ((always_inline))
-	static int norm_l(Word32 _x) {
+	static int norm_l(int32_t _x) {
    return _x==0 ? 0 : __builtin_bfin_norm_fr1x32(_x);
 }
 
 __inline__
 __attribute__ ((always_inline))
-static Word32 L_deposit_h(Word16 _x) {
+static int32_t L_deposit_h(int16_t _x) {
 unsigned int u = (unsigned int)_x;
 u <<= 16;
-return (Word32)u;
+return (int32_t)u;
 }
 
 __inline__
 __attribute__ ((always_inline))
-static Word32 L_deposit_l(Word16 _x) { return ((int)((Word16)(_x))); }
+static int32_t L_deposit_l(int16_t _x) { return ((int)((int16_t)(_x))); }
 
 __inline__
 __attribute__ ((always_inline))
-static Word16 extract_l(Word32 _x) { return (Word16)(_x); }
+static int16_t extract_l(int32_t _x) { return (int16_t)(_x); }
 
 __inline__
 __attribute__ ((always_inline))
-static Word16 extract_h(Word32 _x) {
+static int16_t extract_h(int32_t _x) {
 	  unsigned int u = (unsigned int)_x;
 	  u >>= 16;
-	  return (Word16)u;
+	  return (int16_t)u;
 }
 */
 /* If _x>0x00007fff, returns 0x7fff. If _x<0xffff8000, returns 0x8000.
@@ -112,22 +92,22 @@ static Word16 extract_h(Word32 _x) {
 /*
 __inline__
 __attribute__ ((always_inline))
-static Word16 sature(Word32 _x)
+static int16_t sature(int32_t _x)
 {
 */
 	   /* cast conversions due to MISRA */
 /*
    unsigned int val;
     val = (unsigned int)__builtin_bfin_shl_fr1x32(_x,16)>>16;
-   return (Word16)val;
+   return (int16_t)val;
   }
 
 __inline__
 __attribute__ ((always_inline))
-static Word32 L_msu(Word32 L_var3, Word16 var1, Word16 var2)
+static int32_t L_msu(int32_t L_var3, int16_t var1, int16_t var2)
 {
-    Word32 L_var_out;
-    Word32 L_produit;
+    int32_t L_var_out;
+    int32_t L_produit;
 
     L_produit = __builtin_bfin_mult_fr1x32(var1, var2);
     L_var_out = __builtin_bfin_sub_fr1x32(L_var3, L_produit);
@@ -139,7 +119,7 @@ static Word32 L_msu(Word32 L_var3, Word16 var1, Word16 var2)
 /*
 __inline__
 __attribute__ ((always_inline))
-static Word16 round_(Word32 _x)
+static int16_t round_(int32_t _x)
 { return __builtin_bfin_round_fr1x32(_x); }
 */
 /*
@@ -176,7 +156,7 @@ enum Crate { Rate63, Rate53 };
 #define  LpcOrder          10
 #define  RidgeFact         10
 #define  CosineTableSize   512
-#define  PreCoef           (Word16) 0xc000	/* -0.25*2 */
+#define  PreCoef           (int16_t) 0xc000	/* -0.25*2 */
 
 #define  LspPrd0           12288
 #define  LspPrd1           23552
@@ -188,7 +168,7 @@ enum Crate { Rate63, Rate53 };
 /* LTP constants */
 #define  PitchMin          18
 #define  PitchMax          (PitchMin+127)
-#define  PwConst           (Word16) 0x2800
+#define  PwConst           (int16_t) 0x2800
 #define  PwRange           3
 #define  ClPitchOrd        5
 #define  Pstep             1
@@ -233,7 +213,7 @@ enum Crate { Rate63, Rate53 };
 #define NbFilt085_min      51
 #define NbFilt170_min      93
 #define SizErr             5
-#define Err0               (Word32)4	/* scaling factor */
+#define Err0               (int32_t)4	/* scaling factor */
 #define ThreshErr          0x40000000L
 #define DEC                (30 - 7)
 
@@ -242,132 +222,132 @@ enum Crate { Rate63, Rate53 };
 */
 typedef struct {
 	/* High pass variables */
-	Word16 HpfZdl;
-	Word32 HpfPdl;
+	int16_t HpfZdl;
+	int32_t HpfPdl;
 
 	/* Sine wave detector */
-	Word16 SinDet;
+	int16_t SinDet;
 
 	/* Lsp previous vector */
-	Word16 PrevLsp[LpcOrder];
+	int16_t PrevLsp[LpcOrder];
 
 	/* All pitch operation buffers */
-	Word16 PrevWgt[PitchMax];
-	Word16 PrevErr[PitchMax];
-	Word16 PrevExc[PitchMax];
+	int16_t PrevWgt[PitchMax];
+	int16_t PrevErr[PitchMax];
+	int16_t PrevExc[PitchMax];
 
 	/* Required memory for the delay */
-	Word16 PrevDat[LpcFrame - SubFrLen];
+	int16_t PrevDat[LpcFrame - SubFrLen];
 
 	/* Used delay lines */
-	Word16 WghtFirDl[LpcOrder];
-	Word16 WghtIirDl[LpcOrder];
-	Word16 RingFirDl[LpcOrder];
-	Word16 RingIirDl[LpcOrder];
+	int16_t WghtFirDl[LpcOrder];
+	int16_t WghtIirDl[LpcOrder];
+	int16_t RingFirDl[LpcOrder];
+	int16_t RingIirDl[LpcOrder];
 
 	/* Taming procedure errors */
-	Word32 Err[SizErr];
+	int32_t Err[SizErr];
 
 } CODSTATDEF;
 
 typedef struct {
-	Word16 Ecount;
-	Word16 InterGain;
-	Word16 InterIndx;
-	Word16 Rseed;
-	Word16 Park;
-	Word16 Gain;
+	int16_t Ecount;
+	int16_t InterGain;
+	int16_t InterIndx;
+	int16_t Rseed;
+	int16_t Park;
+	int16_t Gain;
 	/* Lsp previous vector */
-	Word16 PrevLsp[LpcOrder];
+	int16_t PrevLsp[LpcOrder];
 
 	/* All pitch operation buffers */
-	Word16 PrevExc[PitchMax];
+	int16_t PrevExc[PitchMax];
 
 	/* Used delay lines */
-	Word16 SyntIirDl[LpcOrder];
-	Word16 PostFirDl[LpcOrder];
-	Word16 PostIirDl[LpcOrder];
+	int16_t SyntIirDl[LpcOrder];
+	int16_t PostFirDl[LpcOrder];
+	int16_t PostIirDl[LpcOrder];
 
 } DECSTATDEF;
 
    /* subframe coded parameters */
 typedef struct {
-	Word16 AcLg;
-	Word16 AcGn;
-	Word16 Mamp;
-	Word16 Grid;
-	Word16 Tran;
-	Word16 Pamp;
-	Word32 Ppos;
+	int16_t AcLg;
+	int16_t AcGn;
+	int16_t Mamp;
+	int16_t Grid;
+	int16_t Tran;
+	int16_t Pamp;
+	int32_t Ppos;
 } SFSDEF;
 
    /* frame coded parameters */
 typedef struct {
-	Word16 Crc;
-	Word32 LspId;
-	Word16 Olp[SubFrames / 2];
+	int16_t Crc;
+	int32_t LspId;
+	int16_t Olp[SubFrames / 2];
 	SFSDEF Sfs[SubFrames];
 } LINEDEF;
 
    /* harmonic noise shaping filter parameters */
 typedef struct {
-	Word16 Indx;
-	Word16 Gain;
+	int16_t Indx;
+	int16_t Gain;
 } PWDEF;
 
     /* pitch postfilter parameters */
 typedef struct {
-	Word16 Indx;
-	Word16 Gain;
-	Word16 ScGn;
+	int16_t Indx;
+	int16_t Gain;
+	int16_t ScGn;
 } PFDEF;
 
     /* best excitation vector parameters for the high rate */
 typedef struct {
-	Word32 MaxErr;
-	Word16 GridId;
-	Word16 MampId;
-	Word16 UseTrn;
-	Word16 Ploc[MaxPulseNum];
-	Word16 Pamp[MaxPulseNum];
+	int32_t MaxErr;
+	int16_t GridId;
+	int16_t MampId;
+	int16_t UseTrn;
+	int16_t Ploc[MaxPulseNum];
+	int16_t Pamp[MaxPulseNum];
 } BESTDEF;
 
     /* VAD static variables */
 typedef struct {
-	Word16 Hcnt;
-	Word16 Vcnt;
-	Word32 Penr;
-	Word32 Nlev;
-	Word16 Aen;
-	Word16 Polp[4];
-	Word16 NLpc[LpcOrder];
+	int16_t Hcnt;
+	int16_t Vcnt;
+	int32_t Penr;
+	int32_t Nlev;
+	int16_t Aen;
+	int16_t Polp[4];
+	int16_t NLpc[LpcOrder];
 } VADSTATDEF;
 
 /* CNG features */
 
 /* Coder part */
 typedef struct {
-	Word16 CurGain;
-	Word16 PastFtyp;
-	Word16 Acf[SizAcf];
-	Word16 ShAcf[NbAvAcf + 1];
-	Word16 LspSid[LpcOrder];
-	Word16 SidLpc[LpcOrder];
-	Word16 RC[LpcOrderP1];
-	Word16 ShRC;
-	Word16 Ener[NbAvGain];
-	Word16 NbEner;
-	Word16 IRef;
-	Word16 SidGain;
-	Word16 RandSeed;
+	int16_t CurGain;
+	int16_t PastFtyp;
+	int16_t Acf[SizAcf];
+	int16_t ShAcf[NbAvAcf + 1];
+	int16_t LspSid[LpcOrder];
+	int16_t SidLpc[LpcOrder];
+	int16_t RC[LpcOrderP1];
+	int16_t ShRC;
+	int16_t Ener[NbAvGain];
+	int16_t NbEner;
+	int16_t IRef;
+	int16_t SidGain;
+	int16_t RandSeed;
 } CODCNGDEF;
 
 /* Decoder part */
 typedef struct {
-	Word16 CurGain;
-	Word16 PastFtyp;
-	Word16 LspSid[LpcOrder];
-	Word16 SidGain;
-	Word16 RandSeed;
+	int16_t CurGain;
+	int16_t PastFtyp;
+	int16_t LspSid[LpcOrder];
+	int16_t SidGain;
+	int16_t RandSeed;
 } DECCNGDEF;
 #endif

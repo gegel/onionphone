@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -37,8 +37,8 @@
 
 void Reset_BV16_Encoder(struct BV16_Encoder_State *c)
 {
-	W16zero((Word16 *) c,
-		sizeof(struct BV16_Encoder_State) / sizeof(Word16));
+	W16zero((int16_t *) c,
+		sizeof(struct BV16_Encoder_State) / sizeof(int16_t));
 	c->lsplast[0] = 3641;
 	c->lsplast[1] = 7282;
 	c->lsplast[2] = 10923;
@@ -58,31 +58,31 @@ void Reset_BV16_Encoder(struct BV16_Encoder_State *c)
 }
 
 void BV16_Encode(struct BV16_Bit_Stream *bs,
-		 struct BV16_Encoder_State *cs, Word16 * inx)
+		 struct BV16_Encoder_State *cs, int16_t * inx)
 {
-	Word32 r[NSTORDER + 1];	/* DPF representation of autocorrelation lags */
-	Word16 ltnfm[MAXPP1 + FRSZ];
-	Word16 a[LPCO + 1];	/* LPC coefficients */
-	Word16 aw[LPCO + 1];	/* Weighted LPC coefficients */
-	Word16 fsz[NSTORDER + 1];
-	Word16 fsp[NSTORDER + 1];
-	Word16 x[LX];		/* Signal buffer */
-	Word16 dq[LX];		/* quantized short term pred error */
-	Word16 sdq[LX];
-	Word16 xw[FRSZ];	/* Q0 perceptually weighted version of x() */
-	Word16 lsp[LPCO], lspq[LPCO];	/* Q15 */
-	Word16 cbs[VDIM * CBSZ];
-	Word16 bq[3];		/* Q15 */
-	Word16 beta;		/* Q13 */
-	Word16 ppt;		/* Q9 */
-	Word16 gainq;		/* Q2 */
-	Word32 ee;		/* Q1 */
-	Word32 a0;
-	Word16 gain_exp;
-	Word16 pp, cpp, i;
-	Word16 eehi, eelo;
-	Word16 a0hi, a0lo;
-	Word16 dummy;
+	int32_t r[NSTORDER + 1];	/* DPF representation of autocorrelation lags */
+	int16_t ltnfm[MAXPP1 + FRSZ];
+	int16_t a[LPCO + 1];	/* LPC coefficients */
+	int16_t aw[LPCO + 1];	/* Weighted LPC coefficients */
+	int16_t fsz[NSTORDER + 1];
+	int16_t fsp[NSTORDER + 1];
+	int16_t x[LX];		/* Signal buffer */
+	int16_t dq[LX];		/* quantized short term pred error */
+	int16_t sdq[LX];
+	int16_t xw[FRSZ];	/* Q0 perceptually weighted version of x() */
+	int16_t lsp[LPCO], lspq[LPCO];	/* Q15 */
+	int16_t cbs[VDIM * CBSZ];
+	int16_t bq[3];		/* Q15 */
+	int16_t beta;		/* Q13 */
+	int16_t ppt;		/* Q9 */
+	int16_t gainq;		/* Q2 */
+	int32_t ee;		/* Q1 */
+	int32_t a0;
+	int16_t gain_exp;
+	int16_t pp, cpp, i;
+	int16_t eehi, eelo;
+	int16_t a0hi, a0lo;
+	int16_t dummy;
 
 	/* copy state memory to local memory buffers */
 	W16copy(x, cs->x, XOFF);

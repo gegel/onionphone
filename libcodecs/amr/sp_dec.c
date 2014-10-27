@@ -45,38 +45,38 @@ enum DTXStateType {
  */
 typedef struct {
 	/* history vector of past synthesis speech energy */
-	Word32 frameEnergyHist[L_ENERGYHIST];
+	int32_t frameEnergyHist[L_ENERGYHIST];
 
 	/* state flags */
-	Word16 bgHangover;	/* counter; number of frames after last speech frame */
+	int16_t bgHangover;	/* counter; number of frames after last speech frame */
 
 } Bgn_scdState;
 typedef struct {
-	Word32 hangCount;	/* counter; */
+	int32_t hangCount;	/* counter; */
 	/* history vector of past synthesis speech energy */
-	Word32 cbGainHistory[L_CBGAINHIST];
-	Word16 hangVar;		/* counter; */
+	int32_t cbGainHistory[L_CBGAINHIST];
+	int16_t hangVar;		/* counter; */
 
 } Cb_gain_averageState;
 typedef struct {
-	Word32 lsp_meanSave[M];	/* Averaged LSPs saved for efficiency  */
+	int32_t lsp_meanSave[M];	/* Averaged LSPs saved for efficiency  */
 
 } lsp_avgState;
 typedef struct {
-	Word32 past_r_q[M];	/* Past quantized prediction error, Q15 */
-	Word32 past_lsf_q[M];	/* Past dequantized lsfs, Q15 */
+	int32_t past_r_q[M];	/* Past quantized prediction error, Q15 */
+	int32_t past_lsf_q[M];	/* Past dequantized lsfs, Q15 */
 
 } D_plsfState;
 typedef struct {
-	Word32 pbuf[5];
-	Word32 past_gain_pit;
-	Word32 prev_gp;
+	int32_t pbuf[5];
+	int32_t past_gain_pit;
+	int32_t prev_gp;
 
 } ec_gain_pitchState;
 typedef struct {
-	Word32 gbuf[5];
-	Word32 past_gain_code;
-	Word32 prev_gc;
+	int32_t gbuf[5];
+	int32_t past_gain_code;
+	int32_t prev_gc;
 
 } ec_gain_codeState;
 typedef struct {
@@ -84,81 +84,81 @@ typedef struct {
 	 * normal MA predictor memory, Q10
 	 * (contains 20*log10(quaErr))
 	 */
-	Word32 past_qua_en[4];
+	int32_t past_qua_en[4];
 
 	/*
 	 * MA predictor memory for MR122 mode, Q10
 	 * (contains log2(quaErr))
 	 */
-	Word32 past_qua_en_MR122[4];
+	int32_t past_qua_en_MR122[4];
 
 } gc_predState;
 typedef struct {
-	Word32 gainMem[PHDGAINMEMSIZE];
-	Word32 prevCbGain;
-	Word32 prevState;
-	Word16 lockFull;
-	Word16 onset;
+	int32_t gainMem[PHDGAINMEMSIZE];
+	int32_t prevCbGain;
+	int32_t prevState;
+	int16_t lockFull;
+	int16_t onset;
 
 } ph_dispState;
 typedef struct {
 	enum DTXStateType dtxGlobalState;	/* contains previous state */
 
-	Word32 log_en;
-	Word32 old_log_en;
-	Word32 pn_seed_rx;
-	Word32 lsp[M];
-	Word32 lsp_old[M];
-	Word32 lsf_hist[M * DTX_HIST_SIZE];
-	Word32 lsf_hist_mean[M * DTX_HIST_SIZE];
-	Word32 log_en_hist[DTX_HIST_SIZE];
-	Word32 true_sid_period_inv;
-	Word16 since_last_sid;
-	Word16 lsf_hist_ptr;
-	Word16 log_pg_mean;
-	Word16 log_en_hist_ptr;
-	Word16 log_en_adjust;
-	Word16 dtxHangoverCount;
-	Word16 decAnaElapsedCount;
-	Word16 sid_frame;
-	Word16 valid_data;
-	Word16 dtxHangoverAdded;
+	int32_t log_en;
+	int32_t old_log_en;
+	int32_t pn_seed_rx;
+	int32_t lsp[M];
+	int32_t lsp_old[M];
+	int32_t lsf_hist[M * DTX_HIST_SIZE];
+	int32_t lsf_hist_mean[M * DTX_HIST_SIZE];
+	int32_t log_en_hist[DTX_HIST_SIZE];
+	int32_t true_sid_period_inv;
+	int16_t since_last_sid;
+	int16_t lsf_hist_ptr;
+	int16_t log_pg_mean;
+	int16_t log_en_hist_ptr;
+	int16_t log_en_adjust;
+	int16_t dtxHangoverCount;
+	int16_t decAnaElapsedCount;
+	int16_t sid_frame;
+	int16_t valid_data;
+	int16_t dtxHangoverAdded;
 
 	/* updated in main decoder */
-	Word16 data_updated;	/* marker to know if CNI data is ever renewed */
+	int16_t data_updated;	/* marker to know if CNI data is ever renewed */
 
 } dtx_decState;
 typedef struct {
-	Word32 past_gain;
+	int32_t past_gain;
 
 } agcState;
 typedef struct {
 	/* Excitation vector */
-	Word32 old_exc[L_SUBFR + PIT_MAX + L_INTERPOL];
-	Word32 *exc;
-	Word32 lsp_old[M];
+	int32_t old_exc[L_SUBFR + PIT_MAX + L_INTERPOL];
+	int32_t *exc;
+	int32_t lsp_old[M];
 
 	/* Filter's memory */
-	Word32 mem_syn[M];
+	int32_t mem_syn[M];
 
 	/* pitch sharpening */
-	Word32 sharp;
-	Word32 old_T0;
+	int32_t sharp;
+	int32_t old_T0;
 
 	/* Variable holding received ltpLag, used in background noise and BFI */
-	Word32 T0_lagBuff;
+	int32_t T0_lagBuff;
 
 	/* Variables for the source characteristic detector (SCD) */
-	Word32 inBackgroundNoise;
-	Word32 voicedHangover;
-	Word32 ltpGainHistory[9];
+	int32_t inBackgroundNoise;
+	int32_t voicedHangover;
+	int32_t ltpGainHistory[9];
 
 	/* Memories for bad frame handling */
-	Word32 excEnergyHist[9];
-	Word16 prev_bf;
-	Word16 prev_pdf;
-	Word16 state;
-	Word16 nodataSeed;
+	int32_t excEnergyHist[9];
+	int16_t prev_bf;
+	int16_t prev_pdf;
+	int16_t state;
+	int16_t nodataSeed;
 
 	Bgn_scdState *background_state;
 	Cb_gain_averageState *Cb_gain_averState;
@@ -171,19 +171,19 @@ typedef struct {
 	dtx_decState *dtxDecoderState;
 } Decoder_amrState;
 typedef struct {
-	Word32 res2[L_SUBFR];
-	Word32 mem_syn_pst[M];
-	Word32 synth_buf[M + L_FRAME];
-	Word32 preemph_state_mem_pre;
+	int32_t res2[L_SUBFR];
+	int32_t mem_syn_pst[M];
+	int32_t synth_buf[M + L_FRAME];
+	int32_t preemph_state_mem_pre;
 	agcState *agc_state;
 } Post_FilterState;
 typedef struct {
-	Word32 y2_hi;
-	Word32 y2_lo;
-	Word32 y1_hi;
-	Word32 y1_lo;
-	Word32 x0;
-	Word32 x1;
+	int32_t y2_hi;
+	int32_t y2_lo;
+	int32_t y1_hi;
+	int32_t y1_lo;
+	int32_t x0;
+	int32_t x1;
 
 } Post_ProcessState;
 typedef struct {
@@ -208,7 +208,7 @@ typedef struct {
  */
 static void Decoder_amr_reset(Decoder_amrState * state, enum Mode mode)
 {
-	Word32 i;
+	int32_t i;
 
 	/* Cb_gain_average_reset */
 	memzero(state->Cb_gain_averState->cbGainHistory, L_CBGAINHIST << 2);
@@ -515,9 +515,9 @@ static enum DTXStateType rx_dtx_handler(dtx_decState * st,
  * Returns:
  *    void
  */
-static void Lsf_lsp(Word32 lsf[], Word32 lsp[])
+static void Lsf_lsp(int32_t lsf[], int32_t lsp[])
 {
-	Word32 i, ind, offset, tmp;
+	int32_t i, ind, offset, tmp;
 
 	for (i = 0; i < M; i++) {
 		/* ind = b8-b15 of lsf[i] */
@@ -552,12 +552,12 @@ static void Lsf_lsp(Word32 lsf[], Word32 lsp[])
  * Returns:
  *    void
  */
-static void D_plsf_3(D_plsfState * st, enum Mode mode, Word16 bfi, Word16 *
-		     indice, Word32 * lsp1_q)
+static void D_plsf_3(D_plsfState * st, enum Mode mode, int16_t bfi, int16_t *
+		     indice, int32_t * lsp1_q)
 {
-	Word32 lsf1_r[M], lsf1_q[M];
-	Word32 i, index, temp;
-	const Word32 *p_cb1, *p_cb2, *p_cb3, *p_dico;
+	int32_t lsf1_r[M], lsf1_q[M];
+	int32_t i, index, temp;
+	const int32_t *p_cb1, *p_cb2, *p_cb3, *p_dico;
 
 	/* if bad frame */
 	if (bfi != 0) {
@@ -679,10 +679,10 @@ static void D_plsf_3(D_plsfState * st, enum Mode mode, Word16 bfi, Word16 *
  * Returns:
  *    noise_bits
  */
-static Word32 pseudonoise(Word32 * shift_reg, Word32 no_bits)
+static int32_t pseudonoise(int32_t * shift_reg, int32_t no_bits)
 {
-	Word32 noise_bits, Sn, i;
-	Word32 s_reg;
+	int32_t noise_bits, Sn, i;
+	int32_t s_reg;
 
 	s_reg = *shift_reg;
 	noise_bits = 0;
@@ -723,9 +723,9 @@ static Word32 pseudonoise(Word32 * shift_reg, Word32 no_bits)
  * Returns:
  *    void
  */
-static void Lsp_lsf(Word32 lsp[], Word32 lsf[])
+static void Lsp_lsf(int32_t lsp[], int32_t lsf[])
 {
-	Word32 i, ind = 63;	/* begin at end of table -1 */
+	int32_t i, ind = 63;	/* begin at end of table -1 */
 
 	for (i = M - 1; i >= 0; i--) {
 		/* find value in table that is just greater than lsp[i] */
@@ -754,9 +754,9 @@ static void Lsp_lsf(Word32 lsp[], Word32 lsf[])
  * Returns:
  *    void
  */
-static void Reorder_lsf(Word32 * lsf, Word32 min_dist)
+static void Reorder_lsf(int32_t * lsf, int32_t min_dist)
 {
-	Word32 lsf_min, i;
+	int32_t lsf_min, i;
 
 	lsf_min = min_dist;
 
@@ -805,10 +805,10 @@ static void Reorder_lsf(Word32 * lsf, Word32 min_dist)
  * Returns:
  *    void
  */
-static void Get_lsp_pol(Word32 * lsp, Word32 * f)
+static void Get_lsp_pol(int32_t * lsp, int32_t * f)
 {
-	volatile Word32 f0, f1, f2, f3, f4, f5;
-	Word32 l1, l2, l3, l4;
+	volatile int32_t f0, f1, f2, f3, f4, f5;
+	int32_t l1, l2, l3, l4;
 
 	/* f[0] = 1.0; */
 	f0 = 16777216L;
@@ -875,10 +875,10 @@ static void Get_lsp_pol(Word32 * lsp, Word32 * f)
  * Returns:
  *    void
  */
-static void Lsp_Az(Word32 lsp[], Word32 a[])
+static void Lsp_Az(int32_t lsp[], int32_t a[])
 {
-	Word32 f1[6], f2[6];
-	Word32 T0, i, j;
+	int32_t f1[6], f2[6];
+	int32_t T0, i, j;
 
 	Get_lsp_pol(&lsp[0], f1);
 	Get_lsp_pol(&lsp[1], f2);
@@ -891,12 +891,12 @@ static void Lsp_Az(Word32 lsp[], Word32 a[])
 
 	for (i = 1, j = 10; i <= 5; i++, j--) {
 		T0 = f1[i] + f2[i];
-		a[i] = (Word16) (T0 >> 13);	/* emulate fixed point bug */
+		a[i] = (int16_t) (T0 >> 13);	/* emulate fixed point bug */
 		if ((T0 & 4096) != 0) {
 			a[i]++;
 		}
 		T0 = f1[i] - f2[i];
-		a[j] = (Word16) (T0 >> 13);	/* emulate fixed point bug */
+		a[j] = (int16_t) (T0 >> 13);	/* emulate fixed point bug */
 
 		if ((T0 & 4096) != 0) {
 			a[j]++;
@@ -919,12 +919,12 @@ static void Lsp_Az(Word32 lsp[], Word32 a[])
  * Returns:
  *    void
  */
-static void A_Refl(Word32 a[], Word32 refl[])
+static void A_Refl(int32_t a[], int32_t refl[])
 {
 	/* local variables */
 	int normShift;
-	Word32 aState[M], bState[M];
-	Word32 normProd, acc, temp, mult, scale, i, j;
+	int32_t aState[M], bState[M];
+	int32_t normProd, acc, temp, mult, scale, i, j;
 
 	/* initialize states */
 	memcpy(aState, a, M << 2);
@@ -949,7 +949,7 @@ static void A_Refl(Word32 a[], Word32 refl[])
 		}
 		scale = 15 - normShift;
 		acc = (acc << normShift);
-		temp = (acc + (Word32) 0x00008000L);
+		temp = (acc + (int32_t) 0x00008000L);
 
 		if (temp > (1L << 15)) {
 			normProd = temp >> 16;
@@ -960,11 +960,11 @@ static void A_Refl(Word32 a[], Word32 refl[])
 		for (j = 0; j < i; j++) {
 			acc = aState[j] << 16;
 			acc -= (refl[i] * aState[i - j - 1]) << 1;
-			temp = (acc + (Word32) 0x00008000L) >> 16;
+			temp = (acc + (int32_t) 0x00008000L) >> 16;
 			temp = (mult * temp) << 1;
 
 			if (scale > 0) {
-				if ((temp & ((Word32) 1 << (scale - 1))) != 0) {
+				if ((temp & ((int32_t) 1 << (scale - 1))) != 0) {
 					temp = (temp >> scale) + 1;
 				} else
 					temp = (temp >> scale);
@@ -1012,10 +1012,10 @@ static void A_Refl(Word32 a[], Word32 refl[])
  * Returns:
  *    void
  */
-static void Log2_norm(Word32 x, Word32 exp, Word32 * exponent, Word32 *
+static void Log2_norm(int32_t x, int32_t exp, int32_t * exponent, int32_t *
 		      fraction)
 {
-	Word32 y, i, a;
+	int32_t y, i, a;
 
 	if (x <= 0) {
 		*exponent = 0;
@@ -1054,7 +1054,7 @@ static void Log2_norm(Word32 x, Word32 exp, Word32 * exponent, Word32 *
  * Returns:
  *    void
  */
-static void Log2(Word32 x, Word32 * exponent, Word32 * fraction)
+static void Log2(int32_t x, int32_t * exponent, int32_t * fraction)
 {
 	int tmp, exp = 0;
 
@@ -1089,9 +1089,9 @@ static void Log2(Word32 x, Word32 * exponent, Word32 * fraction)
  * Returns:
  *    result (range: 0<=val<=0x7fffffff)
  */
-static Word32 Pow2(Word32 exponent, Word32 fraction)
+static int32_t Pow2(int32_t exponent, int32_t fraction)
 {
-	Word32 i, a, tmp, x, exp;
+	int32_t i, a, tmp, x, exp;
 
 	/* Extract b10-b16 of fraction */
 	i = fraction >> 10;
@@ -1112,7 +1112,7 @@ static Word32 Pow2(Word32 exponent, Word32 fraction)
 		exp = (30 - exponent);
 
 		/* Rounding */
-		if ((x & ((Word32) 1 << (exp - 1))) != 0) {
+		if ((x & ((int32_t) 1 << (exp - 1))) != 0) {
 			x = (x >> exp) + 1;
 		} else
 			x = x >> exp;
@@ -1135,9 +1135,9 @@ static Word32 Pow2(Word32 exponent, Word32 fraction)
  * Returns:
  *    void
  */
-static void Build_CN_code(Word32 * seed, Word32 cod[])
+static void Build_CN_code(int32_t * seed, int32_t cod[])
 {
-	Word32 i, j, k;
+	int32_t i, j, k;
 
 	memzero(cod, L_SUBFR << 2);
 
@@ -1172,60 +1172,60 @@ static void Build_CN_code(Word32 * seed, Word32 cod[])
  * Returns:
  *    void
  */
-static void Build_CN_param(Word16 * seed, enum Mode mode, Word16 parm[])
+static void Build_CN_param(int16_t * seed, enum Mode mode, int16_t parm[])
 {
-	Word32 i;
-	const Word32 *p;
+	int32_t i;
+	const int32_t *p;
 
-	*seed = (Word16) ((*seed * 31821) + 13849L);
+	*seed = (int16_t) ((*seed * 31821) + 13849L);
 	p = &window_200_40[*seed & 0x7F];
 
 	switch (mode) {
 	case MR122:
 		for (i = 0; i < PRMNO_MR122; i++) {
-			parm[i] = (Word16) (*p++ & ~(0xFFFF << bitno_MR122[i]));
+			parm[i] = (int16_t) (*p++ & ~(0xFFFF << bitno_MR122[i]));
 		}
 		break;
 
 	case MR102:
 		for (i = 0; i < PRMNO_MR102; i++) {
-			parm[i] = (Word16) (*p++ & ~(0xFFFF << bitno_MR102[i]));
+			parm[i] = (int16_t) (*p++ & ~(0xFFFF << bitno_MR102[i]));
 		}
 		break;
 
 	case MR795:
 		for (i = 0; i < PRMNO_MR795; i++) {
-			parm[i] = (Word16) (*p++ & ~(0xFFFF << bitno_MR795[i]));
+			parm[i] = (int16_t) (*p++ & ~(0xFFFF << bitno_MR795[i]));
 		}
 		break;
 
 	case MR74:
 		for (i = 0; i < PRMNO_MR74; i++) {
-			parm[i] = (Word16) (*p++ & ~(0xFFFF << bitno_MR74[i]));
+			parm[i] = (int16_t) (*p++ & ~(0xFFFF << bitno_MR74[i]));
 		}
 		break;
 
 	case MR67:
 		for (i = 0; i < PRMNO_MR67; i++) {
-			parm[i] = (Word16) (*p++ & ~(0xFFFF << bitno_MR67[i]));
+			parm[i] = (int16_t) (*p++ & ~(0xFFFF << bitno_MR67[i]));
 		}
 		break;
 
 	case MR59:
 		for (i = 0; i < PRMNO_MR59; i++) {
-			parm[i] = (Word16) (*p++ & ~(0xFFFF << bitno_MR59[i]));
+			parm[i] = (int16_t) (*p++ & ~(0xFFFF << bitno_MR59[i]));
 		}
 		break;
 
 	case MR515:
 		for (i = 0; i < PRMNO_MR515; i++) {
-			parm[i] = (Word16) (*p++ & ~(0xFFFF << bitno_MR515[i]));
+			parm[i] = (int16_t) (*p++ & ~(0xFFFF << bitno_MR515[i]));
 		}
 		break;
 
 	case MR475:
 		for (i = 0; i < PRMNO_MR475; i++) {
-			parm[i] = (Word16) (*p++ & ~(0xFFFF << bitno_MR475[i]));
+			parm[i] = (int16_t) (*p++ & ~(0xFFFF << bitno_MR475[i]));
 		}
 		break;
 	case MRDTX:
@@ -1255,13 +1255,13 @@ static void Build_CN_param(Word16 * seed, enum Mode mode, Word16 parm[])
  * Returns:
  *    void
  */
-static Word32 Syn_filt(Word32 a[], Word32 x[], Word32 y[], Word32 lg,
-		       Word32 mem[]
-		       , Word32 update)
+static int32_t Syn_filt(int32_t a[], int32_t x[], int32_t y[], int32_t lg,
+		       int32_t mem[]
+		       , int32_t update)
 {
-	Word32 tmp[50];		/* malloc is slow */
-	Word32 s, a0, overflow = 0;
-	Word32 *yy, *yy_limit;
+	int32_t tmp[50];		/* malloc is slow */
+	int32_t s, a0, overflow = 0;
+	int32_t *yy, *yy_limit;
 
 	/* Copy mem[] to yy[] */
 	memcpy(tmp, mem, 40);
@@ -1321,13 +1321,13 @@ static Word32 Syn_filt(Word32 a[], Word32 x[], Word32 y[], Word32 lg,
  * Returns:
  *    void
  */
-static void Syn_filt_overflow(Word32 a[], Word32 x[], Word32 y[], Word32 lg,
-			      Word32 mem[]
-			      , Word32 update)
+static void Syn_filt_overflow(int32_t a[], int32_t x[], int32_t y[], int32_t lg,
+			      int32_t mem[]
+			      , int32_t update)
 {
-	Word32 tmp[50];		/* malloc is slow */
-	Word32 i, j, s, a0;
-	Word32 *yy;
+	int32_t tmp[50];		/* malloc is slow */
+	int32_t i, j, s, a0;
+	int32_t *yy;
 
 	/* Copy mem[] to yy[] */
 	memcpy(tmp, mem, 40);
@@ -1389,18 +1389,18 @@ static void Syn_filt_overflow(Word32 a[], Word32 x[], Word32 y[], Word32 lg,
  * Returns:
  *    void
  */
-static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
+static void dtx_dec(dtx_decState * st, int32_t * mem_syn, D_plsfState * lsfState,
 		    gc_predState * pred_state, Cb_gain_averageState * averState,
 		    enum
-		    DTXStateType new_state, enum Mode mode, Word16 parm[],
-		    Word32 synth[], Word32 A_t[])
+		    DTXStateType new_state, enum Mode mode, int16_t parm[],
+		    int32_t synth[], int32_t A_t[])
 {
-	Word32 ex[L_SUBFR], acoeff[11], acoeff_variab[M + 1], lsp_int[M];
-	Word32 refl[M], lsf[M], lsf_int[M], lsf_int_variab[M],
+	int32_t ex[L_SUBFR], acoeff[11], acoeff_variab[M + 1], lsp_int[M];
+	int32_t refl[M], lsf[M], lsf_int[M], lsf_int_variab[M],
 	    lsp_int_variab[M];
-	Word32 i, j, int_fac, log_en_int, pred_err, log_pg_e, log_pg_m, log_pg;
-	Word32 negative, lsf_mean, lsf_variab_index, lsf_variab_factor, ptr;
-	Word16 log_en_index, log_en_int_e, log_en_int_m, level, ma_pred_init,
+	int32_t i, j, int_fac, log_en_int, pred_err, log_pg_e, log_pg_m, log_pg;
+	int32_t negative, lsf_mean, lsf_variab_index, lsf_variab_factor, ptr;
+	int16_t log_en_index, log_en_int_e, log_en_int_m, level, ma_pred_init,
 	    tmp_int_length;
 
 	if ((st->dtxHangoverAdded != 0) & (st->sid_frame != 0)) {
@@ -1542,10 +1542,10 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
 			log_en_index = parm[4];
 
 			/* Q11 and divide by 4 */
-			st->log_en = (Word16) (log_en_index << 9);
+			st->log_en = (int16_t) (log_en_index << 9);
 
 			/* Subtract 2.5 in Q11 */
-			st->log_en = (Word16) (st->log_en - 5120);
+			st->log_en = (int16_t) (st->log_en - 5120);
 
 			/* Index 0 is reserved for silence */
 			if (log_en_index == 0) {
@@ -1565,7 +1565,7 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
 
 		/* endif valid_data */
 		/* initialize gain predictor memory of other modes */
-		ma_pred_init = (Word16) ((st->log_en >> 1) - 9000);
+		ma_pred_init = (int16_t) ((st->log_en >> 1) - 9000);
 
 		if (ma_pred_init > 0) {
 			ma_pred_init = 0;
@@ -1580,7 +1580,7 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
 		pred_state->past_qua_en[3] = ma_pred_init;
 
 		/* past_qua_en for other modes than MR122 */
-		ma_pred_init = (Word16) ((5443 * ma_pred_init) >> 15);
+		ma_pred_init = (int16_t) ((5443 * ma_pred_init) >> 15);
 
 		/* scale down by factor 20*log10(2) in Q15 */
 		pred_state->past_qua_en_MR122[0] = ma_pred_init;
@@ -1596,14 +1596,14 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
 	 * st->log_en_adjust = 0.9*st->log_en_adjust +
 	 *                     0.1*dtx_log_en_adjust[mode]);
 	 */
-	st->log_en_adjust = (Word16) (((st->log_en_adjust * 29491) >> 15) + (((dtx_log_en_adjust[mode] << 5) * 3277) >> 20));
+	st->log_en_adjust = (int16_t) (((st->log_en_adjust * 29491) >> 15) + (((dtx_log_en_adjust[mode] << 5) * 3277) >> 20));
 
 	/* Interpolate SID info */
 	/* Q10 */
 	if (st->since_last_sid > 30)
 		int_fac = 32767;
 	else
-		int_fac = (Word16) ((st->since_last_sid + 1) << 10);
+		int_fac = (int16_t) ((st->since_last_sid + 1) << 10);
 
 	/* Q10 * Q15 -> Q10 */
 	int_fac = (int_fac * st->true_sid_period_inv) >> 15;
@@ -1614,7 +1614,7 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
 	}
 
 	/* Q10 -> Q14 */
-	int_fac = (Word16) (int_fac << 4);
+	int_fac = (int16_t) (int_fac << 4);
 
 	/* Q14 * Q11->Q26 */
 	log_en_int = (int_fac * st->log_en) << 1;
@@ -1710,7 +1710,7 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
 	/* compute logarithm of prediction gain */
 	Log2(pred_err, &log_pg_e, &log_pg_m);
 
-	/* convert exponent and mantissa to Word16 Q12 */
+	/* convert exponent and mantissa to int16_t Q12 */
 	/* Q12 */
 	log_pg = (log_pg_e - 15) << 12;
 	/* saturate */
@@ -1718,7 +1718,7 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
 		log_pg = -32768;
 	}
 	log_pg = (-(log_pg + (log_pg_m >> 3))) >> 1;
-	st->log_pg_mean = (Word16) (((29491 * st->log_pg_mean) >> 15) + ((3277
+	st->log_pg_mean = (int16_t) (((29491 * st->log_pg_mean) >> 15) + ((3277
 									  *
 									  log_pg)
 									 >>
@@ -1736,11 +1736,11 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
 
 	/* adjust level to speech coder mode */
 	log_en_int += st->log_en_adjust << 5;
-	log_en_int_e = (Word16) (log_en_int >> 16);
-	log_en_int_m = (Word16) ((log_en_int - (log_en_int_e << 16)) >> 1);
+	log_en_int_e = (int16_t) (log_en_int >> 16);
+	log_en_int_m = (int16_t) ((log_en_int - (log_en_int_e << 16)) >> 1);
 
 	/* Q4 */
-	level = (Word16) (Pow2(log_en_int_e, log_en_int_m));
+	level = (int16_t) (Pow2(log_en_int_e, log_en_int_m));
 
 	for (i = 0; i < 4; i++) {
 		/* Compute innovation vector */
@@ -1764,7 +1764,7 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
 		 * mute comfort noise as it has been quite a long time since
 		 * last SID update  was performed
 		 */
-		Word32 num, denom;
+		int32_t num, denom;
 
 		tmp_int_length = st->since_last_sid;
 
@@ -1828,9 +1828,9 @@ static void dtx_dec(dtx_decState * st, Word32 * mem_syn, D_plsfState * lsfState,
  * Returns:
  *    void
  */
-static void lsp_avg(lsp_avgState * st, Word32 * lsp)
+static void lsp_avg(lsp_avgState * st, int32_t * lsp)
 {
-	Word32 i, tmp;
+	int32_t i, tmp;
 
 	for (i = 0; i < M; i++) {
 		/* mean = 0.84*mean */
@@ -1870,11 +1870,11 @@ static void lsp_avg(lsp_avgState * st, Word32 * lsp)
  * Returns:
  *    void
  */
-static void Int_lpc_1and3(Word32 lsp_old[], Word32 lsp_mid[], Word32 lsp_new[],
-			  Word32 Az[])
+static void Int_lpc_1and3(int32_t lsp_old[], int32_t lsp_mid[], int32_t lsp_new[],
+			  int32_t Az[])
 {
-	Word32 lsp[M];
-	Word32 i;
+	int32_t lsp[M];
+	int32_t i;
 
 	/* lsp[i] = lsp_mid[i] * 0.5 + lsp_old[i] * 0.5 */
 	for (i = 0; i < 10; i++) {
@@ -1924,10 +1924,10 @@ static void Int_lpc_1and3(Word32 lsp_old[], Word32 lsp_mid[], Word32 lsp_new[],
  * Returns:
  *    void
  */
-static void Int_lpc_1to3(Word32 lsp_old[], Word32 lsp_new[], Word32 Az[])
+static void Int_lpc_1to3(int32_t lsp_old[], int32_t lsp_new[], int32_t Az[])
 {
-	Word32 lsp[M];
-	Word32 i;
+	int32_t lsp[M];
+	int32_t i;
 
 	for (i = 0; i < 10; i++) {
 		lsp[i] = (lsp_new[i] >> 2) + (lsp_old[i] - (lsp_old[i] >> 2));
@@ -1977,12 +1977,12 @@ static void Int_lpc_1to3(Word32 lsp_old[], Word32 lsp_new[], Word32 Az[])
  * Returns:
  *    void
  */
-static void D_plsf_5(D_plsfState * st, Word16 bfi, Word16 * indice,
-		     Word32 * lsp1_q, Word32 * lsp2_q)
+static void D_plsf_5(D_plsfState * st, int16_t bfi, int16_t * indice,
+		     int32_t * lsp1_q, int32_t * lsp2_q)
 {
-	Word32 lsf1_r[M], lsf2_r[M], lsf1_q[M], lsf2_q[M];
-	Word32 i, temp1, temp2, sign;
-	const Word32 *p_dico;
+	int32_t lsf1_r[M], lsf2_r[M], lsf1_q[M], lsf2_q[M];
+	int32_t i, temp1, temp2, sign;
+	const int32_t *p_dico;
 
 	/* if bad frame */
 	if (bfi != 0) {
@@ -2026,7 +2026,7 @@ static void D_plsf_5(D_plsfState * st, Word16 bfi, Word16 * indice,
 		lsf1_r[3] = *p_dico++;
 		lsf2_r[2] = *p_dico++;
 		lsf2_r[3] = *p_dico;
-		sign = (Word16) (indice[2] & 1);
+		sign = (int16_t) (indice[2] & 1);
 		i = indice[2] >> 1;
 		p_dico = &dico3_lsf_5[i << 2];
 
@@ -2036,10 +2036,10 @@ static void D_plsf_5(D_plsfState * st, Word16 bfi, Word16 * indice,
 			lsf2_r[4] = *p_dico++;
 			lsf2_r[5] = *p_dico++;
 		} else {
-			lsf1_r[4] = (Word16) (-(*p_dico++));
-			lsf1_r[5] = (Word16) (-(*p_dico++));
-			lsf2_r[4] = (Word16) (-(*p_dico++));
-			lsf2_r[5] = (Word16) (-(*p_dico++));
+			lsf1_r[4] = (int16_t) (-(*p_dico++));
+			lsf1_r[5] = (int16_t) (-(*p_dico++));
+			lsf2_r[4] = (int16_t) (-(*p_dico++));
+			lsf2_r[5] = (int16_t) (-(*p_dico++));
 		}
 		p_dico = &dico4_lsf_5[(indice[3] << 2)];
 		lsf1_r[6] = *p_dico++;
@@ -2100,11 +2100,11 @@ static void D_plsf_5(D_plsfState * st, Word16 bfi, Word16 * indice,
  * Returns:
  *    void
  */
-static void Dec_lag3(Word32 index, Word32 t0_min, Word32 t0_max, Word32 i_subfr,
-		     Word32 T0_prev, Word32 * T0, Word32 * T0_frac,
-		     Word32 flag4)
+static void Dec_lag3(int32_t index, int32_t t0_min, int32_t t0_max, int32_t i_subfr,
+		     int32_t T0_prev, int32_t * T0, int32_t * T0_frac,
+		     int32_t flag4)
 {
-	Word32 i, tmp_lag;
+	int32_t i, tmp_lag;
 
 	/* if 1st or 3rd subframe */
 	if (i_subfr == 0) {
@@ -2189,11 +2189,11 @@ static void Dec_lag3(Word32 index, Word32 t0_min, Word32 t0_max, Word32 i_subfr,
  * Returns:
  *    void
  */
-static void Pred_lt_3or6_40(Word32 exc[], Word32 T0, Word32 frac, Word32 flag3)
+static void Pred_lt_3or6_40(int32_t exc[], int32_t T0, int32_t frac, int32_t flag3)
 {
-	Word32 s, i;
-	Word32 *x0, *x1, *x2;
-	const Word32 *c1, *c2;
+	int32_t s, i;
+	int32_t *x0, *x1, *x2;
+	const int32_t *c1, *c2;
 
 	x0 = &exc[-T0];
 	frac = -frac;
@@ -2264,10 +2264,10 @@ static void Pred_lt_3or6_40(Word32 exc[], Word32 T0, Word32 frac, Word32 flag3)
  * Returns:
  *    void
  */
-static void Dec_lag6(Word32 index, Word32 pit_min, Word32 pit_max, Word32
-		     i_subfr, Word32 * T0, Word32 * T0_frac)
+static void Dec_lag6(int32_t index, int32_t pit_min, int32_t pit_max, int32_t
+		     i_subfr, int32_t * T0, int32_t * T0_frac)
 {
-	Word32 t0_min, t0_max, i;
+	int32_t t0_min, t0_max, i;
 
 	/* if 1st or 3rd subframe */
 	if (i_subfr == 0) {
@@ -2324,10 +2324,10 @@ static void Dec_lag6(Word32 index, Word32 pit_min, Word32 pit_max, Word32
  * Returns:
  *    void
  */
-static void decompress10(Word32 MSBs, Word32 LSBs, Word32 index1, Word32 index2,
-			 Word32 index3, Word32 pos_indx[])
+static void decompress10(int32_t MSBs, int32_t LSBs, int32_t index1, int32_t index2,
+			 int32_t index3, int32_t pos_indx[])
 {
-	Word32 divMSB;
+	int32_t divMSB;
 
 	if (MSBs > 124) {
 		MSBs = 124;
@@ -2365,9 +2365,9 @@ static void decompress10(Word32 MSBs, Word32 LSBs, Word32 index1, Word32 index2,
  * Returns:
  *    void
  */
-static void decompress_codewords(Word16 indx[], Word32 pos_indx[])
+static void decompress_codewords(int16_t indx[], int32_t pos_indx[])
 {
-	Word32 ia, ib, MSBs, LSBs, MSBs0_24, tmp;
+	int32_t ia, ib, MSBs, LSBs, MSBs0_24, tmp;
 
 	/*
 	 * First index: 10x10x10 -> 2x5x2x5x2x5-> 125x2x2x2 -> 7+1x3 bits
@@ -2428,11 +2428,11 @@ static void decompress_codewords(Word16 indx[], Word32 pos_indx[])
  * Returns:
  *    void
  */
-static void decode_2i40_9bits(Word32 subNr, Word32 sign, Word32 index, Word32
+static void decode_2i40_9bits(int32_t subNr, int32_t sign, int32_t index, int32_t
 			      cod[])
 {
-	Word32 pos[2];
-	Word32 i, j, k;
+	int32_t pos[2];
+	int32_t i, j, k;
 
 	/* Decode the positions */
 	/* table bit  is the MSB */
@@ -2449,7 +2449,7 @@ static void decode_2i40_9bits(Word32 subNr, Word32 sign, Word32 index, Word32
 	/* pos1 =i*5+startPos[j*8+subNr*2+1] */
 	i = (i + (i << 2));
 	k = startPos[((j << 3) + (subNr << 1)) + 1];
-	pos[1] = (Word16) (i + k);
+	pos[1] = (int16_t) (i + k);
 
 	/* decode the signs  and build the codeword */
 	memzero(cod, L_SUBFR << 2);
@@ -2482,10 +2482,10 @@ static void decode_2i40_9bits(Word32 subNr, Word32 sign, Word32 index, Word32
  * Returns:
  *    void
  */
-static void decode_2i40_11bits(Word32 sign, Word32 index, Word32 cod[])
+static void decode_2i40_11bits(int32_t sign, int32_t index, int32_t cod[])
 {
-	Word32 pos[2];
-	Word32 i, j;
+	int32_t pos[2];
+	int32_t i, j;
 
 	/* Decode the positions */
 	j = index & 1;
@@ -2543,10 +2543,10 @@ static void decode_2i40_11bits(Word32 sign, Word32 index, Word32 cod[])
  * Returns:
  *    void
  */
-static void decode_3i40_14bits(Word32 sign, Word32 index, Word32 cod[])
+static void decode_3i40_14bits(int32_t sign, int32_t index, int32_t cod[])
 {
-	Word32 pos[3];
-	Word32 i, j;
+	int32_t pos[3];
+	int32_t i, j;
 
 	/* Decode the positions */
 	i = index & 7;
@@ -2605,10 +2605,10 @@ static void decode_3i40_14bits(Word32 sign, Word32 index, Word32 cod[])
  * Returns:
  *    void
  */
-static void decode_4i40_17bits(Word32 sign, Word32 index, Word32 cod[])
+static void decode_4i40_17bits(int32_t sign, int32_t index, int32_t cod[])
 {
-	Word32 pos[4];
-	Word32 i, j;
+	int32_t pos[4];
+	int32_t i, j;
 
 	/* Decode the positions */
 	i = index & 7;
@@ -2671,10 +2671,10 @@ static void decode_4i40_17bits(Word32 sign, Word32 index, Word32 cod[])
  * Returns:
  *    void
  */
-static void decode_8i40_31bits(Word16 index[], Word32 cod[])
+static void decode_8i40_31bits(int16_t index[], int32_t cod[])
 {
-	Word32 linear_codewords[8];
-	Word32 i, j, pos1, pos2, sign;
+	int32_t linear_codewords[8];
+	int32_t i, j, pos1, pos2, sign;
 
 	memzero(cod, L_CODE << 2);
 	decompress_codewords(&index[NB_TRACK_MR102], linear_codewords);
@@ -2724,9 +2724,9 @@ static void decode_8i40_31bits(Word16 index[], Word32 cod[])
  * Returns:
  *    void
  */
-static void decode_10i40_35bits(Word16 index[], Word32 cod[])
+static void decode_10i40_35bits(int16_t index[], int32_t cod[])
 {
-	Word32 i, j, pos1, pos2, sign, tmp;
+	int32_t i, j, pos1, pos2, sign, tmp;
 
 	memzero(cod, L_CODE << 2);
 
@@ -2779,10 +2779,10 @@ static void decode_10i40_35bits(Word16 index[], Word32 cod[])
  * Returns:
  *    index of the median value
  */
-static Word32 gmed_n(Word32 ind[], Word32 n)
+static int32_t gmed_n(int32_t ind[], int32_t n)
 {
-	Word32 tmp[NMAX], tmp2[NMAX];
-	Word32 max, medianIndex, i, j, ix = 0;
+	int32_t tmp[NMAX], tmp2[NMAX];
+	int32_t max, medianIndex, i, j, ix = 0;
 
 	for (i = 0; i < n; i++) {
 		tmp2[i] = ind[i];
@@ -2820,10 +2820,10 @@ static Word32 gmed_n(Word32 ind[], Word32 n)
  * Returns:
  *    void
  */
-static void ec_gain_pitch(ec_gain_pitchState * st, Word16 state, Word32 *
+static void ec_gain_pitch(ec_gain_pitchState * st, int16_t state, int32_t *
 			  gain_pitch)
 {
-	Word32 tmp;
+	int32_t tmp;
 
 	/* calculate median of last five gains */
 	tmp = gmed_n(st->pbuf, 5);
@@ -2849,9 +2849,9 @@ static void ec_gain_pitch(ec_gain_pitchState * st, Word16 state, Word32 *
  * Returns:
  *    gain
  */
-static Word32 d_gain_pitch(enum Mode mode, Word32 index)
+static int32_t d_gain_pitch(enum Mode mode, int32_t index)
 {
-	Word32 gain;
+	int32_t gain;
 
 	if (mode == MR122) {
 		/* clear 2 LSBits */
@@ -2881,8 +2881,8 @@ static Word32 d_gain_pitch(enum Mode mode, Word32 index)
  * Returns:
  *    gain
  */
-static void ec_gain_pitch_update(ec_gain_pitchState * st, Word32 bfi,
-				 Word32 prev_bf, Word32 * gain_pitch)
+static void ec_gain_pitch_update(ec_gain_pitchState * st, int32_t bfi,
+				 int32_t prev_bf, int32_t * gain_pitch)
 {
 	if (bfi == 0) {
 		if (prev_bf != 0) {
@@ -2949,11 +2949,11 @@ static void ec_gain_pitch_update(ec_gain_pitchState * st, Word32 bfi,
  * Returns:
  *    void
  */
-static void gc_pred(gc_predState * st, enum Mode mode, Word32 * code, Word32 *
-		    exp_gcode0, Word32 * frac_gcode0, Word32 * exp_en,
-		    Word32 * frac_en)
+static void gc_pred(gc_predState * st, enum Mode mode, int32_t * code, int32_t *
+		    exp_gcode0, int32_t * frac_gcode0, int32_t * exp_en,
+		    int32_t * frac_en)
 {
-	Word32 exp, frac, ener_code = 0, i = 0;
+	int32_t exp, frac, ener_code = 0, i = 0;
 
 	/* energy of code:
 	 * ener_code = sum(code[i]^2)
@@ -2969,7 +2969,7 @@ static void gc_pred(gc_predState * st, enum Mode mode, Word32 * code, Word32 *
 		ener_code <<= 1;
 
 	if (mode == MR122) {
-		Word32 ener;
+		int32_t ener;
 
 		/* ener_code = ener_code / lcode; lcode = 40; 1/40 = 26214 Q20       */
 		ener_code = ((ener_code + 0x00008000L) >> 16) * 52428;
@@ -3015,7 +3015,7 @@ static void gc_pred(gc_predState * st, enum Mode mode, Word32 * code, Word32 *
 
 	/* all modes except 12.2 */
 	else {
-		Word32 tmp, gcode0;
+		int32_t tmp, gcode0;
 		int exp_code;
 
 		/*
@@ -3142,10 +3142,10 @@ static void gc_pred(gc_predState * st, enum Mode mode, Word32 * code, Word32 *
  * Returns:
  *    void
  */
-static void gc_pred_update(gc_predState * st, Word32 qua_ener_MR122,
-			   Word32 qua_ener)
+static void gc_pred_update(gc_predState * st, int32_t qua_ener_MR122,
+			   int32_t qua_ener)
 {
-	Word32 i;
+	int32_t i;
 
 	for (i = 3; i > 0; i--) {
 		st->past_qua_en[i] = st->past_qua_en[i - 1];
@@ -3175,12 +3175,12 @@ static void gc_pred_update(gc_predState * st, Word32 qua_ener_MR122,
  * Returns:
  *    void
  */
-static void Dec_gain(gc_predState * pred_state, enum Mode mode, Word32 index,
-		     Word32 code[], Word32 evenSubfr, Word32 * gain_pit,
-		     Word32 * gain_cod)
+static void Dec_gain(gc_predState * pred_state, enum Mode mode, int32_t index,
+		     int32_t code[], int32_t evenSubfr, int32_t * gain_pit,
+		     int32_t * gain_cod)
 {
-	Word32 frac, gcode0, exp, qua_ener, qua_ener_MR122, g_code, tmp;
-	const Word32 *p;
+	int32_t frac, gcode0, exp, qua_ener, qua_ener_MR122, g_code, tmp;
+	const int32_t *p;
 
 	/* Read the quantized gains (table depends on mode) */
 	index = index << 2;
@@ -3209,7 +3209,7 @@ static void Dec_gain(gc_predState * pred_state, enum Mode mode, Word32 index,
 			exp = exp - 12;
 			tmp = frac >> 5;
 
-			if ((frac & ((Word16) 1 << 4)) != 0) {
+			if ((frac & ((int16_t) 1 << 4)) != 0) {
 				tmp++;
 			}
 			qua_ener_MR122 = tmp + (exp << 10);
@@ -3277,10 +3277,10 @@ static void Dec_gain(gc_predState * pred_state, enum Mode mode, Word32 index,
  * Returns:
  *    void
  */
-static void gc_pred_average_limited(gc_predState * st, Word32 * ener_avg_MR122,
-				    Word32 * ener_avg)
+static void gc_pred_average_limited(gc_predState * st, int32_t * ener_avg_MR122,
+				    int32_t * ener_avg)
 {
-	Word32 av_pred_en, i;
+	int32_t av_pred_en, i;
 
 	/* do average in MR122 mode (log2() domain) */
 	av_pred_en = 0;
@@ -3296,7 +3296,7 @@ static void gc_pred_average_limited(gc_predState * st, Word32 * ener_avg_MR122,
 	if (av_pred_en < MIN_ENERGY_MR122) {
 		av_pred_en = MIN_ENERGY_MR122;
 	}
-	*ener_avg_MR122 = (Word16) av_pred_en;
+	*ener_avg_MR122 = (int16_t) av_pred_en;
 
 	/* do average for other modes (20*log10() domain) */
 	av_pred_en = 0;
@@ -3333,9 +3333,9 @@ static void gc_pred_average_limited(gc_predState * st, Word32 * ener_avg_MR122,
  *    void
  */
 static void ec_gain_code(ec_gain_codeState * st, gc_predState * pred_state,
-			 Word16 state, Word32 * gain_code)
+			 int16_t state, int32_t * gain_code)
 {
-	Word32 tmp, qua_ener_MR122, qua_ener;
+	int32_t tmp, qua_ener_MR122, qua_ener;
 
 	/* calculate median of last five gain values */
 	tmp = gmed_n(st->gbuf, 5);
@@ -3373,8 +3373,8 @@ static void ec_gain_code(ec_gain_codeState * st, gc_predState * pred_state,
  * Returns:
  *    void
  */
-static void ec_gain_code_update(ec_gain_codeState * st, Word16 bfi,
-				Word16 prev_bf, Word32 * gain_code)
+static void ec_gain_code_update(ec_gain_codeState * st, int16_t bfi,
+				int16_t prev_bf, int32_t * gain_code)
 {
 	/* limit gain_code by previous good gain if previous frame was bad */
 	if (bfi == 0) {
@@ -3413,12 +3413,12 @@ static void ec_gain_code_update(ec_gain_codeState * st, Word16 bfi,
  * Returns:
  *    void
  */
-static void d_gain_code(gc_predState * pred_state, enum Mode mode, Word32 index,
-			Word32 code[], Word32 * gain_code)
+static void d_gain_code(gc_predState * pred_state, enum Mode mode, int32_t index,
+			int32_t code[], int32_t * gain_code)
 {
-	Word32 g_code0, exp, frac, qua_ener_MR122, qua_ener;
-	Word32 exp_inn_en, frac_inn_en, tmp, tmp2, i;
-	const Word32 *p;
+	int32_t g_code0, exp, frac, qua_ener_MR122, qua_ener;
+	int32_t exp_inn_en, frac_inn_en, tmp, tmp2, i;
+	const int32_t *p;
 
 	/*
 	 * Decode codebook gain
@@ -3497,10 +3497,10 @@ static void d_gain_code(gc_predState * pred_state, enum Mode mode, Word32 index,
  * Returns:
  *    void
  */
-static void Int_lsf(Word32 lsf_old[], Word32 lsf_new[], int i_subfr, Word32
+static void Int_lsf(int32_t lsf_old[], int32_t lsf_new[], int i_subfr, int32_t
 		    lsf_out[])
 {
-	Word32 i;
+	int32_t i;
 
 	switch (i_subfr) {
 	case 0:
@@ -3554,14 +3554,14 @@ static void Int_lsf(Word32 lsf_old[], Word32 lsf_new[], int i_subfr, Word32
  * Returns:
  *    void
  */
-static Word32 Cb_gain_average(Cb_gain_averageState * st, enum Mode mode, Word32
-			      gain_code, Word32 lsp[], Word32 lspAver[],
-			      Word16 bfi, Word16 prev_bf, Word16 pdfi,
-			      Word16 prev_pdf, Word32 inBackgroundNoise,
-			      Word32 voicedHangover)
+static int32_t Cb_gain_average(Cb_gain_averageState * st, enum Mode mode, int32_t
+			      gain_code, int32_t lsp[], int32_t lspAver[],
+			      int16_t bfi, int16_t prev_bf, int16_t pdfi,
+			      int16_t prev_pdf, int32_t inBackgroundNoise,
+			      int32_t voicedHangover)
 {
-	Word32 tmp[M];
-	Word32 i, cbGainMix, tmp_diff, bgMix, cbGainMean, sum, diff, tmp1, tmp2;
+	int32_t tmp[M];
+	int32_t i, cbGainMix, tmp_diff, bgMix, cbGainMean, sum, diff, tmp1, tmp2;
 	int shift1, shift2, shift;
 
 	/* set correct cbGainMix for MR74, MR795, MR122 */
@@ -3739,13 +3739,13 @@ static Word32 Cb_gain_average(Cb_gain_averageState * st, enum Mode mode, Word32
  * Returns:
  *    void
  */
-static void ph_disp(ph_dispState * state, enum Mode mode, Word32 x[],
-		    Word32 cbGain, Word32 ltpGain, Word32 inno[],
-		    Word32 pitch_fac, Word32 tmp_shift)
+static void ph_disp(ph_dispState * state, enum Mode mode, int32_t x[],
+		    int32_t cbGain, int32_t ltpGain, int32_t inno[],
+		    int32_t pitch_fac, int32_t tmp_shift)
 {
-	Word32 inno_sav[L_SUBFR], ps_poss[L_SUBFR];
-	Word32 i, i1, impNr, temp1, temp2, j, nze, nPulse, ppos;
-	const Word32 *ph_imp;	/* Pointer to phase dispersion filter */
+	int32_t inno_sav[L_SUBFR], ps_poss[L_SUBFR];
+	int32_t i, i1, impNr, temp1, temp2, j, nze, nPulse, ppos;
+	const int32_t *ph_imp;	/* Pointer to phase dispersion filter */
 
 	/* Update LTP gain memory */
 	state->gainMem[4] = state->gainMem[3];
@@ -3925,14 +3925,14 @@ static void ph_disp(ph_dispState * state, enum Mode mode, Word32 x[],
  * Returns:
  *    y                 output value
  */
-static Word32 sqrt_l_exp(Word32 x, Word32 * exp)
+static int32_t sqrt_l_exp(int32_t x, int32_t * exp)
 {
-	Word32 y, a, i, tmp;
+	int32_t y, a, i, tmp;
 	int e;
 
-	if (x <= (Word32) 0) {
+	if (x <= (int32_t) 0) {
 		*exp = 0;
-		return (Word32) 0;
+		return (int32_t) 0;
 	}
 	e = 0;
 	if (x != 0) {
@@ -3944,11 +3944,11 @@ static Word32 sqrt_l_exp(Word32 x, Word32 * exp)
 	}
 	e = e & 0xFFFE;
 	x = (x << e);
-	*exp = (Word16) e;
+	*exp = (int16_t) e;
 	x = (x >> 9);
-	i = (Word16) (x >> 16);
+	i = (int16_t) (x >> 16);
 	x = (x >> 1);
-	a = x & (Word16) 0x7fff;
+	a = x & (int16_t) 0x7fff;
 	i = (i - 16);
 	y = (sqrt_table[i] << 16);
 	tmp = (sqrt_table[i] - sqrt_table[i + 1]);
@@ -3974,11 +3974,11 @@ static Word32 sqrt_l_exp(Word32 x, Word32 * exp)
  * Returns:
  *    background noise decision; 0 = no bgn, 1 = bgn
  */
-static Word16 Ex_ctrl(Word32 excitation[], Word32 excEnergy, Word32
-		      exEnergyHist[], Word32 voicedHangover, Word16 prevBFI,
-		      Word16 carefulFlag)
+static int16_t Ex_ctrl(int32_t excitation[], int32_t excEnergy, int32_t
+		      exEnergyHist[], int32_t voicedHangover, int16_t prevBFI,
+		      int16_t carefulFlag)
 {
-	Word32 i, testEnergy, scaleFactor, avgEnergy, prevEnergy, T0;
+	int32_t i, testEnergy, scaleFactor, avgEnergy, prevEnergy, T0;
 	int exp;
 
 	/* get target level */
@@ -4050,13 +4050,13 @@ static Word16 Ex_ctrl(Word32 excitation[], Word32 excEnergy, Word32
  * Returns:
  *    y                 1/sqrt(x)
  */
-static Word32 Inv_sqrt(Word32 x)
+static int32_t Inv_sqrt(int32_t x)
 {
 	int i, a, tmp, exp;
-	Word32 y;
+	int32_t y;
 
-	if (x <= (Word32) 0)
-		return ((Word32) 0x3fffffffL);
+	if (x <= (int32_t) 0)
+		return ((int32_t) 0x3fffffffL);
 	exp = 0;
 	while (!(x & 0x40000000)) {
 		exp++;
@@ -4075,11 +4075,11 @@ static Word32 Inv_sqrt(Word32 x)
 	x = (x >> 9);
 
 	/* Extract b25-b31 */
-	i = (Word16) (x >> 16);
+	i = (int16_t) (x >> 16);
 
 	/* Extract b10-b24 */
 	x = (x >> 1);
-	a = x & (Word16) 0x7fff;
+	a = x & (int16_t) 0x7fff;
 	i = (i - 16);
 
 	/* table[i] << 16 */
@@ -4109,9 +4109,9 @@ static Word32 Inv_sqrt(Word32 x)
  * Returns:
  *    Energy
  */
-static Word32 energy_old(Word32 in[])
+static int32_t energy_old(int32_t in[])
 {
-	Word32 temp, i, sum = 0;
+	int32_t temp, i, sum = 0;
 
 	for (i = 0; i < L_SUBFR; i += 8) {
 		temp = in[i] >> 2;
@@ -4151,9 +4151,9 @@ static Word32 energy_old(Word32 in[])
  * Returns:
  *    Energy
  */
-static Word32 energy_new(Word32 in[])
+static int32_t energy_new(int32_t in[])
 {
-	Word32 i, s = 0, overflow = 0;
+	int32_t i, s = 0, overflow = 0;
 
 	s += in[0] * in[0];
 	for (i = 1; i < L_SUBFR; i += 3) {
@@ -4190,11 +4190,11 @@ static Word32 energy_new(Word32 in[])
  * Returns:
  *    Energy
  */
-static void agc2(Word32 * sig_in, Word32 * sig_out)
+static void agc2(int32_t * sig_in, int32_t * sig_out)
 {
-	Word32 s;
+	int32_t s;
 	int i, exp;
-	Word16 gain_in, gain_out, g0;
+	int16_t gain_in, gain_out, g0;
 
 	/* calculate gain_out with exponent */
 	s = energy_new(sig_out);
@@ -4208,7 +4208,7 @@ static void agc2(Word32 * sig_in, Word32 * sig_out)
 		s = s << 1;
 	}
 
-	gain_out = (Word16) ((s + 0x00008000L) >> 16);
+	gain_out = (int16_t) ((s + 0x00008000L) >> 16);
 
 	/* calculate gain_in with exponent */
 	s = energy_new(sig_in);
@@ -4223,7 +4223,7 @@ static void agc2(Word32 * sig_in, Word32 * sig_out)
 		}
 
 		if (s < 0x7fff7fff)
-			gain_in = (Word16) ((s + 0x00008000L) >> 16);
+			gain_in = (int16_t) ((s + 0x00008000L) >> 16);
 		else
 			gain_in = 32767;
 		exp = (exp - i);
@@ -4240,7 +4240,7 @@ static void agc2(Word32 * sig_in, Word32 * sig_out)
 		else
 			s = (s << (-exp));
 		s = Inv_sqrt(s);
-		g0 = (Word16) (((s << 9) + 0x00008000L) >> 16);
+		g0 = (int16_t) (((s << 9) + 0x00008000L) >> 16);
 	}
 
 	/* sig_out(n) = gain(n) * sig_out(n) */
@@ -4267,12 +4267,12 @@ static void agc2(Word32 * sig_in, Word32 * sig_out)
  * Returns:
  *    inbgNoise         background noise decision; 0 = no bgn, 1 = bgn
  */
-static Word16 Bgn_scd(Bgn_scdState * st, Word32 ltpGainHist[], Word32 speech[],
-		      Word32 * voicedHangover)
+static int16_t Bgn_scd(Bgn_scdState * st, int32_t ltpGainHist[], int32_t speech[],
+		      int32_t * voicedHangover)
 {
-	Word32 temp, ltpLimit, frame_energyMin, currEnergy, noiseFloor,
+	int32_t temp, ltpLimit, frame_energyMin, currEnergy, noiseFloor,
 	    maxEnergy, maxEnergyLastPart, s, i;
-	Word16 prevVoiced, inbgNoise;
+	int16_t prevVoiced, inbgNoise;
 
 	/*
 	 * Update the inBackgroundNoise flag (valid for use in next frame if BFI)
@@ -4405,11 +4405,11 @@ static Word16 Bgn_scd(Bgn_scdState * st, Word32 ltpGainHist[], Word32 speech[],
  * Returns:
  *    void
  */
-static void dtx_dec_activity_update(dtx_decState * st, Word32 lsf[], Word32
+static void dtx_dec_activity_update(dtx_decState * st, int32_t lsf[], int32_t
 				    frame[])
 {
-	Word32 frame_en;
-	Word32 log_en_e, log_en_m, log_en, i;
+	int32_t frame_en;
+	int32_t log_en_e, log_en_m, log_en, i;
 
 	/* update lsp history */
 	st->lsf_hist_ptr += M;
@@ -4428,11 +4428,11 @@ static void dtx_dec_activity_update(dtx_decState * st, Word32 lsf[], Word32
 			break;
 	}
 
-	log_en = (frame_en & 0xC0000000) ? 0x7FFFFFFE : (Word32) frame_en << 1;
+	log_en = (frame_en & 0xC0000000) ? 0x7FFFFFFE : (int32_t) frame_en << 1;
 
 	Log2(log_en, &log_en_e, &log_en_m);
 
-	/* convert exponent and mantissa to Word16 Q10 */
+	/* convert exponent and mantissa to int16_t Q10 */
 	log_en = log_en_e << 10;	/* Q10 */
 	log_en = log_en + (log_en_m >> 5);
 
@@ -4469,35 +4469,35 @@ static void dtx_dec_activity_update(dtx_decState * st, Word32 lsf[], Word32
  * Returns:
  *    void
  */
-static void Decoder_amr(Decoder_amrState * st, enum Mode mode, Word16 parm[],
-			enum RXFrameType frame_type, Word32 synth[],
-			Word32 A_t[])
+static void Decoder_amr(Decoder_amrState * st, enum Mode mode, int16_t parm[],
+			enum RXFrameType frame_type, int32_t synth[],
+			int32_t A_t[])
 {
 	/* LSPs */
-	Word32 lsp_new[M];
-	Word32 lsp_mid[M];
+	int32_t lsp_new[M];
+	int32_t lsp_mid[M];
 
 	/* LSFs */
-	Word32 prev_lsf[M];
-	Word32 lsf_i[M];
+	int32_t prev_lsf[M];
+	int32_t lsf_i[M];
 
 	/* Algebraic codevector */
-	Word32 code[L_SUBFR];
+	int32_t code[L_SUBFR];
 
 	/* excitation */
-	Word32 excp[L_SUBFR];
-	Word32 exc_enhanced[L_SUBFR];
+	int32_t excp[L_SUBFR];
+	int32_t exc_enhanced[L_SUBFR];
 
 	/* Scalars */
-	Word32 i, i_subfr, overflow, T0_frac, index, temp, temp2, subfrNr,
+	int32_t i, i_subfr, overflow, T0_frac, index, temp, temp2, subfrNr,
 	    excEnergy;
-	Word32 gain_code, gain_code_mix, pit_sharp, pit_flag, pitch_fac, t0_min,
+	int32_t gain_code, gain_code_mix, pit_sharp, pit_flag, pitch_fac, t0_min,
 	    t0_max;
-	Word32 gain_pit = 0, evenSubfr = 0, T0 = 0, index_mr475 = 0;
-	Word32 *Az;		/* Pointer on A_t */
-	Word16 flag4, carefulFlag;
-	Word16 delta_frc_low, delta_frc_range, tmp_shift;
-	Word16 bfi = 0, pdfi = 0;
+	int32_t gain_pit = 0, evenSubfr = 0, T0 = 0, index_mr475 = 0;
+	int32_t *Az;		/* Pointer on A_t */
+	int16_t flag4, carefulFlag;
+	int16_t delta_frc_low, delta_frc_range, tmp_shift;
+	int16_t bfi = 0, pdfi = 0;
 	/* bad frame indication flag, potential degraded bad frame flag */
 
 	enum DTXStateType newDTXState;	/* SPEECH , DTX, DTX_MUTE */
@@ -5171,9 +5171,9 @@ static void Decoder_amr(Decoder_amrState * st, enum Mode mode, Word16 parm[],
  * Returns:
  *    void
  */
-static void Residu40(Word32 a[], Word32 x[], Word32 y[])
+static void Residu40(int32_t a[], int32_t x[], int32_t y[])
 {
-	Word32 s, i, j;
+	int32_t s, i, j;
 
 	for (i = 0; i < 40; i++) {
 		s = a[0] * x[i] + a[1] * x[i - 1] + a[2] * x[i - 2] +
@@ -5223,10 +5223,10 @@ static void Residu40(Word32 a[], Word32 x[], Word32 y[])
  * Returns:
  *    void
  */
-static void agc(agcState * st, Word32 * sig_in, Word32 * sig_out,
-		Word16 agc_fac)
+static void agc(agcState * st, int32_t * sig_in, int32_t * sig_out,
+		int16_t agc_fac)
 {
-	Word32 s, gain_in, gain_out, g0, gain;
+	int32_t s, gain_in, gain_out, g0, gain;
 	int exp, i;
 
 	/* calculate gain_out with exponent */
@@ -5335,14 +5335,14 @@ static void agc(agcState * st, Word32 * sig_in, Word32 * sig_out,
  * Returns:
  *    void
  */
-static void Post_Filter(Post_FilterState * st, enum Mode mode, Word32 * syn,
-			Word32 * Az_4)
+static void Post_Filter(Post_FilterState * st, enum Mode mode, int32_t * syn,
+			int32_t * Az_4)
 {
-	Word32 h[22], Ap3[MP1], Ap4[MP1];	/* bandwidth expanded LP parameters */
-	Word32 tmp, i_subfr, i, temp1, temp2, overflow = 0;
-	Word32 *Az, *p1, *p2, *syn_work = &st->synth_buf[M];
-	const Word32 *pgamma3 = &gamma3[0];
-	const Word32 *pgamma4 = &gamma4_gamma3_MR122[0];
+	int32_t h[22], Ap3[MP1], Ap4[MP1];	/* bandwidth expanded LP parameters */
+	int32_t tmp, i_subfr, i, temp1, temp2, overflow = 0;
+	int32_t *Az, *p1, *p2, *syn_work = &st->synth_buf[M];
+	const int32_t *pgamma3 = &gamma3[0];
+	const int32_t *pgamma4 = &gamma4_gamma3_MR122[0];
 
 	/*
 	 * Post filtering
@@ -5469,10 +5469,10 @@ static void Post_Filter(Post_FilterState * st, enum Mode mode, Word32 * syn,
  * Returns:
  *    void
  */
-static void Post_Process(Post_ProcessState * st, Word32 signal[])
+static void Post_Process(Post_ProcessState * st, int32_t signal[])
 {
-	Word32 x2, tmp, i = 0;
-	Word32 mask = 0x40000000;
+	int32_t x2, tmp, i = 0;
+	int32_t mask = 0x40000000;
 
 	do {
 		x2 = st->x1;
@@ -5485,10 +5485,10 @@ static void Post_Process(Post_ProcessState * st, Word32 signal[])
 		 */
 		tmp =
 		    (st->y1_hi * 15836) +
-		    (((st->y1_lo * 15836) & (Word32) 0xffff8000) >> 15);
+		    (((st->y1_lo * 15836) & (int32_t) 0xffff8000) >> 15);
 		tmp +=
 		    (st->y2_hi * -7667) +
-		    (((st->y2_lo * (-7667)) & (Word32) 0xffff8000) >> 15);
+		    (((st->y2_lo * (-7667)) & (int32_t) 0xffff8000) >> 15);
 		tmp += st->x0 * 7699;
 		tmp += st->x1 * -15398;
 		if (((tmp >> 1) ^ tmp) & mask)
@@ -5538,12 +5538,12 @@ static void Post_Process(Post_ProcessState * st, Word32 signal[])
  * Returns:
  *    void
  */
-void Speech_Decode_Frame(void *st, enum Mode mode, Word16 * parm, enum
-			 RXFrameType frame_type, Word16 * synth)
+void Speech_Decode_Frame(void *st, enum Mode mode, int16_t * parm, enum
+			 RXFrameType frame_type, int16_t * synth)
 {
-	Word32 Az_dec[AZ_SIZE];	/* Decoded Az for post-filter in 4 subframes */
-	Word32 synth_speech[L_FRAME];
-	Word32 i;
+	int32_t Az_dec[AZ_SIZE];	/* Decoded Az for post-filter in 4 subframes */
+	int32_t synth_speech[L_FRAME];
+	int32_t i;
 
 	/* Synthesis */
 	Decoder_amr(((Speech_Decode_FrameState *) st)->decoder_amrState, mode,
@@ -5558,9 +5558,9 @@ void Speech_Decode_Frame(void *st, enum Mode mode, Word16 * parm, enum
 	for (i = 0; i < L_FRAME; i++) {
 #ifndef NO13BIT
 		/* Truncate to 13 bits */
-		synth[i] = (Word16) (synth_speech[i] & 0xfff8);
+		synth[i] = (int16_t) (synth_speech[i] & 0xfff8);
 #else
-		synth[i] = (Word16) (synth_speech[i]);
+		synth[i] = (int16_t) (synth_speech[i]);
 #endif
 	}
 

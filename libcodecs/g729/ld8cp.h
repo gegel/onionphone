@@ -16,6 +16,8 @@
  * ~~~~~~                                                       *
  *--------------------------------------------------------------*/
 
+#include <stdint.h>
+
 /*---------------------------------------------------------------------------*
  * constants for bitstream packing                                           *
  *---------------------------------------------------------------------------*/
@@ -51,29 +53,29 @@
 #define N1              (M_BWD + L_FRAME)
 #define L_ANA_BWD       (L_FRAME + MEM_SYN_BWD)
 #define L_ANA_BWD_M1    (L_ANA_BWD - 1)
-#define W_FACT  (FLOAT)0.31640625	/* 10368 */
-#define GAMMA_BWD (FLOAT)0.98	/* 32113 */
+#define W_FACT  (float)0.31640625	/* 10368 */
+#define GAMMA_BWD (float)0.98	/* 32113 */
 
 /* short term pst parameters :                                              */
-#define GAMMA1_PST_E  (FLOAT)0.7	/* denominator weighting factor */
-#define GAMMA2_PST_E  (FLOAT)0.65	/* numerator  weighting factor */
+#define GAMMA1_PST_E  (float)0.7	/* denominator weighting factor */
+#define GAMMA2_PST_E  (float)0.65	/* numerator  weighting factor */
 #define LONG_H_ST_E   32	/* impulse response length                   */
-#define GAMMA_HARM_E (FLOAT)0.25
-#define GAMMA_HARM (FLOAT)0.5
+#define GAMMA_HARM_E (float)0.25
+#define GAMMA_HARM (float)0.5
 
 /* ACELP codebooks parameters */
 #define NB_TRACK  5
-#define Q15_1_5   (FLOAT)0.2
+#define Q15_1_5   (float)0.2
 
 /* Bw / Fw constants */
-#define THRES_ENERGY (FLOAT)40.
-#define TH1 (FLOAT)1.
-#define TH2 (FLOAT)2.
-#define TH3 (FLOAT)3.
-#define TH4 (FLOAT)4.
-#define TH5 (FLOAT)4.7
-#define GAP_FACT (FLOAT)0.000114375
-#define INV_LOG2 (FLOAT) (1./log10(2.))
+#define THRES_ENERGY (float)40.
+#define TH1 (float)1.
+#define TH2 (float)2.
+#define TH3 (float)3.
+#define TH4 (float)4.
+#define TH5 (float)4.7
+#define GAP_FACT (float)0.000114375
+#define INV_LOG2 (float) (1./log10(2.))
 
 /*--------------------------------------------------------------------------*
  *       6.4kbps                                                            *
@@ -101,14 +103,14 @@
 #define NCODE2_6K (1<<NCODE2_B_6K)	/* Codebook 2 size                       */
 #define NCAN1_6K  6		/* Pre-selecting order for #1            */
 #define NCAN2_6K  6		/* Pre-selecting order for #2            */
-#define INV_COEF_6K  ((F)-0.027599)
+#define INV_COEF_6K  ((float)-0.027599)
 
-#define GAIN_PIT_MAX_6K (F)1.4	/* maximum adaptive codebook gain        */
+#define GAIN_PIT_MAX_6K (float)1.4	/* maximum adaptive codebook gain        */
 
 /*--------------------------------------------------------------------------*
  *       VAD                                                                *
  *--------------------------------------------------------------------------*/
-#define EPSI            (F)1.0e-38	/* very small positive floating point number      */
+#define EPSI            (float)1.0e-38	/* very small positive floating point number      */
 /*--------------------------------------------------------------------------*
  * Main coder and decoder functions                                         *
  *--------------------------------------------------------------------------*/
@@ -122,8 +124,8 @@ void init_decod_ld8c(void);
 void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 				   parm[0] = bad frame indicator (bfi)    */
 		int voicing,	/* (i)   : voicing decision from previous frame */
-		FLOAT synth_buf[],	/* (i/o) : synthesis speech                     */
-		FLOAT Az_dec[],	/* (o)   : decoded LP filter in 2 subframes     */
+		float synth_buf[],	/* (i/o) : synthesis speech                     */
+		float Az_dec[],	/* (o)   : decoded LP filter in 2 subframes     */
 		int *t0_first,	/* (o)   : decoded pitch lag in first subframe  */
 		int *bwd_dominant,	/* (o)   : bwd dominant indicator               */
 		int *m_pst,	/* (o)   : LPC order for postfilter             */
@@ -132,8 +134,8 @@ void decod_ld8c(int parm[],	/* (i)   : vector of synthesis parameters
 /*--------------------------------------------------------------------------*
  * bitstream packing VQ functions.                                          *
  *--------------------------------------------------------------------------*/
-void prm2bits_ld8c(int prm[], INT16 bits[]);
-void bits2prm_ld8c(INT16 bits[], int prm[]);
+void prm2bits_ld8c(int prm[], int16_t bits[]);
+void bits2prm_ld8c(int16_t bits[], int prm[]);
 
 /*--------------------------------------------------------------------------*
  * protypes of functions  similar to G729                                   *
@@ -147,89 +149,89 @@ void bits2prm_ld8c(INT16 bits[], int prm[]);
 /*--------------------------------------------------------------------------*
  * LPC analysis and filtering                                               *
  *--------------------------------------------------------------------------*/
-FLOAT levinsone(int m,		/* (i)  : LPC order                         */
-		FLOAT * r,	/* (i)  : r[m+1] autocorrelation coefficients */
-		FLOAT * A,	/* (o)  : A[m]    LPC coefficients  (m = 10)         */
-		FLOAT * rc,	/* (o)  : rc[M]   Reflection coefficients.           */
-		FLOAT * old_A,	/* (i/o) : last stable filter LPC coefficients  */
-		FLOAT * old_rc	/* (i/o) : last stable filter Reflection coefficients.         */
+float levinsone(int m,		/* (i)  : LPC order                         */
+		float * r,	/* (i)  : r[m+1] autocorrelation coefficients */
+		float * A,	/* (o)  : A[m]    LPC coefficients  (m = 10)         */
+		float * rc,	/* (o)  : rc[M]   Reflection coefficients.           */
+		float * old_A,	/* (i/o) : last stable filter LPC coefficients  */
+		float * old_rc	/* (i/o) : last stable filter Reflection coefficients.         */
     );
 
 void residue(int m,		/* (i)    : LPC order                         */
-	     FLOAT a[],		/* (i)  : prediction coefficients                     */
-	     FLOAT x[],		/* (i)     : speech (values x[-m..-1] are needed         */
-	     FLOAT y[],		/* (o)     : residual signal                             */
+	     float a[],		/* (i)  : prediction coefficients                     */
+	     float x[],		/* (i)     : speech (values x[-m..-1] are needed         */
+	     float y[],		/* (o)     : residual signal                             */
 	     int lg		/* (i)     : size of filtering                           */
     );
 void syn_filte(int m,		/* (i)    : LPC order                         */
-	       FLOAT a[],	/* (i)  : a[m+1] prediction coefficients   (m=10)  */
-	       FLOAT x[],	/* (i)     : input signal                             */
-	       FLOAT y[],	/* (o)     : output signal                            */
+	       float a[],	/* (i)  : a[m+1] prediction coefficients   (m=10)  */
+	       float x[],	/* (i)     : input signal                             */
+	       float y[],	/* (o)     : output signal                            */
 	       int lg,		/* (i)     : size of filtering                        */
-	       FLOAT mem[],	/* (i/o)   : memory associated with this filtering.   */
+	       float mem[],	/* (i/o)   : memory associated with this filtering.   */
 	       int update	/* (i)     : 0=no update, 1=update of memory.         */
     );
 
 /*--------------------------------------------------------------------------*
  * LSP VQ functions.                                                        *
  *--------------------------------------------------------------------------*/
-void lsp_az(FLOAT * lsp, FLOAT * a);
-void qua_lspe(FLOAT lsp[],	/* (i)  : Unquantized LSP                            */
-	      FLOAT lsp_q[],	/* (o)  : Quantized LSP                              */
+void lsp_az(float * lsp, float * a);
+void qua_lspe(float lsp[],	/* (i)  : Unquantized LSP                            */
+	      float lsp_q[],	/* (o)  : Quantized LSP                              */
 	      int ana[],	/* (o)     : indexes                                    */
-	      FLOAT freq_prev[MA_NP][M],	/* (i)  : previous LSP MA vector        */
-	      FLOAT freq_cur[]	/* (o)  : current LSP MA vector        */
+	      float freq_prev[MA_NP][M],	/* (i)  : previous LSP MA vector        */
+	      float freq_cur[]	/* (o)  : current LSP MA vector        */
     );
-void lsp_encw_resete(FLOAT freq_prev[MA_NP][M]	/* (i)  : previous LSP MA vector        */
+void lsp_encw_resete(float freq_prev[MA_NP][M]	/* (i)  : previous LSP MA vector        */
     );
-void lsp_stability(FLOAT buf[]);
-void lsp_prev_compose(FLOAT lsp_ele[], FLOAT lsp[], FLOAT fg[][M],
-		      FLOAT freq_prev[][M], FLOAT fg_sum[]);
-void lsp_qua_cse(FLOAT flsp_in[M],	/* (i)  : Original LSP parameters    */
-		 FLOAT lspq_out[M],	/* (o)  : Quantized LSP parameters   */
+void lsp_stability(float buf[]);
+void lsp_prev_compose(float lsp_ele[], float lsp[], float fg[][M],
+		      float freq_prev[][M], float fg_sum[]);
+void lsp_qua_cse(float flsp_in[M],	/* (i)  : Original LSP parameters    */
+		 float lspq_out[M],	/* (o)  : Quantized LSP parameters   */
 		 int *code,	/* (o)     : codes of the selected LSP  */
-		 FLOAT freq_prev[MA_NP][M],	/* (i)  : previous LSP MA vector        */
-		 FLOAT freq_cur[]	/* (o)  : current LSP MA vector        */
+		 float freq_prev[MA_NP][M],	/* (i)  : previous LSP MA vector        */
+		 float freq_cur[]	/* (o)  : current LSP MA vector        */
     );
-void lsp_get_quante(FLOAT lspcb1[][M],	/* (i)  : first stage LSP codebook      */
-		    FLOAT lspcb2[][M],	/* (i)  : Second stage LSP codebook     */
+void lsp_get_quante(float lspcb1[][M],	/* (i)  : first stage LSP codebook      */
+		    float lspcb2[][M],	/* (i)  : Second stage LSP codebook     */
 		    int code0,	/* (i)     : selected code of first stage  */
 		    int code1,	/* (i)     : selected code of second stage */
 		    int code2,	/* (i)     : selected code of second stage */
-		    FLOAT fg[][M],	/* (i)  : MA prediction coef.           */
-		    FLOAT freq_prev[][M],	/* (i)  : previous LSP vector           */
-		    FLOAT lspq[],	/* (o)  : quantized LSP parameters      */
-		    FLOAT fg_sum[],	/* (i)  : present MA prediction coef.   */
-		    FLOAT freq_cur[]	/* (i)  : present MA prediction coef.   */
+		    float fg[][M],	/* (i)  : MA prediction coef.           */
+		    float freq_prev[][M],	/* (i)  : previous LSP vector           */
+		    float lspq[],	/* (o)  : quantized LSP parameters      */
+		    float fg_sum[],	/* (i)  : present MA prediction coef.   */
+		    float freq_cur[]	/* (i)  : present MA prediction coef.   */
     );
-void relspwede(FLOAT lsp[],	/* (i)  : unquantized LSP parameters */
-	       FLOAT wegt[],	/* (i) norm: weighting coefficients     */
-	       FLOAT lspq[],	/* (o)  : quantized LSP parameters   */
-	       FLOAT lspcb1[][M],	/* (i)  : first stage LSP codebook   */
-	       FLOAT lspcb2[][M],	/* (i)  : Second stage LSP codebook  */
-	       FLOAT fg[MODE][MA_NP][M],	/* (i)  : MA prediction coefficients */
-	       FLOAT freq_prev[MA_NP][M],	/* (i)  : previous LSP vector        */
-	       FLOAT fg_sum[MODE][M],	/* (i)  : present MA prediction coef. */
-	       FLOAT fg_sum_inv[MODE][M],	/* (i)  : inverse coef.              */
+void relspwede(float lsp[],	/* (i)  : unquantized LSP parameters */
+	       float wegt[],	/* (i) norm: weighting coefficients     */
+	       float lspq[],	/* (o)  : quantized LSP parameters   */
+	       float lspcb1[][M],	/* (i)  : first stage LSP codebook   */
+	       float lspcb2[][M],	/* (i)  : Second stage LSP codebook  */
+	       float fg[MODE][MA_NP][M],	/* (i)  : MA prediction coefficients */
+	       float freq_prev[MA_NP][M],	/* (i)  : previous LSP vector        */
+	       float fg_sum[MODE][M],	/* (i)  : present MA prediction coef. */
+	       float fg_sum_inv[MODE][M],	/* (i)  : inverse coef.              */
 	       int code_ana[],	/* (o)     : codes of the selected LSP  */
-	       FLOAT freq_cur[]	/* (o)  : current LSP MA vector        */
+	       float freq_cur[]	/* (o)  : current LSP MA vector        */
     );
-void get_wegt(FLOAT flsp[], FLOAT wegt[]);
+void get_wegt(float flsp[], float wegt[]);
 void d_lspe(int prm[],		/* (i)     : indexes of the selected LSP */
-	    FLOAT lsp_q[],	/* (o)  : Quantized LSP parameters    */
+	    float lsp_q[],	/* (o)  : Quantized LSP parameters    */
 	    int erase,		/* (i)     : frame erase information     */
-	    FLOAT freq_prev[MA_NP][M],	/* (i/o)  : previous LSP MA vector        */
-	    FLOAT prev_lsp[],	/* (i/o)  : previous LSP vector        */
+	    float freq_prev[MA_NP][M],	/* (i/o)  : previous LSP MA vector        */
+	    float prev_lsp[],	/* (i/o)  : previous LSP vector        */
 	    int *prev_ma	/* (i/o) previous MA prediction coef. */
     );
-void lsp_decw_resete(FLOAT freq_prev[MA_NP][M],	/* (o)  : previous LSP MA vector        */
-		     FLOAT prev_lsp[],	/* (o)  : previous LSP vector        */
+void lsp_decw_resete(float freq_prev[MA_NP][M],	/* (o)  : previous LSP MA vector        */
+		     float prev_lsp[],	/* (o)  : previous LSP vector        */
 		     int *prev_ma	/* previous MA prediction coef. */
     );
 /*--------------------------------------------------------------------------*
  *       LTP prototypes                                                     *
  *--------------------------------------------------------------------------*/
-int pitch_fr3cp(FLOAT exc[], FLOAT xn[], FLOAT h[], int l_subfr,
+int pitch_fr3cp(float exc[], float xn[], float h[], int l_subfr,
 		int t0_min, int t0_max, int i_subfr, int *pit_frac, int rate);
 int enc_lag3cp(int T0, int T0_frac, int *T0_min, int *T0_max, int pit_min,
 	       int pit_max, int pit_flag, int rate);
@@ -241,13 +243,13 @@ void dec_lag3cp(int index, int pit_min, int pit_max, int i_subfr,
  *--------------------------------------------------------------------------*/
 
 void poste(int t0,		/* input : pitch delay given by coder */
-	   FLOAT * signal_ptr,	/* input : input signal (pointer to current subframe */
-	   FLOAT * coeff,	/* input : LPC coefficients for current subframe */
-	   FLOAT * sig_out,	/* output: postfiltered output */
+	   float * signal_ptr,	/* input : input signal (pointer to current subframe */
+	   float * coeff,	/* input : LPC coefficients for current subframe */
+	   float * sig_out,	/* output: postfiltered output */
 	   int *vo,		/* output: voicing decision 0 = uv,  > 0 delay */
-	   FLOAT gamma1,	/* input: short term postfilt. den. weighting factor */
-	   FLOAT gamma2,	/* input: short term postfilt. num. weighting factor */
-	   FLOAT gamma_harm,	/* input: long term postfilter weighting factor */
+	   float gamma1,	/* input: short term postfilt. den. weighting factor */
+	   float gamma2,	/* input: short term postfilt. num. weighting factor */
+	   float gamma_harm,	/* input: long term postfilter weighting factor */
 	   int long_h_st,	/* input: impulse response length */
 	   int m_pst,		/* input:  LPC order */
 	   int Vad		/* input : VAD information (frame type)  */
@@ -261,42 +263,42 @@ void poste(int t0,		/* input : pitch delay given by coder */
  * gain VQ functions.                                                       *
  *--------------------------------------------------------------------------*/
 void dec_gaine(int index,	/* (i)    :Index of quantization.         */
-	       FLOAT code[],	/* (i)  :Innovative vector.             */
+	       float code[],	/* (i)  :Innovative vector.             */
 	       int L_subfr,	/* (i)    :Subframe length.               */
 	       int bfi,		/* (i)    :Bad frame indicator            */
-	       FLOAT * gain_pit,	/* (o)  :Pitch gain.                    */
-	       FLOAT * gain_cod,	/* (o) :Code gain.                     */
+	       float * gain_pit,	/* (o)  :Pitch gain.                    */
+	       float * gain_cod,	/* (o) :Code gain.                     */
 	       int rate,	/* input   : rate selector/frame  =0 8kbps,= 1 11.8 kbps */
-	       FLOAT gain_pit_mem,
-	       FLOAT gain_cod_mem,
-	       FLOAT * c_muting, int count_bfi, int stationnary);
+	       float gain_pit_mem,
+	       float gain_cod_mem,
+	       float * c_muting, int count_bfi, int stationnary);
 
 /*--------------------------------------------------------------------------*
  * functions  specific to G729E                                             *
  *--------------------------------------------------------------------------*/
 /* backward LPC analysis and switch forward/backward */
-void autocorr_hyb_window(FLOAT * x,	/* Input speech signal  */
-			 FLOAT * r_bwd,	/* (out)    Autocorrelations    */
-			 FLOAT * rexp	/* (in/out) */
+void autocorr_hyb_window(float * x,	/* Input speech signal  */
+			 float * r_bwd,	/* (out)    Autocorrelations    */
+			 float * rexp	/* (in/out) */
     );
-void glag_window_bwd(FLOAT * r_bwd);
-void int_bwd(FLOAT * a_bwd, FLOAT * prev_filter, FLOAT * C_int);
+void glag_window_bwd(float * r_bwd);
+void int_bwd(float * a_bwd, float * prev_filter, float * C_int);
 
-void set_lpc_mode(FLOAT * signal_ptr, FLOAT * a_fwd, FLOAT * a_bwd,
-		  int *mode, FLOAT * lsp_new, FLOAT * lsp_old,
-		  int *bwd_dominant, int prev_mode, FLOAT * prev_filter,
-		  FLOAT * C_int, INT16 * glob_stat, INT16 * stat_bwd,
-		  INT16 * val_stat_bwd);
+void set_lpc_mode(float * signal_ptr, float * a_fwd, float * a_bwd,
+		  int *mode, float * lsp_new, float * lsp_old,
+		  int *bwd_dominant, int prev_mode, float * prev_filter,
+		  float * C_int, int16_t * glob_stat, int16_t * stat_bwd,
+		  int16_t * val_stat_bwd);
 void update_bwd(int *mode,	/* O  Backward / forward Indication */
 		int *bwd_dominant,	/* O   Bwd dominant mode indication */
-		FLOAT * C_int,	/*I/O filter interpolation parameter */
-		INT16 * glob_stat	/* I/O Mre of global stationnarity */
+		float * C_int,	/*I/O filter interpolation parameter */
+		int16_t * glob_stat	/* I/O Mre of global stationnarity */
     );
-FLOAT ener_dB(FLOAT * synth, int L);
+float ener_dB(float * synth, int L);
 void tst_bwd_dominant(int *high_stat, int mode);
 
-void perc_vare(FLOAT * gamma1,	/* Bandwidth expansion parameter */
-	       FLOAT * gamma2,	/* Bandwidth expansion parameter */
+void perc_vare(float * gamma1,	/* Bandwidth expansion parameter */
+	       float * gamma2,	/* Bandwidth expansion parameter */
 	       int high_stat	/* high_stat indication (see file bwfw.c) */
     );
 
@@ -304,25 +306,25 @@ void perc_vare(FLOAT * gamma1,	/* Bandwidth expansion parameter */
  * G729E fixed (ACELP) codebook excitation.                                               *
  *--------------------------------------------------------------------------*/
 
-void ACELP_12i40_44bits(FLOAT x[],	/* (i)  : target vector                                 */
-			FLOAT cn[],	/* (i)  : residual after long term prediction           */
-			FLOAT H[],	/* (i) : impulse response of weighted synthesis filter */
-			FLOAT code[],	/* (o) : algebraic (fixed) codebook excitation         */
-			FLOAT y[],	/* (o) : filtered fixed codebook excitation            */
+void ACELP_12i40_44bits(float x[],	/* (i)  : target vector                                 */
+			float cn[],	/* (i)  : residual after long term prediction           */
+			float H[],	/* (i) : impulse response of weighted synthesis filter */
+			float code[],	/* (o) : algebraic (fixed) codebook excitation         */
+			float y[],	/* (o) : filtered fixed codebook excitation            */
 			int indx[]	/* (o)    : index 5 words: 13,10,7,7,7 = 44 bits          */
     );
-void ACELP_10i40_35bits(FLOAT x[],	/* (i)  : target vector                                 */
-			FLOAT cn[],	/* (i)  : residual after long term prediction           */
-			FLOAT H[],	/* (i) : impulse response of weighted synthesis filter */
-			FLOAT code[],	/* (o) : algebraic (fixed) codebook excitation         */
-			FLOAT y[],	/* (o) : filtered fixed codebook excitation            */
+void ACELP_10i40_35bits(float x[],	/* (i)  : target vector                                 */
+			float cn[],	/* (i)  : residual after long term prediction           */
+			float H[],	/* (i) : impulse response of weighted synthesis filter */
+			float code[],	/* (o) : algebraic (fixed) codebook excitation         */
+			float y[],	/* (o) : filtered fixed codebook excitation            */
 			int indx[]	/* (o)    : index 5 words: 7,7,7,7,7 = 35 bits            */
     );
 void dec_ACELP_12i40_44bits(int *index,	/* (i)     : 5 words index (positions & sign)      */
-			    FLOAT cod[]	/* (o)  : algebraic (fixed) codebook excitation */
+			    float cod[]	/* (o)  : algebraic (fixed) codebook excitation */
     );
 void dec_ACELP_10i40_35bits(int *index,	/* (i)     : 5 words index (positions & sign)      */
-			    FLOAT cod[]	/* (o)  : algebraic (fixed) codebook excitation */
+			    float cod[]	/* (o)  : algebraic (fixed) codebook excitation */
     );
 /* pitch tracking routine */
 void track_pit(int *T0, int *T0_frac, int *prev_pitch,
@@ -331,58 +333,58 @@ void track_pit(int *T0, int *T0_frac, int *prev_pitch,
  * G729D fixed (ACELP) codebook excitation.                                               *
  *--------------------------------------------------------------------------*/
 int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
-			    FLOAT x[],	/* (i)     :Target vector                */
-			    FLOAT h[],	/* (i)     :Impulse response of filters  */
+			    float x[],	/* (i)     :Target vector                */
+			    float h[],	/* (i)     :Impulse response of filters  */
 			    int t0,	/* (i)     :Pitch lag                    */
-			    FLOAT pitch_sharp,	/* (i)     :Last quantized pitch gain    */
-			    FLOAT code[],	/* (o)     :Innovative codebook          */
-			    FLOAT y[],	/* (o)     :Filtered innovative codebook */
+			    float pitch_sharp,	/* (i)     :Last quantized pitch gain    */
+			    float code[],	/* (o)     :Innovative codebook          */
+			    float y[],	/* (o)     :Filtered innovative codebook */
 			    int *sign	/* (o)     :Signs of 4 pulses            */
     );
 void decod_ACELP64(int sign,	/* input : signs of 2 pulses     */
 		   int index,	/* input : positions of 2 pulses */
-		   FLOAT cod[]	/* output: innovative codevector */
+		   float cod[]	/* output: innovative codevector */
     );
 /*--------------------------------------------------------------------------*
  * G729D gain                                                               *
  *--------------------------------------------------------------------------*/
 int qua_gain_6k(		/* output: quantizer index                   */
-		       FLOAT code[],	/* input : fixed codebook vector             */
-		       FLOAT * g_coeff,	/* input : correlation factors               */
+		       float code[],	/* input : fixed codebook vector             */
+		       float * g_coeff,	/* input : correlation factors               */
 		       int l_subfr,	/* input : fcb vector length                 */
-		       FLOAT * gain_pit,	/* output: quantized acb gain                */
-		       FLOAT * gain_code,	/* output: quantized fcb gain                */
+		       float * gain_pit,	/* output: quantized acb gain                */
+		       float * gain_code,	/* output: quantized fcb gain                */
 		       int tameflag	/* input : flag set to 1 if taming is needed */
     );
 void dec_gain_6k(int index,	/* input : quantizer index              */
-		 FLOAT code[],	/* input : fixed code book vector       */
+		 float code[],	/* input : fixed code book vector       */
 		 int l_subfr,	/* input : subframe size                */
 		 int bfi,	/* input : bad frame indicator good = 0 */
-		 FLOAT * gain_pit,	/* output: quantized acb gain           */
-		 FLOAT * gain_code	/* output: quantized fcb gain           */
+		 float * gain_pit,	/* output: quantized acb gain           */
+		 float * gain_code	/* output: quantized fcb gain           */
     );
 /*--------------------------------------------------------------------------*
  * G729D gain  phase dispersion                                             *
  *--------------------------------------------------------------------------*/
-void Update_PhDisp(FLOAT ltpGain,	/* (i)  : pitch gain                  */
-		   FLOAT cbGain	/* (i)  : codebook gain               */
+void Update_PhDisp(float ltpGain,	/* (i)  : pitch gain                  */
+		   float cbGain	/* (i)  : codebook gain               */
     );
-void PhDisp(FLOAT x[],		/* input : excitation signal                */
-	    FLOAT x_phdisp[],	/* output : excitation signal after phase dispersion */
-	    FLOAT cbGain, FLOAT ltpGainQ, FLOAT inno[]
+void PhDisp(float x[],		/* input : excitation signal                */
+	    float x_phdisp[],	/* output : excitation signal after phase dispersion */
+	    float cbGain, float ltpGainQ, float inno[]
     );
 
 /*--------------------------------------------------------------------------*
  * Prototypes for auxiliary functions                                       *
  *--------------------------------------------------------------------------*/
-void fwrite16(FLOAT * data, int length, FILE * fp);
-INT16 random_g729c(INT16 * seed);
-void dvsub(FLOAT * in1, FLOAT * in2, FLOAT * out, INT16 npts);
-FLOAT dvdot(FLOAT * in1, FLOAT * in2, INT16 npts);
-void dvwadd(FLOAT * in1, FLOAT scalar1, FLOAT * in2, FLOAT scalar2,
-	    FLOAT * out, INT16 npts);
-void dvsmul(FLOAT * in, FLOAT scalar, FLOAT * out, INT16 npts);
+void fwrite16(float * data, int length, FILE * fp);
+int16_t random_g729c(int16_t * seed);
+void dvsub(float * in1, float * in2, float * out, int16_t npts);
+float dvdot(float * in1, float * in2, int16_t npts);
+void dvwadd(float * in1, float scalar1, float * in2, float scalar2,
+	    float * out, int16_t npts);
+void dvsmul(float * in, float scalar, float * out, int16_t npts);
 
-void musdetect(int rate, FLOAT Energy, FLOAT * rc, int *lags, FLOAT * pgains,
+void musdetect(int rate, float Energy, float * rc, int *lags, float * pgains,
 	       int stat_flg, int frm_count, int prev_vad, int *Vad,
-	       FLOAT Energy_db);
+	       float Energy_db);

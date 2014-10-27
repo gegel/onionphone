@@ -39,10 +39,10 @@ extern void Init_Coder(void);
 extern void Init_Decod(void);
 extern void Init_Cod_Cng(void);
 extern void Init_Dec_Cng(void);
-extern Flag Coder(Word16 * DataBuff, char *Vout);
-extern Flag Decod(Word16 * DataBuff, char *Vinp, Word16 Crc);
-extern void Write_lbc(Word16 * Dpnt, int Len, FILE * Fp);
-extern void Read_lbc(Word16 * Dpnt, int Len, FILE * Fp);
+extern int Coder(int16_t * DataBuff, char *Vout);
+extern int Decod(int16_t * DataBuff, char *Vinp, int16_t Crc);
+extern void Write_lbc(int16_t * Dpnt, int Len, FILE * Fp);
+extern void Read_lbc(int16_t * Dpnt, int Len, FILE * Fp);
 extern void Line_Wr(char *, FILE *);
 extern int Line_Rd(char *, FILE *);
 extern void reset_max_time(void);
@@ -61,10 +61,10 @@ int PackedFrameSize[2] = {
 	20
 };
 
-Flag UseHp = True;
-Flag UsePf = True;
-Flag UseVx = False;
-Flag UsePr = True;
+int UseHp = True;
+int UsePf = True;
+int UseVx = False;
+int UsePr = True;
 
 void g723_i(int rate, int dtx)
 {
@@ -125,5 +125,5 @@ int g723_e(short *sp, unsigned char *buf)
 //decode 20/24 bytes or 4 bytes silency to 240 short linear samples (30 mS)
 void g723_d(unsigned char *buf, short *sp)
 {
-	Decod(sp, (char *)buf, (Word16) 0);
+	Decod(sp, (char *)buf, (int16_t) 0);
 }

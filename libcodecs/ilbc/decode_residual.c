@@ -36,16 +36,16 @@ void WebRtcIlbcfix_DecodeResidual(iLBC_Dec_Inst_t * iLBCdec_inst,
 				  /* (i/o) the decoder state structure */
 				  iLBC_bits * iLBC_encbits,	/* (i/o) Encoded bits, which are used
 								   for the decoding  */
-				  WebRtc_Word16 * decresidual,	/* (o) decoded residual frame */
-				  WebRtc_Word16 * syntdenum	/* (i) the decoded synthesis filter
+				  int16_t * decresidual,	/* (o) decoded residual frame */
+				  int16_t * syntdenum	/* (i) the decoded synthesis filter
 								   coefficients */
     )
 {
-	WebRtc_Word16 meml_gotten, Nfor, Nback, diff, start_pos;
-	WebRtc_Word16 subcount, subframe;
-	WebRtc_Word16 *reverseDecresidual = iLBCdec_inst->enh_buf;	/* Reversed decoded data, used for decoding backwards in time (reuse memory in state) */
-	WebRtc_Word16 *memVec = iLBCdec_inst->prevResidual;	/* Memory for codebook and filter state (reuse memory in state) */
-	WebRtc_Word16 *mem = &memVec[CB_HALFFILTERLEN];	/* Memory for codebook */
+	int16_t meml_gotten, Nfor, Nback, diff, start_pos;
+	int16_t subcount, subframe;
+	int16_t *reverseDecresidual = iLBCdec_inst->enh_buf;	/* Reversed decoded data, used for decoding backwards in time (reuse memory in state) */
+	int16_t *memVec = iLBCdec_inst->prevResidual;	/* Memory for codebook and filter state (reuse memory in state) */
+	int16_t *mem = &memVec[CB_HALFFILTERLEN];	/* Memory for codebook */
 
 	diff = STATE_LEN - iLBCdec_inst->state_short_len;
 
@@ -69,7 +69,7 @@ void WebRtcIlbcfix_DecodeResidual(iLBC_Dec_Inst_t * iLBCdec_inst,
 		/* setup memory */
 
 		WebRtcSpl_MemSetW16(mem, 0,
-				    (WebRtc_Word16) (CB_MEML -
+				    (int16_t) (CB_MEML -
 						     iLBCdec_inst->
 						     state_short_len));
 		WEBRTC_SPL_MEMCPY_W16(mem + CB_MEML -
@@ -85,7 +85,7 @@ void WebRtcIlbcfix_DecodeResidual(iLBC_Dec_Inst_t * iLBCdec_inst,
 					  iLBC_encbits->cb_index,
 					  iLBC_encbits->gain_index,
 					  mem + CB_MEML - ST_MEM_L_TBL,
-					  ST_MEM_L_TBL, (WebRtc_Word16) diff);
+					  ST_MEM_L_TBL, (int16_t) diff);
 
 	} else {		/* put adaptive part in the beginning */
 
@@ -104,7 +104,7 @@ void WebRtcIlbcfix_DecodeResidual(iLBC_Dec_Inst_t * iLBCdec_inst,
 					      decresidual + start_pos,
 					      meml_gotten);
 		WebRtcSpl_MemSetW16(mem, 0,
-				    (WebRtc_Word16) (CB_MEML - meml_gotten));
+				    (int16_t) (CB_MEML - meml_gotten));
 
 		/* construct decoded vector */
 
@@ -182,7 +182,7 @@ void WebRtcIlbcfix_DecodeResidual(iLBC_Dec_Inst_t * iLBCdec_inst,
 					      (iLBC_encbits->startIdx -
 					       1) * SUBL, meml_gotten);
 		WebRtcSpl_MemSetW16(mem, 0,
-				    (WebRtc_Word16) (CB_MEML - meml_gotten));
+				    (int16_t) (CB_MEML - meml_gotten));
 
 		/* loop over subframes to decode */
 

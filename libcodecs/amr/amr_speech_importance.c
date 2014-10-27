@@ -1,9 +1,9 @@
 /* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
 
-#include "ophint.h"
+#include <stdint.h>
 
 /* Subjective importance of the speech encoded bits */
-Word16 order_MR475[] = {
+int16_t order_MR475[] = {
 	0, 0x80,
 	0, 0x40,
 	0, 0x20,
@@ -101,7 +101,7 @@ Word16 order_MR475[] = {
 	15, 0x40
 };
 
-Word16 order_MR515[] = {
+int16_t order_MR515[] = {
 	0, 0x1,
 	0, 0x2,
 	0, 0x4,
@@ -207,7 +207,7 @@ Word16 order_MR515[] = {
 	16, 0x8
 };
 
-Word16 order_MR59[] = {
+int16_t order_MR59[] = {
 	0, 0x80,
 	0, 0x40,
 	0, 0x8,
@@ -328,7 +328,7 @@ Word16 order_MR59[] = {
 	16, 0x20
 };
 
-Word16 order_MR67[] = {
+int16_t order_MR67[] = {
 	0, 0x80,
 	0, 0x40,
 	0, 0x8,
@@ -465,7 +465,7 @@ Word16 order_MR67[] = {
 	16, 0x100
 };
 
-Word16 order_MR74[] = {
+int16_t order_MR74[] = {
 	0, 0x80,
 	0, 0x40,
 	0, 0x20,
@@ -616,7 +616,7 @@ Word16 order_MR74[] = {
 	16, 0x40
 };
 
-Word16 order_MR795[] = {
+int16_t order_MR795[] = {
 	0, 0x1,
 	0, 0x2,
 	0, 0x4,
@@ -937,7 +937,7 @@ Word16 order_MR795[] = {
 	19, 0x200
 };
 
-Word16 order_MR102[] = {
+int16_t order_MR102[] = {
 	0, 0x1,
 	0, 0x2,
 	0, 0x4,
@@ -1144,7 +1144,7 @@ Word16 order_MR102[] = {
 	9, 0x2
 };
 
-Word16 order_MR122[] = {
+int16_t order_MR122[] = {
 	0, 0x40,
 	0, 0x20,
 	0, 0x10,
@@ -1391,7 +1391,7 @@ Word16 order_MR122[] = {
 	44, 0x1
 };
 
-Word16 order_MRDTX[] = {
+int16_t order_MRDTX[] = {
 	0, 0x4,
 	0, 0x2,
 	0, 0x1,

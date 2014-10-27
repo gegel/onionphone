@@ -16,8 +16,6 @@ Used for the floating point version of G729B main body, G729D and G729E
 /*****************************************************************************/
 /* bit stream manipulation routines                                          */
 /*****************************************************************************/
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "tab_ld8k.h"
@@ -29,8 +27,8 @@ Used for the floating point version of G729B main body, G729D and G729E
 
 /* prototypes for local functions */
 
-static void int2bin(int value, int no_of_bits, INT16 * bitstream);
-static int bin2int(int no_of_bits, INT16 * bitstream);
+static void int2bin(int value, int no_of_bits, int16_t * bitstream);
+static int bin2int(int no_of_bits, int16_t * bitstream);
 
 /*----------------------------------------------------------------------------
 * prm2bits_ld8c -converts encoder parameter vector into vector of serial bits
@@ -118,11 +116,11 @@ static int bin2int(int no_of_bits, INT16 * bitstream);
 */
 
 void prm2bits_ld8c(int prm[],	/* input : encoded parameters  */
-		   INT16 bits[]	/* output: serial bits         */
+		   int16_t bits[]	/* output: serial bits         */
     )
 {
 	int i;
-	INT16 *ptr_bits;
+	int16_t *ptr_bits;
 
 	ptr_bits = bits;
 	*ptr_bits++ = SYNC_WORD;	/* bit[0], at receiver this bits indicates BFI */
@@ -211,10 +209,10 @@ void prm2bits_ld8c(int prm[],	/* input : encoded parameters  */
 */
 static void int2bin(int value,	/* input : decimal value */
 		    int no_of_bits,	/* input : number of bits to use */
-		    INT16 * bitstream	/* output: bitstream  */
+		    int16_t * bitstream	/* output: bitstream  */
     )
 {
-	INT16 *pt_bitstream;
+	int16_t *pt_bitstream;
 	int i, bit;
 
 	pt_bitstream = bitstream + no_of_bits;
@@ -234,7 +232,7 @@ static void int2bin(int value,	/* input : decimal value */
 *  bits2prm_ld8c - converts serial received bits to  encoder parameter vector
 *----------------------------------------------------------------------------
 */
-void bits2prm_ld8c(INT16 bits[],	/* input : serial bits        */
+void bits2prm_ld8c(int16_t bits[],	/* input : serial bits        */
 		   int prm[]	/* output: decoded parameters */
     )
 {
@@ -342,7 +340,7 @@ void bits2prm_ld8c(INT16 bits[],	/* input : serial bits        */
 */
 static int bin2int(		/* output: decimal value of bit pattern */
 			  int no_of_bits,	/* input : number of bits to read       */
-			  INT16 * bitstream	/* input : array containing bits        */
+			  int16_t * bitstream	/* input : array containing bits        */
     )
 {
 	int value, i;

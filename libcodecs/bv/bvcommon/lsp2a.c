@@ -26,20 +26,20 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "basop32.h"
 #include "mathutil.h"
 
-void get_pq_polynomials(Word32 * f,	/* Q23 */
-			Word16 * lsp);	/* Q15 */
+void get_pq_polynomials(int32_t * f,	/* Q23 */
+			int16_t * lsp);	/* Q15 */
 
-void lsp2a(Word16 lsp[],	/* (i) Q15 : line spectral pairs                  */
-	   Word16 a[])
+void lsp2a(int16_t lsp[],	/* (i) Q15 : line spectral pairs                  */
+	   int16_t a[])
 {				/* (o) Q12 : predictor coefficients (order = 10)  */
-	Word32 p[LPCO + 1], q[LPCO + 1];	// Q23
-	Word32 a0;
-	Word16 i, n;
+	int32_t p[LPCO + 1], q[LPCO + 1];	// Q23
+	int32_t a0;
+	int16_t i, n;
 
 	get_pq_polynomials(p, lsp);
 	get_pq_polynomials(q, lsp + 1);
@@ -57,12 +57,12 @@ void lsp2a(Word16 lsp[],	/* (i) Q15 : line spectral pairs                  */
 	return;
 }
 
-void get_pq_polynomials(Word32 * f,	/* Q23 */
-			Word16 * lsp)
+void get_pq_polynomials(int32_t * f,	/* Q23 */
+			int16_t * lsp)
 {				/* Q15 */
-	Word16 i, n, hi, lo;
-	Word16 index, offset, coslsp, c;
-	Word32 a0;
+	int16_t i, n, hi, lo;
+	int16_t index, offset, coslsp, c;
+	int32_t a0;
 
 	f[0] = L_bv_mult(2048, 2048);	// 1.0 Q23
 	for (i = 1; i <= LPCO; i++)
@@ -72,7 +72,7 @@ void get_pq_polynomials(Word32 * f,	/* Q23 */
 
 		/* cosine mapping */
 		index = bv_shr(lsp[2 * n - 2], 9);	// Q6
-		offset = lsp[2 * n - 2] & (Word16) 0x01ff;	// Q9
+		offset = lsp[2 * n - 2] & (int16_t) 0x01ff;	// Q9
 		a0 = L_bv_mult(bv_sub(costable[index + 1], costable[index]), offset);	// Q10
 		coslsp = bv_add(costable[index], intround(L_bv_shl(a0, 6)));	// Q15 cos((double)PI*lsp[2*n-2])
 

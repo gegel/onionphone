@@ -14,8 +14,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "ophint.h"
-
 /************************************************************************/
 /*                                                                      */
 /*   ADAPTIVE BANDWIDTH EXPANSION FOR THE PERCEPTUAL WEIGHTING FILTER   */
@@ -24,21 +22,21 @@
 /*                                                                      */
 /************************************************************************/
 
-void perc_vare(FLOAT * gamma1,	/* Bandwidth expansion parameter */
-	       FLOAT * gamma2,	/* Bandwidth expansion parameter */
+void perc_vare(float * gamma1,	/* Bandwidth expansion parameter */
+	       float * gamma2,	/* Bandwidth expansion parameter */
 	       int high_stat	/* high_stat indication (see file bwfw.c) */
     )
 {
 	if (high_stat == 0) {
-		gamma1[0] = (F) 0.9;
-		gamma1[1] = (F) 0.9;
-		gamma2[0] = (F) 0.4;
-		gamma2[1] = (F) 0.4;
+		gamma1[0] = (float) 0.9;
+		gamma1[1] = (float) 0.9;
+		gamma2[0] = (float) 0.4;
+		gamma2[1] = (float) 0.4;
 	} else {
-		gamma1[0] = (F) 0.98;
-		gamma1[1] = (F) 0.98;
-		gamma2[0] = (F) 0.4;
-		gamma2[1] = (F) 0.4;
+		gamma1[0] = (float) 0.98;
+		gamma1[1] = (float) 0.98;
+		gamma2[0] = (float) 0.4;
+		gamma2[1] = (float) 0.4;
 	}
 	return;
 }

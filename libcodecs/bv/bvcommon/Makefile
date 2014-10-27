@@ -22,7 +22,6 @@ OBJ = a2lsp.o \
       lsp2a.o \
       mathtables.o \
       mathutil.o \
-      memutil.o \
       ptdec.o \
       stblzlsp.o \
       utility.o \

@@ -47,40 +47,40 @@
 #include "g723_const.h"
 #include "lbccodec.h"
 
-extern Word16 PerFiltZeroTable[LpcOrder];
-extern Word16 PerFiltPoleTable[LpcOrder];
+extern int16_t PerFiltZeroTable[LpcOrder];
+extern int16_t PerFiltPoleTable[LpcOrder];
 extern CODSTATDEF CodStat;
 extern DECSTATDEF DecStat;
-extern Word16 PostFiltZeroTable[LpcOrder];
-extern Word16 PostFiltPoleTable[LpcOrder];
-extern Word16 HammingWindowTable[LpcFrame];
-extern Word16 BinomialWindowTable[LpcOrder];
-extern Flag UsePf;
+extern int16_t PostFiltZeroTable[LpcOrder];
+extern int16_t PostFiltPoleTable[LpcOrder];
+extern int16_t HammingWindowTable[LpcFrame];
+extern int16_t BinomialWindowTable[LpcOrder];
+extern int UsePf;
 
-extern Word16 Vec_Norm(Word16 * Vect, Word16 Len);
-extern Word16 g723_mult_r(Word16 var1, Word16 var2);	/* Mult with round,     2 */
-extern Word32 L_g723_mult(Word16 var1, Word16 var2);	/* Long mult,           1 */
-extern Word32 L_g723_shr(Word32 L_var1, Word16 var2);	/* Long shift right,    2 */
-extern Word32 L_g723_add(Word32 L_var1, Word32 L_var2);	/* Long add,        2 */
-extern Word16 g723_norm_l(Word32 L_var1);	/* Long norm,            30 */
-extern Word32 L_g723_shl(Word32 L_var1, Word16 var2);	/* Long shift left,     2 */
-extern Word16 round_(Word32 L_var1);	/* Round,               1 */
-extern Word32 L_mls(Word32, Word16);	/* Wght ?? */
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
-extern Word16 g723_shl(Word16 var1, Word16 var2);	/* Short shift left,    1 */
+extern int16_t Vec_Norm(int16_t * Vect, int16_t Len);
+extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
+extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
+extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
+extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
+extern int16_t g723_norm_l(int32_t L_var1);	/* Long norm,            30 */
+extern int32_t L_g723_shl(int32_t L_var1, int16_t var2);	/* Long shift left,     2 */
+extern int16_t round_(int32_t L_var1);	/* Round,               1 */
+extern int32_t L_mls(int32_t, int16_t);	/* Wght ?? */
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
+extern int16_t g723_shl(int16_t var1, int16_t var2);	/* Short shift left,    1 */
 
-Word16 Durbin(Word16 * Lpc, Word16 * Corr, Word16 Err, Word16 * Pk2);
-extern void Update_Acf(Word16 * Acfsf, Word16 * Shsf);
+int16_t Durbin(int16_t * Lpc, int16_t * Corr, int16_t Err, int16_t * Pk2);
+extern void Update_Acf(int16_t * Acfsf, int16_t * Shsf);
 
-extern Word32 g723_L_deposit_h(Word16 var1);	/* 16 bit var1 -> MSB,     2 */
-extern Word32 g723_L_msu(Word32 L_var3, Word16 var1, Word16 var2);	/* Msu,    1 */
-extern Word32 g723_L_abs(Word32 L_var1);	/* Long abs,              3 */
-extern Word16 div_l(Word32, Word16);
-extern Word16 g723_negate(Word16 var1);	/* Short negate,        1 */
-extern Word32 g723_L_mac(Word32 L_var3, Word16 var1, Word16 var2);	/* Mac,    1 */
-extern Word16 g723_sub(Word16 var1, Word16 var2);	/* Short sub,           1 */
-extern Word16 g723_extract_h(Word32 L_var1);	/* Extract high,        1 */
-extern Word16 g723_mult(Word16 var1, Word16 var2);	/* Short mult,          1 */
+extern int32_t g723_L_deposit_h(int16_t var1);	/* 16 bit var1 -> MSB,     2 */
+extern int32_t g723_L_msu(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu,    1 */
+extern int32_t g723_L_abs(int32_t L_var1);	/* Long abs,              3 */
+extern int16_t div_l(int32_t, int16_t);
+extern int16_t g723_negate(int16_t var1);	/* Short negate,        1 */
+extern int32_t g723_L_mac(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac,    1 */
+extern int16_t g723_sub(int16_t var1, int16_t var2);	/* Short sub,           1 */
+extern int16_t g723_extract_h(int32_t L_var1);	/* Extract high,        1 */
+extern int16_t g723_mult(int16_t var1, int16_t var2);	/* Short mult,          1 */
 /*
 **
 ** Function:        Comp_Lpc()
@@ -99,31 +99,31 @@ extern Word16 g723_mult(Word16 var1, Word16 var2);	/* Short mult,          1 */
 **
 ** Arguments:
 **
-**  Word16 *UnqLpc      Empty Buffer
-**  Word16 PrevDat[]    Previous 2 subframes of samples (120 words)
-**  Word16 DataBuff[]   Current frame of samples (240 words)
+**  int16_t *UnqLpc      Empty Buffer
+**  int16_t PrevDat[]    Previous 2 subframes of samples (120 words)
+**  int16_t DataBuff[]   Current frame of samples (240 words)
 **
 ** Outputs:
 
 **
-**  Word16 UnqLpc[]     LPC coefficients for entire frame (40 words)
+**  int16_t UnqLpc[]     LPC coefficients for entire frame (40 words)
 **
 ** Return value:    None
 **
 */
-void Comp_Lpc(Word16 * UnqLpc, Word16 * PrevDat, Word16 * DataBuff)
+void Comp_Lpc(int16_t * UnqLpc, int16_t * PrevDat, int16_t * DataBuff)
 {
 	int i, j, k;
 
-	Word16 Dpnt[Frame + LpcFrame - SubFrLen];
-	Word16 Vect[LpcFrame];
-	Word16 Acf_sf[LpcOrderP1 * SubFrames];
-	Word16 ShAcf_sf[SubFrames];
-	Word16 Exp;
-	Word16 *curAcf;
-	Word16 Pk2;
+	int16_t Dpnt[Frame + LpcFrame - SubFrLen];
+	int16_t Vect[LpcFrame];
+	int16_t Acf_sf[LpcOrderP1 * SubFrames];
+	int16_t ShAcf_sf[SubFrames];
+	int16_t Exp;
+	int16_t *curAcf;
+	int16_t Pk2;
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
 	/*
 	 * Generate a buffer of 360 samples.  This consists of 120 samples
@@ -149,7 +149,7 @@ void Comp_Lpc(Word16 * UnqLpc, Word16 * PrevDat, Word16 * DataBuff)
 			Vect[i] = Dpnt[k * SubFrLen + i];
 
 		/* Normalize */
-		ShAcf_sf[k] = Vec_Norm(Vect, (Word16) LpcFrame);
+		ShAcf_sf[k] = Vec_Norm(Vect, (int16_t) LpcFrame);
 
 		/* Apply the Hamming window */
 		for (i = 0; i < LpcFrame; i++)
@@ -160,15 +160,15 @@ void Comp_Lpc(Word16 * UnqLpc, Word16 * PrevDat, Word16 * DataBuff)
 		 */
 
 		/* Compute the zeroth-order coefficient (energy) */
-		Acc1 = (Word32) 0;
+		Acc1 = (int32_t) 0;
 		for (i = 0; i < LpcFrame; i++) {
 			Acc0 = L_g723_mult(Vect[i], Vect[i]);
-			Acc0 = L_g723_shr(Acc0, (Word16) 1);
+			Acc0 = L_g723_shr(Acc0, (int16_t) 1);
 			Acc1 = L_g723_add(Acc1, Acc0);
 		}
 
 		/* Apply a white noise correction factor of (1025/1024) */
-		Acc0 = L_g723_shr(Acc1, (Word16) RidgeFact);
+		Acc0 = L_g723_shr(Acc1, (int16_t) RidgeFact);
 		Acc1 = L_g723_add(Acc1, Acc0);
 
 		/* Normalize the energy */
@@ -186,11 +186,11 @@ void Comp_Lpc(Word16 * UnqLpc, Word16 * PrevDat, Word16 * DataBuff)
 			/* Compute the rest of the autocorrelation coefficients.
 			   Multiply them by a binomial coefficients lag window. */
 			for (i = 1; i <= LpcOrder; i++) {
-				Acc1 = (Word32) 0;
+				Acc1 = (int32_t) 0;
 				for (j = i; j < LpcFrame; j++) {
 					Acc0 =
 					    L_g723_mult(Vect[j], Vect[j - i]);
-					Acc0 = L_g723_shr(Acc0, (Word16) 1);
+					Acc0 = L_g723_shr(Acc0, (int16_t) 1);
 					Acc1 = L_g723_add(Acc1, Acc0);
 				}
 				Acc0 = L_g723_shl(Acc1, Exp);
@@ -244,31 +244,31 @@ void Comp_Lpc(Word16 * UnqLpc, Word16 * PrevDat, Word16 * DataBuff)
 **
 ** Arguments:       
 **
-**  Word16 *Lpc Empty buffer
-**  Word16 Corr[]   First- through tenth-order autocorrelations (10 words)
-**  Word16 Err  Zeroth-order autocorrelation, or energy
+**  int16_t *Lpc Empty buffer
+**  int16_t Corr[]   First- through tenth-order autocorrelations (10 words)
+**  int16_t Err  Zeroth-order autocorrelation, or energy
 **
 ** Outputs:     
 **
-**  Word16 Lpc[]    LPC coefficients (10 words)
+**  int16_t Lpc[]    LPC coefficients (10 words)
 **
 ** Return value:    The error
 **
 */
-Word16 Durbin(Word16 * Lpc, Word16 * Corr, Word16 Err, Word16 * Pk2)
+int16_t Durbin(int16_t * Lpc, int16_t * Corr, int16_t Err, int16_t * Pk2)
 {
 	int i, j;
 
-	Word16 Temp[LpcOrder];
-	Word16 Pk;
+	int16_t Temp[LpcOrder];
+	int16_t Pk;
 
-	Word32 Acc0, Acc1, Acc2;
+	int32_t Acc0, Acc1, Acc2;
 
 	/*
 	 * Initialize the LPC vector
 	 */
 	for (i = 0; i < LpcOrder; i++)
-		Lpc[i] = (Word16) 0;
+		Lpc[i] = (int16_t) 0;
 
 	/*
 	 * Do the recursion.  At the ith step, the algorithm computes the
@@ -282,10 +282,10 @@ Word16 Durbin(Word16 * Lpc, Word16 * Corr, Word16 Err, Word16 * Pk2)
 
 		/* Start parcor computation */
 		Acc0 = g723_L_deposit_h(Corr[i]);
-		Acc0 = L_g723_shr(Acc0, (Word16) 2);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 2);
 		for (j = 0; j < i; j++)
 			Acc0 = g723_L_msu(Acc0, Lpc[j], Corr[i - j - 1]);
-		Acc0 = L_g723_shl(Acc0, (Word16) 2);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 2);
 
 		/* Save sign */
 		Acc1 = Acc0;
@@ -313,7 +313,7 @@ Word16 Durbin(Word16 * Lpc, Word16 * Corr, Word16 Err, Word16 * Pk2)
 		 * Compute the ith LPC coefficient
 		 */
 		Acc0 = g723_L_deposit_h(g723_negate(Pk));
-		Acc0 = L_g723_shr(Acc0, (Word16) 2);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 2);
 		Lpc[i] = round_(Acc0);
 
 		/*
@@ -352,19 +352,19 @@ Word16 Durbin(Word16 * Lpc, Word16 * Corr, Word16 Err, Word16 * Pk2)
 **
 ** Arguments:       
 **
-**  Word16 *PerLpc      Empty Buffer
-**  Word16 UnqLpc[]     Unquantized LPC coefficients (40 words)
+**  int16_t *PerLpc      Empty Buffer
+**  int16_t UnqLpc[]     Unquantized LPC coefficients (40 words)
 **
 ** Outputs:     
 
 **
-**  Word16 PerLpc[]     Perceptual weighting filter coefficients
+**  int16_t PerLpc[]     Perceptual weighting filter coefficients
 **              (80 words)
 **
 ** Return value:    None
 **
 */
-void Wght_Lpc(Word16 * PerLpc, Word16 * UnqLpc)
+void Wght_Lpc(int16_t * PerLpc, int16_t * UnqLpc)
 {
 	int i, j;
 
@@ -405,8 +405,8 @@ void Wght_Lpc(Word16 * PerLpc, Word16 * UnqLpc)
 **
 ** Arguments:
 **
-**  Word16 Dpnt[]       Highpass filtered speech x[n] (240 words)
-**  Word16 PerLpc[]     Filter coefficients (80 words)
+**  int16_t Dpnt[]       Highpass filtered speech x[n] (240 words)
+**  int16_t PerLpc[]     Filter coefficients (80 words)
 **
 ** Inputs:
 **
@@ -416,16 +416,16 @@ void Wght_Lpc(Word16 * PerLpc, Word16 * UnqLpc)
 **
 ** Outputs:
 **
-**  Word16 Dpnt[]       Weighted speech f[n] (240 words)
+**  int16_t Dpnt[]       Weighted speech f[n] (240 words)
 **
 ** Return value:    None
 **
 */
-void Error_Wght(Word16 * Dpnt, Word16 * PerLpc)
+void Error_Wght(int16_t * Dpnt, int16_t * PerLpc)
 {
 	int i, j, k;
 
-	Word32 Acc0;
+	int32_t Acc0;
 
 /*
  * Do for all subframes
@@ -438,7 +438,7 @@ void Error_Wght(Word16 * Dpnt, Word16 * PerLpc)
  * Do the FIR part
  */
 			/* Filter */
-			Acc0 = L_g723_mult(*Dpnt, (Word16) 0x2000);
+			Acc0 = L_g723_mult(*Dpnt, (int16_t) 0x2000);
 			for (j = 0; j < LpcOrder; j++)
 				Acc0 =
 				    g723_L_msu(Acc0, PerLpc[j],
@@ -459,7 +459,7 @@ void Error_Wght(Word16 * Dpnt, Word16 * PerLpc)
 						  CodStat.WghtIirDl[j]);
 			for (j = LpcOrder - 1; j > 0; j--)
 				CodStat.WghtIirDl[j] = CodStat.WghtIirDl[j - 1];
-			Acc0 = L_g723_shl(Acc0, (Word16) 2);
+			Acc0 = L_g723_shl(Acc0, (int16_t) 2);
 
 			/* Update memory */
 			CodStat.WghtIirDl[0] = round_(Acc0);
@@ -482,27 +482,28 @@ void Error_Wght(Word16 * Dpnt, Word16 * PerLpc)
 **
 ** Arguments:
 **
-**  Word16 *ImpResp     Empty Buffer
-**  Word16 QntLpc[]     Quantized LPC coefficients (10 words)
-**  Word16 PerLpc[]     Perceptual filter coefficients (20 words)
+**  int16_t *ImpResp     Empty Buffer
+**  int16_t QntLpc[]     Quantized LPC coefficients (10 words)
+**  int16_t PerLpc[]     Perceptual filter coefficients (20 words)
 **  PWDEF Pw        Harmonic noise shaping filter parameters
 **
 ** Outputs:
 **
-**  Word16 ImpResp[]    Combined impulse response (60 words)
+**  int16_t ImpResp[]    Combined impulse response (60 words)
 **
 ** Return value:    None
 **
 */
-void Comp_Ir(Word16 * ImpResp, Word16 * QntLpc, Word16 * PerLpc, PWDEF Pw)
+void Comp_Ir(int16_t * ImpResp, int16_t * QntLpc, int16_t * PerLpc,
+	     PWDEF Pw)
 {
 	int i, j;
 
-	Word16 FirDl[LpcOrder];
-	Word16 IirDl[LpcOrder];
-	Word16 Temp[PitchMax + SubFrLen];
+	int16_t FirDl[LpcOrder];
+	int16_t IirDl[LpcOrder];
+	int16_t Temp[PitchMax + SubFrLen];
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
 	/*
 	 * Clear all memory.  Impulse response calculation requires
@@ -511,16 +512,16 @@ void Comp_Ir(Word16 * ImpResp, Word16 * QntLpc, Word16 * PerLpc, PWDEF Pw)
 
 	/* Perceptual weighting filter */
 	for (i = 0; i < LpcOrder; i++)
-		FirDl[i] = IirDl[i] = (Word16) 0;
+		FirDl[i] = IirDl[i] = (int16_t) 0;
 
 	/* Harmonic noise shaping filter */
 	for (i = 0; i < PitchMax + SubFrLen; i++)
-		Temp[i] = (Word16) 0;
+		Temp[i] = (int16_t) 0;
 
 	/*
 	 * Input a single impulse
 	 */
-	Acc0 = (Word32) 0x04000000L;
+	Acc0 = (int32_t) 0x04000000L;
 
 	/*
 	 * Do for all elements in a subframe
@@ -532,7 +533,7 @@ void Comp_Ir(Word16 * ImpResp, Word16 * QntLpc, Word16 * PerLpc, PWDEF Pw)
 		 */
 		for (j = 0; j < LpcOrder; j++)
 			Acc0 = g723_L_mac(Acc0, QntLpc[j], FirDl[j]);
-		Acc1 = L_g723_shl(Acc0, (Word16) 2);
+		Acc1 = L_g723_shl(Acc0, (int16_t) 2);
 
 		/*
 		 * Perceptual weighting filter
@@ -541,7 +542,7 @@ void Comp_Ir(Word16 * ImpResp, Word16 * QntLpc, Word16 * PerLpc, PWDEF Pw)
 		/* FIR part */
 		for (j = 0; j < LpcOrder; j++)
 			Acc0 = g723_L_msu(Acc0, PerLpc[j], FirDl[j]);
-		Acc0 = L_g723_shl(Acc0, (Word16) 1);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 1);
 		for (j = LpcOrder - 1; j > 0; j--)
 			FirDl[j] = FirDl[j - 1];
 		FirDl[0] = round_(Acc1);
@@ -551,7 +552,7 @@ void Comp_Ir(Word16 * ImpResp, Word16 * QntLpc, Word16 * PerLpc, PWDEF Pw)
 			Acc0 = g723_L_mac(Acc0, PerLpc[LpcOrder + j], IirDl[j]);
 		for (j = LpcOrder - 1; j > 0; j--)
 			IirDl[j] = IirDl[j - 1];
-		Acc0 = L_g723_shl(Acc0, (Word16) 2);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 2);
 		IirDl[0] = round_(Acc0);
 		Temp[PitchMax + i] = IirDl[0];
 
@@ -563,7 +564,7 @@ void Comp_Ir(Word16 * ImpResp, Word16 * QntLpc, Word16 * PerLpc, PWDEF Pw)
 		Acc0 = g723_L_msu(Acc0, Pw.Gain, Temp[PitchMax - Pw.Indx + i]);
 		ImpResp[i] = round_(Acc0);
 
-		Acc0 = (Word32) 0;
+		Acc0 = (int32_t) 0;
 	}
 }
 
@@ -583,10 +584,10 @@ void Comp_Ir(Word16 * ImpResp, Word16 * QntLpc, Word16 * PerLpc, PWDEF Pw)
 **
 ** Arguments:       
 **
-**  Word16 Dpnt[]       Harmonic noise weighted vector w[n] (60 words)
-**  Word16 QntLpc[]     Quantized LPC coefficients (10 words)
-**  Word16 PerLpc[]     Perceptual filter coefficients (20 words)
-**  Word16 PrevErr[]    Harmonic noise shaping filter memory (145 words)
+**  int16_t Dpnt[]       Harmonic noise weighted vector w[n] (60 words)
+**  int16_t QntLpc[]     Quantized LPC coefficients (10 words)
+**  int16_t PerLpc[]     Perceptual filter coefficients (20 words)
+**  int16_t PrevErr[]    Harmonic noise shaping filter memory (145 words)
 **  PWDEF Pw        Harmonic noise shaping filter parameters
 **  
 ** Inputs:
@@ -598,20 +599,20 @@ void Comp_Ir(Word16 * ImpResp, Word16 * QntLpc, Word16 * PerLpc, PWDEF Pw)
 **
 ** Outputs:     
 **
-**  Word16 Dpnt[]       Target vector t[n] (60 words)
+**  int16_t Dpnt[]       Target vector t[n] (60 words)
 **
 ** Return value:    None
 **
 */
-void Sub_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16
+void Sub_Ring(int16_t * Dpnt, int16_t * QntLpc, int16_t * PerLpc, int16_t
 	      * PrevErr, PWDEF Pw)
 {
 	int i, j;
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
-	Word16 FirDl[LpcOrder];
-	Word16 IirDl[LpcOrder];
-	Word16 Temp[PitchMax + SubFrLen];
+	int16_t FirDl[LpcOrder];
+	int16_t IirDl[LpcOrder];
+	int16_t Temp[PitchMax + SubFrLen];
 
 	/*
 	 * Initialize the memory
@@ -632,14 +633,14 @@ void Sub_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16
 		/*
 		 * Input zero
 		 */
-		Acc0 = (Word32) 0;
+		Acc0 = (int32_t) 0;
 
 		/*
 		 * Synthesis filter
 		 */
 		for (j = 0; j < LpcOrder; j++)
 			Acc0 = g723_L_mac(Acc0, QntLpc[j], FirDl[j]);
-		Acc1 = L_g723_shl(Acc0, (Word16) 2);
+		Acc1 = L_g723_shl(Acc0, (int16_t) 2);
 
 		/*
 		 * Perceptual weighting filter
@@ -655,7 +656,7 @@ void Sub_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16
 		/* Iir part */
 		for (j = 0; j < LpcOrder; j++)
 			Acc0 = g723_L_mac(Acc0, PerLpc[LpcOrder + j], IirDl[j]);
-		Acc0 = L_g723_shl(Acc0, (Word16) 2);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 2);
 		for (j = LpcOrder - 1; j > 0; j--)
 			IirDl[j] = IirDl[j - 1];
 		IirDl[0] = round_(Acc0);
@@ -688,11 +689,11 @@ void Sub_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16
 **
 ** Arguments:       
 **
-**  Word16 Dpnt[]       Decoded excitation for the current subframe e[n] 
+**  int16_t Dpnt[]       Decoded excitation for the current subframe e[n] 
 **               (60 words)
-**  Word16 QntLpc[]     Quantized LPC coefficients (10 words)
-**  Word16 PerLpc[]     Perceptual filter coefficients (20 words)
-**  Word16 PrevErr[]    Harmonic noise shaping filter memory (145 words)
+**  int16_t QntLpc[]     Quantized LPC coefficients (10 words)
+**  int16_t PerLpc[]     Perceptual filter coefficients (20 words)
+**  int16_t PrevErr[]    Harmonic noise shaping filter memory (145 words)
 **  
 ** Inputs:
 **
@@ -704,18 +705,19 @@ void Sub_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16
 **
 ** Outputs:     
 **
-**  Word16 PrevErr[]    Updated harmonic noise shaping filter memory 
+**  int16_t PrevErr[]    Updated harmonic noise shaping filter memory 
 **  CodStat.RingFirDl[] Updated perceptual weighting filter FIR memory 
 **  CodStat.RingIirDl[] Updated perceptual weighting filter IIR memory 
 **
 ** Return value:    None
 **
 */
-void Upd_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16 * PrevErr)
+void Upd_Ring(int16_t * Dpnt, int16_t * QntLpc, int16_t * PerLpc,
+	      int16_t * PrevErr)
 {
 	int i, j;
 
-	Word32 Acc0, Acc1;
+	int32_t Acc0, Acc1;
 
 	/*
 	 * Shift the harmonic noise shaping filter memory
@@ -732,7 +734,7 @@ void Upd_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16 * PrevErr)
 		 * Input the current subframe's excitation
 		 */
 		Acc0 = g723_L_deposit_h(Dpnt[i]);
-		Acc0 = L_g723_shr(Acc0, (Word16) 3);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 3);
 
 		/*
 		 * Synthesis filter
@@ -740,9 +742,9 @@ void Upd_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16 * PrevErr)
 		for (j = 0; j < LpcOrder; j++)
 			Acc0 =
 			    g723_L_mac(Acc0, QntLpc[j], CodStat.RingFirDl[j]);
-		Acc1 = L_g723_shl(Acc0, (Word16) 2);
+		Acc1 = L_g723_shl(Acc0, (int16_t) 2);
 
-		Dpnt[i] = g723_shl(round_(Acc1), (Word16) 1);
+		Dpnt[i] = g723_shl(round_(Acc1), (int16_t) 1);
 
 		/*
 		 * Perceptual weighting filter
@@ -763,7 +765,7 @@ void Upd_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16 * PrevErr)
 			Acc0 =
 			    g723_L_mac(Acc0, PerLpc[LpcOrder + j],
 				       CodStat.RingIirDl[j]);
-		Acc0 = L_g723_shl(Acc0, (Word16) 2);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 2);
 
 		/* Update IIR memory */
 		for (j = LpcOrder - 1; j > 0; j--)
@@ -786,9 +788,9 @@ void Upd_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc, Word16 * PrevErr)
 **
 ** Arguments:       
 **
-**  Word16 Dpnt[]       Pitch-postfiltered excitation for the current
+**  int16_t Dpnt[]       Pitch-postfiltered excitation for the current
 **               subframe ppf[n] (60 words)
-**  Word16 Lpc[]        Quantized LPC coefficients (10 words)
+**  int16_t Lpc[]        Quantized LPC coefficients (10 words)
 **  
 ** Inputs:
 **
@@ -797,17 +799,17 @@ subframe (10 words)
 **
 ** Outputs:     
 **
-**  Word16 Dpnt[]       Synthesized speech vector sy[n]
+**  int16_t Dpnt[]       Synthesized speech vector sy[n]
 **  DecStat.SyntIirDl[] Updated synthesis filter memory 
 **
 ** Return value:    None
 **
 */
-void Synt(Word16 * Dpnt, Word16 * Lpc)
+void Synt(int16_t * Dpnt, int16_t * Lpc)
 {
 	int i, j;
 
-	Word32 Acc0;
+	int32_t Acc0;
 
 	/*
 	 * Do for all elements in the subframe
@@ -818,7 +820,7 @@ void Synt(Word16 * Dpnt, Word16 * Lpc)
 		 * Input the current subframe's excitation
 		 */
 		Acc0 = g723_L_deposit_h(Dpnt[i]);
-		Acc0 = L_g723_shr(Acc0, (Word16) 3);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 3);
 
 		/*
 		 * Synthesis
@@ -832,7 +834,7 @@ void Synt(Word16 * Dpnt, Word16 * Lpc)
 		for (j = LpcOrder - 1; j > 0; j--)
 			DecStat.SyntIirDl[j] = DecStat.SyntIirDl[j - 1];
 
-		Acc0 = L_g723_shl(Acc0, (Word16) 2);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 2);
 
 		DecStat.SyntIirDl[0] = round_(Acc0);
 
@@ -843,7 +845,7 @@ void Synt(Word16 * Dpnt, Word16 * Lpc)
 		if (UsePf)
 			Dpnt[i] = DecStat.SyntIirDl[0];
 		else
-			Dpnt[i] = g723_shl(DecStat.SyntIirDl[0], (Word16) 1);
+			Dpnt[i] = g723_shl(DecStat.SyntIirDl[0], (int16_t) 1);
 
 	}
 
@@ -862,8 +864,8 @@ void Synt(Word16 * Dpnt, Word16 * Lpc)
 **
 ** Arguments:
 **
-**  Word16 Tv[]     Synthesized speech vector sy[n] (60 words)
-**  Word16 Lpc[]        Quantized LPC coefficients (10 words)
+**  int16_t Tv[]     Synthesized speech vector sy[n] (60 words)
+**  int16_t Lpc[]        Quantized LPC coefficients (10 words)
 **
 ** Inputs:
 **
@@ -875,7 +877,7 @@ subframe (10 words)
 **
 ** Outputs:
 **
-**  Word16 Tv[]     Postfiltered speech vector pf[n] (60 words)
+**  int16_t Tv[]     Postfiltered speech vector pf[n] (60 words)
 **  DecStat.PostIirDl[] Updated postfilter IIR memory
 **  DecStat.PostFirDl[] Updated postfilter FIR memory
 **  DecStat.Park        Updated compensation filter parameter
@@ -883,19 +885,19 @@ subframe (10 words)
 ** Return value: Input vector energy
 **
 */
-Word32 Spf(Word16 * Tv, Word16 * Lpc)
+int32_t Spf(int16_t * Tv, int16_t * Lpc)
 {
 	int i, j;
 
-	Word32 Acc0, Acc1;
-	Word32 Sen;
-	Word16 Tmp;
-	Word16 Exp;
+	int32_t Acc0, Acc1;
+	int32_t Sen;
+	int16_t Tmp;
+	int16_t Exp;
 
-	Word16 FirCoef[LpcOrder];
-	Word16 IirCoef[LpcOrder];
+	int16_t FirCoef[LpcOrder];
+	int16_t IirCoef[LpcOrder];
 
-	Word16 TmpVect[SubFrLen];
+	int16_t TmpVect[SubFrLen];
 
 	/*
 	 * Compute ARMA coefficients.  Compute the jth FIR coefficient by
@@ -914,12 +916,12 @@ Word32 Spf(Word16 * Tv, Word16 * Lpc)
 	 */
 	for (i = 0; i < SubFrLen; i++)
 		TmpVect[i] = Tv[i];
-	Exp = Vec_Norm(TmpVect, (Word16) SubFrLen);
+	Exp = Vec_Norm(TmpVect, (int16_t) SubFrLen);
 
 	/*
 	 * Compute the first two autocorrelation coefficients R[0] and R[1]
 	 */
-	Acc0 = (Word32) 0;
+	Acc0 = (int32_t) 0;
 	Acc1 = L_g723_mult(TmpVect[0], TmpVect[0]);
 	for (i = 1; i < SubFrLen; i++) {
 		Acc0 = g723_L_mac(Acc0, TmpVect[i], TmpVect[i - 1]);
@@ -929,37 +931,37 @@ Word32 Spf(Word16 * Tv, Word16 * Lpc)
 	/*
 	 * Scale the energy for the later use.
 	 */
-	Sen = L_g723_shr(Acc1, (Word16) (2 * Exp + 4));
+	Sen = L_g723_shr(Acc1, (int16_t) (2 * Exp + 4));
 
 	/*
 	 * Compute the first-order partial correlation coefficient of the
 	 * input speech vector.
 	 */
 	Tmp = g723_extract_h(Acc1);
-	if (Tmp != (Word16) 0) {
+	if (Tmp != (int16_t) 0) {
 
 		/* Compute first parkor */
-		Acc0 = L_g723_shr(Acc0, (Word16) 1);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 1);
 		Acc1 = Acc0;
 		Acc0 = g723_L_abs(Acc0);
 
 		Tmp = div_l(Acc0, Tmp);
 
-		if (Acc1 < (Word32) 0)
+		if (Acc1 < (int32_t) 0)
 			Tmp = g723_negate(Tmp);
 	} else
-		Tmp = (Word16) 0;
+		Tmp = (int16_t) 0;
 
 	/*
 	 * Compute the compensation filter parameter and update the memory
 	 */
 	Acc0 = g723_L_deposit_h(DecStat.Park);
-	Acc0 = g723_L_msu(Acc0, DecStat.Park, (Word16) 0x2000);
-	Acc0 = g723_L_mac(Acc0, Tmp, (Word16) 0x2000);
+	Acc0 = g723_L_msu(Acc0, DecStat.Park, (int16_t) 0x2000);
+	Acc0 = g723_L_mac(Acc0, Tmp, (int16_t) 0x2000);
 	DecStat.Park = round_(Acc0);
 
 	Tmp = g723_mult(DecStat.Park, PreCoef);
-	Tmp &= (Word16) 0xfffc;
+	Tmp &= (int16_t) 0xfffc;
 
 	/*
 	 *  Do for all elements in the subframe
@@ -970,7 +972,7 @@ Word32 Spf(Word16 * Tv, Word16 * Lpc)
 		 * Input the speech vector
 		 */
 		Acc0 = g723_L_deposit_h(Tv[i]);
-		Acc0 = L_g723_shr(Acc0, (Word16) 2);
+		Acc0 = L_g723_shr(Acc0, (int16_t) 2);
 
 		/*
 		 * Formant postfilter
@@ -995,7 +997,7 @@ Word32 Spf(Word16 * Tv, Word16 * Lpc)
 		for (j = LpcOrder - 1; j > 0; j--)
 			DecStat.PostIirDl[j] = DecStat.PostIirDl[j - 1];
 
-		Acc0 = L_g723_shl(Acc0, (Word16) 2);
+		Acc0 = L_g723_shl(Acc0, (int16_t) 2);
 		Acc1 = Acc0;
 
 		DecStat.PostIirDl[0] = round_(Acc0);

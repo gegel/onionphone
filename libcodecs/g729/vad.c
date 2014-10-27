@@ -16,8 +16,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "tab_ld8k.h"
 #include "ld8cp.h"
@@ -26,18 +24,18 @@
 #include "tab_dtx.h"
 
 /* Local functions */
-static int MakeDec(FLOAT dSLE,	/* (i)  : differential low band energy */
-		   FLOAT dSE,	/* (i)  : differential full band energy */
-		   FLOAT SD,	/* (i)  : differential spectral distortion  */
-		   FLOAT dSZC	/* (i)  : differential zero crossing rate */
+static int MakeDec(float dSLE,	/* (i)  : differential low band energy */
+		   float dSE,	/* (i)  : differential full band energy */
+		   float SD,	/* (i)  : differential spectral distortion  */
+		   float dSZC	/* (i)  : differential zero crossing rate */
     );
 
 /* static variables */
-static FLOAT MeanLSF[M];
-static FLOAT Min_buffer[16];
-static FLOAT Prev_Min, Next_Min, Min;
-static FLOAT MeanE, MeanSE, MeanSLE, MeanSZC;
-static FLOAT prev_energy;
+static float MeanLSF[M];
+static float Min_buffer[16];
+static float Prev_Min, Next_Min, Min;
+static float MeanE, MeanSE, MeanSLE, MeanSZC;
+static float prev_energy;
 static int count_sil, count_update, count_ext;
 static int flag, v_flag, less_count;
 
@@ -54,10 +52,10 @@ void vad_init(void)
 	set_zero(MeanLSF, M);
 
 	/* Initialize VAD parameters */
-	MeanSE = (F) 0.0;
-	MeanSLE = (F) 0.0;
-	MeanE = (F) 0.0;
-	MeanSZC = (F) 0.0;
+	MeanSE = (float) 0.0;
+	MeanSLE = (float) 0.0;
+	MeanE = (float) 0.0;
+	MeanSZC = (float) 0.0;
 	count_sil = 0;
 	count_update = 0;
 	count_ext = 0;
@@ -85,59 +83,59 @@ void vad_init(void)
 *                                                                 *
 *-----------------------------------------------------------------*/
 
-void vad(FLOAT rc,
-	 FLOAT * lsf,
-	 FLOAT * rxx,
-	 FLOAT * sigpp,
+void vad(float rc,
+	 float * lsf,
+	 float * rxx,
+	 float * sigpp,
 	 int frm_count,
-	 int prev_marker, int pprev_marker, int *marker, FLOAT * Energy_db)
+	 int prev_marker, int pprev_marker, int *marker, float * Energy_db)
 {
-	FLOAT tmp[M];
-	FLOAT SD;
-	FLOAT E_low;
-	FLOAT dtemp;
-	FLOAT dSE;
-	FLOAT dSLE;
-	FLOAT ZC;
-	FLOAT COEF;
-	FLOAT COEFZC;
-	FLOAT COEFSD;
-	FLOAT dSZC;
-	FLOAT norm_energy;
+	float tmp[M];
+	float SD;
+	float E_low;
+	float dtemp;
+	float dSE;
+	float dSLE;
+	float ZC;
+	float COEF;
+	float COEFZC;
+	float COEFSD;
+	float dSZC;
+	float norm_energy;
 	int i;
 
 	/* compute the frame energy */
 	norm_energy =
-	    (F) 10.0 *(FLOAT) log10((FLOAT) (rxx[0] / (F) 240.0 + EPSI));
+	    (float) 10.0 *(float) log10((float) (rxx[0] / (float) 240.0 + EPSI));
 	*Energy_db = norm_energy;
 
 	/* compute the low band energy */
-	E_low = (F) 0.0;
+	E_low = (float) 0.0;
 	for (i = 1; i <= NP; i++)
 		E_low = E_low + rxx[i] * lbf_corr[i];
 
-	E_low = rxx[0] * lbf_corr[0] + (F) 2.0 *E_low;
-	if (E_low < (F) 0.0)
-		E_low = (F) 0.0;
-	E_low = (F) 10.0 *(FLOAT) log10((FLOAT) (E_low / (F) 240.0 + EPSI));
+	E_low = rxx[0] * lbf_corr[0] + (float) 2.0 *E_low;
+	if (E_low < (float) 0.0)
+		E_low = (float) 0.0;
+	E_low = (float) 10.0 *(float) log10((float) (E_low / (float) 240.0 + EPSI));
 
 	/* compute SD */
 	/* Normalize lsfs */
 	for (i = 0; i < M; i++)
-		lsf[i] /= (F) 2. *PI;
+		lsf[i] /= (float) 2. *PI;
 	dvsub(lsf, MeanLSF, tmp, M);
 	SD = dvdot(tmp, tmp, M);
 
 	/* compute # zero crossing */
-	ZC = (F) 0.0f;
+	ZC = (float) 0.0f;
 	dtemp = sigpp[ZC_START];
 	for (i = ZC_START + 1; i <= ZC_END; i++) {
-		if (dtemp * sigpp[i] < (F) 0.0) {
-			ZC = ZC + (F) 1.0;
+		if (dtemp * sigpp[i] < (float) 0.0) {
+			ZC = ZC + (float) 1.0;
 		}
 		dtemp = sigpp[i];
 	}
-	ZC = ZC / (F) 80.0;
+	ZC = ZC / (float) 80.0;
 
 	/* Initialize and update Mins */
 	if (frm_count < 129) {
@@ -181,36 +179,36 @@ void vad(FLOAT rc,
 	}
 
 	if (frm_count <= INIT_FRAME) {
-		if (norm_energy < (F) 21.0) {
+		if (norm_energy < (float) 21.0) {
 			less_count++;
 			*marker = NOISE;
 		} else {
 			*marker = VOICE;
 			MeanE =
-			    (MeanE * ((FLOAT) (frm_count - less_count - 1)) +
-			     norm_energy) / (FLOAT) (frm_count - less_count);
+			    (MeanE * ((float) (frm_count - less_count - 1)) +
+			     norm_energy) / (float) (frm_count - less_count);
 			MeanSZC =
-			    (MeanSZC * ((FLOAT) (frm_count - less_count - 1)) +
-			     ZC) / (FLOAT) (frm_count - less_count);
-			dvwadd(MeanLSF, (FLOAT) (frm_count - less_count - 1),
-			       lsf, (F) 1.0, MeanLSF, M);
+			    (MeanSZC * ((float) (frm_count - less_count - 1)) +
+			     ZC) / (float) (frm_count - less_count);
+			dvwadd(MeanLSF, (float) (frm_count - less_count - 1),
+			       lsf, (float) 1.0, MeanLSF, M);
 			dvsmul(MeanLSF,
-			       (F) 1.0 / (FLOAT) (frm_count - less_count),
+			       (float) 1.0 / (float) (frm_count - less_count),
 			       MeanLSF, M);
 		}
 	}
 
 	if (frm_count >= INIT_FRAME) {
 		if (frm_count == INIT_FRAME) {
-			MeanSE = MeanE - (F) 10.0;
-			MeanSLE = MeanE - (F) 12.0;
+			MeanSE = MeanE - (float) 10.0;
+			MeanSLE = MeanE - (float) 12.0;
 		}
 
 		dSE = MeanSE - norm_energy;
 		dSLE = MeanSLE - E_low;
 		dSZC = MeanSZC - ZC;
 
-		if (norm_energy < (F) 21.0) {
+		if (norm_energy < (float) 21.0) {
 			*marker = NOISE;
 		} else {
 			*marker = MakeDec(dSLE, dSE, SD, dSZC);
@@ -218,16 +216,16 @@ void vad(FLOAT rc,
 
 		v_flag = 0;
 		if ((prev_marker == VOICE) && (*marker == NOISE) &&
-		    (norm_energy > MeanSE + (F) 2.0)
-		    && (norm_energy > (F) 21.0)) {
+		    (norm_energy > MeanSE + (float) 2.0)
+		    && (norm_energy > (float) 21.0)) {
 			*marker = VOICE;
 			v_flag = 1;
 		}
 
-		if ((flag == 1)) {
+		if (flag == 1) {
 			if ((pprev_marker == VOICE) && (prev_marker == VOICE) &&
 			    (*marker == NOISE)
-			    && (fabs(prev_energy - norm_energy) <= (F) 3.0)) {
+			    && (fabs(prev_energy - norm_energy) <= (float) 3.0)) {
 				count_ext++;
 				*marker = VOICE;
 				v_flag = 1;
@@ -245,7 +243,7 @@ void vad(FLOAT rc,
 			count_sil++;
 
 		if ((*marker == VOICE) && (count_sil > 10) &&
-		    ((norm_energy - prev_energy) <= (F) 3.0)) {
+		    ((norm_energy - prev_energy) <= (float) 3.0)) {
 			*marker = NOISE;
 			count_sil = 0;
 		}
@@ -253,48 +251,48 @@ void vad(FLOAT rc,
 		if (*marker == VOICE)
 			count_sil = 0;
 
-		if ((norm_energy < MeanSE + (F) 3.0) && (frm_count > 128)
-		    && (!v_flag) && (rc < (F) 0.6))
+		if ((norm_energy < MeanSE + (float) 3.0) && (frm_count > 128)
+		    && (!v_flag) && (rc < (float) 0.6))
 			*marker = NOISE;
 
-		if ((norm_energy < MeanSE + (F) 3.0) && (rc < (F) 0.75)
-		    && (SD < (F) 0.002532959)) {
+		if ((norm_energy < MeanSE + (float) 3.0) && (rc < (float) 0.75)
+		    && (SD < (float) 0.002532959)) {
 			count_update++;
 			if (count_update < INIT_COUNT) {
-				COEF = (F) 0.75;
-				COEFZC = (F) 0.8;
-				COEFSD = (F) 0.6;
+				COEF = (float) 0.75;
+				COEFZC = (float) 0.8;
+				COEFSD = (float) 0.6;
 			} else if (count_update < INIT_COUNT + 10) {
-				COEF = (F) 0.95;
-				COEFZC = (F) 0.92;
-				COEFSD = (F) 0.65;
+				COEF = (float) 0.95;
+				COEFZC = (float) 0.92;
+				COEFSD = (float) 0.65;
 			} else if (count_update < INIT_COUNT + 20) {
-				COEF = (F) 0.97;
-				COEFZC = (F) 0.94;
-				COEFSD = (F) 0.70;
+				COEF = (float) 0.97;
+				COEFZC = (float) 0.94;
+				COEFSD = (float) 0.70;
 			} else if (count_update < INIT_COUNT + 30) {
-				COEF = (F) 0.99;
-				COEFZC = (F) 0.96;
-				COEFSD = (F) 0.75;
+				COEF = (float) 0.99;
+				COEFZC = (float) 0.96;
+				COEFSD = (float) 0.75;
 			} else if (count_update < INIT_COUNT + 40) {
-				COEF = (F) 0.995;
-				COEFZC = (F) 0.99;
-				COEFSD = (F) 0.75;
+				COEF = (float) 0.995;
+				COEFZC = (float) 0.99;
+				COEFSD = (float) 0.75;
 			} else {
-				COEF = (F) 0.995;
-				COEFZC = (F) 0.998;
-				COEFSD = (F) 0.75;
+				COEF = (float) 0.995;
+				COEFZC = (float) 0.998;
+				COEFSD = (float) 0.75;
 			}
-			dvwadd(MeanLSF, COEFSD, lsf, (F) 1.0 - COEFSD, MeanLSF,
+			dvwadd(MeanLSF, COEFSD, lsf, (float) 1.0 - COEFSD, MeanLSF,
 			       M);
-			MeanSE = COEF * MeanSE + ((F) 1.0 - COEF) * norm_energy;
-			MeanSLE = COEF * MeanSLE + ((F) 1.0 - COEF) * E_low;
-			MeanSZC = COEFZC * MeanSZC + ((F) 1.0 - COEFZC) * ZC;
+			MeanSE = COEF * MeanSE + ((float) 1.0 - COEF) * norm_energy;
+			MeanSLE = COEF * MeanSLE + ((float) 1.0 - COEF) * E_low;
+			MeanSZC = COEFZC * MeanSZC + ((float) 1.0 - COEFZC) * ZC;
 		}
 
 		if (((frm_count > 128)
-		     && ((MeanSE < Min) && (SD < (F) 0.002532959)))
-		    || (MeanSE > Min + (F) 10.0)) {
+		     && ((MeanSE < Min) && (SD < (float) 0.002532959)))
+		    || (MeanSE > Min + (float) 10.0)) {
 			MeanSE = Min;
 			count_update = 0;
 		}
@@ -304,25 +302,25 @@ void vad(FLOAT rc,
 	return;
 }
 
-static FLOAT a[14] = {
-	(F) 1.750000e-03, (F) - 4.545455e-03, (F) - 2.500000e+01,
-	(F) 2.000000e+01,
-	(F) 0.000000e+00, (F) 8.800000e+03, (F) 0.000000e+00, (F) 2.5e+01,
-	(F) - 2.909091e+01, (F) 0.000000e+00, (F) 1.400000e+04, (F) 0.928571,
-	(F) - 1.500000e+00, (F) 0.714285
+static float a[14] = {
+	(float) 1.750000e-03, (float) - 4.545455e-03, (float) - 2.500000e+01,
+	(float) 2.000000e+01,
+	(float) 0.000000e+00, (float) 8.800000e+03, (float) 0.000000e+00, (float) 2.5e+01,
+	(float) - 2.909091e+01, (float) 0.000000e+00, (float) 1.400000e+04, (float) 0.928571,
+	(float) - 1.500000e+00, (float) 0.714285
 };
 
-static FLOAT b[14] = {
-	(F) 0.00085, (F) 0.001159091, (F) - 5.0, (F) - 6.0, (F) - 4.7,
-	(F) - 12.2, (F) 0.0009,
-	(F) - 7.0, (F) - 4.8182, (F) - 5.3, (F) - 15.5, (F) 1.14285, (F) - 9.0,
-	(F) - 2.1428571
+static float b[14] = {
+	(float) 0.00085, (float) 0.001159091, (float) - 5.0, (float) - 6.0, (float) - 4.7,
+	(float) - 12.2, (float) 0.0009,
+	(float) - 7.0, (float) - 4.8182, (float) - 5.3, (float) - 15.5, (float) 1.14285, (float) - 9.0,
+	(float) - 2.1428571
 };
 
-static int MakeDec(FLOAT dSLE, FLOAT dSE, FLOAT SD, FLOAT dSZC)
+static int MakeDec(float dSLE, float dSE, float SD, float dSZC)
 {
 
-	FLOAT pars[4];
+	float pars[4];
 
 	pars[0] = dSLE;
 	pars[1] = dSE;

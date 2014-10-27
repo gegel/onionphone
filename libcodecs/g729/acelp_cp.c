@@ -16,86 +16,84 @@
 /* fixed codebook encoding routines  for 11.8, 8 and 6.4 kbit/s              */
 /*****************************************************************************/
 #include <math.h>
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 #include "tabld8cp.h"
 
 /* prototypes of local functions */
-static void cor_h_cp(FLOAT * H,	/* (i)     :Impulse response of filters */
-		     FLOAT * rr,	/* (o)     :Correlations of H[]         */
+static void cor_h_cp(float * H,	/* (i)     :Impulse response of filters */
+		     float * rr,	/* (o)     :Correlations of H[]         */
 		     int rate);
 static int d4i40_17(		/* (o)    : Index of pulses positions.               */
-			   FLOAT Dn[],	/* (i)    : Correlations between h[] and Xn[].       */
-			   FLOAT rr[],	/* (i)    : Correlations of impulse response h[].    */
-			   FLOAT h[],	/* (i)    : Impulse response of filters.             */
-			   FLOAT cod[],	/* (o)    : Selected algebraic codeword.             */
-			   FLOAT y[],	/* (o)    : Filtered algebraic codeword.             */
+			   float Dn[],	/* (i)    : Correlations between h[] and Xn[].       */
+			   float rr[],	/* (i)    : Correlations of impulse response h[].    */
+			   float h[],	/* (i)    : Impulse response of filters.             */
+			   float cod[],	/* (o)    : Selected algebraic codeword.             */
+			   float y[],	/* (o)    : Filtered algebraic codeword.             */
 			   int *sign,	/* (o)    : Signs of 4 pulses.                       */
 			   int i_subfr	/* (i)    : subframe flag                            */
     );
-static void cor_h_vec(FLOAT h[],	/* (i) scaled impulse response */
-		      FLOAT vec[],	/* (i) vector to correlate with h[] */
+static void cor_h_vec(float h[],	/* (i) scaled impulse response */
+		      float vec[],	/* (i) vector to correlate with h[] */
 		      int track,	/* (i) track to use */
-		      FLOAT sign[],	/* (i) sign vector */
-		      FLOAT rrixix[][NB_POS],	/* (i) correlation of h[x] with h[x] */
-		      FLOAT cor[]	/* (o) result of correlation (NB_POS elements) */
+		      float sign[],	/* (i) sign vector */
+		      float rrixix[][NB_POS],	/* (i) correlation of h[x] with h[x] */
+		      float cor[]	/* (o) result of correlation (NB_POS elements) */
     );
 
 static void search_ixiy(int track_x,	/* (i) track of pulse 1 */
 			int track_y,	/* (i) track of pulse 2 */
-			FLOAT * ps,	/* (i/o) correlation of all fixed pulses */
-			FLOAT * alp,	/* (i/o) energy of all fixed pulses */
+			float * ps,	/* (i/o) correlation of all fixed pulses */
+			float * alp,	/* (i/o) energy of all fixed pulses */
 			int *ix,	/* (o) position of pulse 1 */
 			int *iy,	/* (o) position of pulse 2 */
-			FLOAT dn[],	/* (i) corr. between target and h[] */
-			FLOAT cor_x[],	/* (i) corr. of pulse 1 with fixed pulses */
-			FLOAT cor_y[],	/* (i) corr. of pulse 2 with fixed pulses */
-			FLOAT rrixiy[][MSIZE]	/* (i) corr. of pulse 1 with pulse 2 */
+			float dn[],	/* (i) corr. between target and h[] */
+			float cor_x[],	/* (i) corr. of pulse 1 with fixed pulses */
+			float cor_y[],	/* (i) corr. of pulse 2 with fixed pulses */
+			float rrixiy[][MSIZE]	/* (i) corr. of pulse 1 with pulse 2 */
     );
 
-static void set_sign(FLOAT cn[],	/* (i) : residual after long term prediction    */
-		     FLOAT dn[],	/* (i) : correlation between target and h[]     */
-		     FLOAT sign[],	/* (o) : sign vector (sign of each position)    */
-		     FLOAT inv_sign[],	/* (o) : inverse of sign[]                      */
+static void set_sign(float cn[],	/* (i) : residual after long term prediction    */
+		     float dn[],	/* (i) : correlation between target and h[]     */
+		     float sign[],	/* (o) : sign vector (sign of each position)    */
+		     float inv_sign[],	/* (o) : inverse of sign[]                      */
 		     int pos_max[],	/* (o) : pos of max of correlation              */
-		     FLOAT corr[]	/* (o) : correlation of each track              */
+		     float corr[]	/* (o) : correlation of each track              */
     );
 
-static void cor_h_e(FLOAT sign[],	/* (i) : sign vector                 */
-		    FLOAT inv_sign[],	/* (i) : inverse of sign[]           */
-		    FLOAT h[],	/* (o) : scaled h[]                 */
-		    FLOAT h_inv[],	/* (o) : inverse of scaled h[]      */
-		    FLOAT rrixix[][NB_POS],	/* (o) energy of h[].                   */
-		    FLOAT rrixiy[][MSIZE]	/* (o) correlation between 2 pulses.    */
+static void cor_h_e(float sign[],	/* (i) : sign vector                 */
+		    float inv_sign[],	/* (i) : inverse of sign[]           */
+		    float h[],	/* (o) : scaled h[]                 */
+		    float h_inv[],	/* (o) : inverse of scaled h[]      */
+		    float rrixix[][NB_POS],	/* (o) energy of h[].                   */
+		    float rrixiy[][MSIZE]	/* (o) correlation between 2 pulses.    */
     );
 
 static void build_code(int codvec[],	/* (i)  : positions of each pulse */
-		       FLOAT sign[],	/* (i)  : sign vector             */
+		       float sign[],	/* (i)  : sign vector             */
 		       int nb_of_pulse,	/* (i)  : number of pulses        */
-		       FLOAT h[],	/* (i)  : impulse response of weighted synthesis filter */
-		       FLOAT code[],	/* (o)  : algebraic (fixed) codebook excitation         */
-		       FLOAT y[],	/* (o)  : filtered fixed codebook excitation            */
+		       float h[],	/* (i)  : impulse response of weighted synthesis filter */
+		       float code[],	/* (o)  : algebraic (fixed) codebook excitation         */
+		       float y[],	/* (o)  : filtered fixed codebook excitation            */
 		       int indx[]	/* (o)  : index of pulses (5 words, 1 per track).       */
     );
 
 static int pack3(int index1, int index2, int index3);
 
 int ACELP_codebook(		/* (o)     :index of pulses positions    */
-			  FLOAT x[],	/* (i)     :Target vector                */
-			  FLOAT h[],	/* (i)     :Impulse response of filters  */
+			  float x[],	/* (i)     :Target vector                */
+			  float h[],	/* (i)     :Impulse response of filters  */
 			  int t0,	/* (i)     :Pitch lag                    */
-			  FLOAT pitch_sharp,	/* (i)     :Last quantized pitch gain    */
+			  float pitch_sharp,	/* (i)     :Last quantized pitch gain    */
 			  int i_subfr,	/* (i)     :Indicator of 1st subframe,   */
-			  FLOAT code[],	/* (o)     :Innovative codebook          */
-			  FLOAT y[],	/* (o)     :Filtered innovative codebook */
+			  float code[],	/* (o)     :Innovative codebook          */
+			  float y[],	/* (o)     :Filtered innovative codebook */
 			  int *sign	/* (o)     :Signs of 4 pulses            */
     )
 {
 	int i, index;
-	FLOAT dn[L_SUBFR];
-	FLOAT rr[DIM_RR];
+	float dn[L_SUBFR];
+	float rr[DIM_RR];
 
     /*----------------------------------------------------------------*
     * Include fixed-gain pitch contribution into impulse resp. h[]    *
@@ -132,12 +130,12 @@ int ACELP_codebook(		/* (o)     :index of pulses positions    */
 }
 
 int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
-			    FLOAT x[],	/* (i)     :Target vector                */
-			    FLOAT h[],	/* (i)     :Impulse response of filters  */
+			    float x[],	/* (i)     :Target vector                */
+			    float h[],	/* (i)     :Impulse response of filters  */
 			    int t0,	/* (i)     :Pitch lag                    */
-			    FLOAT pitch_sharp,	/* (i)     :Last quantized pitch gain    */
-			    FLOAT code[],	/* (o)     :Innovative codebook          */
-			    FLOAT y[],	/* (o)     :Filtered innovative codebook */
+			    float pitch_sharp,	/* (i)     :Last quantized pitch gain    */
+			    float code[],	/* (o)     :Innovative codebook          */
+			    float y[],	/* (o)     :Filtered innovative codebook */
 			    int *sign	/* (o)     :Signs of 4 pulses            */
     )
 {
@@ -147,13 +145,13 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 	int signIndex[NB_PULSES_6K];	/* sign index of last constructed vector */
 	/* (1=positive, 0=negative) */
 
-	FLOAT dn[L_SUBFR];
+	float dn[L_SUBFR];
 
-	FLOAT Csq_best;
-	FLOAT E_best;
-	FLOAT C;
-	FLOAT Csq;
-	FLOAT E;
+	float Csq_best;
+	float E_best;
+	float C;
+	float Csq;
+	float E;
 	int m0_bestIndex;
 	int m1_bestIndex;
 	int m0_bestPos;
@@ -161,21 +159,21 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 	int index;
 	int m0, m1, pulse0, pulse1;
 
-	FLOAT *ptr1, *ptr2, *ptr3;
-	FLOAT C0;
+	float *ptr1, *ptr2, *ptr3;
+	float C0;
 
-	FLOAT rr[DIM_RR];
+	float rr[DIM_RR];
 	int p_sign[L_SUBFR];
 
 	int i0, i1, i2, i3;
-	FLOAT *rri0i0, *rri1i1, *rri2i2, *rri3i3, *rri4i4;
-	FLOAT *rri0i1, *rri0i2, *rri0i3, *rri0i4;
-	FLOAT *rri1i2, *rri1i3, *rri1i4;
-	FLOAT *rri2i3, *rri2i4;
+	float *rri0i0, *rri1i1, *rri2i2, *rri3i3, *rri4i4;
+	float *rri0i1, *rri0i2, *rri0i3, *rri0i4;
+	float *rri1i2, *rri1i3, *rri1i4;
+	float *rri2i3, *rri2i4;
 
-	FLOAT *ptr_ri0i1, *ptr_ri0i2, *ptr_ri0i3, *ptr_ri0i4;
-	FLOAT *ptr_ri1i2, *ptr_ri1i3, *ptr_ri1i4;
-	FLOAT *ptr_ri2i3, *ptr_ri2i4;
+	float *ptr_ri0i1, *ptr_ri0i2, *ptr_ri0i3, *ptr_ri0i4;
+	float *ptr_ri1i2, *ptr_ri1i3, *ptr_ri1i4;
+	float *ptr_ri2i3, *ptr_ri2i4;
 
     /*----------------------------------------------------------------*
     * Include fixed-gain pitch contribution into impulse resp. h[]    *
@@ -273,8 +271,8 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 
 	/* start of actual search */
 
-	Csq_best = (F) 0.0;
-	E_best = (F) 1.0e38;
+	Csq_best = (float) 0.0;
+	E_best = (float) 1.0e38;
 
 	m0_bestIndex = trackTable0[0];
 	m1_bestIndex = trackTable1[0];
@@ -293,7 +291,7 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 			C += dn[m0];
 			Csq = C * C;
 			E += *ptr2++;
-			E += (F) 2.0 **ptr3++;
+			E += (float) 2.0 **ptr3++;
 			if ((Csq * E_best) > (E * Csq_best)) {
 				E_best = E;
 				Csq_best = Csq;
@@ -318,7 +316,7 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 			C += dn[m1];
 			Csq = C * C;
 			E += *ptr2++;
-			E += (F) 2.0 **ptr3++;
+			E += (float) 2.0 **ptr3++;
 			if ((Csq * E_best) > (E * Csq_best)) {
 				E_best = E;
 				Csq_best = Csq;
@@ -343,7 +341,7 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 			C += dn[m1];
 			Csq = C * C;
 			E += *ptr2++;
-			E += (F) 2.0 **ptr3++;
+			E += (float) 2.0 **ptr3++;
 			if ((Csq * E_best) > (E * Csq_best)) {
 				E_best = E;
 				Csq_best = Csq;
@@ -368,7 +366,7 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 			C += dn[m1];
 			Csq = C * C;
 			E += *ptr2++;
-			E += (F) 2.0 **ptr3++;
+			E += (float) 2.0 **ptr3++;
 			if ((Csq * E_best) > (E * Csq_best)) {
 				E_best = E;
 				Csq_best = Csq;
@@ -393,7 +391,7 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 			C += dn[m0];
 			Csq = C * C;
 			E += *ptr2++;
-			E += (F) 2.0 **ptr3++;
+			E += (float) 2.0 **ptr3++;
 			if ((Csq * E_best) > (E * Csq_best)) {
 				E_best = E;
 				Csq_best = Csq;
@@ -418,7 +416,7 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 			C += dn[m0];
 			Csq = C * C;
 			E += *ptr2++;
-			E += (F) 2.0 **ptr3++;
+			E += (float) 2.0 **ptr3++;
 			if ((Csq * E_best) > (E * Csq_best)) {
 				E_best = E;
 				Csq_best = Csq;
@@ -443,7 +441,7 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 			C += dn[m1];
 			Csq = C * C;
 			E += *ptr2++;
-			E += (F) 2.0 **ptr3++;
+			E += (float) 2.0 **ptr3++;
 			if ((Csq * E_best) > (E * Csq_best)) {
 				E_best = E;
 				Csq_best = Csq;
@@ -468,7 +466,7 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 			C += dn[m0];
 			Csq = C * C;
 			E += *ptr2++;
-			E += (F) 2.0 **ptr3++;
+			E += (float) 2.0 **ptr3++;
 			if ((Csq * E_best) > (E * Csq_best)) {
 				E_best = E;
 				Csq_best = Csq;
@@ -490,16 +488,16 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 
 	/* build innovation vector */
 	for (i = 0; i < L_SUBFR; i++)
-		code[i] = (F) 0.0;
-	code[m0_bestPos] = (FLOAT) p_sign[m0_bestPos];
-	code[m1_bestPos] += (FLOAT) p_sign[m1_bestPos];
+		code[i] = (float) 0.0;
+	code[m0_bestPos] = (float) p_sign[m0_bestPos];
+	code[m1_bestPos] += (float) p_sign[m1_bestPos];
 
 	*sign = signIndex[0] + 2 * signIndex[1];
 	index = posIndex[0] + 16 * posIndex[1];
 
 	/* compute filtered cbInnovation */
 	for (i = 0; i < L_SUBFR; i++)
-		y[i] = (F) 0.0;
+		y[i] = (float) 0.0;
 
 	if (signIndex[0] == 1) {
 		for (i = m0_bestPos, j = 0; i < L_SUBFR; i++, j++)
@@ -529,19 +527,19 @@ int ACELP_codebook64(		/* (o)     :Index of pulses positions    */
 * Compute  correlations of h[]  needed for the codebook search.            *
 *--------------------------------------------------------------------------*/
 
-static void cor_h_cp(FLOAT * h,	/* (i) :Impulse response of filters */
-		     FLOAT * rr,	/* (o) :Correlations of H[]         */
+static void cor_h_cp(float * h,	/* (i) :Impulse response of filters */
+		     float * rr,	/* (o) :Correlations of H[]         */
 		     int rate)
 {
-	FLOAT *rri0i0, *rri1i1, *rri2i2, *rri3i3, *rri4i4;
-	FLOAT *rri0i1, *rri0i2, *rri0i3, *rri0i4;
-	FLOAT *rri1i2, *rri1i3, *rri1i4;
-	FLOAT *rri2i3, *rri2i4;
+	float *rri0i0, *rri1i1, *rri2i2, *rri3i3, *rri4i4;
+	float *rri0i1, *rri0i2, *rri0i3, *rri0i4;
+	float *rri1i2, *rri1i3, *rri1i4;
+	float *rri2i3, *rri2i4;
 
-	FLOAT *p0, *p1, *p2, *p3, *p4;
+	float *p0, *p1, *p2, *p3, *p4;
 
-	FLOAT *ptr_hd, *ptr_hf, *ptr_h1, *ptr_h2;
-	FLOAT cor;
+	float *ptr_hd, *ptr_hf, *ptr_h1, *ptr_h2;
+	float cor;
 	int i, k, ldec, l_fin_sup, l_fin_inf;
 	int lsym;
 
@@ -572,7 +570,7 @@ static void cor_h_cp(FLOAT * h,	/* (i) :Impulse response of filters */
 	p4 = rri4i4 + NB_POS - 1;
 
 	ptr_h1 = h;
-	cor = (F) 0.0;
+	cor = (float) 0.0;
 	for (i = 0; i < NB_POS; i++) {
 		cor += *ptr_h1 * *ptr_h1;
 		ptr_h1++;
@@ -613,7 +611,7 @@ static void cor_h_cp(FLOAT * h,	/* (i) :Impulse response of filters */
 		p2 = rri1i2 + l_fin_sup;
 		p1 = rri0i1 + l_fin_sup;
 		p0 = rri0i4 + l_fin_inf;
-		cor = (F) 0.0;
+		cor = (float) 0.0;
 		ptr_h1 = ptr_hd;
 		ptr_h2 = ptr_hf;
 
@@ -692,7 +690,7 @@ static void cor_h_cp(FLOAT * h,	/* (i) :Impulse response of filters */
 		p1 = rri1i4 + l_fin_inf;
 		p0 = rri0i3 + l_fin_inf;
 
-		cor = (F) 0.0;
+		cor = (float) 0.0;
 		ptr_h1 = ptr_hd;
 		ptr_h2 = ptr_hf;
 		for (i = k + 1; i < NB_POS; i++) {
@@ -766,7 +764,7 @@ static void cor_h_cp(FLOAT * h,	/* (i) :Impulse response of filters */
 
 		ptr_h1 = ptr_hd;
 		ptr_h2 = ptr_hf;
-		cor = (F) 0.0;
+		cor = (float) 0.0;
 		for (i = k + 1; i < NB_POS; i++) {
 
 			cor += *ptr_h1 * *ptr_h2;
@@ -835,7 +833,7 @@ static void cor_h_cp(FLOAT * h,	/* (i) :Impulse response of filters */
 
 		ptr_h1 = ptr_hd;
 		ptr_h2 = ptr_hf;
-		cor = (F) 0.;
+		cor = (float) 0.;
 		for (i = k + 1; i < NB_POS; i++) {
 
 			cor += *ptr_h1 * *ptr_h2;
@@ -899,7 +897,7 @@ static void cor_h_cp(FLOAT * h,	/* (i) :Impulse response of filters */
 			p0 = rri0i2 + l_fin_inf;
 			ptr_h1 = ptr_hd;
 			ptr_h2 = ptr_hf;
-			cor = (F) 0.;
+			cor = (float) 0.;
 			cor += *ptr_h1 * *ptr_h2;
 			ptr_h1++;
 			ptr_h2++;
@@ -949,11 +947,11 @@ static int extra;
 *----------------------------------------------------------------------------
 */
 static int d4i40_17(		/* output: pulse positions                          */
-			   FLOAT dn[],	/* input : backward filtered target vector          */
-			   FLOAT rr[],	/* input : autocorrelations of impulse response h[] */
-			   FLOAT h[],	/* input : impulse response of filters              */
-			   FLOAT cod[],	/* output: selected algebraic codeword              */
-			   FLOAT y[],	/* output: filtered algebraic codeword              */
+			   float dn[],	/* input : backward filtered target vector          */
+			   float rr[],	/* input : autocorrelations of impulse response h[] */
+			   float h[],	/* input : impulse response of filters              */
+			   float cod[],	/* output: selected algebraic codeword              */
+			   float y[],	/* output: filtered algebraic codeword              */
 			   int *signs,	/* output: signs of 4 pulses                        */
 			   int i_subfr	/* input : subframe flag                            */
     )
@@ -972,20 +970,20 @@ static int d4i40_17(		/* output: pulse positions                          */
     */
 	int i0, i1, i2, i3, ip0, ip1, ip2, ip3;
 	int i, j, time;
-	FLOAT ps0, ps1, ps2, ps3, alp0, alp1, alp2, alp3;
-	FLOAT ps3c, psc, alpha;
-	FLOAT average, max0, max1, max2, thres;
-	FLOAT p_sign[L_SUBFR];
+	float ps0, ps1, ps2, ps3, alp0, alp1, alp2, alp3;
+	float ps3c, psc, alpha;
+	float average, max0, max1, max2, thres;
+	float p_sign[L_SUBFR];
 
-	FLOAT *rri0i0, *rri1i1, *rri2i2, *rri3i3, *rri4i4;
-	FLOAT *rri0i1, *rri0i2, *rri0i3, *rri0i4;
-	FLOAT *rri1i2, *rri1i3, *rri1i4;
-	FLOAT *rri2i3, *rri2i4;
+	float *rri0i0, *rri1i1, *rri2i2, *rri3i3, *rri4i4;
+	float *rri0i1, *rri0i2, *rri0i3, *rri0i4;
+	float *rri1i2, *rri1i3, *rri1i4;
+	float *rri2i3, *rri2i4;
 
-	FLOAT *ptr_ri0i0, *ptr_ri1i1, *ptr_ri2i2, *ptr_ri3i3, *ptr_ri4i4;
-	FLOAT *ptr_ri0i1, *ptr_ri0i2, *ptr_ri0i3, *ptr_ri0i4;
-	FLOAT *ptr_ri1i2, *ptr_ri1i3, *ptr_ri1i4;
-	FLOAT *ptr_ri2i3, *ptr_ri2i4;
+	float *ptr_ri0i0, *ptr_ri1i1, *ptr_ri2i2, *ptr_ri3i3, *ptr_ri4i4;
+	float *ptr_ri0i1, *ptr_ri0i2, *ptr_ri0i3, *ptr_ri0i4;
+	float *ptr_ri1i2, *ptr_ri1i3, *ptr_ri1i4;
+	float *ptr_ri2i3, *ptr_ri2i4;
 
 	/* Init pointers */
 
@@ -1017,10 +1015,10 @@ static int d4i40_17(		/* output: pulse positions                          */
     *-----------------------------------------------------------------------*/
 
 	for (i = 0; i < L_SUBFR; i++) {
-		if (dn[i] >= (F) 0.0) {
-			p_sign[i] = (F) 1.0;
+		if (dn[i] >= (float) 0.0) {
+			p_sign[i] = (float) 1.0;
 		} else {
-			p_sign[i] = (F) - 1.0;
+			p_sign[i] = (float) - 1.0;
 			dn[i] = -dn[i];
 		}
 	}
@@ -1043,7 +1041,7 @@ static int d4i40_17(		/* output: pulse positions                          */
 			max2 = dn[i + 2];
 	}
 	max0 += max1 + max2;
-	average *= (F) 0.125;	/* 1/8 */
+	average *= (float) 0.125;	/* 1/8 */
 	thres = average + (max0 - average) * THRESHFCB;
 
     /*-------------------------------------------------------------------*
@@ -1111,8 +1109,8 @@ static int d4i40_17(		/* output: pulse positions                          */
 	ip1 = 1;
 	ip2 = 2;
 	ip3 = 3;
-	psc = (F) 0.0;
-	alpha = (F) 1000000.0;
+	psc = (float) 0.0;
+	alpha = (float) 1000000.0;
 	time = MAX_TIME + extra;
 
 	/* Four loops to search innovation code. */
@@ -1133,7 +1131,7 @@ static int d4i40_17(		/* output: pulse positions                          */
 
 		for (i1 = 1; i1 < L_SUBFR; i1 += STEP) {	/* second pulse loop */
 			ps1 = ps0 + dn[i1];
-			alp1 = alp0 + *ptr_ri1i1++ + (F) 2.0 **ptr_ri0i1++;
+			alp1 = alp0 + *ptr_ri1i1++ + (float) 2.0 **ptr_ri0i1++;
 
 			ptr_ri2i2 = rri2i2;	/* Init. pointers that depend on third loop */
 			ptr_ri2i3 = rri2i3;
@@ -1143,7 +1141,7 @@ static int d4i40_17(		/* output: pulse positions                          */
 				ps2 = ps1 + dn[i2];
 				alp2 =
 				    alp1 + *ptr_ri2i2++ +
-				    (F) 2.0 *(*ptr_ri0i2++ + *ptr_ri1i2++);
+				    (float) 2.0 *(*ptr_ri0i2++ + *ptr_ri1i2++);
 
 				if (ps2 > thres) {
 					ptr_ri3i3 = rri3i3;	/* Init. pointers that depend on 4th loop */
@@ -1152,7 +1150,7 @@ static int d4i40_17(		/* output: pulse positions                          */
 						ps3 = ps2 + dn[i3];
 						alp3 =
 						    alp2 + *ptr_ri3i3++ +
-						    (F) 2.0 *(*ptr_ri1i3++ +
+						    (float) 2.0 *(*ptr_ri1i3++ +
 							      *ptr_ri0i3++ +
 							      *ptr_ri2i3++);
 
@@ -1177,7 +1175,7 @@ static int d4i40_17(		/* output: pulse positions                          */
 						ps3 = ps2 + dn[i3];
 						alp3 =
 						    alp2 + *ptr_ri4i4++ +
-						    (F) 2.0 *(*ptr_ri1i4++ +
+						    (float) 2.0 *(*ptr_ri1i4++ +
 							      *ptr_ri0i4++ +
 							      *ptr_ri2i4++);
 
@@ -1226,7 +1224,7 @@ static int d4i40_17(		/* output: pulse positions                          */
 	/* Find the codeword corresponding to the selected positions */
 
 	for (i = 0; i < L_SUBFR; i++)
-		cod[i] = (F) 0.0;
+		cod[i] = (float) 0.0;
 	cod[ip0] = p_sign[ip0];
 	cod[ip1] = p_sign[ip1];
 	cod[ip2] = p_sign[ip2];
@@ -1235,30 +1233,30 @@ static int d4i40_17(		/* output: pulse positions                          */
 	/* find the filtered codeword */
 
 	for (i = 0; i < L_SUBFR; i++)
-		y[i] = (F) 0.0;
+		y[i] = (float) 0.0;
 
-	if (p_sign[ip0] > (F) 0.0) {
+	if (p_sign[ip0] > (float) 0.0) {
 		for (i = ip0, j = 0; i < L_SUBFR; i++, j++)
 			y[i] = h[j];
 	} else {
 		for (i = ip0, j = 0; i < L_SUBFR; i++, j++)
 			y[i] = -h[j];
 	}
-	if (p_sign[ip1] > (F) 0.0) {
+	if (p_sign[ip1] > (float) 0.0) {
 		for (i = ip1, j = 0; i < L_SUBFR; i++, j++)
 			y[i] = y[i] + h[j];
 	} else {
 		for (i = ip1, j = 0; i < L_SUBFR; i++, j++)
 			y[i] = y[i] - h[j];
 	}
-	if (p_sign[ip2] > (F) 0.0) {
+	if (p_sign[ip2] > (float) 0.0) {
 		for (i = ip2, j = 0; i < L_SUBFR; i++, j++)
 			y[i] = y[i] + h[j];
 	} else {
 		for (i = ip2, j = 0; i < L_SUBFR; i++, j++)
 			y[i] = y[i] - h[j];
 	}
-	if (p_sign[ip3] > (F) 0.0) {
+	if (p_sign[ip3] > (float) 0.0) {
 		for (i = ip3, j = 0; i < L_SUBFR; i++, j++)
 			y[i] = y[i] + h[j];
 	} else {
@@ -1268,13 +1266,13 @@ static int d4i40_17(		/* output: pulse positions                          */
 	/* find codebook index;  4 bit signs + 13 bit positions */
 
 	i = 0;
-	if (p_sign[ip0] > (F) 0.0)
+	if (p_sign[ip0] > (float) 0.0)
 		i += 1;
-	if (p_sign[ip1] > (F) 0.0)
+	if (p_sign[ip1] > (float) 0.0)
 		i += 2;
-	if (p_sign[ip2] > (F) 0.0)
+	if (p_sign[ip2] > (float) 0.0)
 		i += 4;
-	if (p_sign[ip3] > (F) 0.0)
+	if (p_sign[ip3] > (float) 0.0)
 		i += 8;
 	*signs = i;
 
@@ -1306,33 +1304,33 @@ static int d4i40_17(		/* output: pulse positions                          */
 * The 2 other pulses can be on the following track:                 *
 *   t0-t1,t1-t2,t2-t3,t3-t4,t4-t0.                                  *
 *-------------------------------------------------------------------*/
-void ACELP_12i40_44bits(FLOAT x[],	/* (i) : target vector                                 */
-			FLOAT cn[],	/* (i) : residual after long term prediction           */
-			FLOAT h1[],	/* (i) : impulse response of weighted synthesis filter */
-			FLOAT code[],	/* (o) : algebraic (fixed) codebook excitation         */
-			FLOAT y[],	/* (o) : filtered fixed codebook excitation            */
+void ACELP_12i40_44bits(float x[],	/* (i) : target vector                                 */
+			float cn[],	/* (i) : residual after long term prediction           */
+			float h1[],	/* (i) : impulse response of weighted synthesis filter */
+			float code[],	/* (o) : algebraic (fixed) codebook excitation         */
+			float y[],	/* (o) : filtered fixed codebook excitation            */
 			int indx[]	/* (o) : index 5 words: 13,10,7,7,7 = 44 bits          */
     )
 {
 
 	int i, j, k, ix, iy, itrk[3], track, pos, index;
 	int idx[NB_TRACK];
-	FLOAT psk, ps, alpk, alp;
-	FLOAT s, corr[NB_TRACK];
-	FLOAT *p0, *p1, *h_inv, *h;
+	float psk, ps, alpk, alp;
+	float s, corr[NB_TRACK];
+	float *p0, *p1, *h_inv, *h;
 
-	FLOAT dn[L_SUBFR], sign[L_SUBFR], vec[L_SUBFR];
+	float dn[L_SUBFR], sign[L_SUBFR], vec[L_SUBFR];
 	int ip[12], codvec[12], pos_max[NB_TRACK];
-	FLOAT cor_x[NB_POS], cor_y[NB_POS];
-	FLOAT h_buf[4 * L_SUBFR];
-	FLOAT rrixix[NB_TRACK][NB_POS], rrixiy[NB_TRACK][MSIZE];
-	FLOAT L_tmp;
+	float cor_x[NB_POS], cor_y[NB_POS];
+	float h_buf[4 * L_SUBFR];
+	float rrixix[NB_TRACK][NB_POS], rrixiy[NB_TRACK][MSIZE];
+	float L_tmp;
 
 	h = h_buf;
 	h_inv = h_buf + (2 * L_SUBFR);
 	for (i = 0; i < L_SUBFR; i++) {
-		*h++ = (FLOAT) 0.;
-		*h_inv++ = (FLOAT) 0.;
+		*h++ = (float) 0.;
+		*h_inv++ = (float) 0.;
 	}
 	for (i = 0; i < L_SUBFR; i++) {
 		h[i] = h1[i];
@@ -1360,12 +1358,12 @@ void ACELP_12i40_44bits(FLOAT x[],	/* (i) : target vector                       
 		track = 0;
 		for (i = 1; i < NB_TRACK; i++) {
 			L_tmp = corr[i] - s;
-			if (L_tmp > (FLOAT) 0.) {
+			if (L_tmp > (float) 0.) {
 				s = corr[i];
 				track = i;
 			}
 		}
-		corr[track] = (FLOAT) - 1.;
+		corr[track] = (float) - 1.;
 		itrk[k] = track;
 	}
 
@@ -1382,8 +1380,8 @@ void ACELP_12i40_44bits(FLOAT x[],	/* (i) : target vector                       
     *-------------------------------------------------------------------*/
 
 	/* stage 0: fix pulse i0 and i1 according to max of correlation */
-	psk = (FLOAT) - 1.;
-	alpk = (FLOAT) 1.;
+	psk = (float) - 1.;
+	alpk = (float) 1.;
 	for (pos = 0; pos < 3; pos++) {
 		k = itrk[pos];	/* starting position index */
 
@@ -1400,7 +1398,7 @@ void ACELP_12i40_44bits(FLOAT x[],	/* (i) : target vector                       
 		ip[1] = iy;
 
 		for (i = 0; i < L_SUBFR; i++)
-			vec[i] = (FLOAT) 0.;
+			vec[i] = (float) 0.;
 
 		/* stage 2..5: fix pulse i2,i3,i4,i5,i6,i7,i8 and i9 */
 		for (j = 2; j < 12; j += 2) {
@@ -1408,12 +1406,12 @@ void ACELP_12i40_44bits(FLOAT x[],	/* (i) : target vector                       
         * Store all impulse response of all fixed pulses   *
         * in vector vec[] for the "cor_h_vec()" function.  *
             *--------------------------------------------------*/
-			if (sign[ix] < (FLOAT) 0.)
+			if (sign[ix] < (float) 0.)
 				p0 = h_inv - ix;
 			else
 				p0 = h - ix;
 
-			if (sign[iy] < (FLOAT) 0.)
+			if (sign[iy] < (float) 0.)
 				p1 = h_inv - iy;
 			else
 				p1 = h - iy;
@@ -1446,7 +1444,7 @@ void ACELP_12i40_44bits(FLOAT x[],	/* (i) : target vector                       
 		/* memorise new codevector if it's better than the last one. */
 		ps *= ps;
 		s = alpk * ps - psk * alp;
-		if (s > (FLOAT) 0.) {
+		if (s > (float) 0.) {
 			psk = ps;
 			alpk = alp;
 			for (i = 0; i < 12; i++)
@@ -1471,12 +1469,12 @@ void ACELP_12i40_44bits(FLOAT x[],	/* (i) : target vector                       
 		pos = codvec[k];
 		index = pos / 5;	/* index = pos/5       */
 		track = pos % 5;
-		if (sign[pos] > (FLOAT) 0.) {
-			code[pos] += (FLOAT) 1.;
+		if (sign[pos] > (float) 0.) {
+			code[pos] += (float) 1.;
 			for (i = pos, j = 0; i < L_SUBFR; i++, j++)
 				y[i] += h[j];
 		} else {
-			code[pos] -= (FLOAT) 1.;
+			code[pos] -= (float) 1.;
 			for (i = pos, j = 0; i < L_SUBFR; i++, j++)
 				y[i] -= h[j];
 			index += 8;
@@ -1517,32 +1515,32 @@ void ACELP_12i40_44bits(FLOAT x[],	/* (i) : target vector                       
 * i3,i8 :  3, 8, 13, 18, 23, 28, 33, 38.                            *
 * i4,i9 :  4, 9, 14, 19, 24, 29, 34, 39.                            *
 *-------------------------------------------------------------------*/
-void ACELP_10i40_35bits(FLOAT x[],	/* (i) : target vector                                 */
-			FLOAT cn[],	/* (i) : residual after long term prediction           */
-			FLOAT h1[],	/* (i) : impulse response of weighted synthesis filter */
-			FLOAT code[],	/* (o) : algebraic (fixed) codebook excitation         */
-			FLOAT y[],	/* (o) : filtered fixed codebook excitation            */
+void ACELP_10i40_35bits(float x[],	/* (i) : target vector                                 */
+			float cn[],	/* (i) : residual after long term prediction           */
+			float h1[],	/* (i) : impulse response of weighted synthesis filter */
+			float code[],	/* (o) : algebraic (fixed) codebook excitation         */
+			float y[],	/* (o) : filtered fixed codebook excitation            */
 			int indx[]	/* (o) : index 5 words: 7,7,7,7,7 = 35 bits            */
     )
 {
 	int i, j, k, ix, iy, pos, track;
-	FLOAT psk, ps, alpk, alp;
+	float psk, ps, alpk, alp;
 	int itrk[3];
-	FLOAT s, corr[NB_TRACK], L_tmp;
-	FLOAT *p0, *p1, *h_inv, *h;
+	float s, corr[NB_TRACK], L_tmp;
+	float *p0, *p1, *h_inv, *h;
 
 	/* these vectors are not static */
-	FLOAT dn[L_SUBFR], sign[L_SUBFR], vec[L_SUBFR];
+	float dn[L_SUBFR], sign[L_SUBFR], vec[L_SUBFR];
 	int ip[10], codvec[10], pos_max[NB_TRACK];
-	FLOAT cor_x[NB_POS], cor_y[NB_POS];
-	FLOAT h_buf[4 * L_SUBFR];
-	FLOAT rrixix[NB_TRACK][NB_POS], rrixiy[NB_TRACK][MSIZE];
+	float cor_x[NB_POS], cor_y[NB_POS];
+	float h_buf[4 * L_SUBFR];
+	float rrixix[NB_TRACK][NB_POS], rrixiy[NB_TRACK][MSIZE];
 
 	h = h_buf;
 	h_inv = h_buf + (2 * L_SUBFR);
 	for (i = 0; i < L_SUBFR; i++) {
-		*h++ = (FLOAT) 0.;
-		*h_inv++ = (FLOAT) 0.;
+		*h++ = (float) 0.;
+		*h_inv++ = (float) 0.;
 	}
 	for (i = 0; i < L_SUBFR; i++) {
 		h[i] = h1[i];
@@ -1574,12 +1572,12 @@ void ACELP_10i40_35bits(FLOAT x[],	/* (i) : target vector                       
 		track = 0;
 		for (i = 1; i < NB_TRACK; i++) {
 			L_tmp = corr[i] - s;
-			if (L_tmp > (FLOAT) 0.) {
+			if (L_tmp > (float) 0.) {
 				s = corr[i];
 				track = i;
 			}
 		}
-		corr[track] = (FLOAT) - 1.;
+		corr[track] = (float) - 1.;
 		itrk[k] = track;
 	}
 
@@ -1593,8 +1591,8 @@ void ACELP_10i40_35bits(FLOAT x[],	/* (i) : target vector                       
     *     stage 4 : fix i6 and i7 --> try 8x8 = 64 positions.           *
     *     stage 5 : fix i8 and i9 --> try 8x8 = 64 positions.           *
     *-------------------------------------------------------------------*/
-	psk = (FLOAT) - 1.;
-	alpk = (FLOAT) 1.;
+	psk = (float) - 1.;
+	alpk = (float) 1.;
 	for (pos = 0; pos < 3; pos++) {
 		k = itrk[pos];	/* starting position index */
 
@@ -1611,7 +1609,7 @@ void ACELP_10i40_35bits(FLOAT x[],	/* (i) : target vector                       
 		ip[1] = iy;
 
 		for (i = 0; i < L_SUBFR; i++)
-			vec[i] = (FLOAT) 0.;
+			vec[i] = (float) 0.;
 
 		/* stage 2..5: fix pulse i2,i3,i4,i5,i6,i7,i8 and i9 */
 		for (j = 2; j < 10; j += 2) {
@@ -1657,7 +1655,7 @@ void ACELP_10i40_35bits(FLOAT x[],	/* (i) : target vector                       
 		ps *= ps;
 		s = (alpk * ps) - (psk * alp);
 
-		if (s > (FLOAT) 0.) {
+		if (s > (float) 0.) {
 			psk = ps;
 			alpk = alp;
 			for (i = 0; i < 10; i++)
@@ -1690,22 +1688,22 @@ void ACELP_10i40_35bits(FLOAT x[],	/* (i) : target vector                       
 * Compute correlations of h[] with vec[] for the specified track.   *
 *-------------------------------------------------------------------*
 *-------------------------------------------------------------------*/
-static void cor_h_vec(FLOAT h[],	/* (i) scaled impulse response */
-		      FLOAT vec[],	/* (i) vector to correlate with h[] */
+static void cor_h_vec(float h[],	/* (i) scaled impulse response */
+		      float vec[],	/* (i) vector to correlate with h[] */
 		      int track,	/* (i) track to use */
-		      FLOAT sign[],	/* (i) sign vector */
-		      FLOAT rrixix[][NB_POS],	/* (i) correlation of h[x] with h[x] */
-		      FLOAT cor[]	/* (o) result of correlation (NB_POS elements) */
+		      float sign[],	/* (i) sign vector */
+		      float rrixix[][NB_POS],	/* (i) correlation of h[x] with h[x] */
+		      float cor[]	/* (o) result of correlation (NB_POS elements) */
     )
 {
 	int i, j, pos;
-	FLOAT *p0, *p1, *p2;
-	FLOAT s;
+	float *p0, *p1, *p2;
+	float s;
 
 	p0 = rrixix[track];
 	pos = track;
 	for (i = 0; i < NB_POS; i++, pos += STEP) {
-		s = (FLOAT) 0.;
+		s = (float) 0.;
 		p1 = h;
 		p2 = &vec[pos];
 		for (j = pos; j < L_SUBFR; j++) {
@@ -1726,27 +1724,27 @@ static void cor_h_vec(FLOAT h[],	/* (i) scaled impulse response */
 *-------------------------------------------------------------------*/
 static void search_ixiy(int track_x,	/* (i) track of pulse 1 */
 			int track_y,	/* (i) track of pulse 2 */
-			FLOAT * ps,	/* (i/o) correlation of all fixed pulses */
-			FLOAT * alp,	/* (i/o) energy of all fixed pulses */
+			float * ps,	/* (i/o) correlation of all fixed pulses */
+			float * alp,	/* (i/o) energy of all fixed pulses */
 			int *ix,	/* (o) position of pulse 1 */
 			int *iy,	/* (o) position of pulse 2 */
-			FLOAT dn[],	/* (i) corr. between target and h[] */
-			FLOAT cor_x[],	/* (i) corr. of pulse 1 with fixed pulses */
-			FLOAT cor_y[],	/* (i) corr. of pulse 2 with fixed pulses */
-			FLOAT rrixiy[][MSIZE]	/* (i) corr. of pulse 1 with pulse 2 */
+			float dn[],	/* (i) corr. between target and h[] */
+			float cor_x[],	/* (i) corr. of pulse 1 with fixed pulses */
+			float cor_y[],	/* (i) corr. of pulse 2 with fixed pulses */
+			float rrixiy[][MSIZE]	/* (i) corr. of pulse 1 with pulse 2 */
     )
 {
 	int i, j, pos;
-	FLOAT ps1, ps2, sq, sqk;
-	FLOAT alp1, alp2, alpk;
-	FLOAT *p0, *p1, *p2;
-	FLOAT s;
+	float ps1, ps2, sq, sqk;
+	float alp1, alp2, alpk;
+	float *p0, *p1, *p2;
+	float s;
 
 	p0 = cor_x;
 	p1 = cor_y;
 	p2 = rrixiy[track_x];
-	sqk = (FLOAT) - 1.;
-	alpk = (FLOAT) 1.;
+	sqk = (float) - 1.;
+	alpk = (float) 1.;
 	for (i = track_x; i < L_SUBFR; i += STEP) {
 		ps1 = *ps + dn[i];
 		alp1 = *alp + *p0++;
@@ -1756,7 +1754,7 @@ static void search_ixiy(int track_x,	/* (i) track of pulse 1 */
 			alp2 = alp1 + *p1++ + *p2++;
 			sq = (ps2 * ps2);
 			s = (alpk * sq) - (sqk * alp2);
-			if (s > (FLOAT) 0.) {
+			if (s > (float) 0.) {
 				sqk = sq;
 				alpk = alp2;
 				pos = j;
@@ -1779,52 +1777,52 @@ static void search_ixiy(int track_x,	/* (i) track of pulse 1 */
 * ~~~~~~~~~~~~~~~~~~~~                                              *
 * Set the sign of each pulse position.                              *
 *-------------------------------------------------------------------*/
-static void set_sign(FLOAT cn[],	/* (i) : residual after long term prediction    */
-		     FLOAT dn[],	/* (i) : correlation between target and h[]     */
-		     FLOAT sign[],	/* (o) : sign vector (sign of each position)    */
-		     FLOAT inv_sign[],	/* (o) : inverse of sign[]                      */
+static void set_sign(float cn[],	/* (i) : residual after long term prediction    */
+		     float dn[],	/* (i) : correlation between target and h[]     */
+		     float sign[],	/* (o) : sign vector (sign of each position)    */
+		     float inv_sign[],	/* (o) : inverse of sign[]                      */
 		     int pos_max[],	/* (o) : pos of max of correlation              */
-		     FLOAT corr[]	/* (o) : correlation of each track              */
+		     float corr[]	/* (o) : correlation of each track              */
     )
 {
 	int i, k, pos;
-	FLOAT k_cn, k_dn, val;
-	FLOAT s, max;
+	float k_cn, k_dn, val;
+	float s, max;
 
 	/* calculate energy for normalization of cn[] and dn[] */
-	s = (FLOAT) 0.;
+	s = (float) 0.;
 	for (i = 0; i < L_SUBFR; i++)
 		s += cn[i] * cn[i];
-	if (s < (F) 0.01)
-		s = (F) 0.01;
-	k_cn = (F) 1. / (FLOAT) sqrt((double)s);
+	if (s < (float) 0.01)
+		s = (float) 0.01;
+	k_cn = (float) 1. / (float) sqrt((double)s);
 
-	s = (FLOAT) 0.;
+	s = (float) 0.;
 	for (i = 0; i < L_SUBFR; i++)
 		s += dn[i] * dn[i];
-	if (s < (F) 0.01)
-		s = (F) 0.01;
-	k_dn = (F) 1. / (FLOAT) sqrt((double)s);
+	if (s < (float) 0.01)
+		s = (float) 0.01;
+	k_dn = (float) 1. / (float) sqrt((double)s);
 
 	/* set sign according to en[] = k_cn*cn[] + k_dn*dn[]    */
 
 	/* find position of maximum of correlation in each track */
 	pos = 0;		/* to avoid visual warning */
 	for (k = 0; k < NB_TRACK; k++) {
-		max = (FLOAT) - 1.;
+		max = (float) - 1.;
 		for (i = k; i < L_SUBFR; i += STEP) {
 			val = dn[i];
 			s = (k_cn * cn[i]) + (k_dn * val);
-			if (s >= (FLOAT) 0.) {
-				sign[i] = (FLOAT) 1.;
-				inv_sign[i] = (FLOAT) - 1.;
+			if (s >= (float) 0.) {
+				sign[i] = (float) 1.;
+				inv_sign[i] = (float) - 1.;
 			} else {
-				sign[i] = (FLOAT) - 1.;
-				inv_sign[i] = (FLOAT) 1.;
+				sign[i] = (float) - 1.;
+				inv_sign[i] = (float) 1.;
 				val = -val;
 			}
 			dn[i] = val;	/* modify dn[] according to the fixed sign */
-			s = (FLOAT) fabs(s);
+			s = (float) fabs(s);
 			if (s > max) {
 				max = s;
 				pos = i;
@@ -1842,18 +1840,18 @@ static void set_sign(FLOAT cn[],	/* (i) : residual after long term prediction   
 * ~~~~~~~~~~~~~~~~~                                                 *
 * Compute correlations of h[] needed for the codebook search.       *
 *-------------------------------------------------------------------*/
-static void cor_h_e(FLOAT sign[],	/* (i) : sign vector                 */
-		    FLOAT inv_sign[],	/* (i) : inverse of sign[]           */
-		    FLOAT h[],	/* (o) : scaled h[]                 */
-		    FLOAT h_inv[],	/* (o) : inverse of scaled h[]      */
-		    FLOAT rrixix[][NB_POS],	/* (o) energy of h[].                   */
-		    FLOAT rrixiy[][MSIZE]	/* (o) correlation between 2 pulses.    */
+static void cor_h_e(float sign[],	/* (i) : sign vector                 */
+		    float inv_sign[],	/* (i) : inverse of sign[]           */
+		    float h[],	/* (o) : scaled h[]                 */
+		    float h_inv[],	/* (o) : inverse of scaled h[]      */
+		    float rrixix[][NB_POS],	/* (o) energy of h[].                   */
+		    float rrixiy[][MSIZE]	/* (o) correlation between 2 pulses.    */
     )
 {
 	int i, j, k, pos;
-	FLOAT *ptr_h1, *ptr_h2, *ptr_hf, *psign;
-	FLOAT *p0, *p1, *p2, *p3, *p4;
-	FLOAT cor;
+	float *ptr_h1, *ptr_h2, *ptr_hf, *psign;
+	float *p0, *p1, *p2, *p3, *p4;
+	float cor;
 
 	for (i = 0; i < L_SUBFR; i++) {
 		h_inv[i] = -h[i];
@@ -1872,7 +1870,7 @@ static void cor_h_e(FLOAT sign[],	/* (i) : sign vector                 */
 	p3 = &rrixix[3][NB_POS - 1];
 	p4 = &rrixix[4][NB_POS - 1];
 	ptr_h1 = h;
-	cor = (FLOAT) 0.;
+	cor = (float) 0.;
 	for (i = 0; i < NB_POS; i++) {
 		cor += (*ptr_h1) * (*ptr_h1);
 		ptr_h1++;
@@ -1894,7 +1892,7 @@ static void cor_h_e(FLOAT sign[],	/* (i) : sign vector                 */
 	/* Divide all elements of rrixix[][] by 2. */
 	p0 = &rrixix[0][0];
 	for (i = 0; i < L_SUBFR; i++) {
-		*p0 *= (FLOAT) 0.5;
+		*p0 *= (float) 0.5;
 		p0++;
 	}
 
@@ -1913,7 +1911,7 @@ static void cor_h_e(FLOAT sign[],	/* (i) : sign vector                 */
 		p2 = &rrixiy[1][pos];
 		p1 = &rrixiy[0][pos];
 		p0 = &rrixiy[4][pos - NB_POS];
-		cor = (FLOAT) 0.;
+		cor = (float) 0.;
 		ptr_h1 = h;
 		ptr_h2 = ptr_hf;
 		for (i = k + 1; i < NB_POS; i++) {
@@ -1974,7 +1972,7 @@ static void cor_h_e(FLOAT sign[],	/* (i) : sign vector                 */
 		p1 = &rrixiy[1][pos - 1];
 		p0 = &rrixiy[0][pos - 1];
 
-		cor = (FLOAT) 0.;
+		cor = (float) 0.;
 		ptr_h1 = h;
 		ptr_h2 = ptr_hf;
 		for (i = k + 1; i < NB_POS; i++) {
@@ -2038,19 +2036,19 @@ static void cor_h_e(FLOAT sign[],	/* (i) : sign vector                 */
 * Build the codeword, the filtered codeword and index of codevector.*
 *-------------------------------------------------------------------*/
 static void build_code(int codvec[],	/* (i) : positions of each pulse */
-		       FLOAT sign[],	/* (i) : sign vector             */
+		       float sign[],	/* (i) : sign vector             */
 		       int nb_of_pulse,	/* (i) : number of pulses        */
-		       FLOAT h[],	/* (i) : impulse response of weighted synthesis filter */
-		       FLOAT code[],	/* (o) : algebraic (fixed) codebook excitation         */
-		       FLOAT y[],	/* (o) : filtered fixed codebook excitation            */
+		       float h[],	/* (i) : impulse response of weighted synthesis filter */
+		       float code[],	/* (o) : algebraic (fixed) codebook excitation         */
+		       float y[],	/* (o) : filtered fixed codebook excitation            */
 		       int indx[]	/* (o) : index of pulses (5 words, 1 per track).       */
     )
 {
 	int i, j, k, index, track;
 
 	for (i = 0; i < L_SUBFR; i++) {
-		code[i] = (FLOAT) 0.;
-		y[i] = (FLOAT) 0.;
+		code[i] = (float) 0.;
+		y[i] = (float) 0.;
 	}
 
 	for (i = 0; i < NB_TRACK; i++)
@@ -2063,11 +2061,11 @@ static void build_code(int codvec[],	/* (i) : positions of each pulse */
 		track = i % 5;
 		/* codeword & filtered codeword */
 		if (sign[i] > 0) {
-			code[i] += (FLOAT) 1.;
+			code[i] += (float) 1.;
 			for (i = codvec[k], j = 0; i < L_SUBFR; i++, j++)
 				y[i] += h[j];
 		} else {
-			code[i] -= (FLOAT) 1.;
+			code[i] -= (float) 1.;
 			index += 8;
 			for (i = codvec[k], j = 0; i < L_SUBFR; i++, j++)
 				y[i] -= h[j];

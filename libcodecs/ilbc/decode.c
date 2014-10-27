@@ -41,26 +41,26 @@
  *  main decoder function
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_DecodeImpl(WebRtc_Word16 * decblock,	/* (o) decoded signal block */
-			      const WebRtc_UWord16 * bytes,	/* (i) encoded signal bits */
+void WebRtcIlbcfix_DecodeImpl(int16_t * decblock,	/* (o) decoded signal block */
+			      const uint16_t * bytes,	/* (i) encoded signal bits */
 			      iLBC_Dec_Inst_t * iLBCdec_inst,	/* (i/o) the decoder state
 								   structure */
-			      WebRtc_Word16 mode	/* (i) 0: bad packet, PLC,
+			      int16_t mode	/* (i) 0: bad packet, PLC,
 							   1: normal */
     )
 {
 	int i;
-	WebRtc_Word16 order_plus_one;
+	int16_t order_plus_one;
 
-	WebRtc_Word16 last_bit;
-	WebRtc_Word16 *data;
+	int16_t last_bit;
+	int16_t *data;
 	/* Stack based */
-	WebRtc_Word16 decresidual[BLOCKL_MAX];
-	WebRtc_Word16 PLCresidual[BLOCKL_MAX + LPC_FILTERORDER];
-	WebRtc_Word16 syntdenum[NSUB_MAX * (LPC_FILTERORDER + 1)];
-	WebRtc_Word16 PLClpc[LPC_FILTERORDER + 1];
+	int16_t decresidual[BLOCKL_MAX];
+	int16_t PLCresidual[BLOCKL_MAX + LPC_FILTERORDER];
+	int16_t syntdenum[NSUB_MAX * (LPC_FILTERORDER + 1)];
+	int16_t PLClpc[LPC_FILTERORDER + 1];
 #ifndef WEBRTC_BIG_ENDIAN
-	WebRtc_UWord16 swapped[NO_OF_WORDS_30MS];
+	uint16_t swapped[NO_OF_WORDS_30MS];
 #endif
 	iLBC_bits *iLBCbits_inst = (iLBC_bits *) PLCresidual;
 
@@ -97,8 +97,8 @@ void WebRtcIlbcfix_DecodeImpl(WebRtc_Word16 * decblock,	/* (o) decoded signal bl
 
 		if (mode) {	/* No bit errors was detected, continue decoding */
 			/* Stack based */
-			WebRtc_Word16 lsfdeq[LPC_FILTERORDER * LPC_N_MAX];
-			WebRtc_Word16 weightdenum[(LPC_FILTERORDER + 1) *
+			int16_t lsfdeq[LPC_FILTERORDER * LPC_N_MAX];
+			int16_t weightdenum[(LPC_FILTERORDER + 1) *
 						  NSUB_MAX];
 
 			/* adjust index */
@@ -106,7 +106,7 @@ void WebRtcIlbcfix_DecodeImpl(WebRtc_Word16 * decblock,	/* (o) decoded signal bl
 
 			/* decode the lsf */
 			WebRtcIlbcfix_SimpleLsfDeQ(lsfdeq,
-						   (WebRtc_Word16
+						   (int16_t
 						    *) (iLBCbits_inst->lsf),
 						   iLBCdec_inst->lpc_n);
 			WebRtcIlbcfix_LsfCheck(lsfdeq, LPC_FILTERORDER,
@@ -127,7 +127,7 @@ void WebRtcIlbcfix_DecodeImpl(WebRtc_Word16 * decblock,	/* (o) decoded signal bl
 					       syntdenum + (LPC_FILTERORDER +
 							    1) *
 					       (iLBCdec_inst->nsub - 1),
-					       (WebRtc_Word16) (iLBCdec_inst->
+					       (int16_t) (iLBCdec_inst->
 								last_lag),
 					       iLBCdec_inst);
 
@@ -147,7 +147,7 @@ void WebRtcIlbcfix_DecodeImpl(WebRtc_Word16 * decblock,	/* (o) decoded signal bl
 
 		WebRtcIlbcfix_DoThePlc(PLCresidual, PLClpc, 1,
 				       decresidual, syntdenum,
-				       (WebRtc_Word16) (iLBCdec_inst->last_lag),
+				       (int16_t) (iLBCdec_inst->last_lag),
 				       iLBCdec_inst);
 
 		WEBRTC_SPL_MEMCPY_W16(decresidual, PLCresidual,
@@ -235,13 +235,13 @@ void WebRtcIlbcfix_DecodeImpl(WebRtc_Word16 * decblock,	/* (o) decoded signal bl
 					    LPC_FILTERORDER], LPC_FILTERORDER);
 
 	} else {		/* Enhancer not activated */
-		WebRtc_Word16 lag;
+		int16_t lag;
 
 		/* Find last lag (since the enhancer is not called to give this info) */
 		lag = 20;
 		if (iLBCdec_inst->mode == 20) {
 			lag =
-			    (WebRtc_Word16)
+			    (int16_t)
 			    WebRtcIlbcfix_XcorrCoef(&decresidual
 						    [iLBCdec_inst->blockl - 60],
 						    &decresidual[iLBCdec_inst->
@@ -250,7 +250,7 @@ void WebRtcIlbcfix_DecodeImpl(WebRtc_Word16 * decblock,	/* (o) decoded signal bl
 						    lag, -1);
 		} else {
 			lag =
-			    (WebRtc_Word16)
+			    (int16_t)
 			    WebRtcIlbcfix_XcorrCoef(&decresidual
 						    [iLBCdec_inst->blockl -
 						     ENH_BLOCKL],
@@ -289,7 +289,7 @@ void WebRtcIlbcfix_DecodeImpl(WebRtc_Word16 * decblock,	/* (o) decoded signal bl
 
 	/* High pass filter the signal (with upscaling a factor 2 and saturation) */
 	WebRtcIlbcfix_HpOutput(decblock,
-			       (WebRtc_Word16 *) WebRtcIlbcfix_kHpOutCoefs,
+			       (int16_t *) WebRtcIlbcfix_kHpOutCoefs,
 			       iLBCdec_inst->hpimemy, iLBCdec_inst->hpimemx,
 			       iLBCdec_inst->blockl);
 

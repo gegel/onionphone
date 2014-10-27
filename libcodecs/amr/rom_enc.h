@@ -27,7 +27,7 @@
 #ifndef _ROM_ENC_H_
 #define _ROM_ENC_H_
 
-#include "ophint.h"
+#include <stdint.h>
 #include "sp_enc.h"
 
 #define M               10	/* Order of LP filter */
@@ -58,10 +58,10 @@
 #define STEP_MR102      4	/* codebook step size mode mr102 */
 #define NC              M/2	/* Order of LP filter divided by 2 */
 
-#define SCALE_LSP_FREQ  (Float32)(4000.0/3.141592654)
-#define SCALE_FREQ_LSP  (Float32)(3.141592654/4000.0)
-#define SLOPE1_WGHT_LSF (Float32)((3.347-1.8)/(450.0-0.0))
-#define SLOPE2_WGHT_LSF (Float32)((1.8-1.0)/(1500.0-450.0))
+#define SCALE_LSP_FREQ  (float)(4000.0/3.141592654)
+#define SCALE_FREQ_LSP  (float)(3.141592654/4000.0)
+#define SLOPE1_WGHT_LSF (float)((3.347-1.8)/(450.0-0.0))
+#define SLOPE2_WGHT_LSF (float)((1.8-1.0)/(1500.0-450.0))
 
 #define FRAME_LEN 160		/* Length (samples) of the input frame          */
 #define COMPLEN 9		/* Number of sub-bands used by VAD              */
@@ -74,13 +74,13 @@
 #define TONE_THR 0.65F		/* Threshold for tone detection   */
 
 /* Constants for background spectrum update */
-#define ALPHA_UP1   (Float32)(1.0 - 0.95)	/* Normal update, upwards:   */
-#define ALPHA_DOWN1 (Float32)(1.0 - 0.936)	/* Normal update, downwards  */
-#define ALPHA_UP2   (Float32)(1.0 - 0.985)	/* Forced update, upwards    */
-#define ALPHA_DOWN2 (Float32)(1.0 - 0.943)	/* Forced update, downwards  */
-#define ALPHA3      (Float32)(1.0 - 0.95)	/* Update downwards          */
-#define ALPHA4      (Float32)(1.0 - 0.9)	/* For stationary estimation */
-#define ALPHA5      (Float32)(1.0 - 0.5)	/* For stationary estimation */
+#define ALPHA_UP1   (float)(1.0 - 0.95)	/* Normal update, upwards:   */
+#define ALPHA_DOWN1 (float)(1.0 - 0.936)	/* Normal update, downwards  */
+#define ALPHA_UP2   (float)(1.0 - 0.985)	/* Forced update, upwards    */
+#define ALPHA_DOWN2 (float)(1.0 - 0.943)	/* Forced update, downwards  */
+#define ALPHA3      (float)(1.0 - 0.95)	/* Update downwards          */
+#define ALPHA4      (float)(1.0 - 0.9)	/* For stationary estimation */
+#define ALPHA5      (float)(1.0 - 0.5)	/* For stationary estimation */
 
 /* Constants for VAD threshold */
 #define VAD_THR_HIGH 1260	/* Highest threshold                 */
@@ -110,12 +110,12 @@
 #define HANG_LEN_LOW_NOISE 4
 
 /* Thresholds for signal power */
-#define VAD_POW_LOW (Word32)15000/2	/* If input power is lower,                    */
+#define VAD_POW_LOW (int32_t)15000/2	/* If input power is lower,                    */
 				       /*     VAD is set to 0                         */
-#define POW_PITCH_THR (Word32)343040/2	/* If input power is lower, pitch              */
+#define POW_PITCH_THR (int32_t)343040/2	/* If input power is lower, pitch              */
 				       /*     detection is ignored                    */
 
-#define POW_COMPLEX_THR (Word32)15000/2	/* If input power is lower, complex            */
+#define POW_COMPLEX_THR (int32_t)15000/2	/* If input power is lower, complex            */
 				       /* flags  value for previous frame  is un-set  */
 /*
  * VAD Constants
@@ -123,9 +123,9 @@
 
 /* Constants for the filter bank */
 #define LEVEL_SHIFT 0		/* scaling                                  */
-#define COEFF3   (Float32)13363/32768	/* coefficient for the 3rd order filter     */
-#define COEFF5_1 (Float32)21955/32768	/* 1st coefficient the for 5th order filter */
-#define COEFF5_2 (Float32)6390/32768	/* 2nd coefficient the for 5th order filter */
+#define COEFF3   (float)13363/32768	/* coefficient for the 3rd order filter     */
+#define COEFF5_1 (float)21955/32768	/* 1st coefficient the for 5th order filter */
+#define COEFF5_2 (float)6390/32768	/* 2nd coefficient the for 5th order filter */
 
 /* Constants for pitch detection */
 #define LTHRESH 4
@@ -137,8 +137,8 @@
 #define CVAD_THRESH_IN_NOISE  0.65F * 32768.0F	/* threshold going into speech on
 						   a short term basis */
 #define CVAD_THRESH_HANG  0.70F	/* threshold */
-#define CVAD_HANG_LIMIT  (Word16)(100)	/* 2 second estimation time */
-#define CVAD_HANG_LENGTH  (Word16)(250)	/* 5 second hangover */
+#define CVAD_HANG_LIMIT  (int16_t)(100)	/* 2 second estimation time */
+#define CVAD_HANG_LENGTH  (int16_t)(250)	/* 5 second hangover */
 
 #define CVAD_LOWPOW_RESET 0.40F	/* init in low power segment */
 #define CVAD_MIN_CORR 0.40F	/* lowest adaptation value */
@@ -149,7 +149,7 @@
 #define CVAD_ADAPT_REALLY_FAST 1.0F - 0.80F	/* threshold for really fast adaption */
 
 /* track table for algebraic code book search (MR475, MR515) */
-static Word8 trackTable[4 * 5] = {
+static int8_t trackTable[4 * 5] = {
 	/* subframe 1; track to code; -1 do not code this position */ 0,
 	1,
 	0,
@@ -172,7 +172,7 @@ static Word8 trackTable[4 * 5] = {
 	1
 };
 
-static const Float32 gamma1[M] = {
+static const float gamma1[M] = {
 	0.9400024414063F,
 	0.8836059570313F,
 	0.8305969238281F,
@@ -188,7 +188,7 @@ static const Float32 gamma1[M] = {
 /*
  *  gamma1 for the 12k2 coder
  */
-static const Float32 gamma1_12k2[M] = {
+static const float gamma1_12k2[M] = {
 	0.8999938964844F,
 	0.8099975585938F,
 	0.72900390625F,
@@ -201,7 +201,7 @@ static const Float32 gamma1_12k2[M] = {
 	0.3486633300781F
 };
 
-static const Float32 gamma2[M] = {
+static const float gamma2[M] = {
 	0.6000061035156F,
 	0.3600158691406F,
 	0.2160034179688F,
@@ -221,7 +221,7 @@ static const Float32 gamma2[M] = {
  *
  *       inter_6(1/3)[k] = inter_6(1/3)[2*k], 0 <= k <= 3*L_INTER10
  */
-static Float32 b60[UP_SAMP_MAX * (L_INTERPOL - 1) + 1] = {
+static float b60[UP_SAMP_MAX * (L_INTERPOL - 1) + 1] = {
 	0.898529F,
 	0.865051F,
 	0.769257F,
@@ -286,7 +286,7 @@ static Float32 b60[UP_SAMP_MAX * (L_INTERPOL - 1) + 1] = {
 };
 
 /* same in fixed-point */
-static const Word32 inter6[61] = {
+static const int32_t inter6[61] = {
 	29443,
 	28346,
 	25207,
@@ -350,19 +350,19 @@ static const Word32 inter6[61] = {
 	0
 };
 
-static const Word16 startPos1[2] = {
+static const int16_t startPos1[2] = {
 	1,
 	3
 };
 
-static const Word16 startPos2[4] = {
+static const int16_t startPos2[4] = {
 	0,
 	1,
 	2,
 	4
 };
 
-static const Word16 startPos[2 * 4 * 2] = {
+static const int16_t startPos[2 * 4 * 2] = {
 	0,
 	2,
 	0,
@@ -384,7 +384,7 @@ static const Word16 startPos[2 * 4 * 2] = {
 /* Scalar quantization tables of the pitch gain and the codebook gain. */
 #define NB_QUA_PITCH 16
 
-static const Float32 qua_gain_pitch[NB_QUA_PITCH] = {
+static const float qua_gain_pitch[NB_QUA_PITCH] = {
 	0.0F,
 	0.20001220703125F,
 	0.400146484375F,
@@ -403,7 +403,7 @@ static const Float32 qua_gain_pitch[NB_QUA_PITCH] = {
 	1.20001220703125F
 };
 
-static const Float32 qua_gain_pitch_MR122[NB_QUA_PITCH] = {
+static const float qua_gain_pitch_MR122[NB_QUA_PITCH] = {
 	0.0F,
 	0.199951171875F,
 	0.400146484375F,
@@ -423,7 +423,7 @@ static const Float32 qua_gain_pitch_MR122[NB_QUA_PITCH] = {
 };
 
 #define NB_QUA_CODE 32
-static const Float32 gain_factor[NB_QUA_CODE] = {
+static const float gain_factor[NB_QUA_CODE] = {
 /* gain factor (g_fac) */
 	0.0776367F,
 	0.100586F,
@@ -459,7 +459,7 @@ static const Float32 gain_factor[NB_QUA_CODE] = {
 	13.4204F
 };
 
-static const Word8 gray[8] = {
+static const int8_t gray[8] = {
 	0,
 	1,
 	3,
@@ -474,9 +474,9 @@ static const Word8 gray[8] = {
  * grid[0] = 1.0;
  * grid[61] = -1.0;
  * for (i = 1; i < 61; i++)
- *    grid[i] = (Float32)cos((6.283185307*i)/(2.0*60));
+ *    grid[i] = (float)cos((6.283185307*i)/(2.0*60));
  */
-static const Float32 grid[61] = {
+static const float grid[61] = {
 	1.00000F,
 	0.998630F,
 	0.994522F,
@@ -548,7 +548,7 @@ static const Float32 grid[61] = {
  *
  *       b24[k](1/3) = b24[2*k](1/6), 0 <= k <= 3*L_INTER_SRCH
  */
-static const Float32 b24[UP_SAMP_MAX * L_INTER_SRCH + 1] = {
+static const float b24[UP_SAMP_MAX * L_INTER_SRCH + 1] = {
 	0.900848F,
 	0.864136F,
 	0.760071F,
@@ -584,7 +584,7 @@ static const Float32 b24[UP_SAMP_MAX * L_INTER_SRCH + 1] = {
  * lagwindow[i] =  exp( -0.5*(2*pi*F0*(i+1)/Fs)^2 ); i = 0,...,9
  * F0 = 60 Hz, Fs = 8000 Hz
  */
-static Float32 lag_wind[M] = {
+static float lag_wind[M] = {
 	0.99889028F,
 	0.99556851F,
 	0.99005681F,
@@ -598,7 +598,7 @@ static Float32 lag_wind[M] = {
 };
 
 /* initialization table for lsp history in DTX */
-static const Float32 lsp_init_data[M] = {
+static const float lsp_init_data[M] = {
 	0.9595F,
 	0.8413F,
 	0.6549F,
@@ -614,7 +614,7 @@ static const Float32 lsp_init_data[M] = {
 #define PAST_RQ_INIT_SIZE 8
 
 /* initalization table for MA predictor in dtx mode */
-static const Float32 past_rq_init[80] = {
+static const float past_rq_init[80] = {
 	-62.9883F, -77.6367F, -107.178F, -154.785F, -160.156F, -188.721F,
 	    -173.584F, -122.559F,
 	-65.4297F, -47.1191F, -0.488281F, 30.5176F, 29.7852F, -9.52148F,
@@ -639,7 +639,7 @@ static const Float32 past_rq_init[80] = {
 
 /* LSF means ->normalize frequency domain */
 
-static const Float32 mean_lsf_3[10] = {
+static const float mean_lsf_3[10] = {
 	377.441F,
 	554.688F,
 	922.363F,
@@ -652,7 +652,7 @@ static const Float32 mean_lsf_3[10] = {
 	3348.14F,
 };
 
-static const Float32 mean_lsf_5[10] = {
+static const float mean_lsf_5[10] = {
 	337.891F,
 	507.080F,
 	834.961F,
@@ -666,7 +666,7 @@ static const Float32 mean_lsf_5[10] = {
 };
 
 /* LSF prediction factors (not in MR122) */
-static const Float32 pred_fac[10] = {
+static const float pred_fac[10] = {
 	0.291626F,
 	0.328644F,
 	0.383636F,
@@ -683,7 +683,7 @@ static const Float32 pred_fac[10] = {
 #define DICO1_SIZE_3  256
 #define DICO2_SIZE_3  512
 #define DICO3_SIZE_3  512
-static const Float32 dico1_lsf_3[] = {
+static const float dico1_lsf_3[] = {
 	1.46484F,
 	20.0195F,
 	-31.9824F,
@@ -1454,7 +1454,7 @@ static const Float32 dico1_lsf_3[] = {
 	108.887F
 };
 
-static const Float32 dico2_lsf_3[] = {
+static const float dico2_lsf_3[] = {
 	12.2070F,
 	17.3340F,
 	-2.19727F,
@@ -2993,7 +2993,7 @@ static const Float32 dico2_lsf_3[] = {
 	415.039F
 };
 
-static const Float32 dico3_lsf_3[] = {
+static const float dico3_lsf_3[] = {
 	16.3574F,
 	-4.15039F,
 	16.1133F,
@@ -5047,7 +5047,7 @@ static const Float32 dico3_lsf_3[] = {
 #define MR515_3_SIZE  128
 
 /* third codebook for MR475, MR515 */
-static const Float32 mr515_3_lsf[] = {
+static const float mr515_3_lsf[] = {
 	102.295F,
 	39.7949F,
 	-7.32422F,
@@ -5565,7 +5565,7 @@ static const Float32 mr515_3_lsf[] = {
 #define MR795_1_SIZE  512
 
 /* first codebook for MR795 */
-static const Float32 mr795_1_lsf[] = {
+static const float mr795_1_lsf[] = {
 	-217.285F,
 	-378.418F,
 	-620.361F,
@@ -7112,7 +7112,7 @@ static const Float32 mr795_1_lsf[] = {
 #define DICO3_SIZE_5 256
 #define DICO4_SIZE_5 256
 #define DICO5_SIZE_5 64
-static const Float32 dico1_lsf_5[DICO1_SIZE_5 * 4] = {
+static const float dico1_lsf_5[DICO1_SIZE_5 * 4] = {
 	-110.107F,
 	-260.010F,
 	-129.150F,
@@ -7627,7 +7627,7 @@ static const Float32 dico1_lsf_5[DICO1_SIZE_5 * 4] = {
 	492.188F
 };
 
-static const Float32 dico2_lsf_5[DICO2_SIZE_5 * 4] = {
+static const float dico2_lsf_5[DICO2_SIZE_5 * 4] = {
 	-398.193F,
 	-390.625F,
 	-438.477F,
@@ -8654,7 +8654,7 @@ static const Float32 dico2_lsf_5[DICO2_SIZE_5 * 4] = {
 	680.664F
 };
 
-static const Float32 dico3_lsf_5[DICO3_SIZE_5 * 4] = {
+static const float dico3_lsf_5[DICO3_SIZE_5 * 4] = {
 	-442.383F,
 	-555.420F,
 	-458.740F,
@@ -9681,7 +9681,7 @@ static const Float32 dico3_lsf_5[DICO3_SIZE_5 * 4] = {
 	493.164F
 };
 
-static const Float32 dico4_lsf_5[DICO4_SIZE_5 * 4] = {
+static const float dico4_lsf_5[DICO4_SIZE_5 * 4] = {
 	-453.369F,
 	-410.400F,
 	-453.369F,
@@ -10708,7 +10708,7 @@ static const Float32 dico4_lsf_5[DICO4_SIZE_5 * 4] = {
 	357.666F
 };
 
-static const Float32 dico5_lsf_5[DICO5_SIZE_5 * 4] = {
+static const float dico5_lsf_5[DICO5_SIZE_5 * 4] = {
 	-244.629F,
 	-226.807F,
 	-267.578F,
@@ -10979,7 +10979,7 @@ static const Float32 dico5_lsf_5[DICO5_SIZE_5 * 4] = {
  *    g_fac(1)           // frame 1 and 3
  *
  */
-static const Float32 table_gain_MR475[MR475_VQ_SIZE * 4] = {
+static const float table_gain_MR475[MR475_VQ_SIZE * 4] = {
 	0.049561F, 0.031250F,
 	0.033081F, 0.034180F,
 	0.175354F, 0.277100F,
@@ -11501,7 +11501,7 @@ static const Float32 table_gain_MR475[MR475_VQ_SIZE * 4] = {
  */
 /* table used in 'high' rates: MR67 MR74 MR102 */
 #define VQ_SIZE_HIGHRATES 128
-static const Float32 table_highrates[VQ_SIZE_HIGHRATES * 2] = {
+static const float table_highrates[VQ_SIZE_HIGHRATES * 2] = {
 	/*g_pit,    g_fac,   */
 	0.0352173F, 0.161621F,
 	0.0491943F, 0.448242F,
@@ -11635,7 +11635,7 @@ static const Float32 table_highrates[VQ_SIZE_HIGHRATES * 2] = {
 
 /* table used in 'low' rates: MR475, MR515, MR59 */
 #define VQ_SIZE_LOWRATES 64
-static const Float32 table_lowrates[VQ_SIZE_LOWRATES * 2] = {
+static const float table_lowrates[VQ_SIZE_LOWRATES * 2] = {
 	/*g_pit,    g_fac */
 	0.659973F, 7.01978F,
 	1.25000F, 0.679932F,
@@ -11704,7 +11704,7 @@ static const Float32 table_lowrates[VQ_SIZE_LOWRATES * 2] = {
 };
 
 #define DTX_VQ_SIZE 47
-static const Word32 qua_gain_code_MR122[NB_QUA_CODE + VQ_SIZE_HIGHRATES +
+static const int32_t qua_gain_code_MR122[NB_QUA_CODE + VQ_SIZE_HIGHRATES +
 					VQ_SIZE_LOWRATES + (MR475_VQ_SIZE * 2) +
 					DTX_VQ_SIZE + 1] = {
 	-3776,
@@ -12498,7 +12498,7 @@ static const Word32 qua_gain_code_MR122[NB_QUA_CODE + VQ_SIZE_HIGHRATES +
 	-2381
 };
 
-static const Word32 qua_gain_code[NB_QUA_CODE + VQ_SIZE_HIGHRATES +
+static const int32_t qua_gain_code[NB_QUA_CODE + VQ_SIZE_HIGHRATES +
 				  VQ_SIZE_LOWRATES + (MR475_VQ_SIZE * 2) +
 				  DTX_VQ_SIZE + 3] = {
 	-22731,
@@ -13303,7 +13303,7 @@ static const Word32 qua_gain_code[NB_QUA_CODE + VQ_SIZE_HIGHRATES +
  * the first part is half a Hamming window and
  * the second part is a quarter of a cosine function cycle.
  */
-static const Float32 window_200_40[240] = {
+static const float window_200_40[240] = {
 	0.0800000F,
 	0.0800570F,
 	0.0802281F,
@@ -13553,7 +13553,7 @@ static const Float32 window_200_40[240] = {
  * the first part is half a Hamming window and
  * the second part is a quarter of a cosine function cycle.
  */
-static const Float32 window_232_8[240] = {
+static const float window_232_8[240] = {
 	0.0800000F,
 	0.0800424F,
 	0.0801694F,
@@ -13801,7 +13801,7 @@ static const Float32 window_232_8[240] = {
  * The first window has its weight concentrated at the second subframe
  * and it consists of two halves of Hamming windows with different sizes
  */
-static const Float32 window_160_80[240] = {
+static const float window_160_80[240] = {
 	0.0800000F,
 	0.0800898F,
 	0.0803591F,
@@ -14045,7 +14045,7 @@ static const Float32 window_160_80[240] = {
 };
 
 /* correlation weights	*/
-static const Float32 corrweight[251] = {
+static const float corrweight[251] = {
 	0.624805F,
 	0.625813F,
 	0.626820F,
@@ -14300,15 +14300,15 @@ static const Float32 corrweight[251] = {
 };
 
 static const struct {
-	Word8 max_frac_lag;	/* lag up to which fractional lags are used */
-	Word8 flag3;		/* enable 1/3 instead of 1/6 fract. resolution */
-	Word8 first_frac;	/* first fractional to check */
-	Word8 last_frac;	/* last fractional to check */
-	Word8 delta_int_low;	/* integer lag below TO to start search from */
-	Word8 delta_int_range;	/* integer range around T0 */
-	Word8 delta_frc_low;	/* fractional below T0 */
-	Word8 delta_frc_range;	/* fractional range around T0 */
-	Word8 pit_min;		/* minimum pitch */
+	int8_t max_frac_lag;	/* lag up to which fractional lags are used */
+	int8_t flag3;		/* enable 1/3 instead of 1/6 fract. resolution */
+	int8_t first_frac;	/* first fractional to check */
+	int8_t last_frac;	/* last fractional to check */
+	int8_t delta_int_low;	/* integer lag below TO to start search from */
+	int8_t delta_int_range;	/* integer range around T0 */
+	int8_t delta_frc_low;	/* fractional below T0 */
+	int8_t delta_frc_range;	/* fractional range around T0 */
+	int8_t pit_min;		/* minimum pitch */
 
 } mode_dep_parm[8] = {
 	/*
@@ -14354,7 +14354,7 @@ static const struct {
 };
 
 /* table used inbase 2 logharithm computation */
-static const Word32 log2_table[33] = {
+static const int32_t log2_table[33] = {
 	0,
 	1455,
 	2866,
@@ -14391,7 +14391,7 @@ static const Word32 log2_table[33] = {
 };
 
 /* table used in 2 to the power computation */
-static const Word32 pow2_table[33] = {
+static const int32_t pow2_table[33] = {
 	16384,
 	16743,
 	17109,

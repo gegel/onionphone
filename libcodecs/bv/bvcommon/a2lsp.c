@@ -26,7 +26,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "basop32.h"
 #include "mathutil.h"
@@ -35,19 +35,19 @@
 #define  NAB      (LPCO>>1)+1
 #define  NBIS  4		/* number of bisections */
 
-Word16 FNevChebP(Word16 x, Word16 * t_man, Word16 * t_exp, Word16 nd2);
+int16_t FNevChebP(int16_t x, int16_t * t_man, int16_t * t_exp, int16_t nd2);
 
-void a2lsp(Word16 pc[],		/* (i) Q12: predictor coefficients */
-	   Word16 lsp[],	/* (o) Q15: line spectral pairs    */
-	   Word16 old_lsp[])
+void a2lsp(int16_t pc[],		/* (i) Q12: predictor coefficients */
+	   int16_t lsp[],	/* (o) Q15: line spectral pairs    */
+	   int16_t old_lsp[])
 {				/* (i) Q15: old lsp                */
-	Word16 i, j, exp;
-	Word16 fa_man[NAB], fa_exp[NAB], fb_man[NAB], fb_exp[NAB];
-	Word16 ta_man[NAB], ta_exp[NAB], tb_man[NAB], tb_exp[NAB];
-	Word16 *t_man, *t_exp;
-	Word32 a0;
-	Word16 nd2, nf, ngrd;
-	Word16 xroot, xlow, ylow, ind, xhigh, yhigh, xmid, ymid, dx, dy, dxdy,
+	int16_t i, j, exp;
+	int16_t fa_man[NAB], fa_exp[NAB], fb_man[NAB], fb_exp[NAB];
+	int16_t ta_man[NAB], ta_exp[NAB], tb_man[NAB], tb_exp[NAB];
+	int16_t *t_man, *t_exp;
+	int32_t a0;
+	int16_t nd2, nf, ngrd;
+	int16_t xroot, xlow, ylow, ind, xhigh, yhigh, xmid, ymid, dx, dy, dxdy,
 	    x, sign;
 
 	/* Find normalization for fa and fb */
@@ -193,16 +193,16 @@ void a2lsp(Word16 pc[],		/* (i) Q12: predictor coefficients */
 	return;
 }
 
-Word16 FNevChebP(Word16 x,	/* (i) Q15: value                     */
-		 Word16 * t_man,	/* (i) Q7: mantissa of coefficients */
-		 Word16 * t_exp,	/* (i): exponent fo cofficients     */
-		 Word16 nd2)
+int16_t FNevChebP(int16_t x,	/* (i) Q15: value                     */
+		 int16_t * t_man,	/* (i) Q7: mantissa of coefficients */
+		 int16_t * t_exp,	/* (i): exponent fo cofficients     */
+		 int16_t nd2)
 {				/* (i): order                       */
-	Word16 i;
-	Word16 x2;
-	Word16 b_man[NAB], b_exp[NAB];
-	Word16 y;
-	Word32 a0;
+	int16_t i;
+	int16_t x2;
+	int16_t b_man[NAB], b_exp[NAB];
+	int16_t y;
+	int32_t a0;
 
 	x2 = x;			// 2x in Q14
 	b_man[0] = t_man[nd2];

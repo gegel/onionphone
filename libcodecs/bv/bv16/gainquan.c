@@ -27,7 +27,7 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -36,14 +36,14 @@
 #include "mathutil.h"
 #include "../itug729ilib/oper_32b.h"
 
-Word16 gainquan(Word32 * gainq,	/* Q18 */
-		Word32 * ee,	/* Q1 */
-		Word16 * lgpm,	/* Q11 */
-		Word32 * prevlg, Word32 level)
+int16_t gainquan(int32_t * gainq,	/* Q18 */
+		int32_t * ee,	/* Q1 */
+		int16_t * lgpm,	/* Q11 */
+		int32_t * prevlg, int32_t level)
 {
-	Word32 lg, elg, lgq, limit;
-	Word16 lg_exp, lg_frac, lgpe, d, dmin;
-	Word16 i, n, gidx = 0, *p_gidx;
+	int32_t lg, elg, lgq, limit;
+	int16_t lg_exp, lg_frac, lgpe, d, dmin;
+	int16_t i, n, gidx = 0, *p_gidx;
 
 	/* Divide ee by hfrsz = 8*5 */
 	if (*ee < 2 * FRSZ)

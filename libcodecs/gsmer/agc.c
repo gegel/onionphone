@@ -16,25 +16,25 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 #include "sig_proc.h"
 #include "cnst.h"
 
-Word16 w_past_gain;		/* initial value of w_past_gain = 1.0  */
+int16_t w_past_gain;		/* initial value of w_past_gain = 1.0  */
 
-void w_agc(Word16 * sig_in,	/* (i)     : postfilter input signal  */
-	   Word16 * sig_out,	/* (i/o)   : postfilter output signal */
-	   Word16 w_agc_fac,	/* (i)     : AGC factor               */
-	   Word16 l_trm		/* (i)     : w_subframe size            */
+void w_agc(int16_t * sig_in,	/* (i)     : postfilter input signal  */
+	   int16_t * sig_out,	/* (i/o)   : postfilter output signal */
+	   int16_t w_agc_fac,	/* (i)     : AGC factor               */
+	   int16_t l_trm		/* (i)     : w_subframe size            */
     )
 {
-	Word16 i, exp;
-	Word16 gain_in, gain_out, g0, gain;
-	Word32 s;
+	int16_t i, exp;
+	int16_t gain_in, gain_out, g0, gain;
+	int32_t s;
 
-	Word16 temp;
+	int16_t temp;
 
 	/* calculate gain_out with exponent */
 
@@ -104,16 +104,16 @@ void w_agc(Word16 * sig_in,	/* (i)     : postfilter input signal  */
 	return;
 }
 
-void w_w_agc2(Word16 * sig_in,	/* (i)     : postfilter input signal  */
-	      Word16 * sig_out,	/* (i/o)   : postfilter output signal */
-	      Word16 l_trm	/* (i)     : w_subframe size            */
+void w_w_agc2(int16_t * sig_in,	/* (i)     : postfilter input signal  */
+	      int16_t * sig_out,	/* (i/o)   : postfilter output signal */
+	      int16_t l_trm	/* (i)     : w_subframe size            */
     )
 {
-	Word16 i, exp;
-	Word16 gain_in, gain_out, g0;
-	Word32 s;
+	int16_t i, exp;
+	int16_t gain_in, gain_out, g0;
+	int32_t s;
 
-	Word16 temp;
+	int16_t temp;
 
 	/* calculate gain_out with exponent */
 

@@ -29,7 +29,6 @@
 #include <string.h>
 #include <ophtools.h>
 
-#include "ophint.h"
 #include "basic_op.h"
 #include "sig_proc.h"
 #include "count.h"
@@ -40,27 +39,27 @@
 #include "d_homing.h"
 #include "dtx.h"
 
-static Word16 w_TAF_count = { 1 };
+static int16_t w_TAF_count = { 1 };
 
-Word16 w_dtx_mode;
-extern Word16 w_txdtx_ctrl;
-extern Word16 *w_new_w_speech;	/* Pointer to new w_speech data            */
+int16_t w_dtx_mode;
+extern int16_t w_txdtx_ctrl;
+extern int16_t *w_new_w_speech;	/* Pointer to new w_speech data            */
 
 /* L_FRAME, M, PRM_SIZE, AZ_SIZE, SERIAL_SIZE: defined in "cnst.h" */
 
-static Word16 w_reset_flag;
-static Word16 w_prm[PRM_SIZE];	/* Analysis parameters.                  */
-static Word16 w_serial[SERIAL_SIZE + 4];	/* Output bitstream buffer               */
-static Word16 w_syn[L_FRAME];	/* Buffer for w_w_synthesis w_speech           */
-static Word16 LastFrameType;
+static int16_t w_reset_flag;
+static int16_t w_prm[PRM_SIZE];	/* Analysis parameters.                  */
+static int16_t w_serial[SERIAL_SIZE + 4];	/* Output bitstream buffer               */
+static int16_t w_syn[L_FRAME];	/* Buffer for w_w_synthesis w_speech           */
+static int16_t LastFrameType;
 
-Word16 synth_buf[L_FRAME + M];
+int16_t synth_buf[L_FRAME + M];
 
-static Word16 *w_w_synth;	/* Synthesis                  */
-static Word16 w_parm[PRM_SIZE + 1];	/* Synthesis parameters    58   */
-static Word16 w_dw_reset_flag;
-static Word16 w_w_reset_flag_old = 1;
-static Word16 w_Az_dec[AZ_SIZE];	/* Decoded Az for post-filter */
+static int16_t *w_w_synth;	/* Synthesis                  */
+static int16_t w_parm[PRM_SIZE + 1];	/* Synthesis parameters    58   */
+static int16_t w_dw_reset_flag;
+static int16_t w_w_reset_flag_old = 1;
+static int16_t w_Az_dec[AZ_SIZE];	/* Decoded Az for post-filter */
 				/* in 4 w_subframes, length= 44 */
 
 void gsmer_init(int dtx)
@@ -80,10 +79,10 @@ void gsmer_init(int dtx)
 //returns SP + 2*VAD flags
 int gsmer_encode(unsigned char *rb, const short *pcm)
 {
-	Word16 i;
+	int16_t i;
 
 	/* Check whether this frame is an encoder homing frame */
-	w_reset_flag = w_encoder_homing_frame_w_test((Word16 *) pcm);
+	w_reset_flag = w_encoder_homing_frame_w_test((int16_t *) pcm);
 
 	for (i = 0; i < L_FRAME; i++) {	/* Delete the 3 LSBs (13-bit input) */
 		w_new_w_speech[i] = pcm[i] & 0xfff8;	//     
@@ -160,8 +159,8 @@ int gsmer_decode(short *pcm, const unsigned char *rb)
 	   that function w_decoder_homing_frame_w_test() checks */
 #define WHOLE_FRAME 57
 #define TO_FIRST_SUBFRAME 18
-	Word16 i, temp;
-	Word16 TAF, SID_flag, VAD, SP, BFI;
+	int16_t i, temp;
+	int16_t TAF, SID_flag, VAD, SP, BFI;
 
 	/* Unpack bitStream */
 	for (i = 0; i < 248; i++) {
@@ -176,7 +175,7 @@ int gsmer_decode(short *pcm, const unsigned char *rb)
 
 	/* Set channel status (BFI) flag */
 	/* -------------------------------------- */
-	BFI = (Word16) (!w_serial[247]);	/* BFI flag */
+	BFI = (int16_t) (!w_serial[247]);	/* BFI flag */
 	w_serial[0] = BFI;
 
 	/* Evaluate SID flag                                  */

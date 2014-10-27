@@ -27,7 +27,7 @@
 #ifndef _interf_dec_h_
 #define _interf_dec_h_
 
-#include <ophint.h>
+#include <stdint.h>
 
 /*
  * Function prototypes
@@ -54,7 +54,7 @@ void *Decoder_Interface_init(void);
  */
 void Decoder_Interface_exit(void *state);
 
-void AMR475_decode(void *st, UWord8 * serial, Word16 * synth, int bfi);
-void AMR_decode(void *st, UWord8 mode, UWord8 * serial, Word16 * synth,
+void AMR475_decode(void *st, uint8_t * serial, int16_t * synth, int bfi);
+void AMR_decode(void *st, uint8_t mode, uint8_t * serial, int16_t * synth,
 		int bfi);
 #endif /* _interf_dec_h_ */

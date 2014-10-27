@@ -21,8 +21,6 @@
 /*
  File : PRED_LT3.C
 */
-
-#include "ophint.h"
 #include "ld8k.h"
 #include "tab_ld8k.h"
 
@@ -38,14 +36,14 @@
 *-------------------------------------------------------------------*/
 
 void pred_lt_3(			/* Compute adaptive codebook                       */
-		      FLOAT exc[],	/* in/out: excitation vector, exc[0:l_sub-1] = out */
+		      float exc[],	/* in/out: excitation vector, exc[0:l_sub-1] = out */
 		      int t0,	/* input : pitch lag                               */
 		      int frac,	/* input : Fraction of pitch lag (-1, 0, 1)  / 3   */
 		      int l_subfr	/* input : length of subframe.                     */
     )
 {
 	int i, j, k;
-	FLOAT s, *x0, *x1, *x2, *c1, *c2;
+	float s, *x0, *x1, *x2, *c1, *c2;
 
 	x0 = &exc[-t0];
 
@@ -61,7 +59,7 @@ void pred_lt_3(			/* Compute adaptive codebook                       */
 		c1 = &inter_3l[frac];
 		c2 = &inter_3l[UP_SAMP - frac];
 
-		s = (F) 0.0;
+		s = (float) 0.0;
 		for (i = 0, k = 0; i < L_INTER10; i++, k += UP_SAMP)
 			s += x1[-i] * c1[k] + x2[i] * c2[k];
 

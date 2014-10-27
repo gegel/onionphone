@@ -16,18 +16,18 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
-void w_Convolve(Word16 x[],	/* (i)     : input vector                           */
-		Word16 h[],	/* (i)     : impulse response                       */
-		Word16 y[],	/* (o)     : output vector                          */
-		Word16 L	/* (i)     : vector size                            */
+void w_Convolve(int16_t x[],	/* (i)     : input vector                           */
+		int16_t h[],	/* (i)     : impulse response                       */
+		int16_t y[],	/* (o)     : output vector                          */
+		int16_t L	/* (i)     : vector size                            */
     )
 {
-	Word16 i, n;
-	Word32 s;
+	int16_t i, n;
+	int32_t s;
 
 	for (n = 0; n < L; n++) {
 		s = 0;

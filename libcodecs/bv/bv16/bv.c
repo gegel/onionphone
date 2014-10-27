@@ -29,7 +29,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 #include "bv16cnst.h"
 #include "bv16strct.h"
@@ -40,10 +40,9 @@
 #else
 #include "bitpack.h"
 #endif
-#include "memutil.h"
 
 int frame;
-Word16 bfi = 0;
+int16_t bfi = 0;
 
 void usage(char *name)
 {

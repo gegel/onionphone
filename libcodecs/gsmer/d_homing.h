@@ -15,7 +15,7 @@
 
 /* Function Prototypes */
 
-Word16 w_decoder_homing_frame_w_test(Word16 w_parm[], Word16 nbr_of_params);
+int16_t w_decoder_homing_frame_w_test(int16_t w_parm[], int16_t nbr_of_params);
 
 void w_decoder_reset(void);
 

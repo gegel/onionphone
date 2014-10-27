@@ -17,26 +17,25 @@
 /*****************************************************************************/
 
 #include <math.h>
-#include "ophint.h"
 #include "ld8k.h"
 #include "tab_ld8k.h"
 #include "ld8cp.h"
 #include "tabld8cp.h"
 
-static FLOAT past_qua_en[4] =
-    { (F) - 14.0, (F) - 14.0, (F) - 14.0, (F) - 14.0 };
+static float past_qua_en[4] =
+    { (float) - 14.0, (float) - 14.0, (float) - 14.0, (float) - 14.0 };
 /* prototypes of local functions */
-static void gbk_presel_6k(FLOAT best_gain[],	/* input : [0] unquantized pitch gain
+static void gbk_presel_6k(float best_gain[],	/* input : [0] unquantized pitch gain
 						   [1] unquantized code gain      */
 			  int *cand1,	/* output: index of best 1st stage vector */
 			  int *cand2,	/* output: index of best 2nd stage vector */
-			  FLOAT gcode0	/* input : presearch for gain codebook    */
+			  float gcode0	/* input : presearch for gain codebook    */
     );
-static void gbk_presel(FLOAT best_gain[],	/* input : [0] unquantized pitch gain
+static void gbk_presel(float best_gain[],	/* input : [0] unquantized pitch gain
 						   [1] unquantized code gain      */
 		       int *cand1,	/* output: index of best 1st stage vector */
 		       int *cand2,	/* output: index of best 2nd stage vector */
-		       FLOAT gcode0	/* input : presearch for gain codebook    */
+		       float gcode0	/* input : presearch for gain codebook    */
     );
 
 /*----------------------------------------------------------------------------
@@ -44,11 +43,11 @@ static void gbk_presel(FLOAT best_gain[],	/* input : [0] unquantized pitch gain
 *----------------------------------------------------------------------------
 */
 int qua_gain_6k(		/* output: quantizer index                   */
-		       FLOAT code[],	/* input : fixed codebook vector             */
-		       FLOAT * g_coeff,	/* input : correlation factors               */
+		       float code[],	/* input : fixed codebook vector             */
+		       float * g_coeff,	/* input : correlation factors               */
 		       int l_subfr,	/* input : fcb vector length                 */
-		       FLOAT * gain_pit,	/* output: quantized acb gain                */
-		       FLOAT * gain_code,	/* output: quantized fcb gain                */
+		       float * gain_pit,	/* output: quantized acb gain                */
+		       float * gain_code,	/* output: quantized fcb gain                */
 		       int tameflag	/* input : flag set to 1 if taming is needed */
     )
 {
@@ -63,9 +62,9 @@ int qua_gain_6k(		/* output: quantizer index                   */
 */
 	int i, j, index1, index2;
 	int cand1, cand2;
-	FLOAT gcode0;
-	FLOAT dist, dist_min, g_pitch, g_code;
-	FLOAT best_gain[2], tmp;
+	float gcode0;
+	float dist, dist_min, g_pitch, g_code;
+	float best_gain[2], tmp;
 
     /*---------------------------------------------------*
     *-  energy due to innovation                       -*
@@ -76,12 +75,12 @@ int qua_gain_6k(		/* output: quantizer index                   */
 
     /*-- pre-selection --*/
 	tmp =
-	    (F) - 1. / ((F) 4. * g_coeff[0] * g_coeff[2] -
+	    (float) - 1. / ((float) 4. * g_coeff[0] * g_coeff[2] -
 			g_coeff[4] * g_coeff[4]);
 	best_gain[0] =
-	    ((F) 2. * g_coeff[2] * g_coeff[1] - g_coeff[3] * g_coeff[4]) * tmp;
+	    ((float) 2. * g_coeff[2] * g_coeff[1] - g_coeff[3] * g_coeff[4]) * tmp;
 	best_gain[1] =
-	    ((F) 2. * g_coeff[0] * g_coeff[3] - g_coeff[1] * g_coeff[4]) * tmp;
+	    ((float) 2. * g_coeff[0] * g_coeff[3] - g_coeff[1] * g_coeff[4]) * tmp;
 
 	if (tameflag == 1) {
 		if (best_gain[0] > GPCLIP2)
@@ -146,8 +145,8 @@ int qua_gain_6k(		/* output: quantizer index                   */
     /*----------------------------------------------*
     * update table of past quantized energies      *
     *----------------------------------------------*/
-	if (g_code < (F) 0.2)
-		g_code = (F) 0.2;
+	if (g_code < (float) 0.2)
+		g_code = (float) 0.2;
 	gain_update(past_qua_en, g_code);
 
 	return (map1_6k[index1] * NCODE2_6K + map2_6k[index2]);
@@ -156,14 +155,14 @@ int qua_gain_6k(		/* output: quantizer index                   */
 /*----------------------------------------------------------------------------
 * gbk_presel_6k - presearch for gain codebook
 */
-static void gbk_presel_6k(FLOAT best_gain[],	/* input : [0] unquantized pitch gain
+static void gbk_presel_6k(float best_gain[],	/* input : [0] unquantized pitch gain
 						   [1] unquantized code gain      */
 			  int *cand1,	/* output: index of best 1st stage vector */
 			  int *cand2,	/* output: index of best 2nd stage vector */
-			  FLOAT gcode0	/* input : presearch for gain codebook    */
+			  float gcode0	/* input : presearch for gain codebook    */
     )
 {
-	FLOAT x, y;
+	float x, y;
 
 	x = (best_gain[1] -
 	     (coef_6k[0][0] * best_gain[0] +
@@ -171,7 +170,7 @@ static void gbk_presel_6k(FLOAT best_gain[],	/* input : [0] unquantized pitch ga
 	y = (coef_6k[1][0] * (-coef_6k[0][1] + best_gain[0] * coef_6k[0][0]) *
 	     gcode0 - coef_6k[0][0] * best_gain[1]) * INV_COEF_6K;
 
-	if (gcode0 > (F) 0.0) {
+	if (gcode0 > (float) 0.0) {
 		/* pre select codebook #1 */
 		*cand1 = 0;
 		do {
@@ -215,11 +214,11 @@ static void gbk_presel_6k(FLOAT best_gain[],	/* input : [0] unquantized pitch ga
 *----------------------------------------------------------------------------
 */
 int qua_gain(			/* output: quantizer index                   */
-		    FLOAT code[],	/* input : fixed codebook vector             */
-		    FLOAT * g_coeff,	/* input : correlation factors               */
+		    float code[],	/* input : fixed codebook vector             */
+		    float * g_coeff,	/* input : correlation factors               */
 		    int l_subfr,	/* input : fcb vector length                 */
-		    FLOAT * gain_pit,	/* output: quantized acb gain                */
-		    FLOAT * gain_code,	/* output: quantized fcb gain                */
+		    float * gain_pit,	/* output: quantized acb gain                */
+		    float * gain_code,	/* output: quantized fcb gain                */
 		    int tameflag	/* input : flag set to 1 if taming is needed */
     )
 {
@@ -235,9 +234,9 @@ int qua_gain(			/* output: quantizer index                   */
 
 	int i, j, index1, index2;
 	int cand1, cand2;
-	FLOAT gcode0;
-	FLOAT dist, dist_min, g_pitch, g_code;
-	FLOAT best_gain[2], tmp;
+	float gcode0;
+	float dist, dist_min, g_pitch, g_code;
+	float best_gain[2], tmp;
 
     /*---------------------------------------------------*
     *-  energy due to innovation                       -*
@@ -248,12 +247,12 @@ int qua_gain(			/* output: quantizer index                   */
 
     /*-- pre-selection --*/
 	tmp =
-	    (F) - 1. / ((F) 4. * g_coeff[0] * g_coeff[2] -
+	    (float) - 1. / ((float) 4. * g_coeff[0] * g_coeff[2] -
 			g_coeff[4] * g_coeff[4]);
 	best_gain[0] =
-	    ((F) 2. * g_coeff[2] * g_coeff[1] - g_coeff[3] * g_coeff[4]) * tmp;
+	    ((float) 2. * g_coeff[2] * g_coeff[1] - g_coeff[3] * g_coeff[4]) * tmp;
 	best_gain[1] =
-	    ((F) 2. * g_coeff[0] * g_coeff[3] - g_coeff[1] * g_coeff[4]) * tmp;
+	    ((float) 2. * g_coeff[0] * g_coeff[3] - g_coeff[1] * g_coeff[4]) * tmp;
 
 	if (tameflag == 1) {
 		if (best_gain[0] > GPCLIP2)
@@ -325,21 +324,21 @@ int qua_gain(			/* output: quantizer index                   */
 /*----------------------------------------------------------------------------
 * gbk_presel - presearch for gain codebook
 */
-static void gbk_presel(FLOAT best_gain[],	/* input : [0] unquantized pitch gain
+static void gbk_presel(float best_gain[],	/* input : [0] unquantized pitch gain
 						   [1] unquantized code gain      */
 		       int *cand1,	/* output: index of best 1st stage vector */
 		       int *cand2,	/* output: index of best 2nd stage vector */
-		       FLOAT gcode0	/* input : presearch for gain codebook    */
+		       float gcode0	/* input : presearch for gain codebook    */
     )
 {
-	FLOAT x, y;
+	float x, y;
 
 	x = (best_gain[1] -
 	     (coef[0][0] * best_gain[0] + coef[1][1]) * gcode0) * INV_COEF;
 	y = (coef[1][0] * (-coef[0][1] + best_gain[0] * coef[0][0]) * gcode0 -
 	     coef[0][0] * best_gain[1]) * INV_COEF;
 
-	if (gcode0 > (F) 0.0) {
+	if (gcode0 > (float) 0.0) {
 		/* pre select codebook #1 */
 		*cand1 = 0;
 		do {

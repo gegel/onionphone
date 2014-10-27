@@ -32,7 +32,7 @@
 /*
  * include files
  */
-#include "ophint.h"
+#include <stdint.h>
 
 /*
  * definition of constants
@@ -54,24 +54,24 @@
  */
 #ifndef IF2
 #ifndef ETSI
-static const UWord8 block_size[16] = { 13, 14, 16, 18, 20, 21, 27, 32,
+static const uint8_t block_size[16] = { 13, 14, 16, 18, 20, 21, 27, 32,
 	6, 0, 0, 0, 0, 0, 0, 1
 };
 
-static const UWord8 toc_byte[16] =
+static const uint8_t toc_byte[16] =
     { 0x04, 0x0C, 0x14, 0x1C, 0x24, 0x2C, 0x34, 0x3C,
 	0x44, 0x4C, 0x54, 0x5C, 0x64, 0x6C, 0x74, 0x7C
 };
 #endif
 #else
 /* One encoded frame (bytes) */
-static const UWord8 block_size[16] = { 13, 14, 16, 18, 19, 21, 26, 31,
+static const uint8_t block_size[16] = { 13, 14, 16, 18, 19, 21, 26, 31,
 	5, 0, 0, 0, 0, 0, 0, 1
 };
 #endif
 
 /* Homing frames for the decoder */
-static const Word16 dhf_MR475[PRMNO_MR475] = {
+static const int16_t dhf_MR475[PRMNO_MR475] = {
 	0x00F8,
 	0x009D,
 	0x001C,
@@ -91,7 +91,7 @@ static const Word16 dhf_MR475[PRMNO_MR475] = {
 	0x0003
 };
 
-static const Word16 dhf_MR515[PRMNO_MR515] = {
+static const int16_t dhf_MR515[PRMNO_MR515] = {
 	0x00F8,
 	0x009D,
 	0x001C,
@@ -113,7 +113,7 @@ static const Word16 dhf_MR515[PRMNO_MR515] = {
 	0x001F
 };
 
-static const Word16 dhf_MR59[PRMNO_MR59] = {
+static const int16_t dhf_MR59[PRMNO_MR59] = {
 	0x00F8,
 	0x00E3,
 	0x002F,
@@ -135,7 +135,7 @@ static const Word16 dhf_MR59[PRMNO_MR59] = {
 	0x0037
 };
 
-static const Word16 dhf_MR67[PRMNO_MR67] = {
+static const int16_t dhf_MR67[PRMNO_MR67] = {
 	0x00F8,
 	0x00E3,
 	0x002F,
@@ -157,7 +157,7 @@ static const Word16 dhf_MR67[PRMNO_MR67] = {
 	0x0000
 };
 
-static const Word16 dhf_MR74[PRMNO_MR74] = {
+static const int16_t dhf_MR74[PRMNO_MR74] = {
 	0x00F8,
 	0x00E3,
 	0x002F,
@@ -179,7 +179,7 @@ static const Word16 dhf_MR74[PRMNO_MR74] = {
 	0x0000
 };
 
-static const Word16 dhf_MR795[PRMNO_MR795] = {
+static const int16_t dhf_MR795[PRMNO_MR795] = {
 	0x00C2,
 	0x00E3,
 	0x002F,
@@ -205,7 +205,7 @@ static const Word16 dhf_MR795[PRMNO_MR795] = {
 	0x0001
 };
 
-static const Word16 dhf_MR102[PRMNO_MR102] = {
+static const int16_t dhf_MR102[PRMNO_MR102] = {
 	0x00F8,
 	0x00E3,
 	0x002F,
@@ -247,7 +247,7 @@ static const Word16 dhf_MR102[PRMNO_MR102] = {
 	0x0030
 };
 
-static const Word16 dhf_MR122[PRMNO_MR122] = {
+static const int16_t dhf_MR122[PRMNO_MR122] = {
 	0x0004,
 	0x002A,
 	0x00DB,
@@ -308,7 +308,7 @@ static const Word16 dhf_MR122[PRMNO_MR122] = {
 };
 
 /* parameter sizes (# of bits), one table per mode */
-static const Word16 bitno_MR475[PRMNO_MR475] = {
+static const int16_t bitno_MR475[PRMNO_MR475] = {
 	8, 8, 7,		/* LSP VQ          */
 	8, 7, 2, 8,		/* first subframe  */
 	4, 7, 2,		/* second subframe */
@@ -316,7 +316,7 @@ static const Word16 bitno_MR475[PRMNO_MR475] = {
 	4, 7, 2			/* fourth subframe */
 };
 
-static const Word16 bitno_MR515[PRMNO_MR515] = {
+static const int16_t bitno_MR515[PRMNO_MR515] = {
 	8, 8, 7,		/* LSP VQ          */
 	8, 7, 2, 6,		/* first subframe  */
 	4, 7, 2, 6,		/* second subframe */
@@ -324,7 +324,7 @@ static const Word16 bitno_MR515[PRMNO_MR515] = {
 	4, 7, 2, 6		/* fourth subframe */
 };
 
-static const Word16 bitno_MR59[PRMNO_MR59] = {
+static const int16_t bitno_MR59[PRMNO_MR59] = {
 	8, 9, 9,		/* LSP VQ          */
 	8, 9, 2, 6,		/* first subframe  */
 	4, 9, 2, 6,		/* second subframe */
@@ -332,7 +332,7 @@ static const Word16 bitno_MR59[PRMNO_MR59] = {
 	4, 9, 2, 6		/* fourth subframe */
 };
 
-static const Word16 bitno_MR67[PRMNO_MR67] = {
+static const int16_t bitno_MR67[PRMNO_MR67] = {
 	8, 9, 9,		/* LSP VQ          */
 	8, 11, 3, 7,		/* first subframe  */
 	4, 11, 3, 7,		/* second subframe */
@@ -340,7 +340,7 @@ static const Word16 bitno_MR67[PRMNO_MR67] = {
 	4, 11, 3, 7		/* fourth subframe */
 };
 
-static const Word16 bitno_MR74[PRMNO_MR74] = {
+static const int16_t bitno_MR74[PRMNO_MR74] = {
 	8, 9, 9,		/* LSP VQ          */
 	8, 13, 4, 7,		/* first subframe  */
 	5, 13, 4, 7,		/* second subframe */
@@ -348,7 +348,7 @@ static const Word16 bitno_MR74[PRMNO_MR74] = {
 	5, 13, 4, 7		/* fourth subframe */
 };
 
-static const Word16 bitno_MR795[PRMNO_MR795] = {
+static const int16_t bitno_MR795[PRMNO_MR795] = {
 	9, 9, 9,		/* LSP VQ          */
 	8, 13, 4, 4, 5,		/* first subframe  */
 	6, 13, 4, 4, 5,		/* second subframe */
@@ -356,7 +356,7 @@ static const Word16 bitno_MR795[PRMNO_MR795] = {
 	6, 13, 4, 4, 5		/* fourth subframe */
 };
 
-static const Word16 bitno_MR102[PRMNO_MR102] = {
+static const int16_t bitno_MR102[PRMNO_MR102] = {
 	8, 9, 9,		/* LSP VQ          */
 	8, 1, 1, 1, 1, 10, 10, 7, 7,	/* first subframe  */
 	5, 1, 1, 1, 1, 10, 10, 7, 7,	/* second subframe */
@@ -364,7 +364,7 @@ static const Word16 bitno_MR102[PRMNO_MR102] = {
 	5, 1, 1, 1, 1, 10, 10, 7, 7	/* fourth subframe */
 };
 
-static const Word16 bitno_MR122[PRMNO_MR122] = {
+static const int16_t bitno_MR122[PRMNO_MR122] = {
 	7, 8, 9, 8, 6,		/* LSP VQ          */
 	9, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 5,	/* first subframe  */
 	6, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 5,	/* second subframe */
@@ -372,7 +372,7 @@ static const Word16 bitno_MR122[PRMNO_MR122] = {
 	6, 4, 4, 4, 4, 4, 4, 3, 3, 3, 3, 3, 5	/* fourth subframe */
 };
 
-static const Word16 bitno_MRDTX[PRMNO_MRDTX] = {
+static const int16_t bitno_MRDTX[PRMNO_MRDTX] = {
 	3, 8, 9, 9, 6
 };
 

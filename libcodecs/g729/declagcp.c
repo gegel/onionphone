@@ -10,7 +10,6 @@
 /*
  File : DECLAGCP.C
 */
-#include "ophint.h"
 #include "ld8k.h"
 #include "ld8cp.h"
 

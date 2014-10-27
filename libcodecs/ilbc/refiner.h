@@ -31,14 +31,14 @@
  * sampling rate
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_Refiner(WebRtc_Word16 * updStartPos,	/* (o) updated start point (Q-2) */
-			   WebRtc_Word16 * idata,	/* (i) original data buffer */
-			   WebRtc_Word16 idatal,	/* (i) dimension of idata */
-			   WebRtc_Word16 centerStartPos,	/* (i) beginning center segment */
-			   WebRtc_Word16 estSegPos,	/* (i) estimated beginning other segment (Q-2) */
-			   WebRtc_Word16 * surround,	/* (i/o) The contribution from this sequence
+void WebRtcIlbcfix_Refiner(int16_t * updStartPos,	/* (o) updated start point (Q-2) */
+			   int16_t * idata,	/* (i) original data buffer */
+			   int16_t idatal,	/* (i) dimension of idata */
+			   int16_t centerStartPos,	/* (i) beginning center segment */
+			   int16_t estSegPos,	/* (i) estimated beginning other segment (Q-2) */
+			   int16_t * surround,	/* (i/o) The contribution from this sequence
 							   summed with earlier contributions */
-			   WebRtc_Word16 gain	/* (i) Gain to use for this sequence */
+			   int16_t gain	/* (i) Gain to use for this sequence */
     );
 
 #endif

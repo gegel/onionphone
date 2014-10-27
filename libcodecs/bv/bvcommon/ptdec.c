@@ -26,13 +26,13 @@
   $Log$
 ******************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "bvcommon.h"
 
-void pp3dec(Word16 idx, Word16 * b)
+void pp3dec(int16_t idx, int16_t * b)
 {
-	Word16 *fp;
-	Word16 i;
+	int16_t *fp;
+	int16_t i;
 	fp = pp9cb + idx * 9;
 	for (i = 0; i < 3; i++)
 		b[i] = *fp++;

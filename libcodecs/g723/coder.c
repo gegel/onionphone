@@ -39,44 +39,47 @@ extern float mips_test[TESTMIPSNUM];
 //end    -----------------------------------add by haiping 2009-06-19
 
 CODSTATDEF CodStat;
-extern Word16 LspDcTable[LpcOrder];
+extern int16_t LspDcTable[LpcOrder];
 extern VADSTATDEF VadStat;
 extern CODCNGDEF CodCng;
 
-extern Word16 g723_add(Word16 var1, Word16 var2);	/* Short add,           1 */
-extern Word16 g723_shl(Word16 var1, Word16 var2);	/* Short shift left,    1 */
-extern void Rem_Dc(Word16 * Dpnt);
-extern void Comp_Lpc(Word16 * UnqLpc, Word16 * PrevDat, Word16 * DataBuff);
-extern void Find_Fcbk(Word16 * Dpnt, Word16 * ImpResp, LINEDEF * Line,
-		      Word16 Sfc);
-extern PWDEF Comp_Pw(Word16 * Dpnt, Word16 Start, Word16 Olp);
-extern void AtoLsp(Word16 * LspVect, Word16 * Lpc, Word16 * PrevLsp);
-extern Flag Comp_Vad(Word16 * Dpnt);
-extern Word32 Lsp_Qnt(Word16 * CurrLsp, Word16 * PrevLsp);
-extern void Mem_Shift(Word16 * PrevDat, Word16 * DataBuff);
-extern void Wght_Lpc(Word16 * PerLpc, Word16 * UnqLpc);
-extern void Error_Wght(Word16 * Dpnt, Word16 * PerLpc);
-extern Word16 Vec_Norm(Word16 * Vect, Word16 Len);
-extern Word16 Estim_Pitch(Word16 * Dpnt, Word16 Start);
+extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
+extern int16_t g723_shl(int16_t var1, int16_t var2);	/* Short shift left,    1 */
+extern void Rem_Dc(int16_t * Dpnt);
+extern void Comp_Lpc(int16_t * UnqLpc, int16_t * PrevDat, int16_t * DataBuff);
+extern void Find_Fcbk(int16_t * Dpnt, int16_t * ImpResp, LINEDEF * Line,
+		      int16_t Sfc);
+extern PWDEF Comp_Pw(int16_t * Dpnt, int16_t Start, int16_t Olp);
+extern void AtoLsp(int16_t * LspVect, int16_t * Lpc, int16_t * PrevLsp);
+extern int Comp_Vad(int16_t * Dpnt);
+extern int32_t Lsp_Qnt(int16_t * CurrLsp, int16_t * PrevLsp);
+extern void Mem_Shift(int16_t * PrevDat, int16_t * DataBuff);
+extern void Wght_Lpc(int16_t * PerLpc, int16_t * UnqLpc);
+extern void Error_Wght(int16_t * Dpnt, int16_t * PerLpc);
+extern int16_t Vec_Norm(int16_t * Vect, int16_t Len);
+extern int16_t Estim_Pitch(int16_t * Dpnt, int16_t Start);
 
 extern void Init_Cod_Cng(void);
-extern void Cod_Cng(Word16 * DataExc, Word16 * Ftyp, LINEDEF * Line,
-		    Word16 * QntLpc);
-extern void Filt_Pw(Word16 * DataBuff, Word16 * Dpnt, Word16 Start, PWDEF Pw);
-extern void Lsp_Inq(Word16 * Lsp, Word16 * PrevLsp, Word32 LspId, Word16 Crc);
-extern void Lsp_Int(Word16 * QntLpc, Word16 * CurrLsp, Word16 * PrevLsp);
-extern void Comp_Ir(Word16 * ImpResp, Word16 * QntLpc, Word16 * PerLpc,
+extern void Cod_Cng(int16_t * DataExc, int16_t * Ftyp, LINEDEF * Line,
+		    int16_t * QntLpc);
+extern void Filt_Pw(int16_t * DataBuff, int16_t * Dpnt, int16_t Start,
 		    PWDEF Pw);
-extern void Update_Err(Word16 Olp, Word16 AcLg, Word16 AcGn);
-extern void Upd_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc,
-		     Word16 * PrevErr);
-extern void Sub_Ring(Word16 * Dpnt, Word16 * QntLpc, Word16 * PerLpc,
-		     Word16 * PrevErr, PWDEF Pw);
-extern void Find_Acbk(Word16 * Tv, Word16 * ImpResp, Word16 * PrevExc,
-		      LINEDEF * Line, Word16 Sfc);
-extern void Line_Pack(LINEDEF * Line, char *Vout, Word16 Ftyp);
-extern void Decod_Acbk(Word16 * Tv, Word16 * PrevExc, Word16 Olp, Word16 Lid,
-		       Word16 Gid);
+extern void Lsp_Inq(int16_t * Lsp, int16_t * PrevLsp, int32_t LspId,
+		    int16_t Crc);
+extern void Lsp_Int(int16_t * QntLpc, int16_t * CurrLsp, int16_t * PrevLsp);
+extern void Comp_Ir(int16_t * ImpResp, int16_t * QntLpc, int16_t * PerLpc,
+		    PWDEF Pw);
+extern void Update_Err(int16_t Olp, int16_t AcLg, int16_t AcGn);
+extern void Upd_Ring(int16_t * Dpnt, int16_t * QntLpc, int16_t * PerLpc,
+		     int16_t * PrevErr);
+extern void Sub_Ring(int16_t * Dpnt, int16_t * QntLpc, int16_t * PerLpc,
+		     int16_t * PrevErr, PWDEF Pw);
+extern void Find_Acbk(int16_t * Tv, int16_t * ImpResp, int16_t * PrevExc,
+		      LINEDEF * Line, int16_t Sfc);
+extern void Line_Pack(LINEDEF * Line, char *Vout, int16_t Ftyp);
+extern void Decod_Acbk(int16_t * Tv, int16_t * PrevExc, int16_t Olp,
+		       int16_t Lid,
+		       int16_t Gid);
 
 /*
 **
@@ -123,52 +126,54 @@ void Init_Coder(void)
 **
 ** Arguments:
 **
-**  Word16 DataBuff[]   frame (480 bytes)
+**  int16_t DataBuff[]   frame (480 bytes)
 **
 
 ** Outputs:
 **
-**  Word16 Vout[]       Encoded frame (20/24 bytes)
+**  int16_t Vout[]       Encoded frame (20/24 bytes)
 **
 ** Return value:
 **
-**  Flag            Always True
+**  int            Always True
 **
 */
-Flag Coder(Word16 * DataBuff, char *Vout)
+
+#include <stdint.h>
+
+int Coder(int16_t * DataBuff, char *Vout)
 {
 	int i, j;
 
 #ifdef TEST_MIPS
-	unsigned int test_temp = 0;
+	unsigned int test_temp;
 #endif				//TEST_MIPS
 
 	/*
 	   Local variables
 	 */
-	Word16 UnqLpc[SubFrames * LpcOrder];
-	Word16 QntLpc[SubFrames * LpcOrder];
-	Word16 PerLpc[2 * SubFrames * LpcOrder];
+	int16_t UnqLpc[SubFrames * LpcOrder];
+	int16_t QntLpc[SubFrames * LpcOrder];
+	int16_t PerLpc[2 * SubFrames * LpcOrder];
 
-	Word16 LspVect[LpcOrder];
+	int16_t LspVect[LpcOrder];
 	LINEDEF Line;
 	PWDEF Pw[SubFrames];
 
-	Word16 ImpResp[SubFrLen];
+	int16_t ImpResp[SubFrLen];
 
-	Word16 *Dpnt;
+	int16_t *Dpnt;
 
-	Word16 Ftyp = 1;
+	int16_t Ftyp;
 
 	/*
 	   Coder Start
 	 */
-	Line.Crc = (Word16) 0;
+	Line.Crc = (int16_t) 0;
 
 	//High-pass filtering
 	//------------------------------------------------------------(1)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -183,7 +188,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 	/* Compute the Unquantized Lpc set for whole frame */
 	//------------------------------------------------------------(2)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -198,7 +202,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 	/* Convert to Lsp */
 	//------------------------------------------------------------(3)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -214,11 +217,10 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 /* Convert to Lsp */
 	//------------------------------------------------------------(4)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
-	Ftyp = (Word16) Comp_Vad(DataBuff);
+	Ftyp = (int16_t) Comp_Vad(DataBuff);
 
 #ifdef TEST_MIPS
 	test_temp = cycles() - test_start;
@@ -229,7 +231,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 	/* VQ Lsp vector */
 	//------------------------------------------------------------(5)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -243,7 +244,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 
 	//------------------------------------------------------------(6)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -258,7 +258,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 	/* Compute Perceptual filter Lpc coefficients */
 	//------------------------------------------------------------(7)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -272,7 +271,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 	/* Apply the perceptual weighting filter */
 	//------------------------------------------------------------(8)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -289,11 +287,10 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 	 */
 	//------------------------------------------------------------(9)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
-	Dpnt = (Word16 *) malloc(sizeof(Word16) * (PitchMax + Frame));
+	Dpnt = (int16_t *) malloc(sizeof(int16_t) * (PitchMax + Frame));
 
 #ifdef TEST_MIPS
 	test_temp = cycles() - test_start;
@@ -304,7 +301,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 	/* Construct the buffer */
 	//------------------------------------------------------------(10)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -321,11 +317,10 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 
 	//------------------------------------------------------------(11)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
-	Vec_Norm(Dpnt, (Word16) (PitchMax + Frame));
+	Vec_Norm(Dpnt, (int16_t) (PitchMax + Frame));
 
 #ifdef TEST_MIPS
 	test_temp = cycles() - test_start;
@@ -337,12 +332,11 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 
 	//------------------------------------------------------------(12)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
 	for (i = 0; i < SubFrames / 2; i++) {
-		Line.Olp[i] = Estim_Pitch(Dpnt, (Word16) j);
+		Line.Olp[i] = Estim_Pitch(Dpnt, (int16_t) j);
 		VadStat.Polp[i + 2] = Line.Olp[i];
 		j += 2 * SubFrLen;
 	}
@@ -361,7 +355,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 
 		//------------------------------------------------------------(13)
 #ifdef TEST_MIPS
-		test_temp = 0;
 		test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -408,7 +401,7 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 
 		j = PitchMax;
 		for (i = 0; i < SubFrames; i++) {
-			Pw[i] = Comp_Pw(Dpnt, (Word16) j, Line.Olp[i >> 1]);
+			Pw[i] = Comp_Pw(Dpnt, (int16_t) j, Line.Olp[i >> 1]);
 			j += SubFrLen;
 		}
 
@@ -425,7 +418,7 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 		/* Apply the Harmonic filter */
 		j = 0;
 		for (i = 0; i < SubFrames; i++) {
-			Filt_Pw(DataBuff, Dpnt, (Word16) j, Pw[i]);
+			Filt_Pw(DataBuff, Dpnt, (int16_t) j, Pw[i]);
 			j += SubFrLen;
 		}
 		free((char *)Dpnt);
@@ -456,7 +449,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 			/* Compute full impulse response */
 			//------------------------------------------------------------(15)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -473,7 +465,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 
 			//------------------------------------------------------------(16)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -491,12 +482,11 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 
 			//------------------------------------------------------------(17)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
 			Find_Acbk(Dpnt, ImpResp, CodStat.PrevExc, &Line,
-				  (Word16) i);
+				  (int16_t) i);
 
 #ifdef TEST_MIPS
 			test_temp = cycles() - test_start;
@@ -507,11 +497,10 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 			/* Compute fixed code book contribution */
 			//------------------------------------------------------------(18)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
-			Find_Fcbk(Dpnt, ImpResp, &Line, (Word16) i);
+			Find_Fcbk(Dpnt, ImpResp, &Line, (int16_t) i);
 
 #ifdef TEST_MIPS
 			test_temp = cycles() - test_start;
@@ -522,7 +511,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 			/* Reconstruct the excitation */
 			//------------------------------------------------------------(19)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -537,7 +525,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 
 			//------------------------------------------------------------(20)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -546,7 +533,7 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 				    CodStat.PrevExc[j];
 
 			for (j = 0; j < SubFrLen; j++) {
-				Dpnt[j] = g723_shl(Dpnt[j], (Word16) 1);
+				Dpnt[j] = g723_shl(Dpnt[j], (int16_t) 1);
 				Dpnt[j] = g723_add(Dpnt[j], ImpResp[j]);
 				CodStat.PrevExc[PitchMax - SubFrLen + j] =
 				    Dpnt[j];
@@ -561,7 +548,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 			/* Update exc_err */
 			//------------------------------------------------------------(21)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -578,7 +564,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 
 			//------------------------------------------------------------(22)
 #ifdef TEST_MIPS
-			test_temp = 0;
 			test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -605,7 +590,6 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 	/* Pack the Line structure */
 	//------------------------------------------------------------(23)
 #ifdef TEST_MIPS
-	test_temp = 0;
 	test_start = cycles();
 #endif				//TEST_MIPS
 
@@ -617,5 +601,5 @@ Flag Coder(Word16 * DataBuff, char *Vout)
 		mips_test[23] = test_temp;
 #endif				//TEST_MIPS
 
-	return (Flag) True;
+	return (int) True;
 }

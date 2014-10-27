@@ -8,25 +8,25 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
 /* m = LPC order == 10 */
 #define m 10
 
-void w_Syn_filt(Word16 a[],	/* (i)     : a[m+1] w_prediction coefficients   (m=10)  */
-		Word16 x[],	/* (i)     : input signal                             */
-		Word16 y[],	/* (o)     : output signal                            */
-		Word16 lg,	/* (i)     : size of filtering                        */
-		Word16 mem[],	/* (i/o)   : memory associated with this filtering.   */
-		Word16 update	/* (i)     : 0=no update, 1=update of memory.         */
+void w_Syn_filt(int16_t a[],	/* (i)     : a[m+1] w_prediction coefficients   (m=10)  */
+		int16_t x[],	/* (i)     : input signal                             */
+		int16_t y[],	/* (o)     : output signal                            */
+		int16_t lg,	/* (i)     : size of filtering                        */
+		int16_t mem[],	/* (i/o)   : memory associated with this filtering.   */
+		int16_t update	/* (i)     : 0=no update, 1=update of memory.         */
     )
 {
-	Word16 i, j;
-	Word32 s;
-	Word16 tmp[80];		/* This is usually done by memory allocation (lg+m) */
-	Word16 *yy;
+	int16_t i, j;
+	int32_t s;
+	int16_t tmp[80];		/* This is usually done by memory allocation (lg+m) */
+	int16_t *yy;
 
 	/* w_Copy mem[] to yy[] */
 

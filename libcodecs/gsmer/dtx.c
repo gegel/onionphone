@@ -56,7 +56,7 @@
  *
  **************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "cnst.h"
 #include "sig_proc.h"
@@ -83,7 +83,7 @@
 
 /* Index map for encoding and detecting SID codeword */
 
-static const Word16 w_SID_codeword_bit_idx[95] = {
+static const int16_t w_SID_codeword_bit_idx[95] = {
 	45, 46, 48, 49, 50, 51, 52, 53, 54, 55,
 	56, 57, 58, 59, 60, 61, 62, 63, 64, 65,
 	66, 67, 68, 94, 95, 96, 98, 99, 100, 101,
@@ -96,30 +96,30 @@ static const Word16 w_SID_codeword_bit_idx[95] = {
 	217, 218, 219, 220, 221
 };
 
-Word16 w_txdtx_ctrl;		/* Encoder DTX control word                */
-Word16 w_rxdtx_ctrl;		/* Decoder DTX control word                */
-Word16 w_CN_w_excitation_gain;	/* Unquantized fixed codebook gain         */
-Word32 w_L_pn_seed_tx;		/* PN generator seed (encoder)             */
-Word32 w_L_pn_seed_rx;		/* PN generator seed (decoder)             */
-Word16 w_w_rx_dtx_w_state;	/* State of comfort noise insertion period */
+int16_t w_txdtx_ctrl;		/* Encoder DTX control word                */
+int16_t w_rxdtx_ctrl;		/* Decoder DTX control word                */
+int16_t w_CN_w_excitation_gain;	/* Unquantized fixed codebook gain         */
+int32_t w_L_pn_seed_tx;		/* PN generator seed (encoder)             */
+int32_t w_L_pn_seed_rx;		/* PN generator seed (decoder)             */
+int16_t w_w_rx_dtx_w_state;	/* State of comfort noise insertion period */
 
-static Word16 w_txdtx_hangover;	/* Length of hangover period (VAD=0, SP=1) */
-static Word16 w_rxdtx_aver_period;	/* Length of hangover period (VAD=0, SP=1) */
-static Word16 w_txdtx_N_elapsed;	/* Measured time from previous SID frame   */
-static Word16 w_rxdtx_N_elapsed;	/* Measured time from previous SID frame   */
-static Word16 w_old_CN_mem_tx[6];	/* The most recent CN parameters are stored */
-static Word16 w_prev_SID_frames_lost;	/* Counter for lost SID frames         */
-static Word16 w_buf_p_tx;	/* Circular buffer pointer for gain code 
+static int16_t w_txdtx_hangover;	/* Length of hangover period (VAD=0, SP=1) */
+static int16_t w_rxdtx_aver_period;	/* Length of hangover period (VAD=0, SP=1) */
+static int16_t w_txdtx_N_elapsed;	/* Measured time from previous SID frame   */
+static int16_t w_rxdtx_N_elapsed;	/* Measured time from previous SID frame   */
+static int16_t w_old_CN_mem_tx[6];	/* The most recent CN parameters are stored */
+static int16_t w_prev_SID_frames_lost;	/* Counter for lost SID frames         */
+static int16_t w_buf_p_tx;	/* Circular buffer pointer for gain code 
 				   history  update in tx                   */
-static Word16 w_buf_p_rx;	/* Circular buffer pointer for gain code 
+static int16_t w_buf_p_rx;	/* Circular buffer pointer for gain code 
 				   history update in rx                    */
 
-Word16 w_lsf_old_tx[DTX_HANGOVER][M];	/* Comfort noise LSF averaging buffer  */
-Word16 w_lsf_old_rx[DTX_HANGOVER][M];	/* Comfort noise LSF averaging buffer  */
+int16_t w_lsf_old_tx[DTX_HANGOVER][M];	/* Comfort noise LSF averaging buffer  */
+int16_t w_lsf_old_rx[DTX_HANGOVER][M];	/* Comfort noise LSF averaging buffer  */
 
-Word16 w_gain_code_old_tx[4 * DTX_HANGOVER];	/* Comfort noise gain averaging 
+int16_t w_gain_code_old_tx[4 * DTX_HANGOVER];	/* Comfort noise gain averaging 
 						   buffer                       */
-Word16 w_gain_code_old_rx[4 * DTX_HANGOVER];	/* Comfort noise gain averaging 
+int16_t w_gain_code_old_rx[4 * DTX_HANGOVER];	/* Comfort noise gain averaging 
 						   buffer                       */
 
 /*************************************************************************
@@ -133,7 +133,7 @@ Word16 w_gain_code_old_rx[4 * DTX_HANGOVER];	/* Comfort noise gain averaging
 
 void w_reset_w_tx_dtx()
 {
-	Word16 i;
+	int16_t i;
 
 	/* suppose infinitely long w_speech period before start */
 
@@ -179,7 +179,7 @@ void w_reset_w_tx_dtx()
 
 void w_reset_w_rx_dtx()
 {
-	Word16 i;
+	int16_t i;
 
 	/* suppose infinitely long w_speech period before start */
 
@@ -237,7 +237,7 @@ void w_reset_w_rx_dtx()
  *
  *************************************************************************/
 
-void w_tx_dtx(Word16 VAD_flag, Word16 * w_txdtx_ctrl)
+void w_tx_dtx(int16_t VAD_flag, int16_t * w_txdtx_ctrl)
 {
 
 	/* N_elapsed (frames since last SID update) is incremented. If SID
@@ -331,9 +331,10 @@ void w_tx_dtx(Word16 VAD_flag, Word16 * w_txdtx_ctrl)
  *
  *************************************************************************/
 
-void w_rx_dtx(Word16 * w_rxdtx_ctrl, Word16 TAF, Word16 bfi, Word16 SID_flag)
+void w_rx_dtx(int16_t * w_rxdtx_ctrl, int16_t TAF, int16_t bfi,
+	      int16_t SID_flag)
 {
-	Word16 frame_type;
+	int16_t frame_type;
 
 	/* Frame classification according to bfi-flag and ternary-valued
 	   SID flag. The frames between SID updates (not actually trans-
@@ -493,9 +494,9 @@ void w_rx_dtx(Word16 * w_rxdtx_ctrl, Word16 TAF, Word16 bfi, Word16 SID_flag)
  *
  *************************************************************************/
 
-void w_CN_encoding(Word16 params[], Word16 w_txdtx_ctrl)
+void w_CN_encoding(int16_t params[], int16_t w_txdtx_ctrl)
 {
-	Word16 i;
+	int16_t i;
 
 	if ((w_txdtx_ctrl & TX_SID_UPDATE) != 0) {
 		/* Store new CN parameters in memory to be used later as old
@@ -548,10 +549,10 @@ void w_CN_encoding(Word16 params[], Word16 w_txdtx_ctrl)
  *
  *************************************************************************/
 
-void w_sid_codeword_encoding(Word16 ser2[]
+void w_sid_codeword_encoding(int16_t ser2[]
     )
 {
-	Word16 i;
+	int16_t i;
 
 	for (i = 0; i < 95; i++) {
 		ser2[w_SID_codeword_bit_idx[i]] = 1;
@@ -579,10 +580,10 @@ void w_sid_codeword_encoding(Word16 ser2[]
  *
  *************************************************************************/
 
-Word16 w_sid_frame_detection(Word16 ser2[]
+int16_t w_sid_frame_detection(int16_t ser2[]
     )
 {
-	Word16 i, nbr_w_errors, sid;
+	int16_t i, nbr_w_errors, sid;
 
 	/* Search for bit w_errors in SID codeword */
 	nbr_w_errors = 0;
@@ -626,11 +627,11 @@ Word16 w_sid_frame_detection(Word16 ser2[]
  *
  *************************************************************************/
 
-void w_update_lsf_history(Word16 lsf1[M],
-			  Word16 lsf2[M], Word16 lsf_old[DTX_HANGOVER][M]
+void w_update_lsf_history(int16_t lsf1[M],
+			  int16_t lsf2[M], int16_t lsf_old[DTX_HANGOVER][M]
     )
 {
-	Word16 i, j, temp;
+	int16_t i, j, temp;
 
 	/* shift LSF data to make room for LSFs from current frame */
 	/* This can also be implemented by using circular buffering */
@@ -668,11 +669,11 @@ void w_update_lsf_history(Word16 lsf1[M],
  *
  *************************************************************************/
 
-void update_w_lsf_p_CN(Word16 lsf_old[DTX_HANGOVER][M], Word16 w_lsf_p_CN[M]
+void update_w_lsf_p_CN(int16_t lsf_old[DTX_HANGOVER][M], int16_t w_lsf_p_CN[M]
     )
 {
-	Word16 i, j;
-	Word32 L_temp;
+	int16_t i, j;
+	int32_t L_temp;
 
 	for (j = 0; j < M; j++) {
 		L_temp = w_L_w_mult(INV_DTX_HANGOVER, lsf_old[0][j]);
@@ -706,12 +707,12 @@ void update_w_lsf_p_CN(Word16 lsf_old[DTX_HANGOVER][M], Word16 w_lsf_p_CN[M]
  *
  *************************************************************************/
 
-void w_aver_lsf_history(Word16 lsf_old[DTX_HANGOVER][M],
-			Word16 lsf1[M], Word16 lsf2[M], Word16 lsf_aver[M]
+void w_aver_lsf_history(int16_t lsf_old[DTX_HANGOVER][M],
+			int16_t lsf1[M], int16_t lsf2[M], int16_t lsf_aver[M]
     )
 {
-	Word16 i, j;
-	Word32 L_temp;
+	int16_t i, j;
+	int32_t L_temp;
 
 	for (j = 0; j < M; j++) {
 		L_temp = w_L_w_mult(0x3fff, lsf1[j]);
@@ -751,8 +752,8 @@ void w_aver_lsf_history(Word16 lsf_old[DTX_HANGOVER][M],
  *
  *************************************************************************/
 
-void w_update_gain_code_history_tx(Word16 new_gain_code,
-				   Word16 w_gain_code_old_tx[4 * DTX_HANGOVER]
+void w_update_gain_code_history_tx(int16_t new_gain_code,
+				   int16_t w_gain_code_old_tx[4 * DTX_HANGOVER]
     )
 {
 
@@ -789,8 +790,8 @@ void w_update_gain_code_history_tx(Word16 new_gain_code,
  *
  *************************************************************************/
 
-void w_update_gain_code_history_rx(Word16 new_gain_code,
-				   Word16 w_gain_code_old_rx[4 * DTX_HANGOVER]
+void w_update_gain_code_history_rx(int16_t new_gain_code,
+				   int16_t w_gain_code_old_rx[4 * DTX_HANGOVER]
     )
 {
 
@@ -821,11 +822,11 @@ void w_update_gain_code_history_rx(Word16 new_gain_code,
  *
  *************************************************************************/
 
-Word16 compute_w_CN_w_excitation_gain(Word16 w_res2[L_SUBFR]
+int16_t compute_w_CN_w_excitation_gain(int16_t w_res2[L_SUBFR]
     )
 {
-	Word16 i, norm, norm1, temp, overfl;
-	Word32 L_temp;
+	int16_t i, norm, norm1, temp, overfl;
+	int32_t L_temp;
 
 	/* Compute the energy of the LP residual signal */
 
@@ -900,11 +901,11 @@ Word16 compute_w_CN_w_excitation_gain(Word16 w_res2[L_SUBFR]
  *
  *************************************************************************/
 
-Word16 update_w_gcode0_CN(Word16 gain_code_old[4 * DTX_HANGOVER]
+int16_t update_w_gcode0_CN(int16_t gain_code_old[4 * DTX_HANGOVER]
     )
 {
-	Word16 i, j;
-	Word32 L_temp, L_ret;
+	int16_t i, j;
+	int32_t L_temp, L_ret;
 
 	L_ret = 0L;
 	for (i = 0; i < DTX_HANGOVER; i++) {
@@ -941,12 +942,12 @@ Word16 update_w_gcode0_CN(Word16 gain_code_old[4 * DTX_HANGOVER]
  *
  *************************************************************************/
 
-Word16 w_aver_gain_code_history(Word16 w_CN_w_excitation_gain,
-				Word16 gain_code_old[4 * DTX_HANGOVER]
+int16_t w_aver_gain_code_history(int16_t w_CN_w_excitation_gain,
+				int16_t gain_code_old[4 * DTX_HANGOVER]
     )
 {
-	Word16 i;
-	Word32 L_ret;
+	int16_t i;
+	int32_t L_ret;
 
 	L_ret = w_L_w_mult(0x470, w_CN_w_excitation_gain);
 
@@ -972,9 +973,9 @@ Word16 w_aver_gain_code_history(Word16 w_CN_w_excitation_gain,
  *
  *************************************************************************/
 
-void w_build_CN_code(Word16 cod[], Word32 * seed)
+void w_build_CN_code(int16_t cod[], int32_t * seed)
 {
-	Word16 i, j, k;
+	int16_t i, j, k;
 
 	for (i = 0; i < L_SUBFR; i++) {
 		cod[i] = 0;
@@ -1014,9 +1015,9 @@ void w_build_CN_code(Word16 cod[], Word32 * seed)
  *
  *************************************************************************/
 
-Word16 w_pseudonoise(Word32 * shift_reg, Word16 no_bits)
+int16_t w_pseudonoise(int32_t * shift_reg, int16_t no_bits)
 {
-	Word16 noise_bits, Sn, i;
+	int16_t noise_bits, Sn, i;
 
 	noise_bits = 0;
 	for (i = 0; i < no_bits; i++) {
@@ -1069,17 +1070,17 @@ Word16 w_pseudonoise(Word32 * shift_reg, Word16 no_bits)
  *
  *************************************************************************/
 
-Word16 w_interpolate_CN_param(Word16 old_param,
-			      Word16 new_param, Word16 w_w_rx_dtx_w_state)
+int16_t w_interpolate_CN_param(int16_t old_param,
+			      int16_t new_param, int16_t w_w_rx_dtx_w_state)
 {
-	static const Word16 interp_factor[CN_INT_PERIOD] = {
+	static const int16_t interp_factor[CN_INT_PERIOD] = {
 		0x0555, 0x0aaa, 0x1000, 0x1555, 0x1aaa, 0x2000,
 		0x2555, 0x2aaa, 0x3000, 0x3555, 0x3aaa, 0x4000,
 		0x4555, 0x4aaa, 0x5000, 0x5555, 0x5aaa, 0x6000,
 		0x6555, 0x6aaa, 0x7000, 0x7555, 0x7aaa, 0x7fff
 	};
-	Word16 temp;
-	Word32 L_temp;
+	int16_t temp;
+	int32_t L_temp;
 
 	L_temp = w_L_w_mult(interp_factor[w_w_rx_dtx_w_state], new_param);
 	temp = w_sub(0x7fff, interp_factor[w_w_rx_dtx_w_state]);
@@ -1114,11 +1115,12 @@ Word16 w_interpolate_CN_param(Word16 old_param,
  *
  *************************************************************************/
 
-void w_interpolate_CN_lsf(Word16 w_lsf_old_CN[M],
-			  Word16 w_lsf_new_CN[M],
-			  Word16 lsf_interp_CN[M], Word16 w_w_rx_dtx_w_state)
+void w_interpolate_CN_lsf(int16_t w_lsf_old_CN[M],
+			  int16_t w_lsf_new_CN[M],
+			  int16_t lsf_interp_CN[M],
+			  int16_t w_w_rx_dtx_w_state)
 {
-	Word16 i;
+	int16_t i;
 
 	for (i = 0; i < M; i++) {
 		lsf_interp_CN[i] = w_interpolate_CN_param(w_lsf_old_CN[i],

@@ -51,9 +51,9 @@ enum TXFrameType { TX_SPEECH_GOOD = 0,
 
 /* Declaration of interface structure */
 typedef struct {
-	Word16 sid_update_counter;	/* Number of frames since last SID */
-	Word16 sid_handover_debt;	/* Number of extra SID_UPD frames to schedule */
-	Word32 dtx;
+	int16_t sid_update_counter;	/* Number of frames since last SID */
+	int16_t sid_handover_debt;	/* Number of extra SID_UPD frames to schedule */
+	int32_t dtx;
 	enum TXFrameType prev_ft;	/* Type of the previous frame */
 	void *encoderState;	/* Points encoder state structure */
 } enc_interface_State;
@@ -74,10 +74,10 @@ typedef struct {
  * Returns:
  *    void
  */
-static void Int2Bin(Word16 value, Word16 no_of_bits, Word16 * bitstream)
+static void Int2Bin(int16_t value, int16_t no_of_bits, int16_t * bitstream)
 {
-	Word32 i, bit;
-	Word16 *pt_bitstream;
+	int32_t i, bit;
+	int16_t *pt_bitstream;
 
 	pt_bitstream = &bitstream[no_of_bits];
 
@@ -89,7 +89,7 @@ static void Int2Bin(Word16 value, Word16 no_of_bits, Word16 * bitstream)
 		} else {
 			*--pt_bitstream = 1;
 		}
-		value = (Word16) (value >> 1);
+		value = (int16_t) (value >> 1);
 	}
 }
 
@@ -107,9 +107,9 @@ static void Int2Bin(Word16 value, Word16 no_of_bits, Word16 * bitstream)
  * Returns:
  *    void
  */
-static void Prm2Bits(enum Mode mode, Word16 prm[], Word16 bits[])
+static void Prm2Bits(enum Mode mode, int16_t prm[], int16_t bits[])
 {
-	Word32 i;
+	int32_t i;
 
 	switch (mode) {
 	case MR122:
@@ -200,11 +200,11 @@ static void Prm2Bits(enum Mode mode, Word16 prm[], Word16 bits[])
  * Returns:
  *    number of octets
  */
-static int EncoderMMS(enum Mode mode, Word16 * param, UWord8 * stream, enum
+static int EncoderMMS(enum Mode mode, int16_t * param, uint8_t * stream, enum
 		      TXFrameType frame_type, enum Mode speech_mode)
 {
-	Word32 j = 0, k;
-	Word16 *mask;
+	int32_t j = 0, k;
+	int16_t *mask;
 
 	memzero(stream, block_size[mode]);
 
@@ -373,11 +373,11 @@ static int EncoderMMS(enum Mode mode, Word16 * param, UWord8 * stream, enum
  * Returns:
  *    number of octets
  */
-static int Encoder3GPP(enum Mode mode, Word16 * param, UWord8 * stream, enum
+static int Encoder3GPP(enum Mode mode, int16_t * param, uint8_t * stream, enum
 		       TXFrameType frame_type, enum Mode speech_mode)
 {
-	Word32 j = 0;
-	Word16 *mask;
+	int32_t j = 0;
+	int16_t *mask;
 
 	memzero(stream, block_size[mode]);
 
@@ -568,17 +568,17 @@ static void Sid_Sync_reset(enc_interface_State * st)
  * Returns:
  *    number of octets
  */
-int Encoder_Interface_Encode(void *st, enum Mode mode, Word16 * speech,
+int Encoder_Interface_Encode(void *st, enum Mode mode, int16_t * speech,
 #ifndef ETSI
-			     UWord8 * serial,
+			     uint8_t * serial,
 #else
-			     Word16 * serial,
+			     int16_t * serial,
 #endif
 			     int force_speech)
 {
-	Word16 prm[PRMNO_MR122];	/* speech parameters, max size */
-	const Word16 *homing;	/* pointer to homing frame */
-	Word16 homing_size;	/* frame size for homing frame */
+	int16_t prm[PRMNO_MR122];	/* speech parameters, max size */
+	const int16_t *homing;	/* pointer to homing frame */
+	int16_t homing_size;	/* frame size for homing frame */
 
 	enc_interface_State *s;
 	enum TXFrameType txFrameType;	/* frame type */
@@ -709,8 +709,8 @@ int Encoder_Interface_Encode(void *st, enum Mode mode, Word16 * speech,
 #else
 
 	Prm2Bits(used_mode, prm, &serial[1]);
-	serial[0] = (Word16) txFrameType;
-	serial[245] = (Word16) mode;
+	serial[0] = (int16_t) txFrameType;
+	serial[245] = (int16_t) mode;
 	return 500;
 #endif
 
@@ -773,12 +773,12 @@ void Encoder_Interface_exit(void *state)
 //encode using 475-mode and pack parameter and DTX-flag to 12 bytes (96 bits)
 //return data length in bytes: 12 for speech, 5 for SID
 //set force_speech=1 for VAD
-int AMR475_encode(void *st, Word16 * speech, UWord8 * serial, int force_speech)
+int AMR475_encode(void *st, int16_t * speech, uint8_t * serial, int force_speech)
 {
-	Word16 prm[PRMNO_MR475];	//parameters outputed by encoder
+	int16_t prm[PRMNO_MR475];	//parameters outputed by encoder
 	enc_interface_State *s;	//pointer to state
 	int i, j, noHoming = 0;	//homing detect flag
-	Word16 bits;		//output bits counter
+	int16_t bits;		//output bits counter
 
 	/*
 	 * used encoder mode,
@@ -824,9 +824,9 @@ int AMR475_encode(void *st, Word16 * speech, UWord8 * serial, int force_speech)
 		{
 			for (j = 0; j < bitno_MRDTX[i]; j++)	//process eack bits in it
 			{	//set corresponding bit in byte
-				if (prm[i] & ((Word16) 1 << j))
+				if (prm[i] & ((int16_t) 1 << j))
 					serial[bits >> 3] |=
-					    ((UWord8) 1 << (bits & 0x07));
+					    ((uint8_t) 1 << (bits & 0x07));
 				bits++;	//updates bits counter
 			}
 		}
@@ -837,9 +837,9 @@ int AMR475_encode(void *st, Word16 * speech, UWord8 * serial, int force_speech)
 		for (i = 0; i < PRMNO_MR475; i++)	//pack speech to 12 bits
 		{
 			for (j = 0; j < bitno_MR475[i]; j++) {
-				if (prm[i] & ((Word16) 1 << j))
+				if (prm[i] & ((int16_t) 1 << j))
 					serial[bits >> 3] |=
-					    ((UWord8) 1 << (bits & 0x07));
+					    ((uint8_t) 1 << (bits & 0x07));
 				bits++;	//updates bits counter
 			}
 		}
@@ -850,14 +850,14 @@ int AMR475_encode(void *st, Word16 * speech, UWord8 * serial, int force_speech)
 //encode using mode, pack parameter and SID-flag=0 to bytes
 //return data length in bytes (5 for SID data for all modes)
 //set force_speech=1 for cbr (no VAD function)
-int AMR_encode(void *st, UWord8 mode, Word16 * speech, UWord8 * serial,
+int AMR_encode(void *st, uint8_t mode, int16_t * speech, uint8_t * serial,
 	       int force_speech)
 {
 
-	Word16 prm[PRMNO_MR122];	//parameters outputed by encoder
+	int16_t prm[PRMNO_MR122];	//parameters outputed by encoder
 	enc_interface_State *s;	//pointer to state
 	int i, j, noHoming = 0;	//homing detect flag
-	Word16 bits;		//output bits counter
+	int16_t bits;		//output bits counter
 
 	/*  Modes list
 	   Mode 0: 95 (12)
@@ -871,32 +871,32 @@ int AMR_encode(void *st, UWord8 mode, Word16 * speech, UWord8 * serial,
 	 */
 
 	//Homing frames length in bytes for each mode
-	UWord8 homing_size_m[8] = { 7, 7, 7, 7, 7, 8, 12, 18 };
+	uint8_t homing_size_m[8] = { 7, 7, 7, 7, 7, 8, 12, 18 };
 
 	//Pointers to homing frames patterns for each mode
-	const Word16 *dhf_m[8] = { dhf_MR475, dhf_MR515, dhf_MR59,
+	const int16_t *dhf_m[8] = { dhf_MR475, dhf_MR515, dhf_MR59,
 		dhf_MR67, dhf_MR74, dhf_MR795, dhf_MR102, dhf_MR122
 	};
 
 	//Number of parameters for each mode
-	UWord8 prmno_m[8] = { PRMNO_MR475, PRMNO_MR515, PRMNO_MR59,
+	uint8_t prmno_m[8] = { PRMNO_MR475, PRMNO_MR515, PRMNO_MR59,
 		PRMNO_MR67, PRMNO_MR74, PRMNO_MR795, PRMNO_MR102, PRMNO_MR122
 	};
 
 	//Number of bits in parameters for each mode
-	const Word16 *bitno_m[8] = { bitno_MR475, bitno_MR515, bitno_MR59,
+	const int16_t *bitno_m[8] = { bitno_MR475, bitno_MR515, bitno_MR59,
 		bitno_MR67, bitno_MR74, bitno_MR795, bitno_MR102, bitno_MR122
 	};
 
 	//Encodec blocks length in byte for each mode  
-	UWord8 bl_size_m[8] = { 12, 13, 15, 17, 19, 20, 26, 31 };
+	uint8_t bl_size_m[8] = { 12, 13, 15, 17, 19, 20, 26, 31 };
 
 //Set variables for current mode   
-	UWord8 homing_size = homing_size_m[mode];
-	const Word16 *dhf = dhf_m[mode];
-	UWord8 prmno = prmno_m[mode];
-	const Word16 *bitno = bitno_m[mode];
-	UWord8 bl_size = bl_size_m[mode];
+	uint8_t homing_size = homing_size_m[mode];
+	const int16_t *dhf = dhf_m[mode];
+	uint8_t prmno = prmno_m[mode];
+	const int16_t *bitno = bitno_m[mode];
+	uint8_t bl_size = bl_size_m[mode];
 
 	/*
 	 * used encoder mode,
@@ -942,9 +942,9 @@ int AMR_encode(void *st, UWord8 mode, Word16 * speech, UWord8 * serial,
 		{
 			for (j = 0; j < bitno_MRDTX[i]; j++)	//process eack bits in it
 			{	//set corresponding bit in byte
-				if (prm[i] & ((Word16) 1 << j))
+				if (prm[i] & ((int16_t) 1 << j))
 					serial[bits >> 3] |=
-					    ((UWord8) 1 << (bits & 0x07));
+					    ((uint8_t) 1 << (bits & 0x07));
 				bits++;	//updates bits counter
 			}
 		}
@@ -956,9 +956,9 @@ int AMR_encode(void *st, UWord8 mode, Word16 * speech, UWord8 * serial,
 		for (i = 0; i < prmno; i++)	//pack speech to bits
 		{
 			for (j = 0; j < bitno[i]; j++) {
-				if (prm[i] & ((Word16) 1 << j))
+				if (prm[i] & ((int16_t) 1 << j))
 					serial[bits >> 3] |=
-					    ((UWord8) 1 << (bits & 0x07));
+					    ((uint8_t) 1 << (bits & 0x07));
 				bits++;	//updates bits counter
 			}
 		}

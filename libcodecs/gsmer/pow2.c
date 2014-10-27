@@ -16,25 +16,24 @@
  *
  *************************************************************************/
 
-#include "ophint.h"
+#include <stdint.h>
 #include "basic_op.h"
 #include "count.h"
 
 #include "pow2.tab"		/* Table for w_Pow2() */
 
-Word32 w_Pow2(			/* (o)  : result       (range: 0<=val<=0x7fffffff) */
-		     Word16 exponent,	/* (i)  : Integer part.      (range: 0<=val<=30)   */
-		     Word16 fraction	/* (i)  : Fractional part.  (range: 0.0<=val<1.0) */
+int32_t w_Pow2(int16_t exponent,	/* (i)  : Integer part.      (range: 0<=val<=30)   */
+		     int16_t fraction	/* (i)  : Fractional part.  (range: 0.0<=val<1.0) */
     )
 {
-	Word16 exp, i, a, tmp;
-	Word32 L_x;
+	int16_t exp, i, a, tmp;
+	int32_t L_x;
 
 	L_x = w_L_w_mult(fraction, 32);	/* L_x = fraction<<6           */
 	i = w_extract_h(L_x);	/* Extract b10-b16 of fraction */
 	L_x = w_L_w_shr(L_x, 1);
 	a = w_extract_l(L_x);	/* Extract b0-b9   of fraction */
-	a = a & (Word16) 0x7fff;
+	a = a & (int16_t) 0x7fff;
 
 	L_x = w_L_deposit_h(w_table[i]);	/* w_table[i] << 16        */
 	tmp = w_sub(w_table[i], w_table[i + 1]);	/* w_table[i] - w_table[i+1] */

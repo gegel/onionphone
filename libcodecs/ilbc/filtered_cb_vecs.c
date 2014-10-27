@@ -27,11 +27,11 @@
  *  the codebook with an additional section.
  *---------------------------------------------------------------*/
 
-void WebRtcIlbcfix_FilteredCbVecs(WebRtc_Word16 * cbvectors,	/* (o) Codebook vector for the higher section */
-				  WebRtc_Word16 * CBmem,	/* (i) Codebook memory that is filtered to create a
+void WebRtcIlbcfix_FilteredCbVecs(int16_t * cbvectors,	/* (o) Codebook vector for the higher section */
+				  int16_t * CBmem,	/* (i) Codebook memory that is filtered to create a
 								   second CB section */
 				  int lMem,	/* (i) Length of codebook memory */
-				  WebRtc_Word16 samples	/* (i) Number of samples to filter */
+				  int16_t samples	/* (i) Number of samples to filter */
     )
 {
 
@@ -44,7 +44,7 @@ void WebRtcIlbcfix_FilteredCbVecs(WebRtc_Word16 * cbvectors,	/* (o) Codebook vec
 
 	WebRtcSpl_FilterMAFastQ12(CBmem + CB_HALFFILTERLEN + lMem - samples,
 				  cbvectors + lMem - samples,
-				  (WebRtc_Word16 *) WebRtcIlbcfix_kCbFiltersRev,
+				  (int16_t *) WebRtcIlbcfix_kCbFiltersRev,
 				  CB_FILTERLEN, samples);
 
 	return;
