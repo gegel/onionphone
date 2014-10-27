@@ -45,6 +45,8 @@ void Levinson(int32_t r32[],	/* (i)  : r32[] double precision vector of autocorr
 
 	memzero(r_hi, (LPCO + 1) * sizeof(int16_t));
 	memzero(r_lo, (LPCO + 1) * sizeof(int16_t));
+	memzero(anew_hi, (LPCO + 1) * sizeof(int16_t));
+	memzero(anew_lo, (LPCO + 1) * sizeof(int16_t));
 
 	/* Normalization of autocorrelation coefficients */
 	exp = bv_norm_l(r32[0]);
