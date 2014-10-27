@@ -7,8 +7,8 @@ MODE ?= NORMAL
 MODE_NORMAL ?= -O3
 MODE_DEBUG ?= -O0 -g -ggdb
 
-# -DHAVE_CONFIG_H
-EXTRADEFS = -DHAVE_CONFIG_H
+# -DHAVE_CONFIG_H -DFIXED_POINT
+EXTRADEFS = -DHAVE_CONFIG_H -DFIXED_POINT
 
 CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
 
@@ -24,7 +24,7 @@ OBJ = opus.o \
       mlp.o \
       mlp_data.o
 
-INCADD ?= -I. -I../include -I../celt -I../silk_common -I../silk_float -I../../../common/inc
+INCADD ?= -I. -I../include -I../celt -I../silk_common -I../silk_fixed -I../silk_float -I../../../common/inc
 
 all: build
 
