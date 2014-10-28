@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2007-2008 CSIRO
    Copyright (c) 2007-2009 Xiph.Org Foundation
    Copyright (c) 2007-2009 Timothy B. Terriberry
@@ -38,10 +40,10 @@
 int log2_frac(opus_uint32 val, int frac);
 #endif
 
-void get_required_bits(opus_int16 *bits, int N, int K, int frac);
+void get_required_bits(opus_int16 * bits, int N, int K, int frac);
 
-void encode_pulses(const int *_y, int N, int K, ec_enc *enc);
+void encode_pulses(const int *_y, int N, int K, ec_enc * enc);
 
-void decode_pulses(int *_y, int N, int K, ec_dec *dec);
+void decode_pulses(int *_y, int N, int K, ec_dec * dec);
 
-#endif /* CWRS_H */
+#endif				/* CWRS_H */

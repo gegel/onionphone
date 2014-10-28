@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -83,12 +85,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 static inline opus_int32 silk_CLZ16(opus_int16 in16)
 {
-    return 32 - EC_ILOG(in16<<16|0x8000);
+	return 32 - EC_ILOG(in16 << 16 | 0x8000);
 }
 
 static inline opus_int32 silk_CLZ32(opus_int32 in32)
 {
-    return in32 ? 32 - EC_ILOG(in32) : 32;
+	return in32 ? 32 - EC_ILOG(in32) : 32;
 }
 
 /* Row based */
@@ -99,7 +101,7 @@ static inline opus_int32 silk_CLZ32(opus_int32 in32)
 
 /* Column based */
 #ifndef matrix_c_ptr
-#   define matrix_c_ptr(Matrix_base_adr, row, column, M) \
+#define matrix_c_ptr(Matrix_base_adr, row, column, M) \
     (*((Matrix_base_adr) + ((row)+(M)*(column))))
 #endif
 
@@ -111,5 +113,4 @@ static inline opus_int32 silk_CLZ32(opus_int32 in32)
 #include "arm/macros_armv5e.h"
 #endif
 
-#endif /* SILK_MACROS_H */
-
+#endif				/* SILK_MACROS_H */

@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2003-2008 Jean-Marc Valin
    Copyright (c) 2007-2008 CSIRO
    Copyright (c) 2007-2009 Xiph.Org Foundation
@@ -37,14 +39,14 @@
 #include "opus_types.h"
 #include "opus_defines.h"
 
-# if !defined(__GNUC_PREREQ)
-#  if defined(__GNUC__)&&defined(__GNUC_MINOR__)
-#   define __GNUC_PREREQ(_maj,_min) \
+#if !defined(__GNUC_PREREQ)
+#if defined(__GNUC__)&&defined(__GNUC_MINOR__)
+#define __GNUC_PREREQ(_maj,_min) \
  ((__GNUC__<<16)+__GNUC_MINOR__>=((_maj)<<16)+(_min))
-#  else
-#   define __GNUC_PREREQ(_maj,_min) 0
-#  endif
-# endif
+#else
+#define __GNUC_PREREQ(_maj,_min) 0
+#endif
+#endif
 
 #define CELT_SIG_SCALE 32768.f
 
@@ -53,13 +55,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #ifdef __GNUC__
-__attribute__((noreturn))
+__attribute__ ((noreturn))
 #endif
 static inline void _celt_fatal(const char *str, const char *file, int line)
 {
-   fprintf (stderr, "Fatal (internal) error in %s, line %d: %s\n", file, line, str);
-   abort();
+	fprintf(stderr, "Fatal (internal) error in %s, line %d: %s\n", file,
+		line, str);
+	abort();
 }
+
 #define celt_assert(cond) {if (!(cond)) {celt_fatal("assertion failed: " #cond);}}
 #define celt_assert2(cond, message) {if (!(cond)) {celt_fatal("assertion failed: " #cond "\n" message);}}
 #else
@@ -69,7 +73,7 @@ static inline void _celt_fatal(const char *str, const char *file, int line)
 
 #define IMUL32(a,b) ((a)*(b))
 
-#define ABS(x) ((x) < 0 ? (-(x)) : (x))      /**< Absolute integer value. */
+#define ABS(x) ((x) < 0 ? (-(x)) : (x))	     /**< Absolute integer value. */
 #define ABS16(x) ((x) < 0 ? (-(x)) : (x))    /**< Absolute 16-bit value.  */
 #define MIN16(a,b) ((a) < (b) ? (a) : (b))   /**< Minimum 16-bit value.   */
 #define MAX16(a,b) ((a) > (b) ? (a) : (b))   /**< Maximum 16-bit value.   */
@@ -128,7 +132,7 @@ typedef opus_val32 celt_ener;
 
 #endif
 
-#else /* FIXED_POINT */
+#else				/* FIXED_POINT */
 
 typedef float opus_val16;
 typedef float opus_val32;
@@ -201,7 +205,7 @@ typedef float celt_ener;
 #define SCALEIN(a)      ((a)*CELT_SIG_SCALE)
 #define SCALEOUT(a)     ((a)*(1/CELT_SIG_SCALE))
 
-#endif /* !FIXED_POINT */
+#endif				/* !FIXED_POINT */
 
 #ifndef GLOBAL_STACK_SIZE
 #ifdef FIXED_POINT
@@ -211,4 +215,4 @@ typedef float celt_ener;
 #endif
 #endif
 
-#endif /* ARCH_H */
+#endif				/* ARCH_H */

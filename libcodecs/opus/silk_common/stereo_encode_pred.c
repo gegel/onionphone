@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,31 +34,29 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 
 /* Entropy code the mid/side quantization indices */
-void silk_stereo_encode_pred(
-    ec_enc                      *psRangeEnc,                    /* I/O  Compressor data structure                   */
-    opus_int8                   ix[ 2 ][ 3 ]                    /* I    Quantization indices                        */
-)
+void silk_stereo_encode_pred(ec_enc * psRangeEnc,	/* I/O  Compressor data structure                   */
+			     opus_int8 ix[2][3]	/* I    Quantization indices                        */
+    )
 {
-    opus_int   n;
+	opus_int n;
 
-    /* Entropy coding */
-    n = 5 * ix[ 0 ][ 2 ] + ix[ 1 ][ 2 ];
-    silk_assert( n < 25 );
-    ec_enc_icdf( psRangeEnc, n, silk_stereo_pred_joint_iCDF, 8 );
-    for( n = 0; n < 2; n++ ) {
-        silk_assert( ix[ n ][ 0 ] < 3 );
-        silk_assert( ix[ n ][ 1 ] < STEREO_QUANT_SUB_STEPS );
-        ec_enc_icdf( psRangeEnc, ix[ n ][ 0 ], silk_uniform3_iCDF, 8 );
-        ec_enc_icdf( psRangeEnc, ix[ n ][ 1 ], silk_uniform5_iCDF, 8 );
-    }
+	/* Entropy coding */
+	n = 5 * ix[0][2] + ix[1][2];
+	silk_assert(n < 25);
+	ec_enc_icdf(psRangeEnc, n, silk_stereo_pred_joint_iCDF, 8);
+	for (n = 0; n < 2; n++) {
+		silk_assert(ix[n][0] < 3);
+		silk_assert(ix[n][1] < STEREO_QUANT_SUB_STEPS);
+		ec_enc_icdf(psRangeEnc, ix[n][0], silk_uniform3_iCDF, 8);
+		ec_enc_icdf(psRangeEnc, ix[n][1], silk_uniform5_iCDF, 8);
+	}
 }
 
 /* Entropy code the mid-only flag */
-void silk_stereo_encode_mid_only(
-    ec_enc                      *psRangeEnc,                    /* I/O  Compressor data structure                   */
-    opus_int8                   mid_only_flag
-)
+void silk_stereo_encode_mid_only(ec_enc * psRangeEnc,	/* I/O  Compressor data structure                   */
+				 opus_int8 mid_only_flag)
 {
-    /* Encode flag that only mid channel is coded */
-    ec_enc_icdf( psRangeEnc, mid_only_flag, silk_stereo_only_code_mid_iCDF, 8 );
+	/* Encode flag that only mid channel is coded */
+	ec_enc_icdf(psRangeEnc, mid_only_flag, silk_stereo_only_code_mid_iCDF,
+		    8);
 }

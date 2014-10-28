@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -33,49 +35,62 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "tuning_parameters.h"
 
 /* Control SNR of redidual quantizer */
-opus_int silk_control_SNR(
-    silk_encoder_state          *psEncC,                        /* I/O  Pointer to Silk encoder state               */
-    opus_int32                  TargetRate_bps                  /* I    Target max bitrate (bps)                    */
-)
+opus_int silk_control_SNR(silk_encoder_state * psEncC,	/* I/O  Pointer to Silk encoder state               */
+			  opus_int32 TargetRate_bps	/* I    Target max bitrate (bps)                    */
+    )
 {
-    opus_int k, ret = SILK_NO_ERROR;
-    opus_int32 frac_Q6;
-    const opus_int32 *rateTable;
+	opus_int k, ret = SILK_NO_ERROR;
+	opus_int32 frac_Q6;
+	const opus_int32 *rateTable;
 
-    /* Set bitrate/coding quality */
-    TargetRate_bps = silk_LIMIT( TargetRate_bps, MIN_TARGET_RATE_BPS, MAX_TARGET_RATE_BPS );
-    if( TargetRate_bps != psEncC->TargetRate_bps ) {
-        psEncC->TargetRate_bps = TargetRate_bps;
+	/* Set bitrate/coding quality */
+	TargetRate_bps =
+	    silk_LIMIT(TargetRate_bps, MIN_TARGET_RATE_BPS,
+		       MAX_TARGET_RATE_BPS);
+	if (TargetRate_bps != psEncC->TargetRate_bps) {
+		psEncC->TargetRate_bps = TargetRate_bps;
 
-        /* If new TargetRate_bps, translate to SNR_dB value */
-        if( psEncC->fs_kHz == 8 ) {
-            rateTable = silk_TargetRate_table_NB;
-        } else if( psEncC->fs_kHz == 12 ) {
-            rateTable = silk_TargetRate_table_MB;
-        } else {
-            rateTable = silk_TargetRate_table_WB;
-        }
+		/* If new TargetRate_bps, translate to SNR_dB value */
+		if (psEncC->fs_kHz == 8) {
+			rateTable = silk_TargetRate_table_NB;
+		} else if (psEncC->fs_kHz == 12) {
+			rateTable = silk_TargetRate_table_MB;
+		} else {
+			rateTable = silk_TargetRate_table_WB;
+		}
 
-        /* Reduce bitrate for 10 ms modes in these calculations */
-        if( psEncC->nb_subfr == 2 ) {
-            TargetRate_bps -= REDUCE_BITRATE_10_MS_BPS;
-        }
+		/* Reduce bitrate for 10 ms modes in these calculations */
+		if (psEncC->nb_subfr == 2) {
+			TargetRate_bps -= REDUCE_BITRATE_10_MS_BPS;
+		}
 
-        /* Find bitrate interval in table and interpolate */
-        for( k = 1; k < TARGET_RATE_TAB_SZ; k++ ) {
-            if( TargetRate_bps <= rateTable[ k ] ) {
-                frac_Q6 = silk_DIV32( silk_LSHIFT( TargetRate_bps - rateTable[ k - 1 ], 6 ),
-                                                 rateTable[ k ] - rateTable[ k - 1 ] );
-                psEncC->SNR_dB_Q7 = silk_LSHIFT( silk_SNR_table_Q1[ k - 1 ], 6 ) + silk_MUL( frac_Q6, silk_SNR_table_Q1[ k ] - silk_SNR_table_Q1[ k - 1 ] );
-                break;
-            }
-        }
+		/* Find bitrate interval in table and interpolate */
+		for (k = 1; k < TARGET_RATE_TAB_SZ; k++) {
+			if (TargetRate_bps <= rateTable[k]) {
+				frac_Q6 =
+				    silk_DIV32(silk_LSHIFT
+					       (TargetRate_bps -
+						rateTable[k - 1], 6),
+					       rateTable[k] - rateTable[k - 1]);
+				psEncC->SNR_dB_Q7 =
+				    silk_LSHIFT(silk_SNR_table_Q1[k - 1],
+						6) + silk_MUL(frac_Q6,
+							      silk_SNR_table_Q1
+							      [k] -
+							      silk_SNR_table_Q1
+							      [k - 1]);
+				break;
+			}
+		}
 
-        /* Reduce coding quality whenever LBRR is enabled, to free up some bits */
-        if( psEncC->LBRR_enabled ) {
-            psEncC->SNR_dB_Q7 = silk_SMLABB( psEncC->SNR_dB_Q7, 12 - psEncC->LBRR_GainIncreases, SILK_FIX_CONST( -0.25, 7 ) );
-        }
-    }
+		/* Reduce coding quality whenever LBRR is enabled, to free up some bits */
+		if (psEncC->LBRR_enabled) {
+			psEncC->SNR_dB_Q7 =
+			    silk_SMLABB(psEncC->SNR_dB_Q7,
+					12 - psEncC->LBRR_GainIncreases,
+					SILK_FIX_CONST(-0.25, 7));
+		}
+	}
 
-    return ret;
+	return ret;
 }

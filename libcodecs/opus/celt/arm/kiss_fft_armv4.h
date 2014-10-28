@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*Copyright (c) 2013, Xiph.Org Foundation and contributors.
 
   All rights reserved.
@@ -116,6 +118,6 @@
     } \
     while(0)
 
-#endif /* FIXED_POINT */
+#endif				/* FIXED_POINT */
 
-#endif /* KISS_FFT_ARMv4_H */
+#endif				/* KISS_FFT_ARMv4_H */

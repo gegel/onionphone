@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2010-2011 Xiph.Org Foundation, Skype Limited
    Written by Jean-Marc Valin and Koen Vos */
 /*
@@ -64,52 +66,52 @@ extern "C" {
 /**Export control for opus functions */
 
 #ifndef OPUS_EXPORT
-# if defined(WIN32)
-#  ifdef OPUS_BUILD
-#   define OPUS_EXPORT __declspec(dllexport)
-#  else
-#   define OPUS_EXPORT
-#  endif
-# elif defined(__GNUC__) && defined(OPUS_BUILD)
-#  define OPUS_EXPORT __attribute__ ((visibility ("default")))
-# else
-#  define OPUS_EXPORT
-# endif
+#if defined(WIN32)
+#ifdef OPUS_BUILD
+#define OPUS_EXPORT __declspec(dllexport)
+#else
+#define OPUS_EXPORT
+#endif
+#elif defined(__GNUC__) && defined(OPUS_BUILD)
+#define OPUS_EXPORT __attribute__ ((visibility ("default")))
+#else
+#define OPUS_EXPORT
+#endif
 #endif
 
-# if !defined(OPUS_GNUC_PREREQ)
-#  if defined(__GNUC__)&&defined(__GNUC_MINOR__)
-#   define OPUS_GNUC_PREREQ(_maj,_min) \
+#if !defined(OPUS_GNUC_PREREQ)
+#if defined(__GNUC__)&&defined(__GNUC_MINOR__)
+#define OPUS_GNUC_PREREQ(_maj,_min) \
  ((__GNUC__<<16)+__GNUC_MINOR__>=((_maj)<<16)+(_min))
-#  else
-#   define OPUS_GNUC_PREREQ(_maj,_min) 0
-#  endif
-# endif
+#else
+#define OPUS_GNUC_PREREQ(_maj,_min) 0
+#endif
+#endif
 
 #if (!defined(__STDC_VERSION__) || (__STDC_VERSION__ < 199901L) )
-# if OPUS_GNUC_PREREQ(3,0)
-#  define OPUS_RESTRICT __restrict__
-# elif (defined(_MSC_VER) && _MSC_VER >= 1400)
-#  define OPUS_RESTRICT __restrict
-# else
-#  define OPUS_RESTRICT
-# endif
+#if OPUS_GNUC_PREREQ(3,0)
+#define OPUS_RESTRICT __restrict__
+#elif (defined(_MSC_VER) && _MSC_VER >= 1400)
+#define OPUS_RESTRICT __restrict
 #else
-# define OPUS_RESTRICT restrict
+#define OPUS_RESTRICT
+#endif
+#else
+#define OPUS_RESTRICT restrict
 #endif
 
 /**Warning attributes for opus functions
   * NONNULL is not used in OPUS_BUILD to avoid the compiler optimizing out
   * some paranoid null checks. */
 #if defined(__GNUC__) && OPUS_GNUC_PREREQ(3, 4)
-# define OPUS_WARN_UNUSED_RESULT __attribute__ ((__warn_unused_result__))
+#define OPUS_WARN_UNUSED_RESULT __attribute__ ((__warn_unused_result__))
 #else
-# define OPUS_WARN_UNUSED_RESULT
+#define OPUS_WARN_UNUSED_RESULT
 #endif
 #if !defined(OPUS_BUILD) && defined(__GNUC__) && OPUS_GNUC_PREREQ(3, 4)
-# define OPUS_ARG_NONNULL(_x)  __attribute__ ((__nonnull__(_x)))
+#define OPUS_ARG_NONNULL(_x)  __attribute__ ((__nonnull__(_x)))
 #else
-# define OPUS_ARG_NONNULL(_x)
+#define OPUS_ARG_NONNULL(_x)
 #endif
 
 /** These are the actual Encoder CTL ID numbers.
@@ -145,7 +147,7 @@ extern "C" {
 #define OPUS_GET_FINAL_RANGE_REQUEST         4031
 #define OPUS_GET_PITCH_REQUEST               4033
 #define OPUS_SET_GAIN_REQUEST                4034
-#define OPUS_GET_GAIN_REQUEST                4045 /* Should have been 4035 */
+#define OPUS_GET_GAIN_REQUEST                4045	/* Should have been 4035 */
 #define OPUS_SET_LSB_DEPTH_REQUEST           4036
 #define OPUS_GET_LSB_DEPTH_REQUEST           4037
 #define OPUS_GET_LAST_PACKET_DURATION_REQUEST 4039
@@ -198,7 +200,6 @@ extern "C" {
 #define OPUS_FRAMESIZE_60_MS                 5006 /**< Use 60 ms frames */
 
 /**@}*/
-
 
 /** @defgroup opus_encoderctls Encoder related CTLs
   *
@@ -410,7 +411,6 @@ extern "C" {
   * </dl>
   * @hideinitializer */
 #define OPUS_GET_SIGNAL(x) OPUS_GET_SIGNAL_REQUEST, __opus_check_int_ptr(x)
-
 
 /** Configures the encoder's intended application.
   * The initial value is a mandatory argument to the encoder_create function.
@@ -698,17 +698,16 @@ extern "C" {
   * @param[in] error <tt>int</tt>: Error number
   * @returns Error string
   */
-OPUS_EXPORT const char *opus_strerror(int error);
+	OPUS_EXPORT const char *opus_strerror(int error);
 
 /** Gets the libopus version string.
   *
   * @returns Version string
   */
-OPUS_EXPORT const char *opus_get_version_string(void);
+	OPUS_EXPORT const char *opus_get_version_string(void);
 /**@}*/
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* OPUS_DEFINES_H */
+#endif				/* OPUS_DEFINES_H */

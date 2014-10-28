@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2007 CSIRO
    Copyright (c) 2007-2009 Xiph.Org Foundation
    Written by Jean-Marc Valin */
@@ -36,7 +38,7 @@
  @param fs Probability of 0, multiplied by 32768
  @param decay Probability of the value +/- 1, multiplied by 16384
 */
-void ec_laplace_encode(ec_enc *enc, int *value, unsigned fs, int decay);
+void ec_laplace_encode(ec_enc * enc, int *value, unsigned fs, int decay);
 
 /** Decode a value that is assumed to be the realisation of a
     Laplace-distributed random process
@@ -45,4 +47,4 @@ void ec_laplace_encode(ec_enc *enc, int *value, unsigned fs, int decay);
  @param decay Probability of the value +/- 1, multiplied by 16384
  @return Value decoded
  */
-int ec_laplace_decode(ec_dec *dec, unsigned fs, int decay);
+int ec_laplace_decode(ec_dec * dec, unsigned fs, int decay);

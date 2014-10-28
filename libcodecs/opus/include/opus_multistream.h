@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2011 Xiph.Org Foundation
    Written by Jean-Marc Valin */
 /*
@@ -172,7 +174,7 @@ extern "C" {
   * @see opus_multistream_encoder_create
   * @see opus_multistream_encoder_init
   */
-typedef struct OpusMSEncoder OpusMSEncoder;
+	typedef struct OpusMSEncoder OpusMSEncoder;
 
 /** Opus multistream decoder state.
   * This contains the complete state of a multistream Opus decoder.
@@ -180,7 +182,7 @@ typedef struct OpusMSEncoder OpusMSEncoder;
   * @see opus_multistream_decoder_create
   * @see opus_multistream_decoder_init
   */
-typedef struct OpusMSDecoder OpusMSDecoder;
+	typedef struct OpusMSDecoder OpusMSDecoder;
 
 /**\name Multistream encoder functions */
 /**@{*/
@@ -200,16 +202,12 @@ typedef struct OpusMSDecoder OpusMSDecoder;
   * @returns The size in bytes on success, or a negative error code
   *          (see @ref opus_errorcodes) on error.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_multistream_encoder_get_size(
-      int streams,
-      int coupled_streams
-);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	    opus_multistream_encoder_get_size(int streams, int coupled_streams);
 
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_multistream_surround_encoder_get_size(
-      int channels,
-      int mapping_family
-);
-
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	    opus_multistream_surround_encoder_get_size(int channels,
+						       int mapping_family);
 
 /** Allocates and initializes a multistream encoder state.
   * Call opus_multistream_encoder_destroy() to release
@@ -254,26 +252,23 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_multistream_surround_encoder
   *                                   code (see @ref opus_errorcodes) on
   *                                   failure.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSEncoder *opus_multistream_encoder_create(
-      opus_int32 Fs,
-      int channels,
-      int streams,
-      int coupled_streams,
-      const unsigned char *mapping,
-      int application,
-      int *error
-) OPUS_ARG_NONNULL(5);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSEncoder
+	    *opus_multistream_encoder_create(opus_int32 Fs, int channels,
+					     int streams, int coupled_streams,
+					     const unsigned char *mapping,
+					     int application,
+					     int *error) OPUS_ARG_NONNULL(5);
 
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSEncoder *opus_multistream_surround_encoder_create(
-      opus_int32 Fs,
-      int channels,
-      int mapping_family,
-      int *streams,
-      int *coupled_streams,
-      unsigned char *mapping,
-      int application,
-      int *error
-) OPUS_ARG_NONNULL(5);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSEncoder
+	    *opus_multistream_surround_encoder_create(opus_int32 Fs,
+						      int channels,
+						      int mapping_family,
+						      int *streams,
+						      int *coupled_streams,
+						      unsigned char *mapping,
+						      int application,
+						      int *error)
+	    OPUS_ARG_NONNULL(5);
 
 /** Initialize a previously allocated multistream encoder state.
   * The memory pointed to by \a st must be at least the size returned by
@@ -323,26 +318,29 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSEncoder *opus_multistream_surround_enc
   * @returns #OPUS_OK on success, or an error code (see @ref opus_errorcodes)
   *          on failure.
   */
-OPUS_EXPORT int opus_multistream_encoder_init(
-      OpusMSEncoder *st,
-      opus_int32 Fs,
-      int channels,
-      int streams,
-      int coupled_streams,
-      const unsigned char *mapping,
-      int application
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(6);
+	OPUS_EXPORT int opus_multistream_encoder_init(OpusMSEncoder * st,
+						      opus_int32 Fs,
+						      int channels,
+						      int streams,
+						      int coupled_streams,
+						      const unsigned char
+						      *mapping,
+						      int application)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(6);
 
-OPUS_EXPORT int opus_multistream_surround_encoder_init(
-      OpusMSEncoder *st,
-      opus_int32 Fs,
-      int channels,
-      int mapping_family,
-      int *streams,
-      int *coupled_streams,
-      unsigned char *mapping,
-      int application
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(6);
+	OPUS_EXPORT int opus_multistream_surround_encoder_init(OpusMSEncoder *
+							       st,
+							       opus_int32 Fs,
+							       int channels,
+							       int
+							       mapping_family,
+							       int *streams,
+							       int
+							       *coupled_streams,
+							       unsigned char
+							       *mapping,
+							       int application)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(6);
 
 /** Encodes a multistream Opus frame.
   * @param st <tt>OpusMSEncoder*</tt>: Multistream encoder state.
@@ -374,13 +372,11 @@ OPUS_EXPORT int opus_multistream_surround_encoder_init(
   * @returns The length of the encoded packet (in bytes) on success or a
   *          negative error code (see @ref opus_errorcodes) on failure.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_multistream_encode(
-    OpusMSEncoder *st,
-    const opus_int16 *pcm,
-    int frame_size,
-    unsigned char *data,
-    opus_int32 max_data_bytes
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
+	    opus_multistream_encode(OpusMSEncoder * st, const opus_int16 * pcm,
+				    int frame_size, unsigned char *data,
+				    opus_int32 max_data_bytes)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
 
 /** Encodes a multistream Opus frame from floating point input.
   * @param st <tt>OpusMSEncoder*</tt>: Multistream encoder state.
@@ -419,19 +415,17 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_multistream_encode(
   * @returns The length of the encoded packet (in bytes) on success or a
   *          negative error code (see @ref opus_errorcodes) on failure.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_multistream_encode_float(
-      OpusMSEncoder *st,
-      const float *pcm,
-      int frame_size,
-      unsigned char *data,
-      opus_int32 max_data_bytes
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
+	    opus_multistream_encode_float(OpusMSEncoder * st, const float *pcm,
+					  int frame_size, unsigned char *data,
+					  opus_int32 max_data_bytes)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
 
 /** Frees an <code>OpusMSEncoder</code> allocated by
   * opus_multistream_encoder_create().
   * @param st <tt>OpusMSEncoder*</tt>: Multistream encoder state to be freed.
   */
-OPUS_EXPORT void opus_multistream_encoder_destroy(OpusMSEncoder *st);
+	OPUS_EXPORT void opus_multistream_encoder_destroy(OpusMSEncoder * st);
 
 /** Perform a CTL function on a multistream Opus encoder.
   *
@@ -445,7 +439,9 @@ OPUS_EXPORT void opus_multistream_encoder_destroy(OpusMSEncoder *st);
   * @see opus_encoderctls
   * @see opus_multistream_ctls
   */
-OPUS_EXPORT int opus_multistream_encoder_ctl(OpusMSEncoder *st, int request, ...) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT int opus_multistream_encoder_ctl(OpusMSEncoder * st,
+						     int request,
+						     ...) OPUS_ARG_NONNULL(1);
 
 /**@}*/
 
@@ -467,10 +463,8 @@ OPUS_EXPORT int opus_multistream_encoder_ctl(OpusMSEncoder *st, int request, ...
   * @returns The size in bytes on success, or a negative error code
   *          (see @ref opus_errorcodes) on error.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_multistream_decoder_get_size(
-      int streams,
-      int coupled_streams
-);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	    opus_multistream_decoder_get_size(int streams, int coupled_streams);
 
 /** Allocates and initializes a multistream decoder state.
   * Call opus_multistream_decoder_destroy() to release
@@ -501,14 +495,11 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_multistream_decoder_get_size
   *                                   code (see @ref opus_errorcodes) on
   *                                   failure.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSDecoder *opus_multistream_decoder_create(
-      opus_int32 Fs,
-      int channels,
-      int streams,
-      int coupled_streams,
-      const unsigned char *mapping,
-      int *error
-) OPUS_ARG_NONNULL(5);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSDecoder
+	    *opus_multistream_decoder_create(opus_int32 Fs, int channels,
+					     int streams, int coupled_streams,
+					     const unsigned char *mapping,
+					     int *error) OPUS_ARG_NONNULL(5);
 
 /** Intialize a previously allocated decoder state object.
   * The memory pointed to by \a st must be at least the size returned by
@@ -544,14 +535,14 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSDecoder *opus_multistream_decoder_crea
   * @returns #OPUS_OK on success, or an error code (see @ref opus_errorcodes)
   *          on failure.
   */
-OPUS_EXPORT int opus_multistream_decoder_init(
-      OpusMSDecoder *st,
-      opus_int32 Fs,
-      int channels,
-      int streams,
-      int coupled_streams,
-      const unsigned char *mapping
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(6);
+	OPUS_EXPORT int opus_multistream_decoder_init(OpusMSDecoder * st,
+						      opus_int32 Fs,
+						      int channels,
+						      int streams,
+						      int coupled_streams,
+						      const unsigned char
+						      *mapping)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(6);
 
 /** Decode a multistream Opus packet.
   * @param st <tt>OpusMSDecoder*</tt>: Multistream decoder state.
@@ -582,14 +573,12 @@ OPUS_EXPORT int opus_multistream_decoder_init(
   * @returns Number of samples decoded on success or a negative error code
   *          (see @ref opus_errorcodes) on failure.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_multistream_decode(
-    OpusMSDecoder *st,
-    const unsigned char *data,
-    opus_int32 len,
-    opus_int16 *pcm,
-    int frame_size,
-    int decode_fec
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
+	    opus_multistream_decode(OpusMSDecoder * st,
+				    const unsigned char *data, opus_int32 len,
+				    opus_int16 * pcm, int frame_size,
+				    int decode_fec) OPUS_ARG_NONNULL(1)
+	    OPUS_ARG_NONNULL(4);
 
 /** Decode a multistream Opus packet with floating point output.
   * @param st <tt>OpusMSDecoder*</tt>: Multistream decoder state.
@@ -620,14 +609,13 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_multistream_decode(
   * @returns Number of samples decoded on success or a negative error code
   *          (see @ref opus_errorcodes) on failure.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_multistream_decode_float(
-    OpusMSDecoder *st,
-    const unsigned char *data,
-    opus_int32 len,
-    float *pcm,
-    int frame_size,
-    int decode_fec
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
+	    opus_multistream_decode_float(OpusMSDecoder * st,
+					  const unsigned char *data,
+					  opus_int32 len, float *pcm,
+					  int frame_size,
+					  int decode_fec) OPUS_ARG_NONNULL(1)
+	    OPUS_ARG_NONNULL(4);
 
 /** Perform a CTL function on a multistream Opus decoder.
   *
@@ -641,13 +629,15 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_multistream_decode_float(
   * @see opus_decoderctls
   * @see opus_multistream_ctls
   */
-OPUS_EXPORT int opus_multistream_decoder_ctl(OpusMSDecoder *st, int request, ...) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT int opus_multistream_decoder_ctl(OpusMSDecoder * st,
+						     int request,
+						     ...) OPUS_ARG_NONNULL(1);
 
 /** Frees an <code>OpusMSDecoder</code> allocated by
   * opus_multistream_decoder_create().
   * @param st <tt>OpusMSDecoder</tt>: Multistream decoder state to be freed.
   */
-OPUS_EXPORT void opus_multistream_decoder_destroy(OpusMSDecoder *st);
+	OPUS_EXPORT void opus_multistream_decoder_destroy(OpusMSDecoder * st);
 
 /**@}*/
 
@@ -656,5 +646,4 @@ OPUS_EXPORT void opus_multistream_decoder_destroy(OpusMSDecoder *st);
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* OPUS_MULTISTREAM_H */
+#endif				/* OPUS_MULTISTREAM_H */

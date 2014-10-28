@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,15 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FIX.h"
 /* Approximation of 128 * log2() (very close inverse of silk_log2lin()) */
 /* Convert input to a log scale    */
-opus_int32 silk_lin2log(
-    const opus_int32            inLin               /* I  input in linear scale                                         */
-)
+opus_int32 silk_lin2log(const opus_int32 inLin	/* I  input in linear scale                                         */
+    )
 {
-    opus_int32 lz, frac_Q7;
+	opus_int32 lz, frac_Q7;
 
-    silk_CLZ_FRAC( inLin, &lz, &frac_Q7 );
+	silk_CLZ_FRAC(inLin, &lz, &frac_Q7);
 
-    /* Piece-wise parabolic approximation */
-    return silk_LSHIFT( 31 - lz, 7 ) + silk_SMLAWB( frac_Q7, silk_MUL( frac_Q7, 128 - frac_Q7 ), 179 );
+	/* Piece-wise parabolic approximation */
+	return silk_LSHIFT(31 - lz, 7) + silk_SMLAWB(frac_Q7,
+						     silk_MUL(frac_Q7,
+							      128 - frac_Q7),
+						     179);
 }
-

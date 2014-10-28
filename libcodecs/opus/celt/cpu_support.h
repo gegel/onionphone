@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2010 Xiph.Org Foundation
  * Copyright (c) 2013 Parrot */
 /*
@@ -47,7 +49,7 @@
 
 static inline int opus_select_arch(void)
 {
-  return 0;
+	return 0;
 }
 #endif
 

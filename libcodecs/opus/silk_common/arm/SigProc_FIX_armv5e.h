@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Copyright (c) 2013       Parrot
@@ -32,30 +34,26 @@ POSSIBILITY OF SUCH DAMAGE.
 #undef silk_SMULTT
 static inline opus_int32 silk_SMULTT_armv5e(opus_int32 a, opus_int32 b)
 {
-  opus_int32 res;
-  __asm__(
-      "#silk_SMULTT\n\t"
-      "smultt %0, %1, %2\n\t"
-      : "=r"(res)
-      : "%r"(a), "r"(b)
-  );
-  return res;
+	opus_int32 res;
+ __asm__("#silk_SMULTT\n\t" "smultt %0, %1, %2\n\t":"=r"(res)
+ :		"%r"(a), "r"(b)
+	    );
+	return res;
 }
+
 #define silk_SMULTT(a, b) (silk_SMULTT_armv5e(a, b))
 
 #undef silk_SMLATT
 static inline opus_int32 silk_SMLATT_armv5e(opus_int32 a, opus_int32 b,
- opus_int32 c)
+					    opus_int32 c)
 {
-  opus_int32 res;
-  __asm__(
-      "#silk_SMLATT\n\t"
-      "smlatt %0, %1, %2, %3\n\t"
-      : "=r"(res)
-      : "%r"(b), "r"(c), "r"(a)
-  );
-  return res;
+	opus_int32 res;
+ __asm__("#silk_SMLATT\n\t" "smlatt %0, %1, %2, %3\n\t":"=r"(res)
+ :		"%r"(b), "r"(c), "r"(a)
+	    );
+	return res;
 }
+
 #define silk_SMLATT(a, b, c) (silk_SMLATT_armv5e(a, b, c))
 
 #endif
