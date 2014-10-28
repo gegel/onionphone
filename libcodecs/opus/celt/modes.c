@@ -228,10 +228,6 @@ CELTMode *opus_custom_mode_create(opus_int32 Fs, int frame_size, int *error)
    opus_int16 *logN;
    int LM;
    
-#if !defined(VAR_ARRAYS) && !defined(USE_ALLOCA)
-   if (global_stack==NULL)
-      goto failure;
-#endif
 #endif
 
 #ifndef CUSTOM_MODES_ONLY

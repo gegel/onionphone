@@ -570,13 +570,6 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
    st->prev_mode = mode;
    st->prev_redundancy = redundancy && !celt_to_silk;
 
-   if (celt_ret>=0)
-   {
-      if (OPUS_CHECK_ARRAY(pcm, audiosize*st->channels))
-         OPUS_PRINT_INT(audiosize);
-   }
-
-   
    return celt_ret < 0 ? celt_ret : audiosize;
 
 }
@@ -607,8 +600,6 @@ int opus_decode_native(OpusDecoder *st, const unsigned char *data,
          pcm_count += ret;
       } while (pcm_count < frame_size);
       celt_assert(pcm_count == frame_size);
-      if (OPUS_CHECK_ARRAY(pcm, pcm_count*st->channels))
-         OPUS_PRINT_INT(pcm_count);
       st->last_packet_duration = pcm_count;
       return pcm_count;
    } else if (len<0)
@@ -655,8 +646,6 @@ int opus_decode_native(OpusDecoder *st, const unsigned char *data,
       if (ret<0)
          return ret;
       else {
-         if (OPUS_CHECK_ARRAY(pcm, frame_size*st->channels))
-            OPUS_PRINT_INT(frame_size);
          st->last_packet_duration = frame_size;
          return frame_size;
       }
@@ -683,8 +672,6 @@ int opus_decode_native(OpusDecoder *st, const unsigned char *data,
       nb_samples += ret;
    }
    st->last_packet_duration = nb_samples;
-   if (OPUS_CHECK_ARRAY(pcm, nb_samples*st->channels))
-      OPUS_PRINT_INT(nb_samples);
 #ifndef FIXED_POINT
    if (soft_clip)
       opus_pcm_soft_clip(pcm, nb_samples, st->channels, st->softclip_mem);

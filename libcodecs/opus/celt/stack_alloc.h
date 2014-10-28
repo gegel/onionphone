@@ -51,60 +51,18 @@
 # endif
 #endif
 
-/**
- * @def ALIGN(stack, size)
- *
- * Aligns the stack to a 'size' boundary
- *
- * @param stack Stack
- * @param size  New size boundary
- */
-
-/**
- * @def PUSH(stack, size, type)
- *
- * Allocates 'size' elements of type 'type' on the stack
- *
- * @param stack Stack
- * @param size  Number of elements
- * @param type  Type of element
- */
-
 #if defined(VAR_ARRAYS)
 
 /* C99 does not allow VLAs of size zero */
 #define ALLOC_NONE 1
 
 #elif defined(USE_ALLOCA)
-
 #define ALLOC_NONE 0
 
 #else
 
-#ifdef CELT_C
-char *global_stack=0;
-#else
-extern char *global_stack;
-#endif /* CELT_C */
-
 #ifdef ENABLE_VALGRIND
-
 #include <valgrind/memcheck.h>
-
-#ifdef CELT_C
-char *global_stack_top=0;
-#else
-extern char *global_stack_top;
-#endif /* CELT_C */
-
-#define ALIGN(stack, size) ((stack) += ((size) - (long)(stack)) & ((size) - 1))
-#define PUSH(stack, size, type) (VALGRIND_MAKE_MEM_NOACCESS(stack, global_stack_top-stack),ALIGN((stack),sizeof(type)/sizeof(char)),VALGRIND_MAKE_MEM_UNDEFINED(stack, ((size)*sizeof(type)/sizeof(char))),(stack)+=(2*(size)*sizeof(type)/sizeof(char)),(type*)((stack)-(2*(size)*sizeof(type)/sizeof(char))))
-
-#else
-
-#define ALIGN(stack, size) ((stack) += ((size) - (long)(stack)) & ((size) - 1))
-#define PUSH(stack, size, type) (ALIGN((stack),sizeof(type)/sizeof(char)),(stack)+=(size)*(sizeof(type)/sizeof(char)),(type*)((stack)-(size)*(sizeof(type)/sizeof(char))))
-
 #endif /* ENABLE_VALGRIND */
 
 #include "os_support.h"
@@ -116,20 +74,10 @@ extern char *global_stack_top;
 #ifdef ENABLE_VALGRIND
 
 #include <valgrind/memcheck.h>
-#define OPUS_CHECK_ARRAY(ptr, len) VALGRIND_CHECK_MEM_IS_DEFINED(ptr, len*sizeof(*ptr))
-#define OPUS_CHECK_VALUE(value) VALGRIND_CHECK_VALUE_IS_DEFINED(value)
-#define OPUS_CHECK_ARRAY_COND(ptr, len) VALGRIND_CHECK_MEM_IS_DEFINED(ptr, len*sizeof(*ptr))
-#define OPUS_CHECK_VALUE_COND(value) VALGRIND_CHECK_VALUE_IS_DEFINED(value)
-#define OPUS_PRINT_INT(value) do {fprintf(stderr, #value " = %d at %s:%d\n", value, __FILE__, __LINE__);}while(0)
-#define OPUS_FPRINTF fprintf
 
 #else
 
 static OPUS_INLINE int _opus_false(void) {return 0;}
-#define OPUS_CHECK_ARRAY(ptr, len) _opus_false()
-#define OPUS_CHECK_VALUE(value) _opus_false()
-#define OPUS_PRINT_INT(value) do{}while(0)
-#define OPUS_FPRINTF (void)
 
 #endif
 
