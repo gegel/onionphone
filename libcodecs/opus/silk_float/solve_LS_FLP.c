@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
  * Matrix D (only the diagonal elements returned in a vector)such that
  * the symmetric matric A is given by A = L*D*L'.
  **********************************************************************/
-static OPUS_INLINE void silk_LDL_FLP(
+static inline void silk_LDL_FLP(
     silk_float          *A,         /* I/O  Pointer to Symetric Square Matrix                               */
     opus_int            M,          /* I    Size of Matrix                                                  */
     silk_float          *L,         /* I/O  Pointer to Square Upper triangular Matrix                       */
@@ -49,7 +49,7 @@ static OPUS_INLINE void silk_LDL_FLP(
  * Function to solve linear equation Ax = b, when A is a MxM lower
  * triangular matrix, with ones on the diagonal.
  **********************************************************************/
-static OPUS_INLINE void silk_SolveWithLowerTriangularWdiagOnes_FLP(
+static inline void silk_SolveWithLowerTriangularWdiagOnes_FLP(
     const silk_float    *L,         /* I    Pointer to Lower Triangular Matrix                              */
     opus_int            M,          /* I    Dim of Matrix equation                                          */
     const silk_float    *b,         /* I    b Vector                                                        */
@@ -60,7 +60,7 @@ static OPUS_INLINE void silk_SolveWithLowerTriangularWdiagOnes_FLP(
  * Function to solve linear equation (A^T)x = b, when A is a MxM lower
  * triangular, with ones on the diagonal. (ie then A^T is upper triangular)
  **********************************************************************/
-static OPUS_INLINE void silk_SolveWithUpperTriangularFromLowerWdiagOnes_FLP(
+static inline void silk_SolveWithUpperTriangularFromLowerWdiagOnes_FLP(
     const silk_float    *L,         /* I    Pointer to Lower Triangular Matrix                              */
     opus_int            M,          /* I    Dim of Matrix equation                                          */
     const silk_float    *b,         /* I    b Vector                                                        */
@@ -110,7 +110,7 @@ void silk_solve_LDL_FLP(
     silk_SolveWithUpperTriangularFromLowerWdiagOnes_FLP( &L[ 0 ][ 0 ], M, T, x );
 }
 
-static OPUS_INLINE void silk_SolveWithUpperTriangularFromLowerWdiagOnes_FLP(
+static inline void silk_SolveWithUpperTriangularFromLowerWdiagOnes_FLP(
     const silk_float    *L,         /* I    Pointer to Lower Triangular Matrix                              */
     opus_int            M,          /* I    Dim of Matrix equation                                          */
     const silk_float    *b,         /* I    b Vector                                                        */
@@ -132,7 +132,7 @@ static OPUS_INLINE void silk_SolveWithUpperTriangularFromLowerWdiagOnes_FLP(
     }
 }
 
-static OPUS_INLINE void silk_SolveWithLowerTriangularWdiagOnes_FLP(
+static inline void silk_SolveWithLowerTriangularWdiagOnes_FLP(
     const silk_float    *L,         /* I    Pointer to Lower Triangular Matrix                              */
     opus_int            M,          /* I    Dim of Matrix equation                                          */
     const silk_float    *b,         /* I    b Vector                                                        */
@@ -154,7 +154,7 @@ static OPUS_INLINE void silk_SolveWithLowerTriangularWdiagOnes_FLP(
     }
 }
 
-static OPUS_INLINE void silk_LDL_FLP(
+static inline void silk_LDL_FLP(
     silk_float          *A,         /* I/O  Pointer to Symetric Square Matrix                               */
     opus_int            M,          /* I    Size of Matrix                                                  */
     silk_float          *L,         /* I/O  Pointer to Square Upper triangular Matrix                       */

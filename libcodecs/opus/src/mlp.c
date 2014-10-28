@@ -39,7 +39,7 @@
 #define MAX_NEURONS 100
 
 #if 0
-static OPUS_INLINE opus_val16 tansig_approx(opus_val32 _x) /* Q19 */
+static inline opus_val16 tansig_approx(opus_val32 _x) /* Q19 */
 {
 	int i;
 	opus_val16 xx; /* Q11 */
@@ -65,7 +65,7 @@ static OPUS_INLINE opus_val16 tansig_approx(opus_val32 _x) /* Q19 */
 }
 #else
 /*extern const float tansig_table[501];*/
-static OPUS_INLINE float tansig_approx(float x)
+static inline float tansig_approx(float x)
 {
 	int i;
 	float y, dy;

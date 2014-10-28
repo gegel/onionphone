@@ -66,6 +66,6 @@
 
 #endif /* VAR_ARRAYS */
 
-static OPUS_INLINE int _opus_false(void) {return 0;}
+static inline int _opus_false(void) {return 0;}
 
 #endif /* STACK_ALLOC_H */

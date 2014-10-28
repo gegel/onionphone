@@ -32,7 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 #include "stack_alloc.h"
 
-static OPUS_INLINE void silk_nsq_scale_states(
+static inline void silk_nsq_scale_states(
     const silk_encoder_state *psEncC,           /* I    Encoder State                   */
     silk_nsq_state      *NSQ,                   /* I/O  NSQ state                       */
     const opus_int32    x_Q3[],                 /* I    input in Q3                     */
@@ -46,7 +46,7 @@ static OPUS_INLINE void silk_nsq_scale_states(
     const opus_int      signal_type             /* I    Signal type                     */
 );
 
-static OPUS_INLINE void silk_noise_shape_quantizer(
+static inline void silk_noise_shape_quantizer(
     silk_nsq_state      *NSQ,                   /* I/O  NSQ state                       */
     opus_int            signalType,             /* I    Signal type                     */
     const opus_int32    x_sc_Q10[],             /* I                                    */
@@ -171,7 +171,7 @@ void silk_NSQ(
 /***********************************/
 /* silk_noise_shape_quantizer  */
 /***********************************/
-static OPUS_INLINE void silk_noise_shape_quantizer(
+static inline void silk_noise_shape_quantizer(
     silk_nsq_state      *NSQ,                   /* I/O  NSQ state                       */
     opus_int            signalType,             /* I    Signal type                     */
     const opus_int32    x_sc_Q10[],             /* I                                    */
@@ -369,7 +369,7 @@ static OPUS_INLINE void silk_noise_shape_quantizer(
     silk_memcpy( NSQ->sLPC_Q14, &NSQ->sLPC_Q14[ length ], NSQ_LPC_BUF_LENGTH * sizeof( opus_int32 ) );
 }
 
-static OPUS_INLINE void silk_nsq_scale_states(
+static inline void silk_nsq_scale_states(
     const silk_encoder_state *psEncC,           /* I    Encoder State                   */
     silk_nsq_state      *NSQ,                   /* I/O  NSQ state                       */
     const opus_int32    x_Q3[],                 /* I    input in Q3                     */

@@ -57,7 +57,7 @@ opus_val16 remove_doubling(opus_val16 *x, int maxperiod, int minperiod,
 /* OPT: This is the kernel you really want to optimize. It gets used a lot
    by the prefilter and by the PLC. */
 #ifndef OVERRIDE_XCORR_KERNEL
-static OPUS_INLINE void xcorr_kernel(const opus_val16 * x, const opus_val16 * y, opus_val32 sum[4], int len)
+static inline void xcorr_kernel(const opus_val16 * x, const opus_val16 * y, opus_val32 sum[4], int len)
 {
    int j;
    opus_val16 y_0, y_1, y_2, y_3;
@@ -125,7 +125,7 @@ static OPUS_INLINE void xcorr_kernel(const opus_val16 * x, const opus_val16 * y,
 #endif /* OVERRIDE_XCORR_KERNEL */
 
 #ifndef OVERRIDE_DUAL_INNER_PROD
-static OPUS_INLINE void dual_inner_prod(const opus_val16 *x, const opus_val16 *y01, const opus_val16 *y02,
+static inline void dual_inner_prod(const opus_val16 *x, const opus_val16 *y01, const opus_val16 *y02,
       int N, opus_val32 *xy1, opus_val32 *xy2)
 {
    int i;

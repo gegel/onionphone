@@ -64,7 +64,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifdef __GNUC__
 __attribute__((noreturn))
 #endif
-static OPUS_INLINE void _silk_fatal(const char *str, const char *file, int line)
+static inline void _silk_fatal(const char *str, const char *file, int line)
 {
    fprintf (stderr, "Fatal (internal) error in %s, line %d: %s\n", file, line, str);
    abort();
