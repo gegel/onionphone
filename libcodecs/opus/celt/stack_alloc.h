@@ -61,25 +61,11 @@
 
 #else
 
-#ifdef ENABLE_VALGRIND
-#include <valgrind/memcheck.h>
-#endif /* ENABLE_VALGRIND */
-
 #include "os_support.h"
 #define ALLOC_NONE 0
 
 #endif /* VAR_ARRAYS */
 
-
-#ifdef ENABLE_VALGRIND
-
-#include <valgrind/memcheck.h>
-
-#else
-
 static OPUS_INLINE int _opus_false(void) {return 0;}
-
-#endif
-
 
 #endif /* STACK_ALLOC_H */
