@@ -154,7 +154,7 @@ void silk_resampler_private_down_FIR(
     opus_int32 max_index_Q16, index_increment_Q16;
     
     const opus_int16 *FIR_Coefs;
-    SAVE_STACK;
+    
 
   opus_int32   buf[S->batchSize + S->FIR_Order];
 
@@ -190,5 +190,5 @@ void silk_resampler_private_down_FIR(
 
     /* Copy last part of filtered signal to the state for the next call */
     silk_memcpy( S->sFIR.i32, &buf[ nSamplesIn ], S->FIR_Order * sizeof( opus_int32 ) );
-    RESTORE_STACK;
+    
 }

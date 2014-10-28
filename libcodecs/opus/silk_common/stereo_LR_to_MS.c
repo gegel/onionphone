@@ -56,7 +56,7 @@ void silk_stereo_LR_to_MS(
     
     
     opus_int16 *mid = &x1[ -2 ];
-    SAVE_STACK;
+    
 
   opus_int16   side[frame_length + 2];
     /* Convert to basic mid/side signals */
@@ -225,5 +225,5 @@ void silk_stereo_LR_to_MS(
     state->pred_prev_Q13[ 0 ] = (opus_int16)pred_Q13[ 0 ];
     state->pred_prev_Q13[ 1 ] = (opus_int16)pred_Q13[ 1 ];
     state->width_prev_Q14     = (opus_int16)width_Q14;
-    RESTORE_STACK;
+    
 }

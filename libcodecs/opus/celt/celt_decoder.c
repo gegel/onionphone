@@ -347,7 +347,7 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st, opus_val16 * OPUS_R
    int loss_count;
    int noise_based;
    const opus_int16 *eBands;
-   SAVE_STACK;
+   
 
    mode = st->mode;
    nbEBands = mode->nbEBands;
@@ -644,7 +644,7 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st, opus_val16 * OPUS_R
 
    st->loss_count = loss_count+1;
 
-   RESTORE_STACK;
+   
 }
 
 int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *data, int len, opus_val16 * OPUS_RESTRICT pcm, int frame_size, ec_dec *dec)
@@ -683,7 +683,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
    int nbEBands;
    int overlap;
    const opus_int16 *eBands;
-   ALLOC_STACK;
+   
 
    mode = st->mode;
    nbEBands = mode->nbEBands;
@@ -746,7 +746,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
    if (data == NULL || len<=1)
    {
       celt_decode_lost(st, pcm, N, LM);
-      RESTORE_STACK;
+      
       return frame_size/st->downsample;
    }
 
@@ -1000,7 +1000,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
    /* We reuse freq[] as scratch space for the de-emphasis */
    deemphasis(out_syn, pcm, N, CC, st->downsample, mode->preemph, st->preemph_memD, freq);
    st->loss_count = 0;
-   RESTORE_STACK;
+   
    if (ec_tell(dec) > 8*len)
       return OPUS_INTERNAL_ERROR;
    if(ec_get_error(dec))
@@ -1021,7 +1021,7 @@ int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st, const unsigned char *data
 int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st, const unsigned char *data, int len, float * OPUS_RESTRICT pcm, int frame_size)
 {
    int j, ret, C, N;
-   ALLOC_STACK;
+   
 
    if (pcm==NULL)
       return OPUS_BAD_ARG;
@@ -1035,7 +1035,7 @@ int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st, const unsigned char
       for (j=0;j<C*ret;j++)
          pcm[j]=out[j]*(1.f/32768.f);
 
-   RESTORE_STACK;
+   
    return ret;
 }
 #endif /* DISABLE_FLOAT_API */
@@ -1050,7 +1050,7 @@ int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st, const unsigned char
 int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st, const unsigned char *data, int len, opus_int16 * OPUS_RESTRICT pcm, int frame_size)
 {
    int j, ret, C, N;
-   ALLOC_STACK;
+   
 
    if (pcm==NULL)
       return OPUS_BAD_ARG;
@@ -1065,7 +1065,7 @@ int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st, const unsigned char *data
       for (j=0;j<C*ret;j++)
          pcm[j] = FLOAT2INT16 (out[j]);
 
-   RESTORE_STACK;
+   
    return ret;
 }
 

@@ -220,7 +220,7 @@ void tonality_analysis(TonalityAnalysisState *tonal, AnalysisInfo *info_out, con
     float noise_floor;
     int remaining;
     AnalysisInfo *info;
-    SAVE_STACK;
+    
 
     tonal->last_transition++;
     alpha = 1.f/IMIN(20, 1+tonal->count);
@@ -237,7 +237,7 @@ void tonality_analysis(TonalityAnalysisState *tonal, AnalysisInfo *info_out, con
     {
        tonal->mem_fill += len;
        /* Don't have enough to update the analysis */
-       RESTORE_STACK;
+       
        return;
     }
     info = &tonal->info[tonal->write_pos++];
@@ -611,7 +611,7 @@ void tonality_analysis(TonalityAnalysisState *tonal, AnalysisInfo *info_out, con
     info->valid = 1;
     if (info_out!=NULL)
        OPUS_COPY(info_out, info, 1);
-    RESTORE_STACK;
+    
 }
 
 void run_analysis(TonalityAnalysisState *analysis, const CELTMode *celt_mode, const void *analysis_pcm,

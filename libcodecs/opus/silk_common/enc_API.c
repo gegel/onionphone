@@ -155,7 +155,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
     silk_encoder *psEnc = ( silk_encoder * )encState;
     
     opus_int transition, curr_block, tot_blocks;
-    SAVE_STACK;
+    
 
     if (encControl->reducedDependency)
     {
@@ -167,7 +167,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
     /* Check values in encoder control structure */
     if( ( ret = check_control_input( encControl ) != 0 ) ) {
         silk_assert( 0 );
-        RESTORE_STACK;
+        
         return ret;
     }
 
@@ -202,7 +202,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
         /* Only accept input length of 10 ms */
         if( nBlocksOf10ms != 1 ) {
             silk_assert( 0 );
-            RESTORE_STACK;
+            
             return SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
         }
         /* Reset Encoder */
@@ -222,13 +222,13 @@ opus_int silk_Encode(                                   /* O    Returns error co
         /* Only accept input lengths that are a multiple of 10 ms */
         if( nBlocksOf10ms * encControl->API_sampleRate != 100 * nSamplesIn || nSamplesIn < 0 ) {
             silk_assert( 0 );
-            RESTORE_STACK;
+            
             return SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
         }
         /* Make sure no more than one packet can be produced */
         if( 1000 * (opus_int32)nSamplesIn > encControl->payloadSize_ms * encControl->API_sampleRate ) {
             silk_assert( 0 );
-            RESTORE_STACK;
+            
             return SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
         }
     }
@@ -239,7 +239,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
         opus_int force_fs_kHz = (n==1) ? psEnc->state_Fxx[0].sCmn.fs_kHz : 0;
         if( ( ret = silk_control_encoder( &psEnc->state_Fxx[ n ], encControl, TargetRate_bps, psEnc->allowBandwidthSwitch, n, force_fs_kHz ) ) != 0 ) {
             silk_assert( 0 );
-            RESTORE_STACK;
+            
             return ret;
         }
         if( psEnc->state_Fxx[n].sCmn.first_frame_after_reset || transition ) {
@@ -550,7 +550,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
         }
     }
 
-    RESTORE_STACK;
+    
     return ret;
 }
 

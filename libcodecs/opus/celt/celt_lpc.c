@@ -98,7 +98,7 @@ void celt_fir(const opus_val16 *_x,
    int i,j;
    opus_val16 rnum[ord];
    opus_val16 x[N + ord];
-   SAVE_STACK;
+   
 
    for(i=0;i<ord;i++)
       rnum[i] = num[ord-i-1];
@@ -136,7 +136,7 @@ void celt_fir(const opus_val16 *_x,
       _y[i] = SATURATE16(ADD32(EXTEND32(_x[i]), PSHR32(sum, SIG_SHIFT)));
    }
 #endif
-   RESTORE_STACK;
+   
 }
 
 void celt_iir(const opus_val32 *_x,
@@ -166,7 +166,7 @@ void celt_iir(const opus_val32 *_x,
    int i,j;
    opus_val16 rden[ord];
    opus_val16 y[N + ord];
-   SAVE_STACK;
+   
 
    celt_assert((ord&3)==0);
    for(i=0;i<ord;i++)
@@ -212,7 +212,7 @@ void celt_iir(const opus_val32 *_x,
    }
    for(i=0;i<ord;i++)
       mem[i] = _y[N-i-1];
-   RESTORE_STACK;
+   
 #endif
 }
 
@@ -232,7 +232,7 @@ int _celt_autocorr(
    int shift;
    const opus_val16 *xptr;
    opus_val16 xx[n];
-   SAVE_STACK;
+   
    celt_assert(n>0);
    celt_assert(overlap>=0);
    if (overlap == 0)
@@ -299,6 +299,6 @@ int _celt_autocorr(
    }
 #endif
 
-   RESTORE_STACK;
+   
    return shift;
 }

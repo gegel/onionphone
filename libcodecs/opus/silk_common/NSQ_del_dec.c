@@ -137,7 +137,7 @@ void silk_NSQ_del_dec(
     
     
     NSQ_del_dec_struct  *psDD;
-    SAVE_STACK;
+    
 
     /* Set unvoiced lag to the previous one, overwrite later for voiced */
     lag = NSQ->lagPrev;
@@ -296,7 +296,7 @@ void silk_NSQ_del_dec(
     /* DEBUG_STORE_DATA( enc.pcm, &NSQ->xq[psEncC->ltp_mem_length], psEncC->frame_length * sizeof( opus_int16 ) ) */
     silk_memmove( NSQ->xq,           &NSQ->xq[           psEncC->frame_length ], psEncC->ltp_mem_length * sizeof( opus_int16 ) );
     silk_memmove( NSQ->sLTP_shp_Q14, &NSQ->sLTP_shp_Q14[ psEncC->frame_length ], psEncC->ltp_mem_length * sizeof( opus_int32 ) );
-    RESTORE_STACK;
+    
 }
 
 /******************************************/
@@ -341,7 +341,7 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec(
     
     NSQ_del_dec_struct *psDD;
     NSQ_sample_struct  *psSS;
-    SAVE_STACK;
+    
 
     silk_assert( nStatesDelayedDecision > 0 );
   NSQ_sample_pair   psSampleState[nStatesDelayedDecision];
@@ -626,7 +626,7 @@ static OPUS_INLINE void silk_noise_shape_quantizer_del_dec(
         psDD = &psDelDec[ k ];
         silk_memcpy( psDD->sLPC_Q14, &psDD->sLPC_Q14[ length ], NSQ_LPC_BUF_LENGTH * sizeof( opus_int32 ) );
     }
-    RESTORE_STACK;
+    
 }
 
 static OPUS_INLINE void silk_nsq_del_dec_scale_states(

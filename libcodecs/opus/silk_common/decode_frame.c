@@ -48,7 +48,7 @@ opus_int silk_decode_frame(
     
     opus_int         L, mv_len, ret = 0;
     
-    SAVE_STACK;
+    
 
     L = psDec->frame_length;
   silk_decoder_control   psDecCtrl[1];
@@ -122,6 +122,6 @@ opus_int silk_decode_frame(
     /* Set output frame length */
     *pN = L;
 
-    RESTORE_STACK;
+    
     return ret;
 }

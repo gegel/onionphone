@@ -94,7 +94,7 @@ opus_int silk_encode_frame_FIX(
     opus_int16   ec_prevLagIndex_copy;
     opus_int     ec_prevSignalType_copy;
     opus_int8    LastGainIndex_copy2;
-    SAVE_STACK;
+    
 
     /* This is totally unnecessary but many compilers (including gcc) are too dumb to realise it */
     LastGainIndex_copy2 = nBits_lower = nBits_upper = gainMult_lower = gainMult_upper = 0;
@@ -304,7 +304,7 @@ opus_int silk_encode_frame_FIX(
     if( psEnc->sCmn.prefillFlag ) {
         /* No payload */
         *pnBytesOut = 0;
-        RESTORE_STACK;
+        
         return ret;
     }
 
@@ -319,7 +319,7 @@ opus_int silk_encode_frame_FIX(
     /* Payload size */
     *pnBytesOut = silk_RSHIFT( ec_tell( psRangeEnc ) + 7, 3 );
 
-    RESTORE_STACK;
+    
     return ret;
 }
 

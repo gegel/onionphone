@@ -138,7 +138,7 @@ static opus_int silk_setup_resamplers(
 )
 {
     opus_int   ret = SILK_NO_ERROR;
-    SAVE_STACK;
+    
 
     if( psEnc->sCmn.fs_kHz != fs_kHz || psEnc->sCmn.prev_API_fs_Hz != psEnc->sCmn.API_fs_Hz )
     {
@@ -192,7 +192,7 @@ static opus_int silk_setup_resamplers(
 
     psEnc->sCmn.prev_API_fs_Hz = psEnc->sCmn.API_fs_Hz;
 
-    RESTORE_STACK;
+    
     return ret;
 }
 

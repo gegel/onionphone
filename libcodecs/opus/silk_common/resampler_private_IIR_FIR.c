@@ -73,7 +73,7 @@ void silk_resampler_private_IIR_FIR(
     opus_int32 nSamplesIn;
     opus_int32 max_index_Q16, index_increment_Q16;
     
-    SAVE_STACK;
+    
 
   opus_int16   buf[2 * S->batchSize + RESAMPLER_ORDER_FIR_12];
 
@@ -103,5 +103,5 @@ void silk_resampler_private_IIR_FIR(
 
     /* Copy last part of filtered signal to the state for the next call */
     silk_memcpy( S->sFIR.i16, &buf[ nSamplesIn << 1 ], RESAMPLER_ORDER_FIR_12 * sizeof( opus_int16 ) );
-    RESTORE_STACK;
+    
 }

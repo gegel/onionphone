@@ -50,7 +50,7 @@ void silk_decode_core(
     opus_int32 *pred_lag_ptr, *pexc_Q14, *pres_Q14;
     
     
-    SAVE_STACK;
+    
 
     silk_assert( psDec->prev_gain_Q16 != 0 );
 
@@ -234,5 +234,5 @@ void silk_decode_core(
 
     /* Save LPC state */
     silk_memcpy( psDec->sLPC_Q14_buf, sLPC_Q14, MAX_LPC_ORDER * sizeof( opus_int32 ) );
-    RESTORE_STACK;
+    
 }

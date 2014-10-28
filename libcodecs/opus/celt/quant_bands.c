@@ -272,7 +272,7 @@ void quant_coarse_energy(const CELTMode *m, int start, int end, int effEnd,
    opus_val32 new_distortion;
    opus_val16 oldEBands_intra[C*m->nbEBands];
    opus_val16 error_intra[C*m->nbEBands];
-   SAVE_STACK;
+   
 
    intra = force_intra || (!two_pass && *delayedIntra>2*C*(end-start) && nbAvailableBytes > (end-start)*C);
    intra_bias = (opus_int32)((budget**delayedIntra*loss_rate)/(C*512));
@@ -352,7 +352,7 @@ void quant_coarse_energy(const CELTMode *m, int start, int end, int effEnd,
       *delayedIntra = ADD32(MULT16_32_Q15(MULT16_16_Q15(pred_coef[LM], pred_coef[LM]),*delayedIntra),
             new_distortion);
 
-   RESTORE_STACK;
+   
 }
 
 void quant_fine_energy(const CELTMode *m, int start, int end, opus_val16 *oldEBands, opus_val16 *error, int *fine_quant, ec_enc *enc, int C)

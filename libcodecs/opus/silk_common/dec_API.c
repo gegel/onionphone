@@ -98,7 +98,7 @@ opus_int silk_Decode(                                   /* O    Returns error co
     silk_decoder_state *channel_state = psDec->channel_state;
     opus_int has_side;
     opus_int stereo_to_mono;
-    SAVE_STACK;
+    
 
     silk_assert( decControl->nChannelsInternal == 1 || decControl->nChannelsInternal == 2 );
 
@@ -140,13 +140,13 @@ opus_int silk_Decode(                                   /* O    Returns error co
                 channel_state[ n ].nb_subfr = 4;
             } else {
                 silk_assert( 0 );
-                RESTORE_STACK;
+                
                 return SILK_DEC_INVALID_FRAME_SIZE;
             }
             fs_kHz_dec = ( decControl->internalSampleRate >> 10 ) + 1;
             if( fs_kHz_dec != 8 && fs_kHz_dec != 12 && fs_kHz_dec != 16 ) {
                 silk_assert( 0 );
-                RESTORE_STACK;
+                
                 return SILK_DEC_INVALID_SAMPLING_FREQUENCY;
             }
             ret += silk_decoder_set_fs( &channel_state[ n ], fs_kHz_dec, decControl->API_sampleRate );
@@ -163,7 +163,7 @@ opus_int silk_Decode(                                   /* O    Returns error co
 
     if( decControl->API_sampleRate > (opus_int32)MAX_API_FS_KHZ * 1000 || decControl->API_sampleRate < 8000 ) {
         ret = SILK_DEC_INVALID_SAMPLING_FREQUENCY;
-        RESTORE_STACK;
+        
         return( ret );
     }
 
@@ -354,7 +354,7 @@ opus_int silk_Decode(                                   /* O    Returns error co
     } else {
        psDec->prev_decode_only_middle = decode_only_middle;
     }
-    RESTORE_STACK;
+    
     return ret;
 }
 

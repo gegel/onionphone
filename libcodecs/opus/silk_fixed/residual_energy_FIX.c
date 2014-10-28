@@ -50,7 +50,7 @@ void silk_residual_energy_FIX(
     
     const opus_int16 *x_ptr;
     opus_int32       tmp32;
-    SAVE_STACK;
+    
 
     x_ptr  = x;
     offset = LPC_order + subfr_length;
@@ -93,5 +93,5 @@ void silk_residual_energy_FIX(
         nrgs[ i ] = silk_SMMUL( tmp32, silk_LSHIFT32( nrgs[ i ], lz1 ) ); /* Q( nrgsQ[ i ] + lz1 + 2 * lz2 - 32 - 32 )*/
         nrgsQ[ i ] += lz1 + 2 * lz2 - 32 - 32;
     }
-    RESTORE_STACK;
+    
 }

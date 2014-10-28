@@ -185,7 +185,7 @@ static OPUS_INLINE void silk_PLC_conceal(
     
     silk_PLC_struct *psPLC = &psDec->sPLC;
     opus_int32 prevGain_Q10[2];
-    SAVE_STACK;
+    
 
   opus_int16   exc_buf[2*psPLC->subfr_length];
   opus_int16   sLTP[psDec->ltp_mem_length];
@@ -360,7 +360,7 @@ static OPUS_INLINE void silk_PLC_conceal(
     for( i = 0; i < MAX_NB_SUBFR; i++ ) {
         psDecCtrl->pitchL[ i ] = lag;
     }
-    RESTORE_STACK;
+    
 }
 
 /* Glues concealed frames with new good received frames */

@@ -75,7 +75,7 @@ void silk_encode_pulses(
     const opus_int8 *pulses_ptr;
     const opus_uint8 *cdf_ptr;
     const opus_uint8 *nBits_ptr;
-    SAVE_STACK;
+    
 
     silk_memset( pulses_comb, 0, 8 * sizeof( opus_int ) ); /* Fixing Valgrind reported problem*/
 
@@ -202,5 +202,5 @@ void silk_encode_pulses(
     /* Encode signs */
     /****************/
     silk_encode_signs( psRangeEnc, pulses, frame_length, signalType, quantOffsetType, sum_pulses );
-    RESTORE_STACK;
+    
 }

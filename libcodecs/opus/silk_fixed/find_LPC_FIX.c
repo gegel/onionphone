@@ -52,7 +52,7 @@ void silk_find_LPC_FIX(
     opus_int     res_nrg_interp_Q, res_nrg_Q, res_tmp_nrg_Q;
     opus_int16   a_tmp_Q12[ MAX_LPC_ORDER ];
     opus_int16   NLSF0_Q15[ MAX_LPC_ORDER ];
-    SAVE_STACK;
+    
 
     subfr_length = psEncC->subfr_length + psEncC->predictLPCOrder;
 
@@ -147,5 +147,5 @@ void silk_find_LPC_FIX(
     }
 
     silk_assert( psEncC->indices.NLSFInterpCoef_Q2 == 4 || ( psEncC->useInterpolatedNLSFs && !psEncC->first_frame_after_reset && psEncC->nb_subfr == MAX_NB_SUBFR ) );
-    RESTORE_STACK;
+    
 }

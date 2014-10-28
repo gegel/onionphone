@@ -160,7 +160,7 @@ void silk_noise_shape_analysis_FIX(
     opus_int32   AR2_Q24[       MAX_SHAPE_LPC_ORDER ];
     
     const opus_int16 *x_ptr, *pitch_res_ptr;
-    SAVE_STACK;
+    
 
     /* Point to start of first LPC analysis block */
     x_ptr = x - psEnc->sCmn.la_shape;
@@ -441,5 +441,5 @@ void silk_noise_shape_analysis_FIX(
         psEncCtrl->HarmShapeGain_Q14[ k ] = ( opus_int )silk_RSHIFT_ROUND( psShapeSt->HarmShapeGain_smth_Q16, 2 );
         psEncCtrl->Tilt_Q14[ k ]          = ( opus_int )silk_RSHIFT_ROUND( psShapeSt->Tilt_smth_Q16,          2 );
     }
-    RESTORE_STACK;
+    
 }

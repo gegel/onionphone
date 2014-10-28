@@ -167,7 +167,7 @@ unsigned alg_quant(celt_norm *X, int N, int K, int spread, int B, ec_enc *enc
    celt_norm y[N];
    int iy[N];
    opus_val16 signx[N];
-   SAVE_STACK;
+   
 
    celt_assert2(K>0, "alg_quant() needs at least one pulse");
    celt_assert2(N>1, "alg_quant() needs at least two dimensions");
@@ -309,7 +309,7 @@ unsigned alg_quant(celt_norm *X, int N, int K, int spread, int B, ec_enc *enc
 #endif
 
    collapse_mask = extract_collapse_mask(iy, N, B);
-   RESTORE_STACK;
+   
    return collapse_mask;
 }
 
@@ -322,7 +322,7 @@ unsigned alg_unquant(celt_norm *X, int N, int K, int spread, int B,
    opus_val32 Ryy;
    unsigned collapse_mask;
    int iy[N];
-   SAVE_STACK;
+   
 
    celt_assert2(K>0, "alg_unquant() needs at least one pulse");
    celt_assert2(N>1, "alg_unquant() needs at least two dimensions");
@@ -335,7 +335,7 @@ unsigned alg_unquant(celt_norm *X, int N, int K, int spread, int B,
    normalise_residual(iy, X, N, Ryy, gain);
    exp_rotation(X, N, -1, B, K, spread);
    collapse_mask = extract_collapse_mask(iy, N, B);
-   RESTORE_STACK;
+   
    return collapse_mask;
 }
 

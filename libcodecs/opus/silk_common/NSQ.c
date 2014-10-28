@@ -94,7 +94,7 @@ void silk_NSQ(
     opus_int32          HarmShapeFIRPacked_Q14;
     opus_int            offset_Q10;
     
-    SAVE_STACK;
+    
 
     NSQ->rand_seed = psIndices->Seed;
 
@@ -165,7 +165,7 @@ void silk_NSQ(
     /* DEBUG_STORE_DATA( enc.pcm, &NSQ->xq[ psEncC->ltp_mem_length ], psEncC->frame_length * sizeof( opus_int16 ) ) */
     silk_memmove( NSQ->xq,           &NSQ->xq[           psEncC->frame_length ], psEncC->ltp_mem_length * sizeof( opus_int16 ) );
     silk_memmove( NSQ->sLTP_shp_Q14, &NSQ->sLTP_shp_Q14[ psEncC->frame_length ], psEncC->ltp_mem_length * sizeof( opus_int32 ) );
-    RESTORE_STACK;
+    
 }
 
 /***********************************/

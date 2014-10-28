@@ -233,7 +233,7 @@ void surround_analysis(const CELTMode *celt_mode, const void *pcm, opus_val16 *b
    
    
    
-   SAVE_STACK;
+   
 
    upsample = resampling_factor(rate);
    frame_size = len*upsample;
@@ -338,7 +338,7 @@ void surround_analysis(const CELTMode *celt_mode, const void *pcm, opus_val16 *b
       printf("\n");
 #endif
    }
-   RESTORE_STACK;
+   
 }
 
 opus_int32 opus_multistream_encoder_get_size(int nb_streams, int nb_coupled_streams)
@@ -694,7 +694,7 @@ static int opus_multistream_encode_native
    opus_val32 *mem = NULL;
    opus_val32 *preemph_mem=NULL;
    int frame_size;
-   ALLOC_STACK;
+   
 
    if (st->surround)
    {
@@ -725,7 +725,7 @@ static int opus_multistream_encode_native
 
    if (400*frame_size < Fs)
    {
-      RESTORE_STACK;
+      
       return OPUS_BAD_ARG;
    }
    /* Validate frame_size before using it to allocate stack space.
@@ -734,7 +734,7 @@ static int opus_multistream_encode_native
        100*frame_size != Fs &&  50*frame_size != Fs &&
         25*frame_size != Fs &&  50*frame_size != 3*Fs)
    {
-      RESTORE_STACK;
+      
       return OPUS_BAD_ARG;
    }
   opus_val16 buf[2*frame_size];
@@ -749,7 +749,7 @@ static int opus_multistream_encode_native
 
    if (max_data_bytes < 4*st->layout.nb_streams-1)
    {
-      RESTORE_STACK;
+      
       return OPUS_BUFFER_TOO_SMALL;
    }
 
@@ -852,7 +852,7 @@ static int opus_multistream_encode_native
             pcm, analysis_frame_size, c1, c2, st->layout.nb_channels, downmix);
       if (len<0)
       {
-         RESTORE_STACK;
+         
          return len;
       }
       /* We need to use the repacketizer to add the self-delimiting lengths
@@ -865,7 +865,7 @@ static int opus_multistream_encode_native
       tot_size += len;
    }
    /*printf("\n");*/
-   RESTORE_STACK;
+   
    return tot_size;
 }
 

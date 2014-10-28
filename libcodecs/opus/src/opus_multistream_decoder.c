@@ -199,7 +199,7 @@ static int opus_multistream_decode_native(
    char *ptr;
    int do_plc=0;
    
-   ALLOC_STACK;
+   
 
    /* Limit frame_size to avoid excessive stack allocations. */
    opus_multistream_decoder_ctl(st, OPUS_GET_SAMPLE_RATE(&Fs));
@@ -213,12 +213,12 @@ static int opus_multistream_decode_native(
       do_plc = 1;
    if (len < 0)
    {
-      RESTORE_STACK;
+      
       return OPUS_BAD_ARG;
    }
    if (!do_plc && len < 2*st->layout.nb_streams-1)
    {
-      RESTORE_STACK;
+      
       return OPUS_INVALID_PACKET;
    }
    if (!do_plc)
@@ -226,11 +226,11 @@ static int opus_multistream_decode_native(
       int ret = opus_multistream_packet_validate(data, len, st->layout.nb_streams, Fs);
       if (ret < 0)
       {
-         RESTORE_STACK;
+         
          return ret;
       } else if (ret > frame_size)
       {
-         RESTORE_STACK;
+         
          return OPUS_BUFFER_TOO_SMALL;
       }
    }
@@ -244,7 +244,7 @@ static int opus_multistream_decode_native(
 
       if (!do_plc && len<=0)
       {
-         RESTORE_STACK;
+         
          return OPUS_INTERNAL_ERROR;
       }
       packet_offset = 0;
@@ -253,7 +253,7 @@ static int opus_multistream_decode_native(
       len -= packet_offset;
       if (ret <= 0)
       {
-         RESTORE_STACK;
+         
          return ret;
       }
       frame_size = ret;
@@ -297,7 +297,7 @@ static int opus_multistream_decode_native(
             NULL, 0, frame_size);
       }
    }
-   RESTORE_STACK;
+   
    return frame_size;
 }
 

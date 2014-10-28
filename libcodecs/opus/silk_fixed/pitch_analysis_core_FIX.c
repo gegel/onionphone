@@ -117,7 +117,7 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
     opus_int   nb_cbk_search, cbk_size;
     opus_int32 delta_lag_log2_sqr_Q7, lag_log2_Q7, prevLag_log2_Q7, prev_lag_bias_Q13;
     const opus_int8 *Lag_CB_ptr;
-    SAVE_STACK;
+    
     /* Check for valid sampling frequency */
     silk_assert( Fs_kHz == 8 || Fs_kHz == 12 || Fs_kHz == 16 );
 
@@ -254,7 +254,7 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
         *LTPCorr_Q15  = 0;
         *lagIndex     = 0;
         *contourIndex = 0;
-        RESTORE_STACK;
+        
         return 1;
     }
 
@@ -452,7 +452,7 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
         *LTPCorr_Q15  = 0;
         *lagIndex     = 0;
         *contourIndex = 0;
-        RESTORE_STACK;
+        
         return 1;
     }
 
@@ -576,7 +576,7 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
     }
     silk_assert( *lagIndex >= 0 );
     /* return as voiced */
-    RESTORE_STACK;
+    
     return 0;
 }
 
@@ -609,7 +609,7 @@ static void silk_P_Ana_calc_corr_st3(
     
     
     const opus_int8 *Lag_range_ptr, *Lag_CB_ptr;
-    SAVE_STACK;
+    
 
     silk_assert( complexity >= SILK_PE_MIN_COMPLEX );
     silk_assert( complexity <= SILK_PE_MAX_COMPLEX );
@@ -658,7 +658,7 @@ static void silk_P_Ana_calc_corr_st3(
         }
         target_ptr += sf_length;
     }
-    RESTORE_STACK;
+    
 }
 
 /********************************************************************/
@@ -680,7 +680,7 @@ static void silk_P_Ana_calc_energy_st3(
     opus_int   nb_cbk_search, delta, idx, cbk_size, lag_diff;
     
     const opus_int8 *Lag_range_ptr, *Lag_CB_ptr;
-    SAVE_STACK;
+    
 
     silk_assert( complexity >= SILK_PE_MIN_COMPLEX );
     silk_assert( complexity <= SILK_PE_MAX_COMPLEX );
@@ -740,5 +740,5 @@ static void silk_P_Ana_calc_energy_st3(
         }
         target_ptr += sf_length;
     }
-    RESTORE_STACK;
+    
 }

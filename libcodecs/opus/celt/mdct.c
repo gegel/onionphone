@@ -108,7 +108,7 @@ void clt_mdct_forward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scalar
    int i;
    int N, N2, N4;
    kiss_twiddle_scalar sine;
-   SAVE_STACK;
+   
    N = l->n;
    N >>= shift;
    N2 = N>>1;
@@ -204,7 +204,7 @@ void clt_mdct_forward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scalar
          yp2 -= 2*stride;
       }
    }
-   RESTORE_STACK;
+   
 }
 
 void clt_mdct_backward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scalar * OPUS_RESTRICT out,
@@ -213,7 +213,7 @@ void clt_mdct_backward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scala
    int i;
    int N, N2, N4;
    kiss_twiddle_scalar sine;
-   SAVE_STACK;
+   
    N = l->n;
    N >>= shift;
    N2 = N>>1;
@@ -305,5 +305,5 @@ void clt_mdct_backward(const mdct_lookup *l, kiss_fft_scalar *in, kiss_fft_scala
          wp2--;
       }
    }
-   RESTORE_STACK;
+   
 }

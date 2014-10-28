@@ -105,7 +105,7 @@ void silk_prefilter_FIX(
     
     
     opus_int16 B_Q10[ 2 ];
-    SAVE_STACK;
+    
 
     /* Set up pointers */
     px  = x;
@@ -152,7 +152,7 @@ void silk_prefilter_FIX(
     }
 
     P->lagPrev = psEncCtrl->pitchL[ psEnc->sCmn.nb_subfr - 1 ];
-    RESTORE_STACK;
+    
 }
 
 /* Prefilter for finding Quantizer input signal */

@@ -59,7 +59,7 @@ opus_int32 silk_NLSF_encode(                                    /* O    Returns 
     opus_uint8       pred_Q8[      MAX_LPC_ORDER ];
     opus_int16       ec_ix[        MAX_LPC_ORDER ];
     const opus_uint8 *pCB_element, *iCDF_ptr;
-    SAVE_STACK;
+    
 
     silk_assert( nSurvivors <= NLSF_VQ_MAX_SURVIVORS );
     silk_assert( signalType >= 0 && signalType <= 2 );
@@ -131,6 +131,6 @@ opus_int32 silk_NLSF_encode(                                    /* O    Returns 
     /* Decode */
     silk_NLSF_decode( pNLSF_Q15, NLSFIndices, psNLSF_CB );
 
-    RESTORE_STACK;
+    
     return RD_Q25[ 0 ];
 }

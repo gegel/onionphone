@@ -549,7 +549,7 @@ static void deinterleave_hadamard(celt_norm *X, int N0, int stride, int hadamard
 {
    int i,j;
    int N;
-   SAVE_STACK;
+   
    N = N0*stride;
    celt_norm tmp[N];
    celt_assert(stride>0);
@@ -568,14 +568,14 @@ static void deinterleave_hadamard(celt_norm *X, int N0, int stride, int hadamard
    }
    for (j=0;j<N;j++)
       X[j] = tmp[j];
-   RESTORE_STACK;
+   
 }
 
 static void interleave_hadamard(celt_norm *X, int N0, int stride, int hadamard)
 {
    int i,j;
    int N;
-   SAVE_STACK;
+   
    N = N0*stride;
    celt_norm tmp[N];
    if (hadamard)
@@ -591,7 +591,7 @@ static void interleave_hadamard(celt_norm *X, int N0, int stride, int hadamard)
    }
    for (j=0;j<N;j++)
       X[j] = tmp[j];
-   RESTORE_STACK;
+   
 }
 
 void haar1(celt_norm *X, int N0, int stride)
@@ -1372,7 +1372,7 @@ void quant_all_bands(int encode, const CELTMode *m, int start, int end,
    int resynth = !encode;
 #endif
    struct band_ctx ctx;
-   SAVE_STACK;
+   
 
    M = 1<<LM;
    B = shortBlocks ? M : 1;
@@ -1510,6 +1510,6 @@ void quant_all_bands(int encode, const CELTMode *m, int start, int end,
    }
    *seed = ctx.seed;
 
-   RESTORE_STACK;
+   
 }
 

@@ -83,7 +83,7 @@ void silk_solve_LDL_FIX(
     
     opus_int32 Y[      MAX_MATRIX_SIZE ];
     inv_D_t   inv_D[  MAX_MATRIX_SIZE ];
-    SAVE_STACK;
+    
 
     silk_assert( M <= MAX_MATRIX_SIZE );
   opus_int32   L_Q16[M * M];
@@ -110,7 +110,7 @@ void silk_solve_LDL_FIX(
     x = inv(L') * inv(D) * Y
     *****************************************************/
     silk_LS_SolveLast_FIX( L_Q16, M, Y, x_Q16 );
-    RESTORE_STACK;
+    
 }
 
 static OPUS_INLINE void silk_LDL_factorize_FIX(

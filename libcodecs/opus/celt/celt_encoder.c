@@ -246,7 +246,7 @@ static int transient_analysis(const opus_val32 * OPUS_RESTRICT in, int len, int 
            4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  4,  3,  3,
            3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  3,  2,
    };
-   SAVE_STACK;
+   
 
    len2=len/2;
    for (c=0;c<C;c++)
@@ -367,7 +367,7 @@ static int transient_analysis(const opus_val32 * OPUS_RESTRICT in, int len, int 
    /* *tf_estimate = 1 + MIN16(1, sqrt(MAX16(0, tf_max-30))/20); */
    *tf_estimate = celt_sqrt(MAX16(0, SHL32(MULT16_16(QCONST16(0.0069,14),MIN16(163,tf_max)),14)-QCONST32(0.139,28)));
    /*printf("%d %f\n", tf_max, mask_metric);*/
-   RESTORE_STACK;
+   
 #ifdef FUZZING
    is_transient = rand()&0x1;
 #endif
@@ -556,7 +556,7 @@ static int tf_analysis(const CELTMode *m, int len, int isTransient,
    int tf_select=0;
    opus_val16 bias;
 
-   SAVE_STACK;
+   
    bias = MULT16_16_Q14(QCONST16(.04f,15), MAX16(-QCONST16(.25f,14), QCONST16(.5f,14)-tf_estimate));
    /*printf("%f ", bias);*/
 
@@ -694,7 +694,7 @@ static int tf_analysis(const CELTMode *m, int len, int isTransient,
          tf_res[i] = path0[i+1];
    }
    /*printf("%d %f\n", *tf_sum, tf_estimate);*/
-   RESTORE_STACK;
+   
 #ifdef FUZZING
    tf_select = rand()&0x1;
    tf_res[0] = rand()&0x1;
@@ -890,7 +890,7 @@ static opus_val16 dynalloc_analysis(const opus_val16 *bandLogE, const opus_val16
    opus_val16 maxDepth;
    opus_val16 follower[C*nbEBands];
    opus_val16 noise_floor[C*nbEBands];
-   SAVE_STACK;
+   
    for (i=0;i<nbEBands;i++)
       offsets[i] = 0;
    /* Dynamic allocation code */
@@ -991,7 +991,7 @@ static opus_val16 dynalloc_analysis(const opus_val16 *bandLogE, const opus_val16
       }
    }
    *tot_boost_ = tot_boost;
-   RESTORE_STACK;
+   
    return maxDepth;
 }
 
@@ -1008,7 +1008,7 @@ static int run_prefilter(CELTEncoder *st, celt_sig *in, celt_sig *prefilter_mem,
    int pf_on;
    int qg;
    celt_sig _pre[CC*(N+COMBFILTER_MAXPERIOD)];
-   SAVE_STACK;
+   
 
    mode = st->mode;
 
@@ -1112,7 +1112,7 @@ static int run_prefilter(CELTEncoder *st, celt_sig *in, celt_sig *prefilter_mem,
       }
    } while (++c<CC);
 
-   RESTORE_STACK;
+   
    *gain = gain1;
    *pitch = pitch_index;
    *qgain = qg;
@@ -1285,7 +1285,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm, 
    opus_val16 temporal_vbr=0;
    opus_val16 surround_trim = 0;
    opus_int32 equiv_rate = 510000;
-   ALLOC_STACK;
+   
 
    mode = st->mode;
    nbEBands = mode->nbEBands;
@@ -1294,7 +1294,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm, 
    tf_estimate = 0;
    if (nbCompressedBytes<2 || pcm==NULL)
    {
-      RESTORE_STACK;
+      
       return OPUS_BAD_ARG;
    }
 
@@ -1304,7 +1304,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm, 
          break;
    if (LM>mode->maxLM)
    {
-      RESTORE_STACK;
+      
       return OPUS_BAD_ARG;
    }
    M=1<<LM;
@@ -1338,7 +1338,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm, 
          int c0 = toOpus(compressed[0]);
          if (c0<0)
          {
-            RESTORE_STACK;
+            
             return OPUS_BAD_ARG;
          }
          compressed[0] = c0;
@@ -2070,7 +2070,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm, 
       nbCompressedBytes++;
 #endif
 
-   RESTORE_STACK;
+   
    if (ec_get_error(enc))
       return OPUS_INTERNAL_ERROR;
    else
@@ -2090,7 +2090,7 @@ int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const opus_int16 * pcm, i
 int opus_custom_encode_float(CELTEncoder * OPUS_RESTRICT st, const float * pcm, int frame_size, unsigned char *compressed, int nbCompressedBytes)
 {
    int j, ret, C, N;
-   ALLOC_STACK;
+   
 
    if (pcm==NULL)
       return OPUS_BAD_ARG;
@@ -2107,7 +2107,7 @@ int opus_custom_encode_float(CELTEncoder * OPUS_RESTRICT st, const float * pcm, 
    for (j=0;j<C*N;j++)
       ((float*)pcm)[j]=in[j]*(1.f/32768.f);
 #endif
-   RESTORE_STACK;
+   
    return ret;
 }
 #endif /* DISABLE_FLOAT_API */
@@ -2116,7 +2116,7 @@ int opus_custom_encode_float(CELTEncoder * OPUS_RESTRICT st, const float * pcm, 
 int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const opus_int16 * pcm, int frame_size, unsigned char *compressed, int nbCompressedBytes)
 {
    int j, ret, C, N;
-   ALLOC_STACK;
+   
 
    if (pcm==NULL)
       return OPUS_BAD_ARG;
@@ -2133,7 +2133,7 @@ int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const opus_int16 * pcm, i
    for (j=0;j<C*N;j++)
       ((opus_int16*)pcm)[j] = FLOAT2INT16(in[j]);
 #endif
-   RESTORE_STACK;
+   
    return ret;
 }
 

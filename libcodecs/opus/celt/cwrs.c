@@ -662,12 +662,12 @@ void get_required_bits(opus_int16 *_bits,int _n,int _maxk,int _frac){
       _bits[k] = 1<<_frac;
   }
   else {
-    SAVE_STACK;
+    
     opus_uint32 u[_maxk + 2U];
     ncwrs_urow(_n,_maxk,u);
     for(k=1;k<=_maxk;k++)
       _bits[k]=log2_frac(u[k]+u[k+1],_frac);
-    RESTORE_STACK;
+    
   }
 }
 #endif /* CUSTOM_MODES */
@@ -675,20 +675,20 @@ void get_required_bits(opus_int16 *_bits,int _n,int _maxk,int _frac){
 void encode_pulses(const int *_y,int _n,int _k,ec_enc *_enc){
   opus_uint32 i;
   opus_uint32 nc;
-  SAVE_STACK;
+  
   celt_assert(_k>0);
   opus_uint32 u[_k + 2U];
   i=icwrs(_n,_k,&nc,_y,u);
   ec_enc_uint(_enc,i,nc);
-  RESTORE_STACK;
+  
 }
 
 void decode_pulses(int *_y,int _n,int _k,ec_dec *_dec){
-  SAVE_STACK;
+  
   celt_assert(_k>0);
   opus_uint32 u[_k + 2U];
   cwrsi(_n,_k,ec_dec_uint(_dec,ncwrs_urow(_n,_k,u)),_y,u);
-  RESTORE_STACK;
+  
 }
 
 #endif /* SMALL_FOOTPRINT */

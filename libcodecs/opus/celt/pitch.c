@@ -310,7 +310,7 @@ void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp, opus_val16 * OPUS_RESTR
 #endif
    int offset;
 
-   SAVE_STACK;
+   
 
    celt_assert(len>0);
    celt_assert(max_pitch>0);
@@ -392,7 +392,7 @@ void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp, opus_val16 * OPUS_RESTR
    }
    *pitch = 2*best_pitch[0]-offset;
 
-   RESTORE_STACK;
+   
 }
 
 static const int second_check[16] = {0, 0, 3, 2, 3, 2, 5, 2, 3, 2, 3, 2, 5, 2, 3, 2};
@@ -407,7 +407,7 @@ opus_val16 remove_doubling(opus_val16 *x, int maxperiod, int minperiod,
    opus_val32 best_xy, best_yy;
    int offset;
    int minperiod0;
-   SAVE_STACK;
+   
 
    minperiod0 = minperiod;
    maxperiod /= 2;
@@ -527,6 +527,6 @@ opus_val16 remove_doubling(opus_val16 *x, int maxperiod, int minperiod,
 
    if (*T0_<minperiod0)
       *T0_=minperiod0;
-   RESTORE_STACK;
+   
    return pg;
 }

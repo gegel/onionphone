@@ -959,7 +959,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
     int analysis_read_subframe_bak=-1;
     
 
-    ALLOC_STACK;
+    
 
     max_data_bytes = IMIN(1276, out_data_bytes);
 
@@ -970,7 +970,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
          || max_data_bytes<=0
          )
     {
-       RESTORE_STACK;
+       
        return OPUS_BAD_ARG;
     }
     silk_enc = (char*)st+st->silk_enc_offset;
@@ -1050,7 +1050,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
        else if (bw<=OPUS_BANDWIDTH_SUPERWIDEBAND)
           bw=OPUS_BANDWIDTH_SUPERWIDEBAND;
        data[0] = gen_toc(tocmode, frame_rate, bw, st->stream_channels);
-       RESTORE_STACK;
+       
        return 1;
     }
     if (!st->use_vbr)
@@ -1380,13 +1380,13 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
                 NULL, 0, c1, c2, analysis_channels, downmix);
           if (tmp_len<0)
           {
-             RESTORE_STACK;
+             
              return OPUS_INTERNAL_ERROR;
           }
           ret = opus_repacketizer_cat(rp, tmp_data+i*bytes_per_frame, tmp_len);
           if (ret<0)
           {
-             RESTORE_STACK;
+             
              return OPUS_INTERNAL_ERROR;
           }
        }
@@ -1397,14 +1397,14 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
        ret = opus_repacketizer_out_range_impl(rp, 0, nb_frames, data, repacketize_len, 0, !st->use_vbr);
        if (ret<0)
        {
-          RESTORE_STACK;
+          
           return OPUS_INTERNAL_ERROR;
        }
        st->user_forced_mode = bak_mode;
        st->user_bandwidth = bak_bandwidth;
        st->force_channels = bak_channels;
        st->silk_mode.toMono = bak_to_mono;
-       RESTORE_STACK;
+       
        return ret;
     }
     curr_bandwidth = st->bandwidth;
@@ -1620,14 +1620,14 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
         if( ret ) {
             /*fprintf (stderr, "SILK encode error: %d\n", ret);*/
             /* Handle error */
-           RESTORE_STACK;
+           
            return OPUS_INTERNAL_ERROR;
         }
         if (nBytes==0)
         {
            st->rangeFinal = 0;
            data[-1] = gen_toc(st->mode, st->Fs/frame_size, curr_bandwidth, st->stream_channels);
-           RESTORE_STACK;
+           
            return 1;
         }
         /* Extract SILK internal bandwidth for signaling in first byte */
@@ -1819,7 +1819,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
         err = celt_encode_with_ec(celt_enc, pcm_buf, st->Fs/200, data+nb_compr_bytes, redundancy_bytes, NULL);
         if (err < 0)
         {
-           RESTORE_STACK;
+           
            return OPUS_INTERNAL_ERROR;
         }
         celt_encoder_ctl(celt_enc, OPUS_GET_FINAL_RANGE(&redundant_rng));
@@ -1845,7 +1845,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
            ret = celt_encode_with_ec(celt_enc, pcm_buf, frame_size, NULL, nb_compr_bytes, &enc);
            if (ret < 0)
            {
-              RESTORE_STACK;
+              
               return OPUS_INTERNAL_ERROR;
            }
         }
@@ -1870,7 +1870,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
         err = celt_encode_with_ec(celt_enc, pcm_buf+st->channels*(frame_size-N2), N2, data+nb_compr_bytes, redundancy_bytes, NULL);
         if (err < 0)
         {
-           RESTORE_STACK;
+           
            return OPUS_INTERNAL_ERROR;
         }
         celt_encoder_ctl(celt_enc, OPUS_GET_FINAL_RANGE(&redundant_rng));
@@ -1899,7 +1899,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
     {
        if (max_data_bytes < 2)
        {
-          RESTORE_STACK;
+          
           return OPUS_BUFFER_TOO_SMALL;
        }
        data[1] = 0;
@@ -1922,12 +1922,12 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
        if (opus_packet_pad(data, ret, max_data_bytes) != OPUS_OK)
 
        {
-          RESTORE_STACK;
+          
           return OPUS_INTERNAL_ERROR;
        }
        ret = max_data_bytes;
     }
-    RESTORE_STACK;
+    
     return ret;
 }
 
@@ -1941,7 +1941,7 @@ opus_int32 opus_encode_float(OpusEncoder *st, const float *pcm, int analysis_fra
    int frame_size;
    int delay_compensation;
    
-   ALLOC_STACK;
+   
 
    if (st->application == OPUS_APPLICATION_RESTRICTED_LOWDELAY)
       delay_compensation = 0;
@@ -1956,7 +1956,7 @@ opus_int32 opus_encode_float(OpusEncoder *st, const float *pcm, int analysis_fra
    for (i=0;i<frame_size*st->channels;i++)
       in[i] = FLOAT2INT16(pcm[i]);
    ret = opus_encode_native(st, in, frame_size, data, max_data_bytes, 16, pcm, analysis_frame_size, 0, -2, st->channels, downmix_float);
-   RESTORE_STACK;
+   
    return ret;
 }
 #endif
@@ -1988,7 +1988,7 @@ opus_int32 opus_encode(OpusEncoder *st, const opus_int16 *pcm, int analysis_fram
    int frame_size;
    int delay_compensation;
    
-   ALLOC_STACK;
+   
 
    if (st->application == OPUS_APPLICATION_RESTRICTED_LOWDELAY)
       delay_compensation = 0;
@@ -2003,7 +2003,7 @@ opus_int32 opus_encode(OpusEncoder *st, const opus_int16 *pcm, int analysis_fram
    for (i=0;i<frame_size*st->channels;i++)
       in[i] = (1.0f/32768)*pcm[i];
    ret = opus_encode_native(st, in, frame_size, data, max_data_bytes, 16, pcm, analysis_frame_size, 0, -2, st->channels, downmix_int);
-   RESTORE_STACK;
+   
    return ret;
 }
 opus_int32 opus_encode_float(OpusEncoder *st, const float *pcm, int analysis_frame_size,
