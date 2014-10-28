@@ -660,10 +660,10 @@ int optimize_framesize(const opus_val16 *x, int len, int C, opus_int32 Fs,
    int bestLM=0;
    int subframe;
    int pos;
-   VARDECL(opus_val32, sub);
+   
 
    subframe = Fs/400;
-   ALLOC(sub, subframe, opus_val32);
+  opus_val32 sub[subframe];
    e[0]=mem[0];
    e_1[0]=1.f/(EPSILON+mem[0]);
    if (buffering)
@@ -938,7 +938,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
     int redundancy = 0;
     int redundancy_bytes = 0; /* Number of bytes to use for redundancy frame */
     int celt_to_silk = 0;
-    VARDECL(opus_val16, pcm_buf);
+    
     int nb_compr_bytes;
     int to_celt = 0;
     opus_uint32 redundant_rng = 0;
@@ -957,7 +957,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
     AnalysisInfo analysis_info;
     int analysis_read_pos_bak=-1;
     int analysis_read_subframe_bak=-1;
-    VARDECL(opus_val16, tmp_prefill);
+    
 
     ALLOC_STACK;
 
@@ -1332,10 +1332,10 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
     /* Can't support higher than wideband for >20 ms frames */
     if (frame_size > st->Fs/50 && (st->mode == MODE_CELT_ONLY || st->bandwidth > OPUS_BANDWIDTH_WIDEBAND))
     {
-       VARDECL(unsigned char, tmp_data);
+       
        int nb_frames;
        int bak_mode, bak_bandwidth, bak_channels, bak_to_mono;
-       VARDECL(OpusRepacketizer, rp);
+       
        opus_int32 bytes_per_frame;
        opus_int32 repacketize_len;
 
@@ -1350,9 +1350,9 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
        nb_frames = frame_size > st->Fs/25 ? 3 : 2;
        bytes_per_frame = IMIN(1276,(out_data_bytes-3)/nb_frames);
 
-       ALLOC(tmp_data, nb_frames*bytes_per_frame, unsigned char);
+  unsigned char tmp_data[nb_frames*bytes_per_frame];
 
-       ALLOC(rp, 1, OpusRepacketizer);
+  OpusRepacketizer rp[1];
        opus_repacketizer_init(rp);
 
        bak_mode = st->user_forced_mode;
@@ -1423,7 +1423,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
 
     ec_enc_init(&enc, data, max_data_bytes-1);
 
-    ALLOC(pcm_buf, (total_buffer+frame_size)*st->channels, opus_val16);
+  opus_val16 pcm_buf[(total_buffer+frame_size)*st->channels];
     for (i=0;i<total_buffer*st->channels;i++)
        pcm_buf[i] = st->delay_buffer[(st->encoder_buffer-total_buffer)*st->channels+i];
 
@@ -1455,8 +1455,8 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
 #ifdef FIXED_POINT
        const opus_int16 *pcm_silk;
 #else
-       VARDECL(opus_int16, pcm_silk);
-       ALLOC(pcm_silk, st->channels*frame_size, opus_int16);
+       
+  opus_int16 pcm_silk[st->channels*frame_size];
 #endif
 
         /* Distribute bits between SILK and CELT */
@@ -1724,7 +1724,7 @@ opus_int32 opus_encode_native(OpusEncoder *st, const opus_val16 *pcm, int frame_
         nb_compr_bytes = 0;
     }
 
-    ALLOC(tmp_prefill, st->channels*st->Fs/400, opus_val16);
+  opus_val16 tmp_prefill[st->channels*st->Fs/400];
     if (st->mode != MODE_SILK_ONLY && st->mode != st->prev_mode && st->prev_mode > 0)
     {
        for (i=0;i<st->channels*st->Fs/400;i++)
@@ -1940,7 +1940,7 @@ opus_int32 opus_encode_float(OpusEncoder *st, const float *pcm, int analysis_fra
    int i, ret;
    int frame_size;
    int delay_compensation;
-   VARDECL(opus_int16, in);
+   
    ALLOC_STACK;
 
    if (st->application == OPUS_APPLICATION_RESTRICTED_LOWDELAY)
@@ -1951,7 +1951,7 @@ opus_int32 opus_encode_float(OpusEncoder *st, const float *pcm, int analysis_fra
          st->variable_duration, st->channels, st->Fs, st->bitrate_bps,
          delay_compensation, downmix_float, st->analysis.subframe_mem);
 
-   ALLOC(in, frame_size*st->channels, opus_int16);
+  opus_int16 in[frame_size*st->channels];
 
    for (i=0;i<frame_size*st->channels;i++)
       in[i] = FLOAT2INT16(pcm[i]);
@@ -1987,7 +1987,7 @@ opus_int32 opus_encode(OpusEncoder *st, const opus_int16 *pcm, int analysis_fram
    int i, ret;
    int frame_size;
    int delay_compensation;
-   VARDECL(float, in);
+   
    ALLOC_STACK;
 
    if (st->application == OPUS_APPLICATION_RESTRICTED_LOWDELAY)
@@ -1998,7 +1998,7 @@ opus_int32 opus_encode(OpusEncoder *st, const opus_int16 *pcm, int analysis_fram
          st->variable_duration, st->channels, st->Fs, st->bitrate_bps,
          delay_compensation, downmix_int, st->analysis.subframe_mem);
 
-   ALLOC(in, frame_size*st->channels, float);
+  float in[frame_size*st->channels];
 
    for (i=0;i<frame_size*st->channels;i++)
       in[i] = (1.0f/32768)*pcm[i];

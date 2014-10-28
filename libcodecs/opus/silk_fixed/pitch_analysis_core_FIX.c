@@ -93,22 +93,22 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
     int                         arch                /* I    Run-time architecture                                       */
 )
 {
-    VARDECL( opus_int16, frame_8kHz );
-    VARDECL( opus_int16, frame_4kHz );
+    
+    
     opus_int32 filt_state[ 6 ];
     const opus_int16 *input_frame_ptr;
     opus_int   i, k, d, j;
-    VARDECL( opus_int16, C );
-    VARDECL( opus_int32, xcorr32 );
+    
+    
     const opus_int16 *target_ptr, *basis_ptr;
     opus_int32 cross_corr, normalizer, energy, shift, energy_basis, energy_target;
     opus_int   d_srch[ PE_D_SRCH_LENGTH ], Cmax, length_d_srch, length_d_comp;
-    VARDECL( opus_int16, d_comp );
+    
     opus_int32 sum, threshold, lag_counter;
     opus_int   CBimax, CBimax_new, CBimax_old, lag, start_lag, end_lag, lag_new;
     opus_int32 CC[ PE_NB_CBKS_STAGE2_EXT ], CCmax, CCmax_b, CCmax_new_b, CCmax_new;
-    VARDECL( silk_pe_stage3_vals, energies_st3 );
-    VARDECL( silk_pe_stage3_vals, cross_corr_st3 );
+    
+    
     opus_int   frame_length, frame_length_8kHz, frame_length_4kHz;
     opus_int   sf_length;
     opus_int   min_lag;
@@ -137,7 +137,7 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
     max_lag           = PE_MAX_LAG_MS * Fs_kHz - 1;
 
     /* Resample from input sampled at Fs_kHz to 8 kHz */
-    ALLOC( frame_8kHz, frame_length_8kHz, opus_int16 );
+  opus_int16   frame_8kHz[frame_length_8kHz];
     if( Fs_kHz == 16 ) {
         silk_memset( filt_state, 0, 2 * sizeof( opus_int32 ) );
         silk_resampler_down2( filt_state, frame_8kHz, frame, frame_length );
@@ -151,7 +151,7 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
 
     /* Decimate again to 4 kHz */
     silk_memset( filt_state, 0, 2 * sizeof( opus_int32 ) );/* Set state to zero */
-    ALLOC( frame_4kHz, frame_length_4kHz, opus_int16 );
+  opus_int16   frame_4kHz[frame_length_4kHz];
     silk_resampler_down2( filt_state, frame_4kHz, frame_8kHz, frame_length_8kHz );
 
     /* Low-pass filter */
@@ -176,8 +176,8 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
     /******************************************************************************
     * FIRST STAGE, operating in 4 khz
     ******************************************************************************/
-    ALLOC( C, nb_subfr * CSTRIDE_8KHZ, opus_int16 );
-    ALLOC( xcorr32, MAX_LAG_4KHZ-MIN_LAG_4KHZ+1, opus_int32 );
+  opus_int16   C[nb_subfr * CSTRIDE_8KHZ];
+  opus_int32   xcorr32[MAX_LAG_4KHZ-MIN_LAG_4KHZ+1];
     silk_memset( C, 0, (nb_subfr >> 1) * CSTRIDE_4KHZ * sizeof( opus_int16 ) );
     target_ptr = &frame_4kHz[ silk_LSHIFT( SF_LENGTH_4KHZ, 2 ) ];
     for( k = 0; k < nb_subfr >> 1; k++ ) {
@@ -270,7 +270,7 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
     }
     silk_assert( length_d_srch > 0 );
 
-    ALLOC( d_comp, D_COMP_STRIDE, opus_int16 );
+  opus_int16   d_comp[D_COMP_STRIDE];
     for( i = D_COMP_MIN; i < D_COMP_MAX; i++ ) {
         d_comp[ i - D_COMP_MIN ] = 0;
     }
@@ -461,13 +461,13 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
     silk_assert( *LTPCorr_Q15 >= 0 );
 
     if( Fs_kHz > 8 ) {
-        VARDECL( opus_int16, scratch_mem );
+        
         /***************************************************************************/
         /* Scale input signal down to avoid correlations measures from overflowing */
         /***************************************************************************/
         /* find scaling as max scaling for each subframe */
         silk_sum_sqr_shift( &energy, &shift, frame, frame_length );
-        ALLOC( scratch_mem, shift > 0 ? frame_length : ALLOC_NONE, opus_int16 );
+  opus_int16   scratch_mem[shift > 0 ? frame_length : ALLOC_NONE];
         if( shift > 0 ) {
             /* Move signal to scratch mem because the input signal should be unchanged */
             shift = silk_RSHIFT( shift, 1 );
@@ -516,8 +516,8 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
         }
 
         /* Calculate the correlations and energies needed in stage 3 */
-        ALLOC( energies_st3, nb_subfr * nb_cbk_search, silk_pe_stage3_vals );
-        ALLOC( cross_corr_st3, nb_subfr * nb_cbk_search, silk_pe_stage3_vals );
+  silk_pe_stage3_vals   energies_st3[nb_subfr * nb_cbk_search];
+  silk_pe_stage3_vals   cross_corr_st3[nb_subfr * nb_cbk_search];
         silk_P_Ana_calc_corr_st3(  cross_corr_st3, input_frame_ptr, start_lag, sf_length, nb_subfr, complexity, arch );
         silk_P_Ana_calc_energy_st3( energies_st3, input_frame_ptr, start_lag, sf_length, nb_subfr, complexity );
 
@@ -606,8 +606,8 @@ static void silk_P_Ana_calc_corr_st3(
     const opus_int16 *target_ptr;
     opus_int   i, j, k, lag_counter, lag_low, lag_high;
     opus_int   nb_cbk_search, delta, idx, cbk_size;
-    VARDECL( opus_int32, scratch_mem );
-    VARDECL( opus_int32, xcorr32 );
+    
+    
     const opus_int8 *Lag_range_ptr, *Lag_CB_ptr;
     SAVE_STACK;
 
@@ -626,8 +626,8 @@ static void silk_P_Ana_calc_corr_st3(
         nb_cbk_search = PE_NB_CBKS_STAGE3_10MS;
         cbk_size      = PE_NB_CBKS_STAGE3_10MS;
     }
-    ALLOC( scratch_mem, SCRATCH_SIZE, opus_int32 );
-    ALLOC( xcorr32, SCRATCH_SIZE, opus_int32 );
+  opus_int32   scratch_mem[SCRATCH_SIZE];
+  opus_int32   xcorr32[SCRATCH_SIZE];
 
     target_ptr = &frame[ silk_LSHIFT( sf_length, 2 ) ]; /* Pointer to middle of frame */
     for( k = 0; k < nb_subfr; k++ ) {
@@ -678,7 +678,7 @@ static void silk_P_Ana_calc_energy_st3(
     opus_int32 energy;
     opus_int   k, i, j, lag_counter;
     opus_int   nb_cbk_search, delta, idx, cbk_size, lag_diff;
-    VARDECL( opus_int32, scratch_mem );
+    
     const opus_int8 *Lag_range_ptr, *Lag_CB_ptr;
     SAVE_STACK;
 
@@ -697,7 +697,7 @@ static void silk_P_Ana_calc_energy_st3(
         nb_cbk_search = PE_NB_CBKS_STAGE3_10MS;
         cbk_size      = PE_NB_CBKS_STAGE3_10MS;
     }
-    ALLOC( scratch_mem, SCRATCH_SIZE, opus_int32 );
+  opus_int32   scratch_mem[SCRATCH_SIZE];
 
     target_ptr = &frame[ silk_LSHIFT( sf_length, 2 ) ];
     for( k = 0; k < nb_subfr; k++ ) {

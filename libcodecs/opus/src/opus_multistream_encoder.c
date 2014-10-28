@@ -230,9 +230,9 @@ void surround_analysis(const CELTMode *celt_mode, const void *pcm, opus_val16 *b
    opus_val16 channel_offset;
    opus_val32 bandE[21];
    opus_val16 maskLogE[3][21];
-   VARDECL(opus_val32, in);
-   VARDECL(opus_val16, x);
-   VARDECL(opus_val32, freq);
+   
+   
+   
    SAVE_STACK;
 
    upsample = resampling_factor(rate);
@@ -242,9 +242,9 @@ void surround_analysis(const CELTMode *celt_mode, const void *pcm, opus_val16 *b
       if (celt_mode->shortMdctSize<<LM==frame_size)
          break;
 
-   ALLOC(in, frame_size+overlap, opus_val32);
-   ALLOC(x, len, opus_val16);
-   ALLOC(freq, frame_size, opus_val32);
+  opus_val32 in[frame_size+overlap];
+  opus_val16 x[len];
+  opus_val32 freq[frame_size];
 
    channel_pos(channels, pos);
 
@@ -683,8 +683,8 @@ static int opus_multistream_encode_native
    int s;
    char *ptr;
    int tot_size;
-   VARDECL(opus_val16, buf);
-   VARDECL(opus_val16, bandSMR);
+   
+   
    unsigned char tmp_data[MS_FRAME_TMP];
    OpusRepacketizer rp;
    opus_int32 vbr;
@@ -737,11 +737,11 @@ static int opus_multistream_encode_native
       RESTORE_STACK;
       return OPUS_BAD_ARG;
    }
-   ALLOC(buf, 2*frame_size, opus_val16);
+  opus_val16 buf[2*frame_size];
    coupled_size = opus_encoder_get_size(2);
    mono_size = opus_encoder_get_size(1);
 
-   ALLOC(bandSMR, 21*st->layout.nb_channels, opus_val16);
+  opus_val16 bandSMR[21*st->layout.nb_channels];
    if (st->surround)
    {
       surround_analysis(celt_mode, pcm, bandSMR, mem, preemph_mem, frame_size, 120, st->layout.nb_channels, Fs, copy_channel_in);

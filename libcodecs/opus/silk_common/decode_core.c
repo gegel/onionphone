@@ -44,20 +44,20 @@ void silk_decode_core(
 {
     opus_int   i, k, lag = 0, start_idx, sLTP_buf_idx, NLSF_interpolation_flag, signalType;
     opus_int16 *A_Q12, *B_Q14, *pxq, A_Q12_tmp[ MAX_LPC_ORDER ];
-    VARDECL( opus_int16, sLTP );
-    VARDECL( opus_int32, sLTP_Q15 );
+    
+    
     opus_int32 LTP_pred_Q13, LPC_pred_Q10, Gain_Q10, inv_gain_Q31, gain_adj_Q16, rand_seed, offset_Q10;
     opus_int32 *pred_lag_ptr, *pexc_Q14, *pres_Q14;
-    VARDECL( opus_int32, res_Q14 );
-    VARDECL( opus_int32, sLPC_Q14 );
+    
+    
     SAVE_STACK;
 
     silk_assert( psDec->prev_gain_Q16 != 0 );
 
-    ALLOC( sLTP, psDec->ltp_mem_length, opus_int16 );
-    ALLOC( sLTP_Q15, psDec->ltp_mem_length + psDec->frame_length, opus_int32 );
-    ALLOC( res_Q14, psDec->subfr_length, opus_int32 );
-    ALLOC( sLPC_Q14, psDec->subfr_length + MAX_LPC_ORDER, opus_int32 );
+  opus_int16   sLTP[psDec->ltp_mem_length];
+  opus_int32   sLTP_Q15[psDec->ltp_mem_length + psDec->frame_length];
+  opus_int32   res_Q14[psDec->subfr_length];
+  opus_int32   sLPC_Q14[psDec->subfr_length + MAX_LPC_ORDER];
 
     offset_Q10 = silk_Quantization_Offsets_Q10[ psDec->indices.signalType >> 1 ][ psDec->indices.quantOffsetType ];
 

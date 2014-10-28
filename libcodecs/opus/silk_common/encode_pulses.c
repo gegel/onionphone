@@ -67,9 +67,9 @@ void silk_encode_pulses(
 {
     opus_int   i, k, j, iter, bit, nLS, scale_down, RateLevelIndex = 0;
     opus_int32 abs_q, minSumBits_Q5, sumBits_Q5;
-    VARDECL( opus_int, abs_pulses );
-    VARDECL( opus_int, sum_pulses );
-    VARDECL( opus_int, nRshifts );
+    
+    
+    
     opus_int   pulses_comb[ 8 ];
     opus_int   *abs_pulses_ptr;
     const opus_int8 *pulses_ptr;
@@ -92,7 +92,7 @@ void silk_encode_pulses(
     }
 
     /* Take the absolute value of the pulses */
-    ALLOC( abs_pulses, iter * SHELL_CODEC_FRAME_LENGTH, opus_int );
+  opus_int   abs_pulses[iter * SHELL_CODEC_FRAME_LENGTH];
     silk_assert( !( SHELL_CODEC_FRAME_LENGTH & 3 ) );
     for( i = 0; i < iter * SHELL_CODEC_FRAME_LENGTH; i+=4 ) {
         abs_pulses[i+0] = ( opus_int )silk_abs( pulses[ i + 0 ] );
@@ -102,8 +102,8 @@ void silk_encode_pulses(
     }
 
     /* Calc sum pulses per shell code frame */
-    ALLOC( sum_pulses, iter, opus_int );
-    ALLOC( nRshifts, iter, opus_int );
+  opus_int   sum_pulses[iter];
+  opus_int   nRshifts[iter];
     abs_pulses_ptr = abs_pulses;
     for( i = 0; i < iter; i++ ) {
         nRshifts[ i ] = 0;

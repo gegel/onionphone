@@ -88,7 +88,7 @@ opus_int silk_VAD_GetSA_Q8(                                     /* O    Return v
     opus_int   dec_subframe_length, dec_subframe_offset, SNR_Q7, i, b, s;
     opus_int32 sumSquared, smooth_coef_Q16;
     opus_int16 HPstateTmp;
-    VARDECL( opus_int16, X );
+    
     opus_int32 Xnrg[ VAD_N_BANDS ];
     opus_int32 NrgToNoiseRatio_Q8[ VAD_N_BANDS ];
     opus_int32 speech_nrg, x_tmp;
@@ -122,7 +122,7 @@ opus_int silk_VAD_GetSA_Q8(                                     /* O    Return v
     X_offset[ 1 ] = decimated_framelength + decimated_framelength2;
     X_offset[ 2 ] = X_offset[ 1 ] + decimated_framelength;
     X_offset[ 3 ] = X_offset[ 2 ] + decimated_framelength2;
-    ALLOC( X, X_offset[ 3 ] + decimated_framelength1, opus_int16 );
+  opus_int16   X[X_offset[ 3 ] + decimated_framelength1];
 
     /* 0-8 kHz to 0-4 kHz and 4-8 kHz */
     silk_ana_filt_bank_1( pIn, &psSilk_VAD->AnaState[  0 ],

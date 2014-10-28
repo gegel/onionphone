@@ -102,8 +102,8 @@ void silk_prefilter_FIX(
     opus_int32 *pxw_Q3;
     opus_int   HarmShapeGain_Q12, Tilt_Q14;
     opus_int32 HarmShapeFIRPacked_Q12, LF_shp_Q14;
-    VARDECL( opus_int32, x_filt_Q12 );
-    VARDECL( opus_int32, st_res_Q2 );
+    
+    
     opus_int16 B_Q10[ 2 ];
     SAVE_STACK;
 
@@ -111,8 +111,8 @@ void silk_prefilter_FIX(
     px  = x;
     pxw_Q3 = xw_Q3;
     lag = P->lagPrev;
-    ALLOC( x_filt_Q12, psEnc->sCmn.subfr_length, opus_int32 );
-    ALLOC( st_res_Q2, psEnc->sCmn.subfr_length, opus_int32 );
+  opus_int32   x_filt_Q12[psEnc->sCmn.subfr_length];
+  opus_int32   st_res_Q2[psEnc->sCmn.subfr_length];
     for( k = 0; k < psEnc->sCmn.nb_subfr; k++ ) {
         /* Update Variables that change per sub frame */
         if( psEnc->sCmn.indices.signalType == TYPE_VOICED ) {

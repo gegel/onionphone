@@ -70,28 +70,8 @@
  * @param type  Type of element
  */
 
-/**
- * @def VARDECL(var)
- *
- * Declare variable on stack
- *
- * @param var Variable to declare
- */
-
-/**
- * @def ALLOC(var, size, type)
- *
- * Allocate 'size' elements of 'type' on stack
- *
- * @param var  Name of variable to allocate
- * @param size Number of elements
- * @param type Type of element
- */
-
 #if defined(VAR_ARRAYS)
 
-#define VARDECL(type, var)
-#define ALLOC(var, size, type) type var[size]
 #define SAVE_STACK
 #define RESTORE_STACK
 #define ALLOC_STACK
@@ -99,14 +79,6 @@
 #define ALLOC_NONE 1
 
 #elif defined(USE_ALLOCA)
-
-#define VARDECL(type, var) type *var
-
-# ifdef WIN32
-#  define ALLOC(var, size, type) var = ((type*)_alloca(sizeof(type)*(size)))
-# else
-#  define ALLOC(var, size, type) var = ((type*)alloca(sizeof(type)*(size)))
-# endif
 
 #define SAVE_STACK
 #define RESTORE_STACK
@@ -146,8 +118,6 @@ extern char *global_stack_top;
 #endif /* ENABLE_VALGRIND */
 
 #include "os_support.h"
-#define VARDECL(type, var) type *var
-#define ALLOC(var, size, type) var = PUSH(global_stack, size, type)
 #define SAVE_STACK char *_saved_stack = global_stack;
 #define ALLOC_NONE 0
 

@@ -265,13 +265,13 @@ void quant_coarse_energy(const CELTMode *m, int start, int end, int effEnd,
 {
    int intra;
    opus_val16 max_decay;
-   VARDECL(opus_val16, oldEBands_intra);
-   VARDECL(opus_val16, error_intra);
    ec_enc enc_start_state;
    opus_uint32 tell;
    int badness1=0;
    opus_int32 intra_bias;
    opus_val32 new_distortion;
+   opus_val16 oldEBands_intra[C*m->nbEBands];
+   opus_val16 error_intra[C*m->nbEBands];
    SAVE_STACK;
 
    intra = force_intra || (!two_pass && *delayedIntra>2*C*(end-start) && nbAvailableBytes > (end-start)*C);
@@ -295,8 +295,6 @@ void quant_coarse_energy(const CELTMode *m, int start, int end, int effEnd,
       max_decay=3;
    enc_start_state = *enc;
 
-   ALLOC(oldEBands_intra, C*m->nbEBands, opus_val16);
-   ALLOC(error_intra, C*m->nbEBands, opus_val16);
    OPUS_COPY(oldEBands_intra, oldEBands, C*m->nbEBands);
 
    if (two_pass || intra)
@@ -314,7 +312,6 @@ void quant_coarse_energy(const CELTMode *m, int start, int end, int effEnd,
       opus_uint32 nintra_bytes;
       opus_uint32 save_bytes;
       int badness2;
-      VARDECL(unsigned char, intra_bits);
 
       tell_intra = ec_tell_frac(enc);
 
@@ -326,7 +323,7 @@ void quant_coarse_energy(const CELTMode *m, int start, int end, int effEnd,
       save_bytes = nintra_bytes-nstart_bytes;
       if (save_bytes == 0)
          save_bytes = ALLOC_NONE;
-      ALLOC(intra_bits, save_bytes, unsigned char);
+      unsigned char intra_bits[save_bytes];
       /* Copy bits from intra bit-stream */
       OPUS_COPY(intra_bits, intra_buf, nintra_bytes - nstart_bytes);
 

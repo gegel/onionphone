@@ -96,12 +96,10 @@ void celt_fir(const opus_val16 *_x,
          opus_val16 *mem)
 {
    int i,j;
-   VARDECL(opus_val16, rnum);
-   VARDECL(opus_val16, x);
+   opus_val16 rnum[ord];
+   opus_val16 x[N + ord];
    SAVE_STACK;
 
-   ALLOC(rnum, ord, opus_val16);
-   ALLOC(x, N+ord, opus_val16);
    for(i=0;i<ord;i++)
       rnum[i] = num[ord-i-1];
    for(i=0;i<ord;i++)
@@ -166,13 +164,11 @@ void celt_iir(const opus_val32 *_x,
    }
 #else
    int i,j;
-   VARDECL(opus_val16, rden);
-   VARDECL(opus_val16, y);
+   opus_val16 rden[ord];
+   opus_val16 y[N + ord];
    SAVE_STACK;
 
    celt_assert((ord&3)==0);
-   ALLOC(rden, ord, opus_val16);
-   ALLOC(y, N+ord, opus_val16);
    for(i=0;i<ord;i++)
       rden[i] = den[ord-i-1];
    for(i=0;i<ord;i++)
@@ -235,9 +231,8 @@ int _celt_autocorr(
    int fastN=n-lag;
    int shift;
    const opus_val16 *xptr;
-   VARDECL(opus_val16, xx);
+   opus_val16 xx[n];
    SAVE_STACK;
-   ALLOC(xx, n, opus_val16);
    celt_assert(n>0);
    celt_assert(overlap>=0);
    if (overlap == 0)

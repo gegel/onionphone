@@ -347,7 +347,6 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st, opus_val16 * OPUS_R
    int loss_count;
    int noise_based;
    const opus_int16 *eBands;
-   VARDECL(celt_sig, scratch);
    SAVE_STACK;
 
    mode = st->mode;
@@ -369,12 +368,11 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st, opus_val16 * OPUS_R
    start = st->start;
    downsample = st->downsample;
    noise_based = loss_count >= 5 || start != 0;
-   ALLOC(scratch, noise_based?N*C:N, celt_sig);
+   celt_sig scratch[noise_based?N*C:N];
    if (noise_based)
    {
       /* Noise-based PLC/CNG */
       celt_sig *freq;
-      VARDECL(celt_norm, X);
       opus_uint32 seed;
       opus_val16 *plcLogE;
       int end;
@@ -386,7 +384,7 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st, opus_val16 * OPUS_R
       /* Share the interleaved signal MDCT coefficient buffer with the
          deemphasis scratch buffer. */
       freq = scratch;
-      ALLOC(X, C*N, celt_norm);   /**< Interleaved normalised MDCTs */
+      celt_norm X[C*N];   /**< Interleaved normalised MDCTs */
 
       if (loss_count >= 5)
          plcLogE = backgroundLogE;
@@ -440,13 +438,10 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st, opus_val16 * OPUS_R
       const opus_val16 *window;
       opus_val16 fade = Q15ONE;
       int pitch_index;
-      VARDECL(opus_val32, etmp);
-      VARDECL(opus_val16, exc);
 
       if (loss_count == 0)
       {
-         VARDECL( opus_val16, lp_pitch_buf );
-         ALLOC( lp_pitch_buf, DECODE_BUFFER_SIZE>>1, opus_val16 );
+         opus_val16 lp_pitch_buf[DECODE_BUFFER_SIZE>>1];
          pitch_downsample(decode_mem, lp_pitch_buf,
                DECODE_BUFFER_SIZE, C, st->arch);
          pitch_search(lp_pitch_buf+(PLC_PITCH_LAG_MAX>>1), lp_pitch_buf,
@@ -459,8 +454,8 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st, opus_val16 * OPUS_R
          fade = QCONST16(.8f,15);
       }
 
-      ALLOC(etmp, overlap, opus_val32);
-      ALLOC(exc, MAX_PERIOD, opus_val16);
+      opus_val32 etmp[overlap];
+      opus_val16 exc[MAX_PERIOD];
       window = mode->window;
       c=0; do {
          opus_val16 decay;
@@ -658,15 +653,6 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
    int spread_decision;
    opus_int32 bits;
    ec_dec _dec;
-   VARDECL(celt_sig, freq);
-   VARDECL(celt_norm, X);
-   VARDECL(int, fine_quant);
-   VARDECL(int, pulses);
-   VARDECL(int, cap);
-   VARDECL(int, offsets);
-   VARDECL(int, fine_priority);
-   VARDECL(int, tf_res);
-   VARDECL(unsigned char, collapse_masks);
    celt_sig *decode_mem[2];
    celt_sig *out_syn[2];
    opus_val16 *lpc;
@@ -829,7 +815,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
    unquant_coarse_energy(mode, st->start, st->end, oldBandE,
          intra_ener, dec, C, LM);
 
-   ALLOC(tf_res, nbEBands, int);
+   int tf_res[nbEBands];
    tf_decode(st->start, st->end, isTransient, tf_res, LM, dec);
 
    tell = ec_tell(dec);
@@ -837,11 +823,11 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
    if (tell+4 <= total_bits)
       spread_decision = ec_dec_icdf(dec, spread_icdf, 5);
 
-   ALLOC(cap, nbEBands, int);
+   int cap[nbEBands];
 
    init_caps(mode,cap,LM,C);
 
-   ALLOC(offsets, nbEBands, int);
+   int offsets[nbEBands];
 
    dynalloc_logp = 6;
    total_bits<<=BITRES;
@@ -874,7 +860,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
          dynalloc_logp = IMAX(2, dynalloc_logp-1);
    }
 
-   ALLOC(fine_quant, nbEBands, int);
+   int fine_quant[nbEBands];
    alloc_trim = tell+(6<<BITRES) <= total_bits ?
          ec_dec_icdf(dec, trim_icdf, 7) : 5;
 
@@ -882,8 +868,8 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
    anti_collapse_rsv = isTransient&&LM>=2&&bits>=((LM+2)<<BITRES) ? (1<<BITRES) : 0;
    bits -= anti_collapse_rsv;
 
-   ALLOC(pulses, nbEBands, int);
-   ALLOC(fine_priority, nbEBands, int);
+   int pulses[nbEBands];
+   int fine_priority[nbEBands];
 
    codedBands = compute_allocation(mode, st->start, st->end, offsets, cap,
          alloc_trim, &intensity, &dual_stereo, bits, &balance, pulses,
@@ -892,8 +878,8 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
    unquant_fine_energy(mode, st->start, st->end, oldBandE, fine_quant, dec, C);
 
    /* Decode fixed codebook */
-   ALLOC(collapse_masks, C*nbEBands, unsigned char);
-   ALLOC(X, C*N, celt_norm);   /**< Interleaved normalised MDCTs */
+   unsigned char collapse_masks[C*nbEBands];
+   celt_norm X[C*N];   /**< Interleaved normalised MDCTs */
 
    quant_all_bands(0, mode, st->start, st->end, X, C==2 ? X+N : NULL, collapse_masks,
          NULL, pulses, shortBlocks, spread_decision, dual_stereo, intensity, tf_res,
@@ -911,7 +897,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st, const unsigned char *dat
       anti_collapse(mode, X, collapse_masks, LM, C, N,
             st->start, st->end, oldBandE, oldLogE, oldLogE2, pulses, st->rng);
 
-   ALLOC(freq, IMAX(CC,C)*N, celt_sig); /**< Interleaved signal MDCTs */
+   celt_sig freq[IMAX(CC,C)*N]; /**< Interleaved signal MDCTs */
 
    if (silence)
    {
@@ -1035,7 +1021,6 @@ int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st, const unsigned char *data
 int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st, const unsigned char *data, int len, float * OPUS_RESTRICT pcm, int frame_size)
 {
    int j, ret, C, N;
-   VARDECL(opus_int16, out);
    ALLOC_STACK;
 
    if (pcm==NULL)
@@ -1044,7 +1029,7 @@ int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st, const unsigned char
    C = st->channels;
    N = frame_size;
 
-   ALLOC(out, C*N, opus_int16);
+   opus_int16 out[C * N];
    ret=celt_decode_with_ec(st, data, len, out, frame_size, NULL);
    if (ret>0)
       for (j=0;j<C*ret;j++)
@@ -1065,7 +1050,6 @@ int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st, const unsigned char
 int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st, const unsigned char *data, int len, opus_int16 * OPUS_RESTRICT pcm, int frame_size)
 {
    int j, ret, C, N;
-   VARDECL(celt_sig, out);
    ALLOC_STACK;
 
    if (pcm==NULL)
@@ -1073,7 +1057,7 @@ int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st, const unsigned char *data
 
    C = st->channels;
    N = frame_size;
-   ALLOC(out, C*N, celt_sig);
+   celt_sig out[C * N];
 
    ret=celt_decode_with_ec(st, data, len, out, frame_size, NULL);
 

@@ -210,14 +210,14 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
    ec_dec dec;
    opus_int32 silk_frame_size;
    int pcm_silk_size;
-   VARDECL(opus_int16, pcm_silk);
+   
    int pcm_transition_silk_size;
-   VARDECL(opus_val16, pcm_transition_silk);
+   
    int pcm_transition_celt_size;
-   VARDECL(opus_val16, pcm_transition_celt);
+   
    opus_val16 *pcm_transition = NULL;
    int redundant_audio_size;
-   VARDECL(opus_val16, redundant_audio);
+   
 
    int audiosize;
    int mode;
@@ -309,7 +309,7 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
       else
          pcm_transition_silk_size = F5*st->channels;
    }
-   ALLOC(pcm_transition_celt, pcm_transition_celt_size, opus_val16);
+  opus_val16 pcm_transition_celt[pcm_transition_celt_size];
    if (transition && mode == MODE_CELT_ONLY)
    {
       pcm_transition = pcm_transition_celt;
@@ -326,7 +326,7 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
 
    /* Don't allocate any memory when in CELT-only mode */
    pcm_silk_size = (mode != MODE_CELT_ONLY) ? IMAX(F10, frame_size)*st->channels : ALLOC_NONE;
-   ALLOC(pcm_silk, pcm_silk_size, opus_int16);
+  opus_int16 pcm_silk[pcm_silk_size];
 
    /* SILK processing */
    if (mode != MODE_CELT_ONLY)
@@ -445,7 +445,7 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
       pcm_transition_silk_size=ALLOC_NONE;
    }
 
-   ALLOC(pcm_transition_silk, pcm_transition_silk_size, opus_val16);
+  opus_val16 pcm_transition_silk[pcm_transition_silk_size];
 
    if (transition && mode != MODE_CELT_ONLY)
    {
@@ -455,7 +455,7 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
 
    /* Only allocation memory for redundancy if/when needed */
    redundant_audio_size = redundancy ? F5*st->channels : ALLOC_NONE;
-   ALLOC(redundant_audio, redundant_audio_size, opus_val16);
+  opus_val16 redundant_audio[redundant_audio_size];
 
    /* 5 ms redundant frame for CELT->SILK*/
    if (redundancy && celt_to_silk)
@@ -708,7 +708,7 @@ int opus_decode(OpusDecoder *st, const unsigned char *data,
 int opus_decode_float(OpusDecoder *st, const unsigned char *data,
       opus_int32 len, float *pcm, int frame_size, int decode_fec)
 {
-   VARDECL(opus_int16, out);
+   
    int ret, i;
    ALLOC_STACK;
 
@@ -717,7 +717,7 @@ int opus_decode_float(OpusDecoder *st, const unsigned char *data,
       RESTORE_STACK;
       return OPUS_BAD_ARG;
    }
-   ALLOC(out, frame_size*st->channels, opus_int16);
+  opus_int16 out[frame_size*st->channels];
 
    ret = opus_decode_native(st, data, len, out, frame_size, decode_fec, 0, NULL, 0);
    if (ret > 0)
@@ -735,7 +735,7 @@ int opus_decode_float(OpusDecoder *st, const unsigned char *data,
 int opus_decode(OpusDecoder *st, const unsigned char *data,
       opus_int32 len, opus_int16 *pcm, int frame_size, int decode_fec)
 {
-   VARDECL(float, out);
+   
    int ret, i;
    ALLOC_STACK;
 
@@ -745,7 +745,7 @@ int opus_decode(OpusDecoder *st, const unsigned char *data,
       return OPUS_BAD_ARG;
    }
 
-   ALLOC(out, frame_size*st->channels, float);
+  float out[frame_size*st->channels];
 
    ret = opus_decode_native(st, data, len, out, frame_size, decode_fec, 0, NULL, 1);
    if (ret > 0)

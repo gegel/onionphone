@@ -179,17 +179,17 @@ static OPUS_INLINE void silk_PLC_conceal(
     opus_int16 rand_scale_Q14;
     opus_int16 *B_Q14, *exc_buf_ptr;
     opus_int32 *sLPC_Q14_ptr;
-    VARDECL( opus_int16, exc_buf );
+    
     opus_int16 A_Q12[ MAX_LPC_ORDER ];
-    VARDECL( opus_int16, sLTP );
-    VARDECL( opus_int32, sLTP_Q14 );
+    
+    
     silk_PLC_struct *psPLC = &psDec->sPLC;
     opus_int32 prevGain_Q10[2];
     SAVE_STACK;
 
-    ALLOC( exc_buf, 2*psPLC->subfr_length, opus_int16 );
-    ALLOC( sLTP, psDec->ltp_mem_length, opus_int16 );
-    ALLOC( sLTP_Q14, psDec->ltp_mem_length + psDec->frame_length, opus_int32 );
+  opus_int16   exc_buf[2*psPLC->subfr_length];
+  opus_int16   sLTP[psDec->ltp_mem_length];
+  opus_int32   sLTP_Q14[psDec->ltp_mem_length + psDec->frame_length];
 
     prevGain_Q10[0] = silk_RSHIFT( psPLC->prevGain_Q16[ 0 ], 6);
     prevGain_Q10[1] = silk_RSHIFT( psPLC->prevGain_Q16[ 1 ], 6);

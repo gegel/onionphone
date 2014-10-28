@@ -153,7 +153,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
     opus_int   speech_act_thr_for_switch_Q8;
     opus_int32 TargetRate_bps, MStargetRates_bps[ 2 ], channelRate_bps, LBRR_symbol, sum;
     silk_encoder *psEnc = ( silk_encoder * )encState;
-    VARDECL( opus_int16, buf );
+    
     opus_int transition, curr_block, tot_blocks;
     SAVE_STACK;
 
@@ -258,7 +258,7 @@ opus_int silk_Encode(                                   /* O    Returns error co
         silk_DIV32_16( nSamplesToBufferMax *
                            psEnc->state_Fxx[ 0 ].sCmn.API_fs_Hz,
                        psEnc->state_Fxx[ 0 ].sCmn.fs_kHz * 1000 );
-    ALLOC( buf, nSamplesFromInputMax, opus_int16 );
+  opus_int16   buf[nSamplesFromInputMax];
     while( 1 ) {
         nSamplesToBuffer  = psEnc->state_Fxx[ 0 ].sCmn.frame_length - psEnc->state_Fxx[ 0 ].sCmn.inputBufIx;
         nSamplesToBuffer  = silk_min( nSamplesToBuffer, nSamplesToBufferMax );

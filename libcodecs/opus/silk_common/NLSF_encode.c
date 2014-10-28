@@ -47,10 +47,10 @@ opus_int32 silk_NLSF_encode(                                    /* O    Returns 
 {
     opus_int         i, s, ind1, bestIndex, prob_Q8, bits_q7;
     opus_int32       W_tmp_Q9;
-    VARDECL( opus_int32, err_Q26 );
-    VARDECL( opus_int32, RD_Q25 );
-    VARDECL( opus_int, tempIndices1 );
-    VARDECL( opus_int8, tempIndices2 );
+    
+    
+    
+    
     opus_int16       res_Q15[      MAX_LPC_ORDER ];
     opus_int16       res_Q10[      MAX_LPC_ORDER ];
     opus_int16       NLSF_tmp_Q15[ MAX_LPC_ORDER ];
@@ -69,15 +69,15 @@ opus_int32 silk_NLSF_encode(                                    /* O    Returns 
     silk_NLSF_stabilize( pNLSF_Q15, psNLSF_CB->deltaMin_Q15, psNLSF_CB->order );
 
     /* First stage: VQ */
-    ALLOC( err_Q26, psNLSF_CB->nVectors, opus_int32 );
+  opus_int32   err_Q26[psNLSF_CB->nVectors];
     silk_NLSF_VQ( err_Q26, pNLSF_Q15, psNLSF_CB->CB1_NLSF_Q8, psNLSF_CB->nVectors, psNLSF_CB->order );
 
     /* Sort the quantization errors */
-    ALLOC( tempIndices1, nSurvivors, opus_int );
+  opus_int   tempIndices1[nSurvivors];
     silk_insertion_sort_increasing( err_Q26, tempIndices1, psNLSF_CB->nVectors, nSurvivors );
 
-    ALLOC( RD_Q25, nSurvivors, opus_int32 );
-    ALLOC( tempIndices2, nSurvivors * MAX_LPC_ORDER, opus_int8 );
+  opus_int32   RD_Q25[nSurvivors];
+  opus_int8   tempIndices2[nSurvivors * MAX_LPC_ORDER];
 
     /* Loop over survivors */
     for( s = 0; s < nSurvivors; s++ ) {

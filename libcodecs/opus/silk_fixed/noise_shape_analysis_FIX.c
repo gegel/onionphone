@@ -158,7 +158,7 @@ void silk_noise_shape_analysis_FIX(
     opus_int32   refl_coef_Q16[ MAX_SHAPE_LPC_ORDER ];
     opus_int32   AR1_Q24[       MAX_SHAPE_LPC_ORDER ];
     opus_int32   AR2_Q24[       MAX_SHAPE_LPC_ORDER ];
-    VARDECL( opus_int16, x_windowed );
+    
     const opus_int16 *x_ptr, *pitch_res_ptr;
     SAVE_STACK;
 
@@ -261,7 +261,7 @@ void silk_noise_shape_analysis_FIX(
     /********************************************/
     /* Compute noise shaping AR coefs and gains */
     /********************************************/
-    ALLOC( x_windowed, psEnc->sCmn.shapeWinLength, opus_int16 );
+  opus_int16   x_windowed[psEnc->sCmn.shapeWinLength];
     for( k = 0; k < psEnc->sCmn.nb_subfr; k++ ) {
         /* Apply window: sine slope followed by flat part followed by cosine slope */
         opus_int shift, slope_part, flat_part;

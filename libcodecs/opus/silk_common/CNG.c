@@ -124,9 +124,9 @@ void silk_CNG(
 
     /* Add CNG when packet is lost or during DTX */
     if( psDec->lossCnt ) {
-        VARDECL( opus_int32, CNG_sig_Q10 );
+        
 
-        ALLOC( CNG_sig_Q10, length + MAX_LPC_ORDER, opus_int32 );
+  opus_int32   CNG_sig_Q10[length + MAX_LPC_ORDER];
 
         /* Generate CNG excitation */
         silk_CNG_exc( CNG_sig_Q10 + MAX_LPC_ORDER, psCNG->CNG_exc_buf_Q14, psCNG->CNG_smth_Gain_Q16, length, &psCNG->rand_seed );

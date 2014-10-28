@@ -47,7 +47,7 @@ void silk_residual_energy_FIX(
 {
     opus_int         offset, i, j, rshift, lz1, lz2;
     opus_int16       *LPC_res_ptr;
-    VARDECL( opus_int16, LPC_res );
+    
     const opus_int16 *x_ptr;
     opus_int32       tmp32;
     SAVE_STACK;
@@ -56,7 +56,7 @@ void silk_residual_energy_FIX(
     offset = LPC_order + subfr_length;
 
     /* Filter input to create the LPC residual for each frame half, and measure subframe energies */
-    ALLOC( LPC_res, ( MAX_NB_SUBFR >> 1 ) * offset, opus_int16 );
+  opus_int16   LPC_res[( MAX_NB_SUBFR >> 1 ) * offset];
     silk_assert( ( nb_subfr >> 1 ) * ( MAX_NB_SUBFR >> 1 ) == nb_subfr );
     for( i = 0; i < nb_subfr >> 1; i++ ) {
         /* Calculate half frame LPC residual signal including preceding samples */

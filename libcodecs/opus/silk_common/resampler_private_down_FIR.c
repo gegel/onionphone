@@ -152,11 +152,11 @@ void silk_resampler_private_down_FIR(
     silk_resampler_state_struct *S = (silk_resampler_state_struct *)SS;
     opus_int32 nSamplesIn;
     opus_int32 max_index_Q16, index_increment_Q16;
-    VARDECL( opus_int32, buf );
+    
     const opus_int16 *FIR_Coefs;
     SAVE_STACK;
 
-    ALLOC( buf, S->batchSize + S->FIR_Order, opus_int32 );
+  opus_int32   buf[S->batchSize + S->FIR_Order];
 
     /* Copy buffered samples to start of buffer */
     silk_memcpy( buf, S->sFIR.i32, S->FIR_Order * sizeof( opus_int32 ) );

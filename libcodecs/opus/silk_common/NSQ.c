@@ -89,11 +89,11 @@ void silk_NSQ(
     opus_int            k, lag, start_idx, LSF_interpolation_flag;
     const opus_int16    *A_Q12, *B_Q14, *AR_shp_Q13;
     opus_int16          *pxq;
-    VARDECL( opus_int32, sLTP_Q15 );
-    VARDECL( opus_int16, sLTP );
+    
+    
     opus_int32          HarmShapeFIRPacked_Q14;
     opus_int            offset_Q10;
-    VARDECL( opus_int32, x_sc_Q10 );
+    
     SAVE_STACK;
 
     NSQ->rand_seed = psIndices->Seed;
@@ -111,10 +111,9 @@ void silk_NSQ(
         LSF_interpolation_flag = 1;
     }
 
-    ALLOC( sLTP_Q15,
-           psEncC->ltp_mem_length + psEncC->frame_length, opus_int32 );
-    ALLOC( sLTP, psEncC->ltp_mem_length + psEncC->frame_length, opus_int16 );
-    ALLOC( x_sc_Q10, psEncC->subfr_length, opus_int32 );
+    opus_int32 sLTP_Q15[psEncC->ltp_mem_length + psEncC->frame_length];
+  opus_int16   sLTP[psEncC->ltp_mem_length + psEncC->frame_length];
+  opus_int32   x_sc_Q10[psEncC->subfr_length];
     /* Set up pointers to start of sub frame */
     NSQ->sLTP_shp_buf_idx = psEncC->ltp_mem_length;
     NSQ->sLTP_buf_idx     = psEncC->ltp_mem_length;

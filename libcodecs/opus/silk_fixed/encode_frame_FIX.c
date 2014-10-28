@@ -118,14 +118,12 @@ opus_int silk_encode_frame_FIX(
     silk_memcpy( x_frame + LA_SHAPE_MS * psEnc->sCmn.fs_kHz, psEnc->sCmn.inputBuf + 1, psEnc->sCmn.frame_length * sizeof( opus_int16 ) );
 
     if( !psEnc->sCmn.prefillFlag ) {
-        VARDECL( opus_int32, xfw_Q3 );
-        VARDECL( opus_int16, res_pitch );
-        VARDECL( opus_uint8, ec_buf_copy );
+        
+        
+        
         opus_int16 *res_pitch_frame;
 
-        ALLOC( res_pitch,
-               psEnc->sCmn.la_pitch + psEnc->sCmn.frame_length
-                   + psEnc->sCmn.ltp_mem_length, opus_int16 );
+        opus_int16 res_pitch[psEnc->sCmn.la_pitch + psEnc->sCmn.frame_length + psEnc->sCmn.ltp_mem_length];
         /* start of pitch LPC residual frame */
         res_pitch_frame = res_pitch + psEnc->sCmn.ltp_mem_length;
 
@@ -152,7 +150,7 @@ opus_int silk_encode_frame_FIX(
         /*****************************************/
         /* Prefiltering for noise shaper         */
         /*****************************************/
-        ALLOC( xfw_Q3, psEnc->sCmn.frame_length, opus_int32 );
+  opus_int32   xfw_Q3[psEnc->sCmn.frame_length];
         silk_prefilter_FIX( psEnc, &sEncCtrl, xfw_Q3, x_frame );
 
         /****************************************/
@@ -174,7 +172,7 @@ opus_int silk_encode_frame_FIX(
         seed_copy = psEnc->sCmn.indices.Seed;
         ec_prevLagIndex_copy = psEnc->sCmn.ec_prevLagIndex;
         ec_prevSignalType_copy = psEnc->sCmn.ec_prevSignalType;
-        ALLOC( ec_buf_copy, 1275, opus_uint8 );
+  opus_uint8   ec_buf_copy[1275];
         for( iter = 0; ; iter++ ) {
             if( gainsID == gainsID_lower ) {
                 nBits = nBits_lower;

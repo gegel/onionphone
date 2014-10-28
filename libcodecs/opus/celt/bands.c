@@ -548,11 +548,10 @@ static const int ordery_table[] = {
 static void deinterleave_hadamard(celt_norm *X, int N0, int stride, int hadamard)
 {
    int i,j;
-   VARDECL(celt_norm, tmp);
    int N;
    SAVE_STACK;
    N = N0*stride;
-   ALLOC(tmp, N, celt_norm);
+   celt_norm tmp[N];
    celt_assert(stride>0);
    if (hadamard)
    {
@@ -575,11 +574,10 @@ static void deinterleave_hadamard(celt_norm *X, int N0, int stride, int hadamard
 static void interleave_hadamard(celt_norm *X, int N0, int stride, int hadamard)
 {
    int i,j;
-   VARDECL(celt_norm, tmp);
    int N;
    SAVE_STACK;
    N = N0*stride;
-   ALLOC(tmp, N, celt_norm);
+   celt_norm tmp[N];
    if (hadamard)
    {
       const int *ordery = ordery_table+stride-2;
@@ -1361,7 +1359,6 @@ void quant_all_bands(int encode, const CELTMode *m, int start, int end,
    opus_int32 remaining_bits;
    const opus_int16 * OPUS_RESTRICT eBands = m->eBands;
    celt_norm * OPUS_RESTRICT norm, * OPUS_RESTRICT norm2;
-   VARDECL(celt_norm, _norm);
    celt_norm *lowband_scratch;
    int B;
    int M;
@@ -1382,7 +1379,7 @@ void quant_all_bands(int encode, const CELTMode *m, int start, int end,
    norm_offset = M*eBands[start];
    /* No need to allocate norm for the last band because we don't need an
       output in that band. */
-   ALLOC(_norm, C*(M*eBands[m->nbEBands-1]-norm_offset), celt_norm);
+   celt_norm _norm[C*(M*eBands[m->nbEBands-1]-norm_offset)];
    norm = _norm;
    norm2 = norm + M*eBands[m->nbEBands-1]-norm_offset;
    /* We can use the last band as scratch space because we don't need that

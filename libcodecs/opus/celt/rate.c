@@ -526,20 +526,19 @@ static OPUS_INLINE int interp_bits2pulses(const CELTMode *m, int start, int end,
 int compute_allocation(const CELTMode *m, int start, int end, const int *offsets, const int *cap, int alloc_trim, int *intensity, int *dual_stereo,
       opus_int32 total, opus_int32 *balance, int *pulses, int *ebits, int *fine_priority, int C, int LM, ec_ctx *ec, int encode, int prev, int signalBandwidth)
 {
-   int lo, hi, len, j;
+   int lo, hi, len = m->nbEBands, j;
    int codedBands;
    int skip_start;
    int skip_rsv;
    int intensity_rsv;
    int dual_stereo_rsv;
-   VARDECL(int, bits1);
-   VARDECL(int, bits2);
-   VARDECL(int, thresh);
-   VARDECL(int, trim_offset);
+   int bits1[len];
+   int bits2[len];
+   int thresh[len];
+   int trim_offset[len];
    SAVE_STACK;
 
    total = IMAX(total, 0);
-   len = m->nbEBands;
    skip_start = start;
    /* Reserve a bit to signal the end of manually skipped bands. */
    skip_rsv = total >= 1<<BITRES ? 1<<BITRES : 0;
@@ -558,10 +557,6 @@ int compute_allocation(const CELTMode *m, int start, int end, const int *offsets
          total -= dual_stereo_rsv;
       }
    }
-   ALLOC(bits1, len, int);
-   ALLOC(bits2, len, int);
-   ALLOC(thresh, len, int);
-   ALLOC(trim_offset, len, int);
 
    for (j=start;j<end;j++)
    {

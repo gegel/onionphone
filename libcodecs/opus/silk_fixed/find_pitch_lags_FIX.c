@@ -45,7 +45,7 @@ void silk_find_pitch_lags_FIX(
     opus_int   buf_len, i, scale;
     opus_int32 thrhld_Q13, res_nrg;
     const opus_int16 *x_buf, *x_buf_ptr;
-    VARDECL( opus_int16, Wsig );
+    
     opus_int16 *Wsig_ptr;
     opus_int32 auto_corr[ MAX_FIND_PITCH_LPC_ORDER + 1 ];
     opus_int16 rc_Q15[    MAX_FIND_PITCH_LPC_ORDER ];
@@ -69,7 +69,7 @@ void silk_find_pitch_lags_FIX(
 
     /* Calculate windowed signal */
 
-    ALLOC( Wsig, psEnc->sCmn.pitch_LPC_win_length, opus_int16 );
+  opus_int16   Wsig[psEnc->sCmn.pitch_LPC_win_length];
 
     /* First LA_LTP samples */
     x_buf_ptr = x_buf + buf_len - psEnc->sCmn.pitch_LPC_win_length;

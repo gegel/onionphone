@@ -157,9 +157,6 @@ unsigned alg_quant(celt_norm *X, int N, int K, int spread, int B, ec_enc *enc
 #endif
    )
 {
-   VARDECL(celt_norm, y);
-   VARDECL(int, iy);
-   VARDECL(opus_val16, signx);
    int i, j;
    opus_val16 s;
    int pulsesLeft;
@@ -167,14 +164,13 @@ unsigned alg_quant(celt_norm *X, int N, int K, int spread, int B, ec_enc *enc
    opus_val32 xy;
    opus_val16 yy;
    unsigned collapse_mask;
+   celt_norm y[N];
+   int iy[N];
+   opus_val16 signx[N];
    SAVE_STACK;
 
    celt_assert2(K>0, "alg_quant() needs at least one pulse");
    celt_assert2(N>1, "alg_quant() needs at least two dimensions");
-
-   ALLOC(y, N, celt_norm);
-   ALLOC(iy, N, int);
-   ALLOC(signx, N, opus_val16);
 
    exp_rotation(X, N, 1, B, K, spread);
 
@@ -325,12 +321,11 @@ unsigned alg_unquant(celt_norm *X, int N, int K, int spread, int B,
    int i;
    opus_val32 Ryy;
    unsigned collapse_mask;
-   VARDECL(int, iy);
+   int iy[N];
    SAVE_STACK;
 
    celt_assert2(K>0, "alg_unquant() needs at least one pulse");
    celt_assert2(N>1, "alg_unquant() needs at least two dimensions");
-   ALLOC(iy, N, int);
    decode_pulses(iy, N, K, dec);
    Ryy = 0;
    i=0;

@@ -45,15 +45,14 @@ opus_int silk_decode_frame(
     opus_int                    condCoding                      /* I    The type of conditional coding to use       */
 )
 {
-    VARDECL( silk_decoder_control, psDecCtrl );
+    
     opus_int         L, mv_len, ret = 0;
-    VARDECL( opus_int, pulses );
+    
     SAVE_STACK;
 
     L = psDec->frame_length;
-    ALLOC( psDecCtrl, 1, silk_decoder_control );
-    ALLOC( pulses, (L + SHELL_CODEC_FRAME_LENGTH - 1) &
-                   ~(SHELL_CODEC_FRAME_LENGTH - 1), opus_int );
+  silk_decoder_control   psDecCtrl[1];
+    opus_int pulses[(L + SHELL_CODEC_FRAME_LENGTH - 1) & ~(SHELL_CODEC_FRAME_LENGTH - 1)];
     psDecCtrl->LTP_scale_Q14 = 0;
 
     /* Safety checks */

@@ -44,11 +44,11 @@ void silk_resampler_down2_3(
 )
 {
     opus_int32 nSamplesIn, counter, res_Q6;
-    VARDECL( opus_int32, buf );
+    
     opus_int32 *buf_ptr;
     SAVE_STACK;
 
-    ALLOC( buf, RESAMPLER_MAX_BATCH_SIZE_IN + ORDER_FIR, opus_int32 );
+  opus_int32   buf[RESAMPLER_MAX_BATCH_SIZE_IN + ORDER_FIR];
 
     /* Copy buffered samples to start of buffer */
     silk_memcpy( buf, S, ORDER_FIR * sizeof( opus_int32 ) );

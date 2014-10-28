@@ -191,14 +191,14 @@ void tonality_analysis(TonalityAnalysisState *tonal, AnalysisInfo *info_out, con
 {
     int i, b;
     const kiss_fft_state *kfft;
-    VARDECL(kiss_fft_cpx, in);
-    VARDECL(kiss_fft_cpx, out);
+    
+    
     int N = 480, N2=240;
     float * OPUS_RESTRICT A = tonal->angle;
     float * OPUS_RESTRICT dA = tonal->d_angle;
     float * OPUS_RESTRICT d2A = tonal->d2_angle;
-    VARDECL(float, tonality);
-    VARDECL(float, noisiness);
+    
+    
     float band_tonality[NB_TBANDS];
     float logE[NB_TBANDS];
     float BFCC[8];
@@ -244,10 +244,10 @@ void tonality_analysis(TonalityAnalysisState *tonal, AnalysisInfo *info_out, con
     if (tonal->write_pos>=DETECT_SIZE)
        tonal->write_pos-=DETECT_SIZE;
 
-    ALLOC(in, 480, kiss_fft_cpx);
-    ALLOC(out, 480, kiss_fft_cpx);
-    ALLOC(tonality, 240, float);
-    ALLOC(noisiness, 240, float);
+  kiss_fft_cpx in[480];
+  kiss_fft_cpx out[480];
+  float tonality[240];
+  float noisiness[240];
     for (i=0;i<N2;i++)
     {
        float w = analysis_window[i];

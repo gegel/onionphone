@@ -63,7 +63,7 @@ void silk_find_LPC_FIX(
     silk_burg_modified( &res_nrg, &res_nrg_Q, a_Q16, x, minInvGain_Q30, subfr_length, psEncC->nb_subfr, psEncC->predictLPCOrder, psEncC->arch );
 
     if( psEncC->useInterpolatedNLSFs && !psEncC->first_frame_after_reset && psEncC->nb_subfr == MAX_NB_SUBFR ) {
-        VARDECL( opus_int16, LPC_res );
+        
 
         /* Optimal solution for last 10 ms */
         silk_burg_modified( &res_tmp_nrg, &res_tmp_nrg_Q, a_tmp_Q16, x + 2 * subfr_length, minInvGain_Q30, subfr_length, 2, psEncC->predictLPCOrder, psEncC->arch );
@@ -84,7 +84,7 @@ void silk_find_LPC_FIX(
         /* Convert to NLSFs */
         silk_A2NLSF( NLSF_Q15, a_tmp_Q16, psEncC->predictLPCOrder );
 
-        ALLOC( LPC_res, 2 * subfr_length, opus_int16 );
+  opus_int16   LPC_res[2 * subfr_length];
 
         /* Search over interpolation indices to find the one with lowest residual energy */
         for( k = 3; k >= 0; k-- ) {

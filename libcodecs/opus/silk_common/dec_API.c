@@ -90,8 +90,8 @@ opus_int silk_Decode(                                   /* O    Returns error co
     opus_int   i, n, decode_only_middle = 0, ret = SILK_NO_ERROR;
     opus_int32 nSamplesOutDec, LBRR_symbol;
     opus_int16 *samplesOut1_tmp[ 2 ];
-    VARDECL( opus_int16, samplesOut1_tmp_storage );
-    VARDECL( opus_int16, samplesOut2_tmp );
+    
+    
     opus_int32 MS_pred_Q13[ 2 ] = { 0 };
     opus_int16 *resample_out_ptr;
     silk_decoder *psDec = ( silk_decoder * )decState;
@@ -251,10 +251,7 @@ opus_int silk_Decode(                                   /* O    Returns error co
         psDec->channel_state[ 1 ].first_frame_after_reset = 1;
     }
 
-    ALLOC( samplesOut1_tmp_storage,
-           decControl->nChannelsInternal*(
-               channel_state[ 0 ].frame_length + 2 ),
-           opus_int16 );
+    opus_int16 samplesOut1_tmp_storage[decControl->nChannelsInternal*( channel_state[ 0 ].frame_length + 2 )];
     samplesOut1_tmp[ 0 ] = samplesOut1_tmp_storage;
     samplesOut1_tmp[ 1 ] = samplesOut1_tmp_storage
                            + channel_state[ 0 ].frame_length + 2;
@@ -304,8 +301,7 @@ opus_int silk_Decode(                                   /* O    Returns error co
     *nSamplesOut = silk_DIV32( nSamplesOutDec * decControl->API_sampleRate, silk_SMULBB( channel_state[ 0 ].fs_kHz, 1000 ) );
 
     /* Set up pointers to temp buffers */
-    ALLOC( samplesOut2_tmp,
-           decControl->nChannelsAPI == 2 ? *nSamplesOut : ALLOC_NONE, opus_int16 );
+    opus_int16 samplesOut2_tmp[decControl->nChannelsAPI == 2 ? *nSamplesOut : ALLOC_NONE];
     if( decControl->nChannelsAPI == 2 ) {
         resample_out_ptr = samplesOut2_tmp;
     } else {

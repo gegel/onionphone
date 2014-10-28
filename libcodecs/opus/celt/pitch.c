@@ -297,11 +297,12 @@ void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp, opus_val16 * OPUS_RESTR
                   int len, int max_pitch, int *pitch, int arch)
 {
    int i, j;
-   int lag;
+   int lag = len + max_pitch;
    int best_pitch[2]={0,0};
-   VARDECL(opus_val16, x_lp4);
-   VARDECL(opus_val16, y_lp4);
-   VARDECL(opus_val32, xcorr);
+   opus_val16 x_lp4[len>>2];
+   opus_val16 y_lp4[lag>>2];
+   opus_val32 xcorr[max_pitch>>1];
+
 #ifdef FIXED_POINT
    opus_val32 maxcorr;
    opus_val32 xmax, ymax;
@@ -313,11 +314,6 @@ void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp, opus_val16 * OPUS_RESTR
 
    celt_assert(len>0);
    celt_assert(max_pitch>0);
-   lag = len+max_pitch;
-
-   ALLOC(x_lp4, len>>2, opus_val16);
-   ALLOC(y_lp4, lag>>2, opus_val16);
-   ALLOC(xcorr, max_pitch>>1, opus_val32);
 
    /* Downsample by 2 again */
    for (j=0;j<len>>2;j++)
@@ -411,7 +407,6 @@ opus_val16 remove_doubling(opus_val16 *x, int maxperiod, int minperiod,
    opus_val32 best_xy, best_yy;
    int offset;
    int minperiod0;
-   VARDECL(opus_val32, yy_lookup);
    SAVE_STACK;
 
    minperiod0 = minperiod;
@@ -425,7 +420,7 @@ opus_val16 remove_doubling(opus_val16 *x, int maxperiod, int minperiod,
       *T0_=maxperiod-1;
 
    T = T0 = *T0_;
-   ALLOC(yy_lookup, maxperiod+1, opus_val32);
+   opus_val32 yy_lookup[maxperiod + 1];
    dual_inner_prod(x, x, x-T0, N, &xx, &xy);
    yy_lookup[0] = xx;
    yy=xx;

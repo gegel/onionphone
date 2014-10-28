@@ -80,13 +80,13 @@ void silk_solve_LDL_FIX(
     opus_int32                      *x_Q16                                  /* O    Pointer to x solution vector                                                */
 )
 {
-    VARDECL( opus_int32, L_Q16 );
+    
     opus_int32 Y[      MAX_MATRIX_SIZE ];
     inv_D_t   inv_D[  MAX_MATRIX_SIZE ];
     SAVE_STACK;
 
     silk_assert( M <= MAX_MATRIX_SIZE );
-    ALLOC( L_Q16, M * M, opus_int32 );
+  opus_int32   L_Q16[M * M];
 
     /***************************************************
     Factorize A by LDL such that A = L*D*L',
