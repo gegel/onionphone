@@ -34,7 +34,6 @@
 #include "entenc.h"
 #include "modes.h"
 #include "API.h"
-#include "stack_alloc.h"
 #include "float_cast.h"
 #include "opus.h"
 #include "arch.h"

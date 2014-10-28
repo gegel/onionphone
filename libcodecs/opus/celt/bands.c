@@ -36,7 +36,6 @@
 #include "modes.h"
 #include "vq.h"
 #include "cwrs.h"
-#include "stack_alloc.h"
 #include "os_support.h"
 #include "mathops.h"
 #include "rate.h"

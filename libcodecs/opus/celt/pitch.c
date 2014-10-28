@@ -38,7 +38,6 @@
 #include "pitch.h"
 #include "os_support.h"
 #include "modes.h"
-#include "stack_alloc.h"
 #include "mathops.h"
 #include "celt_lpc.h"
 

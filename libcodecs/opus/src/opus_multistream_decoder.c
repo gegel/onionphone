@@ -32,7 +32,6 @@
 #include "opus_multistream.h"
 #include "opus.h"
 #include "opus_private.h"
-#include "stack_alloc.h"
 #include <stdarg.h>
 #include "float_cast.h"
 #include "os_support.h"

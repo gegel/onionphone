@@ -35,7 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main_FLP.h"
 #define silk_encoder_state_Fxx      silk_encoder_state_FLP
 #endif
-#include "stack_alloc.h"
 #include "tuning_parameters.h"
 #include "pitch_est_defines.h"
 

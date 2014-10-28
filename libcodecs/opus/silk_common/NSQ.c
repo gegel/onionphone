@@ -30,7 +30,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
-#include "stack_alloc.h"
 
 static inline void silk_nsq_scale_states(
     const silk_encoder_state *psEncC,           /* I    Encoder State                   */

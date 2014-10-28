@@ -36,7 +36,6 @@
 #include "os_support.h"
 #include "arch.h"
 #include "mathops.h"
-#include "stack_alloc.h"
 #include "rate.h"
 
 #ifdef FIXED_POINT
@@ -322,7 +321,7 @@ void quant_coarse_energy(const CELTMode *m, int start, int end, int effEnd,
       intra_buf = ec_get_buffer(&enc_intra_state) + nstart_bytes;
       save_bytes = nintra_bytes-nstart_bytes;
       if (save_bytes == 0)
-         save_bytes = ALLOC_NONE;
+         save_bytes = 1;
       unsigned char intra_bits[save_bytes];
       /* Copy bits from intra bit-stream */
       OPUS_COPY(intra_bits, intra_buf, nintra_bytes - nstart_bytes);

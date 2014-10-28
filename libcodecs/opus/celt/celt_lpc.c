@@ -30,7 +30,6 @@
 #endif
 
 #include "celt_lpc.h"
-#include "stack_alloc.h"
 #include "mathops.h"
 #include "pitch.h"
 

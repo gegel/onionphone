@@ -43,7 +43,6 @@
 #include "entdec.h"
 #include "modes.h"
 #include "API.h"
-#include "stack_alloc.h"
 #include "float_cast.h"
 #include "opus_private.h"
 #include "os_support.h"
@@ -295,8 +294,8 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
       }
    }
 
-   pcm_transition_silk_size = ALLOC_NONE;
-   pcm_transition_celt_size = ALLOC_NONE;
+   pcm_transition_silk_size = 1;
+   pcm_transition_celt_size = 1;
    if (data!=NULL && st->prev_mode > 0 && (
        (mode == MODE_CELT_ONLY && st->prev_mode != MODE_CELT_ONLY && !st->prev_redundancy)
     || (mode != MODE_CELT_ONLY && st->prev_mode == MODE_CELT_ONLY) )
@@ -325,7 +324,7 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
    }
 
    /* Don't allocate any memory when in CELT-only mode */
-   pcm_silk_size = (mode != MODE_CELT_ONLY) ? IMAX(F10, frame_size)*st->channels : ALLOC_NONE;
+   pcm_silk_size = (mode != MODE_CELT_ONLY) ? IMAX(F10, frame_size)*st->channels : 1;
   opus_int16 pcm_silk[pcm_silk_size];
 
    /* SILK processing */
@@ -442,7 +441,7 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
    if (redundancy)
    {
       transition = 0;
-      pcm_transition_silk_size=ALLOC_NONE;
+      pcm_transition_silk_size=1;
    }
 
   opus_val16 pcm_transition_silk[pcm_transition_silk_size];
@@ -454,7 +453,7 @@ static int opus_decode_frame(OpusDecoder *st, const unsigned char *data,
    }
 
    /* Only allocation memory for redundancy if/when needed */
-   redundant_audio_size = redundancy ? F5*st->channels : ALLOC_NONE;
+   redundant_audio_size = redundancy ? F5*st->channels : 1;
   opus_val16 redundant_audio[redundant_audio_size];
 
    /* 5 ms redundant frame for CELT->SILK*/

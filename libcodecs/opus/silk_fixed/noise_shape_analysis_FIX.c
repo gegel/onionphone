@@ -30,7 +30,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main_FIX.h"
-#include "stack_alloc.h"
 #include "tuning_parameters.h"
 
 /* Compute gain to make warped filter coefficients have a zero mean log frequency response on a   */

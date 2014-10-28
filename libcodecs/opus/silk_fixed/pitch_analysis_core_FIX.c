@@ -34,7 +34,6 @@ POSSIBILITY OF SUCH DAMAGE.
 ********************************************************** */
 #include "SigProc_FIX.h"
 #include "pitch_est_defines.h"
-#include "stack_alloc.h"
 #include "debug.h"
 #include "pitch.h"
 
@@ -467,7 +466,7 @@ opus_int silk_pitch_analysis_core(                  /* O    Voicing estimate: 0 
         /***************************************************************************/
         /* find scaling as max scaling for each subframe */
         silk_sum_sqr_shift( &energy, &shift, frame, frame_length );
-  opus_int16   scratch_mem[shift > 0 ? frame_length : ALLOC_NONE];
+  opus_int16   scratch_mem[shift > 0 ? frame_length : 1];
         if( shift > 0 ) {
             /* Move signal to scratch mem because the input signal should be unchanged */
             shift = silk_RSHIFT( shift, 1 );

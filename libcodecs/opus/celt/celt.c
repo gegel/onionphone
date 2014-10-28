@@ -43,7 +43,6 @@
 #include "entcode.h"
 #include "quant_bands.h"
 #include "rate.h"
-#include "stack_alloc.h"
 #include "mathops.h"
 #include "float_cast.h"
 #include <stdarg.h>

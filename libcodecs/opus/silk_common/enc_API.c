@@ -32,7 +32,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "API.h"
 #include "control.h"
 #include "typedef.h"
-#include "stack_alloc.h"
 #include "structs.h"
 #include "tuning_parameters.h"
 #ifdef FIXED_POINT

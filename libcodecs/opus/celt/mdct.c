@@ -51,7 +51,6 @@
 #include <math.h>
 #include "os_support.h"
 #include "mathops.h"
-#include "stack_alloc.h"
 
 #ifdef CUSTOM_MODES
 

@@ -37,7 +37,6 @@
 #include <stdio.h>
 #include "analysis.h"
 #include "mlp.h"
-#include "stack_alloc.h"
 #include <math.h>
 #include <ophmconsts.h>
 

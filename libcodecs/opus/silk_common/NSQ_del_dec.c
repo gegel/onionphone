@@ -30,7 +30,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
-#include "stack_alloc.h"
 
 typedef struct {
     opus_int32 sLPC_Q14[ MAX_SUB_FRAME_LENGTH + NSQ_LPC_BUF_LENGTH ];

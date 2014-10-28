@@ -35,7 +35,6 @@
 #include "modes.h"
 #include "rate.h"
 #include "os_support.h"
-#include "stack_alloc.h"
 #include "quant_bands.h"
 #include <math.h>
 #include <ophmconsts.h>

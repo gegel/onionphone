@@ -30,7 +30,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include "API.h"
 #include "main.h"
-#include "stack_alloc.h"
 
 /************************/
 /* Decoder Super Struct */
@@ -301,7 +300,7 @@ opus_int silk_Decode(                                   /* O    Returns error co
     *nSamplesOut = silk_DIV32( nSamplesOutDec * decControl->API_sampleRate, silk_SMULBB( channel_state[ 0 ].fs_kHz, 1000 ) );
 
     /* Set up pointers to temp buffers */
-    opus_int16 samplesOut2_tmp[decControl->nChannelsAPI == 2 ? *nSamplesOut : ALLOC_NONE];
+    opus_int16 samplesOut2_tmp[decControl->nChannelsAPI == 2 ? *nSamplesOut : 1];
     if( decControl->nChannelsAPI == 2 ) {
         resample_out_ptr = samplesOut2_tmp;
     } else {
