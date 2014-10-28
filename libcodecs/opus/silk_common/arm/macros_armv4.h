@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (C) 2013 Xiph.Org Foundation and contributors.
 Redistribution and use in source and binary forms, with or without
@@ -30,18 +32,18 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* (a32 * (opus_int32)((opus_int16)(b32))) >> 16 output have to be 32bit int */
 #undef silk_SMULWB
-static OPUS_INLINE opus_int32 silk_SMULWB_armv4(opus_int32 a, opus_int16 b)
+static inline opus_int32 silk_SMULWB_armv4(opus_int32 a, opus_int16 b)
 {
-  unsigned rd_lo;
-  int rd_hi;
-  __asm__(
-      "#silk_SMULWB\n\t"
-      "smull %0, %1, %2, %3\n\t"
-      : "=&r"(rd_lo), "=&r"(rd_hi)
-      : "%r"(a), "r"(b<<16)
-  );
-  return rd_hi;
+	unsigned rd_lo;
+	int rd_hi;
+ __asm__("#silk_SMULWB\n\t" "smull %0, %1, %2, %3\n\t":"=&r"(rd_lo),
+		"=&r"
+		(rd_hi)
+ :		"%r"(a), "r"(b << 16)
+	    );
+	return rd_hi;
 }
+
 #define silk_SMULWB(a, b) (silk_SMULWB_armv4(a, b))
 
 /* a32 + (b32 * (opus_int32)((opus_int16)(c32))) >> 16 output have to be 32bit int */
@@ -50,18 +52,18 @@ static OPUS_INLINE opus_int32 silk_SMULWB_armv4(opus_int32 a, opus_int16 b)
 
 /* (a32 * (b32 >> 16)) >> 16 */
 #undef silk_SMULWT
-static OPUS_INLINE opus_int32 silk_SMULWT_armv4(opus_int32 a, opus_int32 b)
+static inline opus_int32 silk_SMULWT_armv4(opus_int32 a, opus_int32 b)
 {
-  unsigned rd_lo;
-  int rd_hi;
-  __asm__(
-      "#silk_SMULWT\n\t"
-      "smull %0, %1, %2, %3\n\t"
-      : "=&r"(rd_lo), "=&r"(rd_hi)
-      : "%r"(a), "r"(b&~0xFFFF)
-  );
-  return rd_hi;
+	unsigned rd_lo;
+	int rd_hi;
+ __asm__("#silk_SMULWT\n\t" "smull %0, %1, %2, %3\n\t":"=&r"(rd_lo),
+		"=&r"
+		(rd_hi)
+ :		"%r"(a), "r"(b & ~0xFFFF)
+	    );
+	return rd_hi;
 }
+
 #define silk_SMULWT(a, b) (silk_SMULWT_armv4(a, b))
 
 /* a32 + (b32 * (c32 >> 16)) >> 16 */
@@ -70,34 +72,34 @@ static OPUS_INLINE opus_int32 silk_SMULWT_armv4(opus_int32 a, opus_int32 b)
 
 /* (a32 * b32) >> 16 */
 #undef silk_SMULWW
-static OPUS_INLINE opus_int32 silk_SMULWW_armv4(opus_int32 a, opus_int32 b)
+static inline opus_int32 silk_SMULWW_armv4(opus_int32 a, opus_int32 b)
 {
-  unsigned rd_lo;
-  int rd_hi;
-  __asm__(
-    "#silk_SMULWW\n\t"
-    "smull %0, %1, %2, %3\n\t"
-    : "=&r"(rd_lo), "=&r"(rd_hi)
-    : "%r"(a), "r"(b)
-  );
-  return (rd_hi<<16)+(rd_lo>>16);
+	unsigned rd_lo;
+	int rd_hi;
+ __asm__("#silk_SMULWW\n\t" "smull %0, %1, %2, %3\n\t":"=&r"(rd_lo),
+		"=&r"
+		(rd_hi)
+ :		"%r"(a), "r"(b)
+	    );
+	return (rd_hi << 16) + (rd_lo >> 16);
 }
+
 #define silk_SMULWW(a, b) (silk_SMULWW_armv4(a, b))
 
 #undef silk_SMLAWW
-static OPUS_INLINE opus_int32 silk_SMLAWW_armv4(opus_int32 a, opus_int32 b,
- opus_int32 c)
+static inline opus_int32 silk_SMLAWW_armv4(opus_int32 a, opus_int32 b,
+					   opus_int32 c)
 {
-  unsigned rd_lo;
-  int rd_hi;
-  __asm__(
-    "#silk_SMLAWW\n\t"
-    "smull %0, %1, %2, %3\n\t"
-    : "=&r"(rd_lo), "=&r"(rd_hi)
-    : "%r"(b), "r"(c)
-  );
-  return a+(rd_hi<<16)+(rd_lo>>16);
+	unsigned rd_lo;
+	int rd_hi;
+ __asm__("#silk_SMLAWW\n\t" "smull %0, %1, %2, %3\n\t":"=&r"(rd_lo),
+		"=&r"
+		(rd_hi)
+ :		"%r"(b), "r"(c)
+	    );
+	return a + (rd_hi << 16) + (rd_lo >> 16);
 }
+
 #define silk_SMLAWW(a, b, c) (silk_SMLAWW_armv4(a, b, c))
 
-#endif /* SILK_MACROS_ARMv4_H */
+#endif				/* SILK_MACROS_ARMv4_H */

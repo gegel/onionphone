@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,20 +34,24 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FIX.h"
 
 /* Chirp (bandwidth expand) LP AR filter */
-void silk_bwexpander(
-    opus_int16                  *ar,                /* I/O  AR filter to be expanded (without leading 1)                */
-    const opus_int              d,                  /* I    Length of ar                                                */
-    opus_int32                  chirp_Q16           /* I    Chirp factor (typically in the range 0 to 1)                */
-)
+void silk_bwexpander(opus_int16 * ar,	/* I/O  AR filter to be expanded (without leading 1)                */
+		     const opus_int d,	/* I    Length of ar                                                */
+		     opus_int32 chirp_Q16	/* I    Chirp factor (typically in the range 0 to 1)                */
+    )
 {
-    opus_int   i;
-    opus_int32 chirp_minus_one_Q16 = chirp_Q16 - 65536;
+	opus_int i;
+	opus_int32 chirp_minus_one_Q16 = chirp_Q16 - 65536;
 
-    /* NB: Dont use silk_SMULWB, instead of silk_RSHIFT_ROUND( silk_MUL(), 16 ), below.  */
-    /* Bias in silk_SMULWB can lead to unstable filters                                */
-    for( i = 0; i < d - 1; i++ ) {
-        ar[ i ]    = (opus_int16)silk_RSHIFT_ROUND( silk_MUL( chirp_Q16, ar[ i ]             ), 16 );
-        chirp_Q16 +=            silk_RSHIFT_ROUND( silk_MUL( chirp_Q16, chirp_minus_one_Q16 ), 16 );
-    }
-    ar[ d - 1 ] = (opus_int16)silk_RSHIFT_ROUND( silk_MUL( chirp_Q16, ar[ d - 1 ] ), 16 );
+	/* NB: Dont use silk_SMULWB, instead of silk_RSHIFT_ROUND( silk_MUL(), 16 ), below.  */
+	/* Bias in silk_SMULWB can lead to unstable filters                                */
+	for (i = 0; i < d - 1; i++) {
+		ar[i] =
+		    (opus_int16) silk_RSHIFT_ROUND(silk_MUL(chirp_Q16, ar[i]),
+						   16);
+		chirp_Q16 +=
+		    silk_RSHIFT_ROUND(silk_MUL(chirp_Q16, chirp_minus_one_Q16),
+				      16);
+	}
+	ar[d - 1] =
+	    (opus_int16) silk_RSHIFT_ROUND(silk_MUL(chirp_Q16, ar[d - 1]), 16);
 }

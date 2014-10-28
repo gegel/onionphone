@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2010-2011 Xiph.Org Foundation, Skype Limited
    Written by Jean-Marc Valin and Koen Vos */
 /*
@@ -161,14 +163,15 @@ extern "C" {
   * It is position independent and can be freely copied.
   * @see opus_encoder_create,opus_encoder_init
   */
-typedef struct OpusEncoder OpusEncoder;
+	typedef struct OpusEncoder OpusEncoder;
 
 /** Gets the size of an <code>OpusEncoder</code> structure.
   * @param[in] channels <tt>int</tt>: Number of channels.
   *                                   This must be 1 or 2.
   * @returns The size in bytes.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_encoder_get_size(int channels);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_encoder_get_size(int
+								      channels);
 
 /**
  */
@@ -205,12 +208,9 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_encoder_get_size(int channels);
  * selected is too low. This also means that it is safe to always use 48 kHz stereo input
  * and let the encoder optimize the encoding.
  */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusEncoder *opus_encoder_create(
-    opus_int32 Fs,
-    int channels,
-    int application,
-    int *error
-);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusEncoder
+	    *opus_encoder_create(opus_int32 Fs, int channels, int application,
+				 int *error);
 
 /** Initializes a previously allocated encoder state
   * The memory pointed to by st must be at least the size returned by opus_encoder_get_size().
@@ -225,12 +225,10 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusEncoder *opus_encoder_create(
   * @param [in] application <tt>int</tt>: Coding mode (OPUS_APPLICATION_VOIP/OPUS_APPLICATION_AUDIO/OPUS_APPLICATION_RESTRICTED_LOWDELAY)
   * @retval #OPUS_OK Success or @ref opus_errorcodes
   */
-OPUS_EXPORT int opus_encoder_init(
-    OpusEncoder *st,
-    opus_int32 Fs,
-    int channels,
-    int application
-) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT int opus_encoder_init(OpusEncoder * st,
+					  opus_int32 Fs,
+					  int channels,
+					  int application) OPUS_ARG_NONNULL(1);
 
 /** Encodes an Opus frame.
   * @param [in] st <tt>OpusEncoder*</tt>: Encoder state
@@ -260,13 +258,18 @@ OPUS_EXPORT int opus_encoder_init(
   * @returns The length of the encoded packet (in bytes) on success or a
   *          negative error code (see @ref opus_errorcodes) on failure.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_encode(
-    OpusEncoder *st,
-    const opus_int16 *pcm,
-    int frame_size,
-    unsigned char *data,
-    opus_int32 max_data_bytes
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_encode(OpusEncoder *
+								   st,
+								   const
+								   opus_int16 *
+								   pcm,
+								   int
+								   frame_size,
+								   unsigned char
+								   *data,
+								   opus_int32
+								   max_data_bytes)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
 
 /** Encodes an Opus frame from floating point input.
   * @param [in] st <tt>OpusEncoder*</tt>: Encoder state
@@ -301,18 +304,16 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_encode(
   * @returns The length of the encoded packet (in bytes) on success or a
   *          negative error code (see @ref opus_errorcodes) on failure.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_encode_float(
-    OpusEncoder *st,
-    const float *pcm,
-    int frame_size,
-    unsigned char *data,
-    opus_int32 max_data_bytes
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	    opus_encode_float(OpusEncoder * st, const float *pcm,
+			      int frame_size, unsigned char *data,
+			      opus_int32 max_data_bytes) OPUS_ARG_NONNULL(1)
+	    OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
 
 /** Frees an <code>OpusEncoder</code> allocated by opus_encoder_create().
   * @param[in] st <tt>OpusEncoder*</tt>: State to be freed.
   */
-OPUS_EXPORT void opus_encoder_destroy(OpusEncoder *st);
+	OPUS_EXPORT void opus_encoder_destroy(OpusEncoder * st);
 
 /** Perform a CTL function on an Opus encoder.
   *
@@ -325,7 +326,8 @@ OPUS_EXPORT void opus_encoder_destroy(OpusEncoder *st);
   * @see opus_genericctls
   * @see opus_encoderctls
   */
-OPUS_EXPORT int opus_encoder_ctl(OpusEncoder *st, int request, ...) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT int opus_encoder_ctl(OpusEncoder * st, int request,
+					 ...) OPUS_ARG_NONNULL(1);
 /**@}*/
 
 /** @defgroup opus_decoder Opus Decoder
@@ -396,14 +398,15 @@ OPUS_EXPORT int opus_encoder_ctl(OpusEncoder *st, int request, ...) OPUS_ARG_NON
   * It is position independent and can be freely copied.
   * @see opus_decoder_create,opus_decoder_init
   */
-typedef struct OpusDecoder OpusDecoder;
+	typedef struct OpusDecoder OpusDecoder;
 
 /** Gets the size of an <code>OpusDecoder</code> structure.
   * @param [in] channels <tt>int</tt>: Number of channels.
   *                                    This must be 1 or 2.
   * @returns The size in bytes.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decoder_get_size(int channels);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decoder_get_size(int
+								      channels);
 
 /** Allocates and initializes a decoder state.
   * @param [in] Fs <tt>opus_int32</tt>: Sample rate to decode at (Hz).
@@ -420,11 +423,8 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decoder_get_size(int channels);
   * rate. Likewise, the decoder is capable of filling in either mono or
   * interleaved stereo pcm buffers, at the caller's request.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusDecoder *opus_decoder_create(
-    opus_int32 Fs,
-    int channels,
-    int *error
-);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusDecoder
+	    *opus_decoder_create(opus_int32 Fs, int channels, int *error);
 
 /** Initializes a previously allocated decoder state.
   * The state must be at least the size returned by opus_decoder_get_size().
@@ -437,11 +437,9 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusDecoder *opus_decoder_create(
   * @param [in] channels <tt>int</tt>: Number of channels (1 or 2) to decode
   * @retval #OPUS_OK Success or @ref opus_errorcodes
   */
-OPUS_EXPORT int opus_decoder_init(
-    OpusDecoder *st,
-    opus_int32 Fs,
-    int channels
-) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT int opus_decoder_init(OpusDecoder * st,
+					  opus_int32 Fs,
+					  int channels) OPUS_ARG_NONNULL(1);
 
 /** Decode an Opus packet.
   * @param [in] st <tt>OpusDecoder*</tt>: Decoder state
@@ -459,14 +457,14 @@ OPUS_EXPORT int opus_decoder_init(
   *  decoded. If no such data is available, the frame is decoded as if it were lost.
   * @returns Number of decoded samples or @ref opus_errorcodes
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decode(
-    OpusDecoder *st,
-    const unsigned char *data,
-    opus_int32 len,
-    opus_int16 *pcm,
-    int frame_size,
-    int decode_fec
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decode(OpusDecoder * st,
+							    const unsigned char
+							    *data,
+							    opus_int32 len,
+							    opus_int16 * pcm,
+							    int frame_size,
+							    int decode_fec)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
 
 /** Decode an Opus packet with floating point output.
   * @param [in] st <tt>OpusDecoder*</tt>: Decoder state
@@ -484,14 +482,18 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decode(
   *  decoded. If no such data is available the frame is decoded as if it were lost.
   * @returns Number of decoded samples or @ref opus_errorcodes
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decode_float(
-    OpusDecoder *st,
-    const unsigned char *data,
-    opus_int32 len,
-    float *pcm,
-    int frame_size,
-    int decode_fec
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decode_float(OpusDecoder *
+								  st,
+								  const unsigned
+								  char *data,
+								  opus_int32
+								  len,
+								  float *pcm,
+								  int
+								  frame_size,
+								  int
+								  decode_fec)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
 
 /** Perform a CTL function on an Opus decoder.
   *
@@ -504,12 +506,13 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decode_float(
   * @see opus_genericctls
   * @see opus_decoderctls
   */
-OPUS_EXPORT int opus_decoder_ctl(OpusDecoder *st, int request, ...) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT int opus_decoder_ctl(OpusDecoder * st, int request,
+					 ...) OPUS_ARG_NONNULL(1);
 
 /** Frees an <code>OpusDecoder</code> allocated by opus_decoder_create().
   * @param[in] st <tt>OpusDecoder*</tt>: State to be freed.
   */
-OPUS_EXPORT void opus_decoder_destroy(OpusDecoder *st);
+	OPUS_EXPORT void opus_decoder_destroy(OpusDecoder * st);
 
 /** Parse an opus packet into one or more frames.
   * Opus_decode will perform this operation internally so most applications do
@@ -524,14 +527,13 @@ OPUS_EXPORT void opus_decoder_destroy(OpusDecoder *st);
   * @param [out] payload_offset <tt>int*</tt>: returns the position of the payload within the packet (in bytes)
   * @returns number of frames
   */
-OPUS_EXPORT int opus_packet_parse(
-   const unsigned char *data,
-   opus_int32 len,
-   unsigned char *out_toc,
-   const unsigned char *frames[48],
-   opus_int16 size[48],
-   int *payload_offset
-) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT int opus_packet_parse(const unsigned char *data,
+					  opus_int32 len,
+					  unsigned char *out_toc,
+					  const unsigned char *frames[48],
+					  opus_int16 size[48],
+					  int *payload_offset)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
 
 /** Gets the bandwidth of an Opus packet.
   * @param [in] data <tt>char*</tt>: Opus packet
@@ -542,7 +544,11 @@ OPUS_EXPORT int opus_packet_parse(
   * @retval OPUS_BANDWIDTH_FULLBAND Fullband (20kHz bandpass)
   * @retval OPUS_INVALID_PACKET The compressed data passed is corrupted or of an unsupported type
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_bandwidth(const unsigned char *data) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_bandwidth(const
+									  unsigned
+									  char
+									  *data)
+	    OPUS_ARG_NONNULL(1);
 
 /** Gets the number of samples per frame from an Opus packet.
   * @param [in] data <tt>char*</tt>: Opus packet.
@@ -553,14 +559,19 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_bandwidth(const unsigned
   *                                     inaccurate results will be returned.
   * @returns Number of samples per frame.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_samples_per_frame(const unsigned char *data, opus_int32 Fs) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
+	    opus_packet_get_samples_per_frame(const unsigned char *data,
+					      opus_int32 Fs)
+	    OPUS_ARG_NONNULL(1);
 
 /** Gets the number of channels from an Opus packet.
   * @param [in] data <tt>char*</tt>: Opus packet
   * @returns Number of channels
   * @retval OPUS_INVALID_PACKET The compressed data passed is corrupted or of an unsupported type
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_nb_channels(const unsigned char *data) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
+	    opus_packet_get_nb_channels(const unsigned char *data)
+	    OPUS_ARG_NONNULL(1);
 
 /** Gets the number of frames in an Opus packet.
   * @param [in] packet <tt>char*</tt>: Opus packet
@@ -569,7 +580,14 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_nb_channels(const unsign
   * @retval OPUS_BAD_ARG Insufficient data was passed to the function
   * @retval OPUS_INVALID_PACKET The compressed data passed is corrupted or of an unsupported type
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_nb_frames(const unsigned char packet[], opus_int32 len) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_nb_frames(const
+									  unsigned
+									  char
+									  packet
+									  [],
+									  opus_int32
+									  len)
+	    OPUS_ARG_NONNULL(1);
 
 /** Gets the number of samples of an Opus packet.
   * @param [in] packet <tt>char*</tt>: Opus packet
@@ -581,7 +599,16 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_nb_frames(const unsigned
   * @retval OPUS_BAD_ARG Insufficient data was passed to the function
   * @retval OPUS_INVALID_PACKET The compressed data passed is corrupted or of an unsupported type
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_nb_samples(const unsigned char packet[], opus_int32 len, opus_int32 Fs) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_nb_samples(const
+									   unsigned
+									   char
+									   packet
+									   [],
+									   opus_int32
+									   len,
+									   opus_int32
+									   Fs)
+	    OPUS_ARG_NONNULL(1);
 
 /** Gets the number of samples of an Opus packet.
   * @param [in] dec <tt>OpusDecoder*</tt>: Decoder state
@@ -591,7 +618,11 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_nb_samples(const unsigne
   * @retval OPUS_BAD_ARG Insufficient data was passed to the function
   * @retval OPUS_INVALID_PACKET The compressed data passed is corrupted or of an unsupported type
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decoder_get_nb_samples(const OpusDecoder *dec, const unsigned char packet[], opus_int32 len) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
+	    opus_decoder_get_nb_samples(const OpusDecoder * dec,
+					const unsigned char packet[],
+					opus_int32 len) OPUS_ARG_NONNULL(1)
+	    OPUS_ARG_NONNULL(2);
 
 /** Applies soft-clipping to bring a float signal within the [-1,1] range. If
   * the signal is already in that range, nothing is done. If there are values
@@ -603,8 +634,8 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_decoder_get_nb_samples(const OpusDe
   * @param [in] channels <tt>int</tt>: Number of channels
   * @param [in,out] softclip_mem <tt>float*</tt>: State memory for the soft clipping process (one float per channel, initialized to zero)
   */
-OPUS_EXPORT void opus_pcm_soft_clip(float *pcm, int frame_size, int channels, float *softclip_mem);
-
+	OPUS_EXPORT void opus_pcm_soft_clip(float *pcm, int frame_size,
+					    int channels, float *softclip_mem);
 
 /**@}*/
 
@@ -748,12 +779,13 @@ OPUS_EXPORT void opus_pcm_soft_clip(float *pcm, int frame_size, int channels, fl
   * repacketizer state.
   */
 
-typedef struct OpusRepacketizer OpusRepacketizer;
+	typedef struct OpusRepacketizer OpusRepacketizer;
 
 /** Gets the size of an <code>OpusRepacketizer</code> structure.
   * @returns The size in bytes.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_repacketizer_get_size(void);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
+	    opus_repacketizer_get_size(void);
 
 /** (Re)initializes a previously allocated repacketizer state.
   * The state must be at least the size returned by opus_repacketizer_get_size().
@@ -772,18 +804,21 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_repacketizer_get_size(void);
   *                                       (re)initialize.
   * @returns A pointer to the same repacketizer state that was passed in.
   */
-OPUS_EXPORT OpusRepacketizer *opus_repacketizer_init(OpusRepacketizer *rp) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT OpusRepacketizer *opus_repacketizer_init(OpusRepacketizer *
+							     rp)
+	    OPUS_ARG_NONNULL(1);
 
 /** Allocates memory and initializes the new repacketizer with
  * opus_repacketizer_init().
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusRepacketizer *opus_repacketizer_create(void);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusRepacketizer
+	    *opus_repacketizer_create(void);
 
 /** Frees an <code>OpusRepacketizer</code> allocated by
   * opus_repacketizer_create().
   * @param[in] rp <tt>OpusRepacketizer*</tt>: State to be freed.
   */
-OPUS_EXPORT void opus_repacketizer_destroy(OpusRepacketizer *rp);
+	OPUS_EXPORT void opus_repacketizer_destroy(OpusRepacketizer * rp);
 
 /** Add a packet to the current repacketizer state.
   * This packet must match the configuration of any packets already submitted
@@ -832,8 +867,10 @@ OPUS_EXPORT void opus_repacketizer_destroy(OpusRepacketizer *rp);
   *                              audio stored in the repacketizer state to more
   *                              than 120 ms.
   */
-OPUS_EXPORT int opus_repacketizer_cat(OpusRepacketizer *rp, const unsigned char *data, opus_int32 len) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2);
-
+	OPUS_EXPORT int opus_repacketizer_cat(OpusRepacketizer * rp,
+					      const unsigned char *data,
+					      opus_int32 len)
+	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2);
 
 /** Construct a new packet from data previously submitted to the repacketizer
   * state via opus_repacketizer_cat().
@@ -866,7 +903,11 @@ OPUS_EXPORT int opus_repacketizer_cat(OpusRepacketizer *rp, const unsigned char 
   * @retval #OPUS_BUFFER_TOO_SMALL \a maxlen was insufficient to contain the
   *                                complete output packet.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_repacketizer_out_range(OpusRepacketizer *rp, int begin, int end, unsigned char *data, opus_int32 maxlen) OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	    opus_repacketizer_out_range(OpusRepacketizer * rp, int begin,
+					int end, unsigned char *data,
+					opus_int32 maxlen) OPUS_ARG_NONNULL(1)
+	    OPUS_ARG_NONNULL(4);
 
 /** Return the total number of frames contained in packet data submitted to
   * the repacketizer state so far via opus_repacketizer_cat() since the last
@@ -878,7 +919,9 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_repacketizer_out_range(OpusR
   * @returns The total number of frames contained in the packet data submitted
   *          to the repacketizer state.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_repacketizer_get_nb_frames(OpusRepacketizer *rp) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
+	    opus_repacketizer_get_nb_frames(OpusRepacketizer *
+					    rp) OPUS_ARG_NONNULL(1);
 
 /** Construct a new packet from data previously submitted to the repacketizer
   * state via opus_repacketizer_cat().
@@ -909,7 +952,9 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_repacketizer_get_nb_frames(OpusRepa
   * @retval #OPUS_BUFFER_TOO_SMALL \a maxlen was insufficient to contain the
   *                                complete output packet.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_repacketizer_out(OpusRepacketizer *rp, unsigned char *data, opus_int32 maxlen) OPUS_ARG_NONNULL(1);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	    opus_repacketizer_out(OpusRepacketizer * rp, unsigned char *data,
+				  opus_int32 maxlen) OPUS_ARG_NONNULL(1);
 
 /** Pads a given Opus packet to a larger size (possibly changing the TOC sequence).
   * @param[in,out] data <tt>const unsigned char*</tt>: The buffer containing the
@@ -923,7 +968,8 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_repacketizer_out(OpusRepacke
   * @retval #OPUS_BAD_ARG \a len was less than 1 or new_len was less than len.
   * @retval #OPUS_INVALID_PACKET \a data did not contain a valid Opus packet.
   */
-OPUS_EXPORT int opus_packet_pad(unsigned char *data, opus_int32 len, opus_int32 new_len);
+	OPUS_EXPORT int opus_packet_pad(unsigned char *data, opus_int32 len,
+					opus_int32 new_len);
 
 /** Remove all padding from a given Opus packet and rewrite the TOC sequence to
   * minimize space usage.
@@ -936,7 +982,8 @@ OPUS_EXPORT int opus_packet_pad(unsigned char *data, opus_int32 len, opus_int32 
   * @retval #OPUS_BAD_ARG \a len was less than 1.
   * @retval #OPUS_INVALID_PACKET \a data did not contain a valid Opus packet.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_packet_unpad(unsigned char *data, opus_int32 len);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	    opus_packet_unpad(unsigned char *data, opus_int32 len);
 
 /** Pads a given Opus multi-stream packet to a larger size (possibly changing the TOC sequence).
   * @param[in,out] data <tt>const unsigned char*</tt>: The buffer containing the
@@ -952,7 +999,10 @@ OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_packet_unpad(unsigned char *
   * @retval #OPUS_BAD_ARG \a len was less than 1.
   * @retval #OPUS_INVALID_PACKET \a data did not contain a valid Opus packet.
   */
-OPUS_EXPORT int opus_multistream_packet_pad(unsigned char *data, opus_int32 len, opus_int32 new_len, int nb_streams);
+	OPUS_EXPORT int opus_multistream_packet_pad(unsigned char *data,
+						    opus_int32 len,
+						    opus_int32 new_len,
+						    int nb_streams);
 
 /** Remove all padding from a given Opus multi-stream packet and rewrite the TOC sequence to
   * minimize space usage.
@@ -967,12 +1017,13 @@ OPUS_EXPORT int opus_multistream_packet_pad(unsigned char *data, opus_int32 len,
   * @retval #OPUS_BAD_ARG \a len was less than 1 or new_len was less than len.
   * @retval #OPUS_INVALID_PACKET \a data did not contain a valid Opus packet.
   */
-OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32 opus_multistream_packet_unpad(unsigned char *data, opus_int32 len, int nb_streams);
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	    opus_multistream_packet_unpad(unsigned char *data, opus_int32 len,
+					  int nb_streams);
 
 /**@}*/
 
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* OPUS_H */
+#endif				/* OPUS_H */

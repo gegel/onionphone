@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,18 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FLP.h"
 
 /* Chirp (bw expand) LP AR filter */
-void silk_bwexpander_FLP(
-    silk_float          *ar,                /* I/O  AR filter to be expanded (without leading 1)                */
-    const opus_int      d,                  /* I    length of ar                                                */
-    const silk_float    chirp               /* I    chirp factor (typically in range (0..1) )                   */
-)
+void silk_bwexpander_FLP(silk_float * ar,	/* I/O  AR filter to be expanded (without leading 1)                */
+			 const opus_int d,	/* I    length of ar                                                */
+			 const silk_float chirp	/* I    chirp factor (typically in range (0..1) )                   */
+    )
 {
-    opus_int   i;
-    silk_float cfac = chirp;
+	opus_int i;
+	silk_float cfac = chirp;
 
-    for( i = 0; i < d - 1; i++ ) {
-        ar[ i ] *=  cfac;
-        cfac    *=  chirp;
-    }
-    ar[ d - 1 ] *=  cfac;
+	for (i = 0; i < d - 1; i++) {
+		ar[i] *= cfac;
+		cfac *= chirp;
+	}
+	ar[d - 1] *= cfac;
 }

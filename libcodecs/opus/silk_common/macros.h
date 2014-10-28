@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -35,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "opus_types.h"
 #include "opus_defines.h"
 
-/* This is an OPUS_INLINE header file for general platform. */
+/* This is an inline header file for general platform. */
 
 /* (a32 * (opus_int32)((opus_int16)(b32))) >> 16 output have to be 32bit int */
 #define silk_SMULWB(a32, b32)            ((((a32) >> 16) * (opus_int32)((opus_int16)(b32))) + ((((a32) & 0x0000FFFF) * (opus_int32)((opus_int16)(b32))) >> 16))
@@ -81,14 +83,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "ecintrin.h"
 
-static OPUS_INLINE opus_int32 silk_CLZ16(opus_int16 in16)
+static inline opus_int32 silk_CLZ16(opus_int16 in16)
 {
-    return 32 - EC_ILOG(in16<<16|0x8000);
+	return 32 - EC_ILOG(in16 << 16 | 0x8000);
 }
 
-static OPUS_INLINE opus_int32 silk_CLZ32(opus_int32 in32)
+static inline opus_int32 silk_CLZ32(opus_int32 in32)
 {
-    return in32 ? 32 - EC_ILOG(in32) : 32;
+	return in32 ? 32 - EC_ILOG(in32) : 32;
 }
 
 /* Row based */
@@ -99,7 +101,7 @@ static OPUS_INLINE opus_int32 silk_CLZ32(opus_int32 in32)
 
 /* Column based */
 #ifndef matrix_c_ptr
-#   define matrix_c_ptr(Matrix_base_adr, row, column, M) \
+#define matrix_c_ptr(Matrix_base_adr, row, column, M) \
     (*((Matrix_base_adr) + ((row)+(M)*(column))))
 #endif
 
@@ -111,5 +113,4 @@ static OPUS_INLINE opus_int32 silk_CLZ32(opus_int32 in32)
 #include "arm/macros_armv5e.h"
 #endif
 
-#endif /* SILK_MACROS_H */
-
+#endif				/* SILK_MACROS_H */

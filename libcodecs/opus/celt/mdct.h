@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2007-2008 CSIRO
    Copyright (c) 2007-2008 Xiph.Org Foundation
    Written by Jean-Marc Valin */
@@ -47,24 +49,26 @@
 #include "arch.h"
 
 typedef struct {
-   int n;
-   int maxshift;
-   const kiss_fft_state *kfft[4];
-   const kiss_twiddle_scalar * OPUS_RESTRICT trig;
+	int n;
+	int maxshift;
+	const kiss_fft_state *kfft[4];
+	const kiss_twiddle_scalar *OPUS_RESTRICT trig;
 } mdct_lookup;
 
-int clt_mdct_init(mdct_lookup *l,int N, int maxshift);
-void clt_mdct_clear(mdct_lookup *l);
+int clt_mdct_init(mdct_lookup * l, int N, int maxshift);
+void clt_mdct_clear(mdct_lookup * l);
 
 /** Compute a forward MDCT and scale by 4/N, trashes the input array */
-void clt_mdct_forward(const mdct_lookup *l, kiss_fft_scalar *in,
-      kiss_fft_scalar * OPUS_RESTRICT out,
-      const opus_val16 *window, int overlap, int shift, int stride);
+void clt_mdct_forward(const mdct_lookup * l, kiss_fft_scalar * in,
+		      kiss_fft_scalar * OPUS_RESTRICT out,
+		      const opus_val16 * window, int overlap, int shift,
+		      int stride);
 
 /** Compute a backward MDCT (no scaling) and performs weighted overlap-add
     (scales implicitly by 1/2) */
-void clt_mdct_backward(const mdct_lookup *l, kiss_fft_scalar *in,
-      kiss_fft_scalar * OPUS_RESTRICT out,
-      const opus_val16 * OPUS_RESTRICT window, int overlap, int shift, int stride);
+void clt_mdct_backward(const mdct_lookup * l, kiss_fft_scalar * in,
+		       kiss_fft_scalar * OPUS_RESTRICT out,
+		       const opus_val16 * OPUS_RESTRICT window, int overlap,
+		       int shift, int stride);
 
 #endif

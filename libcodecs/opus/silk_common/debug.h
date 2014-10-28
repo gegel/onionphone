@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -29,43 +31,41 @@ POSSIBILITY OF SUCH DAMAGE.
 #define SILK_DEBUG_H
 
 #include "typedef.h"
-#include <stdio.h>      /* file writing */
-#include <string.h>     /* strcpy, strcmp */
+#include <stdio.h>		/* file writing */
+#include <string.h>		/* strcpy, strcmp */
 
 #ifdef  __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-unsigned long GetHighResolutionTime(void); /* O  time in usec*/
+	unsigned long GetHighResolutionTime(void);	/* O  time in usec */
 
 /* make SILK_DEBUG dependent on compiler's _DEBUG */
 #if defined _WIN32
-    #ifdef _DEBUG
-        #define SILK_DEBUG  1
-    #else
-        #define SILK_DEBUG  0
-    #endif
-
-    /* overrule the above */
-    #if 0
-    /*  #define NO_ASSERTS*/
-    #undef  SILK_DEBUG
-    #define SILK_DEBUG  1
-    #endif
+#ifdef _DEBUG
+#define SILK_DEBUG  1
 #else
-    #define SILK_DEBUG  0
+#define SILK_DEBUG  0
+#endif
+
+	/* overrule the above */
+#if 0
+	/*  #define NO_ASSERTS */
+#undef  SILK_DEBUG
+#define SILK_DEBUG  1
+#endif
+#else
+#define SILK_DEBUG  0
 #endif
 
 /* Flag for using timers */
 #define SILK_TIC_TOC    0
 
-
 #if SILK_TIC_TOC
 
 #if (defined(_WIN32) || defined(_WINCE))
-#include <windows.h>    /* timer */
-#else   /* Linux or Mac*/
+#include <windows.h>		/* timer */
+#else				/* Linux or Mac */
 #include <sys/time.h>
 #endif
 
@@ -84,26 +84,27 @@ unsigned long GetHighResolutionTime(void); /* O  time in usec*/
 /*                                                                  */
 /* results are now in silk_TimingData.txt                           */
 
-void silk_TimerSave(char *file_name);
+	void silk_TimerSave(char *file_name);
 
 /* max number of timers (in different locations) */
 #define silk_NUM_TIMERS_MAX                  50
 /* max length of name tags in TIC(..), TOC(..) */
 #define silk_NUM_TIMERS_MAX_TAG_LEN          30
 
-extern int           silk_Timer_nTimers;
-extern int           silk_Timer_depth_ctr;
-extern char          silk_Timer_tags[silk_NUM_TIMERS_MAX][silk_NUM_TIMERS_MAX_TAG_LEN];
+	extern int silk_Timer_nTimers;
+	extern int silk_Timer_depth_ctr;
+	extern char
+	    silk_Timer_tags[silk_NUM_TIMERS_MAX][silk_NUM_TIMERS_MAX_TAG_LEN];
 #ifdef _WIN32
-extern LARGE_INTEGER silk_Timer_start[silk_NUM_TIMERS_MAX];
+	extern LARGE_INTEGER silk_Timer_start[silk_NUM_TIMERS_MAX];
 #else
-extern unsigned long silk_Timer_start[silk_NUM_TIMERS_MAX];
+	extern unsigned long silk_Timer_start[silk_NUM_TIMERS_MAX];
 #endif
-extern unsigned int  silk_Timer_cnt[silk_NUM_TIMERS_MAX];
-extern opus_int64    silk_Timer_sum[silk_NUM_TIMERS_MAX];
-extern opus_int64    silk_Timer_max[silk_NUM_TIMERS_MAX];
-extern opus_int64    silk_Timer_min[silk_NUM_TIMERS_MAX];
-extern opus_int64    silk_Timer_depth[silk_NUM_TIMERS_MAX];
+	extern unsigned int silk_Timer_cnt[silk_NUM_TIMERS_MAX];
+	extern opus_int64 silk_Timer_sum[silk_NUM_TIMERS_MAX];
+	extern opus_int64 silk_Timer_max[silk_NUM_TIMERS_MAX];
+	extern opus_int64 silk_Timer_min[silk_NUM_TIMERS_MAX];
+	extern opus_int64 silk_Timer_depth[silk_NUM_TIMERS_MAX];
 
 /* WARNING: TIC()/TOC can measure only up to 0.1 seconds at a time */
 #ifdef _WIN32
@@ -224,15 +225,14 @@ extern opus_int64    silk_Timer_depth[silk_NUM_TIMERS_MAX];
 }
 #endif
 
-#else /* SILK_TIC_TOC */
+#else				/* SILK_TIC_TOC */
 
 /* define macros as empty strings */
 #define TIC(TAG_NAME)
 #define TOC(TAG_NAME)
 #define silk_TimerSave(FILE_NAME)
 
-#endif /* SILK_TIC_TOC */
-
+#endif				/* SILK_TIC_TOC */
 
 #if SILK_DEBUG
 /************************************/
@@ -241,8 +241,8 @@ extern opus_int64    silk_Timer_depth[silk_NUM_TIMERS_MAX];
 /* Example: DEBUG_STORE_DATA(testfile.pcm, &RIN[0], 160*sizeof(opus_int16)); */
 
 #define silk_NUM_STORES_MAX                                  100
-extern FILE *silk_debug_store_fp[ silk_NUM_STORES_MAX ];
-extern int silk_debug_store_count;
+	extern FILE *silk_debug_store_fp[silk_NUM_STORES_MAX];
+	extern int silk_debug_store_count;
 
 /* Faster way of storing the data */
 #define DEBUG_STORE_DATA( FILE_NAME, DATA_PTR, N_BYTES ) {          \
@@ -264,16 +264,15 @@ extern int silk_debug_store_count;
     }                                                               \
 }
 
-#else /* SILK_DEBUG */
+#else				/* SILK_DEBUG */
 
 /* define macros as empty strings */
 #define DEBUG_STORE_DATA(FILE_NAME, DATA_PTR, N_BYTES)
 #define SILK_DEBUG_STORE_CLOSE_FILES
 
-#endif /* SILK_DEBUG */
+#endif				/* SILK_DEBUG */
 
 #ifdef  __cplusplus
 }
 #endif
-
-#endif /* SILK_DEBUG_H */
+#endif				/* SILK_DEBUG_H */
