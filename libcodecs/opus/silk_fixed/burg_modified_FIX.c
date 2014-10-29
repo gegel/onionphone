@@ -106,7 +106,9 @@ void silk_burg_modified(int32_t * res_nrg,	/* O    Residual energy              
 			int i;
 			int32_t d;
 			x_ptr = x + s * subfr_length;
-			celt_pitch_xcorr(x_ptr, x_ptr + 1, xcorr,
+			celt_pitch_xcorr((const opus_val16*)x_ptr,
+					 (const opus_val16*)(x_ptr + 1),
+					 (opus_val32*)xcorr,
 					 subfr_length - D, D, arch);
 			for (n = 1; n < D + 1; n++) {
 				for (i = n + subfr_length - D, d = 0;

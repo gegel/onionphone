@@ -200,8 +200,9 @@ int silk_pitch_analysis_core(	/* O    Voicing estimate: 0 voiced, 1 unvoiced    
 		silk_assert(basis_ptr + SF_LENGTH_8KHZ <=
 			    frame_4kHz + frame_length_4kHz);
 
-		celt_pitch_xcorr(target_ptr, target_ptr - MAX_LAG_4KHZ, xcorr32,
-				 SF_LENGTH_8KHZ,
+		celt_pitch_xcorr((const opus_val16*)target_ptr,
+				 (const opus_val16*)(target_ptr - MAX_LAG_4KHZ),
+				 (opus_val32*)xcorr32, SF_LENGTH_8KHZ,
 				 MAX_LAG_4KHZ - MIN_LAG_4KHZ + 1, arch);
 
 		/* Calculate first vector products before loop */
@@ -704,8 +705,9 @@ static void silk_P_Ana_calc_corr_st3(silk_pe_stage3_vals cross_corr_st3[],	/* O 
 		lag_low = matrix_ptr(Lag_range_ptr, k, 0, 2);
 		lag_high = matrix_ptr(Lag_range_ptr, k, 1, 2);
 		silk_assert(lag_high - lag_low + 1 <= SCRATCH_SIZE);
-		celt_pitch_xcorr(target_ptr, target_ptr - start_lag - lag_high,
-				 xcorr32, sf_length, lag_high - lag_low + 1,
+		celt_pitch_xcorr((const opus_val16*)target_ptr,
+				 (const opus_val16*)(target_ptr - start_lag - lag_high),
+				 (opus_val32*)xcorr32, sf_length, lag_high - lag_low + 1,
 				 arch);
 		for (j = lag_low; j <= lag_high; j++) {
 			silk_assert(lag_counter < SCRATCH_SIZE);
