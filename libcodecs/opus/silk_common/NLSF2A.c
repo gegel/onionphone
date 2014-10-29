@@ -27,6 +27,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -95,6 +97,9 @@ void silk_NLSF2A(int16_t * a_Q12,	/* O    monic whitening filter coefficients in
 
 	silk_assert(LSF_COS_TAB_SZ_FIX == 128);
 	silk_assert(d == 10 || d == 16);
+
+	memzero(cos_LSF_QA, SILK_MAX_ORDER_LPC * sizeof(int32_t));
+	memzero(a32_QA1, SILK_MAX_ORDER_LPC * sizeof(int32_t));
 
 	/* convert LSFs to 2*cos(LSF), using piecewise linear curve from table */
 	ordering = d == 16 ? ordering16 : ordering10;

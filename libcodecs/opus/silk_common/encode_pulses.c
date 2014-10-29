@@ -93,6 +93,7 @@ void silk_encode_pulses(ec_enc * psRangeEnc,	/* I/O  compressor data structure  
 
 	/* Take the absolute value of the pulses */
 	int abs_pulses[iter * SHELL_CODEC_FRAME_LENGTH];
+	memzero(abs_pulses, (iter * SHELL_CODEC_FRAME_LENGTH) * sizeof(int));
 	silk_assert(!(SHELL_CODEC_FRAME_LENGTH & 3));
 	for (i = 0; i < iter * SHELL_CODEC_FRAME_LENGTH; i += 4) {
 		abs_pulses[i + 0] = (int) silk_abs(pulses[i + 0]);

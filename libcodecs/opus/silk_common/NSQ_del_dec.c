@@ -429,6 +429,8 @@ static inline void silk_noise_shape_quantizer_del_dec(silk_nsq_state * NSQ,	/* I
 	silk_assert(nStatesDelayedDecision > 0);
 	NSQ_sample_pair psSampleState[nStatesDelayedDecision];
 
+	memzero(psSampleState, nStatesDelayedDecision * sizeof(NSQ_sample_pair));
+
 	shp_lag_ptr =
 	    &NSQ->sLTP_shp_Q14[NSQ->sLTP_shp_buf_idx - lag +
 			       HARM_SHAPE_FIR_TAPS / 2];

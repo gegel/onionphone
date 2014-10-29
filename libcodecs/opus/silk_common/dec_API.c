@@ -92,7 +92,7 @@ int silk_Decode(		/* O    Returns error code                              */
     )
 {
 	int i, n, decode_only_middle = 0, ret = SILK_NO_ERROR;
-	int32_t nSamplesOutDec, LBRR_symbol;
+	int32_t nSamplesOutDec = 0, LBRR_symbol = 0;
 	int16_t *samplesOut1_tmp[2];
 
 	int32_t MS_pred_Q13[2] = { 0 };

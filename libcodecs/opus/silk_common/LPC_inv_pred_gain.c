@@ -27,6 +27,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -147,6 +149,8 @@ int32_t silk_LPC_inverse_pred_gain_Q24(	/* O    Returns inverse prediction gain 
 	int k;
 	int32_t Atmp_QA[2][SILK_MAX_ORDER_LPC];
 	int32_t *Anew_QA;
+
+	memzero(Atmp_QA, (2 * SILK_MAX_ORDER_LPC) * sizeof(int32_t));
 
 	Anew_QA = Atmp_QA[order & 1];
 
