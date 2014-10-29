@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_structs.h"
 #include "SKP_Silk_tables_NLSF_CB1_16.h"
 
-const SKP_uint16 SKP_Silk_NLSF_MSVQ_CB1_16_CDF[ NLSF_MSVQ_CB1_16_VECTORS + NLSF_MSVQ_CB1_16_STAGES ] =
+const uint16_t SKP_Silk_NLSF_MSVQ_CB1_16_CDF[ NLSF_MSVQ_CB1_16_VECTORS + NLSF_MSVQ_CB1_16_STAGES ] =
 {
             0,
         19099,
@@ -152,7 +152,7 @@ const SKP_uint16 SKP_Silk_NLSF_MSVQ_CB1_16_CDF[ NLSF_MSVQ_CB1_16_VECTORS + NLSF_
         65535
 };
 
-const SKP_uint16 * const SKP_Silk_NLSF_MSVQ_CB1_16_CDF_start_ptr[ NLSF_MSVQ_CB1_16_STAGES ] =
+const uint16_t * const SKP_Silk_NLSF_MSVQ_CB1_16_CDF_start_ptr[ NLSF_MSVQ_CB1_16_STAGES ] =
 {
      &SKP_Silk_NLSF_MSVQ_CB1_16_CDF[   0 ],
      &SKP_Silk_NLSF_MSVQ_CB1_16_CDF[  33 ],
@@ -166,7 +166,7 @@ const SKP_uint16 * const SKP_Silk_NLSF_MSVQ_CB1_16_CDF_start_ptr[ NLSF_MSVQ_CB1_
      &SKP_Silk_NLSF_MSVQ_CB1_16_CDF[ 105 ]
 };
 
-const SKP_int SKP_Silk_NLSF_MSVQ_CB1_16_CDF_middle_idx[ NLSF_MSVQ_CB1_16_STAGES ] =
+const int SKP_Silk_NLSF_MSVQ_CB1_16_CDF_middle_idx[ NLSF_MSVQ_CB1_16_STAGES ] =
 {
        5,
        2,
@@ -180,7 +180,7 @@ const SKP_int SKP_Silk_NLSF_MSVQ_CB1_16_CDF_middle_idx[ NLSF_MSVQ_CB1_16_STAGES 
        4
 };
 
-const SKP_int16 SKP_Silk_NLSF_MSVQ_CB1_16_rates_Q5[ NLSF_MSVQ_CB1_16_VECTORS ] =
+const int16_t SKP_Silk_NLSF_MSVQ_CB1_16_rates_Q5[ NLSF_MSVQ_CB1_16_VECTORS ] =
 {
                57,               98,
               133,              134,
@@ -236,7 +236,7 @@ const SKP_int16 SKP_Silk_NLSF_MSVQ_CB1_16_rates_Q5[ NLSF_MSVQ_CB1_16_VECTORS ] =
               107,              110
 };
 
-const SKP_int SKP_Silk_NLSF_MSVQ_CB1_16_ndelta_min_Q15[ 16 + 1 ] =
+const int SKP_Silk_NLSF_MSVQ_CB1_16_ndelta_min_Q15[ 16 + 1 ] =
 {
               148,
                 3,
@@ -257,7 +257,7 @@ const SKP_int SKP_Silk_NLSF_MSVQ_CB1_16_ndelta_min_Q15[ 16 + 1 ] =
               792
 };
 
-const SKP_int16 SKP_Silk_NLSF_MSVQ_CB1_16_Q15[ 16 * NLSF_MSVQ_CB1_16_VECTORS ] =
+const int16_t SKP_Silk_NLSF_MSVQ_CB1_16_Q15[ 16 * NLSF_MSVQ_CB1_16_VECTORS ] =
 {
              1309,             3060,             5071,             6996,
              9028,            10938,            12934,            14891,

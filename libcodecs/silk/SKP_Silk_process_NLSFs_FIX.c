@@ -31,19 +31,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void SKP_Silk_process_NLSFs_FIX(
     SKP_Silk_encoder_state_FIX      *psEnc,             /* I/O  Encoder state FIX                           */
     SKP_Silk_encoder_control_FIX    *psEncCtrl,         /* I/O  Encoder control FIX                         */
-    SKP_int                         *pNLSF_Q15          /* I/O  Normalized LSFs (quant out) (0 - (2^15-1))  */
+    int                         *pNLSF_Q15          /* I/O  Normalized LSFs (quant out) (0 - (2^15-1))  */
 )
 {
-    SKP_int     doInterpolate;
-    SKP_int     pNLSFW_Q6[ MAX_LPC_ORDER ];
-    SKP_int     NLSF_mu_Q15, NLSF_mu_fluc_red_Q16;
-    SKP_int32   i_sqr_Q15;
+    int     doInterpolate;
+    int     pNLSFW_Q6[ MAX_LPC_ORDER ];
+    int     NLSF_mu_Q15, NLSF_mu_fluc_red_Q16;
+    int32_t   i_sqr_Q15;
     const SKP_Silk_NLSF_CB_struct *psNLSF_CB;
 
     /* Used only for NLSF interpolation */
-    SKP_int     pNLSF0_temp_Q15[ MAX_LPC_ORDER ];
-    SKP_int     pNLSFW0_temp_Q6[ MAX_LPC_ORDER ];
-    SKP_int     i;
+    int     pNLSF0_temp_Q15[ MAX_LPC_ORDER ];
+    int     pNLSFW0_temp_Q6[ MAX_LPC_ORDER ];
+    int     i;
 
     SKP_assert( psEnc->speech_activity_Q8 >=   0 );
     SKP_assert( psEnc->speech_activity_Q8 <= 256 );
@@ -94,7 +94,7 @@ void SKP_Silk_process_NLSFs_FIX(
         i_sqr_Q15 = SKP_LSHIFT( SKP_SMULBB( psEncCtrl->sCmn.NLSFInterpCoef_Q2, psEncCtrl->sCmn.NLSFInterpCoef_Q2 ), 11 );
         for( i = 0; i < psEnc->sCmn.predictLPCOrder; i++ ) {
             pNLSFW_Q6[ i ] = SKP_SMLAWB( SKP_RSHIFT( pNLSFW_Q6[ i ], 1 ), pNLSFW0_temp_Q6[ i ], i_sqr_Q15 );
-            SKP_assert( pNLSFW_Q6[ i ] <= SKP_int16_MAX );
+            SKP_assert( pNLSFW_Q6[ i ] <= int16_t_MAX );
             SKP_assert( pNLSFW_Q6[ i ] >= 1 );
         }
     }
@@ -122,6 +122,6 @@ void SKP_Silk_process_NLSFs_FIX(
 
     } else {
         /* Copy LPC coefficients for first half from second half */
-        SKP_memcpy( psEncCtrl->PredCoef_Q12[ 0 ], psEncCtrl->PredCoef_Q12[ 1 ], psEnc->sCmn.predictLPCOrder * sizeof( SKP_int16 ) );
+        SKP_memcpy( psEncCtrl->PredCoef_Q12[ 0 ], psEncCtrl->PredCoef_Q12[ 1 ], psEnc->sCmn.predictLPCOrder * sizeof( int16_t ) );
     }
 }

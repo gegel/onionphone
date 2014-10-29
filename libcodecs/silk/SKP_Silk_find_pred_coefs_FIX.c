@@ -34,25 +34,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void SKP_Silk_find_pred_coefs_FIX(
     SKP_Silk_encoder_state_FIX      *psEnc,         /* I/O  encoder state                               */
     SKP_Silk_encoder_control_FIX    *psEncCtrl,     /* I/O  encoder control                             */
-    const SKP_int16                 res_pitch[]     /* I    Residual from pitch analysis                */
+    const int16_t                 res_pitch[]     /* I    Residual from pitch analysis                */
 )
 {
-    SKP_int         i;
-    SKP_int32       WLTP[ NB_SUBFR * LTP_ORDER * LTP_ORDER ];
-    SKP_int32       invGains_Q16[ NB_SUBFR ], local_gains_Qx[ NB_SUBFR ], Wght_Q15[ NB_SUBFR ];
-    SKP_int         NLSF_Q15[ MAX_LPC_ORDER ];
-    const SKP_int16 *x_ptr;
-    SKP_int16       *x_pre_ptr, LPC_in_pre[ NB_SUBFR * MAX_LPC_ORDER + MAX_FRAME_LENGTH ];
+    int         i;
+    int32_t       WLTP[ NB_SUBFR * LTP_ORDER * LTP_ORDER ];
+    int32_t       invGains_Q16[ NB_SUBFR ], local_gains_Qx[ NB_SUBFR ], Wght_Q15[ NB_SUBFR ];
+    int         NLSF_Q15[ MAX_LPC_ORDER ];
+    const int16_t *x_ptr;
+    int16_t       *x_pre_ptr, LPC_in_pre[ NB_SUBFR * MAX_LPC_ORDER + MAX_FRAME_LENGTH ];
 
-    SKP_int32       tmp, min_gain_Q16;
+    int32_t       tmp, min_gain_Q16;
 #if !VARQ
-    SKP_int         LZ;
+    int         LZ;
 #endif
-    SKP_int         LTP_corrs_rshift[ NB_SUBFR ];
+    int         LTP_corrs_rshift[ NB_SUBFR ];
 
 
     /* weighting for weighted least squares */
-    min_gain_Q16 = SKP_int32_MAX >> 6;
+    min_gain_Q16 = int32_t_MAX >> 6;
     for( i = 0; i < NB_SUBFR; i++ ) {
         min_gain_Q16 = SKP_min( min_gain_Q16, psEncCtrl->Gains_Q16[ i ] );
     }
@@ -120,7 +120,7 @@ void SKP_Silk_find_pred_coefs_FIX(
             x_ptr     += psEnc->sCmn.subfr_length;
         }
 
-        SKP_memset( psEncCtrl->LTPCoef_Q14, 0, NB_SUBFR * LTP_ORDER * sizeof( SKP_int16 ) );
+        SKP_memset( psEncCtrl->LTPCoef_Q14, 0, NB_SUBFR * LTP_ORDER * sizeof( int16_t ) );
         psEncCtrl->LTPredCodGain_Q7 = 0;
     }
 
@@ -142,7 +142,7 @@ void SKP_Silk_find_pred_coefs_FIX(
         psEnc->sCmn.subfr_length, psEnc->sCmn.predictLPCOrder );
 
     /* Copy to prediction struct for use in next frame for fluctuation reduction */
-    SKP_memcpy( psEnc->sPred.prev_NLSFq_Q15, NLSF_Q15, psEnc->sCmn.predictLPCOrder * sizeof( SKP_int ) );
+    SKP_memcpy( psEnc->sPred.prev_NLSFq_Q15, NLSF_Q15, psEnc->sCmn.predictLPCOrder * sizeof( int ) );
 
 }
 

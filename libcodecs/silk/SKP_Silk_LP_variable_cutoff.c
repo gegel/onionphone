@@ -38,13 +38,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Helper function, that interpolates the filter taps */
 SKP_INLINE void SKP_Silk_LP_interpolate_filter_taps( 
-    SKP_int32           B_Q28[ TRANSITION_NB ], 
-    SKP_int32           A_Q28[ TRANSITION_NA ],
-    const SKP_int       ind,
-    const SKP_int32     fac_Q16
+    int32_t           B_Q28[ TRANSITION_NB ], 
+    int32_t           A_Q28[ TRANSITION_NA ],
+    const int       ind,
+    const int32_t     fac_Q16
 )
 {
-    SKP_int nb, na;
+    int nb, na;
 
     if( ind < TRANSITION_INT_NUM - 1 ) {
         if( fac_Q16 > 0 ) {
@@ -99,12 +99,12 @@ SKP_INLINE void SKP_Silk_LP_interpolate_filter_taps(
                 }
             }
         } else {
-            SKP_memcpy( B_Q28, SKP_Silk_Transition_LP_B_Q28[ ind ], TRANSITION_NB * sizeof( SKP_int32 ) );
-            SKP_memcpy( A_Q28, SKP_Silk_Transition_LP_A_Q28[ ind ], TRANSITION_NA * sizeof( SKP_int32 ) );
+            SKP_memcpy( B_Q28, SKP_Silk_Transition_LP_B_Q28[ ind ], TRANSITION_NB * sizeof( int32_t ) );
+            SKP_memcpy( A_Q28, SKP_Silk_Transition_LP_A_Q28[ ind ], TRANSITION_NA * sizeof( int32_t ) );
         }
     } else {
-        SKP_memcpy( B_Q28, SKP_Silk_Transition_LP_B_Q28[ TRANSITION_INT_NUM - 1 ], TRANSITION_NB * sizeof( SKP_int32 ) );
-        SKP_memcpy( A_Q28, SKP_Silk_Transition_LP_A_Q28[ TRANSITION_INT_NUM - 1 ], TRANSITION_NA * sizeof( SKP_int32 ) );
+        SKP_memcpy( B_Q28, SKP_Silk_Transition_LP_B_Q28[ TRANSITION_INT_NUM - 1 ], TRANSITION_NB * sizeof( int32_t ) );
+        SKP_memcpy( A_Q28, SKP_Silk_Transition_LP_A_Q28[ TRANSITION_INT_NUM - 1 ], TRANSITION_NA * sizeof( int32_t ) );
     }
 }
 
@@ -114,13 +114,13 @@ SKP_INLINE void SKP_Silk_LP_interpolate_filter_taps(
 /* Deactivate by setting psEncC->transition_frame_no = 0;   */
 void SKP_Silk_LP_variable_cutoff(
     SKP_Silk_LP_state               *psLP,          /* I/O  LP filter state                     */
-    SKP_int16                       *out,           /* O    Low-pass filtered output signal     */
-    const SKP_int16                 *in,            /* I    Input signal                        */
-    const SKP_int                   frame_length    /* I    Frame length                        */
+    int16_t                       *out,           /* O    Low-pass filtered output signal     */
+    const int16_t                 *in,            /* I    Input signal                        */
+    const int                   frame_length    /* I    Frame length                        */
 )
 {
-    SKP_int32   B_Q28[ TRANSITION_NB ], A_Q28[ TRANSITION_NA ];
-    SKP_int     fac_Q16 = 0, ind = 0;
+    int32_t   B_Q28[ TRANSITION_NB ], A_Q28[ TRANSITION_NA ];
+    int     fac_Q16 = 0, ind = 0;
 
     SKP_assert( psLP->transition_frame_no >= 0 );
     SKP_assert( ( ( ( psLP->transition_frame_no <= TRANSITION_FRAMES_DOWN ) && ( psLP->mode == 0 ) ) || 
@@ -185,7 +185,7 @@ void SKP_Silk_LP_variable_cutoff(
         SKP_Silk_biquad_alt( in, B_Q28, A_Q28, psLP->In_LP_State, out, frame_length );
     } else {
         /* Instead of using the filter, copy input directly to output */
-        SKP_memcpy( out, in, frame_length * sizeof( SKP_int16 ) );
+        SKP_memcpy( out, in, frame_length * sizeof( int16_t ) );
     }
 }
 #endif

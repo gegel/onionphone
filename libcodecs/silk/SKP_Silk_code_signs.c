@@ -36,16 +36,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Encodes signs of excitation */
 void SKP_Silk_encode_signs(
     SKP_Silk_range_coder_state      *sRC,               /* I/O  Range coder state                       */
-    const SKP_int                   q[],                /* I    Pulse signal                            */
-    const SKP_int                   length,             /* I    Length of input                         */
-    const SKP_int                   sigtype,            /* I    Signal type                             */
-    const SKP_int                   QuantOffsetType,    /* I    Quantization offset type                */
-    const SKP_int                   RateLevelIndex      /* I    Rate level index                        */
+    const int                   q[],                /* I    Pulse signal                            */
+    const int                   length,             /* I    Length of input                         */
+    const int                   sigtype,            /* I    Signal type                             */
+    const int                   QuantOffsetType,    /* I    Quantization offset type                */
+    const int                   RateLevelIndex      /* I    Rate level index                        */
 )
 {
-    SKP_int i;
-    SKP_int inData;
-    const SKP_uint16 *cdf;
+    int i;
+    int inData;
+    const uint16_t *cdf;
 
     i = SKP_SMULBB( N_RATE_LEVELS - 1, SKP_LSHIFT( sigtype, 1 ) + QuantOffsetType ) + RateLevelIndex;
     cdf = SKP_Silk_sign_CDF[ i ];
@@ -61,16 +61,16 @@ void SKP_Silk_encode_signs(
 /* Decodes signs of excitation */
 void SKP_Silk_decode_signs(
     SKP_Silk_range_coder_state      *sRC,               /* I/O  Range coder state                           */
-    SKP_int                         q[],                /* I/O  pulse signal                                */
-    const SKP_int                   length,             /* I    length of output                            */
-    const SKP_int                   sigtype,            /* I    Signal type                                 */
-    const SKP_int                   QuantOffsetType,    /* I    Quantization offset type                    */
-    const SKP_int                   RateLevelIndex      /* I    Rate Level Index                            */
+    int                         q[],                /* I/O  pulse signal                                */
+    const int                   length,             /* I    length of output                            */
+    const int                   sigtype,            /* I    Signal type                                 */
+    const int                   QuantOffsetType,    /* I    Quantization offset type                    */
+    const int                   RateLevelIndex      /* I    Rate Level Index                            */
 )
 {
-    SKP_int i;
-    SKP_int data;
-    const SKP_uint16 *cdf;
+    int i;
+    int data;
+    const uint16_t *cdf;
 
     i = SKP_SMULBB( N_RATE_LEVELS - 1, SKP_LSHIFT( sigtype, 1 ) + QuantOffsetType ) + RateLevelIndex;
     cdf = SKP_Silk_sign_CDF[ i ];

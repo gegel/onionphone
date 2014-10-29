@@ -44,11 +44,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Helper function for A2NLSF(..)                    */
 /* Transforms polynomials from cos(n*f) to cos(f)^n  */
 SKP_INLINE void SKP_Silk_A2NLSF_trans_poly(
-    SKP_int32        *p,    /* I/O    Polynomial                                */
-    const SKP_int    dd     /* I      Polynomial order (= filter order / 2 )    */
+    int32_t        *p,    /* I/O    Polynomial                                */
+    const int    dd     /* I      Polynomial order (= filter order / 2 )    */
 )
 {
-    SKP_int k, n;
+    int k, n;
     
     for( k = 2; k <= dd; k++ ) {
         for( n = dd; n > k; n-- ) {
@@ -60,14 +60,14 @@ SKP_INLINE void SKP_Silk_A2NLSF_trans_poly(
 
 /* Helper function for A2NLSF(..)                    */
 /* Polynomial evaluation                             */
-SKP_INLINE SKP_int32 SKP_Silk_A2NLSF_eval_poly(    /* return the polynomial evaluation, in QPoly */
-    SKP_int32        *p,    /* I    Polynomial, QPoly        */
-    const SKP_int32    x,   /* I    Evaluation point, Q12    */
-    const SKP_int    dd     /* I    Order                    */
+SKP_INLINE int32_t SKP_Silk_A2NLSF_eval_poly(    /* return the polynomial evaluation, in QPoly */
+    int32_t        *p,    /* I    Polynomial, QPoly        */
+    const int32_t    x,   /* I    Evaluation point, Q12    */
+    const int    dd     /* I    Order                    */
 )
 {
-    SKP_int   n;
-    SKP_int32 x_Q16, y32;
+    int   n;
+    int32_t x_Q16, y32;
 
     y32 = p[ dd ];                                    /* QPoly */
     x_Q16 = SKP_LSHIFT( x, 4 );
@@ -78,13 +78,13 @@ SKP_INLINE SKP_int32 SKP_Silk_A2NLSF_eval_poly(    /* return the polynomial eval
 }
 
 SKP_INLINE void SKP_Silk_A2NLSF_init(
-     const SKP_int32    *a_Q16,
-     SKP_int32            *P, 
-     SKP_int32            *Q, 
-     const SKP_int        dd
+     const int32_t    *a_Q16,
+     int32_t            *P, 
+     int32_t            *Q, 
+     const int        dd
 ) 
 {
-    SKP_int k;
+    int k;
 
     /* Convert filter coefs to even and odd polynomials */
     P[dd] = SKP_LSHIFT( 1, QPoly );
@@ -118,19 +118,19 @@ SKP_INLINE void SKP_Silk_A2NLSF_init(
 /* Compute Normalized Line Spectral Frequencies (NLSFs) from whitening filter coefficients        */
 /* If not all roots are found, the a_Q16 coefficients are bandwidth expanded until convergence.    */
 void SKP_Silk_A2NLSF(
-    SKP_int          *NLSF,                 /* O    Normalized Line Spectral Frequencies, Q15 (0 - (2^15-1)), [d]    */
-    SKP_int32        *a_Q16,                /* I/O  Monic whitening filter coefficients in Q16 [d]                   */
-    const SKP_int    d                      /* I    Filter order (must be even)                                      */
+    int          *NLSF,                 /* O    Normalized Line Spectral Frequencies, Q15 (0 - (2^15-1)), [d]    */
+    int32_t        *a_Q16,                /* I/O  Monic whitening filter coefficients in Q16 [d]                   */
+    const int    d                      /* I    Filter order (must be even)                                      */
 )
 {
-    SKP_int      i, k, m, dd, root_ix, ffrac;
-    SKP_int32 xlo, xhi, xmid;
-    SKP_int32 ylo, yhi, ymid;
-    SKP_int32 nom, den;
-    SKP_int32 P[ SigProc_MAX_ORDER_LPC / 2 + 1 ];
-    SKP_int32 Q[ SigProc_MAX_ORDER_LPC / 2 + 1 ];
-    SKP_int32 *PQ[ 2 ];
-    SKP_int32 *p;
+    int      i, k, m, dd, root_ix, ffrac;
+    int32_t xlo, xhi, xmid;
+    int32_t ylo, yhi, ymid;
+    int32_t nom, den;
+    int32_t P[ SigProc_MAX_ORDER_LPC / 2 + 1 ];
+    int32_t Q[ SigProc_MAX_ORDER_LPC / 2 + 1 ];
+    int32_t *PQ[ 2 ];
+    int32_t *p;
 
     /* Store pointers to array */
     PQ[ 0 ] = P;
@@ -211,9 +211,9 @@ void SKP_Silk_A2NLSF(
                 ffrac += SKP_DIV32( ylo, SKP_RSHIFT( ylo - yhi, 8 - BIN_DIV_STEPS_A2NLSF_FIX ) );
             }
 #if OVERSAMPLE_COSINE_TABLE
-            NLSF[ root_ix ] = (SKP_int)SKP_min_32( SKP_LSHIFT( (SKP_int32)k, 7 ) + ffrac, SKP_int16_MAX ); 
+            NLSF[ root_ix ] = (int)SKP_min_32( SKP_LSHIFT( (int32_t)k, 7 ) + ffrac, int16_t_MAX ); 
 #else
-            NLSF[ root_ix ] = (SKP_int)SKP_min_32( SKP_LSHIFT( (SKP_int32)k, 8 ) + ffrac, SKP_int16_MAX ); 
+            NLSF[ root_ix ] = (int)SKP_min_32( SKP_LSHIFT( (int32_t)k, 8 ) + ffrac, int16_t_MAX ); 
 #endif
 
             SKP_assert( NLSF[ root_ix ] >=     0 );

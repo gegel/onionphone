@@ -32,9 +32,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Decoder functions */
 /*********************/
 
-SKP_int SKP_Silk_SDK_Get_Decoder_Size( SKP_int32 *decSizeBytes ) 
+int SKP_Silk_SDK_Get_Decoder_Size( int32_t *decSizeBytes ) 
 {
-    SKP_int ret = 0;
+    int ret = 0;
 
     *decSizeBytes = sizeof( SKP_Silk_decoder_state );
 
@@ -42,11 +42,11 @@ SKP_int SKP_Silk_SDK_Get_Decoder_Size( SKP_int32 *decSizeBytes )
 }
 
 /* Reset decoder state */
-SKP_int SKP_Silk_SDK_InitDecoder(
+int SKP_Silk_SDK_InitDecoder(
     void* decState                                      /* I/O: State                                          */
 )
 {
-    SKP_int ret = 0;
+    int ret = 0;
     SKP_Silk_decoder_state *struc;
 
     struc = (SKP_Silk_decoder_state *)decState;
@@ -57,17 +57,17 @@ SKP_int SKP_Silk_SDK_InitDecoder(
 }
 
 /* Decode a frame */
-SKP_int SKP_Silk_SDK_Decode(
+int SKP_Silk_SDK_Decode(
     void*                               decState,       /* I/O: State                                           */
     SKP_SILK_SDK_DecControlStruct*      decControl,     /* I/O: Control structure                               */
-    SKP_int                             lostFlag,       /* I:   0: no loss, 1 loss                              */
-    const SKP_uint8                     *inData,        /* I:   Encoded input vector                            */
-    const SKP_int                       nBytesIn,       /* I:   Number of input Bytes                           */
-    SKP_int16                           *samplesOut,    /* O:   Decoded output speech vector                    */
-    SKP_int16                           *nSamplesOut    /* I/O: Number of samples (vector/decoded)              */
+    int                             lostFlag,       /* I:   0: no loss, 1 loss                              */
+    const uint8_t                     *inData,        /* I:   Encoded input vector                            */
+    const int                       nBytesIn,       /* I:   Number of input Bytes                           */
+    int16_t                           *samplesOut,    /* O:   Decoded output speech vector                    */
+    int16_t                           *nSamplesOut    /* I/O: Number of samples (vector/decoded)              */
 )
 {
-    SKP_int ret = 0, used_bytes, prev_fs_kHz;
+    int ret = 0, used_bytes, prev_fs_kHz;
     SKP_Silk_decoder_state *psDec;
 
     psDec = (SKP_Silk_decoder_state *)decState;
@@ -128,11 +128,11 @@ SKP_int SKP_Silk_SDK_Decode(
 
     /* Do any resampling if needed */
     if( psDec->fs_kHz * 1000 != decControl->sampleRate ) { 
-        SKP_int16 samplesOut_tmp[ 2 * MAX_FRAME_LENGTH ];
-        SKP_int32 scratch[        3 * MAX_FRAME_LENGTH ];
+        int16_t samplesOut_tmp[ 2 * MAX_FRAME_LENGTH ];
+        int32_t scratch[        3 * MAX_FRAME_LENGTH ];
 
         /* Copy to a tmpbuffer as the resampling writes to samplesOut */
-        memcpy( samplesOut_tmp, samplesOut, *nSamplesOut * sizeof( SKP_int16 ) ); 
+        memcpy( samplesOut_tmp, samplesOut, *nSamplesOut * sizeof( int16_t ) ); 
 
         /* Clear resampler state when switching internal sampling frequency */
         if( prev_fs_kHz != psDec->fs_kHz ) {
@@ -159,14 +159,14 @@ SKP_int SKP_Silk_SDK_Decode(
             SKP_Silk_resample_3_2( samplesOut, psDec->resampleState, samplesOut_tmp, *nSamplesOut );
         }
 
-        *nSamplesOut = SKP_DIV32( ( SKP_int32 )*nSamplesOut * decControl->sampleRate, psDec->fs_kHz * 1000 );
+        *nSamplesOut = SKP_DIV32( ( int32_t )*nSamplesOut * decControl->sampleRate, psDec->fs_kHz * 1000 );
     }
 
     /* Copy all parameters that are needed out of internal structure to the control stucture */
-    decControl->frameSize                 = ( SKP_int )psDec->frame_length;
-    decControl->framesPerPacket           = ( SKP_int )psDec->nFramesInPacket;
-    decControl->inBandFECOffset           = ( SKP_int )psDec->inband_FEC_offset;
-    decControl->moreInternalDecoderFrames = ( SKP_int )psDec->moreInternalDecoderFrames;
+    decControl->frameSize                 = ( int )psDec->frame_length;
+    decControl->framesPerPacket           = ( int )psDec->nFramesInPacket;
+    decControl->inBandFECOffset           = ( int )psDec->inband_FEC_offset;
+    decControl->moreInternalDecoderFrames = ( int )psDec->moreInternalDecoderFrames;
 
     return ret;
 }
@@ -174,17 +174,17 @@ SKP_int SKP_Silk_SDK_Decode(
 /* Function to find LBRR information in a packet */
 void SKP_Silk_SDK_search_for_LBRR(
     void   		                        *decState,      /* I:   Decoder state, to select bitstream version only */
-    const SKP_uint8                     *inData,        /* I:   Encoded input vector                            */
-    const SKP_int16                     nBytesIn,       /* I:   Number of input Bytes                           */
-    SKP_int                             lost_offset,    /* I:   Offset from lost packet                         */
-    SKP_uint8                           *LBRRData,      /* O:   LBRR payload                                    */
-    SKP_int16                           *nLBRRBytes     /* O:   Number of LBRR Bytes                            */
+    const uint8_t                     *inData,        /* I:   Encoded input vector                            */
+    const int16_t                     nBytesIn,       /* I:   Number of input Bytes                           */
+    int                             lost_offset,    /* I:   Offset from lost packet                         */
+    uint8_t                           *LBRRData,      /* O:   LBRR payload                                    */
+    int16_t                           *nLBRRBytes     /* O:   Number of LBRR Bytes                            */
 )
 {
     SKP_Silk_decoder_state   *psDec;
     SKP_Silk_decoder_state   sDec; // Local decoder state to avoid interfering with running decoder */
     SKP_Silk_decoder_control sDecCtrl;
-    SKP_int i, TempQ[ MAX_FRAME_LENGTH ];
+    int i, TempQ[ MAX_FRAME_LENGTH ];
 
     psDec = ( SKP_Silk_decoder_state * )decState;
 
@@ -196,8 +196,8 @@ void SKP_Silk_SDK_search_for_LBRR(
 
     sDec.nFramesDecoded = 0;
     sDec.fs_kHz         = 0; /* Force update parameters LPC_order etc */
-    SKP_memset( sDec.prevNLSF_Q15, 0, MAX_LPC_ORDER * sizeof( SKP_int ) );
-    SKP_Silk_range_dec_init( &sDec.sRC, inData, ( SKP_int32 )nBytesIn );
+    SKP_memset( sDec.prevNLSF_Q15, 0, MAX_LPC_ORDER * sizeof( int ) );
+    SKP_Silk_range_dec_init( &sDec.sRC, inData, ( int32_t )nBytesIn );
 
     if( psDec->bitstream_v == BIT_STREAM_V4 ) { /* Silk_v4 payload */
         /* Decode all parameter indices for the whole packet*/
@@ -223,7 +223,7 @@ void SKP_Silk_SDK_search_for_LBRR(
             if( LBRRData != NULL ) {
                 /* The wanted FEC is present in the packet */
                 *nLBRRBytes = sDec.nBytesLeft;
-                SKP_memcpy( LBRRData, &inData[ nBytesIn - sDec.nBytesLeft ], sDec.nBytesLeft * sizeof( SKP_uint8 ) );
+                SKP_memcpy( LBRRData, &inData[ nBytesIn - sDec.nBytesLeft ], sDec.nBytesLeft * sizeof( uint8_t ) );
             }
         }
     } else { /* Silk_v3 payload */
@@ -239,7 +239,7 @@ void SKP_Silk_SDK_search_for_LBRR(
             if( ( sDec.FrameTermination - 1 ) & lost_offset && sDec.FrameTermination > 0 && sDec.nBytesLeft >= 0 ) {
                 /* The wanted FEC is present in the packet */
                 *nLBRRBytes = sDec.nBytesLeft;
-                SKP_memcpy( LBRRData, &inData[ nBytesIn - sDec.nBytesLeft ], sDec.nBytesLeft * sizeof( SKP_uint8 ) );
+                SKP_memcpy( LBRRData, &inData[ nBytesIn - sDec.nBytesLeft ], sDec.nBytesLeft * sizeof( uint8_t ) );
                 break;
             }
             if( sDec.nBytesLeft > 0 && sDec.FrameTermination == SKP_SILK_MORE_FRAMES ) {
@@ -256,21 +256,21 @@ void SKP_Silk_SDK_search_for_LBRR(
 /* Getting type of content for a packet */
 void SKP_Silk_SDK_get_TOC(
     void                                *decState,      /* I/O: Decoder state, to select bitstream version only */
-    const SKP_uint8                     *inData,        /* I:   Encoded input vector                            */
-    const SKP_int16                     nBytesIn,       /* I:   Number of input bytes                           */
+    const uint8_t                     *inData,        /* I:   Encoded input vector                            */
+    const int16_t                     nBytesIn,       /* I:   Number of input bytes                           */
     SKP_Silk_TOC_struct                 *Silk_TOC       /* O:   Type of content                                 */
 )
 {
     SKP_Silk_decoder_state      *psDec;
     SKP_Silk_decoder_state      sDec; // Local Decoder state to avoid interfering with running decoder */
     SKP_Silk_decoder_control    sDecCtrl;
-    SKP_int i, TempQ[ MAX_FRAME_LENGTH ];
+    int i, TempQ[ MAX_FRAME_LENGTH ];
 
     psDec = (SKP_Silk_decoder_state *)decState;
 
     sDec.nFramesDecoded = 0;
     sDec.fs_kHz         = 0; /* Force update parameters LPC_order etc */
-    SKP_Silk_range_dec_init( &sDec.sRC, inData, ( SKP_int32 )nBytesIn );
+    SKP_Silk_range_dec_init( &sDec.sRC, inData, ( int32_t )nBytesIn );
 
     if( psDec->bitstream_v == BIT_STREAM_V4 ) { /* Silk_v4 payload */
         /* Decode all parameter indices for the whole packet*/

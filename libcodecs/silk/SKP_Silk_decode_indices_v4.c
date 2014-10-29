@@ -32,9 +32,9 @@ void SKP_Silk_decode_indices_v4(
     SKP_Silk_decoder_state      *psDec            /* I/O    State                              */
 )
 {
-    SKP_int   i, k, Ix, fs_kHz_dec, FrameIndex = 0, FrameTermination = 0;
-    SKP_int   sigtype, QuantOffsetType, seed_int, nBytesUsed;
-    SKP_int   decode_absolute_lagIndex, delta_lagIndex, prev_lagIndex = 0;
+    int   i, k, Ix, fs_kHz_dec, FrameIndex = 0, FrameTermination = 0;
+    int   sigtype, QuantOffsetType, seed_int, nBytesUsed;
+    int   decode_absolute_lagIndex, delta_lagIndex, prev_lagIndex = 0;
     const SKP_Silk_NLSF_CB_struct *psNLSF_CB = NULL;
     SKP_Silk_range_coder_state  *psRC = &psDec->sRC;
     /************************/
@@ -169,7 +169,7 @@ void SKP_Silk_decode_indices_v4(
         /* Decode seed */
         /***************/
         SKP_Silk_range_decoder( &seed_int, psRC, SKP_Silk_Seed_CDF, SKP_Silk_Seed_offset );
-        psDec->Seed[ FrameIndex ] = ( SKP_int32 )seed_int;
+        psDec->Seed[ FrameIndex ] = ( int32_t )seed_int;
         /**************************************/
         /* Decode Frame termination indicator */
         /**************************************/

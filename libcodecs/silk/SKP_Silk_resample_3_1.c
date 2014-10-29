@@ -39,22 +39,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Resamples by a factor 3/1 */
 void SKP_Silk_resample_3_1(
-    SKP_int16           *out,       /* O:   Fs_high signal [inLen*3]        */
-    SKP_int32           *S,         /* I/O: State vector   [7]              */
-    const SKP_int16     *in,        /* I:   Fs_low signal  [inLen]          */
-    const SKP_int32     inLen       /* I:   Input length                    */
+    int16_t           *out,       /* O:   Fs_high signal [inLen*3]        */
+    int32_t           *S,         /* I/O: State vector   [7]              */
+    const int16_t     *in,        /* I:   Fs_low signal  [inLen]          */
+    const int32_t     inLen       /* I:   Input length                    */
 )
 {
-    SKP_int     k, LSubFrameIn, LSubFrameOut;
-    SKP_int32   out_tmp, idx, inLenTmp = inLen;
-    SKP_int32   scratch00[    IN_SUBFR_LEN_RESAMPLE_3_1 ];
-    SKP_int32   scratch0[ 3 * IN_SUBFR_LEN_RESAMPLE_3_1 ];
-    SKP_int32   scratch1[ 3 * IN_SUBFR_LEN_RESAMPLE_3_1 ];
+    int     k, LSubFrameIn, LSubFrameOut;
+    int32_t   out_tmp, idx, inLenTmp = inLen;
+    int32_t   scratch00[    IN_SUBFR_LEN_RESAMPLE_3_1 ];
+    int32_t   scratch0[ 3 * IN_SUBFR_LEN_RESAMPLE_3_1 ];
+    int32_t   scratch1[ 3 * IN_SUBFR_LEN_RESAMPLE_3_1 ];
     
     /* Coefficients for 3-fold resampling */
-    const SKP_int16 A30[ 2 ] = {  1773, 17818 };
-    const SKP_int16 A31[ 2 ] = {  4942, 25677 };
-    const SKP_int16 A32[ 2 ] = { 11786, 29304 };
+    const int16_t A30[ 2 ] = {  1773, 17818 };
+    const int16_t A31[ 2 ] = {  4942, 25677 };
+    const int16_t A32[ 2 ] = { 11786, 29304 };
 
     while( inLenTmp > 0 ) {
         LSubFrameIn  = SKP_min_int( IN_SUBFR_LEN_RESAMPLE_3_1, inLenTmp );
@@ -62,11 +62,11 @@ void SKP_Silk_resample_3_1(
 
         /* Convert Q15 -> Q25 */
         for( k = 0; k < LSubFrameIn; k++ ) {
-            scratch00[k] = SKP_LSHIFT( (SKP_int32)in[ k ], 10 );
+            scratch00[k] = SKP_LSHIFT( (int32_t)in[ k ], 10 );
         }
 
         /* Allpass filtering */
-        /* Scratch size: 2 * 3* LSubFrame * sizeof(SKP_int32) */
+        /* Scratch size: 2 * 3* LSubFrame * sizeof(int32_t) */
         SKP_Silk_allpass_int( scratch00, S + 1, A30[ 0 ], scratch1, LSubFrameIn );
         SKP_Silk_allpass_int( scratch1,  S + 2, A30[ 1 ], scratch0, LSubFrameIn );
 
@@ -87,10 +87,10 @@ void SKP_Silk_resample_3_1(
         /* Low-pass filtering */
         SKP_Silk_lowpass_int( scratch1, S, scratch0, LSubFrameOut );
 
-        /* Saturate and convert to SKP_int16 */
+        /* Saturate and convert to int16_t */
         for( k = 0; k < LSubFrameOut; k++ ) {
             out_tmp  = scratch0[ k ];
-            out[ k ] = (SKP_int16) SKP_SAT16( SKP_RSHIFT_ROUND( out_tmp, 10 ) );
+            out[ k ] = (int16_t) SKP_SAT16( SKP_RSHIFT_ROUND( out_tmp, 10 ) );
         }
 
         in       += LSubFrameIn;

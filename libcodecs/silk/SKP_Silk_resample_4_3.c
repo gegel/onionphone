@@ -42,16 +42,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Resamples by a factor 4/3 */
 void SKP_Silk_resample_4_3(
-    SKP_int16            *out,       /* O:   Fs_low signal    [inLen * 4/3]           */
-    SKP_int32            *S,         /* I/O: State vector    [7+4+4]                  */
-    const SKP_int16      *in,        /* I:   Fs_high signal    [inLen]                */
-    const SKP_int        inLen       /* I:   input length, must be a multiple of 3    */
+    int16_t            *out,       /* O:   Fs_low signal    [inLen * 4/3]           */
+    int32_t            *S,         /* I/O: State vector    [7+4+4]                  */
+    const int16_t      *in,        /* I:   Fs_high signal    [inLen]                */
+    const int        inLen       /* I:   input length, must be a multiple of 3    */
 ) 
 {
-    SKP_int      outLen, LSubFrameIn, LSubFrameOut;
-    SKP_int16    outH[    3 * OUT_SUBFR_LEN ];
-    SKP_int16    outHH[   6 * OUT_SUBFR_LEN ];
-    SKP_int32    scratch[ 9 * OUT_SUBFR_LEN / 2 ];
+    int      outLen, LSubFrameIn, LSubFrameOut;
+    int16_t    outH[    3 * OUT_SUBFR_LEN ];
+    int16_t    outHH[   6 * OUT_SUBFR_LEN ];
+    int32_t    scratch[ 9 * OUT_SUBFR_LEN / 2 ];
 
     /* Check that input is multiple of 3 */
     SKP_assert( inLen % 3 == 0 );
@@ -62,9 +62,9 @@ void SKP_Silk_resample_4_3(
         LSubFrameIn  = SKP_SMULWB( 49152, LSubFrameOut );
 
         /* Upsample two times by a factor 2 */
-        /* Scratch size needs to be: 3 * LSubFrameIn * sizeof( SKP_int32 ) */
+        /* Scratch size needs to be: 3 * LSubFrameIn * sizeof( int32_t ) */
         SKP_Silk_resample_2_1_coarse( in,   &S[ 0 ], outH,  scratch,             LSubFrameIn      );
-        /* Scratch size needs to be: 6 * LSubFrameIn * sizeof( SKP_int32 ) */
+        /* Scratch size needs to be: 6 * LSubFrameIn * sizeof( int32_t ) */
         SKP_Silk_resample_2_1_coarse( outH, &S[ 4 ], outHH, scratch, SKP_LSHIFT( LSubFrameIn, 1 ) );
         
         /* Downsample by a factor 3 */

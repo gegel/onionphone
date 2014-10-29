@@ -37,24 +37,24 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* downsample by a factor 2, coarser */
 void SKP_Silk_resample_1_2_coarse(
-    const SKP_int16      *in,            /* I:   16 kHz signal [2*len]   */
-    SKP_int32            *S,             /* I/O: State vector [4]        */
-    SKP_int16            *out,           /* O:   8 kHz signal [len]      */
-    SKP_int32            *scratch,       /* I:   Scratch memory [3*len]  */
-    const SKP_int32      len             /* I:   Number of OUTPUT samples*/
+    const int16_t      *in,            /* I:   16 kHz signal [2*len]   */
+    int32_t            *S,             /* I/O: State vector [4]        */
+    int16_t            *out,           /* O:   8 kHz signal [len]      */
+    int32_t            *scratch,       /* I:   Scratch memory [3*len]  */
+    const int32_t      len             /* I:   Number of OUTPUT samples*/
 )
 {
-    SKP_int32 k, idx;
+    int32_t k, idx;
     
     /* Coefficients for coarser 2-fold resampling */
-    const SKP_int16 A20c[ 2 ] = { 2119, 16663 };
-    const SKP_int16 A21c[ 2 ] = { 8050, 26861 };
+    const int16_t A20c[ 2 ] = { 2119, 16663 };
+    const int16_t A21c[ 2 ] = { 8050, 26861 };
 
     /* De-interleave allpass inputs, and convert Q15 -> Q25 */
     for( k = 0; k < len; k++ ) {
         idx = SKP_LSHIFT( k, 1 );
-        scratch[ k ]       = SKP_LSHIFT( (SKP_int32)in[ idx     ], 10 );
-        scratch[ k + len ] = SKP_LSHIFT( (SKP_int32)in[ idx + 1 ], 10 );
+        scratch[ k ]       = SKP_LSHIFT( (int32_t)in[ idx     ], 10 );
+        scratch[ k + len ] = SKP_LSHIFT( (int32_t)in[ idx + 1 ], 10 );
     }
 
     idx = SKP_LSHIFT( len, 1 );
@@ -67,7 +67,7 @@ void SKP_Silk_resample_1_2_coarse(
 
     /* Add two allpass outputs */
     for( k = 0; k < len; k++ ) {
-        out[ k ] = (SKP_int16)SKP_SAT16( SKP_RSHIFT_ROUND( scratch[ k ] + scratch[ k + len ], 11 ) );
+        out[ k ] = (int16_t)SKP_SAT16( SKP_RSHIFT_ROUND( scratch[ k ] + scratch[ k + len ], 11 ) );
     }
 }
 

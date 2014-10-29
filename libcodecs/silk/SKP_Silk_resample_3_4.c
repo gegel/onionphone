@@ -42,16 +42,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Resamples by a factor 3/4 */
 void SKP_Silk_resample_3_4(
-    SKP_int16            *out,       /* O:   Fs_high signal  [inLen*3/4]              */
-    SKP_int32            *S,         /* I/O: State vector    [7+2+6]                  */
-    const SKP_int16      *in,        /* I:   Fs_low signal   [inLen]                  */
-    SKP_int              inLen       /* I:   Input length, must be a multiple of 4    */
+    int16_t            *out,       /* O:   Fs_high signal  [inLen*3/4]              */
+    int32_t            *S,         /* I/O: State vector    [7+2+6]                  */
+    const int16_t      *in,        /* I:   Fs_low signal   [inLen]                  */
+    int              inLen       /* I:   Input length, must be a multiple of 4    */
 )
 {
-    SKP_int      LSubFrameIn, LSubFrameOut;
-    SKP_int16    outH[      3 * IN_SUBFR_LEN_RESAMPLE_3_4 ];
-    SKP_int16    outL[    ( 3 * IN_SUBFR_LEN_RESAMPLE_3_4 ) / 2 ];
-    SKP_int32    scratch[ ( 9 * IN_SUBFR_LEN_RESAMPLE_3_4 ) / 2 ];
+    int      LSubFrameIn, LSubFrameOut;
+    int16_t    outH[      3 * IN_SUBFR_LEN_RESAMPLE_3_4 ];
+    int16_t    outL[    ( 3 * IN_SUBFR_LEN_RESAMPLE_3_4 ) / 2 ];
+    int32_t    scratch[ ( 9 * IN_SUBFR_LEN_RESAMPLE_3_4 ) / 2 ];
 
     /* Check that input is multiple of 4 */
     SKP_assert( inLen % 4 == 0 );
@@ -64,11 +64,11 @@ void SKP_Silk_resample_3_4(
         SKP_Silk_resample_3_1( outH, &S[ 0 ], in, LSubFrameIn );
         
         /* Downsample by a factor 2 twice */
-        /* Scratch size needs to be: 3 * 2 * LSubFrameOut * sizeof( SKP_int32 ) */
+        /* Scratch size needs to be: 3 * 2 * LSubFrameOut * sizeof( int32_t ) */
         /* I: state vector [2], scratch memory [3*len] */
         SKP_Silk_resample_1_2_coarsest( outH, &S[ 7 ], outL, scratch, SKP_LSHIFT( LSubFrameOut, 1 ) ); 
         
-        /* Scratch size needs to be: 3 * LSubFrameOut * sizeof( SKP_int32 ) */
+        /* Scratch size needs to be: 3 * LSubFrameOut * sizeof( int32_t ) */
         /* I: state vector [6], scratch memory [3*len]    */
         SKP_Silk_resample_1_2_coarse( outL, &S[ 9 ], out, scratch, LSubFrameOut );
 

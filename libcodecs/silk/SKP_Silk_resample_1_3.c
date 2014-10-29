@@ -39,20 +39,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Downsamples by a factor 3 */
 void SKP_Silk_resample_1_3(
-    SKP_int16            *out,       /* O:   Fs_low signal  [inLen/3]                */
-    SKP_int32            *S,         /* I/O: State vector   [7]                      */
-    const SKP_int16      *in,        /* I:   Fs_high signal [inLen]                  */
-    const SKP_int32      inLen       /* I:   Input length, must be a multiple of 3   */
+    int16_t            *out,       /* O:   Fs_low signal  [inLen/3]                */
+    int32_t            *S,         /* I/O: State vector   [7]                      */
+    const int16_t      *in,        /* I:   Fs_high signal [inLen]                  */
+    const int32_t      inLen       /* I:   Input length, must be a multiple of 3   */
 )
 {
-    SKP_int      k, outLen, LSubFrameIn, LSubFrameOut;
-    SKP_int32    out_tmp, limit = 102258000; // (102258000 + 1560) * 21 * 2^(-16) = 32767.5
-    SKP_int32    scratch0[ 3 * OUT_SUBFR_LEN ];
-    SKP_int32    scratch10[ OUT_SUBFR_LEN ], scratch11[ OUT_SUBFR_LEN ], scratch12[ OUT_SUBFR_LEN ];
+    int      k, outLen, LSubFrameIn, LSubFrameOut;
+    int32_t    out_tmp, limit = 102258000; // (102258000 + 1560) * 21 * 2^(-16) = 32767.5
+    int32_t    scratch0[ 3 * OUT_SUBFR_LEN ];
+    int32_t    scratch10[ OUT_SUBFR_LEN ], scratch11[ OUT_SUBFR_LEN ], scratch12[ OUT_SUBFR_LEN ];
     /* coefficients for 3-fold resampling */
-    const SKP_int16 A30[ 2 ] = {  1773, 17818 };
-    const SKP_int16 A31[ 2 ] = {  4942, 25677 };
-    const SKP_int16 A32[ 2 ] = { 11786, 29304 };
+    const int16_t A30[ 2 ] = {  1773, 17818 };
+    const int16_t A31[ 2 ] = {  4942, 25677 };
+    const int16_t A32[ 2 ] = { 11786, 29304 };
 
     /* Check that input is multiple of 3 */
     SKP_assert( inLen % 3 == 0 );
@@ -86,11 +86,11 @@ void SKP_Silk_resample_1_3(
         for( k = 0; k < LSubFrameOut; k++ ) {
             out_tmp = scratch10[ k ] + scratch11[ k ] + scratch12[ k ];
             if( out_tmp - limit > 0 ) {
-                out[ k ] = SKP_int16_MAX;
+                out[ k ] = int16_t_MAX;
             } else if( out_tmp + limit < 0 ) {
-                out[ k ] = SKP_int16_MIN;
+                out[ k ] = int16_t_MIN;
             } else {
-                out[ k ] = (SKP_int16) SKP_SMULWB( out_tmp + 1560, 21 );
+                out[ k ] = (int16_t) SKP_SMULWB( out_tmp + 1560, 21 );
             }
         }
 

@@ -28,20 +28,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_main_FIX.h"
 
 void SKP_Silk_quant_LTP_gains_FIX(
-    SKP_int16               B_Q14[],                /* I/O  (un)quantized LTP gains     */
-    SKP_int                 cbk_index[],            /* O    Codebook Index              */
-    SKP_int                 *periodicity_index,     /* O    Periodicity Index           */
-    const SKP_int32         W_Q18[],                /* I    Error Weights in Q18        */
-    SKP_int                 mu_Q8,                  /* I    Mu value (R/D tradeoff)     */
-    SKP_int                 lowComplexity           /* I    Flag for low complexity     */
+    int16_t               B_Q14[],                /* I/O  (un)quantized LTP gains     */
+    int                 cbk_index[],            /* O    Codebook Index              */
+    int                 *periodicity_index,     /* O    Periodicity Index           */
+    const int32_t         W_Q18[],                /* I    Error Weights in Q18        */
+    int                 mu_Q8,                  /* I    Mu value (R/D tradeoff)     */
+    int                 lowComplexity           /* I    Flag for low complexity     */
 )
 {
-    SKP_int             j, k, temp_idx[ NB_SUBFR ], cbk_size;
-    const SKP_int16     *cl_ptr;
-    const SKP_int16     *cbk_ptr_Q14;
-    const SKP_int16     *b_Q14_ptr;
-    const SKP_int32     *W_Q18_ptr;
-    SKP_int32           rate_dist_subfr, rate_dist, min_rate_dist;
+    int             j, k, temp_idx[ NB_SUBFR ], cbk_size;
+    const int16_t     *cl_ptr;
+    const int16_t     *cbk_ptr_Q14;
+    const int16_t     *b_Q14_ptr;
+    const int32_t     *W_Q18_ptr;
+    int32_t           rate_dist_subfr, rate_dist, min_rate_dist;
 
 
 
@@ -49,7 +49,7 @@ void SKP_Silk_quant_LTP_gains_FIX(
     /* iterate over different codebooks with different */
     /* rates/distortions, and choose best */
     /***************************************************/
-    min_rate_dist = SKP_int32_MAX;
+    min_rate_dist = int32_t_MAX;
     for( k = 0; k < 3; k++ ) {
         cl_ptr      = SKP_Silk_LTP_gain_BITS_Q6_ptrs[ k ];
         cbk_ptr_Q14 = SKP_Silk_LTP_vq_ptrs_Q14[       k ];
@@ -80,11 +80,11 @@ void SKP_Silk_quant_LTP_gains_FIX(
         }
 
         /* Avoid never finding a codebook */
-        rate_dist = SKP_min( SKP_int32_MAX - 1, rate_dist );
+        rate_dist = SKP_min( int32_t_MAX - 1, rate_dist );
 
         if( rate_dist < min_rate_dist ) {
             min_rate_dist = rate_dist;
-            SKP_memcpy( cbk_index, temp_idx, NB_SUBFR * sizeof( SKP_int ) );
+            SKP_memcpy( cbk_index, temp_idx, NB_SUBFR * sizeof( int ) );
             *periodicity_index = k;
         }
 

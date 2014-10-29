@@ -30,18 +30,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Range encoder for one symbol */
 void SKP_Silk_range_encoder(
     SKP_Silk_range_coder_state      *psRC,              /* I/O  compressor data structure                   */
-    const SKP_int                   data,               /* I    uncompressed data                           */
-    const SKP_uint16                prob[]              /* I    cumulative density functions                */
+    const int                   data,               /* I    uncompressed data                           */
+    const uint16_t                prob[]              /* I    cumulative density functions                */
 )
 {
-    SKP_uint32 low_Q16, high_Q16;
-    SKP_uint32 base_tmp, range_Q32;
+    uint32_t low_Q16, high_Q16;
+    uint32_t base_tmp, range_Q32;
 
     /* Copy structure data */
-    SKP_uint32 base_Q32  = psRC->base_Q32;
-    SKP_uint32 range_Q16 = psRC->range_Q16;
-    SKP_int32  bufferIx  = psRC->bufferIx;
-    SKP_uint8  *buffer   = psRC->buffer;
+    uint32_t base_Q32  = psRC->base_Q32;
+    uint32_t range_Q16 = psRC->range_Q16;
+    int32_t  bufferIx  = psRC->bufferIx;
+    uint8_t  *buffer   = psRC->buffer;
 
     if( psRC->error ) {
         return;
@@ -57,7 +57,7 @@ void SKP_Silk_range_encoder(
     /* Check for carry */
     if( base_Q32 < base_tmp ) {
         /* Propagate carry in buffer */
-        SKP_int bufferIx_tmp = bufferIx;
+        int bufferIx_tmp = bufferIx;
         while( ( ++buffer[ --bufferIx_tmp ] ) == 0 );
     }
 
@@ -78,7 +78,7 @@ void SKP_Silk_range_encoder(
                 return;
             }
             /* Write one byte to buffer */
-            buffer[ bufferIx++ ] = (SKP_uint8)( SKP_RSHIFT_uint( base_Q32, 24 ) );
+            buffer[ bufferIx++ ] = (uint8_t)( SKP_RSHIFT_uint( base_Q32, 24 ) );
             base_Q32 = SKP_LSHIFT_ovflw( base_Q32, 8 );
         }
         /* Make sure not to write beyond buffer */
@@ -87,7 +87,7 @@ void SKP_Silk_range_encoder(
             return;
         }
         /* Write one byte to buffer */
-        buffer[ bufferIx++ ] = (SKP_uint8)( SKP_RSHIFT_uint( base_Q32, 24 ) );
+        buffer[ bufferIx++ ] = (uint8_t)( SKP_RSHIFT_uint( base_Q32, 24 ) );
         base_Q32 = SKP_LSHIFT_ovflw( base_Q32, 8 );
     }
 
@@ -100,12 +100,12 @@ void SKP_Silk_range_encoder(
 /* Range encoder for multiple symbols */
 void SKP_Silk_range_encoder_multi(
     SKP_Silk_range_coder_state      *psRC,              /* I/O  compressor data structure                   */
-    const SKP_int                   data[],             /* I    uncompressed data    [nSymbols]             */
-    const SKP_uint16 * const        prob[],             /* I    cumulative density functions                */
-    const SKP_int                   nSymbols            /* I    number of data symbols                      */
+    const int                   data[],             /* I    uncompressed data    [nSymbols]             */
+    const uint16_t * const        prob[],             /* I    cumulative density functions                */
+    const int                   nSymbols            /* I    number of data symbols                      */
 )
 {
-    SKP_int k;
+    int k;
     for( k = 0; k < nSymbols; k++ ) {
         SKP_Silk_range_encoder( psRC, data[ k ], prob[ k ] );
     }
@@ -113,20 +113,20 @@ void SKP_Silk_range_encoder_multi(
 
 /* Range decoder for one symbol */
 void SKP_Silk_range_decoder(
-    SKP_int                         data[],             /* O    uncompressed data                           */
+    int                         data[],             /* O    uncompressed data                           */
     SKP_Silk_range_coder_state      *psRC,              /* I/O  compressor data structure                   */
-    const SKP_uint16                prob[],             /* I    cumulative density function                 */
-    SKP_int                         probIx              /* I    initial (middle) entry of cdf               */
+    const uint16_t                prob[],             /* I    cumulative density function                 */
+    int                         probIx              /* I    initial (middle) entry of cdf               */
 )
 {
-    SKP_uint32 low_Q16, high_Q16;
-    SKP_uint32 base_tmp, range_Q32;
+    uint32_t low_Q16, high_Q16;
+    uint32_t base_tmp, range_Q32;
 
     /* Copy structure data */
-    SKP_uint32 base_Q32  = psRC->base_Q32;
-    SKP_uint32 range_Q16 = psRC->range_Q16;
-    SKP_int32  bufferIx  = psRC->bufferIx;
-    SKP_uint8  *buffer   = &psRC->buffer[ 4 ];
+    uint32_t base_Q32  = psRC->base_Q32;
+    uint32_t range_Q16 = psRC->range_Q16;
+    int32_t  bufferIx  = psRC->bufferIx;
+    uint8_t  *buffer   = &psRC->buffer[ 4 ];
 
     if( psRC->error ) {
         /* Set output to zero */
@@ -204,7 +204,7 @@ void SKP_Silk_range_decoder(
             /* Make sure not to read beyond buffer */
             if( bufferIx < psRC->bufferLength ) {
                 /* Read one byte from buffer */
-                base_Q32 |= (SKP_uint32)buffer[ bufferIx++ ];
+                base_Q32 |= (uint32_t)buffer[ bufferIx++ ];
             }
         }
         /* Update base */
@@ -212,7 +212,7 @@ void SKP_Silk_range_decoder(
         /* Make sure not to read beyond buffer */
         if( bufferIx < psRC->bufferLength ) {
             /* Read one byte from buffer */
-            base_Q32 |= (SKP_uint32)buffer[ bufferIx++ ];
+            base_Q32 |= (uint32_t)buffer[ bufferIx++ ];
         }
     }
 
@@ -232,14 +232,14 @@ void SKP_Silk_range_decoder(
 
 /* Range decoder for multiple symbols */
 void SKP_Silk_range_decoder_multi(
-    SKP_int                         data[],             /* O    uncompressed data                [nSymbols] */
+    int                         data[],             /* O    uncompressed data                [nSymbols] */
     SKP_Silk_range_coder_state      *psRC,              /* I/O  compressor data structure                   */
-    const SKP_uint16 * const        prob[],             /* I    cumulative density functions                */
-    const SKP_int                   probStartIx[],      /* I    initial (middle) entries of cdfs [nSymbols] */
-    const SKP_int                   nSymbols            /* I    number of data symbols                      */
+    const uint16_t * const        prob[],             /* I    cumulative density functions                */
+    const int                   probStartIx[],      /* I    initial (middle) entries of cdfs [nSymbols] */
+    const int                   nSymbols            /* I    number of data symbols                      */
 )
 {
-    SKP_int k;
+    int k;
     for( k = 0; k < nSymbols; k++ ) {
         SKP_Silk_range_decoder( &data[ k ], psRC, prob[ k ], probStartIx[ k ] );
     }
@@ -261,8 +261,8 @@ void SKP_Silk_range_enc_init(
 /* Initialize range decoder */
 void SKP_Silk_range_dec_init(
     SKP_Silk_range_coder_state      *psRC,              /* O    compressor data structure                   */
-    const SKP_uint8                 buffer[],           /* I    buffer for compressed data [bufferLength]   */
-    const SKP_int32                 bufferLength        /* I    buffer length (in bytes)                    */
+    const uint8_t                 buffer[],           /* I    buffer for compressed data [bufferLength]   */
+    const int32_t                 bufferLength        /* I    buffer length (in bytes)                    */
 )
 {
     /* check input */
@@ -272,25 +272,25 @@ void SKP_Silk_range_dec_init(
     }
     /* Initialize structure */
     /* Copy to internal buffer */
-    SKP_memcpy( psRC->buffer, buffer, bufferLength * sizeof( SKP_uint8 ) ); 
+    SKP_memcpy( psRC->buffer, buffer, bufferLength * sizeof( uint8_t ) ); 
     psRC->bufferLength = bufferLength;
     psRC->bufferIx = 0;
     psRC->base_Q32 = 
-        SKP_LSHIFT_uint( (SKP_uint32)buffer[ 0 ], 24 ) | 
-        SKP_LSHIFT_uint( (SKP_uint32)buffer[ 1 ], 16 ) | 
-        SKP_LSHIFT_uint( (SKP_uint32)buffer[ 2 ],  8 ) | 
-                         (SKP_uint32)buffer[ 3 ];
+        SKP_LSHIFT_uint( (uint32_t)buffer[ 0 ], 24 ) | 
+        SKP_LSHIFT_uint( (uint32_t)buffer[ 1 ], 16 ) | 
+        SKP_LSHIFT_uint( (uint32_t)buffer[ 2 ],  8 ) | 
+                         (uint32_t)buffer[ 3 ];
     psRC->range_Q16 = 0x0000FFFF;
     psRC->error     = 0;
 }
 
 /* Determine length of bitstream */
-SKP_int SKP_Silk_range_coder_get_length(                /* O    returns number of BITS in stream            */
+int SKP_Silk_range_coder_get_length(                /* O    returns number of BITS in stream            */
     const SKP_Silk_range_coder_state    *psRC,          /* I    compressed data structure                   */
-    SKP_int                             *nBytes         /* O    number of BYTES in stream                   */
+    int                             *nBytes         /* O    number of BYTES in stream                   */
 )
 {
-    SKP_int nBits;
+    int nBits;
 
     /* Number of additional bits (1..9) required to be stored to stream */
     nBits = SKP_LSHIFT( psRC->bufferIx, 3 ) + SKP_Silk_CLZ32( psRC->range_Q16 - 1 ) - 14;
@@ -306,8 +306,8 @@ void SKP_Silk_range_enc_wrap_up(
     SKP_Silk_range_coder_state      *psRC               /* I/O  compressed data structure                   */
 )
 {
-    SKP_int bufferIx_tmp, bits_to_store, bits_in_stream, nBytes, mask;
-    SKP_uint32 base_Q24;
+    int bufferIx_tmp, bits_to_store, bits_in_stream, nBytes, mask;
+    uint32_t base_Q24;
 
     /* Lower limit of interval, shifted 8 bits to the right */
     base_Q24 = SKP_RSHIFT_uint( psRC->base_Q32, 8 );
@@ -329,10 +329,10 @@ void SKP_Silk_range_enc_wrap_up(
 
     /* Store to stream, making sure not to write beyond buffer */
     if( psRC->bufferIx < psRC->bufferLength ) {
-        psRC->buffer[ psRC->bufferIx++ ] = (SKP_uint8)SKP_RSHIFT_uint( base_Q24, 16 );
+        psRC->buffer[ psRC->bufferIx++ ] = (uint8_t)SKP_RSHIFT_uint( base_Q24, 16 );
         if( bits_to_store > 8 ) {
             if( psRC->bufferIx < psRC->bufferLength ) {
-                psRC->buffer[ psRC->bufferIx++ ] = (SKP_uint8)SKP_RSHIFT_uint( base_Q24, 8 );
+                psRC->buffer[ psRC->bufferIx++ ] = (uint8_t)SKP_RSHIFT_uint( base_Q24, 8 );
             }
         }
     }
@@ -351,7 +351,7 @@ void SKP_Silk_range_coder_check_after_decoding(
     SKP_Silk_range_coder_state      *psRC               /* I/O  compressed data structure                   */
 )
 {
-    SKP_int bits_in_stream, nBytes, mask;
+    int bits_in_stream, nBytes, mask;
 
     bits_in_stream = SKP_Silk_range_coder_get_length( psRC, &nBytes );
 

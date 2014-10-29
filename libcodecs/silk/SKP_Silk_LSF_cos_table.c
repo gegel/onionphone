@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 // Q12 values (even)
-const SKP_int SKP_Silk_LSFCosTab_FIX_Q12[LSF_COS_TAB_SZ_FIX + 1] = {
+const int SKP_Silk_LSFCosTab_FIX_Q12[LSF_COS_TAB_SZ_FIX + 1] = {
             8192,             8190,             8182,             8170,     
             8152,             8130,             8104,             8072,     
             8034,             7994,             7946,             7896,     

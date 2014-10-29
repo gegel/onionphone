@@ -31,28 +31,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Compute weighted quantization errors for an LPC_order element input vector, over one codebook stage */
 void SKP_Silk_NLSF_VQ_sum_error_FIX(
-    SKP_int32                       *err_Q20,           /* O    Weighted quantization errors  [N*K]         */
-    const SKP_int                   *in_Q15,            /* I    Input vectors to be quantized [N*LPC_order] */
-    const SKP_int                   *w_Q6,              /* I    Weighting vectors             [N*LPC_order] */
-    const SKP_int16                 *pCB_Q15,           /* I    Codebook vectors              [K*LPC_order] */
-    const SKP_int                   N,                  /* I    Number of input vectors                     */
-    const SKP_int                   K,                  /* I    Number of codebook vectors                  */
-    const SKP_int                   LPC_order           /* I    Number of LPCs                              */
+    int32_t                       *err_Q20,           /* O    Weighted quantization errors  [N*K]         */
+    const int                   *in_Q15,            /* I    Input vectors to be quantized [N*LPC_order] */
+    const int                   *w_Q6,              /* I    Weighting vectors             [N*LPC_order] */
+    const int16_t                 *pCB_Q15,           /* I    Codebook vectors              [K*LPC_order] */
+    const int                   N,                  /* I    Number of input vectors                     */
+    const int                   K,                  /* I    Number of codebook vectors                  */
+    const int                   LPC_order           /* I    Number of LPCs                              */
 )
 {
-    SKP_int         i, n, m;
-    SKP_int32       diff_Q15, sum_error, Wtmp_Q6;
-    SKP_int32       Wcpy_Q6[ MAX_LPC_ORDER / 2 ];
-    const SKP_int16 *cb_vec_Q15;
+    int         i, n, m;
+    int32_t       diff_Q15, sum_error, Wtmp_Q6;
+    int32_t       Wcpy_Q6[ MAX_LPC_ORDER / 2 ];
+    const int16_t *cb_vec_Q15;
 
     SKP_assert( LPC_order <= 16 );
     SKP_assert( ( LPC_order & 1 ) == 0 );
 
-    memzero(Wcpy_Q6, (MAX_LPC_ORDER / 2) * sizeof(SKP_int32));
+    memzero(Wcpy_Q6, (MAX_LPC_ORDER / 2) * sizeof(int32_t));
 
     /* Copy to local stack and pack two weights per int32 */
     for( m = 0; m < SKP_RSHIFT( LPC_order, 1 ); m++ ) {
-        Wcpy_Q6[ m ] = w_Q6[ 2 * m ] | SKP_LSHIFT( ( SKP_int32 )w_Q6[ 2 * m + 1 ], 16 );
+        Wcpy_Q6[ m ] = w_Q6[ 2 * m ] | SKP_LSHIFT( ( int32_t )w_Q6[ 2 * m + 1 ], 16 );
     }
 
     /* Loop over input vectors */

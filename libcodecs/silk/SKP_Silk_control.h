@@ -40,25 +40,25 @@ extern "C"
 /***********************************************/
 typedef struct {
     /* I:   Sampling rate in Hertz; 8000/12000/16000/24000                                  */
-    SKP_int32 sampleRate;
+    int32_t sampleRate;
 
     /* I:   Number of samples per packet; must be equivalent of 20, 40, 60, 80 or 100 ms    */
-    SKP_int packetSize;
+    int packetSize;
 
     /* I:   Bitrate during active speech in bits/second; internally limited                 */
-    SKP_int32 bitRate;                        
+    int32_t bitRate;                        
 
     /* I:   Uplink Packet loss in pct (0...100)                                             */
-    SKP_int packetLossPercentage;
+    int packetLossPercentage;
     
     /* I:   Complexity mode; 0 is lowest; 1 is medium and 2 is highest complexity           */
-    SKP_int complexity;
+    int complexity;
 
     /* I:   Flag to enable in-band Forward Error Correction (FEC); 0/1                      */
-    SKP_int useInBandFEC;
+    int useInBandFEC;
 
     /* I:   Flag to enable Discontinous Transmission; 0/1                                   */
-    SKP_int useDTX;
+    int useDTX;
 } SKP_SILK_SDK_EncControlStruct;
 
 /**************************************************************************/
@@ -66,19 +66,19 @@ typedef struct {
 /**************************************************************************/
 typedef struct {
     /* I:   Sampling rate in Hertz; 8000/12000/16000/24000                                  */
-    SKP_int32 sampleRate;
+    int32_t sampleRate;
 
     /* O:   Number of samples per frame                                                     */
-    SKP_int frameSize;
+    int frameSize;
 
     /* O:   Frames per packet 1, 2, 3, 4, 5                                                 */
-    SKP_int framesPerPacket;
+    int framesPerPacket;
 
     /* O:   Flag to indicate that the decoder has remaining payloads internally             */
-    SKP_int moreInternalDecoderFrames;
+    int moreInternalDecoderFrames;
 
     /* O:   Distance between main payload and redundant payload in packets                  */
-    SKP_int inBandFECOffset;
+    int inBandFECOffset;
 } SKP_SILK_SDK_DecControlStruct;
 
 #ifdef __cplusplus

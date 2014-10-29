@@ -36,26 +36,26 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Coefficients for 2-band filter bank based on first-order allpass filters */
-static SKP_int16 A_fb1_20[ 1 ] = {  5394 };
-static SKP_int16 A_fb1_21[ 1 ] = { 20623 };
+static int16_t A_fb1_20[ 1 ] = {  5394 };
+static int16_t A_fb1_21[ 1 ] = { 20623 };
 
 /* Split signal into two decimated bands using first-order allpass filters */
 void SKP_Silk_ana_filt_bank_1(
-    const SKP_int16      *in,        /* I:    Input signal [N]       */
-    SKP_int32            *S,         /* I/O: State vector [2]        */
-    SKP_int16            *outL,      /* O:    Low band [N/2]         */
-    SKP_int16            *outH,      /* O:    High band [N/2]        */
-    SKP_int32            *scratch,   /* I:    Scratch memory [3*N/2] */
-    const SKP_int32      N           /* I:   Number of input samples */
+    const int16_t      *in,        /* I:    Input signal [N]       */
+    int32_t            *S,         /* I/O: State vector [2]        */
+    int16_t            *outL,      /* O:    Low band [N/2]         */
+    int16_t            *outH,      /* O:    High band [N/2]        */
+    int32_t            *scratch,   /* I:    Scratch memory [3*N/2] */
+    const int32_t      N           /* I:   Number of input samples */
 )
 {
-    SKP_int        k, N2 = SKP_RSHIFT( N, 1 );
-    SKP_int32    out_tmp;
+    int        k, N2 = SKP_RSHIFT( N, 1 );
+    int32_t    out_tmp;
 
     /* De-interleave three allpass inputs, and convert Q15 -> Q25 */
     for( k = 0; k < N2; k++ ) {
-        scratch[ k + N  ] = SKP_LSHIFT( (SKP_int32)in[ 2 * k     ], 10 );
-        scratch[ k + N2 ] = SKP_LSHIFT( (SKP_int32)in[ 2 * k + 1 ], 10 );
+        scratch[ k + N  ] = SKP_LSHIFT( (int32_t)in[ 2 * k     ], 10 );
+        scratch[ k + N2 ] = SKP_LSHIFT( (int32_t)in[ 2 * k + 1 ], 10 );
     }
 
     /* Allpass filters */
@@ -65,9 +65,9 @@ void SKP_Silk_ana_filt_bank_1(
     /* Add and subtract two allpass outputs to create bands */
     for( k = 0; k < N2; k++ ) {
         out_tmp   = scratch[ k ] + scratch[ k + N2 ];
-        outL[ k ] = (SKP_int16)SKP_SAT16( SKP_RSHIFT_ROUND( out_tmp, 11 ) );
+        outL[ k ] = (int16_t)SKP_SAT16( SKP_RSHIFT_ROUND( out_tmp, 11 ) );
 
         out_tmp   = scratch[ k ] - scratch[ k + N2 ];
-        outH[ k ] = (SKP_int16)SKP_SAT16( SKP_RSHIFT_ROUND( out_tmp, 11 ) );
+        outH[ k ] = (int16_t)SKP_SAT16( SKP_RSHIFT_ROUND( out_tmp, 11 ) );
     }        
 }

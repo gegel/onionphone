@@ -27,7 +27,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_tables.h"
 
-const SKP_uint16 SKP_Silk_sign_CDF[ 36 ][ 3 ] = 
+const uint16_t SKP_Silk_sign_CDF[ 36 ][ 3 ] = 
 {
 {
          0,  37840,  65535

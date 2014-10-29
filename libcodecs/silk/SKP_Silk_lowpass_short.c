@@ -28,7 +28,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*                                                                      *
  * SKP_Silk_lowpass_short.c                                           *
  *                                                                      *
- * First order low-pass filter, with input as SKP_int16, running at     *
+ * First order low-pass filter, with input as int16_t, running at     *
  * 48 kHz                                                               *
  *                                                                      *
  * Copyright 2006 (c), Skype Limited                                    *
@@ -37,20 +37,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 
-/* First order low-pass filter, with input as SKP_int16, running at 48 kHz   */
+/* First order low-pass filter, with input as int16_t, running at 48 kHz   */
 void SKP_Silk_lowpass_short(
-    const SKP_int16          *in,        /* I:   Q15 48 kHz signal; [len]    */
-    SKP_int32                *S,         /* I/O: Q25 state; length = 1       */
-    SKP_int32                *out,       /* O:   Q25 48 kHz signal; [len]    */
-    const SKP_int32          len         /* O:   Signal length               */
+    const int16_t          *in,        /* I:   Q15 48 kHz signal; [len]    */
+    int32_t                *S,         /* I/O: Q25 state; length = 1       */
+    int32_t                *out,       /* O:   Q25 48 kHz signal; [len]    */
+    const int32_t          len         /* O:   Signal length               */
 )
 {
-    SKP_int        k;
-    SKP_int32    in_tmp, out_tmp, state;
+    int        k;
+    int32_t    in_tmp, out_tmp, state;
     
     state = S[ 0 ];
     for( k = 0; k < len; k++ ) {    
-        in_tmp   = SKP_MUL( 768, (SKP_int32)in[k] );    /* multiply by 0.75, going from Q15 to Q25 */
+        in_tmp   = SKP_MUL( 768, (int32_t)in[k] );    /* multiply by 0.75, going from Q15 to Q25 */
         out_tmp  = state + in_tmp;                      /* zero at nyquist                         */
         state    = in_tmp - SKP_RSHIFT( out_tmp, 1 );   /* pole                                    */
         out[ k ] = out_tmp;

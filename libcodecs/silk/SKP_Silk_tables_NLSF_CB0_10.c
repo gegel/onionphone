@@ -34,7 +34,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_structs.h"
 #include "SKP_Silk_tables_NLSF_CB0_10.h"
 
-const SKP_uint16 SKP_Silk_NLSF_MSVQ_CB0_10_CDF[ NLSF_MSVQ_CB0_10_VECTORS + NLSF_MSVQ_CB0_10_STAGES ] =
+const uint16_t SKP_Silk_NLSF_MSVQ_CB0_10_CDF[ NLSF_MSVQ_CB0_10_VECTORS + NLSF_MSVQ_CB0_10_STAGES ] =
 {
             0,
          2658,
@@ -164,7 +164,7 @@ const SKP_uint16 SKP_Silk_NLSF_MSVQ_CB0_10_CDF[ NLSF_MSVQ_CB0_10_VECTORS + NLSF_
         65535
 };
 
-const SKP_uint16 * const SKP_Silk_NLSF_MSVQ_CB0_10_CDF_start_ptr[ NLSF_MSVQ_CB0_10_STAGES ] =
+const uint16_t * const SKP_Silk_NLSF_MSVQ_CB0_10_CDF_start_ptr[ NLSF_MSVQ_CB0_10_STAGES ] =
 {
      &SKP_Silk_NLSF_MSVQ_CB0_10_CDF[   0 ],
      &SKP_Silk_NLSF_MSVQ_CB0_10_CDF[  65 ],
@@ -174,7 +174,7 @@ const SKP_uint16 * const SKP_Silk_NLSF_MSVQ_CB0_10_CDF_start_ptr[ NLSF_MSVQ_CB0_
      &SKP_Silk_NLSF_MSVQ_CB0_10_CDF[ 109 ]
 };
 
-const SKP_int SKP_Silk_NLSF_MSVQ_CB0_10_CDF_middle_idx[ NLSF_MSVQ_CB0_10_STAGES ] =
+const int SKP_Silk_NLSF_MSVQ_CB0_10_CDF_middle_idx[ NLSF_MSVQ_CB0_10_STAGES ] =
 {
       23,
        8,
@@ -184,7 +184,7 @@ const SKP_int SKP_Silk_NLSF_MSVQ_CB0_10_CDF_middle_idx[ NLSF_MSVQ_CB0_10_STAGES 
        9
 };
 
-const SKP_int16 SKP_Silk_NLSF_MSVQ_CB0_10_rates_Q5[ NLSF_MSVQ_CB0_10_VECTORS ] =
+const int16_t SKP_Silk_NLSF_MSVQ_CB0_10_rates_Q5[ NLSF_MSVQ_CB0_10_VECTORS ] =
 {
               148,              167,
               169,              170,
@@ -248,7 +248,7 @@ const SKP_int16 SKP_Silk_NLSF_MSVQ_CB0_10_rates_Q5[ NLSF_MSVQ_CB0_10_VECTORS ] =
               130,              131
 };
 
-const SKP_int SKP_Silk_NLSF_MSVQ_CB0_10_ndelta_min_Q15[ 10 + 1 ] =
+const int SKP_Silk_NLSF_MSVQ_CB0_10_ndelta_min_Q15[ 10 + 1 ] =
 {
               563,
                 3,
@@ -263,7 +263,7 @@ const SKP_int SKP_Silk_NLSF_MSVQ_CB0_10_ndelta_min_Q15[ 10 + 1 ] =
               964
 };
 
-const SKP_int16 SKP_Silk_NLSF_MSVQ_CB0_10_Q15[ 10 * NLSF_MSVQ_CB0_10_VECTORS ] =
+const int16_t SKP_Silk_NLSF_MSVQ_CB0_10_Q15[ 10 * NLSF_MSVQ_CB0_10_VECTORS ] =
 {
              2210,             4023,
              6981,             9260,

@@ -35,20 +35,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void SKP_Silk_noise_shape_analysis_FIX(
     SKP_Silk_encoder_state_FIX      *psEnc,         /* I/O  Encoder state FIX                           */
     SKP_Silk_encoder_control_FIX    *psEncCtrl,     /* I/O  Encoder control FIX                         */
-    const SKP_int16                 *pitch_res,     /* I    LPC residual from pitch analysis            */
-    const SKP_int16                 *x              /* I    Input signal [ 2 * frame_length + la_shape ]*/
+    const int16_t                 *pitch_res,     /* I    LPC residual from pitch analysis            */
+    const int16_t                 *x              /* I    Input signal [ 2 * frame_length + la_shape ]*/
 )
 {
     SKP_Silk_shape_state_FIX *psShapeSt = &psEnc->sShape;
-    SKP_int     k, nSamples, lz, Qnrg, b_Q14, scale = 0, sz;
-    SKP_int32   SNR_adj_dB_Q7, HarmBoost_Q16, HarmShapeGain_Q16, Tilt_Q16, tmp32;
-    SKP_int32   nrg, pre_nrg_Q30, log_energy_Q7, log_energy_prev_Q7, energy_variation_Q7;
-    SKP_int32   delta_Q16, BWExp1_Q16, BWExp2_Q16, gain_mult_Q16, gain_add_Q16, strength_Q16, b_Q8;
-    SKP_int32   auto_corr[     SHAPE_LPC_ORDER_MAX + 1 ];
-    SKP_int32   refl_coef_Q16[ SHAPE_LPC_ORDER_MAX ];
-    SKP_int32   AR_Q24[        SHAPE_LPC_ORDER_MAX ];
-    SKP_int16   x_windowed[    SHAPE_LPC_WIN_MAX ];
-    const SKP_int16 *x_ptr, *pitch_res_ptr;
+    int     k, nSamples, lz, Qnrg, b_Q14, scale = 0, sz;
+    int32_t   SNR_adj_dB_Q7, HarmBoost_Q16, HarmShapeGain_Q16, Tilt_Q16, tmp32;
+    int32_t   nrg, pre_nrg_Q30, log_energy_Q7, log_energy_prev_Q7, energy_variation_Q7;
+    int32_t   delta_Q16, BWExp1_Q16, BWExp2_Q16, gain_mult_Q16, gain_add_Q16, strength_Q16, b_Q8;
+    int32_t   auto_corr[     SHAPE_LPC_ORDER_MAX + 1 ];
+    int32_t   refl_coef_Q16[ SHAPE_LPC_ORDER_MAX ];
+    int32_t   AR_Q24[        SHAPE_LPC_ORDER_MAX ];
+    int16_t   x_windowed[    SHAPE_LPC_WIN_MAX ];
+    const int16_t *x_ptr, *pitch_res_ptr;
 
     /* Point to start of first LPC analysis block */
     x_ptr = x + psEnc->sCmn.la_shape - SKP_SMULBB( SHAPE_LPC_WIN_MS, psEnc->sCmn.fs_kHz ) + psEnc->sCmn.frame_length / NB_SUBFR;
@@ -57,7 +57,7 @@ void SKP_Silk_noise_shape_analysis_FIX(
     /* CONTROL SNR  */
     /****************/
     /* Reduce SNR_dB values if recent bitstream has exceeded TargetRate */
-    psEncCtrl->current_SNR_dB_Q7 = psEnc->SNR_dB_Q7 - SKP_SMULWB( SKP_LSHIFT( ( SKP_int32 )psEnc->BufferedInChannel_ms, 7 ), 3277 );
+    psEncCtrl->current_SNR_dB_Q7 = psEnc->SNR_dB_Q7 - SKP_SMULWB( SKP_LSHIFT( ( int32_t )psEnc->BufferedInChannel_ms, 7 ), 3277 );
 
     /* Reduce SNR_dB if inband FEC used */
     if( psEnc->speech_activity_Q8 > LBRR_SPEECH_ACTIVITY_THRES_Q8 ) {
@@ -68,7 +68,7 @@ void SKP_Silk_noise_shape_analysis_FIX(
     /* GAIN CONTROL */
     /****************/
     /* Input quality is the average of the quality in the lowest two VAD bands */
-    psEncCtrl->input_quality_Q14 = ( SKP_int )SKP_RSHIFT( ( SKP_int32 )psEncCtrl->input_quality_bands_Q15[ 0 ] 
+    psEncCtrl->input_quality_Q14 = ( int )SKP_RSHIFT( ( int32_t )psEncCtrl->input_quality_bands_Q15[ 0 ] 
         + psEncCtrl->input_quality_bands_Q15[ 1 ], 2 );
     /* Coding quality level, between 0.0_Q0 and 1.0_Q0, but in Q14 */
     psEncCtrl->coding_quality_Q14 = SKP_RSHIFT( SKP_Silk_sigm_Q15( SKP_RSHIFT_ROUND( psEncCtrl->current_SNR_dB_Q7 - ( 18 << 7 ), 4 ) ), 1 );
@@ -146,7 +146,7 @@ void SKP_Silk_noise_shape_analysis_FIX(
     /********************************************/
     /* Compute noise shaping AR coefs and gains */
     /********************************************/
-    sz = ( SKP_int )SKP_SMULBB( SHAPE_LPC_WIN_MS, psEnc->sCmn.fs_kHz );
+    sz = ( int )SKP_SMULBB( SHAPE_LPC_WIN_MS, psEnc->sCmn.fs_kHz );
     for( k = 0; k < NB_SUBFR; k++ ) {
         /* Apply window */
         SKP_Silk_apply_sine_window( x_windowed, x_ptr, 0, SHAPE_LPC_WIN_MS * psEnc->sCmn.fs_kHz );
@@ -169,14 +169,14 @@ void SKP_Silk_noise_shape_analysis_FIX(
         /* Bandwidth expansion for synthesis filter shaping */
         SKP_Silk_bwexpander_32( AR_Q24, psEnc->sCmn.shapingLPCOrder, BWExp2_Q16 );
 
-        /* Make sure to fit in Q13 SKP_int16 */
+        /* Make sure to fit in Q13 int16_t */
         SKP_Silk_LPC_fit( &psEncCtrl->AR2_Q13[ k * SHAPE_LPC_ORDER_MAX ], AR_Q24, 13, psEnc->sCmn.shapingLPCOrder );
 
         /* Compute noise shaping filter coefficients */
         SKP_memcpy(
             &psEncCtrl->AR1_Q13[ k * SHAPE_LPC_ORDER_MAX ], 
             &psEncCtrl->AR2_Q13[ k * SHAPE_LPC_ORDER_MAX ], 
-            psEnc->sCmn.shapingLPCOrder * sizeof( SKP_int16 ) );
+            psEnc->sCmn.shapingLPCOrder * sizeof( int16_t ) );
 
         /* Bandwidth expansion for analysis filter shaping */
         SKP_assert( BWExp1_Q16 <= ( 1 << 16 ) ); // If ever breaking, use LPC_stabilize() in these cases to stay within range
@@ -206,7 +206,7 @@ void SKP_Silk_noise_shape_analysis_FIX(
         lz = SKP_min_32( SKP_Silk_CLZ32( pre_nrg_Q30 ) - 1, 19 );
         pre_nrg_Q30 = SKP_DIV32( SKP_LSHIFT( pre_nrg_Q30, lz ), SKP_RSHIFT( nrg, 20 - lz ) + 1 ); // Q20
         pre_nrg_Q30 = SKP_RSHIFT( SKP_LSHIFT_SAT32( pre_nrg_Q30, 9 ), 1 );  /* Q28 */
-        psEncCtrl->GainsPre_Q14[ k ] = ( SKP_int )SKP_Silk_SQRT_APPROX( pre_nrg_Q30 );
+        psEncCtrl->GainsPre_Q14[ k ] = ( int )SKP_Silk_SQRT_APPROX( pre_nrg_Q30 );
     }
 
     /*****************/
@@ -242,13 +242,13 @@ void SKP_Silk_noise_shape_analysis_FIX(
 
     if( psEncCtrl->input_tilt_Q15 <= 0 && psEncCtrl->sCmn.sigtype == SIG_TYPE_UNVOICED ) {
         if( psEnc->sCmn.fs_kHz == 24 ) {
-            SKP_int32 essStrength_Q15 = SKP_SMULWW( -psEncCtrl->input_tilt_Q15, 
+            int32_t essStrength_Q15 = SKP_SMULWW( -psEncCtrl->input_tilt_Q15, 
                 SKP_SMULBB( psEnc->speech_activity_Q8, ( 1 << 8 ) - psEncCtrl->sparseness_Q8 ) );
             tmp32 = SKP_Silk_log2lin( ( 16 << 7 ) - SKP_SMULWB( essStrength_Q15, 
                 SKP_SMULWB( DE_ESSER_COEF_SWB_dB_Q7, 20972 ) ) ); // 20972_Q17 = 0.16_Q0
             gain_mult_Q16 = SKP_SMULWW( gain_mult_Q16, tmp32 );
         } else if( psEnc->sCmn.fs_kHz == 16 ) {
-            SKP_int32 essStrength_Q15 = SKP_SMULWW(-psEncCtrl->input_tilt_Q15, 
+            int32_t essStrength_Q15 = SKP_SMULWW(-psEncCtrl->input_tilt_Q15, 
                 SKP_SMULBB( psEnc->speech_activity_Q8, ( 1 << 8 ) - psEncCtrl->sparseness_Q8 ));
             tmp32 = SKP_Silk_log2lin( ( 16 << 7 ) - SKP_SMULWB( essStrength_Q15, 
                 SKP_SMULWB( DE_ESSER_COEF_WB_dB_Q7, 20972 ) ) ); // 20972_Q17 = 0.16_Q0
@@ -270,21 +270,21 @@ void SKP_Silk_noise_shape_analysis_FIX(
     if( psEncCtrl->sCmn.sigtype == SIG_TYPE_VOICED ) {
         /* Reduce low frequencies quantization noise for periodic signals, depending on pitch lag */
         /*f = 400; freqz([1, -0.98 + 2e-4 * f], [1, -0.97 + 7e-4 * f], 2^12, Fs); axis([0, 1000, -10, 1])*/
-        SKP_int fs_kHz_inv = SKP_DIV32_16( 3277, psEnc->sCmn.fs_kHz );      // 0.2_Q0 = 3277_Q14
+        int fs_kHz_inv = SKP_DIV32_16( 3277, psEnc->sCmn.fs_kHz );      // 0.2_Q0 = 3277_Q14
         for( k = 0; k < NB_SUBFR; k++ ) {
             b_Q14 = fs_kHz_inv + SKP_DIV32_16( ( 3 << 14 ), psEncCtrl->sCmn.pitchL[ k ] ); 
             /* Pack two coefficients in one int32 */
             psEncCtrl->LF_shp_Q14[ k ]  = SKP_LSHIFT( ( 1 << 14 ) - b_Q14 - SKP_SMULWB( strength_Q16, b_Q14 ), 16 );
-            psEncCtrl->LF_shp_Q14[ k ] |= (SKP_uint16)( b_Q14 - ( 1 << 14 ) );
+            psEncCtrl->LF_shp_Q14[ k ] |= (uint16_t)( b_Q14 - ( 1 << 14 ) );
         }
-        SKP_assert( HARM_HP_NOISE_COEF_Q24 < ( 1 << 23 ) ); // Guarantees that second argument to SMULWB() is within range of an SKP_int16
+        SKP_assert( HARM_HP_NOISE_COEF_Q24 < ( 1 << 23 ) ); // Guarantees that second argument to SMULWB() is within range of an int16_t
         Tilt_Q16 = - HP_NOISE_COEF_Q16 - 
             SKP_SMULWB( ( 1 << 16 ) - HP_NOISE_COEF_Q16, SKP_SMULWB( HARM_HP_NOISE_COEF_Q24, psEnc->speech_activity_Q8 ) );
     } else {
         b_Q14 = SKP_DIV32_16( 21299, psEnc->sCmn.fs_kHz ); // 1.3_Q0 = 21299_Q14
         /* Pack two coefficients in one int32 */
         psEncCtrl->LF_shp_Q14[ 0 ]  = SKP_LSHIFT( ( 1 << 14 ) - b_Q14 - SKP_SMULWB( strength_Q16, SKP_SMULWB( 39322, b_Q14 ) ), 16 ); // 0.6_Q0 = 39322_Q16
-        psEncCtrl->LF_shp_Q14[ 0 ] |= (SKP_uint16)( b_Q14 - ( 1 << 14 ) );
+        psEncCtrl->LF_shp_Q14[ 0 ] |= (uint16_t)( b_Q14 - ( 1 << 14 ) );
         for( k = 1; k < NB_SUBFR; k++ ) {
             psEncCtrl->LF_shp_Q14[ k ] = psEncCtrl->LF_shp_Q14[ k - 1 ];
         }
@@ -326,8 +326,8 @@ void SKP_Silk_noise_shape_analysis_FIX(
         psShapeSt->Tilt_smth_Q16 =
             SKP_SMLAWB( psShapeSt->Tilt_smth_Q16,          Tilt_Q16          - psShapeSt->Tilt_smth_Q16,          SUBFR_SMTH_COEF_Q16 );
 
-        psEncCtrl->HarmBoost_Q14[ k ]     = ( SKP_int )SKP_RSHIFT_ROUND( psShapeSt->HarmBoost_smth_Q16,     2 );
-        psEncCtrl->HarmShapeGain_Q14[ k ] = ( SKP_int )SKP_RSHIFT_ROUND( psShapeSt->HarmShapeGain_smth_Q16, 2 );
-        psEncCtrl->Tilt_Q14[ k ]          = ( SKP_int )SKP_RSHIFT_ROUND( psShapeSt->Tilt_smth_Q16,          2 );
+        psEncCtrl->HarmBoost_Q14[ k ]     = ( int )SKP_RSHIFT_ROUND( psShapeSt->HarmBoost_smth_Q16,     2 );
+        psEncCtrl->HarmShapeGain_Q14[ k ] = ( int )SKP_RSHIFT_ROUND( psShapeSt->HarmShapeGain_smth_Q16, 2 );
+        psEncCtrl->Tilt_Q14[ k ]          = ( int )SKP_RSHIFT_ROUND( psShapeSt->Tilt_smth_Q16,          2 );
     }
 }

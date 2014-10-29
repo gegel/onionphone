@@ -41,28 +41,28 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Resamples input data with a factor 2/3 */
 void SKP_Silk_resample_2_3_coarsest( 
-    SKP_int16           *out,           /* O:   Output signal                                                                   */
-    SKP_int16           *S,             /* I/O: Resampler state [ SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ]             */
-    const SKP_int16     *in,            /* I:   Input signal                                                                    */
-    const SKP_int       frameLenIn,     /* I:   Number of input samples                                                         */
-    SKP_int16           *scratch        /* I:   Scratch memory [ frameLenIn + SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ] */
+    int16_t           *out,           /* O:   Output signal                                                                   */
+    int16_t           *S,             /* I/O: Resampler state [ SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ]             */
+    const int16_t     *in,            /* I:   Input signal                                                                    */
+    const int       frameLenIn,     /* I:   Number of input samples                                                         */
+    int16_t           *scratch        /* I:   Scratch memory [ frameLenIn + SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ] */
 )
 {
-    SKP_int32 n, ind, interpol_ind, tmp, index_Q16;
-    SKP_int16 *in_ptr;
-    SKP_int   frameLenOut;
-    const SKP_int16 *interpol_ptr;
+    int32_t n, ind, interpol_ind, tmp, index_Q16;
+    int16_t *in_ptr;
+    int   frameLenOut;
+    const int16_t *interpol_ptr;
 #if ( EMBEDDED_ARM>=6 ) && defined (__GNUC__)
-    SKP_int32   in_val, interpol_val;
+    int32_t   in_val, interpol_val;
 #endif
 
     /* Copy buffered samples to start of scratch */
-    SKP_memcpy( scratch, S, ( SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ) * sizeof( SKP_int16 ) );    
+    SKP_memcpy( scratch, S, ( SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ) * sizeof( int16_t ) );    
     
     /* Then append by the input signal */
-    SKP_memcpy( &scratch[ SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ], in, frameLenIn * sizeof( SKP_int16 ) ); 
+    SKP_memcpy( &scratch[ SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ], in, frameLenIn * sizeof( int16_t ) ); 
 
-    frameLenOut = SKP_SMULWB( SKP_LSHIFT( (SKP_int32)frameLenIn, 1 ), 21846 ); // 21846_Q15 = (2/3)_Q0 rounded _up_
+    frameLenOut = SKP_SMULWB( SKP_LSHIFT( (int32_t)frameLenIn, 1 ), 21846 ); // 21846_Q15 = (2/3)_Q0 rounded _up_
     index_Q16 = 0;
 
     SKP_assert( frameLenIn == ( ( frameLenOut * 3 ) / 2 ) );
@@ -85,9 +85,9 @@ void SKP_Silk_resample_2_3_coarsest(
 
         /* Interpolate: Hardcoded for 10 FIR taps */
 #if ( EMBEDDED_ARM>=6 ) && defined (__GNUC__)       /*It doesn't improve efficiency on iphone.*/
-        /*tmp = SKP_SMUAD(    *((SKP_int32 *)interpol_ptr)++, *((SKP_int32 *)in_ptr)++);
-        tmp = SKP_SMLAD( tmp, *((SKP_int32 *)interpol_ptr)++, *((SKP_int32 *)in_ptr)++);
-        tmp = SKP_SMLAD( tmp, *((SKP_int32 *)interpol_ptr),   *((SKP_int32 *)in_ptr)  );*/
+        /*tmp = SKP_SMUAD(    *((int32_t *)interpol_ptr)++, *((int32_t *)in_ptr)++);
+        tmp = SKP_SMLAD( tmp, *((int32_t *)interpol_ptr)++, *((int32_t *)in_ptr)++);
+        tmp = SKP_SMLAD( tmp, *((int32_t *)interpol_ptr),   *((int32_t *)in_ptr)  );*/
         __asm__ __volatile__ (  "ldr    %1, [%3], #4 \n\t"
                                 "ldr    %2, [%4], #4 \n\t"
                                 "smuad  %0, %1, %2 \n\t"
@@ -119,7 +119,7 @@ void SKP_Silk_resample_2_3_coarsest(
         tmp = SKP_SMLABB( tmp, interpol_ptr[ 9 ], in_ptr[ 9 ] );
 #endif
         /* Round, saturate and store to output array */
-        *out++ = (SKP_int16)SKP_SAT16( SKP_RSHIFT_ROUND( tmp, 15 ) );
+        *out++ = (int16_t)SKP_SAT16( SKP_RSHIFT_ROUND( tmp, 15 ) );
 
         /* Update index */
         index_Q16 += ( ( 1 << 16 ) + ( 1 << 15 ) ); // (3/2)_Q0;
@@ -127,5 +127,5 @@ void SKP_Silk_resample_2_3_coarsest(
 
     /* Move last part of input signal to the sample buffer to prepare for the next call */
     SKP_memcpy( S, &in[ frameLenIn - ( SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ) ],
-                ( SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ) * sizeof( SKP_int16 ) );
+                ( SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ) * sizeof( int16_t ) );
 }

@@ -36,14 +36,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void SKP_Silk_HP_variable_cutoff_FIX(
     SKP_Silk_encoder_state_FIX      *psEnc,             /* I/O  Encoder state FIX                           */
     SKP_Silk_encoder_control_FIX    *psEncCtrl,         /* I/O  Encoder control FIX                         */
-    SKP_int16                       *out,               /* O    high-pass filtered output signal            */
-    const SKP_int16                 *in                 /* I    input signal                                */
+    int16_t                       *out,               /* O    high-pass filtered output signal            */
+    const int16_t                 *in                 /* I    input signal                                */
 )
 {
-    SKP_int   quality_Q15;
-    SKP_int32 B_Q28[ 3 ], A_Q28[ 2 ];
-    SKP_int32 Fc_Q19, r_Q28, r_Q22;
-    SKP_int32 pitch_freq_Hz_Q16, pitch_freq_log_Q7, delta_freq_Q7;
+    int   quality_Q15;
+    int32_t B_Q28[ 3 ], A_Q28[ 2 ];
+    int32_t Fc_Q19, r_Q28, r_Q22;
+    int32_t pitch_freq_Hz_Q16, pitch_freq_log_Q7, delta_freq_Q7;
 
     /*********************************************/
     /* Estimate Low End of Pitch Frequency Range */
@@ -89,7 +89,7 @@ void SKP_Silk_HP_variable_cutoff_FIX(
     /* compute cut-off frequency, in radians */
     //Fc_num   = (SKP_float)( 0.45f * 2.0f * 3.14159265359 * psEncCtrl->pitch_freq_low_Hz );
     //Fc_denom = (SKP_float)( 1e3f * psEnc->sCmn.fs_kHz );
-    SKP_assert( psEncCtrl->pitch_freq_low_Hz <= SKP_int32_MAX / SKP_RADIANS_CONSTANT_Q19 );
+    SKP_assert( psEncCtrl->pitch_freq_low_Hz <= int32_t_MAX / SKP_RADIANS_CONSTANT_Q19 );
     Fc_Q19 = SKP_DIV32_16( SKP_SMULBB( SKP_RADIANS_CONSTANT_Q19, psEncCtrl->pitch_freq_low_Hz ), psEnc->sCmn.fs_kHz ); // range: 3704 - 27787, 11-15 bits
     SKP_assert( Fc_Q19 >=  3704 );
     SKP_assert( Fc_Q19 <= 27787 );

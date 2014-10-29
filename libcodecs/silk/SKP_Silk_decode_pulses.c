@@ -33,14 +33,14 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void SKP_Silk_decode_pulses(
     SKP_Silk_range_coder_state      *psRC,              /* I/O  Range coder state                           */
     SKP_Silk_decoder_control        *psDecCtrl,         /* I/O  Decoder control                             */
-    SKP_int                         q[],                /* O    Excitation signal                           */
-    const SKP_int                   frame_length        /* I    Frame length (preliminary)                  */
+    int                         q[],                /* O    Excitation signal                           */
+    const int                   frame_length        /* I    Frame length (preliminary)                  */
 )
 {
-    SKP_int   i, j, k, iter, abs_q, nLS, bit;
-    SKP_int   sum_pulses[ MAX_NB_SHELL_BLOCKS ], nLshifts[ MAX_NB_SHELL_BLOCKS ];
-    SKP_int   *pulses_ptr;
-    const SKP_uint16 *cdf_ptr;
+    int   i, j, k, iter, abs_q, nLS, bit;
+    int   sum_pulses[ MAX_NB_SHELL_BLOCKS ], nLshifts[ MAX_NB_SHELL_BLOCKS ];
+    int   *pulses_ptr;
+    const uint16_t *cdf_ptr;
     
     /*********************/
     /* Decode rate level */
@@ -74,7 +74,7 @@ void SKP_Silk_decode_pulses(
         if( sum_pulses[ i ] > 0 ) {
             SKP_Silk_shell_decoder( &q[ SKP_SMULBB( i, SHELL_CODEC_FRAME_LENGTH ) ], psRC, sum_pulses[ i ] );
         } else {
-            SKP_memset( &q[ SKP_SMULBB( i, SHELL_CODEC_FRAME_LENGTH ) ], 0, SHELL_CODEC_FRAME_LENGTH * sizeof( SKP_int ) );
+            SKP_memset( &q[ SKP_SMULBB( i, SHELL_CODEC_FRAME_LENGTH ) ], 0, SHELL_CODEC_FRAME_LENGTH * sizeof( int ) );
         }
     }
 

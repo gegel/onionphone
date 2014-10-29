@@ -27,25 +27,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_tables.h"
 
-const SKP_uint16 SKP_Silk_LTP_per_index_CDF[ 4 ] = {
+const uint16_t SKP_Silk_LTP_per_index_CDF[ 4 ] = {
          0,  20992,  40788,  65535
 };
 
-const SKP_int SKP_Silk_LTP_per_index_CDF_offset = 1;
+const int SKP_Silk_LTP_per_index_CDF_offset = 1;
 
 
-const SKP_uint16 SKP_Silk_LTP_gain_CDF_0[ 11 ] = {
+const uint16_t SKP_Silk_LTP_gain_CDF_0[ 11 ] = {
          0,  49380,  54463,  56494,  58437,  60101,  61683,  62985,
      64066,  64823,  65535
 };
 
-const SKP_uint16 SKP_Silk_LTP_gain_CDF_1[ 21 ] = {
+const uint16_t SKP_Silk_LTP_gain_CDF_1[ 21 ] = {
          0,  25290,  30654,  35710,  40386,  42937,  45250,  47459,
      49411,  51348,  52974,  54517,  55976,  57423,  58865,  60285,
      61667,  62895,  63827,  64724,  65535
 };
 
-const SKP_uint16 SKP_Silk_LTP_gain_CDF_2[ 41 ] = {
+const uint16_t SKP_Silk_LTP_gain_CDF_2[ 41 ] = {
          0,   4958,   9439,  13581,  17638,  21651,  25015,  28025,
      30287,  32406,  34330,  36240,  38130,  39790,  41281,  42764,
      44229,  45676,  47081,  48431,  49675,  50849,  51932,  52966,
@@ -54,24 +54,24 @@ const SKP_uint16 SKP_Silk_LTP_gain_CDF_2[ 41 ] = {
      65535
 };
 
-const SKP_int SKP_Silk_LTP_gain_CDF_offsets[ 3 ] = {
+const int SKP_Silk_LTP_gain_CDF_offsets[ 3 ] = {
          1,     3,     10
 };
 
-const SKP_int32 SKP_Silk_LTP_gain_middle_avg_RD_Q14 = 11010;
+const int32_t SKP_Silk_LTP_gain_middle_avg_RD_Q14 = 11010;
 
-const SKP_int16 SKP_Silk_LTP_gain_BITS_Q6_0[ 10 ] = {
+const int16_t SKP_Silk_LTP_gain_BITS_Q6_0[ 10 ] = {
         26,    236,    321,    325,    339,    344,    362,    379,
        412,    418
 };
 
-const SKP_int16 SKP_Silk_LTP_gain_BITS_Q6_1[ 20 ] = {
+const int16_t SKP_Silk_LTP_gain_BITS_Q6_1[ 20 ] = {
         88,    231,    237,    244,    300,    309,    313,    324,
        325,    341,    346,    351,    352,    352,    354,    356,
        367,    393,    396,    406
 };
 
-const SKP_int16 SKP_Silk_LTP_gain_BITS_Q6_2[ 40 ] = {
+const int16_t SKP_Silk_LTP_gain_BITS_Q6_2[ 40 ] = {
        238,    248,    255,    257,    258,    274,    284,    311,
        317,    326,    326,    327,    339,    349,    350,    351,
        352,    355,    358,    366,    371,    379,    383,    387,
@@ -79,19 +79,19 @@ const SKP_int16 SKP_Silk_LTP_gain_BITS_Q6_2[ 40 ] = {
        413,    422,    426,    432,    434,    449,    454,    455
 };
 
-const SKP_uint16 * const SKP_Silk_LTP_gain_CDF_ptrs[ NB_LTP_CBKS ] = {
+const uint16_t * const SKP_Silk_LTP_gain_CDF_ptrs[ NB_LTP_CBKS ] = {
     SKP_Silk_LTP_gain_CDF_0,
     SKP_Silk_LTP_gain_CDF_1,
     SKP_Silk_LTP_gain_CDF_2
 };
 
-const SKP_int16 * const SKP_Silk_LTP_gain_BITS_Q6_ptrs[ NB_LTP_CBKS ] = {
+const int16_t * const SKP_Silk_LTP_gain_BITS_Q6_ptrs[ NB_LTP_CBKS ] = {
     SKP_Silk_LTP_gain_BITS_Q6_0,
     SKP_Silk_LTP_gain_BITS_Q6_1,
     SKP_Silk_LTP_gain_BITS_Q6_2
 };
 
-const SKP_int16 SKP_Silk_LTP_gain_vq_0_Q14[ 10 ][ 5 ] = 
+const int16_t SKP_Silk_LTP_gain_vq_0_Q14[ 10 ][ 5 ] = 
 {
 {
        594,    984,   2840,   1021,    669
@@ -125,7 +125,7 @@ const SKP_int16 SKP_Silk_LTP_gain_vq_0_Q14[ 10 ][ 5 ] =
 }
 };
 
-const SKP_int16 SKP_Silk_LTP_gain_vq_1_Q14[ 20 ][ 5 ] = 
+const int16_t SKP_Silk_LTP_gain_vq_1_Q14[ 20 ][ 5 ] = 
 {
 {
       1655,   2918,   5001,   3010,   1775
@@ -189,7 +189,7 @@ const SKP_int16 SKP_Silk_LTP_gain_vq_1_Q14[ 20 ][ 5 ] =
 }
 };
 
-const SKP_int16 SKP_Silk_LTP_gain_vq_2_Q14[ 40 ][ 5 ] = 
+const int16_t SKP_Silk_LTP_gain_vq_2_Q14[ 40 ][ 5 ] = 
 {
 {
       -278,    415,   9345,   7106,   -431
@@ -313,12 +313,12 @@ const SKP_int16 SKP_Silk_LTP_gain_vq_2_Q14[ 40 ][ 5 ] =
 }
 };
 
-const SKP_int16 * const SKP_Silk_LTP_vq_ptrs_Q14[ NB_LTP_CBKS ] = {
+const int16_t * const SKP_Silk_LTP_vq_ptrs_Q14[ NB_LTP_CBKS ] = {
     &SKP_Silk_LTP_gain_vq_0_Q14[ 0 ][ 0 ],
     &SKP_Silk_LTP_gain_vq_1_Q14[ 0 ][ 0 ],
     &SKP_Silk_LTP_gain_vq_2_Q14[ 0 ][ 0 ]
 };
  
-const SKP_int SKP_Silk_LTP_vq_sizes[ NB_LTP_CBKS ] = {
+const int SKP_Silk_LTP_vq_sizes[ NB_LTP_CBKS ] = {
     10, 20, 40 
 };

@@ -36,8 +36,8 @@ void SKP_Silk_encode_parameters_v4(
     SKP_Silk_range_coder_state      *psRC           /* I/O  Range encoder state             */
 )
 {
-    SKP_int   i, k, typeOffset;
-    SKP_int   encode_absolute_lagIndex, delta_lagIndex;
+    int   i, k, typeOffset;
+    int   encode_absolute_lagIndex, delta_lagIndex;
     const SKP_Silk_NLSF_CB_struct *psNLSF_CB;
 
 

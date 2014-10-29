@@ -49,30 +49,30 @@ void SKP_Silk_PLC_Reset(
 void SKP_Silk_PLC(
     SKP_Silk_decoder_state      *psDec,             /* I/O Decoder state        */
     SKP_Silk_decoder_control    *psDecCtrl,         /* I/O Decoder control      */
-    SKP_int16                   signal[],           /* I/O  signal              */
-    SKP_int                     length,             /* I length of residual     */
-    SKP_int                     lost                /* I Loss flag              */
+    int16_t                   signal[],           /* I/O  signal              */
+    int                     length,             /* I length of residual     */
+    int                     lost                /* I Loss flag              */
 );
 
 void SKP_Silk_PLC_update(
     SKP_Silk_decoder_state      *psDec,             /* I/O Decoder state        */
     SKP_Silk_decoder_control    *psDecCtrl,         /* I/O Decoder control      */
-    SKP_int16                   signal[],
-    SKP_int                     length
+    int16_t                   signal[],
+    int                     length
 );
 
 void SKP_Silk_PLC_conceal(
     SKP_Silk_decoder_state      *psDec,             /* I/O Decoder state        */
     SKP_Silk_decoder_control    *psDecCtrl,         /* I/O Decoder control      */
-    SKP_int16                   signal[],           /* O LPC residual signal    */
-    SKP_int                     length              /* I length of signal       */
+    int16_t                   signal[],           /* O LPC residual signal    */
+    int                     length              /* I length of signal       */
 );
 
 void SKP_Silk_PLC_glue_frames(
     SKP_Silk_decoder_state      *psDec,             /* I/O decoder state        */
     SKP_Silk_decoder_control    *psDecCtrl,         /* I/O Decoder control      */
-    SKP_int16                   signal[],           /* I/O signal               */
-    SKP_int                     length              /* I length of signal       */
+    int16_t                   signal[],           /* I/O signal               */
+    int                     length              /* I length of signal       */
 );
 
 #endif

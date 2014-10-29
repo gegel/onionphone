@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /************************/
 /* Init Decoder State   */
 /************************/
-SKP_int SKP_Silk_init_decoder(
+int SKP_Silk_init_decoder(
     SKP_Silk_decoder_state      *psDec              /* I/O  Decoder state pointer                       */
 )
 {

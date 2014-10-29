@@ -33,13 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Gain scalar quantization with hysteresis, uniform on log scale */
 void SKP_Silk_gains_quant(
-    SKP_int                         ind[ NB_SUBFR ],        /* O    gain indices                            */
-    SKP_int32                       gain_Q16[ NB_SUBFR ],   /* I/O  gains (quantized out)                   */
-    SKP_int                         *prev_ind,              /* I/O  last index in previous frame            */
-    const SKP_int                   conditional             /* I    first gain is delta coded if 1          */
+    int                         ind[ NB_SUBFR ],        /* O    gain indices                            */
+    int32_t                       gain_Q16[ NB_SUBFR ],   /* I/O  gains (quantized out)                   */
+    int                         *prev_ind,              /* I/O  last index in previous frame            */
+    const int                   conditional             /* I    first gain is delta coded if 1          */
 )
 {
-    SKP_int k;
+    int k;
 
     for( k = 0; k < NB_SUBFR; k++ ) {
         /* Add half of previous quantization error, convert to log scale, scale, floor() */
@@ -72,13 +72,13 @@ void SKP_Silk_gains_quant(
 
 /* Gains scalar dequantization, uniform on log scale */
 void SKP_Silk_gains_dequant(
-    SKP_int32                       gain_Q16[ NB_SUBFR ],   /* O    quantized gains                         */
-    const SKP_int                   ind[ NB_SUBFR ],        /* I    gain indices                            */
-    SKP_int                         *prev_ind,              /* I/O  last index in previous frame            */
-    const SKP_int                   conditional             /* I    first gain is delta coded if 1          */
+    int32_t                       gain_Q16[ NB_SUBFR ],   /* O    quantized gains                         */
+    const int                   ind[ NB_SUBFR ],        /* I    gain indices                            */
+    int                         *prev_ind,              /* I/O  last index in previous frame            */
+    const int                   conditional             /* I    first gain is delta coded if 1          */
 )
 {
-    SKP_int   k;
+    int   k;
 
     for( k = 0; k < NB_SUBFR; k++ ) {
         if( k == 0 && conditional == 0 ) {

@@ -37,15 +37,15 @@ extern "C"
 {
 #endif
 
-/* count leading zeros of SKP_int64 */
-SKP_INLINE SKP_int32 SKP_Silk_CLZ64(SKP_int64 in)
+/* count leading zeros of int64_t */
+SKP_INLINE int32_t SKP_Silk_CLZ64(int64_t in)
 {
-    SKP_int32 in_upper;
+    int32_t in_upper;
 
-    in_upper = (SKP_int32)SKP_RSHIFT64(in, 32);
+    in_upper = (int32_t)SKP_RSHIFT64(in, 32);
     if (in_upper == 0) {
         /* Search in the lower 32 bits */
-        return 32 + SKP_Silk_CLZ32( (SKP_int32) in );
+        return 32 + SKP_Silk_CLZ32( (int32_t) in );
     } else {
         /* Search in the upper 32 bits */
         return SKP_Silk_CLZ32( in_upper );
@@ -53,11 +53,11 @@ SKP_INLINE SKP_int32 SKP_Silk_CLZ64(SKP_int64 in)
 }
 
 /* get number of leading zeros and fractional part (the bits right after the leading one */
-SKP_INLINE void SKP_Silk_CLZ_FRAC(SKP_int32 in,            /* I: input */
-                                    SKP_int32 *lz,           /* O: number of leading zeros */
-                                    SKP_int32 *frac_Q7)      /* O: the 7 bits right after the leading one */
+SKP_INLINE void SKP_Silk_CLZ_FRAC(int32_t in,            /* I: input */
+                                    int32_t *lz,           /* O: number of leading zeros */
+                                    int32_t *frac_Q7)      /* O: the 7 bits right after the leading one */
 {
-    SKP_int32 leadingZeros;
+    int32_t leadingZeros;
 
     leadingZeros = SKP_Silk_CLZ32(in);
     *lz = leadingZeros;
@@ -71,9 +71,9 @@ SKP_INLINE void SKP_Silk_CLZ_FRAC(SKP_int32 in,            /* I: input */
 /* Approximation of square root                                          */
 /* Accuracy: < +/- 10% for output values > 15                            */
 /*             < +/- 2.5% for output values > 120                        */
-SKP_INLINE SKP_int32 SKP_Silk_SQRT_APPROX(SKP_int32 x)
+SKP_INLINE int32_t SKP_Silk_SQRT_APPROX(int32_t x)
 {
-    SKP_int32 y, lz, frac_Q7;
+    int32_t y, lz, frac_Q7;
 
     if( x <= 0 ) {
         return 0;
@@ -97,11 +97,11 @@ SKP_INLINE SKP_int32 SKP_Silk_SQRT_APPROX(SKP_int32 x)
 }
 
 /* returns the number of left shifts before overflow for a 16 bit number (ITU definition with norm(0)=0) */
-SKP_INLINE SKP_int32 SKP_Silk_norm16(SKP_int16 a) {
+SKP_INLINE int32_t SKP_Silk_norm16(int16_t a) {
 
-  SKP_int32 a32;
+  int32_t a32;
 
-  /* if ((a == 0) || (a == SKP_int16_MIN)) return(0); */
+  /* if ((a == 0) || (a == int16_t_MIN)) return(0); */
   if ((a << 1) == 0) return(0);
 
   a32 = a;
@@ -112,9 +112,9 @@ SKP_INLINE SKP_int32 SKP_Silk_norm16(SKP_int16 a) {
 }
 
 /* returns the number of left shifts before overflow for a 32 bit number (ITU definition with norm(0)=0) */
-SKP_INLINE SKP_int32 SKP_Silk_norm32(SKP_int32 a) {
+SKP_INLINE int32_t SKP_Silk_norm32(int32_t a) {
   
-  /* if ((a == 0) || (a == SKP_int32_MIN)) return(0); */
+  /* if ((a == 0) || (a == int32_t_MIN)) return(0); */
   if ((a << 1) == 0) return(0);
 
   /* if (a < 0) a = -a - 1; */
@@ -124,14 +124,14 @@ SKP_INLINE SKP_int32 SKP_Silk_norm32(SKP_int32 a) {
 }
 
 /* Divide two int32 values and return result as int32 in a given Q-domain */
-SKP_INLINE SKP_int32 SKP_DIV32_varQ(    /* O    returns a good approximation of "(a32 << Qres) / b32" */
-    const SKP_int32        a32,         /* I    numerator (Q0)                  */
-    const SKP_int32        b32,         /* I    denominator (Q0)                */
-    const SKP_int        Qres           /* I    Q-domain of result (>= 0)       */
+SKP_INLINE int32_t SKP_DIV32_varQ(    /* O    returns a good approximation of "(a32 << Qres) / b32" */
+    const int32_t        a32,         /* I    numerator (Q0)                  */
+    const int32_t        b32,         /* I    denominator (Q0)                */
+    const int        Qres           /* I    Q-domain of result (>= 0)       */
 )
 {
-    SKP_int   a_headrm, b_headrm, lshift;
-    SKP_int32 b32_inv, a32_nrm, b32_nrm, result;
+    int   a_headrm, b_headrm, lshift;
+    int32_t b32_inv, a32_nrm, b32_nrm, result;
 
     SKP_assert( b32 != 0 );
     SKP_assert( Qres >= 0 );
@@ -143,7 +143,7 @@ SKP_INLINE SKP_int32 SKP_DIV32_varQ(    /* O    returns a good approximation of 
     b32_nrm = SKP_LSHIFT(b32, b_headrm);                                    /* Q: b_headrm                    */
 
     /* Inverse of b32, with 14 bits of precision */
-    b32_inv = SKP_DIV32_16( SKP_int32_MAX >> 2, SKP_RSHIFT(b32_nrm, 16) );  /* Q: 29 + 16 - b_headrm        */
+    b32_inv = SKP_DIV32_16( int32_t_MAX >> 2, SKP_RSHIFT(b32_nrm, 16) );  /* Q: 29 + 16 - b_headrm        */
 
     /* First approximation */
     result = SKP_SMULWB(a32_nrm, b32_inv);                                  /* Q: 29 + a_headrm - b_headrm    */
@@ -169,13 +169,13 @@ SKP_INLINE SKP_int32 SKP_DIV32_varQ(    /* O    returns a good approximation of 
 }
 
 /* Invert int32 value and return result as int32 in a given Q-domain */
-SKP_INLINE SKP_int32 SKP_INVERSE32_varQ(    /* O    returns a good approximation of "(1 << Qres) / b32" */
-    const SKP_int32        b32,             /* I    denominator (Q0)                */
-    const SKP_int        Qres               /* I    Q-domain of result (> 0)        */
+SKP_INLINE int32_t SKP_INVERSE32_varQ(    /* O    returns a good approximation of "(1 << Qres) / b32" */
+    const int32_t        b32,             /* I    denominator (Q0)                */
+    const int        Qres               /* I    Q-domain of result (> 0)        */
 )
 {
-    SKP_int   b_headrm, lshift;
-    SKP_int32 b32_inv, b32_nrm, err_Q32, result;
+    int   b_headrm, lshift;
+    int32_t b32_inv, b32_nrm, err_Q32, result;
 
     SKP_assert( b32 != 0 );
     SKP_assert( Qres > 0 );
@@ -185,7 +185,7 @@ SKP_INLINE SKP_int32 SKP_INVERSE32_varQ(    /* O    returns a good approximation
     b32_nrm = SKP_LSHIFT(b32, b_headrm);                                    /* Q: b_headrm                */
 
     /* Inverse of b32, with 14 bits of precision */
-    b32_inv = SKP_DIV32_16( SKP_int32_MAX >> 2, SKP_RSHIFT(b32_nrm, 16) );  /* Q: 29 + 16 - b_headrm    */
+    b32_inv = SKP_DIV32_16( int32_t_MAX >> 2, SKP_RSHIFT(b32_nrm, 16) );  /* Q: 29 + 16 - b_headrm    */
 
     /* First approximation */
     result = SKP_LSHIFT(b32_inv, 16);                                       /* Q: 61 - b_headrm            */
@@ -218,11 +218,11 @@ SKP_INLINE SKP_int32 SKP_INVERSE32_varQ(    /* O    returns a good approximation
 /* Sine approximation; an input of 65536 corresponds to 2 * pi */
 /* Uses polynomial expansion of the input to the power 0, 2, 4 and 6 */
 /* The relative error is below 1e-5 */
-SKP_INLINE SKP_int32 SKP_Silk_SIN_APPROX_Q24(        /* O    returns approximately 2^24 * sin(x * 2 * pi / 65536) */
-    SKP_int32        x
+SKP_INLINE int32_t SKP_Silk_SIN_APPROX_Q24(        /* O    returns approximately 2^24 * sin(x * 2 * pi / 65536) */
+    int32_t        x
 )
 {
-    SKP_int y_Q30;
+    int y_Q30;
 
     /* Keep only bottom 16 bits (the function repeats itself with period 65536) */
     x &= 65535;
@@ -266,8 +266,8 @@ SKP_INLINE SKP_int32 SKP_Silk_SIN_APPROX_Q24(        /* O    returns approximate
 
 /* Cosine approximation; an input of 65536 corresponds to 2 * pi */
 /* The relative error is below 1e-5 */
-SKP_INLINE SKP_int32 SKP_Silk_COS_APPROX_Q24(        /* O    returns approximately 2^24 * cos(x * 2 * pi / 65536) */
-    SKP_int32        x
+SKP_INLINE int32_t SKP_Silk_COS_APPROX_Q24(        /* O    returns approximately 2^24 * cos(x * 2 * pi / 65536) */
+    int32_t        x
 )
 {
     return SKP_Silk_SIN_APPROX_Q24( x + 16384 );

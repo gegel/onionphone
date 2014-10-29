@@ -33,13 +33,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 void SKP_Silk_detect_SWB_input(
     SKP_Silk_detect_SWB_state   *psSWBdetect,   /* (I/O) encoder state  */
-    const SKP_int16             samplesIn[],    /* (I) input to encoder */
-    SKP_int                     nSamplesIn      /* (I) length of input */
+    const int16_t             samplesIn[],    /* (I) input to encoder */
+    int                     nSamplesIn      /* (I) length of input */
 )
 {
-    SKP_int     HP_8_kHz_len, i;
-    SKP_int16   in_HP_8_kHz[ MAX_FRAME_LENGTH ];
-    SKP_int32   energy_32, shift;
+    int     HP_8_kHz_len, i;
+    int16_t   in_HP_8_kHz[ MAX_FRAME_LENGTH ];
+    int32_t   energy_32, shift;
     
     /* High pass filter with cutoff at 8 khz */
     HP_8_kHz_len = SKP_min_int( nSamplesIn, MAX_FRAME_LENGTH );

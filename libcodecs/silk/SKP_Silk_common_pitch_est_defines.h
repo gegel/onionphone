@@ -66,11 +66,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PITCH_EST_NB_CBKS_STAGE3_MID        24
 #define PITCH_EST_NB_CBKS_STAGE3_MIN        16
 
-extern const SKP_int16 SKP_Silk_CB_lags_stage2[PITCH_EST_NB_SUBFR][PITCH_EST_NB_CBKS_STAGE2_EXT];
-extern const SKP_int16 SKP_Silk_CB_lags_stage3[PITCH_EST_NB_SUBFR][PITCH_EST_NB_CBKS_STAGE3_MAX];
-extern const SKP_int16 SKP_Silk_Lag_range_stage3[ SigProc_PITCH_EST_MAX_COMPLEX + 1 ] [ PITCH_EST_NB_SUBFR ][ 2 ];
-extern const SKP_int16 SKP_Silk_cbk_sizes_stage3[ SigProc_PITCH_EST_MAX_COMPLEX + 1 ];
-extern const SKP_int16 SKP_Silk_cbk_offsets_stage3[ SigProc_PITCH_EST_MAX_COMPLEX + 1 ];
+extern const int16_t SKP_Silk_CB_lags_stage2[PITCH_EST_NB_SUBFR][PITCH_EST_NB_CBKS_STAGE2_EXT];
+extern const int16_t SKP_Silk_CB_lags_stage3[PITCH_EST_NB_SUBFR][PITCH_EST_NB_CBKS_STAGE3_MAX];
+extern const int16_t SKP_Silk_Lag_range_stage3[ SigProc_PITCH_EST_MAX_COMPLEX + 1 ] [ PITCH_EST_NB_SUBFR ][ 2 ];
+extern const int16_t SKP_Silk_cbk_sizes_stage3[ SigProc_PITCH_EST_MAX_COMPLEX + 1 ];
+extern const int16_t SKP_Silk_cbk_offsets_stage3[ SigProc_PITCH_EST_MAX_COMPLEX + 1 ];
 
 #endif
 

@@ -29,15 +29,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* NLSF vector decoder */
 void SKP_Silk_NLSF_MSVQ_decode(
-    SKP_int                         *pNLSF_Q15,     /* O    Pointer to decoded output vector [LPC_ORDER x 1]    */
+    int                         *pNLSF_Q15,     /* O    Pointer to decoded output vector [LPC_ORDER x 1]    */
     const SKP_Silk_NLSF_CB_struct   *psNLSF_CB,     /* I    Pointer to NLSF codebook struct                     */
-    const SKP_int                   *NLSFIndices,   /* I    Pointer to NLSF indices          [nStages x 1]      */
-    const SKP_int                   LPC_order       /* I    LPC order used                                      */
+    const int                   *NLSFIndices,   /* I    Pointer to NLSF indices          [nStages x 1]      */
+    const int                   LPC_order       /* I    LPC order used                                      */
 ) 
 {
-    const SKP_int16 *pCB_element;
-          SKP_int    s;
-          SKP_int    i;
+    const int16_t *pCB_element;
+          int    s;
+          int    i;
 
     /* Check that each index is within valid range */
     SKP_assert( 0 <= NLSFIndices[ 0 ] && NLSFIndices[ 0 ] < psNLSF_CB->CBStages[ 0 ].nVectors );
@@ -47,7 +47,7 @@ void SKP_Silk_NLSF_MSVQ_decode(
 
     /* Initialize with the codebook vector from stage 0 */
     for( i = 0; i < LPC_order; i++ ) {
-        pNLSF_Q15[ i ] = ( SKP_int )pCB_element[ i ];
+        pNLSF_Q15[ i ] = ( int )pCB_element[ i ];
     }
           
     for( s = 1; s < psNLSF_CB->nStages; s++ ) {

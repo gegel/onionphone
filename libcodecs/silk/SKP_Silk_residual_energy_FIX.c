@@ -30,21 +30,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Calculates residual energies of input subframes where all subframes have LPC_order   */
 /* of preceeding samples                                                                */
 void SKP_Silk_residual_energy_FIX(
-          SKP_int32 nrgs[ NB_SUBFR ],           /* O    Residual energy per subframe    */
-          SKP_int   nrgsQ[ NB_SUBFR ],          /* O    Q value per subframe            */
-    const SKP_int16 x[],                        /* I    Input signal                    */
-    const SKP_int16 a_Q12[ 2 ][ MAX_LPC_ORDER ],/* I    AR coefs for each frame half    */
-    const SKP_int32 gains_Qx[ NB_SUBFR ],       /* I    Quantization gains in Qx        */
-    const SKP_int   Qx,                         /* I    Quantization gains Q value      */
-    const SKP_int   subfr_length,               /* I    Subframe length                 */
-    const SKP_int   LPC_order                   /* I    LPC order                       */
+          int32_t nrgs[ NB_SUBFR ],           /* O    Residual energy per subframe    */
+          int   nrgsQ[ NB_SUBFR ],          /* O    Q value per subframe            */
+    const int16_t x[],                        /* I    Input signal                    */
+    const int16_t a_Q12[ 2 ][ MAX_LPC_ORDER ],/* I    AR coefs for each frame half    */
+    const int32_t gains_Qx[ NB_SUBFR ],       /* I    Quantization gains in Qx        */
+    const int   Qx,                         /* I    Quantization gains Q value      */
+    const int   subfr_length,               /* I    Subframe length                 */
+    const int   LPC_order                   /* I    LPC order                       */
 )
 {
-    SKP_int         offset, i, j, rshift, lz1, lz2;
-    SKP_int16       *LPC_res_ptr, LPC_res[ ( MAX_FRAME_LENGTH + NB_SUBFR * MAX_LPC_ORDER ) / 2 ];
-    const SKP_int16 *x_ptr;
-    SKP_int16       S[ MAX_LPC_ORDER ];
-    SKP_int32       tmp32;
+    int         offset, i, j, rshift, lz1, lz2;
+    int16_t       *LPC_res_ptr, LPC_res[ ( MAX_FRAME_LENGTH + NB_SUBFR * MAX_LPC_ORDER ) / 2 ];
+    const int16_t *x_ptr;
+    int16_t       S[ MAX_LPC_ORDER ];
+    int32_t       tmp32;
 
     x_ptr  = x;
     offset = LPC_order + subfr_length;
@@ -52,7 +52,7 @@ void SKP_Silk_residual_energy_FIX(
     /* Filter input to create the LPC residual for each frame half, and measure subframe energies */
     for( i = 0; i < 2; i++ ) {
         /* Calculate half frame LPC residual signal including preceeding samples */
-        SKP_memset( S, 0, LPC_order * sizeof( SKP_int16 ) );
+        SKP_memset( S, 0, LPC_order * sizeof( int16_t ) );
         SKP_Silk_LPC_analysis_filter( x_ptr, a_Q12[ i ], S, LPC_res, ( NB_SUBFR >> 1 ) * offset, LPC_order );
 
         /* Point to first subframe of the just calculated LPC residual signal */

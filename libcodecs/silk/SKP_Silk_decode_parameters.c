@@ -31,16 +31,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void SKP_Silk_decode_parameters(
     SKP_Silk_decoder_state      *psDec,             /* I/O  State                                       */
     SKP_Silk_decoder_control    *psDecCtrl,         /* I/O  Decoder control                             */
-    SKP_int                     q[],                /* O    Excitation signal                           */
-    const SKP_int               fullDecoding        /* I    Flag to tell if only arithmetic decoding    */
+    int                     q[],                /* O    Excitation signal                           */
+    const int               fullDecoding        /* I    Flag to tell if only arithmetic decoding    */
 )
 {
-    SKP_int   i, k, Ix, fs_kHz_dec, nBytesUsed;
-    SKP_int   Ixs[ NB_SUBFR ];
-    SKP_int   GainsIndices[ NB_SUBFR ];
-    SKP_int   NLSFIndices[ NLSF_MSVQ_MAX_CB_STAGES ];
-    SKP_int   pNLSF_Q15[ MAX_LPC_ORDER ], pNLSF0_Q15[ MAX_LPC_ORDER ];
-    const SKP_int16 *cbk_ptr_Q14;
+    int   i, k, Ix, fs_kHz_dec, nBytesUsed;
+    int   Ixs[ NB_SUBFR ];
+    int   GainsIndices[ NB_SUBFR ];
+    int   NLSFIndices[ NLSF_MSVQ_MAX_CB_STAGES ];
+    int   pNLSF_Q15[ MAX_LPC_ORDER ], pNLSF0_Q15[ MAX_LPC_ORDER ];
+    const int16_t *cbk_ptr_Q14;
     const SKP_Silk_NLSF_CB_struct *psNLSF_CB = NULL;
     SKP_Silk_range_coder_state  *psRC = &psDec->sRC;
 
@@ -135,11 +135,11 @@ void SKP_Silk_decode_parameters(
         } else {
             /* Copy LPC coefficients for first half from second half */
             SKP_memcpy( psDecCtrl->PredCoef_Q12[ 0 ], psDecCtrl->PredCoef_Q12[ 1 ], 
-                psDec->LPC_order * sizeof( SKP_int16 ) );
+                psDec->LPC_order * sizeof( int16_t ) );
         }
     }
 
-    SKP_memcpy( psDec->prevNLSF_Q15, pNLSF_Q15, psDec->LPC_order * sizeof( SKP_int ) );
+    SKP_memcpy( psDec->prevNLSF_Q15, pNLSF_Q15, psDec->LPC_order * sizeof( int ) );
 
     /* After a packet loss do BWE of LPC coefs */
     if( psDec->lossCnt ) {
@@ -199,8 +199,8 @@ void SKP_Silk_decode_parameters(
         SKP_Silk_range_decoder( &Ix, psRC, SKP_Silk_LTPscale_CDF, SKP_Silk_LTPscale_offset );
         psDecCtrl->LTP_scale_Q14 = SKP_Silk_LTPScales_table_Q14[ Ix ];
     } else {
-        SKP_memset( psDecCtrl->pitchL,      0, NB_SUBFR * sizeof( SKP_int ) );
-        SKP_memset( psDecCtrl->LTPCoef_Q14, 0, NB_SUBFR * LTP_ORDER * sizeof( SKP_int16 ) );
+        SKP_memset( psDecCtrl->pitchL,      0, NB_SUBFR * sizeof( int ) );
+        SKP_memset( psDecCtrl->LTPCoef_Q14, 0, NB_SUBFR * LTP_ORDER * sizeof( int16_t ) );
         psDecCtrl->PERIndex      = 0;
         psDecCtrl->LTP_scale_Q14 = 0;
     }
@@ -209,7 +209,7 @@ void SKP_Silk_decode_parameters(
     /* Decode seed */
     /***************/
     SKP_Silk_range_decoder( &Ix, psRC, SKP_Silk_Seed_CDF, SKP_Silk_Seed_offset );
-    psDecCtrl->Seed = ( SKP_int32 )Ix;
+    psDecCtrl->Seed = ( int32_t )Ix;
     /*********************************************/
     /* Decode quantization indices of excitation */
     /*********************************************/

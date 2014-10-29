@@ -29,29 +29,29 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Finds LPC vector from correlations, and converts to NLSF */
 void SKP_Silk_find_LPC_FIX(
-    SKP_int             NLSF_Q15[],             /* O    NLSFs                                                                       */
-    SKP_int             *interpIndex,           /* O    NLSF interpolation index, only used for NLSF interpolation                  */
-    const SKP_int       prev_NLSFq_Q15[],       /* I    previous NLSFs, only used for NLSF interpolation                            */
-    const SKP_int       useInterpolatedNLSFs,   /* I    Flag                                                                        */
-    const SKP_int       LPC_order,              /* I    LPC order                                                                   */
-    const SKP_int16     x[],                    /* I    Input signal                                                                */
-    const SKP_int       subfr_length            /* I    Input signal subframe length including preceeding samples                   */
+    int             NLSF_Q15[],             /* O    NLSFs                                                                       */
+    int             *interpIndex,           /* O    NLSF interpolation index, only used for NLSF interpolation                  */
+    const int       prev_NLSFq_Q15[],       /* I    previous NLSFs, only used for NLSF interpolation                            */
+    const int       useInterpolatedNLSFs,   /* I    Flag                                                                        */
+    const int       LPC_order,              /* I    LPC order                                                                   */
+    const int16_t     x[],                    /* I    Input signal                                                                */
+    const int       subfr_length            /* I    Input signal subframe length including preceeding samples                   */
 )
 {
-    SKP_int     k;
-    SKP_int32   a_Q16[ MAX_LPC_ORDER ];
+    int     k;
+    int32_t   a_Q16[ MAX_LPC_ORDER ];
 
-    SKP_int     isInterpLower, shift;
-    SKP_int16   S[ MAX_LPC_ORDER ];
-    SKP_int32   res_nrg0, res_nrg1;
-    SKP_int     rshift0, rshift1; 
+    int     isInterpLower, shift;
+    int16_t   S[ MAX_LPC_ORDER ];
+    int32_t   res_nrg0, res_nrg1;
+    int     rshift0, rshift1; 
 
     /* Used only for LSF interpolation */
-    SKP_int32   a_tmp_Q16[ MAX_LPC_ORDER ], res_nrg_interp, res_nrg, res_tmp_nrg;
-    SKP_int     res_nrg_interp_Q, res_nrg_Q, res_tmp_nrg_Q;
-    SKP_int16   a_tmp_Q12[ MAX_LPC_ORDER ];
-    SKP_int     NLSF0_Q15[ MAX_LPC_ORDER ];
-    SKP_int16   LPC_res[ ( MAX_FRAME_LENGTH + NB_SUBFR * MAX_LPC_ORDER ) / 2 ];
+    int32_t   a_tmp_Q16[ MAX_LPC_ORDER ], res_nrg_interp, res_nrg, res_tmp_nrg;
+    int     res_nrg_interp_Q, res_nrg_Q, res_tmp_nrg_Q;
+    int16_t   a_tmp_Q12[ MAX_LPC_ORDER ];
+    int     NLSF0_Q15[ MAX_LPC_ORDER ];
+    int16_t   LPC_res[ ( MAX_FRAME_LENGTH + NB_SUBFR * MAX_LPC_ORDER ) / 2 ];
 
     /* Default: no interpolation */
     *interpIndex = 4;
@@ -90,7 +90,7 @@ void SKP_Silk_find_LPC_FIX(
             SKP_Silk_NLSF2A_stable( a_tmp_Q12, NLSF0_Q15, LPC_order );
 
             /* Calculate residual energy with NLSF interpolation */
-            SKP_memset( S, 0, LPC_order * sizeof( SKP_int16 ) );
+            SKP_memset( S, 0, LPC_order * sizeof( int16_t ) );
             SKP_Silk_LPC_analysis_filter( x, a_tmp_Q12, S, LPC_res, 2 * subfr_length, LPC_order );
 
             SKP_Silk_sum_sqr_shift( &res_nrg0, &rshift0, LPC_res + LPC_order,                subfr_length - LPC_order );

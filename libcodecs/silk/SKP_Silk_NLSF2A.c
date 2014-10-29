@@ -37,21 +37,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* helper function for NLSF2A(..) */
 SKP_INLINE void SKP_Silk_NLSF2A_find_poly(
-    SKP_int32        *out,        /* o    intermediate polynomial, Q20            */
-    const SKP_int32    *cLSF,     /* i    vector of interleaved 2*cos(LSFs), Q20  */
-    SKP_int            dd         /* i    polynomial order (= 1/2 * filter order) */
+    int32_t        *out,        /* o    intermediate polynomial, Q20            */
+    const int32_t    *cLSF,     /* i    vector of interleaved 2*cos(LSFs), Q20  */
+    int            dd         /* i    polynomial order (= 1/2 * filter order) */
 )
 {
-    SKP_int        k, n;
-    SKP_int32    ftmp;
+    int        k, n;
+    int32_t    ftmp;
 
     out[0] = SKP_LSHIFT( 1, 20 );
     out[1] = -cLSF[0];
     for( k = 1; k < dd; k++ ) {
         ftmp = cLSF[2*k];            // Q20
-        out[k+1] = SKP_LSHIFT( out[k-1], 1 ) - (SKP_int32)SKP_RSHIFT_ROUND64( SKP_SMULL( ftmp, out[k] ), 20 );
+        out[k+1] = SKP_LSHIFT( out[k-1], 1 ) - (int32_t)SKP_RSHIFT_ROUND64( SKP_SMULL( ftmp, out[k] ), 20 );
         for( n = k; n > 1; n-- ) {
-            out[n] += out[n-2] - (SKP_int32)SKP_RSHIFT_ROUND64( SKP_SMULL( ftmp, out[n-1] ), 20 );
+            out[n] += out[n-2] - (int32_t)SKP_RSHIFT_ROUND64( SKP_SMULL( ftmp, out[n-1] ), 20 );
         }
         out[1] -= ftmp;
     }
@@ -59,25 +59,25 @@ SKP_INLINE void SKP_Silk_NLSF2A_find_poly(
 
 /* compute whitening filter coefficients from normalized line spectral frequencies */
 void SKP_Silk_NLSF2A(
-    SKP_int16       *a,               /* o    monic whitening filter coefficients in Q12,  [d]    */
-    const SKP_int    *NLSF,           /* i    normalized line spectral frequencies in Q15, [d]    */
-    const SKP_int    d                /* i    filter order (should be even)                       */
+    int16_t       *a,               /* o    monic whitening filter coefficients in Q12,  [d]    */
+    const int    *NLSF,           /* i    normalized line spectral frequencies in Q15, [d]    */
+    const int    d                /* i    filter order (should be even)                       */
 )
 {
-    SKP_int k, i, dd;
-    SKP_int32 cos_LSF_Q20[SigProc_MAX_ORDER_LPC];
-    SKP_int32 P[SigProc_MAX_ORDER_LPC/2+1], Q[SigProc_MAX_ORDER_LPC/2+1];
-    SKP_int32 Ptmp, Qtmp;
-    SKP_int32 f_int;
-    SKP_int32 f_frac;
-    SKP_int32 cos_val, delta;
-    SKP_int32 a_int32[SigProc_MAX_ORDER_LPC];
-    SKP_int32 maxabs, absval, idx=0, sc_Q16; 
+    int k, i, dd;
+    int32_t cos_LSF_Q20[SigProc_MAX_ORDER_LPC];
+    int32_t P[SigProc_MAX_ORDER_LPC/2+1], Q[SigProc_MAX_ORDER_LPC/2+1];
+    int32_t Ptmp, Qtmp;
+    int32_t f_int;
+    int32_t f_frac;
+    int32_t cos_val, delta;
+    int32_t a_int32[SigProc_MAX_ORDER_LPC];
+    int32_t maxabs, absval, idx=0, sc_Q16; 
 
     SKP_assert(LSF_COS_TAB_SZ_FIX == 128);
 
-    memzero(a_int32, SigProc_MAX_ORDER_LPC * sizeof(SKP_int32));
-    memzero(cos_LSF_Q20, SigProc_MAX_ORDER_LPC * sizeof(SKP_int32));
+    memzero(a_int32, SigProc_MAX_ORDER_LPC * sizeof(int32_t));
+    memzero(cos_LSF_Q20, SigProc_MAX_ORDER_LPC * sizeof(int32_t));
 
     /* convert LSFs to 2*cos(LSF(i)), using piecewise linear curve from table */
     for( k = 0; k < d; k++ ) {
@@ -107,7 +107,7 @@ void SKP_Silk_NLSF2A(
     SKP_Silk_NLSF2A_find_poly( P, &cos_LSF_Q20[0], dd );
     SKP_Silk_NLSF2A_find_poly( Q, &cos_LSF_Q20[1], dd );
 
-    /* convert even and odd polynomials to SKP_int32 Q12 filter coefs */
+    /* convert even and odd polynomials to int32_t Q12 filter coefs */
     for( k = 0; k < dd; k++ ) {
         Ptmp = P[k+1] + P[k];
         Qtmp = Q[k+1] - Q[k];
@@ -130,9 +130,9 @@ void SKP_Silk_NLSF2A(
             }    
         }
     
-        if( maxabs > SKP_int16_MAX ) {    
+        if( maxabs > int16_t_MAX ) {    
             /* Reduce magnitude of prediction coefficients */
-            sc_Q16 = 65470 - SKP_DIV32( SKP_MUL( 65470 >> 2, maxabs - SKP_int16_MAX ), 
+            sc_Q16 = 65470 - SKP_DIV32( SKP_MUL( 65470 >> 2, maxabs - int16_t_MAX ), 
                                         SKP_RSHIFT32( SKP_MUL( maxabs, idx + 1), 2 ) );
             SKP_Silk_bwexpander_32( a_int32, d, sc_Q16 );
         } else {
@@ -148,8 +148,8 @@ void SKP_Silk_NLSF2A(
         }
     }
 
-    /* Return as SKP_int16 Q12 coefficients */
+    /* Return as int16_t Q12 coefficients */
     for( k = 0; k < d; k++ ) {
-        a[k] = (SKP_int16)a_int32[k];
+        a[k] = (int16_t)a_int32[k];
     }
 }

@@ -40,16 +40,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Variable order MA filter */
 void SKP_Silk_MA(
-    const SKP_int16      *in,            /* I:   input signal                                */
-    const SKP_int16      *B,             /* I:   MA coefficients, Q13 [order+1]              */
-    SKP_int32            *S,             /* I/O: state vector [order]                        */
-    SKP_int16            *out,           /* O:   output signal                               */
-    const SKP_int32      len,            /* I:   signal length                               */
-    const SKP_int32      order           /* I:   filter order                                */
+    const int16_t      *in,            /* I:   input signal                                */
+    const int16_t      *B,             /* I:   MA coefficients, Q13 [order+1]              */
+    int32_t            *S,             /* I/O: state vector [order]                        */
+    int16_t            *out,           /* O:   output signal                               */
+    const int32_t      len,            /* I:   signal length                               */
+    const int32_t      order           /* I:   filter order                                */
 )
 {
-    SKP_int   k, d, in16;
-    SKP_int32 out32;
+    int   k, d, in16;
+    int32_t out32;
     
     for( k = 0; k < len; k++ ) {
         in16 = in[ k ];
@@ -62,24 +62,24 @@ void SKP_Silk_MA(
         S[ order - 1 ] = SKP_SMULBB( in16, B[ order ] );
 
         /* Limit */
-        out[ k ] = (SKP_int16)SKP_SAT16( out32 );
+        out[ k ] = (int16_t)SKP_SAT16( out32 );
     }
 }
 /* Variable order MA prediction error filter */
 void SKP_Silk_MA_Prediction(
-    const SKP_int16      *in,            /* I:   Input signal                                */
-    const SKP_int16      *B,             /* I:   MA prediction coefficients, Q12 [order]     */
-    SKP_int32            *S,             /* I/O: State vector [order]                        */
-    SKP_int16            *out,           /* O:   Output signal                               */
-    const SKP_int32      len,            /* I:   Signal length                               */
-    const SKP_int32      order           /* I:   Filter order                                */
+    const int16_t      *in,            /* I:   Input signal                                */
+    const int16_t      *B,             /* I:   MA prediction coefficients, Q12 [order]     */
+    int32_t            *S,             /* I/O: State vector [order]                        */
+    int16_t            *out,           /* O:   Output signal                               */
+    const int32_t      len,            /* I:   Signal length                               */
+    const int32_t      order           /* I:   Filter order                                */
 )
 {
-    SKP_int   k, d, in16;
-    SKP_int32 out32;
-    SKP_int32 B32;
+    int   k, d, in16;
+    int32_t out32;
+    int32_t B32;
 
-    if( ( order & 1 ) == 0 && (SKP_int32)( (SKP_int_ptr_size)B & 3 ) == 0 ) {
+    if( ( order & 1 ) == 0 && (int32_t)( (int_ptr_size)B & 3 ) == 0 ) {
         /* Even order and 4-byte aligned coefficient array */
 
         /* NOTE: the code below loads two int16 values in an int32, and multiplies each using the    */
@@ -92,16 +92,16 @@ void SKP_Silk_MA_Prediction(
             out32 = SKP_RSHIFT_ROUND( out32, 12 );
             
             for( d = 0; d < order - 2; d += 2 ) {
-                B32 = *( (SKP_int32*)&B[ d ] );                /* read two coefficients at once */
+                B32 = *( (int32_t*)&B[ d ] );                /* read two coefficients at once */
                 S[ d ]     = SKP_SMLABB_ovflw( S[ d + 1 ], in16, B32 );
                 S[ d + 1 ] = SKP_SMLABT_ovflw( S[ d + 2 ], in16, B32 );
             }
-            B32 = *( (SKP_int32*)&B[ d ] );                    /* read two coefficients at once */
+            B32 = *( (int32_t*)&B[ d ] );                    /* read two coefficients at once */
             S[ order - 2 ] = SKP_SMLABB_ovflw( S[ order - 1 ], in16, B32 );
             S[ order - 1 ] = SKP_SMULBT( in16, B32 );
 
             /* Limit */
-            out[ k ] = (SKP_int16)SKP_SAT16( out32 );
+            out[ k ] = (int16_t)SKP_SAT16( out32 );
         }
     } else {
         /* Odd order or not 4-byte aligned coefficient array */
@@ -116,24 +116,24 @@ void SKP_Silk_MA_Prediction(
             S[ order - 1 ] = SKP_SMULBB( in16, B[ order - 1 ] );
 
             /* Limit */
-            out[ k ] = (SKP_int16)SKP_SAT16( out32 );
+            out[ k ] = (int16_t)SKP_SAT16( out32 );
         }
     }
 }
 
 void SKP_Silk_MA_Prediction_Q13(
-    const SKP_int16      *in,            /* I:   input signal                                */
-    const SKP_int16      *B,             /* I:   MA prediction coefficients, Q13 [order]     */
-    SKP_int32            *S,             /* I/O: state vector [order]                        */
-    SKP_int16            *out,           /* O:   output signal                               */
-    SKP_int32            len,            /* I:   signal length                               */
-    SKP_int32            order           /* I:   filter order                                */
+    const int16_t      *in,            /* I:   input signal                                */
+    const int16_t      *B,             /* I:   MA prediction coefficients, Q13 [order]     */
+    int32_t            *S,             /* I/O: state vector [order]                        */
+    int16_t            *out,           /* O:   output signal                               */
+    int32_t            len,            /* I:   signal length                               */
+    int32_t            order           /* I:   filter order                                */
 )
 {
-    SKP_int   k, d, in16;
-    SKP_int32 out32, B32;
+    int   k, d, in16;
+    int32_t out32, B32;
     
-    if( ( order & 1 ) == 0 && (SKP_int32)( (SKP_int_ptr_size)B & 3 ) == 0 ) {
+    if( ( order & 1 ) == 0 && (int32_t)( (int_ptr_size)B & 3 ) == 0 ) {
         /* Even order and 4-byte aligned coefficient array */
         
         /* NOTE: the code below loads two int16 values in an int32, and multiplies each using the    */
@@ -146,16 +146,16 @@ void SKP_Silk_MA_Prediction_Q13(
             out32 = SKP_RSHIFT_ROUND( out32, 13 );
             
             for( d = 0; d < order - 2; d += 2 ) {
-                B32 = *( (SKP_int32*)&B[ d ] );                /* read two coefficients at once */
+                B32 = *( (int32_t*)&B[ d ] );                /* read two coefficients at once */
                 S[ d ]     = SKP_SMLABB( S[ d + 1 ], in16, B32 );
                 S[ d + 1 ] = SKP_SMLABT( S[ d + 2 ], in16, B32 );
             }
-            B32 = *( (SKP_int32*)&B[ d ] );                    /* read two coefficients at once */
+            B32 = *( (int32_t*)&B[ d ] );                    /* read two coefficients at once */
             S[ order - 2 ] = SKP_SMLABB( S[ order - 1 ], in16, B32 );
             S[ order - 1 ] = SKP_SMULBT( in16, B32 );
 
             /* Limit */
-            out[ k ] = (SKP_int16)SKP_SAT16( out32 );
+            out[ k ] = (int16_t)SKP_SAT16( out32 );
         }
     } else {
         /* Odd order or not 4-byte aligned coefficient array */
@@ -170,33 +170,33 @@ void SKP_Silk_MA_Prediction_Q13(
             S[ order - 1 ] = SKP_SMULBB( in16, B[ order - 1 ] );
 
             /* Limit */
-            out[ k ] = (SKP_int16)SKP_SAT16( out32 );
+            out[ k ] = (int16_t)SKP_SAT16( out32 );
         }
     }
 }
 /* Variable order MA prediction error filter. */
 /* Inverse filter of SKP_Silk_LPC_synthesis_filter */
 void SKP_Silk_LPC_analysis_filter(
-    const SKP_int16      *in,            /* I:   Input signal                                */
-    const SKP_int16      *B,             /* I:   MA prediction coefficients, Q12 [order]     */
-    SKP_int16            *S,             /* I/O: State vector [order]                        */
-    SKP_int16            *out,           /* O:   Output signal                               */
-    const SKP_int32      len,            /* I:   Signal length                               */
-    const SKP_int32      Order           /* I:   Filter order                                */
+    const int16_t      *in,            /* I:   Input signal                                */
+    const int16_t      *B,             /* I:   MA prediction coefficients, Q12 [order]     */
+    int16_t            *S,             /* I/O: State vector [order]                        */
+    int16_t            *out,           /* O:   Output signal                               */
+    const int32_t      len,            /* I:   Signal length                               */
+    const int32_t      Order           /* I:   Filter order                                */
 )
 {
-    SKP_int   k, j, idx, Order_half = SKP_RSHIFT( Order, 1 );
-    SKP_int32 Btmp, B_align_Q12[ SigProc_MAX_ORDER_LPC >> 1 ], out32_Q12, out32;
-    SKP_int16 SA, SB;
+    int   k, j, idx, Order_half = SKP_RSHIFT( Order, 1 );
+    int32_t Btmp, B_align_Q12[ SigProc_MAX_ORDER_LPC >> 1 ], out32_Q12, out32;
+    int16_t SA, SB;
     /* Order must be even */
     SKP_assert( 2 * Order_half == Order );
 
-    memzero(B_align_Q12, (SigProc_MAX_ORDER_LPC >> 1) * sizeof(SKP_int32));
+    memzero(B_align_Q12, (SigProc_MAX_ORDER_LPC >> 1) * sizeof(int32_t));
 
     /* Combine two A_Q12 values and ensure 32-bit alignment */
     for( k = 0; k < Order_half; k++ ) {
         idx = SKP_SMULBB( 2, k );
-        B_align_Q12[ k ] = ( ( (SKP_int32)B[ idx ] ) & 0x0000ffff ) | SKP_LSHIFT( (SKP_int32)B[ idx + 1 ], 16 );
+        B_align_Q12[ k ] = ( ( (int32_t)B[ idx ] ) & 0x0000ffff ) | SKP_LSHIFT( (int32_t)B[ idx + 1 ], 16 );
     }
 
     /* S[] values are in Q0 */
@@ -223,13 +223,13 @@ void SKP_Silk_LPC_analysis_filter(
         out32_Q12 = SKP_SMLABT( out32_Q12, SB, Btmp );
 
         /* Subtract prediction */
-        out32_Q12 = SKP_SUB_SAT32( SKP_LSHIFT( (SKP_int32)in[ k ], 12 ), out32_Q12 );
+        out32_Q12 = SKP_SUB_SAT32( SKP_LSHIFT( (int32_t)in[ k ], 12 ), out32_Q12 );
 
         /* Scale to Q0 */
         out32 = SKP_RSHIFT_ROUND( out32_Q12, 12 );
 
         /* Saturate output */
-        out[ k ] = (SKP_int16)SKP_SAT16( out32 );
+        out[ k ] = (int16_t)SKP_SAT16( out32 );
 
         /* Move input line */
         S[ 0 ] = in[ k ];

@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NB_THRESHOLDS           11
 
 /* Table containing trained thresholds for LTP scaling */
-static const SKP_int16 LTPScaleThresholds_Q15[ NB_THRESHOLDS ] = 
+static const int16_t LTPScaleThresholds_Q15[ NB_THRESHOLDS ] = 
 {
     31129, 26214, 16384, 13107, 9830, 6554,
      4915,  3276,  2621,  2458,    0
@@ -41,8 +41,8 @@ void SKP_Silk_LTP_scale_ctrl_FIX(
     SKP_Silk_encoder_control_FIX    *psEncCtrl  /* I/O  encoder control FIX                         */
 )
 {
-    SKP_int round_loss, frames_per_packet;
-    SKP_int g_out_Q5, g_limit_Q15, thrld1_Q15, thrld2_Q15;
+    int round_loss, frames_per_packet;
+    int g_out_Q5, g_limit_Q15, thrld1_Q15, thrld2_Q15;
 
     /* 1st order high-pass filter */
     psEnc->HPLTPredCodGain_Q7 = SKP_max_int( psEncCtrl->LTPredCodGain_Q7 - psEnc->prevLTPredCodGain_Q7, 0 ) 
@@ -58,7 +58,7 @@ void SKP_Silk_LTP_scale_ctrl_FIX(
     psEncCtrl->sCmn.LTP_scaleIndex = 0;
 
     /* Round the loss measure to whole pct */
-    round_loss = ( SKP_int )psEnc->sCmn.PacketLoss_perc;
+    round_loss = ( int )psEnc->sCmn.PacketLoss_perc;
 
     /* Only scale if first frame in packet 0% */
     if( psEnc->sCmn.nFramesInPayloadBuf == 0 ) {

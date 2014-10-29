@@ -34,20 +34,20 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* 16th order AR filter */
-void SKP_Silk_LPC_synthesis_order16(const SKP_int16 *in,          /* I:   excitation signal */
-                                      const SKP_int16 *A_Q12,       /* I:   AR coefficients [16], between -8_Q0 and 8_Q0 */
-                                      const SKP_int32 Gain_Q26,     /* I:   gain */
-                                      SKP_int32 *S,                 /* I/O: state vector [16] */
-                                      SKP_int16 *out,               /* O:   output signal */
-                                      const SKP_int32 len           /* I:   signal length, must be multiple of 16 */
+void SKP_Silk_LPC_synthesis_order16(const int16_t *in,          /* I:   excitation signal */
+                                      const int16_t *A_Q12,       /* I:   AR coefficients [16], between -8_Q0 and 8_Q0 */
+                                      const int32_t Gain_Q26,     /* I:   gain */
+                                      int32_t *S,                 /* I/O: state vector [16] */
+                                      int16_t *out,               /* O:   output signal */
+                                      const int32_t len           /* I:   signal length, must be multiple of 16 */
 )
 {
-    SKP_int   k;
-    SKP_int32 SA, SB, Atmp, A_align_Q12[8], out32_Q10, out32;
+    int   k;
+    int32_t SA, SB, Atmp, A_align_Q12[8], out32_Q10, out32;
 
     /* combine two A_Q12 values and ensure 32-bit alignment */
     for( k = 0; k < 8; k++ ) {
-        A_align_Q12[k] = (((SKP_int32)A_Q12[ 2*k ]) & 0x0000ffff) | SKP_LSHIFT( (SKP_int32)A_Q12[ 2*k + 1 ], 16 );
+        A_align_Q12[k] = (((int32_t)A_Q12[ 2*k ]) & 0x0000ffff) | SKP_LSHIFT( (int32_t)A_Q12[ 2*k + 1 ], 16 );
     }
 
     /* S[] values are in Q14 */
@@ -131,7 +131,7 @@ void SKP_Silk_LPC_synthesis_order16(const SKP_int16 *in,          /* I:   excita
         out32 = SKP_RSHIFT_ROUND( out32_Q10, 10 );
 
         /* saturate output */
-        out[k] = (SKP_int16)SKP_SAT16( out32 );
+        out[k] = (int16_t)SKP_SAT16( out32 );
 
         /* move result into delay line */
         S[15] = SKP_LSHIFT_SAT32( out32_Q10, 4 );

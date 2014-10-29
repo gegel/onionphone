@@ -37,9 +37,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 /* Approximation of 128 * log2() (very close inverse of approx 2^() below) */
 /* Convert input to a log scale    */ 
-SKP_int32 SKP_Silk_lin2log( const SKP_int32 inLin )    /* I:    Input in linear scale */
+int32_t SKP_Silk_lin2log( const int32_t inLin )    /* I:    Input in linear scale */
 {
-    SKP_int32 lz, frac_Q7;
+    int32_t lz, frac_Q7;
 
     SKP_Silk_CLZ_FRAC( inLin, &lz, &frac_Q7 );
 

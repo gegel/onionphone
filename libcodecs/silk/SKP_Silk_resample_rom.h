@@ -51,54 +51,54 @@ extern "C"
 #define SigProc_Resample_bw_1_4_NUM_INTERPOLATORS					(1 << SigProc_Resample_bw_1_4_NUM_INTERPOLATORS_LOG2)
 #define SigProc_Resample_bw_1_4_NUM_FIR_COEFS						6 
 
-extern const SKP_int16 SigProc_Resample_bw_1_4_INTERPOL[SigProc_Resample_bw_1_4_NUM_INTERPOLATORS][SigProc_Resample_bw_1_4_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_bw_1_4_INTERPOL[SigProc_Resample_bw_1_4_NUM_INTERPOLATORS][SigProc_Resample_bw_1_4_NUM_FIR_COEFS];
 
 
 #define SigProc_Resample_bw_80_441_NUM_INTERPOLATORS_LOG2			6
 #define SigProc_Resample_bw_80_441_NUM_INTERPOLATORS				(1 << SigProc_Resample_bw_80_441_NUM_INTERPOLATORS_LOG2)
 #define SigProc_Resample_bw_80_441_NUM_FIR_COEFS					4 
 
-extern const SKP_int16 SigProc_Resample_bw_80_441_INTERPOL[SigProc_Resample_bw_80_441_NUM_INTERPOLATORS][SigProc_Resample_bw_80_441_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_bw_80_441_INTERPOL[SigProc_Resample_bw_80_441_NUM_INTERPOLATORS][SigProc_Resample_bw_80_441_NUM_FIR_COEFS];
 
 #define SigProc_Resample_2_3_coarse_NUM_INTERPOLATORS				 2
 #define SigProc_Resample_2_3_coarse_NUM_FIR_COEFS					32
 
-extern const SKP_int16 SigProc_Resample_2_3_coarse_INTERPOL[SigProc_Resample_2_3_coarse_NUM_INTERPOLATORS][SigProc_Resample_2_3_coarse_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_2_3_coarse_INTERPOL[SigProc_Resample_2_3_coarse_NUM_INTERPOLATORS][SigProc_Resample_2_3_coarse_NUM_FIR_COEFS];
 
 #define SigProc_Resample_2_3_coarsest_NUM_INTERPOLATORS				 2
 #define SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS					10
 
-extern const SKP_int16 SigProc_Resample_2_3_coarsest_INTERPOL[SigProc_Resample_2_3_coarsest_NUM_INTERPOLATORS][SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_2_3_coarsest_INTERPOL[SigProc_Resample_2_3_coarsest_NUM_INTERPOLATORS][SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS];
 
 #define SigProc_Resample_3_2_coarse_NUM_INTERPOLATORS				 3
 #define SigProc_Resample_3_2_coarse_NUM_FIR_COEFS					 8
 
-extern const SKP_int16 SigProc_Resample_3_2_coarse_INTERPOL[SigProc_Resample_3_2_coarse_NUM_INTERPOLATORS][SigProc_Resample_3_2_coarse_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_3_2_coarse_INTERPOL[SigProc_Resample_3_2_coarse_NUM_INTERPOLATORS][SigProc_Resample_3_2_coarse_NUM_FIR_COEFS];
 
 #define SigProc_Resample_147_40_NUM_INTERPOLATORS					 147
 #define SigProc_Resample_147_40_NUM_FIR_COEFS						 20
 
-extern const SKP_int16 SigProc_Resample_147_40_INTERPOL[SigProc_Resample_147_40_NUM_INTERPOLATORS][SigProc_Resample_147_40_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_147_40_INTERPOL[SigProc_Resample_147_40_NUM_INTERPOLATORS][SigProc_Resample_147_40_NUM_FIR_COEFS];
 
 #define SigProc_Resample_147_40_alt_NUM_INTERPOLATORS				 147
 #define SigProc_Resample_147_40_alt_NUM_FIR_COEFS					 10
 
-extern const SKP_int16 SigProc_Resample_147_40_alt_INTERPOL[SigProc_Resample_147_40_alt_NUM_INTERPOLATORS][SigProc_Resample_147_40_alt_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_147_40_alt_INTERPOL[SigProc_Resample_147_40_alt_NUM_INTERPOLATORS][SigProc_Resample_147_40_alt_NUM_FIR_COEFS];
 
 #define SigProc_Resample_147_40_coarse_NUM_INTERPOLATORS			 147
 #define SigProc_Resample_147_40_coarse_NUM_FIR_COEFS				 16
 
-extern const SKP_int16 SigProc_Resample_147_40_coarse_INTERPOL[SigProc_Resample_147_40_coarse_NUM_INTERPOLATORS][SigProc_Resample_147_40_coarse_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_147_40_coarse_INTERPOL[SigProc_Resample_147_40_coarse_NUM_INTERPOLATORS][SigProc_Resample_147_40_coarse_NUM_FIR_COEFS];
 
 #define SigProc_Resample_40_147_NUM_INTERPOLATORS					 40
 #define SigProc_Resample_40_147_NUM_FIR_COEFS						 60
 
-extern const SKP_int16 SigProc_Resample_40_147_INTERPOL[SigProc_Resample_40_147_NUM_INTERPOLATORS][SigProc_Resample_40_147_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_40_147_INTERPOL[SigProc_Resample_40_147_NUM_INTERPOLATORS][SigProc_Resample_40_147_NUM_FIR_COEFS];
 
 #define SigProc_Resample_40_147_coarse_NUM_INTERPOLATORS			 40
 #define SigProc_Resample_40_147_coarse_NUM_FIR_COEFS				 30
 
-extern const SKP_int16 SigProc_Resample_40_147_coarse_INTERPOL[SigProc_Resample_40_147_coarse_NUM_INTERPOLATORS][SigProc_Resample_40_147_coarse_NUM_FIR_COEFS];
+extern const int16_t SigProc_Resample_40_147_coarse_INTERPOL[SigProc_Resample_40_147_coarse_NUM_INTERPOLATORS][SigProc_Resample_40_147_coarse_NUM_FIR_COEFS];
 
 #ifdef  __cplusplus
 }

@@ -28,22 +28,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_main_FIX.h"
 
 /* Control encoder SNR */
-SKP_int SKP_Silk_control_encoder_FIX( 
+int SKP_Silk_control_encoder_FIX( 
     SKP_Silk_encoder_state_FIX  *psEnc,             /* I/O  Pointer to Silk encoder state                   */
-    const SKP_int               API_fs_kHz,         /* I    External (API) sampling rate (kHz)              */
-    const SKP_int               PacketSize_ms,      /* I    Packet length (ms)                              */
-    SKP_int32                   TargetRate_bps,     /* I    Target max bitrate (bps) (used if SNR_dB == 0)  */
-    const SKP_int               PacketLoss_perc,    /* I    Packet loss rate (in percent)                   */
-    const SKP_int               INBandFec_enabled,  /* I    Enable (1) / disable (0) inband FEC             */
-    const SKP_int               DTX_enabled,        /* I    Enable / disable DTX                            */
-    const SKP_int               InputFramesize_ms,  /* I    Inputframe in ms                                */
-    const SKP_int               Complexity          /* I    Complexity (0->low; 1->medium; 2->high)         */
+    const int               API_fs_kHz,         /* I    External (API) sampling rate (kHz)              */
+    const int               PacketSize_ms,      /* I    Packet length (ms)                              */
+    int32_t                   TargetRate_bps,     /* I    Target max bitrate (bps) (used if SNR_dB == 0)  */
+    const int               PacketLoss_perc,    /* I    Packet loss rate (in percent)                   */
+    const int               INBandFec_enabled,  /* I    Enable (1) / disable (0) inband FEC             */
+    const int               DTX_enabled,        /* I    Enable / disable DTX                            */
+    const int               InputFramesize_ms,  /* I    Inputframe in ms                                */
+    const int               Complexity          /* I    Complexity (0->low; 1->medium; 2->high)         */
 )
 {
-    SKP_int32 LBRRRate_thres_bps;
-    SKP_int   k, fs_kHz, ret = 0;
-    SKP_int32 frac_Q6;
-    const SKP_int32 *rateTable;
+    int32_t LBRRRate_thres_bps;
+    int   k, fs_kHz, ret = 0;
+    int32_t frac_Q6;
+    const int32_t *rateTable;
 
     /* State machine for the SWB/WB switching */
     fs_kHz = psEnc->sCmn.fs_kHz;
@@ -82,28 +82,28 @@ SKP_int SKP_Silk_control_encoder_FIX(
 #endif
                 ( psEnc->speech_activity_Q8 < 128 && psEnc->sCmn.nFramesInPayloadBuf == 0 ) ) {
 
-                    SKP_int16 x_buf[    2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
-                    SKP_int16 x_bufout[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ];
+                    int16_t x_buf[    2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
+                    int16_t x_bufout[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ];
                     
                     psEnc->sCmn.bitrateDiff = 0;
                     fs_kHz = 16;
 
-                    SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                    SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 
                     SKP_memset( psEnc->sCmn.resample24To16state, 0, sizeof( psEnc->sCmn.resample24To16state ) );
                     
 #if LOW_COMPLEXITY_ONLY
                     {
-                        SKP_int16 scratch[ ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ];
-                        SKP_Silk_resample_2_3_coarse( &x_bufout[ 0 ], psEnc->sCmn.resample24To16state, &x_buf[ 0 ], SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape, (SKP_int16*)scratch );
+                        int16_t scratch[ ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ];
+                        SKP_Silk_resample_2_3_coarse( &x_bufout[ 0 ], psEnc->sCmn.resample24To16state, &x_buf[ 0 ], SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape, (int16_t*)scratch );
                     }
 #else
                     SKP_Silk_resample_2_3( &x_bufout[ 0 ], psEnc->sCmn.resample24To16state, &x_buf[ 0 ], SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape );
 #endif
 
                     /* set the first frame to zero, no performance difference was noticed though */
-                    SKP_memset( x_bufout, 0, 320 * sizeof( SKP_int16 ) );
-                    SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                    SKP_memset( x_bufout, 0, 320 * sizeof( int16_t ) );
+                    SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 
 #if SWITCH_TRANSITION_FILTERING
                     psEnc->sCmn.sLP.transition_frame_no = 0; /* Transition phase complete */
@@ -120,22 +120,22 @@ SKP_int SKP_Silk_control_encoder_FIX(
                 ( API_fs_kHz > psEnc->sCmn.fs_kHz && TargetRate_bps >= WB2SWB_BITRATE_BPS && psEnc->sCmn.sSWBdetect.WB_detected == 0 ) && 
                 ( psEnc->speech_activity_Q8 < 128 && psEnc->sCmn.nFramesInPayloadBuf == 0 ) ) {
 
-                SKP_int16 x_buf[          2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
-                SKP_int16 x_bufout[ 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 2 ]; 
-                SKP_int32 resample16To24state[ 11 ];
+                int16_t x_buf[          2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
+                int16_t x_bufout[ 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 2 ]; 
+                int32_t resample16To24state[ 11 ];
 
                 psEnc->sCmn.bitrateDiff = 0;
                 fs_kHz = 24;
                 
-                SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 
                 SKP_memset( resample16To24state, 0, sizeof(resample16To24state) );
                 
                 SKP_Silk_resample_3_2( &x_bufout[ 0 ], resample16To24state, &x_buf[ 0 ], SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape );
 
                 /* set the first frame to zero, no performance difference was noticed though */
-                SKP_memset( x_bufout, 0, 480 * sizeof( SKP_int16 ) );
-                SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                SKP_memset( x_bufout, 0, 480 * sizeof( int16_t ) );
+                SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 #if SWITCH_TRANSITION_FILTERING
                 psEnc->sCmn.sLP.mode = 1; /* Switch up */
 #endif
@@ -159,9 +159,9 @@ SKP_int SKP_Silk_control_encoder_FIX(
 #endif
                     ( psEnc->speech_activity_Q8 < 128 && psEnc->sCmn.nFramesInPayloadBuf == 0 ) ) {
 
-                    SKP_int16 x_buf[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
+                    int16_t x_buf[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
 
-                    SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                    SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
     
                     psEnc->sCmn.bitrateDiff = 0;
                     fs_kHz = 12;
@@ -169,9 +169,9 @@ SKP_int SKP_Silk_control_encoder_FIX(
                     if( API_fs_kHz == 24 ) {
 
                         /* Intermediate upsampling of x_bufFIX from 16 to 24 kHz */
-                        SKP_int16 x_buf24[ 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 2 ]; 
-                        SKP_int32 scratch[    3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
-                        SKP_int32 resample16To24state[ 11 ];
+                        int16_t x_buf24[ 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 2 ]; 
+                        int32_t scratch[    3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
+                        int32_t resample16To24state[ 11 ];
 
                         SKP_memset( resample16To24state, 0, sizeof( resample16To24state ) );
                         SKP_Silk_resample_3_2( &x_buf24[ 0 ], resample16To24state, &x_buf[ 0 ], SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape );
@@ -181,18 +181,18 @@ SKP_int SKP_Silk_control_encoder_FIX(
                         SKP_Silk_resample_1_2_coarse( &x_buf24[ 0 ], psEnc->sCmn.resample24To12state, &x_buf[ 0 ], scratch, SKP_RSHIFT( SKP_SMULBB( 3, SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape ), 2 ) );
 
                         /* set the first frame to zero, no performance difference was noticed though */
-                        SKP_memset( x_buf, 0, 240 * sizeof( SKP_int16 ) );
-                        SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                        SKP_memset( x_buf, 0, 240 * sizeof( int16_t ) );
+                        SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 
                     } else if( API_fs_kHz == 16 ) {
-                        SKP_int16 x_bufout[ 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 4 ]; 
+                        int16_t x_bufout[ 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 4 ]; 
                         SKP_memset( psEnc->sCmn.resample16To12state, 0, sizeof( psEnc->sCmn.resample16To12state ) );
                         
                         SKP_Silk_resample_3_4( &x_bufout[ 0 ], psEnc->sCmn.resample16To12state, &x_buf[ 0 ], SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape );
                     
                         /* set the first frame to zero, no performance difference was noticed though */
-                        SKP_memset( x_bufout, 0, 240 * sizeof( SKP_int16 ) );
-                        SKP_memcpy( psEnc->x_buf, x_bufout, ( (2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX) / 4 ) * sizeof( SKP_int16 ) );
+                        SKP_memset( x_bufout, 0, 240 * sizeof( int16_t ) );
+                        SKP_memcpy( psEnc->x_buf, x_bufout, ( (2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX) / 4 ) * sizeof( int16_t ) );
                     }
 #if SWITCH_TRANSITION_FILTERING
                     psEnc->sCmn.sLP.transition_frame_no = 0; /* Transition phase complete */
@@ -210,9 +210,9 @@ SKP_int SKP_Silk_control_encoder_FIX(
                 ( API_fs_kHz > psEnc->sCmn.fs_kHz && TargetRate_bps >= MB2WB_BITRATE_BPS ) &&
                 ( psEnc->speech_activity_Q8 < 128 && psEnc->sCmn.nFramesInPayloadBuf == 0 ) ) {
 
-                SKP_int16 x_buf[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
+                int16_t x_buf[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
 
-                SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 
                 psEnc->sCmn.bitrateDiff = 0;
                 fs_kHz = 16;
@@ -220,12 +220,12 @@ SKP_int SKP_Silk_control_encoder_FIX(
                 /* Reset state of the resampler to be used */
                 if( API_fs_kHz == 24 ) {
             
-                    SKP_int16 x_bufout[ 2 * 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 3 ]; 
+                    int16_t x_bufout[ 2 * 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 3 ]; 
 
                     /* Intermediate upsampling of x_bufFIX from 12 to 24 kHz */
-                    SKP_int16 x_buf24[ 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ]; 
-                    SKP_int32 scratch[    3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
-                    SKP_int32 resample12To24state[6];
+                    int16_t x_buf24[ 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ]; 
+                    int32_t scratch[    3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
+                    int32_t resample12To24state[6];
 
                     SKP_memset( resample12To24state, 0, sizeof( resample12To24state ) );
                     SKP_Silk_resample_2_1_coarse( &x_buf[ 0 ], resample12To24state, &x_buf24[ 0 ], scratch, SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape );
@@ -233,15 +233,15 @@ SKP_int SKP_Silk_control_encoder_FIX(
                     SKP_memset( psEnc->sCmn.resample24To16state, 0, sizeof( psEnc->sCmn.resample24To16state ) );
                 
 #if LOW_COMPLEXITY_ONLY
-                    SKP_assert( sizeof( SKP_int16 ) * ( 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ) <= sizeof( scratch ) );
-                    SKP_Silk_resample_2_3_coarse( &x_bufout[ 0 ], psEnc->sCmn.resample24To16state, &x_buf24[ 0 ], SKP_LSHIFT( SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape, 1 ), (SKP_int16*)scratch );
+                    SKP_assert( sizeof( int16_t ) * ( 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ) <= sizeof( scratch ) );
+                    SKP_Silk_resample_2_3_coarse( &x_bufout[ 0 ], psEnc->sCmn.resample24To16state, &x_buf24[ 0 ], SKP_LSHIFT( SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape, 1 ), (int16_t*)scratch );
 #else
                     SKP_Silk_resample_2_3( &x_bufout[ 0 ], psEnc->sCmn.resample24To16state, &x_buf24[ 0 ], SKP_LSHIFT( SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape, 1 ) );
 #endif
                 
                     /* set the first frame to zero, no performance difference was noticed though */
-                    SKP_memset( x_bufout, 0, 320 * sizeof( SKP_int16 ) );
-                    SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                    SKP_memset( x_bufout, 0, 320 * sizeof( int16_t ) );
+                    SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
                 }
 #if SWITCH_TRANSITION_FILTERING
                 psEnc->sCmn.sLP.mode = 1; /* Switch up */
@@ -266,19 +266,19 @@ SKP_int SKP_Silk_control_encoder_FIX(
 #endif
                     ( psEnc->speech_activity_Q8 < 128 && psEnc->sCmn.nFramesInPayloadBuf == 0 ) ) {
                 
-                    SKP_int16 x_buf[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
+                    int16_t x_buf[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
 
-                    SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                    SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 
                     psEnc->sCmn.bitrateDiff = 0;
                     fs_kHz = 8;
 
                     if( API_fs_kHz == 24 ) {
 
-                        SKP_int32 scratch[    3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
+                        int32_t scratch[    3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
                         /* Intermediate upsampling of x_buf from 12 to 24 kHz */
-                        SKP_int16 x_buf24[ 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
-                        SKP_int32 resample12To24state[ 6 ];
+                        int16_t x_buf24[ 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
+                        int32_t resample12To24state[ 6 ];
 
                         SKP_memset( resample12To24state, 0, sizeof( resample12To24state ) );
                         SKP_Silk_resample_2_1_coarse( &x_buf[ 0 ], resample12To24state, &x_buf24[ 0 ], scratch, SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape );
@@ -288,27 +288,27 @@ SKP_int SKP_Silk_control_encoder_FIX(
                         SKP_Silk_resample_1_3( &x_buf[ 0 ], psEnc->sCmn.resample24To8state, &x_buf24[ 0 ], SKP_LSHIFT( SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape, 1 ) );
 
                         /* set the first frame to zero, no performance difference was noticed though */
-                        SKP_memset( x_buf, 0, 160 * sizeof( SKP_int16 ) );
-                        SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                        SKP_memset( x_buf, 0, 160 * sizeof( int16_t ) );
+                        SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 
                     } else if( API_fs_kHz == 16 ) {
                         /* Intermediate upsampling of x_bufFIX from 12 to 16 kHz */
-                        SKP_int16 x_buf16[  3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 2 ]; 
-                        SKP_int32 resample12To16state[11];
+                        int16_t x_buf16[  3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 2 ]; 
+                        int32_t resample12To16state[11];
                         
                         SKP_memset( resample12To16state, 0, sizeof( resample12To16state ) );
                         SKP_Silk_resample_3_2( &x_buf16[ 0 ], resample12To16state, &x_buf[ 0 ], SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape );
                         
                         /* set the first frame to zero, no performance difference was noticed though */
-                        SKP_memset( x_buf, 0, 160 * sizeof( SKP_int16 ) );
-                        SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                        SKP_memset( x_buf, 0, 160 * sizeof( int16_t ) );
+                        SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 
                     } else if( API_fs_kHz == 12 ) {
-                        SKP_int16 x_bufout[ 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 3 ]; 
+                        int16_t x_bufout[ 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 3 ]; 
                         SKP_memset( psEnc->sCmn.resample12To8state, 0, sizeof( psEnc->sCmn.resample12To8state ) );
 #if LOW_COMPLEXITY_ONLY
                         {
-                            SKP_int16 scratch[ ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ];
+                            int16_t scratch[ ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ];
                             SKP_Silk_resample_2_3_coarse( &x_bufout[ 0 ], psEnc->sCmn.resample12To8state, &x_buf[ 0 ], 
                                 SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape, scratch );
                         }
@@ -316,8 +316,8 @@ SKP_int SKP_Silk_control_encoder_FIX(
                         SKP_Silk_resample_2_3( &x_bufout[ 0 ], psEnc->sCmn.resample12To8state, &x_buf[ 0 ], SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape );
 #endif
                         /* set the first frame to zero, no performance difference was noticed though */
-                        SKP_memset( x_bufout, 0, 160 * sizeof( SKP_int16 ) );
-                        SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * (2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX) /3 ) * sizeof( SKP_int16 ) );
+                        SKP_memset( x_bufout, 0, 160 * sizeof( int16_t ) );
+                        SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * (2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX) /3 ) * sizeof( int16_t ) );
                     }
 #if SWITCH_TRANSITION_FILTERING
                     psEnc->sCmn.sLP.transition_frame_no = 0; /* Transition phase complete */
@@ -335,18 +335,18 @@ SKP_int SKP_Silk_control_encoder_FIX(
                 ( API_fs_kHz > psEnc->sCmn.fs_kHz && TargetRate_bps >= NB2MB_BITRATE_BPS ) &&
                 ( psEnc->speech_activity_Q8 < 128 && psEnc->sCmn.nFramesInPayloadBuf == 0 ) ) {
 
-                SKP_int16 x_buf[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
+                int16_t x_buf[ 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ]; 
 
-                SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                SKP_memcpy( x_buf, psEnc->x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
 
                 psEnc->sCmn.bitrateDiff = 0;
                 fs_kHz = 12;
 
                 /* Reset state of the resampler to be used */
                 if( API_fs_kHz == 24 ) {
-                    SKP_int16 x_buf24[  3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ]; 
-                    SKP_int32 scratch[ 3 * 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 2 ];
-                    SKP_int32 resample8To24state[ 7 ];
+                    int16_t x_buf24[  3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ]; 
+                    int32_t scratch[ 3 * 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) / 2 ];
+                    int32_t resample8To24state[ 7 ];
 
                     /* Intermediate upsampling of x_bufFIX from 8 to 24 kHz */
                     SKP_memset( resample8To24state, 0, sizeof( resample8To24state ) );
@@ -357,13 +357,13 @@ SKP_int SKP_Silk_control_encoder_FIX(
                     SKP_Silk_resample_1_2_coarse( &x_buf24[ 0 ], psEnc->sCmn.resample24To12state, &x_buf[ 0 ], scratch, SKP_RSHIFT( SKP_SMULBB( 3, SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape ), 1 ) );
                 
                     /* set the first frame to zero, no performance difference was noticed though */
-                    SKP_memset( x_buf, 0, 240 * sizeof( SKP_int16 ) );
-                    SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                    SKP_memset( x_buf, 0, 240 * sizeof( int16_t ) );
+                    SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
                 
                 } else if( API_fs_kHz == 16 ) {
-                    SKP_int16 x_buf16[ 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ]; 
-                    SKP_int32 scratch[ 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
-                    SKP_int32 resample8To16state[ 6 ];
+                    int16_t x_buf16[ 2 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ]; 
+                    int32_t scratch[ 3 * ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) ];
+                    int32_t resample8To16state[ 6 ];
 
                     /* Intermediate upsampling of x_bufFIX from 8 to 16 kHz */
                     SKP_memset( resample8To16state, 0, sizeof( resample8To16state ) );
@@ -374,8 +374,8 @@ SKP_int SKP_Silk_control_encoder_FIX(
                     SKP_Silk_resample_3_4( &x_buf[ 0 ], psEnc->sCmn.resample16To12state, &x_buf16[ 0 ], SKP_LSHIFT( SKP_LSHIFT( psEnc->sCmn.frame_length, 1 ) + psEnc->sCmn.la_shape, 1 ) );
                 
                     /* set the first frame to zero, no performance difference was noticed though */
-                    SKP_memset( x_buf, 0, 240 * sizeof( SKP_int16 ) );
-                    SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                    SKP_memset( x_buf, 0, 240 * sizeof( int16_t ) );
+                    SKP_memcpy( psEnc->x_buf, x_buf, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( int16_t ) );
                 }
 #if SWITCH_TRANSITION_FILTERING
                 psEnc->sCmn.sLP.mode = 1; /* Switch up */
@@ -397,7 +397,7 @@ SKP_int SKP_Silk_control_encoder_FIX(
         psEnc->sCmn.sLP.transition_frame_no = 0;
 
         /* Reset transition filter state */
-        SKP_memset( psEnc->sCmn.sLP.In_LP_State, 0, 2 * sizeof( SKP_int32 ) );
+        SKP_memset( psEnc->sCmn.sLP.In_LP_State, 0, 2 * sizeof( int32_t ) );
     }
 #endif
 
@@ -410,11 +410,11 @@ SKP_int SKP_Silk_control_encoder_FIX(
         SKP_memset( &psEnc->sPrefilt,        0, sizeof( SKP_Silk_prefilter_state_FIX ) );
         SKP_memset( &psEnc->sNSQ,            0, sizeof( SKP_Silk_nsq_state ) );
         SKP_memset( &psEnc->sPred,           0, sizeof( SKP_Silk_predict_state_FIX ) );
-        SKP_memset( psEnc->sNSQ.xq,          0, ( 2 * MAX_FRAME_LENGTH ) * sizeof( SKP_int16 ) );
-        SKP_memset( psEnc->sNSQ_LBRR.xq,     0, ( 2 * MAX_FRAME_LENGTH ) * sizeof( SKP_int16 ) );
+        SKP_memset( psEnc->sNSQ.xq,          0, ( 2 * MAX_FRAME_LENGTH ) * sizeof( int16_t ) );
+        SKP_memset( psEnc->sNSQ_LBRR.xq,     0, ( 2 * MAX_FRAME_LENGTH ) * sizeof( int16_t ) );
         SKP_memset( psEnc->sCmn.LBRR_buffer, 0, MAX_LBRR_DELAY * sizeof( SKP_SILK_LBRR_struct ) );
 #if SWITCH_TRANSITION_FILTERING
-        SKP_memset( psEnc->sCmn.sLP.In_LP_State, 0, 2 * sizeof( SKP_int32 ) );
+        SKP_memset( psEnc->sCmn.sLP.In_LP_State, 0, 2 * sizeof( int32_t ) );
         if( psEnc->sCmn.sLP.mode == 1 ) {
             /* Begin transition phase */
             psEnc->sCmn.sLP.transition_frame_no = 1;
@@ -429,7 +429,7 @@ SKP_int SKP_Silk_control_encoder_FIX(
         psEnc->sCmn.oldest_LBRR_idx     = 0;
         psEnc->sCmn.TargetRate_bps      = 0; /* ensures that psEnc->SNR_dB is recomputed */
 
-        SKP_memset( psEnc->sPred.prev_NLSFq_Q15, 0, MAX_LPC_ORDER * sizeof( SKP_int ) );
+        SKP_memset( psEnc->sPred.prev_NLSFq_Q15, 0, MAX_LPC_ORDER * sizeof( int ) );
 
         /* Initialize non-zero parameters */
         psEnc->sCmn.prevLag                 = 100;
@@ -634,7 +634,7 @@ void SKP_Silk_LBRR_ctrl_FIX(
     SKP_Silk_encoder_control_FIX    *psEncCtrl  /* I/O  encoder control                             */
 )
 {
-    SKP_int LBRR_usage;
+    int LBRR_usage;
 
     if( psEnc->sCmn.LBRR_enabled ) {
         /* Control LBRR */

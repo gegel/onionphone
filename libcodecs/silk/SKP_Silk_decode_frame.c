@@ -32,19 +32,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /****************/
 /* Decode frame */
 /****************/
-SKP_int SKP_Silk_decode_frame(
+int SKP_Silk_decode_frame(
     SKP_Silk_decoder_state          *psDec,             /* I/O  Pointer to Silk decoder state               */
-    SKP_int16                       pOut[],             /* O    Pointer to output speech frame              */
-    SKP_int16                       *pN,                /* O    Pointer to size of output frame             */
-    const SKP_uint8                 pCode[],            /* I    Pointer to payload                          */
-    const SKP_int                   nBytes,             /* I    Payload length                              */
-    SKP_int                         action,             /* I    Action from Jitter Buffer                   */
-    SKP_int                         *decBytes           /* O    Used bytes to decode this frame             */
+    int16_t                       pOut[],             /* O    Pointer to output speech frame              */
+    int16_t                       *pN,                /* O    Pointer to size of output frame             */
+    const uint8_t                 pCode[],            /* I    Pointer to payload                          */
+    const int                   nBytes,             /* I    Payload length                              */
+    int                         action,             /* I    Action from Jitter Buffer                   */
+    int                         *decBytes           /* O    Used bytes to decode this frame             */
 )
 {
     SKP_Silk_decoder_control sDecCtrl;
-    SKP_int         L, fs_Khz_old, LPC_order_old, ret = 0;
-    SKP_int         Pulses[ MAX_FRAME_LENGTH ];
+    int         L, fs_Khz_old, LPC_order_old, ret = 0;
+    int         Pulses[ MAX_FRAME_LENGTH ];
 
 
     L = psDec->frame_length;
@@ -136,7 +136,7 @@ SKP_int SKP_Silk_decode_frame(
     /*************************/
     /* Update output buffer. */
     /*************************/
-    SKP_memcpy( psDec->outBuf, pOut, L * sizeof( SKP_int16 ) );
+    SKP_memcpy( psDec->outBuf, pOut, L * sizeof( int16_t ) );
 
     /****************************************************************/
     /* Ensure smooth connection of extrapolated and good frames     */
@@ -158,7 +158,7 @@ SKP_int SKP_Silk_decode_frame(
     /********************************************/
     /* set output frame length                    */
     /********************************************/
-    *pN = ( SKP_int16 )L;
+    *pN = ( int16_t )L;
 
     /* Update some decoder state variables */
     psDec->lagPrev = sDecCtrl.pitchL[ NB_SUBFR - 1 ];

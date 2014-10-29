@@ -29,66 +29,66 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 SKP_INLINE void SKP_Silk_nsq_scale_states(
     SKP_Silk_nsq_state  *NSQ,               /* I/O NSQ state                        */
-    const SKP_int16     x[],                /* I input in Q0                        */
-    SKP_int32           x_sc_Q10[],         /* O input scaled with 1/Gain           */
-    SKP_int             length,             /* I length of input                    */
-    SKP_int16           sLTP[],             /* I re-whitened LTP state in Q0        */
-    SKP_int32           sLTP_Q16[],         /* O LTP state matching scaled input    */
-    SKP_int             subfr,              /* I subframe number                    */
-    const SKP_int       LTP_scale_Q14,      /* I                                    */
-    const SKP_int32     Gains_Q16[ NB_SUBFR ], /* I                                 */
-    const SKP_int       pitchL[ NB_SUBFR ]  /* I                                    */
+    const int16_t     x[],                /* I input in Q0                        */
+    int32_t           x_sc_Q10[],         /* O input scaled with 1/Gain           */
+    int             length,             /* I length of input                    */
+    int16_t           sLTP[],             /* I re-whitened LTP state in Q0        */
+    int32_t           sLTP_Q16[],         /* O LTP state matching scaled input    */
+    int             subfr,              /* I subframe number                    */
+    const int       LTP_scale_Q14,      /* I                                    */
+    const int32_t     Gains_Q16[ NB_SUBFR ], /* I                                 */
+    const int       pitchL[ NB_SUBFR ]  /* I                                    */
 );
 
 SKP_INLINE void SKP_Silk_noise_shape_quantizer(
     SKP_Silk_nsq_state  *NSQ,               /* I/O  NSQ state                       */
-    SKP_int             sigtype,            /* I    Signal type                     */
-    const SKP_int32     x_sc_Q10[],         /* I                                    */
-    SKP_int             q[],                /* O                                    */
-    SKP_int16           xq[],               /* O                                    */
-    SKP_int32           sLTP_Q16[],         /* I/O  LTP state                       */
-    const SKP_int16     a_Q12[],            /* I    Short term prediction coefs     */
-    const SKP_int16     b_Q14[],            /* I    Long term prediction coefs      */
-    const SKP_int16     AR_shp_Q13[],       /* I    Noise shaping AR coefs          */
-    SKP_int             lag,                /* I    Pitch lag                       */
-    SKP_int32           HarmShapeFIRPacked_Q14, /* I                                */
-    SKP_int             Tilt_Q14,           /* I    Spectral tilt                   */
-    SKP_int32           LF_shp_Q14,         /* I                                    */
-    SKP_int32           Gain_Q16,           /* I                                    */
-    SKP_int             Lambda_Q10,         /* I                                    */
-    SKP_int             offset_Q10,         /* I                                    */
-    SKP_int             length,             /* I    Input length                    */
-    SKP_int             shapingLPCOrder,    /* I    Noise shaping AR filter order   */
-    SKP_int             predictLPCOrder     /* I    Prediction filter order         */
+    int             sigtype,            /* I    Signal type                     */
+    const int32_t     x_sc_Q10[],         /* I                                    */
+    int             q[],                /* O                                    */
+    int16_t           xq[],               /* O                                    */
+    int32_t           sLTP_Q16[],         /* I/O  LTP state                       */
+    const int16_t     a_Q12[],            /* I    Short term prediction coefs     */
+    const int16_t     b_Q14[],            /* I    Long term prediction coefs      */
+    const int16_t     AR_shp_Q13[],       /* I    Noise shaping AR coefs          */
+    int             lag,                /* I    Pitch lag                       */
+    int32_t           HarmShapeFIRPacked_Q14, /* I                                */
+    int             Tilt_Q14,           /* I    Spectral tilt                   */
+    int32_t           LF_shp_Q14,         /* I                                    */
+    int32_t           Gain_Q16,           /* I                                    */
+    int             Lambda_Q10,         /* I                                    */
+    int             offset_Q10,         /* I                                    */
+    int             length,             /* I    Input length                    */
+    int             shapingLPCOrder,    /* I    Noise shaping AR filter order   */
+    int             predictLPCOrder     /* I    Prediction filter order         */
 );
 
 void SKP_Silk_NSQ(
     SKP_Silk_encoder_state          *psEncC,                                    /* I/O  Encoder State                       */
     SKP_Silk_encoder_control        *psEncCtrlC,                                /* I    Encoder Control                     */
     SKP_Silk_nsq_state              *NSQ,                                       /* I/O  NSQ state                           */
-    const SKP_int16                 x[],                                        /* I    prefiltered input signal            */
-    SKP_int                         q[],                                        /* O    quantized qulse signal              */
-    const SKP_int                   LSFInterpFactor_Q2,                         /* I    LSF interpolation factor in Q2      */
-    const SKP_int16                 PredCoef_Q12[ 2 * MAX_LPC_ORDER ],          /* I    Short term prediction coefficients  */
-    const SKP_int16                 LTPCoef_Q14[ LTP_ORDER * NB_SUBFR ],        /* I    Long term prediction coefficients   */
-    const SKP_int16                 AR2_Q13[ NB_SUBFR * SHAPE_LPC_ORDER_MAX ],  /* I                                        */
-    const SKP_int                   HarmShapeGain_Q14[ NB_SUBFR ],              /* I                                        */
-    const SKP_int                   Tilt_Q14[ NB_SUBFR ],                       /* I    Spectral tilt                       */
-    const SKP_int32                 LF_shp_Q14[ NB_SUBFR ],                     /* I                                        */
-    const SKP_int32                 Gains_Q16[ NB_SUBFR ],                      /* I                                        */
-    const SKP_int                   Lambda_Q10,                                 /* I                                        */
-    const SKP_int                   LTP_scale_Q14                               /* I    LTP state scaling                   */
+    const int16_t                 x[],                                        /* I    prefiltered input signal            */
+    int                         q[],                                        /* O    quantized qulse signal              */
+    const int                   LSFInterpFactor_Q2,                         /* I    LSF interpolation factor in Q2      */
+    const int16_t                 PredCoef_Q12[ 2 * MAX_LPC_ORDER ],          /* I    Short term prediction coefficients  */
+    const int16_t                 LTPCoef_Q14[ LTP_ORDER * NB_SUBFR ],        /* I    Long term prediction coefficients   */
+    const int16_t                 AR2_Q13[ NB_SUBFR * SHAPE_LPC_ORDER_MAX ],  /* I                                        */
+    const int                   HarmShapeGain_Q14[ NB_SUBFR ],              /* I                                        */
+    const int                   Tilt_Q14[ NB_SUBFR ],                       /* I    Spectral tilt                       */
+    const int32_t                 LF_shp_Q14[ NB_SUBFR ],                     /* I                                        */
+    const int32_t                 Gains_Q16[ NB_SUBFR ],                      /* I                                        */
+    const int                   Lambda_Q10,                                 /* I                                        */
+    const int                   LTP_scale_Q14                               /* I    LTP state scaling                   */
 )
 {
-    SKP_int     k, lag, start_idx, LSF_interpolation_flag;
-    const SKP_int16 *A_Q12, *B_Q14, *AR_shp_Q13;
-    SKP_int16   *pxq;
-    SKP_int32   sLTP_Q16[ 2 * MAX_FRAME_LENGTH ];
-    SKP_int16   sLTP[     2 * MAX_FRAME_LENGTH ];
-    SKP_int32   HarmShapeFIRPacked_Q14;
-    SKP_int     offset_Q10;
-    SKP_int32   FiltState[ MAX_LPC_ORDER ];
-    SKP_int32   x_sc_Q10[ MAX_FRAME_LENGTH / NB_SUBFR ];
+    int     k, lag, start_idx, LSF_interpolation_flag;
+    const int16_t *A_Q12, *B_Q14, *AR_shp_Q13;
+    int16_t   *pxq;
+    int32_t   sLTP_Q16[ 2 * MAX_FRAME_LENGTH ];
+    int16_t   sLTP[     2 * MAX_FRAME_LENGTH ];
+    int32_t   HarmShapeFIRPacked_Q14;
+    int     offset_Q10;
+    int32_t   FiltState[ MAX_LPC_ORDER ];
+    int32_t   x_sc_Q10[ MAX_FRAME_LENGTH / NB_SUBFR ];
 
     NSQ->rand_seed  =  psEncCtrlC->Seed;
     /* Set unvoiced lag to the previous one, overwrite later for voiced */
@@ -116,7 +116,7 @@ void SKP_Silk_NSQ(
         /* Noise shape parameters */
         SKP_assert( HarmShapeGain_Q14[ k ] >= 0 );
         HarmShapeFIRPacked_Q14  =                        SKP_RSHIFT( HarmShapeGain_Q14[ k ], 2 );
-        HarmShapeFIRPacked_Q14 |= SKP_LSHIFT( ( SKP_int32 )SKP_RSHIFT( HarmShapeGain_Q14[ k ], 1 ), 16 );
+        HarmShapeFIRPacked_Q14 |= SKP_LSHIFT( ( int32_t )SKP_RSHIFT( HarmShapeGain_Q14[ k ], 1 ), 16 );
 
         if( psEncCtrlC->sigtype == SIG_TYPE_VOICED ) {
             /* Voiced */
@@ -130,7 +130,7 @@ void SKP_Silk_NSQ(
                 start_idx = psEncC->frame_length - lag - psEncC->predictLPCOrder - LTP_ORDER / 2;
                 start_idx = SKP_LIMIT( start_idx, 0, psEncC->frame_length - psEncC->predictLPCOrder ); /* Limit */
                 
-                SKP_memset( FiltState, 0, psEncC->predictLPCOrder * sizeof( SKP_int32 ) );
+                SKP_memset( FiltState, 0, psEncC->predictLPCOrder * sizeof( int32_t ) );
                 SKP_Silk_MA_Prediction( &NSQ->xq[ start_idx + k * ( psEncC->frame_length >> 2 ) ], 
                     A_Q12, FiltState, sLTP + start_idx, psEncC->frame_length - start_idx, psEncC->predictLPCOrder );
 
@@ -155,8 +155,8 @@ void SKP_Silk_NSQ(
     /* Save scalars for this layer */
     NSQ->lagPrev                        = psEncCtrlC->pitchL[ NB_SUBFR - 1 ];
     /* Save quantized speech and noise shaping signals */
-    SKP_memcpy( NSQ->xq,           &NSQ->xq[           psEncC->frame_length ], psEncC->frame_length * sizeof( SKP_int16 ) );
-    SKP_memcpy( NSQ->sLTP_shp_Q10, &NSQ->sLTP_shp_Q10[ psEncC->frame_length ], psEncC->frame_length * sizeof( SKP_int32 ) );
+    SKP_memcpy( NSQ->xq,           &NSQ->xq[           psEncC->frame_length ], psEncC->frame_length * sizeof( int16_t ) );
+    SKP_memcpy( NSQ->sLTP_shp_Q10, &NSQ->sLTP_shp_Q10[ psEncC->frame_length ], psEncC->frame_length * sizeof( int32_t ) );
 
 }
 
@@ -165,36 +165,36 @@ void SKP_Silk_NSQ(
 /***********************************/
 SKP_INLINE void SKP_Silk_noise_shape_quantizer(
     SKP_Silk_nsq_state  *NSQ,               /* I/O  NSQ state                       */
-    SKP_int             sigtype,            /* I    Signal type                     */
-    const SKP_int32     x_sc_Q10[],         /* I                                    */
-    SKP_int             q[],                /* O                                    */
-    SKP_int16           xq[],               /* O                                    */
-    SKP_int32           sLTP_Q16[],         /* I/O  LTP state                       */
-    const SKP_int16     a_Q12[],            /* I    Short term prediction coefs     */
-    const SKP_int16     b_Q14[],            /* I    Long term prediction coefs      */
-    const SKP_int16     AR_shp_Q13[],       /* I    Noise shaping AR coefs          */
-    SKP_int             lag,                /* I    Pitch lag                       */
-    SKP_int32           HarmShapeFIRPacked_Q14, /* I                                */
-    SKP_int             Tilt_Q14,           /* I    Spectral tilt                   */
-    SKP_int32           LF_shp_Q14,         /* I                                    */
-    SKP_int32           Gain_Q16,           /* I                                    */
-    SKP_int             Lambda_Q10,         /* I                                    */
-    SKP_int             offset_Q10,         /* I                                    */
-    SKP_int             length,             /* I    Input length                    */
-    SKP_int             shapingLPCOrder,    /* I    Noise shaping AR filter order   */
-    SKP_int             predictLPCOrder     /* I    Prediction filter order         */
+    int             sigtype,            /* I    Signal type                     */
+    const int32_t     x_sc_Q10[],         /* I                                    */
+    int             q[],                /* O                                    */
+    int16_t           xq[],               /* O                                    */
+    int32_t           sLTP_Q16[],         /* I/O  LTP state                       */
+    const int16_t     a_Q12[],            /* I    Short term prediction coefs     */
+    const int16_t     b_Q14[],            /* I    Long term prediction coefs      */
+    const int16_t     AR_shp_Q13[],       /* I    Noise shaping AR coefs          */
+    int             lag,                /* I    Pitch lag                       */
+    int32_t           HarmShapeFIRPacked_Q14, /* I                                */
+    int             Tilt_Q14,           /* I    Spectral tilt                   */
+    int32_t           LF_shp_Q14,         /* I                                    */
+    int32_t           Gain_Q16,           /* I                                    */
+    int             Lambda_Q10,         /* I                                    */
+    int             offset_Q10,         /* I                                    */
+    int             length,             /* I    Input length                    */
+    int             shapingLPCOrder,    /* I    Noise shaping AR filter order   */
+    int             predictLPCOrder     /* I    Prediction filter order         */
 )
 {
-    SKP_int     i, j;
-    SKP_int32   LTP_pred_Q14, LPC_pred_Q10, n_AR_Q10, n_LTP_Q14;
-    SKP_int32   n_LF_Q10, r_Q10, q_Q0, q_Q10;
-    SKP_int32   thr1_Q10, thr2_Q10, thr3_Q10;
-    SKP_int32   Atmp, dither;
-    SKP_int32   exc_Q10, LPC_exc_Q10, xq_Q10;
-    SKP_int32   tmp, sLF_AR_shp_Q10;
-    SKP_int32   *psLPC_Q14;
-    SKP_int32   *shp_lag_ptr, *pred_lag_ptr;
-    SKP_int32   a_Q12_tmp[ MAX_LPC_ORDER / 2 ], AR_shp_Q13_tmp[ MAX_LPC_ORDER / 2 ];
+    int     i, j;
+    int32_t   LTP_pred_Q14, LPC_pred_Q10, n_AR_Q10, n_LTP_Q14;
+    int32_t   n_LF_Q10, r_Q10, q_Q0, q_Q10;
+    int32_t   thr1_Q10, thr2_Q10, thr3_Q10;
+    int32_t   Atmp, dither;
+    int32_t   exc_Q10, LPC_exc_Q10, xq_Q10;
+    int32_t   tmp, sLF_AR_shp_Q10;
+    int32_t   *psLPC_Q14;
+    int32_t   *shp_lag_ptr, *pred_lag_ptr;
+    int32_t   a_Q12_tmp[ MAX_LPC_ORDER / 2 ], AR_shp_Q13_tmp[ MAX_LPC_ORDER / 2 ];
 
     shp_lag_ptr  = &NSQ->sLTP_shp_Q10[ NSQ->sLTP_shp_buf_idx - lag + HARM_SHAPE_FIR_TAPS / 2 ];
     pred_lag_ptr = &sLTP_Q16[ NSQ->sLTP_buf_idx - lag + LTP_ORDER / 2 ];
@@ -209,8 +209,8 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer(
     thr3_Q10 = SKP_ADD_RSHIFT32(  512,  Lambda_Q10, 1);
     
     /* Preload LPC coeficients to array on stack. Gives small performance gain */
-    SKP_memcpy( a_Q12_tmp, a_Q12, predictLPCOrder * sizeof( SKP_int16 ) );
-    SKP_memcpy( AR_shp_Q13_tmp, AR_shp_Q13, shapingLPCOrder * sizeof( SKP_int16 ) );
+    SKP_memcpy( a_Q12_tmp, a_Q12, predictLPCOrder * sizeof( int16_t ) );
+    SKP_memcpy( AR_shp_Q13_tmp, AR_shp_Q13, shapingLPCOrder * sizeof( int16_t ) );
     
     for( i = 0; i < length; i++ ) {
         /* Generate dither */
@@ -221,7 +221,7 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer(
                 
         /* Short-term prediction */
         SKP_assert( ( predictLPCOrder  & 1 ) == 0 );    /* check that order is even */
-        SKP_assert( ( (SKP_int64)a_Q12 & 3 ) == 0 );    /* check that array starts at 4-byte aligned address */
+        SKP_assert( ( (int64_t)a_Q12 & 3 ) == 0 );    /* check that array starts at 4-byte aligned address */
         SKP_assert( predictLPCOrder >= 10 );            /* check that unrolling works */
 
         /* NOTE: the code below loads two int16 values in an int32, and multiplies each using the   */
@@ -265,7 +265,7 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer(
 
         /* Noise shape feedback */
         SKP_assert( ( shapingLPCOrder       & 1 ) == 0 );   /* check that order is even */
-        SKP_assert( ( (SKP_int64)AR_shp_Q13 & 3 ) == 0 );   /* check that array starts at 4-byte aligned address */
+        SKP_assert( ( (int64_t)AR_shp_Q13 & 3 ) == 0 );   /* check that array starts at 4-byte aligned address */
         SKP_assert( shapingLPCOrder >= 12 );                /* check that unrolling works */
 
         /* Partially unrolled */
@@ -351,7 +351,7 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer(
         xq_Q10      = SKP_ADD32( LPC_exc_Q10, LPC_pred_Q10 );
         
         /* Scale XQ back to normal level before saving */
-        xq[ i ] = ( SKP_int16 )SKP_SAT16( SKP_RSHIFT_ROUND( SKP_SMULWW( xq_Q10, Gain_Q16 ), 10 ) );
+        xq[ i ] = ( int16_t )SKP_SAT16( SKP_RSHIFT_ROUND( SKP_SMULWW( xq_Q10, Gain_Q16 ), 10 ) );
         
         
         /* Update states */
@@ -369,27 +369,27 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer(
         NSQ->rand_seed += q[ i ];
     }
     /* Update LPC synth buffer */
-    SKP_memcpy( NSQ->sLPC_Q14, &NSQ->sLPC_Q14[ length ], MAX_LPC_ORDER * sizeof( SKP_int32 ) );
+    SKP_memcpy( NSQ->sLPC_Q14, &NSQ->sLPC_Q14[ length ], MAX_LPC_ORDER * sizeof( int32_t ) );
 }
 
 SKP_INLINE void SKP_Silk_nsq_scale_states(
     SKP_Silk_nsq_state  *NSQ,               /* I/O NSQ state                        */
-    const SKP_int16     x[],                /* I input in Q0                        */
-    SKP_int32           x_sc_Q10[],         /* O input scaled with 1/Gain           */
-    SKP_int             length,             /* I length of input                    */
-    SKP_int16           sLTP[],             /* I re-whitened LTP state in Q0        */
-    SKP_int32           sLTP_Q16[],         /* O LTP state matching scaled input    */
-    SKP_int             subfr,              /* I subframe number                    */
-    const SKP_int       LTP_scale_Q14,      /* I                                    */
-    const SKP_int32     Gains_Q16[ NB_SUBFR ], /* I                                 */
-    const SKP_int       pitchL[ NB_SUBFR ]  /* I                                    */
+    const int16_t     x[],                /* I input in Q0                        */
+    int32_t           x_sc_Q10[],         /* O input scaled with 1/Gain           */
+    int             length,             /* I length of input                    */
+    int16_t           sLTP[],             /* I re-whitened LTP state in Q0        */
+    int32_t           sLTP_Q16[],         /* O LTP state matching scaled input    */
+    int             subfr,              /* I subframe number                    */
+    const int       LTP_scale_Q14,      /* I                                    */
+    const int32_t     Gains_Q16[ NB_SUBFR ], /* I                                 */
+    const int       pitchL[ NB_SUBFR ]  /* I                                    */
 )
 {
-    SKP_int   i, scale_length, lag;
-    SKP_int32 inv_gain_Q16, gain_adj_Q16, inv_gain_Q32;
+    int   i, scale_length, lag;
+    int32_t inv_gain_Q16, gain_adj_Q16, inv_gain_Q32;
 
-    inv_gain_Q16 = SKP_DIV32( SKP_int32_MAX, SKP_RSHIFT( Gains_Q16[ subfr ], 1) );
-    inv_gain_Q16 = SKP_min( inv_gain_Q16, SKP_int16_MAX );
+    inv_gain_Q16 = SKP_DIV32( int32_t_MAX, SKP_RSHIFT( Gains_Q16[ subfr ], 1) );
+    inv_gain_Q16 = SKP_min( inv_gain_Q16, int16_t_MAX );
     lag          = pitchL[ subfr ];
 
     /* After rewhitening the LTP state is un-scaled */
@@ -433,7 +433,7 @@ SKP_INLINE void SKP_Silk_nsq_scale_states(
 
     /* Scale input */
     for( i = 0; i < length; i++ ) {
-        x_sc_Q10[ i ] = SKP_RSHIFT( SKP_SMULBB( x[ i ], ( SKP_int16 )inv_gain_Q16 ), 6 );
+        x_sc_Q10[ i ] = SKP_RSHIFT( SKP_SMULBB( x[ i ], ( int16_t )inv_gain_Q16 ), 6 );
     }
 
     /* save inv_gain */

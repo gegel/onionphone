@@ -34,55 +34,55 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*****************************/
 
 typedef struct {
-    SKP_int32 Q36_part;
-    SKP_int32 Q48_part;
+    int32_t Q36_part;
+    int32_t Q48_part;
 } inv_D_t;
 
 /* Factorize square matrix A into LDL form */
 SKP_INLINE void SKP_Silk_LDL_factorize_FIX(
-    SKP_int32           *A,         /* I/O Pointer to Symetric Square Matrix */
-    SKP_int             M,          /* I   Size of Matrix */
-    SKP_int32           *L_Q16,     /* I/O Pointer to Square Upper triangular Matrix */
+    int32_t           *A,         /* I/O Pointer to Symetric Square Matrix */
+    int             M,          /* I   Size of Matrix */
+    int32_t           *L_Q16,     /* I/O Pointer to Square Upper triangular Matrix */
     inv_D_t             *inv_D      /* I/O Pointer to vector holding inverted diagonal elements of D */
 );
 
 /* Solve Lx = b, when L is lower triangular and has ones on the diagonal */
 SKP_INLINE void SKP_Silk_LS_SolveFirst_FIX(
-    const SKP_int32     *L_Q16,     /* I Pointer to Lower Triangular Matrix */
-    SKP_int             M,          /* I Dim of Matrix equation */
-    const SKP_int32     *b,         /* I b Vector */
-    SKP_int32           *x_Q16      /* O x Vector */  
+    const int32_t     *L_Q16,     /* I Pointer to Lower Triangular Matrix */
+    int             M,          /* I Dim of Matrix equation */
+    const int32_t     *b,         /* I b Vector */
+    int32_t           *x_Q16      /* O x Vector */  
 );
 
 /* Solve L^t*x = b, where L is lower triangular with ones on the diagonal */
 SKP_INLINE void SKP_Silk_LS_SolveLast_FIX(
-    const SKP_int32     *L_Q16,     /* I Pointer to Lower Triangular Matrix */
-    const SKP_int       M,          /* I Dim of Matrix equation */
-    const SKP_int32     *b,         /* I b Vector */
-    SKP_int32           *x_Q16      /* O x Vector */  
+    const int32_t     *L_Q16,     /* I Pointer to Lower Triangular Matrix */
+    const int       M,          /* I Dim of Matrix equation */
+    const int32_t     *b,         /* I b Vector */
+    int32_t           *x_Q16      /* O x Vector */  
 );
 
 SKP_INLINE void SKP_Silk_LS_divide_Q16_FIX(
-    SKP_int32           T[],    /* I/O Numenator vector */
+    int32_t           T[],    /* I/O Numenator vector */
     inv_D_t             *inv_D, /* I   1 / D vector     */
-    SKP_int             M       /* I   dimension        */
+    int             M       /* I   dimension        */
 );
 
 /* Solves Ax = b, assuming A is symmetric */
 void SKP_Silk_solve_LDL_FIX(
-    SKP_int32                       *A,                 /* I    Pointer to symetric square matrix A         */
-    SKP_int                         M,                  /* I    Size of matrix                              */
-    const SKP_int32                 *b,                 /* I    Pointer to b vector                         */
-    SKP_int32                       *x_Q16              /* O    Pointer to x solution vector                */
+    int32_t                       *A,                 /* I    Pointer to symetric square matrix A         */
+    int                         M,                  /* I    Size of matrix                              */
+    const int32_t                 *b,                 /* I    Pointer to b vector                         */
+    int32_t                       *x_Q16              /* O    Pointer to x solution vector                */
 )
 {
-    SKP_int32 L_Q16[  MAX_MATRIX_SIZE * MAX_MATRIX_SIZE ]; 
-    SKP_int32 Y[      MAX_MATRIX_SIZE ];
+    int32_t L_Q16[  MAX_MATRIX_SIZE * MAX_MATRIX_SIZE ]; 
+    int32_t Y[      MAX_MATRIX_SIZE ];
     inv_D_t   inv_D[  MAX_MATRIX_SIZE ];
 
     SKP_assert( M <= MAX_MATRIX_SIZE );
 
-    memzero(Y, MAX_MATRIX_SIZE * sizeof(SKP_int32));
+    memzero(Y, MAX_MATRIX_SIZE * sizeof(int32_t));
 
     /***************************************************
     Factorize A by LDL such that A = L*D*L',
@@ -109,17 +109,17 @@ void SKP_Silk_solve_LDL_FIX(
 }
 
 SKP_INLINE void SKP_Silk_LDL_factorize_FIX(
-    SKP_int32           *A,         /* I   Pointer to Symetric Square Matrix */
-    SKP_int             M,          /* I   Size of Matrix */
-    SKP_int32           *L_Q16,     /* I/O Pointer to Square Upper triangular Matrix */
+    int32_t           *A,         /* I   Pointer to Symetric Square Matrix */
+    int             M,          /* I   Size of Matrix */
+    int32_t           *L_Q16,     /* I/O Pointer to Square Upper triangular Matrix */
     inv_D_t             *inv_D      /* I/O Pointer to vector holding inverted diagonal elements of D */
 )
 {
-    SKP_int   i, j, k, status, loop_count;
-    const SKP_int32 *ptr1, *ptr2;
-    SKP_int32 diag_min_value, tmp_32, err;
-    SKP_int32 v_Q0[ MAX_MATRIX_SIZE ], D_Q0[ MAX_MATRIX_SIZE ];
-    SKP_int32 one_div_diag_Q36, one_div_diag_Q40, one_div_diag_Q48;
+    int   i, j, k, status, loop_count;
+    const int32_t *ptr1, *ptr2;
+    int32_t diag_min_value, tmp_32, err;
+    int32_t v_Q0[ MAX_MATRIX_SIZE ], D_Q0[ MAX_MATRIX_SIZE ];
+    int32_t one_div_diag_Q36, one_div_diag_Q40, one_div_diag_Q48;
 
     SKP_assert( M <= MAX_MATRIX_SIZE );
 
@@ -181,14 +181,14 @@ SKP_INLINE void SKP_Silk_LDL_factorize_FIX(
 }
 
 SKP_INLINE void SKP_Silk_LS_divide_Q16_FIX(
-    SKP_int32 T[],      /* I/O Numenator vector */
+    int32_t T[],      /* I/O Numenator vector */
     inv_D_t *inv_D,     /* I   1 / D vector     */
-    SKP_int M           /* I   Order */
+    int M           /* I   Order */
 )
 {
-    SKP_int   i;
-    SKP_int32 tmp_32;
-    SKP_int32 one_div_diag_Q36, one_div_diag_Q48;
+    int   i;
+    int32_t tmp_32;
+    int32_t one_div_diag_Q36, one_div_diag_Q48;
 
     for( i = 0; i < M; i++ ) {
         one_div_diag_Q36 = inv_D[ i ].Q36_part;
@@ -201,15 +201,15 @@ SKP_INLINE void SKP_Silk_LS_divide_Q16_FIX(
 
 /* Solve Lx = b, when L is lower triangular and has ones on the diagonal */
 SKP_INLINE void SKP_Silk_LS_SolveFirst_FIX(
-    const SKP_int32     *L_Q16, /* I Pointer to Lower Triangular Matrix */
-    SKP_int             M,      /* I Dim of Matrix equation */
-    const SKP_int32     *b,     /* I b Vector */
-    SKP_int32           *x_Q16  /* O x Vector */  
+    const int32_t     *L_Q16, /* I Pointer to Lower Triangular Matrix */
+    int             M,      /* I Dim of Matrix equation */
+    const int32_t     *b,     /* I b Vector */
+    int32_t           *x_Q16  /* O x Vector */  
 )
 {
-    SKP_int i, j;
-    const SKP_int32 *ptr32;
-    SKP_int32 tmp_32;
+    int i, j;
+    const int32_t *ptr32;
+    int32_t tmp_32;
 
     for( i = 0; i < M; i++ ) {
         ptr32 = matrix_adr( L_Q16, i, 0, M );
@@ -223,15 +223,15 @@ SKP_INLINE void SKP_Silk_LS_SolveFirst_FIX(
 
 /* Solve L^t*x = b, where L is lower triangular with ones on the diagonal */
 SKP_INLINE void SKP_Silk_LS_SolveLast_FIX(
-    const SKP_int32     *L_Q16,     /* I Pointer to Lower Triangular Matrix */
-    const SKP_int       M,          /* I Dim of Matrix equation */
-    const SKP_int32     *b,         /* I b Vector */
-    SKP_int32           *x_Q16      /* O x Vector */  
+    const int32_t     *L_Q16,     /* I Pointer to Lower Triangular Matrix */
+    const int       M,          /* I Dim of Matrix equation */
+    const int32_t     *b,         /* I b Vector */
+    int32_t           *x_Q16      /* O x Vector */  
 )
 {
-    SKP_int i, j;
-    const SKP_int32 *ptr32;
-    SKP_int32 tmp_32;
+    int i, j;
+    const int32_t *ptr32;
+    int32_t tmp_32;
 
     for( i = M - 1; i >= 0; i-- ) {
         ptr32 = matrix_adr( L_Q16, 0, i, M );

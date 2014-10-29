@@ -30,11 +30,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*********************************/
 /* Initialize Silk Encoder state */
 /*********************************/
-SKP_int SKP_Silk_init_encoder_FIX(
+int SKP_Silk_init_encoder_FIX(
     SKP_Silk_encoder_state_FIX  *psEnc          /* I/O  Pointer to Silk encoder state               */
 )
 {
-    SKP_int ret = 0;
+    int ret = 0;
     /* Clear the entire encoder state */
     SKP_memset( psEnc, 0, sizeof( SKP_Silk_encoder_state_FIX ) );
 

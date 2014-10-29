@@ -29,27 +29,27 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Entropy constrained MATRIX-weighted VQ, hard-coded to 5-element vectors, for a single input data vector */
 void SKP_Silk_VQ_WMat_EC_FIX(
-    SKP_int                         *ind,               /* O    index of best codebook vector               */
-    SKP_int32                       *rate_dist_Q14,     /* O    best weighted quantization error + mu * rate*/
-    const SKP_int16                 *in_Q14,            /* I    input vector to be quantized                */
-    const SKP_int32                 *W_Q18,             /* I    weighting matrix                            */
-    const SKP_int16                 *cb_Q14,            /* I    codebook                                    */
-    const SKP_int16                 *cl_Q6,             /* I    code length for each codebook vector        */
-    const SKP_int                   mu_Q8,              /* I    tradeoff between weighted error and rate    */
-    SKP_int                         L                   /* I    number of vectors in codebook               */
+    int                         *ind,               /* O    index of best codebook vector               */
+    int32_t                       *rate_dist_Q14,     /* O    best weighted quantization error + mu * rate*/
+    const int16_t                 *in_Q14,            /* I    input vector to be quantized                */
+    const int32_t                 *W_Q18,             /* I    weighting matrix                            */
+    const int16_t                 *cb_Q14,            /* I    codebook                                    */
+    const int16_t                 *cl_Q6,             /* I    code length for each codebook vector        */
+    const int                   mu_Q8,              /* I    tradeoff between weighted error and rate    */
+    int                         L                   /* I    number of vectors in codebook               */
 )
 {
-    SKP_int   k;
-    const SKP_int16 *cb_row_Q14;
-    SKP_int32 sum1_Q14, sum2_Q16, diff_Q14_01, diff_Q14_23, diff_Q14_4;
+    int   k;
+    const int16_t *cb_row_Q14;
+    int32_t sum1_Q14, sum2_Q16, diff_Q14_01, diff_Q14_23, diff_Q14_4;
 
     /* Loop over codebook */
-    *rate_dist_Q14 = SKP_int32_MAX;
+    *rate_dist_Q14 = int32_t_MAX;
     cb_row_Q14 = cb_Q14;
     for( k = 0; k < L; k++ ) {
         /* Pack pairs of int16 values per int32 */
-        diff_Q14_01 = (SKP_uint16)( in_Q14[ 0 ] - cb_row_Q14[ 0 ] ) | SKP_LSHIFT( ( SKP_int32 )in_Q14[ 1 ] - cb_row_Q14[ 1 ], 16 );
-        diff_Q14_23 = (SKP_uint16)( in_Q14[ 2 ] - cb_row_Q14[ 2 ] ) | SKP_LSHIFT( ( SKP_int32 )in_Q14[ 3 ] - cb_row_Q14[ 3 ], 16 );
+        diff_Q14_01 = (uint16_t)( in_Q14[ 0 ] - cb_row_Q14[ 0 ] ) | SKP_LSHIFT( ( int32_t )in_Q14[ 1 ] - cb_row_Q14[ 1 ], 16 );
+        diff_Q14_23 = (uint16_t)( in_Q14[ 2 ] - cb_row_Q14[ 2 ] ) | SKP_LSHIFT( ( int32_t )in_Q14[ 3 ] - cb_row_Q14[ 3 ], 16 );
         diff_Q14_4  = in_Q14[ 4 ] - cb_row_Q14[ 4 ];
 
         /* Weighted rate */

@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Set decoder sampling rate */
 void SKP_Silk_decoder_set_fs(
     SKP_Silk_decoder_state          *psDec,             /* I/O  Decoder state pointer                       */
-    SKP_int                         fs_kHz              /* I    Sampling frequency (kHz)                    */
+    int                         fs_kHz              /* I    Sampling frequency (kHz)                    */
 )
 {
     if( psDec->fs_kHz != fs_kHz ) {
@@ -47,9 +47,9 @@ void SKP_Silk_decoder_set_fs(
             psDec->psNLSF_CB[ 1 ] = &SKP_Silk_NLSF_CB1_16;
         }
         /* Reset part of the decoder state */
-        SKP_memset( psDec->sLPC_Q14,     0, MAX_LPC_ORDER      * sizeof( SKP_int32 ) );
-        SKP_memset( psDec->outBuf,       0, MAX_FRAME_LENGTH   * sizeof( SKP_int16 ) );
-        SKP_memset( psDec->prevNLSF_Q15, 0, MAX_LPC_ORDER      * sizeof( SKP_int )   );
+        SKP_memset( psDec->sLPC_Q14,     0, MAX_LPC_ORDER      * sizeof( int32_t ) );
+        SKP_memset( psDec->outBuf,       0, MAX_FRAME_LENGTH   * sizeof( int16_t ) );
+        SKP_memset( psDec->prevNLSF_Q15, 0, MAX_LPC_ORDER      * sizeof( int )   );
 
         psDec->sLTP_buf_idx            = 0;
         psDec->lagPrev                 = 100;

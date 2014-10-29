@@ -27,11 +27,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_tables.h"
 
-const SKP_int SKP_Silk_max_pulses_table[ 4 ] = {
+const int SKP_Silk_max_pulses_table[ 4 ] = {
          6,      8,     12,     18
 };
 
-const SKP_uint16 SKP_Silk_pulses_per_block_CDF[ 10 ][ 21 ] = 
+const uint16_t SKP_Silk_pulses_per_block_CDF[ 10 ][ 21 ] = 
 {
 {
          0,  47113,  61501,  64590,  65125,  65277,  65352,  65407,
@@ -85,10 +85,10 @@ const SKP_uint16 SKP_Silk_pulses_per_block_CDF[ 10 ][ 21 ] =
 }
 };
 
-const SKP_int SKP_Silk_pulses_per_block_CDF_offset = 6;
+const int SKP_Silk_pulses_per_block_CDF_offset = 6;
 
 
-const SKP_int16 SKP_Silk_pulses_per_block_BITS_Q6[ 9 ][ 20 ] = 
+const int16_t SKP_Silk_pulses_per_block_BITS_Q6[ 9 ][ 20 ] = 
 {
 {
         30,    140,    282,    444,    560,    625,    654,    677,
@@ -137,7 +137,7 @@ const SKP_int16 SKP_Silk_pulses_per_block_BITS_Q6[ 9 ][ 20 ] =
 }
 };
 
-const SKP_uint16 SKP_Silk_rate_levels_CDF[ 2 ][ 10 ] = 
+const uint16_t SKP_Silk_rate_levels_CDF[ 2 ][ 10 ] = 
 {
 {
          0,   2005,  12717,  20281,  31328,  36234,  45816,  57753,
@@ -149,10 +149,10 @@ const SKP_uint16 SKP_Silk_rate_levels_CDF[ 2 ][ 10 ] =
 }
 };
 
-const SKP_int SKP_Silk_rate_levels_CDF_offset = 4;
+const int SKP_Silk_rate_levels_CDF_offset = 4;
 
 
-const SKP_int16 SKP_Silk_rate_levels_BITS_Q6[ 2 ][ 9 ] = 
+const int16_t SKP_Silk_rate_levels_BITS_Q6[ 2 ][ 9 ] = 
 {
 {
        322,    167,    199,    164,    239,    178,    157,    231,
@@ -164,7 +164,7 @@ const SKP_int16 SKP_Silk_rate_levels_BITS_Q6[ 2 ][ 9 ] =
 }
 };
 
-const SKP_uint16 SKP_Silk_shell_code_table0[ 33 ] = {
+const uint16_t SKP_Silk_shell_code_table0[ 33 ] = {
          0,  32748,  65535,      0,   9505,  56230,  65535,      0,
       4093,  32204,  61720,  65535,      0,   2285,  16207,  48750,
      63424,  65535,      0,   1709,   9446,  32026,  55752,  63876,
@@ -172,7 +172,7 @@ const SKP_uint16 SKP_Silk_shell_code_table0[ 33 ] = {
      65535
 };
 
-const SKP_uint16 SKP_Silk_shell_code_table1[ 52 ] = {
+const uint16_t SKP_Silk_shell_code_table1[ 52 ] = {
          0,  32691,  65535,      0,  12782,  52752,  65535,      0,
       4847,  32665,  60899,  65535,      0,   2500,  17305,  47989,
      63369,  65535,      0,   1843,  10329,  32419,  55433,  64277,
@@ -182,7 +182,7 @@ const SKP_uint16 SKP_Silk_shell_code_table1[ 52 ] = {
      56317,  65535,  65535,  65535
 };
 
-const SKP_uint16 SKP_Silk_shell_code_table2[ 102 ] = {
+const uint16_t SKP_Silk_shell_code_table2[ 102 ] = {
          0,  32615,  65535,      0,  14447,  50912,  65535,      0,
       6301,  32587,  59361,  65535,      0,   3038,  18640,  46809,
      62852,  65535,      0,   1746,  10524,  32509,  55273,  64278,
@@ -198,7 +198,7 @@ const SKP_uint16 SKP_Silk_shell_code_table2[ 102 ] = {
      54426,  65535,  65535,  65535,  65535,  65535
 };
 
-const SKP_uint16 SKP_Silk_shell_code_table3[ 207 ] = {
+const uint16_t SKP_Silk_shell_code_table3[ 207 ] = {
          0,  32324,  65535,      0,  15328,  49505,  65535,      0,
       7474,  32344,  57955,  65535,      0,   3944,  19450,  45364,
      61873,  65535,      0,   2338,  11698,  32435,  53915,  63734,
@@ -227,7 +227,7 @@ const SKP_uint16 SKP_Silk_shell_code_table3[ 207 ] = {
      65535,  65535,  65535,  65535,  65535,  65535,  65535
 };
 
-const SKP_uint16 SKP_Silk_shell_code_table_offsets[ 19 ] = {
+const uint16_t SKP_Silk_shell_code_table_offsets[ 19 ] = {
          0,      0,      3,      7,     12,     18,     25,     33,
         42,     52,     63,     75,     88,    102,    117,    133,
        150,    168,    187

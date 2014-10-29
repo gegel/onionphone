@@ -39,16 +39,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Second order ARMA filter */
 /* Can handle slowly varying filter coefficients */
 void SKP_Silk_biquad(
-    const SKP_int16      *in,        /* I:    input signal               */
-    const SKP_int16      *B,         /* I:    MA coefficients, Q13 [3]   */
-    const SKP_int16      *A,         /* I:    AR coefficients, Q13 [2]   */
-    SKP_int32            *S,         /* I/O: state vector [2]            */
-    SKP_int16            *out,       /* O:    output signal              */
-    const SKP_int32      len         /* I:    signal length              */
+    const int16_t      *in,        /* I:    input signal               */
+    const int16_t      *B,         /* I:    MA coefficients, Q13 [3]   */
+    const int16_t      *A,         /* I:    AR coefficients, Q13 [2]   */
+    int32_t            *S,         /* I/O: state vector [2]            */
+    int16_t            *out,       /* O:    output signal              */
+    const int32_t      len         /* I:    signal length              */
 )
 {
-    SKP_int   k, in16;
-    SKP_int32 A0_neg, A1_neg, S0, S1, out32, tmp32;
+    int   k, in16;
+    int32_t A0_neg, A1_neg, S0, S1, out32, tmp32;
 
     S0 = S[ 0 ];
     S1 = S[ 1 ];
@@ -65,7 +65,7 @@ void SKP_Silk_biquad(
         S1 = SKP_LSHIFT( SKP_SMULWB( out32, A1_neg ), 3 );
         S1 = SKP_SMLABB( S1, in16, B[ 2 ] );
         tmp32    = SKP_RSHIFT_ROUND( out32, 13 ) + 1;
-        out[ k ] = (SKP_int16)SKP_SAT16( tmp32 );
+        out[ k ] = (int16_t)SKP_SAT16( tmp32 );
     }
     S[ 0 ] = S0;
     S[ 1 ] = S1;

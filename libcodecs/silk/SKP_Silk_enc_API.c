@@ -38,9 +38,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Encoder functions                    */
 /****************************************/
 
-SKP_int SKP_Silk_SDK_Get_Encoder_Size( SKP_int *encSizeBytes )
+int SKP_Silk_SDK_Get_Encoder_Size( int *encSizeBytes )
 {
-    SKP_int ret = 0;
+    int ret = 0;
     
     *encSizeBytes = sizeof( SKP_Silk_encoder_state_FIX );
     
@@ -51,13 +51,13 @@ SKP_int SKP_Silk_SDK_Get_Encoder_Size( SKP_int *encSizeBytes )
 /***************************************/
 /* Read control structure from encoder */
 /***************************************/
-SKP_int SKP_Silk_SDK_QueryEncoder(
+int SKP_Silk_SDK_QueryEncoder(
     const void *encState,                       /* I:   State Vector                                    */
     SKP_Silk_EncodeControlStruct *encStatus     /* O:   Control Structure                               */
 )
 {
     SKP_Silk_encoder_state_FIX *psEnc;
-    SKP_int ret = 0;    
+    int ret = 0;    
 
     psEnc = ( SKP_Silk_encoder_state_FIX* )encState;
 
@@ -73,13 +73,13 @@ SKP_int SKP_Silk_SDK_QueryEncoder(
 /*************************/
 /* Init or Reset encoder */
 /*************************/
-SKP_int SKP_Silk_SDK_InitEncoder(
+int SKP_Silk_SDK_InitEncoder(
     void                            *encState,          /* I/O: State                                           */
     SKP_Silk_EncodeControlStruct    *encStatus          /* O:   Control structure                               */
 )
 {
     SKP_Silk_encoder_state_FIX *psEnc;
-    SKP_int ret = 0;
+    int ret = 0;
 
         
     psEnc = ( SKP_Silk_encoder_state_FIX* )encState;
@@ -101,19 +101,19 @@ SKP_int SKP_Silk_SDK_InitEncoder(
 /**************************/
 /* Encode frame with Silk */
 /**************************/
-SKP_int SKP_Silk_SDK_Encode( 
+int SKP_Silk_SDK_Encode( 
     void                                *encState,      /* I/O: State                                           */
     const SKP_Silk_EncodeControlStruct  *encControl,    /* I:   Control structure                               */
-    const SKP_int16                     *samplesIn,     /* I:   Speech sample input vector                      */
-    SKP_int                             nSamplesIn,     /* I:   Number of samples in input vector               */
-    SKP_uint8                           *outData,       /* O:   Encoded output vector                           */
-    SKP_int16                           *nBytesOut      /* I/O: Number of bytes in outData (input: Max bytes)   */
+    const int16_t                     *samplesIn,     /* I:   Speech sample input vector                      */
+    int                             nSamplesIn,     /* I:   Number of samples in input vector               */
+    uint8_t                           *outData,       /* O:   Encoded output vector                           */
+    int16_t                           *nBytesOut      /* I/O: Number of bytes in outData (input: Max bytes)   */
 )
 {
-    SKP_int   API_fs_kHz, PacketSize_ms, PacketLoss_perc, UseInBandFec, UseDTX, ret = 0;
-    SKP_int   nSamplesToBuffer, Complexity, input_ms, nSamplesFromInput = 0;
-    SKP_int32 TargetRate_bps;
-    SKP_int16 MaxBytesOut;
+    int   API_fs_kHz, PacketSize_ms, PacketLoss_perc, UseInBandFec, UseDTX, ret = 0;
+    int   nSamplesToBuffer, Complexity, input_ms, nSamplesFromInput = 0;
+    int32_t TargetRate_bps;
+    int16_t MaxBytesOut;
     SKP_Silk_encoder_state_FIX *psEnc = ( SKP_Silk_encoder_state_FIX* )encState;
 
 
@@ -128,13 +128,13 @@ SKP_int SKP_Silk_SDK_Encode(
     }
 
     /* Set Encoder parameters from Control structure */
-    API_fs_kHz      = SKP_DIV32_16( ( SKP_int )encControl->sampleRate, 1000 );          /* convert Hz -> kHz */
-    PacketSize_ms   = SKP_DIV32_16( ( SKP_int )encControl->packetSize, API_fs_kHz );    /* convert samples -> ms */
-    TargetRate_bps  =             ( SKP_int32 )encControl->bitRate;
-    PacketLoss_perc =               ( SKP_int )encControl->packetLossPercentage;
-    UseInBandFec    =               ( SKP_int )encControl->useInBandFEC;
-    Complexity      =               ( SKP_int )encControl->complexity;
-    UseDTX          =               ( SKP_int )encControl->useDTX;
+    API_fs_kHz      = SKP_DIV32_16( ( int )encControl->sampleRate, 1000 );          /* convert Hz -> kHz */
+    PacketSize_ms   = SKP_DIV32_16( ( int )encControl->packetSize, API_fs_kHz );    /* convert samples -> ms */
+    TargetRate_bps  =             ( int32_t )encControl->bitRate;
+    PacketLoss_perc =               ( int )encControl->packetLossPercentage;
+    UseInBandFec    =               ( int )encControl->useInBandFEC;
+    Complexity      =               ( int )encControl->complexity;
+    UseDTX          =               ( int )encControl->useDTX;
 
     /* Only accept input lengths that are multiplum of 10 ms */
     input_ms = SKP_DIV32_16( nSamplesIn, API_fs_kHz );
@@ -159,7 +159,7 @@ SKP_int SKP_Silk_SDK_Encode(
 
     /* Detect energy above 8 kHz */
     if( encControl->sampleRate == 24000 && psEnc->sCmn.sSWBdetect.SWB_detected == 0 && psEnc->sCmn.sSWBdetect.WB_detected == 0 ) {
-        SKP_Silk_detect_SWB_input( &psEnc->sCmn.sSWBdetect, samplesIn, ( SKP_int )nSamplesIn );
+        SKP_Silk_detect_SWB_input( &psEnc->sCmn.sSWBdetect, samplesIn, ( int )nSamplesIn );
     }
 
     /* Input buffering/resampling and encoding */
@@ -171,14 +171,14 @@ SKP_int SKP_Silk_SDK_Encode(
             /* Same sample frequency - copy the data */
             nSamplesToBuffer  = SKP_min_int( nSamplesToBuffer, nSamplesIn );
             nSamplesFromInput = nSamplesToBuffer;
-            SKP_memcpy( &psEnc->sCmn.inputBuf[ psEnc->sCmn.inputBufIx ], samplesIn, SKP_SMULBB( nSamplesToBuffer, sizeof( SKP_int16 ) ) );
+            SKP_memcpy( &psEnc->sCmn.inputBuf[ psEnc->sCmn.inputBufIx ], samplesIn, SKP_SMULBB( nSamplesToBuffer, sizeof( int16_t ) ) );
         } else if( encControl->sampleRate == 24000 && psEnc->sCmn.fs_kHz == 16 ) {
             /* Resample the data from 24 kHz to 16 kHz */
             nSamplesToBuffer  = SKP_min_int( nSamplesToBuffer, SKP_SMULWB( SKP_LSHIFT( nSamplesIn, 1 ), 21846 ) ); // 21846 = ceil(2/3)*2^15
             nSamplesFromInput = SKP_RSHIFT( SKP_SMULBB( nSamplesToBuffer, 3 ), 1 );
 #if LOW_COMPLEXITY_ONLY
             {
-                SKP_int16 scratch[ MAX_FRAME_LENGTH + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ];
+                int16_t scratch[ MAX_FRAME_LENGTH + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ];
                 SKP_assert( nSamplesFromInput <= MAX_FRAME_LENGTH );
                 SKP_Silk_resample_2_3_coarse( &psEnc->sCmn.inputBuf[ psEnc->sCmn.inputBufIx ], psEnc->sCmn.resample24To16state, 
                     samplesIn, nSamplesFromInput, scratch );
@@ -188,7 +188,7 @@ SKP_int SKP_Silk_SDK_Encode(
                 samplesIn, nSamplesFromInput );
 #endif
         } else if( encControl->sampleRate == 24000 && psEnc->sCmn.fs_kHz == 12 ) {
-            SKP_int32 scratch[ 3 * MAX_FRAME_LENGTH ];
+            int32_t scratch[ 3 * MAX_FRAME_LENGTH ];
             /* Resample the data from 24 kHz to 12 kHz */
             nSamplesToBuffer  = SKP_min_int( nSamplesToBuffer, SKP_RSHIFT( nSamplesIn, 1 ) );
             nSamplesFromInput = SKP_LSHIFT16( nSamplesToBuffer, 1 );
@@ -207,7 +207,7 @@ SKP_int SKP_Silk_SDK_Encode(
             SKP_Silk_resample_3_4( &psEnc->sCmn.inputBuf[ psEnc->sCmn.inputBufIx ], psEnc->sCmn.resample16To12state, 
                 samplesIn, nSamplesFromInput );
         } else if( encControl->sampleRate == 16000 && psEnc->sCmn.fs_kHz == 8 ) {
-            SKP_int32 scratch[ 3 * MAX_FRAME_LENGTH ];
+            int32_t scratch[ 3 * MAX_FRAME_LENGTH ];
             /* Resample the data from 16 kHz to 8 kHz */
             nSamplesToBuffer  = SKP_min_int( nSamplesToBuffer, SKP_RSHIFT( nSamplesIn, 1 ) );
             nSamplesFromInput = SKP_LSHIFT16( nSamplesToBuffer, 1 );
@@ -219,7 +219,7 @@ SKP_int SKP_Silk_SDK_Encode(
             nSamplesFromInput = SKP_RSHIFT( SKP_SMULBB( nSamplesToBuffer, 3 ), 1 );
 #if LOW_COMPLEXITY_ONLY
             {
-                SKP_int16 scratch[ MAX_FRAME_LENGTH + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ];
+                int16_t scratch[ MAX_FRAME_LENGTH + SigProc_Resample_2_3_coarse_NUM_FIR_COEFS - 1 ];
                 SKP_assert( nSamplesFromInput <= MAX_FRAME_LENGTH );
                 SKP_Silk_resample_2_3_coarse( &psEnc->sCmn.inputBuf[ psEnc->sCmn.inputBufIx ], psEnc->sCmn.resample12To8state, 
                     samplesIn, nSamplesFromInput, scratch );

@@ -41,21 +41,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Slower than schur(), but more accurate.                              */
 /* Uses SMULL(), available on armv4                                     */ 
-SKP_int32 SKP_Silk_schur64(                    /* O:    Returns residual energy                     */
-    SKP_int32            rc_Q16[],               /* O:    Reflection coefficients [order] Q16         */
-    const SKP_int32      c[],                    /* I:    Correlations [order+1]                      */
-    SKP_int32            order                   /* I:    Prediction order                            */
+int32_t SKP_Silk_schur64(                    /* O:    Returns residual energy                     */
+    int32_t            rc_Q16[],               /* O:    Reflection coefficients [order] Q16         */
+    const int32_t      c[],                    /* I:    Correlations [order+1]                      */
+    int32_t            order                   /* I:    Prediction order                            */
 )
 {
-    SKP_int   k, n;
-    SKP_int32 C[ SigProc_MAX_ORDER_LPC + 1 ][ 2 ];
-    SKP_int32 Ctmp1_Q30, Ctmp2_Q30, rc_tmp_Q31;
+    int   k, n;
+    int32_t C[ SigProc_MAX_ORDER_LPC + 1 ][ 2 ];
+    int32_t Ctmp1_Q30, Ctmp2_Q30, rc_tmp_Q31;
 
-    memzero(C, 2 * (SigProc_MAX_ORDER_LPC + 1) * sizeof(SKP_int32));
+    memzero(C, 2 * (SigProc_MAX_ORDER_LPC + 1) * sizeof(int32_t));
 
     /* Check for invalid input */
     if( c[ 0 ] <= 0 ) {
-        SKP_memset( rc_Q16, 0, order * sizeof( SKP_int32 ) );
+        SKP_memset( rc_Q16, 0, order * sizeof( int32_t ) );
         return 0;
     }
     

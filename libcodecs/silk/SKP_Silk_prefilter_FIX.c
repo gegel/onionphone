@@ -31,32 +31,32 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* SKP_Silk_prefilter. Prefilter for finding Quantizer input signal */
 SKP_INLINE void SKP_Silk_prefilt_FIX(
     SKP_Silk_prefilter_state_FIX *P,                    /* I/O state                          */
-    SKP_int32   st_res_Q12[],                           /* I short term residual signal       */
-    SKP_int16   xw[],                                   /* O prefiltered signal               */
-    SKP_int32   HarmShapeFIRPacked_Q12,                 /* I Harmonic shaping coeficients     */
-    SKP_int     Tilt_Q14,                               /* I Tilt shaping coeficient          */
-    SKP_int32   LF_shp_Q14,                             /* I Low-frequancy shaping coeficients*/
-    SKP_int     lag,                                    /* I Lag for harmonic shaping         */
-    SKP_int     length                                  /* I Length of signals                */
+    int32_t   st_res_Q12[],                           /* I short term residual signal       */
+    int16_t   xw[],                                   /* O prefiltered signal               */
+    int32_t   HarmShapeFIRPacked_Q12,                 /* I Harmonic shaping coeficients     */
+    int     Tilt_Q14,                               /* I Tilt shaping coeficient          */
+    int32_t   LF_shp_Q14,                             /* I Low-frequancy shaping coeficients*/
+    int     lag,                                    /* I Lag for harmonic shaping         */
+    int     length                                  /* I Length of signals                */
 );
 
 void SKP_Silk_prefilter_FIX(
     SKP_Silk_encoder_state_FIX          *psEnc,         /* I/O  Encoder state FIX                           */
     const SKP_Silk_encoder_control_FIX  *psEncCtrl,     /* I    Encoder control FIX                         */
-    SKP_int16                           xw[],           /* O    Weighted signal                             */
-    const SKP_int16                     x[]             /* I    Speech signal                               */
+    int16_t                           xw[],           /* O    Weighted signal                             */
+    const int16_t                     x[]             /* I    Speech signal                               */
 )
 {
     SKP_Silk_prefilter_state_FIX *P = &psEnc->sPrefilt;
-    SKP_int   j, k, lag;
-    SKP_int32 tmp_32, B_Q12;
-    const SKP_int16 *AR1_shp_Q13;
-    const SKP_int16 *px;
-    SKP_int16 *pxw, *pst_res;
-    SKP_int   HarmShapeGain_Q12, Tilt_Q14, LF_shp_Q14;
-    SKP_int32 HarmShapeFIRPacked_Q12;
-    SKP_int32 x_filt_Q12[ MAX_FRAME_LENGTH / NB_SUBFR ], filterState[ MAX_LPC_ORDER ];
-    SKP_int16 st_res[ ( MAX_FRAME_LENGTH / NB_SUBFR ) + MAX_LPC_ORDER ];
+    int   j, k, lag;
+    int32_t tmp_32, B_Q12;
+    const int16_t *AR1_shp_Q13;
+    const int16_t *px;
+    int16_t *pxw, *pst_res;
+    int   HarmShapeGain_Q12, Tilt_Q14, LF_shp_Q14;
+    int32_t HarmShapeFIRPacked_Q12;
+    int32_t x_filt_Q12[ MAX_FRAME_LENGTH / NB_SUBFR ], filterState[ MAX_LPC_ORDER ];
+    int16_t st_res[ ( MAX_FRAME_LENGTH / NB_SUBFR ) + MAX_LPC_ORDER ];
 
     /* Setup pointers */
     px  = x;
@@ -72,13 +72,13 @@ void SKP_Silk_prefilter_FIX(
         HarmShapeGain_Q12 = SKP_SMULWB( psEncCtrl->HarmShapeGain_Q14[ k ], 16384 - psEncCtrl->HarmBoost_Q14[ k ] );
         SKP_assert( HarmShapeGain_Q12 >= 0 );
         HarmShapeFIRPacked_Q12  =                        SKP_RSHIFT( HarmShapeGain_Q12, 2 );
-        HarmShapeFIRPacked_Q12 |= SKP_LSHIFT( ( SKP_int32 )SKP_RSHIFT( HarmShapeGain_Q12, 1 ), 16 );
+        HarmShapeFIRPacked_Q12 |= SKP_LSHIFT( ( int32_t )SKP_RSHIFT( HarmShapeGain_Q12, 1 ), 16 );
         Tilt_Q14    = psEncCtrl->Tilt_Q14[   k ];
         LF_shp_Q14  = psEncCtrl->LF_shp_Q14[ k ];
         AR1_shp_Q13 = &psEncCtrl->AR1_Q13[   k * SHAPE_LPC_ORDER_MAX ];
 
         /* Short term FIR filtering*/
-        SKP_memset( filterState, 0, psEnc->sCmn.shapingLPCOrder * sizeof( SKP_int32 ) );
+        SKP_memset( filterState, 0, psEnc->sCmn.shapingLPCOrder * sizeof( int32_t ) );
         SKP_Silk_MA_Prediction_Q13( px - psEnc->sCmn.shapingLPCOrder, AR1_shp_Q13, filterState, 
             st_res, psEnc->sCmn.subfr_length + psEnc->sCmn.shapingLPCOrder, psEnc->sCmn.shapingLPCOrder );
 
@@ -115,19 +115,19 @@ void SKP_Silk_prefilter_FIX(
 /* SKP_Silk_prefilter. Prefilter for finding Quantizer input signal                           */
 SKP_INLINE void SKP_Silk_prefilt_FIX(
     SKP_Silk_prefilter_state_FIX *P,                    /* I/O state                          */
-    SKP_int32   st_res_Q12[],                           /* I short term residual signal       */
-    SKP_int16   xw[],                                   /* O prefiltered signal               */
-    SKP_int32   HarmShapeFIRPacked_Q12,                 /* I Harmonic shaping coeficients     */
-    SKP_int     Tilt_Q14,                               /* I Tilt shaping coeficient          */
-    SKP_int32   LF_shp_Q14,                             /* I Low-frequancy shaping coeficients*/
-    SKP_int     lag,                                    /* I Lag for harmonic shaping         */
-    SKP_int     length                                  /* I Length of signals                */
+    int32_t   st_res_Q12[],                           /* I short term residual signal       */
+    int16_t   xw[],                                   /* O prefiltered signal               */
+    int32_t   HarmShapeFIRPacked_Q12,                 /* I Harmonic shaping coeficients     */
+    int     Tilt_Q14,                               /* I Tilt shaping coeficient          */
+    int32_t   LF_shp_Q14,                             /* I Low-frequancy shaping coeficients*/
+    int     lag,                                    /* I Lag for harmonic shaping         */
+    int     length                                  /* I Length of signals                */
 )
 {
-    SKP_int   i, idx, LTP_shp_buf_idx;
-    SKP_int32 n_LTP_Q12, n_Tilt_Q10, n_LF_Q10;
-    SKP_int32 sLF_MA_shp_Q12, sLF_AR_shp_Q12;
-    SKP_int16 *LTP_shp_buf;
+    int   i, idx, LTP_shp_buf_idx;
+    int32_t n_LTP_Q12, n_Tilt_Q10, n_LF_Q10;
+    int32_t sLF_MA_shp_Q12, sLF_AR_shp_Q12;
+    int16_t *LTP_shp_buf;
 
     /* To speed up use temp variables instead of using the struct */
     LTP_shp_buf     = P->sLTP_shp1;
@@ -154,9 +154,9 @@ SKP_INLINE void SKP_Silk_prefilt_FIX(
         sLF_MA_shp_Q12 = SKP_SUB32( sLF_AR_shp_Q12,  SKP_LSHIFT( n_LF_Q10,   2 ) );
 
         LTP_shp_buf_idx                = ( LTP_shp_buf_idx - 1 ) & LTP_MASK;
-        LTP_shp_buf[ LTP_shp_buf_idx ] = ( SKP_int16 )SKP_SAT16( SKP_RSHIFT_ROUND( sLF_MA_shp_Q12, 12 ) );
+        LTP_shp_buf[ LTP_shp_buf_idx ] = ( int16_t )SKP_SAT16( SKP_RSHIFT_ROUND( sLF_MA_shp_Q12, 12 ) );
 
-        xw[i] = ( SKP_int16 )SKP_SAT16( SKP_RSHIFT_ROUND( SKP_SUB32( sLF_MA_shp_Q12, n_LTP_Q12 ), 12 ) );
+        xw[i] = ( int16_t )SKP_SAT16( SKP_RSHIFT_ROUND( SKP_SUB32( sLF_MA_shp_Q12, n_LTP_Q12 ), 12 ) );
     }
 
     /* Copy temp variable back to state */

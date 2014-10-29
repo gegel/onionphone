@@ -31,21 +31,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void SKP_Silk_find_pitch_lags_FIX(
     SKP_Silk_encoder_state_FIX      *psEnc,         /* I/O  encoder state                               */
     SKP_Silk_encoder_control_FIX    *psEncCtrl,     /* I/O  encoder control                             */
-    SKP_int16                       res[],          /* O    residual                                    */
-    const SKP_int16                 x[]             /* I    Speech signal                               */
+    int16_t                       res[],          /* O    residual                                    */
+    const int16_t                 x[]             /* I    Speech signal                               */
 )
 {
     SKP_Silk_predict_state_FIX *psPredSt = &psEnc->sPred;
-    SKP_int   buf_len, i;
-    SKP_int32 scale;
-    SKP_int32 thrhld_Q15;
-    const SKP_int16 *x_buf, *x_buf_ptr;
-    SKP_int16 Wsig[      FIND_PITCH_LPC_WIN_MAX ], *Wsig_ptr;
-    SKP_int32 auto_corr[ FIND_PITCH_LPC_ORDER_MAX + 1 ];
-    SKP_int16 rc_Q15[    FIND_PITCH_LPC_ORDER_MAX ];
-    SKP_int32 A_Q24[     FIND_PITCH_LPC_ORDER_MAX ];
-    SKP_int32 FiltState[ FIND_PITCH_LPC_ORDER_MAX ];
-    SKP_int16 A_Q12[     FIND_PITCH_LPC_ORDER_MAX ];
+    int   buf_len, i;
+    int32_t scale;
+    int32_t thrhld_Q15;
+    const int16_t *x_buf, *x_buf_ptr;
+    int16_t Wsig[      FIND_PITCH_LPC_WIN_MAX ], *Wsig_ptr;
+    int32_t auto_corr[ FIND_PITCH_LPC_ORDER_MAX + 1 ];
+    int16_t rc_Q15[    FIND_PITCH_LPC_ORDER_MAX ];
+    int32_t A_Q24[     FIND_PITCH_LPC_ORDER_MAX ];
+    int32_t FiltState[ FIND_PITCH_LPC_ORDER_MAX ];
+    int16_t A_Q12[     FIND_PITCH_LPC_ORDER_MAX ];
 
     /******************************************/
     /* Setup buffer lengths etc based of Fs.  */
@@ -71,7 +71,7 @@ void SKP_Silk_find_pitch_lags_FIX(
     /* Middle un - windowed samples */
     Wsig_ptr  += psEnc->sCmn.la_pitch;
     x_buf_ptr += psEnc->sCmn.la_pitch;
-    SKP_memcpy( Wsig_ptr, x_buf_ptr, ( psPredSt->pitch_LPC_win_length - SKP_LSHIFT( psEnc->sCmn.la_pitch, 1 ) ) * sizeof( SKP_int16 ) );
+    SKP_memcpy( Wsig_ptr, x_buf_ptr, ( psPredSt->pitch_LPC_win_length - SKP_LSHIFT( psEnc->sCmn.la_pitch, 1 ) ) * sizeof( int16_t ) );
 
     /* Last LA_LTP samples */
     Wsig_ptr  += psPredSt->pitch_LPC_win_length - SKP_LSHIFT( psEnc->sCmn.la_pitch, 1 );
@@ -92,7 +92,7 @@ void SKP_Silk_find_pitch_lags_FIX(
     
     /* Convert From 32 bit Q24 to 16 bit Q12 coefs */
     for( i = 0; i < psEnc->sCmn.pitchEstimationLPCOrder; i++ ) {
-        A_Q12[ i ] = ( SKP_int16 )SKP_SAT16( SKP_RSHIFT( A_Q24[ i ], 12 ) );
+        A_Q12[ i ] = ( int16_t )SKP_SAT16( SKP_RSHIFT( A_Q24[ i ], 12 ) );
     }
 
     /* Do BWE */
@@ -101,14 +101,14 @@ void SKP_Silk_find_pitch_lags_FIX(
     /*****************************************/
     /* LPC analysis filtering                */
     /*****************************************/
-    SKP_memset( FiltState, 0, psEnc->sCmn.pitchEstimationLPCOrder * sizeof( SKP_int16 ) );
+    SKP_memset( FiltState, 0, psEnc->sCmn.pitchEstimationLPCOrder * sizeof( int16_t ) );
     SKP_Silk_MA_Prediction( x_buf, A_Q12, FiltState, res, buf_len, psEnc->sCmn.pitchEstimationLPCOrder );
-    SKP_memset( res, 0, psEnc->sCmn.pitchEstimationLPCOrder * sizeof( SKP_int16 ) );
+    SKP_memset( res, 0, psEnc->sCmn.pitchEstimationLPCOrder * sizeof( int16_t ) );
 
     /* Threshold for pitch estimator */
     thrhld_Q15 = ( 1 << 14 ); // 0.5f in Q15
     thrhld_Q15 = SKP_SMLABB( thrhld_Q15, -131, psEnc->sCmn.pitchEstimationLPCOrder );
-    thrhld_Q15 = SKP_SMLABB( thrhld_Q15,  -13, ( SKP_int16 )SKP_Silk_SQRT_APPROX( SKP_LSHIFT( ( SKP_int32 )psEnc->speech_activity_Q8, 8 ) ) );
+    thrhld_Q15 = SKP_SMLABB( thrhld_Q15,  -13, ( int16_t )SKP_Silk_SQRT_APPROX( SKP_LSHIFT( ( int32_t )psEnc->speech_activity_Q8, 8 ) ) );
     thrhld_Q15 = SKP_SMLABB( thrhld_Q15, 4587, psEnc->sCmn.prev_sigtype );
     thrhld_Q15 = SKP_MLA(    thrhld_Q15,  -31, SKP_RSHIFT( psEncCtrl->input_tilt_Q15, 8 ) );
     thrhld_Q15 = SKP_SAT16(  thrhld_Q15 );
@@ -118,5 +118,5 @@ void SKP_Silk_find_pitch_lags_FIX(
     /*****************************************/
     psEncCtrl->sCmn.sigtype = SKP_Silk_pitch_analysis_core( res, psEncCtrl->sCmn.pitchL, &psEncCtrl->sCmn.lagIndex, 
         &psEncCtrl->sCmn.contourIndex, &psEnc->LTPCorr_Q15, psEnc->sCmn.prevLag, psEnc->pitchEstimationThreshold_Q16, 
-        ( SKP_int16 )thrhld_Q15, psEnc->sCmn.fs_kHz, psEnc->sCmn.pitchEstimationComplexity );
+        ( int16_t )thrhld_Q15, psEnc->sCmn.fs_kHz, psEnc->sCmn.pitchEstimationComplexity );
 }

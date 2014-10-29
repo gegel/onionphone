@@ -38,13 +38,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define POLY_FIT_2_Q20     -9222 // ToDo better training with 
 
 /* Predict number of bytes used to encode q */
-SKP_int SKP_Silk_pulses_to_bytes( /* O  Return value, predicted number of bytes used to encode q */ 
+int SKP_Silk_pulses_to_bytes( /* O  Return value, predicted number of bytes used to encode q */ 
     SKP_Silk_encoder_state          *psEncC,        /* I/O  Encoder State */
-    SKP_int                         q[]             /* I    Pulse signal  */
+    int                         q[]             /* I    Pulse signal  */
 )
 {
-    SKP_int i, j, iter, *q_ptr;
-    SKP_int32 sum_abs_val, nBytes, acc_nBytes;
+    int i, j, iter, *q_ptr;
+    int32_t sum_abs_val, nBytes, acc_nBytes;
     /* Take the absolute value of the pulses */
     iter = psEncC->frame_length / SHELL_CODEC_FRAME_LENGTH;
     
@@ -73,5 +73,5 @@ SKP_int SKP_Silk_pulses_to_bytes( /* O  Return value, predicted number of bytes 
     acc_nBytes = SKP_RSHIFT_ROUND( acc_nBytes, 15 );                                    // Q0
     acc_nBytes = SKP_SAT16( acc_nBytes ); // just to be sure                            // Q0
     
-    return(( SKP_int )acc_nBytes);
+    return(( int )acc_nBytes);
 }

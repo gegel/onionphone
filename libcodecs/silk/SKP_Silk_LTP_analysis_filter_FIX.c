@@ -28,21 +28,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_main_FIX.h"
 
 void SKP_Silk_LTP_analysis_filter_FIX(
-    SKP_int16       *LTP_res,                           /* O:   LTP residual signal of length NB_SUBFR * ( pre_length + subfr_length )  */
-    const SKP_int16 *x,                                 /* I:   Pointer to input signal with at least max( pitchL ) preceeding samples  */
-    const SKP_int16 LTPCoef_Q14[ LTP_ORDER * NB_SUBFR ],/* I:   LTP_ORDER LTP coefficients for each NB_SUBFR subframe                   */
-    const SKP_int   pitchL[ NB_SUBFR ],                 /* I:   Pitch lag, one for each subframe                                        */
-    const SKP_int32 invGains_Qxx[ NB_SUBFR ],           /* I:   Inverse quantization gains, one for each subframe                       */
-    const SKP_int   Qxx,                                /* I:   Inverse quantization gains Q domain                                     */
-    const SKP_int   subfr_length,                       /* I:   Length of each subframe                                                 */
-    const SKP_int   pre_length                          /* I:   Length of the preceeding samples starting at &x[0] for each subframe    */
+    int16_t       *LTP_res,                           /* O:   LTP residual signal of length NB_SUBFR * ( pre_length + subfr_length )  */
+    const int16_t *x,                                 /* I:   Pointer to input signal with at least max( pitchL ) preceeding samples  */
+    const int16_t LTPCoef_Q14[ LTP_ORDER * NB_SUBFR ],/* I:   LTP_ORDER LTP coefficients for each NB_SUBFR subframe                   */
+    const int   pitchL[ NB_SUBFR ],                 /* I:   Pitch lag, one for each subframe                                        */
+    const int32_t invGains_Qxx[ NB_SUBFR ],           /* I:   Inverse quantization gains, one for each subframe                       */
+    const int   Qxx,                                /* I:   Inverse quantization gains Q domain                                     */
+    const int   subfr_length,                       /* I:   Length of each subframe                                                 */
+    const int   pre_length                          /* I:   Length of the preceeding samples starting at &x[0] for each subframe    */
 )
 {
-    const SKP_int16 *x_ptr, *x_lag_ptr;
-    SKP_int16   Btmp_Q14[ LTP_ORDER ];
-    SKP_int16   *LTP_res_ptr;
-    SKP_int     k, i, j;
-    SKP_int32   LTP_est;
+    const int16_t *x_ptr, *x_lag_ptr;
+    int16_t   Btmp_Q14[ LTP_ORDER ];
+    int16_t   *LTP_res_ptr;
+    int     k, i, j;
+    int32_t   LTP_est;
 
     x_ptr = x;
     LTP_res_ptr = LTP_res;
@@ -65,13 +65,13 @@ void SKP_Silk_LTP_analysis_filter_FIX(
             LTP_est = SKP_RSHIFT_ROUND( LTP_est, 14 ); // round and -> Q0
 
             /* Subtract long-term prediction */
-            LTP_res_ptr[ i ] = ( SKP_int16 )SKP_SAT16( ( SKP_int32 )x_ptr[ i ] - LTP_est );
+            LTP_res_ptr[ i ] = ( int16_t )SKP_SAT16( ( int32_t )x_ptr[ i ] - LTP_est );
 
             /* Scale residual */
             if( Qxx == 16 ) {
                 LTP_res_ptr[ i ] = SKP_SMULWB( invGains_Qxx[ k ], LTP_res_ptr[ i ] );
             } else {
-                LTP_res_ptr[ i ] = ( SKP_int16 )SKP_CHECK_FIT16( SKP_RSHIFT64( SKP_SMULL( invGains_Qxx[ k ], LTP_res_ptr[ i ] ), Qxx ) );
+                LTP_res_ptr[ i ] = ( int16_t )SKP_CHECK_FIT16( SKP_RSHIFT64( SKP_SMULL( invGains_Qxx[ k ], LTP_res_ptr[ i ] ), Qxx ) );
             }
 
             x_lag_ptr++;

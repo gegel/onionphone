@@ -32,7 +32,7 @@ extern "C"
 {
 #endif
 
-const SKP_uint16 SKP_Silk_gain_CDF[ 2 ][ 65 ] = 
+const uint16_t SKP_Silk_gain_CDF[ 2 ][ 65 ] = 
 {
 {
          0,     18,     45,     94,    181,    320,    519,    777,
@@ -58,10 +58,10 @@ const SKP_uint16 SKP_Silk_gain_CDF[ 2 ][ 65 ] =
 }
 };
 
-const SKP_int SKP_Silk_gain_CDF_offset = 32;
+const int SKP_Silk_gain_CDF_offset = 32;
 
 
-const SKP_uint16 SKP_Silk_delta_gain_CDF[ 46 ] = {
+const uint16_t SKP_Silk_delta_gain_CDF[ 46 ] = {
          0,   2358,   3856,   7023,  15376,  53058,  59135,  61555,
      62784,  63498,  63949,  64265,  64478,  64647,  64783,  64894,
      64986,  65052,  65113,  65169,  65213,  65252,  65284,  65314,
@@ -70,7 +70,7 @@ const SKP_uint16 SKP_Silk_delta_gain_CDF[ 46 ] = {
      65499,  65506,  65513,  65521,  65528,  65535
 };
 
-const SKP_int SKP_Silk_delta_gain_CDF_offset = 5;
+const int SKP_Silk_delta_gain_CDF_offset = 5;
 
 #ifdef __cplusplus
 }

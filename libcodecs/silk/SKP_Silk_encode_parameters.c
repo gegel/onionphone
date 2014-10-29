@@ -34,10 +34,10 @@ void SKP_Silk_encode_parameters(
     SKP_Silk_encoder_state          *psEncC,        /* I/O  Encoder state                   */
     SKP_Silk_encoder_control        *psEncCtrlC,    /* I/O  Encoder control                 */
     SKP_Silk_range_coder_state      *psRC,          /* I/O  Range encoder state             */
-    const SKP_int                   *q              /* I    Quantization indices            */
+    const int                   *q              /* I    Quantization indices            */
 )
 {
-    SKP_int   i, k, typeOffset;
+    int   i, k, typeOffset;
     const SKP_Silk_NLSF_CB_struct *psNLSF_CB;
 
 

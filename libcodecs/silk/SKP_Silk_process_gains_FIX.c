@@ -34,8 +34,8 @@ void SKP_Silk_process_gains_FIX(
 )
 {
     SKP_Silk_shape_state_FIX    *psShapeSt = &psEnc->sShape;
-    SKP_int     k;
-    SKP_int32   s_Q16, InvMaxSqrVal_Q16, gain, gain_squared, ResNrg, ResNrgPart;
+    int     k;
+    int32_t   s_Q16, InvMaxSqrVal_Q16, gain, gain_squared, ResNrg, ResNrgPart;
 
     /* Gain reduction when LTP coding gain is high */
     if( psEncCtrl->sCmn.sigtype == SIG_TYPE_VOICED ) {
@@ -62,15 +62,15 @@ void SKP_Silk_process_gains_FIX(
                 ResNrgPart = 0;
             }
         } else if( psEncCtrl->ResNrgQ[k] != 0 ) {
-            if( ResNrgPart > SKP_RSHIFT( SKP_int32_MAX, -psEncCtrl->ResNrgQ[ k ] ) ) {
-                ResNrgPart = SKP_int32_MAX;
+            if( ResNrgPart > SKP_RSHIFT( int32_t_MAX, -psEncCtrl->ResNrgQ[ k ] ) ) {
+                ResNrgPart = int32_t_MAX;
             } else {
                 ResNrgPart = SKP_LSHIFT( ResNrgPart, -psEncCtrl->ResNrgQ[ k ] );
             }
         }
         gain = psEncCtrl->Gains_Q16[ k ];
         gain_squared = SKP_ADD_SAT32( ResNrgPart, SKP_SMMUL( gain, gain ) );
-        if( gain_squared < SKP_int16_MAX ) {
+        if( gain_squared < int16_t_MAX ) {
             /* recalculate with higher precision */
             gain_squared = SKP_SMLAWW( SKP_LSHIFT( ResNrgPart, 16 ), gain, gain );
             SKP_assert( gain_squared > 0 );

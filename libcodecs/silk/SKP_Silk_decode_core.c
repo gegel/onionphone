@@ -33,17 +33,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 void SKP_Silk_decode_core(
     SKP_Silk_decoder_state      *psDec,                             /* I/O  Decoder state               */
     SKP_Silk_decoder_control    *psDecCtrl,                         /* I    Decoder control             */
-    SKP_int16                   xq[],                               /* O    Decoded speech              */
-    const SKP_int               q[ MAX_FRAME_LENGTH ]               /* I    Pulse signal                */
+    int16_t                   xq[],                               /* O    Decoded speech              */
+    const int               q[ MAX_FRAME_LENGTH ]               /* I    Pulse signal                */
 )
 {
-    SKP_int     i, k, lag = 0, start_idx, NLSF_interpolation_flag, sigtype;
-    SKP_int16   *A_Q12, *B_Q14, *pxq, A_Q12_tmp[ MAX_LPC_ORDER ];
-    SKP_int16   sLTP[ MAX_FRAME_LENGTH ];
-    SKP_int32   Gain_Q16, *pred_lag_ptr, *pexc_Q10, *pres_Q10, LTP_pred_Q14, LPC_pred_Q10;
-    SKP_int32   rand_seed, offset_Q10, dither;
-    SKP_int32   vec_Q10[ MAX_FRAME_LENGTH / NB_SUBFR ], Atmp;
-    SKP_int32   inv_gain_Q16, inv_gain_Q32, gain_adj_Q16, FiltState[ MAX_LPC_ORDER ];
+    int     i, k, lag = 0, start_idx, NLSF_interpolation_flag, sigtype;
+    int16_t   *A_Q12, *B_Q14, *pxq, A_Q12_tmp[ MAX_LPC_ORDER ];
+    int16_t   sLTP[ MAX_FRAME_LENGTH ];
+    int32_t   Gain_Q16, *pred_lag_ptr, *pexc_Q10, *pres_Q10, LTP_pred_Q14, LPC_pred_Q10;
+    int32_t   rand_seed, offset_Q10, dither;
+    int32_t   vec_Q10[ MAX_FRAME_LENGTH / NB_SUBFR ], Atmp;
+    int32_t   inv_gain_Q16, inv_gain_Q32, gain_adj_Q16, FiltState[ MAX_LPC_ORDER ];
     SKP_assert( psDec->prev_inv_gain_Q16 != 0 );
     
     offset_Q10 = SKP_Silk_Quantization_Offsets_Q10[ psDecCtrl->sigtype ][ psDecCtrl->QuantOffsetType ];
@@ -62,7 +62,7 @@ void SKP_Silk_decode_core(
         /* dither = rand_seed < 0 ? 0xFFFFFFFF : 0; */
         dither = SKP_RSHIFT( rand_seed, 31 );
 
-        psDec->exc_Q10[ i ] = SKP_LSHIFT( ( SKP_int32 )q[ i ], 10 ) + offset_Q10;
+        psDec->exc_Q10[ i ] = SKP_LSHIFT( ( int32_t )q[ i ], 10 ) + offset_Q10;
         psDec->exc_Q10[ i ] = ( psDec->exc_Q10[ i ] ^ dither ) - dither;
 
         rand_seed += q[ i ];
@@ -78,16 +78,16 @@ void SKP_Silk_decode_core(
         A_Q12 = psDecCtrl->PredCoef_Q12[ k >> 1 ];
 
         /* Preload LPC coeficients to array on stack. Gives small performance gain */        
-        SKP_memcpy( A_Q12_tmp, A_Q12, psDec->LPC_order * sizeof( SKP_int16 ) ); 
+        SKP_memcpy( A_Q12_tmp, A_Q12, psDec->LPC_order * sizeof( int16_t ) ); 
         B_Q14         = &psDecCtrl->LTPCoef_Q14[ k * LTP_ORDER ];
         Gain_Q16      = psDecCtrl->Gains_Q16[ k ];
         sigtype       = psDecCtrl->sigtype;
 
-        inv_gain_Q16  = SKP_DIV32( SKP_int32_MAX, SKP_RSHIFT( Gain_Q16, 1 ) );
-        inv_gain_Q16  = SKP_min( inv_gain_Q16, SKP_int16_MAX );
+        inv_gain_Q16  = SKP_DIV32( int32_t_MAX, SKP_RSHIFT( Gain_Q16, 1 ) );
+        inv_gain_Q16  = SKP_min( inv_gain_Q16, int16_t_MAX );
 
         /* Calculate Gain adjustment factor */
-        gain_adj_Q16 = ( SKP_int32 )1 << 16;
+        gain_adj_Q16 = ( int32_t )1 << 16;
         if( inv_gain_Q16 != psDec->prev_inv_gain_Q16 ) {
             gain_adj_Q16 =  SKP_DIV32_varQ( inv_gain_Q16, psDec->prev_inv_gain_Q16, 16 );
         }
@@ -96,8 +96,8 @@ void SKP_Silk_decode_core(
         if( psDec->lossCnt && psDec->prev_sigtype == SIG_TYPE_VOICED &&
             psDecCtrl->sigtype == SIG_TYPE_UNVOICED && k < ( NB_SUBFR >> 1 ) ) {
             
-            SKP_memset( B_Q14, 0, LTP_ORDER * sizeof( SKP_int16 ) );
-            B_Q14[ LTP_ORDER/2 ] = ( SKP_int16 )1 << 12; /* 0.25 */
+            SKP_memset( B_Q14, 0, LTP_ORDER * sizeof( int16_t ) );
+            B_Q14[ LTP_ORDER/2 ] = ( int16_t )1 << 12; /* 0.25 */
         
             sigtype = SIG_TYPE_VOICED;
             psDecCtrl->pitchL[ k ] = psDec->lagPrev;
@@ -126,7 +126,7 @@ void SKP_Silk_decode_core(
                 }
             } else {
                 /* Update LTP state when Gain changes */
-                if( gain_adj_Q16 != ( SKP_int32 )1 << 16 ) {
+                if( gain_adj_Q16 != ( int32_t )1 << 16 ) {
                     for( i = 0; i < ( lag + LTP_ORDER / 2 ); i++ ) {
                         psDec->sLTP_Q16[ psDec->sLTP_buf_idx - i - 1 ] = SKP_SMULWW( gain_adj_Q16, psDec->sLTP_Q16[ psDec->sLTP_buf_idx - i - 1 ] );
                     }
@@ -165,7 +165,7 @@ void SKP_Silk_decode_core(
                 psDec->sLTP_buf_idx++;
             }
         } else {
-            SKP_memcpy( pres_Q10, pexc_Q10, psDec->subfr_length * sizeof( SKP_int32 ) );
+            SKP_memcpy( pres_Q10, pexc_Q10, psDec->subfr_length * sizeof( int32_t ) );
         }
 
 
@@ -177,28 +177,28 @@ void SKP_Silk_decode_core(
         if( psDec->LPC_order == 16 ) {
             for( i = 0; i < psDec->subfr_length; i++ ) {
                 /* unrolled */
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 0 ] );    /* read two coefficients at once */
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 0 ] );    /* read two coefficients at once */
                 LPC_pred_Q10 = SKP_SMULWB(               psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  1 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  2 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 2 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 2 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  3 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  4 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 4 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 4 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  5 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  6 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 6 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 6 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  7 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  8 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 8 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 8 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  9 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i - 10 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 10 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 10 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i - 11 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i - 12 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 12 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 12 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i - 13 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i - 14 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 14 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 14 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i - 15 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i - 16 ], Atmp );
                 
@@ -212,19 +212,19 @@ void SKP_Silk_decode_core(
             SKP_assert( psDec->LPC_order == 10 );
             for( i = 0; i < psDec->subfr_length; i++ ) {
                 /* unrolled */
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 0 ] );    /* read two coefficients at once */
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 0 ] );    /* read two coefficients at once */
                 LPC_pred_Q10 = SKP_SMULWB(               psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  1 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  2 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 2 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 2 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  3 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  4 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 4 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 4 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  5 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  6 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 6 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 6 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  7 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  8 ], Atmp );
-                Atmp = *( ( SKP_int32* )&A_Q12_tmp[ 8 ] );
+                Atmp = *( ( int32_t* )&A_Q12_tmp[ 8 ] );
                 LPC_pred_Q10 = SKP_SMLAWB( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i -  9 ], Atmp );
                 LPC_pred_Q10 = SKP_SMLAWT( LPC_pred_Q10, psDec->sLPC_Q14[ MAX_LPC_ORDER + i - 10 ], Atmp );
                 
@@ -238,17 +238,17 @@ void SKP_Silk_decode_core(
 
         /* Scale with Gain */
         for( i = 0; i < psDec->subfr_length; i++ ) {
-            pxq[ i ] = ( SKP_int16 )SKP_SAT16( SKP_RSHIFT_ROUND( SKP_SMULWW( vec_Q10[ i ], Gain_Q16 ), 10 ) );
+            pxq[ i ] = ( int16_t )SKP_SAT16( SKP_RSHIFT_ROUND( SKP_SMULWW( vec_Q10[ i ], Gain_Q16 ), 10 ) );
         }
 
         /* Update LPC filter state */
-        SKP_memcpy( psDec->sLPC_Q14, &psDec->sLPC_Q14[ psDec->subfr_length ], MAX_LPC_ORDER * sizeof( SKP_int32 ) );
+        SKP_memcpy( psDec->sLPC_Q14, &psDec->sLPC_Q14[ psDec->subfr_length ], MAX_LPC_ORDER * sizeof( int32_t ) );
         pexc_Q10 += psDec->subfr_length;
         pres_Q10 += psDec->subfr_length;
         pxq      += psDec->subfr_length;
     }
     
     /* Copy to output */
-    SKP_memcpy( xq, &psDec->outBuf[ psDec->frame_length ], psDec->frame_length * sizeof( SKP_int16 ) );
+    SKP_memcpy( xq, &psDec->outBuf[ psDec->frame_length ], psDec->frame_length * sizeof( int16_t ) );
 
 }
