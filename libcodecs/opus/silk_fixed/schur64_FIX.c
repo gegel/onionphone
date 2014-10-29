@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "SigProc_FIX.h"
+#include <ophtools.h>
 
 /* Slower than schur(), but more accurate.                              */
 /* Uses SMULL(), available on armv4                                     */
@@ -50,7 +51,7 @@ int32_t silk_schur64(	/* O    returns residual energy                           
 
 	/* Check for invalid input */
 	if (c[0] <= 0) {
-		silk_memset(rc_Q16, 0, order * sizeof(int32_t));
+		memzero(rc_Q16, order * sizeof(int32_t));
 		return 0;
 	}
 

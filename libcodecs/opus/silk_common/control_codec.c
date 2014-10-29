@@ -39,6 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include "tuning_parameters.h"
 #include "pitch_est_defines.h"
+#include <ophtools.h>
 
 static int silk_setup_resamplers(silk_encoder_state_Fxx * psEnc,	/* I/O                      */
 				      int fs_kHz	/* I                        */
@@ -265,13 +266,13 @@ static int silk_setup_fs(silk_encoder_state_Fxx * psEnc,	/* I/O                 
 	silk_assert(psEnc->sCmn.nb_subfr == 2 || psEnc->sCmn.nb_subfr == 4);
 	if (psEnc->sCmn.fs_kHz != fs_kHz) {
 		/* reset part of the state */
-		silk_memset(&psEnc->sShape, 0, sizeof(psEnc->sShape));
-		silk_memset(&psEnc->sPrefilt, 0, sizeof(psEnc->sPrefilt));
-		silk_memset(&psEnc->sCmn.sNSQ, 0, sizeof(psEnc->sCmn.sNSQ));
-		silk_memset(psEnc->sCmn.prev_NLSFq_Q15, 0,
-			    sizeof(psEnc->sCmn.prev_NLSFq_Q15));
-		silk_memset(&psEnc->sCmn.sLP.In_LP_State, 0,
-			    sizeof(psEnc->sCmn.sLP.In_LP_State));
+		memzero(&psEnc->sShape, sizeof(psEnc->sShape));
+		memzero(&psEnc->sPrefilt, sizeof(psEnc->sPrefilt));
+		memzero(&psEnc->sCmn.sNSQ, sizeof(psEnc->sCmn.sNSQ));
+		memzero(psEnc->sCmn.prev_NLSFq_Q15,
+			sizeof(psEnc->sCmn.prev_NLSFq_Q15));
+		memzero(&psEnc->sCmn.sLP.In_LP_State,
+			sizeof(psEnc->sCmn.sLP.In_LP_State));
 		psEnc->sCmn.inputBufIx = 0;
 		psEnc->sCmn.nFramesEncoded = 0;
 		psEnc->sCmn.TargetRate_bps = 0;	/* trigger new SNR computation */

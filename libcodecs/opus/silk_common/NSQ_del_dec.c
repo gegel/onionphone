@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 typedef struct {
 	int32_t sLPC_Q14[MAX_SUB_FRAME_LENGTH + NSQ_LPC_BUF_LENGTH];
@@ -141,7 +142,7 @@ void silk_NSQ_del_dec(const silk_encoder_state * psEncC,	/* I/O  Encoder State  
 
 	/* Initialize delayed decision states */
 	NSQ_del_dec_struct psDelDec[psEncC->nStatesDelayedDecision];
-	silk_memset(psDelDec, 0,
+	memzero(psDelDec,
 		    psEncC->nStatesDelayedDecision *
 		    sizeof(NSQ_del_dec_struct));
 	for (k = 0; k < psEncC->nStatesDelayedDecision; k++) {

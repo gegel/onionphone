@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main_FLP.h"
+#include <ophtools.h>
 
 /* Find LPC and LTP coefficients */
 void silk_find_pred_coefs_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state FLP                           */
@@ -110,9 +111,8 @@ void silk_find_pred_coefs_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder st
 			    psEnc->sCmn.predictLPCOrder;
 			x_ptr += psEnc->sCmn.subfr_length;
 		}
-		silk_memset(psEncCtrl->LTPCoef, 0,
-			    psEnc->sCmn.nb_subfr * LTP_ORDER *
-			    sizeof(silk_float));
+		memzero(psEncCtrl->LTPCoef,
+			psEnc->sCmn.nb_subfr * LTP_ORDER * sizeof(silk_float));
 		psEncCtrl->LTPredCodGain = 0.0f;
 		psEnc->sCmn.sum_log_gain_Q7 = 0;
 	}

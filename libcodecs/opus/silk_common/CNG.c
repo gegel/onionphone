@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 /* Generates excitation for CNG LPC synthesis */
 static inline void silk_CNG_exc(int32_t residual_Q10[],	/* O    CNG residual signal Q10                     */
@@ -234,8 +235,8 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 		silk_memcpy(psCNG->CNG_synth_state, &CNG_sig_Q10[length],
 			    MAX_LPC_ORDER * sizeof(int32_t));
 	} else {
-		silk_memset(psCNG->CNG_synth_state, 0,
-			    psDec->LPC_order * sizeof(int32_t));
+		memzero(psCNG->CNG_synth_state,
+			psDec->LPC_order * sizeof(int32_t));
 	}
 
 }

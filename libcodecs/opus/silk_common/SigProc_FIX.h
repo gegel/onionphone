@@ -351,7 +351,6 @@ extern "C" {
 
 /* Useful Macros that can be adjusted to other platforms */
 #define silk_memcpy(dest, src, size)        memcpy((dest), (src), (size))
-#define silk_memset(dest, src, size)        memset((dest), (src), (size))
 #define silk_memmove(dest, src, size)       memmove((dest), (src), (size))
 
 /* Fixed point macros */

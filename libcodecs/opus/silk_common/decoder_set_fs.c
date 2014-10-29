@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 /* Set decoder sampling rate */
 int silk_decoder_set_fs(silk_decoder_state * psDec,	/* I/O  Decoder state pointer                       */
@@ -105,9 +106,9 @@ int silk_decoder_set_fs(silk_decoder_state * psDec,	/* I/O  Decoder state pointe
 			psDec->lagPrev = 100;
 			psDec->LastGainIndex = 10;
 			psDec->prevSignalType = TYPE_NO_VOICE_ACTIVITY;
-			silk_memset(psDec->outBuf, 0, sizeof(psDec->outBuf));
-			silk_memset(psDec->sLPC_Q14_buf, 0,
-				    sizeof(psDec->sLPC_Q14_buf));
+			memzero(psDec->outBuf, sizeof(psDec->outBuf));
+			memzero(psDec->sLPC_Q14_buf,
+				sizeof(psDec->sLPC_Q14_buf));
 		}
 
 		psDec->fs_kHz = fs_kHz;

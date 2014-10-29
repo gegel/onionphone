@@ -34,6 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FLP.h"
 #include "tuning_parameters.h"
 #include "define.h"
+#include <ophtools.h>
 
 #define MAX_FRAME_SIZE              384	/* subfr_length * nb_subfr = ( 0.005 * 16000 + 16 ) * 4 = 384 */
 
@@ -58,7 +59,7 @@ silk_float silk_burg_modified_FLP(	/* O    returns residual energy              
 
 	/* Compute autocorrelations, added over subframes */
 	C0 = silk_energy_FLP(x, nb_subfr * subfr_length);
-	silk_memset(C_first_row, 0, SILK_MAX_ORDER_LPC * sizeof(double));
+	memzero(C_first_row, SILK_MAX_ORDER_LPC * sizeof(double));
 	for (s = 0; s < nb_subfr; s++) {
 		x_ptr = x + s * subfr_length;
 		for (n = 1; n < D + 1; n++) {

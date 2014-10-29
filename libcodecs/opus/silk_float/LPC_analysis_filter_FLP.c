@@ -31,6 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "config.h"
 #endif
 
+#include <ophtools.h>
 #include <stdlib.h>
 #include "main_FLP.h"
 
@@ -235,5 +236,5 @@ void silk_LPC_analysis_filter_FLP(silk_float r_LPC[],	/* O    LPC residual signa
 	}
 
 	/* Set first Order output samples to zero */
-	silk_memset(r_LPC, 0, Order * sizeof(silk_float));
+	memzero(r_LPC, Order * sizeof(silk_float));
 }

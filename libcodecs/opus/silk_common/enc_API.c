@@ -41,6 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #else
 #include "main_FLP.h"
 #endif
+#include <ophtools.h>
 
 /***************************************/
 /* Read control structure from encoder */
@@ -80,7 +81,7 @@ int silk_InitEncoder(	/* O    Returns error code                              */
 	psEnc = (silk_encoder *) encState;
 
 	/* Reset encoder */
-	silk_memset(psEnc, 0, sizeof(silk_encoder));
+	memzero(psEnc, sizeof(silk_encoder));
 	for (n = 0; n < ENCODER_NUM_CHANNELS; n++) {
 		if (ret += silk_init_encoder(&psEnc->state_Fxx[n], arch)) {
 			silk_assert(0);
@@ -183,10 +184,9 @@ int silk_Encode(		/* O    Returns error code                              */
 		ret +=
 		    silk_init_encoder(&psEnc->state_Fxx[1],
 				      psEnc->state_Fxx[0].sCmn.arch);
-		silk_memset(psEnc->sStereo.pred_prev_Q13, 0,
-			    sizeof(psEnc->sStereo.pred_prev_Q13));
-		silk_memset(psEnc->sStereo.sSide, 0,
-			    sizeof(psEnc->sStereo.sSide));
+		memzero(psEnc->sStereo.pred_prev_Q13,
+			sizeof(psEnc->sStereo.pred_prev_Q13));
+		memzero(psEnc->sStereo.sSide, sizeof(psEnc->sStereo.sSide));
 		psEnc->sStereo.mid_side_amp_Q0[0] = 0;
 		psEnc->sStereo.mid_side_amp_Q0[1] = 1;
 		psEnc->sStereo.mid_side_amp_Q0[2] = 0;
@@ -547,10 +547,8 @@ int silk_Encode(		/* O    Returns error code                              */
 				/* Reset LBRR flags */
 				for (n = 0; n < encControl->nChannelsInternal;
 				     n++) {
-					silk_memset(psEnc->state_Fxx[n].sCmn.
-						    LBRR_flags, 0,
-						    sizeof(psEnc->state_Fxx[n].
-							   sCmn.LBRR_flags));
+					memzero(psEnc->state_Fxx[n].sCmn.LBRR_flags,
+						sizeof(psEnc->state_Fxx[n].sCmn.LBRR_flags));
 				}
 			}
 
@@ -617,38 +615,16 @@ int silk_Encode(		/* O    Returns error code                              */
 						   nFramesEncoded] == 0) {
 					/* Reset side channel encoder memory for first frame with side coding */
 					if (psEnc->prev_decode_only_middle == 1) {
-						silk_memset(&psEnc->
-							    state_Fxx[1].sShape,
-							    0,
-							    sizeof(psEnc->
-								   state_Fxx[1].
-								   sShape));
-						silk_memset(&psEnc->
-							    state_Fxx[1].
-							    sPrefilt, 0,
-							    sizeof(psEnc->
-								   state_Fxx[1].
-								   sPrefilt));
-						silk_memset(&psEnc->
-							    state_Fxx[1].sCmn.
-							    sNSQ, 0,
-							    sizeof(psEnc->
-								   state_Fxx[1].
-								   sCmn.sNSQ));
-						silk_memset(psEnc->state_Fxx[1].
-							    sCmn.prev_NLSFq_Q15,
-							    0,
-							    sizeof(psEnc->
-								   state_Fxx[1].
-								   sCmn.
-								   prev_NLSFq_Q15));
-						silk_memset(&psEnc->
-							    state_Fxx[1].sCmn.
-							    sLP.In_LP_State, 0,
-							    sizeof(psEnc->
-								   state_Fxx[1].
-								   sCmn.sLP.
-								   In_LP_State));
+						memzero(&psEnc->state_Fxx[1].sShape,
+							sizeof(psEnc->state_Fxx[1].sShape));
+						memzero(&psEnc->state_Fxx[1].sPrefilt,
+							sizeof(psEnc->state_Fxx[1].sPrefilt));
+						memzero(&psEnc->state_Fxx[1].sCmn.sNSQ,
+							sizeof(psEnc->state_Fxx[1].sCmn.sNSQ));
+						memzero(psEnc->state_Fxx[1].sCmn.prev_NLSFq_Q15,
+							sizeof(psEnc->state_Fxx[1].sCmn.prev_NLSFq_Q15));
+						memzero(&psEnc->state_Fxx[1].sCmn.sLP.In_LP_State,
+							sizeof(psEnc->state_Fxx[1].sCmn.sLP.In_LP_State));
 						psEnc->state_Fxx[1].sCmn.
 						    prevLag = 100;
 						psEnc->state_Fxx[1].sCmn.sNSQ.

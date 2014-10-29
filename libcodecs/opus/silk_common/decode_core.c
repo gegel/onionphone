@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 /**********************************************************/
 /* Core decoder. Performs inverse NSQ operation LTP + LPC */
@@ -131,7 +132,7 @@ void silk_decode_core(silk_decoder_state * psDec,	/* I/O  Decoder state         
 		    psDec->indices.signalType != TYPE_VOICED
 		    && k < MAX_NB_SUBFR / 2) {
 
-			silk_memset(B_Q14, 0, LTP_ORDER * sizeof(int16_t));
+			memzero(B_Q14, LTP_ORDER * sizeof(int16_t));
 			B_Q14[LTP_ORDER / 2] = SILK_FIX_CONST(0.25, 14);
 
 			signalType = TYPE_VOICED;

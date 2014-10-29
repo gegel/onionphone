@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "main.h"
 #include "tuning_parameters.h"
+#include <ophtools.h>
 
 /* Control internal sampling rate */
 int silk_control_audio_bandwidth(silk_encoder_state * psEncC,	/* I/O  Pointer to Silk encoder state               */
@@ -74,9 +75,8 @@ int silk_control_audio_bandwidth(silk_encoder_state * psEncC,	/* I/O  Pointer to
 					    TRANSITION_FRAMES;
 
 					/* Reset transition filter state */
-					silk_memset(psEncC->sLP.In_LP_State, 0,
-						    sizeof(psEncC->sLP.
-							   In_LP_State));
+					memzero(psEncC->sLP.In_LP_State,
+						sizeof(psEncC->sLP.In_LP_State));
 				}
 				if (encControl->opusCanSwitch) {
 					/* Stop transition phase */
@@ -111,9 +111,8 @@ int silk_control_audio_bandwidth(silk_encoder_state * psEncC,	/* I/O  Pointer to
 					psEncC->sLP.transition_frame_no = 0;
 
 					/* Reset transition filter state */
-					silk_memset(psEncC->sLP.In_LP_State, 0,
-						    sizeof(psEncC->sLP.
-							   In_LP_State));
+					memzero(psEncC->sLP.In_LP_State,
+						sizeof(psEncC->sLP.In_LP_State));
 
 					/* Direction: up */
 					psEncC->sLP.mode = 1;

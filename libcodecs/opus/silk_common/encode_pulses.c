@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 /*********************************************/
 /* Encode quantization indices of excitation */
@@ -74,7 +75,7 @@ void silk_encode_pulses(ec_enc * psRangeEnc,	/* I/O  compressor data structure  
 	const uint8_t *cdf_ptr;
 	const uint8_t *nBits_ptr;
 
-	silk_memset(pulses_comb, 0, 8 * sizeof(int));	/* Fixing Valgrind reported problem */
+	memzero(pulses_comb, 8 * sizeof(int));	/* Fixing Valgrind reported problem */
 
     /****************************/
 	/* Prepare for shell coding */
@@ -86,8 +87,8 @@ void silk_encode_pulses(ec_enc * psRangeEnc,	/* I/O  compressor data structure  
 	if (iter * SHELL_CODEC_FRAME_LENGTH < frame_length) {
 		silk_assert(frame_length == 12 * 10);	/* Make sure only happens for 10 ms @ 12 kHz */
 		iter++;
-		silk_memset(&pulses[frame_length], 0,
-			    SHELL_CODEC_FRAME_LENGTH * sizeof(int8_t));
+		memzero(&pulses[frame_length],
+			SHELL_CODEC_FRAME_LENGTH * sizeof(int8_t));
 	}
 
 	/* Take the absolute value of the pulses */

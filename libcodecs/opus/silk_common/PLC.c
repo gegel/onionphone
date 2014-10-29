@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "main.h"
 #include "PLC.h"
+#include <ophtools.h>
 
 #define NB_ATT 2
 static const int16_t HARM_ATT_Q15[NB_ATT] = { 32440, 31130 };	/* 0.99, 0.95 */
@@ -132,8 +133,7 @@ static inline void silk_PLC_update(silk_decoder_state * psDec,	/* I/O Decoder st
 			}
 		}
 
-		silk_memset(psPLC->LTPCoef_Q14, 0,
-			    LTP_ORDER * sizeof(int16_t));
+		memzero(psPLC->LTPCoef_Q14, LTP_ORDER * sizeof(int16_t));
 		psPLC->LTPCoef_Q14[LTP_ORDER / 2] = LTP_Gain_Q14;
 
 		/* Limit LT coefs */
@@ -165,8 +165,7 @@ static inline void silk_PLC_update(silk_decoder_state * psDec,	/* I/O Decoder st
 	} else {
 		psPLC->pitchL_Q8 =
 		    silk_LSHIFT(silk_SMULBB(psDec->fs_kHz, 18), 8);
-		silk_memset(psPLC->LTPCoef_Q14, 0,
-			    LTP_ORDER * sizeof(int16_t));
+		memzero(psPLC->LTPCoef_Q14, LTP_ORDER * sizeof(int16_t));
 	}
 
 	/* Save LPC coeficients */
@@ -210,7 +209,7 @@ static inline void silk_PLC_conceal(silk_decoder_state * psDec,	/* I/O Decoder s
 	prevGain_Q10[1] = silk_RSHIFT(psPLC->prevGain_Q16[1], 6);
 
 	if (psDec->first_frame_after_reset) {
-		silk_memset(psPLC->prevLPC_Q12, 0, sizeof(psPLC->prevLPC_Q12));
+		memzero(psPLC->prevLPC_Q12, sizeof(psPLC->prevLPC_Q12));
 	}
 
 	/* Find random noise component */

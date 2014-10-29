@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 /* Silk VAD noise level estimation */
 static inline void silk_VAD_GetNoiseLevels(const int32_t pX[VAD_N_BANDS],	/* I    subband energies                            */
@@ -48,7 +49,7 @@ int silk_VAD_Init(		/* O    Return value, 0 if success                  */
 	int b, ret = 0;
 
 	/* reset state memory */
-	silk_memset(psSilk_VAD, 0, sizeof(silk_VAD_state));
+	memzero(psSilk_VAD, sizeof(silk_VAD_state));
 
 	/* init noise levels */
 	/* Initialize array with approx pink noise levels (psd proportional to inverse of frequency) */

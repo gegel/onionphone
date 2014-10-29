@@ -31,6 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "config.h"
 #endif
 
+#include <ophtools.h>
+
 /*
  * Matrix of resampling methods used:
  *                                 Fs_out (kHz)
@@ -85,7 +87,7 @@ int silk_resampler_init(silk_resampler_state_struct * S,	/* I/O  Resampler state
 	int up2x;
 
 	/* Clear state */
-	silk_memset(S, 0, sizeof(silk_resampler_state_struct));
+	memzero(S, sizeof(silk_resampler_state_struct));
 
 	/* Input checking */
 	if (forEnc) {

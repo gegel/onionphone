@@ -31,6 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "config.h"
 #endif
 
+#include <ophtools.h>
 #include <stdlib.h>
 #include "main_FLP.h"
 #include "tuning_parameters.h"
@@ -145,7 +146,7 @@ void silk_find_pitch_lags_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder st
 			psEnc->sCmn.indices.signalType = TYPE_UNVOICED;
 		}
 	} else {
-		silk_memset(psEncCtrl->pitchL, 0, sizeof(psEncCtrl->pitchL));
+		memzero(psEncCtrl->pitchL, sizeof(psEncCtrl->pitchL));
 		psEnc->sCmn.indices.lagIndex = 0;
 		psEnc->sCmn.indices.contourIndex = 0;
 		psEnc->LTPCorr = 0;
