@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include "API.h"
 #include "main.h"
+#include <ophtools.h>
 
 /************************/
 /* Decoder Super Struct */
@@ -71,8 +72,8 @@ int silk_InitDecoder(	/* O    Returns error code                              */
 	for (n = 0; n < DECODER_NUM_CHANNELS; n++) {
 		ret = silk_init_decoder(&channel_state[n]);
 	}
-	silk_memset(&((silk_decoder *) decState)->sStereo, 0,
-		    sizeof(((silk_decoder *) decState)->sStereo));
+	memzero(&((silk_decoder *)decState)->sStereo,
+		sizeof(((silk_decoder *)decState)->sStereo));
 	/* Not strictly needed, but it's cleaner that way */
 	((silk_decoder *) decState)->prev_decode_only_middle = 0;
 
@@ -162,11 +163,10 @@ int silk_Decode(		/* O    Returns error code                              */
 
 	if (decControl->nChannelsAPI == 2 && decControl->nChannelsInternal == 2
 	    && (psDec->nChannelsAPI == 1 || psDec->nChannelsInternal == 1)) {
-		silk_memset(psDec->sStereo.pred_prev_Q13, 0,
-			    sizeof(psDec->sStereo.pred_prev_Q13));
-		silk_memset(psDec->sStereo.sSide, 0,
-			    sizeof(psDec->sStereo.sSide));
-		silk_memcpy(&channel_state[1].resampler_state,
+		memzero(psDec->sStereo.pred_prev_Q13,
+			sizeof(psDec->sStereo.pred_prev_Q13));
+		memzero(psDec->sStereo.sSide, sizeof(psDec->sStereo.sSide));
+		memcpy(&channel_state[1].resampler_state,
 			    &channel_state[0].resampler_state,
 			    sizeof(silk_resampler_state_struct));
 	}
@@ -194,8 +194,8 @@ int silk_Decode(		/* O    Returns error code                              */
 		}
 		/* Decode LBRR flags */
 		for (n = 0; n < decControl->nChannelsInternal; n++) {
-			silk_memset(channel_state[n].LBRR_flags, 0,
-				    sizeof(channel_state[n].LBRR_flags));
+			memzero(channel_state[n].LBRR_flags,
+				sizeof(channel_state[n].LBRR_flags));
 			if (channel_state[n].LBRR_flag) {
 				if (channel_state[n].nFramesPerPacket == 1) {
 					channel_state[n].LBRR_flags[0] = 1;
@@ -304,10 +304,10 @@ int silk_Decode(		/* O    Returns error code                              */
 	/* Reset side channel decoder prediction memory for first frame with side coding */
 	if (decControl->nChannelsInternal == 2 && decode_only_middle == 0
 	    && psDec->prev_decode_only_middle == 1) {
-		silk_memset(psDec->channel_state[1].outBuf, 0,
-			    sizeof(psDec->channel_state[1].outBuf));
-		silk_memset(psDec->channel_state[1].sLPC_Q14_buf, 0,
-			    sizeof(psDec->channel_state[1].sLPC_Q14_buf));
+		memzero(psDec->channel_state[1].outBuf,
+			sizeof(psDec->channel_state[1].outBuf));
+		memzero(psDec->channel_state[1].sLPC_Q14_buf,
+			sizeof(psDec->channel_state[1].sLPC_Q14_buf));
 		psDec->channel_state[1].lagPrev = 100;
 		psDec->channel_state[1].LastGainIndex = 10;
 		psDec->channel_state[1].prevSignalType = TYPE_NO_VOICE_ACTIVITY;
@@ -357,8 +357,8 @@ int silk_Decode(		/* O    Returns error code                              */
 					      &nSamplesOutDec, lostFlag,
 					      condCoding);
 		} else {
-			silk_memset(&samplesOut1_tmp[n][2], 0,
-				    nSamplesOutDec * sizeof(int16_t));
+			memzero(&samplesOut1_tmp[n][2],
+				nSamplesOutDec * sizeof(int16_t));
 		}
 		channel_state[n].nFramesDecoded++;
 	}
@@ -370,9 +370,9 @@ int silk_Decode(		/* O    Returns error code                              */
 				     channel_state[0].fs_kHz, nSamplesOutDec);
 	} else {
 		/* Buffering */
-		silk_memcpy(samplesOut1_tmp[0], psDec->sStereo.sMid,
+		memcpy(samplesOut1_tmp[0], psDec->sStereo.sMid,
 			    2 * sizeof(int16_t));
-		silk_memcpy(psDec->sStereo.sMid,
+		memcpy(psDec->sStereo.sMid,
 			    &samplesOut1_tmp[0][nSamplesOutDec],
 			    2 * sizeof(int16_t));
 	}
@@ -469,7 +469,7 @@ int silk_get_TOC(const uint8_t * payload,	/* I    Payload data                  
 		return -1;
 	}
 
-	silk_memset(Silk_TOC, 0, sizeof(*Silk_TOC));
+	memzero(Silk_TOC, sizeof(*Silk_TOC));
 
 	/* For stereo, extract the flags for the mid channel */
 	flags =

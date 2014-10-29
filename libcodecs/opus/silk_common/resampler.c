@@ -31,6 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "config.h"
 #endif
 
+#include <ophtools.h>
+
 /*
  * Matrix of resampling methods used:
  *                                 Fs_out (kHz)
@@ -85,7 +87,7 @@ int silk_resampler_init(silk_resampler_state_struct * S,	/* I/O  Resampler state
 	int up2x;
 
 	/* Clear state */
-	silk_memset(S, 0, sizeof(silk_resampler_state_struct));
+	memzero(S, sizeof(silk_resampler_state_struct));
 
 	/* Input checking */
 	if (forEnc) {
@@ -198,7 +200,7 @@ int silk_resampler(silk_resampler_state_struct * S,	/* I/O  Resampler state     
 	nSamples = S->Fs_in_kHz - S->inputDelay;
 
 	/* Copy to delay buffer */
-	silk_memcpy(&S->delayBuf[S->inputDelay], in,
+	memcpy(&S->delayBuf[S->inputDelay], in,
 		    nSamples * sizeof(int16_t));
 
 	switch (S->resampler_function) {
@@ -224,14 +226,14 @@ int silk_resampler(silk_resampler_state_struct * S,	/* I/O  Resampler state     
 						inLen - S->Fs_in_kHz);
 		break;
 	default:
-		silk_memcpy(out, S->delayBuf,
+		memcpy(out, S->delayBuf,
 			    S->Fs_in_kHz * sizeof(int16_t));
-		silk_memcpy(&out[S->Fs_out_kHz], &in[nSamples],
+		memcpy(&out[S->Fs_out_kHz], &in[nSamples],
 			    (inLen - S->Fs_in_kHz) * sizeof(int16_t));
 	}
 
 	/* Copy to delay buffer */
-	silk_memcpy(S->delayBuf, &in[inLen - S->inputDelay],
+	memcpy(S->delayBuf, &in[inLen - S->inputDelay],
 		    S->inputDelay * sizeof(int16_t));
 
 	return 0;

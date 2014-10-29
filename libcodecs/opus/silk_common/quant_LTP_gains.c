@@ -116,7 +116,7 @@ void silk_quant_LTP_gains(int16_t B_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* I/O  (un)q
 		if (rate_dist_Q14 < min_rate_dist_Q14) {
 			min_rate_dist_Q14 = rate_dist_Q14;
 			*periodicity_index = (int8_t) k;
-			silk_memcpy(cbk_index, temp_idx,
+			memcpy(cbk_index, temp_idx,
 				    nb_subfr * sizeof(int8_t));
 			best_sum_log_gain_Q7 = sum_log_gain_tmp_Q7;
 		}

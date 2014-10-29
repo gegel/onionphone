@@ -107,7 +107,7 @@ void silk_process_gains_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encoder stat
 	}
 
 	/* Save unquantized gains and gain Index */
-	silk_memcpy(psEncCtrl->GainsUnq_Q16, psEncCtrl->Gains_Q16,
+	memcpy(psEncCtrl->GainsUnq_Q16, psEncCtrl->Gains_Q16,
 		    psEnc->sCmn.nb_subfr * sizeof(int32_t));
 	psEncCtrl->lastGainIndexPrev = psShapeSt->LastGainIndex;
 

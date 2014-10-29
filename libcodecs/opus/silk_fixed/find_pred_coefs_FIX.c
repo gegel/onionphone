@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main_FIX.h"
+#include <ophtools.h>
 
 void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder state                                                               */
 			      silk_encoder_control_FIX * psEncCtrl,	/* I/O  encoder control                                                             */
@@ -137,9 +138,8 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 			x_ptr += psEnc->sCmn.subfr_length;
 		}
 
-		silk_memset(psEncCtrl->LTPCoef_Q14, 0,
-			    psEnc->sCmn.nb_subfr * LTP_ORDER *
-			    sizeof(int16_t));
+		memzero(psEncCtrl->LTPCoef_Q14,
+			psEnc->sCmn.nb_subfr * LTP_ORDER * sizeof(int16_t));
 		psEncCtrl->LTPredCodGain_Q7 = 0;
 		psEnc->sCmn.sum_log_gain_Q7 = 0;
 	}
@@ -180,7 +180,7 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 				 psEnc->sCmn.predictLPCOrder);
 
 	/* Copy to prediction struct for use in next frame for interpolation */
-	silk_memcpy(psEnc->sCmn.prev_NLSFq_Q15, NLSF_Q15,
+	memcpy(psEnc->sCmn.prev_NLSFq_Q15, NLSF_Q15,
 		    sizeof(psEnc->sCmn.prev_NLSFq_Q15));
 
 }

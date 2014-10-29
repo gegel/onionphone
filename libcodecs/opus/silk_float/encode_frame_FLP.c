@@ -178,8 +178,8 @@ int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state 
 		gainsID_lower = -1;
 		gainsID_upper = -1;
 		/* Copy part of the input state */
-		silk_memcpy(&sRangeEnc_copy, psRangeEnc, sizeof(ec_enc));
-		silk_memcpy(&sNSQ_copy, &psEnc->sCmn.sNSQ,
+		memcpy(&sRangeEnc_copy, psRangeEnc, sizeof(ec_enc));
+		memcpy(&sNSQ_copy, &psEnc->sCmn.sNSQ,
 			    sizeof(silk_nsq_state));
 		seed_copy = psEnc->sCmn.indices.Seed;
 		ec_prevLagIndex_copy = psEnc->sCmn.ec_prevLagIndex;
@@ -192,9 +192,9 @@ int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state 
 			} else {
 				/* Restore part of the input state */
 				if (iter > 0) {
-					silk_memcpy(psRangeEnc, &sRangeEnc_copy,
+					memcpy(psRangeEnc, &sRangeEnc_copy,
 						    sizeof(ec_enc));
-					silk_memcpy(&psEnc->sCmn.sNSQ,
+					memcpy(&psEnc->sCmn.sNSQ,
 						    &sNSQ_copy,
 						    sizeof(silk_nsq_state));
 					psEnc->sCmn.indices.Seed = seed_copy;
@@ -243,15 +243,15 @@ int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state 
 				    && (gainsID == gainsID_lower
 					|| nBits > maxBits)) {
 					/* Restore output state from earlier iteration that did meet the bitrate budget */
-					silk_memcpy(psRangeEnc,
+					memcpy(psRangeEnc,
 						    &sRangeEnc_copy2,
 						    sizeof(ec_enc));
 					silk_assert(sRangeEnc_copy2.offs <=
 						    1275);
-					silk_memcpy(psRangeEnc->buf,
+					memcpy(psRangeEnc->buf,
 						    ec_buf_copy,
 						    sRangeEnc_copy2.offs);
-					silk_memcpy(&psEnc->sCmn.sNSQ,
+					memcpy(&psEnc->sCmn.sNSQ,
 						    &sNSQ_copy2,
 						    sizeof(silk_nsq_state));
 					psEnc->sShape.LastGainIndex =
@@ -279,13 +279,13 @@ int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state 
 				if (gainsID != gainsID_lower) {
 					gainsID_lower = gainsID;
 					/* Copy part of the output state */
-					silk_memcpy(&sRangeEnc_copy2,
+					memcpy(&sRangeEnc_copy2,
 						    psRangeEnc, sizeof(ec_enc));
 					silk_assert(psRangeEnc->offs <= 1275);
-					silk_memcpy(ec_buf_copy,
+					memcpy(ec_buf_copy,
 						    psRangeEnc->buf,
 						    psRangeEnc->offs);
-					silk_memcpy(&sNSQ_copy2,
+					memcpy(&sNSQ_copy2,
 						    &psEnc->sCmn.sNSQ,
 						    sizeof(silk_nsq_state));
 					LastGainIndex_copy2 =
@@ -374,9 +374,8 @@ int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state 
 	}
 
 	/* Update input buffer */
-	silk_memmove(psEnc->x_buf, &psEnc->x_buf[psEnc->sCmn.frame_length],
-		     (psEnc->sCmn.ltp_mem_length +
-		      LA_SHAPE_MS * psEnc->sCmn.fs_kHz) * sizeof(silk_float));
+	memmove(psEnc->x_buf, &psEnc->x_buf[psEnc->sCmn.frame_length],
+		(psEnc->sCmn.ltp_mem_length + LA_SHAPE_MS * psEnc->sCmn.fs_kHz) * sizeof(silk_float));
 
 	/* Exit without entropy coding */
 	if (psEnc->sCmn.prefillFlag) {
@@ -422,13 +421,13 @@ static inline void silk_LBRR_encode_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  
 		psEnc->sCmn.LBRR_flags[psEnc->sCmn.nFramesEncoded] = 1;
 
 		/* Copy noise shaping quantizer state and quantization indices from regular encoding */
-		silk_memcpy(&sNSQ_LBRR, &psEnc->sCmn.sNSQ,
+		memcpy(&sNSQ_LBRR, &psEnc->sCmn.sNSQ,
 			    sizeof(silk_nsq_state));
-		silk_memcpy(psIndices_LBRR, &psEnc->sCmn.indices,
+		memcpy(psIndices_LBRR, &psEnc->sCmn.indices,
 			    sizeof(SideInfoIndices));
 
 		/* Save original gains */
-		silk_memcpy(TempGains, psEncCtrl->Gains,
+		memcpy(TempGains, psEncCtrl->Gains,
 			    psEnc->sCmn.nb_subfr * sizeof(silk_float));
 
 		if (psEnc->sCmn.nFramesEncoded == 0
@@ -467,7 +466,7 @@ static inline void silk_LBRR_encode_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  
 				     xfw);
 
 		/* Restore original gains */
-		silk_memcpy(psEncCtrl->Gains, TempGains,
+		memcpy(psEncCtrl->Gains, TempGains,
 			    psEnc->sCmn.nb_subfr * sizeof(silk_float));
 	}
 }

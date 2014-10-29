@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 /* Generates excitation for CNG LPC synthesis */
 static inline void silk_CNG_exc(int32_t residual_Q10[],	/* O    CNG residual signal Q10                     */
@@ -117,11 +118,10 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 			}
 		}
 		/* Update CNG excitation buffer with excitation from this subframe */
-		silk_memmove(&psCNG->CNG_exc_buf_Q14[psDec->subfr_length],
-			     psCNG->CNG_exc_buf_Q14,
-			     (psDec->nb_subfr -
-			      1) * psDec->subfr_length * sizeof(int32_t));
-		silk_memcpy(psCNG->CNG_exc_buf_Q14,
+		memmove(&psCNG->CNG_exc_buf_Q14[psDec->subfr_length],
+			psCNG->CNG_exc_buf_Q14,
+			(psDec->nb_subfr - 1) * psDec->subfr_length * sizeof(int32_t));
+		memcpy(psCNG->CNG_exc_buf_Q14,
 			    &psDec->exc_Q14[subfr * psDec->subfr_length],
 			    psDec->subfr_length * sizeof(int32_t));
 
@@ -148,7 +148,7 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 		silk_NLSF2A(A_Q12, psCNG->CNG_smth_NLSF_Q15, psDec->LPC_order);
 
 		/* Generate CNG signal, by synthesis filtering */
-		silk_memcpy(CNG_sig_Q10, psCNG->CNG_synth_state,
+		memcpy(CNG_sig_Q10, psCNG->CNG_synth_state,
 			    MAX_LPC_ORDER * sizeof(int32_t));
 		for (i = 0; i < length; i++) {
 			silk_assert(psDec->LPC_order == 10
@@ -231,11 +231,11 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 			    silk_ADD_SAT16(frame[i],
 					   silk_RSHIFT_ROUND(sum_Q6, 6));
 		}
-		silk_memcpy(psCNG->CNG_synth_state, &CNG_sig_Q10[length],
+		memcpy(psCNG->CNG_synth_state, &CNG_sig_Q10[length],
 			    MAX_LPC_ORDER * sizeof(int32_t));
 	} else {
-		silk_memset(psCNG->CNG_synth_state, 0,
-			    psDec->LPC_order * sizeof(int32_t));
+		memzero(psCNG->CNG_synth_state,
+			psDec->LPC_order * sizeof(int32_t));
 	}
 
 }

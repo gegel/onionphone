@@ -106,9 +106,9 @@ int silk_decode_frame(silk_decoder_state * psDec,	/* I/O  Pointer to Silk decode
     /*************************/
 	silk_assert(psDec->ltp_mem_length >= psDec->frame_length);
 	mv_len = psDec->ltp_mem_length - psDec->frame_length;
-	silk_memmove(psDec->outBuf, &psDec->outBuf[psDec->frame_length],
-		     mv_len * sizeof(int16_t));
-	silk_memcpy(&psDec->outBuf[mv_len], pOut,
+	memmove(psDec->outBuf, &psDec->outBuf[psDec->frame_length],
+		mv_len * sizeof(int16_t));
+	memcpy(&psDec->outBuf[mv_len], pOut,
 		    psDec->frame_length * sizeof(int16_t));
 
     /****************************************************************/

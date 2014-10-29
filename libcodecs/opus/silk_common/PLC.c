@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "main.h"
 #include "PLC.h"
+#include <ophtools.h>
 
 #define NB_ATT 2
 static const int16_t HARM_ATT_Q15[NB_ATT] = { 32440, 31130 };	/* 0.99, 0.95 */
@@ -118,7 +119,7 @@ static inline void silk_PLC_update(silk_decoder_state * psDec,	/* I/O Decoder st
 			}
 			if (temp_LTP_Gain_Q14 > LTP_Gain_Q14) {
 				LTP_Gain_Q14 = temp_LTP_Gain_Q14;
-				silk_memcpy(psPLC->LTPCoef_Q14,
+				memcpy(psPLC->LTPCoef_Q14,
 					    &psDecCtrl->
 					    LTPCoef_Q14[silk_SMULBB
 							(psDec->nb_subfr - 1 -
@@ -132,8 +133,7 @@ static inline void silk_PLC_update(silk_decoder_state * psDec,	/* I/O Decoder st
 			}
 		}
 
-		silk_memset(psPLC->LTPCoef_Q14, 0,
-			    LTP_ORDER * sizeof(int16_t));
+		memzero(psPLC->LTPCoef_Q14, LTP_ORDER * sizeof(int16_t));
 		psPLC->LTPCoef_Q14[LTP_ORDER / 2] = LTP_Gain_Q14;
 
 		/* Limit LT coefs */
@@ -165,17 +165,16 @@ static inline void silk_PLC_update(silk_decoder_state * psDec,	/* I/O Decoder st
 	} else {
 		psPLC->pitchL_Q8 =
 		    silk_LSHIFT(silk_SMULBB(psDec->fs_kHz, 18), 8);
-		silk_memset(psPLC->LTPCoef_Q14, 0,
-			    LTP_ORDER * sizeof(int16_t));
+		memzero(psPLC->LTPCoef_Q14, LTP_ORDER * sizeof(int16_t));
 	}
 
 	/* Save LPC coeficients */
-	silk_memcpy(psPLC->prevLPC_Q12, psDecCtrl->PredCoef_Q12[1],
+	memcpy(psPLC->prevLPC_Q12, psDecCtrl->PredCoef_Q12[1],
 		    psDec->LPC_order * sizeof(int16_t));
 	psPLC->prevLTP_scale_Q14 = psDecCtrl->LTP_scale_Q14;
 
 	/* Save last two gains */
-	silk_memcpy(psPLC->prevGain_Q16,
+	memcpy(psPLC->prevGain_Q16,
 		    &psDecCtrl->Gains_Q16[psDec->nb_subfr - 2],
 		    2 * sizeof(int32_t));
 
@@ -210,7 +209,7 @@ static inline void silk_PLC_conceal(silk_decoder_state * psDec,	/* I/O Decoder s
 	prevGain_Q10[1] = silk_RSHIFT(psPLC->prevGain_Q16[1], 6);
 
 	if (psDec->first_frame_after_reset) {
-		silk_memset(psPLC->prevLPC_Q12, 0, sizeof(psPLC->prevLPC_Q12));
+		memzero(psPLC->prevLPC_Q12, sizeof(psPLC->prevLPC_Q12));
 	}
 
 	/* Find random noise component */
@@ -274,7 +273,7 @@ static inline void silk_PLC_conceal(silk_decoder_state * psDec,	/* I/O Decoder s
 			SILK_FIX_CONST(BWE_COEF, 16));
 
 	/* Preload LPC coeficients to array on stack. Gives small performance gain */
-	silk_memcpy(A_Q12, psPLC->prevLPC_Q12,
+	memcpy(A_Q12, psPLC->prevLPC_Q12,
 		    psDec->LPC_order * sizeof(int16_t));
 
 	/* First Lost frame */
@@ -401,7 +400,7 @@ static inline void silk_PLC_conceal(silk_decoder_state * psDec,	/* I/O Decoder s
 	sLPC_Q14_ptr = &sLTP_Q14[psDec->ltp_mem_length - MAX_LPC_ORDER];
 
 	/* Copy LPC state */
-	silk_memcpy(sLPC_Q14_ptr, psDec->sLPC_Q14_buf,
+	memcpy(sLPC_Q14_ptr, psDec->sLPC_Q14_buf,
 		    MAX_LPC_ORDER * sizeof(int32_t));
 
 	silk_assert(psDec->LPC_order >= 10);	/* check that unrolling works */
@@ -462,7 +461,7 @@ static inline void silk_PLC_conceal(silk_decoder_state * psDec,	/* I/O Decoder s
 	}
 
 	/* Save LPC state */
-	silk_memcpy(psDec->sLPC_Q14_buf, &sLPC_Q14_ptr[psDec->frame_length],
+	memcpy(psDec->sLPC_Q14_buf, &sLPC_Q14_ptr[psDec->frame_length],
 		    MAX_LPC_ORDER * sizeof(int32_t));
 
     /**************************************/

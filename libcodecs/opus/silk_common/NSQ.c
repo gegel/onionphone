@@ -185,9 +185,9 @@ void silk_NSQ(const silk_encoder_state * psEncC,	/* I/O  Encoder State          
 
 	/* Save quantized speech and noise shaping signals */
 	/* DEBUG_STORE_DATA( enc.pcm, &NSQ->xq[ psEncC->ltp_mem_length ], psEncC->frame_length * sizeof( int16_t ) ) */
-	silk_memmove(NSQ->xq, &NSQ->xq[psEncC->frame_length],
+	memmove(NSQ->xq, &NSQ->xq[psEncC->frame_length],
 		     psEncC->ltp_mem_length * sizeof(int16_t));
-	silk_memmove(NSQ->sLTP_shp_Q14,
+	memmove(NSQ->sLTP_shp_Q14,
 		     &NSQ->sLTP_shp_Q14[psEncC->frame_length],
 		     psEncC->ltp_mem_length * sizeof(int32_t));
 
@@ -446,7 +446,7 @@ static inline void silk_noise_shape_quantizer(silk_nsq_state * NSQ,	/* I/O  NSQ 
 	}
 
 	/* Update LPC synth buffer */
-	silk_memcpy(NSQ->sLPC_Q14, &NSQ->sLPC_Q14[length],
+	memcpy(NSQ->sLPC_Q14, &NSQ->sLPC_Q14[length],
 		    NSQ_LPC_BUF_LENGTH * sizeof(int32_t));
 }
 

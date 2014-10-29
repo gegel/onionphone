@@ -245,7 +245,7 @@ int32_t silk_NLSF_del_dec_quant(	/* O    Returns RD value in Q25                
 						 NLSF_QUANT_DEL_DEC_STATES];
 				RD_min_Q25[ind_max_min] = 0;
 				RD_max_Q25[ind_min_max] = silk_int32_MAX;
-				silk_memcpy(ind[ind_max_min], ind[ind_min_max],
+				memcpy(ind[ind_max_min], ind[ind_min_max],
 					    MAX_LPC_ORDER * sizeof(int8_t));
 			}
 			/* increment index if it comes from the upper half */

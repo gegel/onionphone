@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "main_FIX.h"
 #include "tuning_parameters.h"
+#include <ophtools.h>
 
 /* Find pitch lags */
 void silk_find_pitch_lags_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder state                                                               */
@@ -80,7 +81,7 @@ void silk_find_pitch_lags_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 	/* Middle un - windowed samples */
 	Wsig_ptr += psEnc->sCmn.la_pitch;
 	x_buf_ptr += psEnc->sCmn.la_pitch;
-	silk_memcpy(Wsig_ptr, x_buf_ptr,
+	memcpy(Wsig_ptr, x_buf_ptr,
 		    (psEnc->sCmn.pitch_LPC_win_length -
 		     silk_LSHIFT(psEnc->sCmn.la_pitch,
 				 1)) * sizeof(int16_t));
@@ -164,7 +165,7 @@ void silk_find_pitch_lags_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 			psEnc->sCmn.indices.signalType = TYPE_UNVOICED;
 		}
 	} else {
-		silk_memset(psEncCtrl->pitchL, 0, sizeof(psEncCtrl->pitchL));
+		memzero(psEncCtrl->pitchL, sizeof(psEncCtrl->pitchL));
 		psEnc->sCmn.indices.lagIndex = 0;
 		psEnc->sCmn.indices.contourIndex = 0;
 		psEnc->LTPCorr_Q15 = 0;

@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "define.h"
 #include "tuning_parameters.h"
 #include "pitch.h"
+#include <ophtools.h>
 
 #define MAX_FRAME_SIZE              384	/* subfr_length * nb_subfr = ( 0.005 * 16000 + 16 ) * 4 = 384 */
 
@@ -89,7 +90,7 @@ void silk_burg_modified(int32_t * res_nrg,	/* O    Residual energy              
 		rshifts += rshifts_extra;
 	}
 	CAb[0] = CAf[0] = C0 + silk_SMMUL(SILK_FIX_CONST(FIND_LPC_COND_FAC, 32), C0) + 1;	/* Q(-rshifts) */
-	silk_memset(C_first_row, 0, SILK_MAX_ORDER_LPC * sizeof(int32_t));
+	memzero(C_first_row, SILK_MAX_ORDER_LPC * sizeof(int32_t));
 	if (rshifts > 0) {
 		for (s = 0; s < nb_subfr; s++) {
 			x_ptr = x + s * subfr_length;
@@ -122,7 +123,7 @@ void silk_burg_modified(int32_t * res_nrg,	/* O    Residual energy              
 			}
 		}
 	}
-	silk_memcpy(C_last_row, C_first_row,
+	memcpy(C_last_row, C_first_row,
 		    SILK_MAX_ORDER_LPC * sizeof(int32_t));
 
 	/* Initialize */

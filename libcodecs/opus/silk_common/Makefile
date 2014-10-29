@@ -92,7 +92,7 @@ OBJ = CNG.o \
       stereo_find_predictor.o \
       stereo_quant_pred.o
 
-INCADD ?= -I. -I../include -I../celt -I../silk_float -I../silk_fixed
+INCADD ?= -I. -I../include -I../celt -I../silk_float -I../silk_fixed -I../../../common/inc
 
 all: build
 

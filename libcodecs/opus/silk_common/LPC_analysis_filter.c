@@ -107,6 +107,6 @@ void silk_LPC_analysis_filter(int16_t * out,	/* O    Output signal              
 	}
 
 	/* Set first d output samples to zero */
-	silk_memset(out, 0, d * sizeof(int16_t));
+	memzero(out, d * sizeof(int16_t));
 #endif
 }

@@ -37,6 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 #include "tuning_parameters.h"
 #include "cpu_support.h"
+#include <ophtools.h>
 
 /*********************************/
 /* Initialize Silk Encoder state */
@@ -48,7 +49,7 @@ int silk_init_encoder(silk_encoder_state_Fxx * psEnc,	/* I/O  Pointer to Silk FI
 	int ret = 0;
 
 	/* Clear the entire encoder state */
-	silk_memset(psEnc, 0, sizeof(silk_encoder_state_Fxx));
+	memzero(psEnc, sizeof(silk_encoder_state_Fxx));
 
 	psEnc->sCmn.arch = arch;
 

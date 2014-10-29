@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 /*********************************************/
 /* Decode quantization indices of excitation */
@@ -92,11 +93,8 @@ void silk_decode_pulses(ec_dec * psRangeDec,	/* I/O  Compressor data structure  
 					    (i, SHELL_CODEC_FRAME_LENGTH)],
 					   psRangeDec, sum_pulses[i]);
 		} else {
-			silk_memset(&pulses
-				    [silk_SMULBB(i, SHELL_CODEC_FRAME_LENGTH)],
-				    0,
-				    SHELL_CODEC_FRAME_LENGTH *
-				    sizeof(int));
+			memzero(&pulses[silk_SMULBB(i, SHELL_CODEC_FRAME_LENGTH)],
+				SHELL_CODEC_FRAME_LENGTH * sizeof(int));
 		}
 	}
 

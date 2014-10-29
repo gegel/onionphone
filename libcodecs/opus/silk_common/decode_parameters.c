@@ -32,6 +32,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 /* Decode parameters from payload */
 void silk_decode_parameters(silk_decoder_state * psDec,	/* I/O  State                                       */
@@ -80,12 +81,12 @@ void silk_decode_parameters(silk_decoder_state * psDec,	/* I/O  State           
 			    psDec->LPC_order);
 	} else {
 		/* Copy LPC coefficients for first half from second half */
-		silk_memcpy(psDecCtrl->PredCoef_Q12[0],
+		memcpy(psDecCtrl->PredCoef_Q12[0],
 			    psDecCtrl->PredCoef_Q12[1],
 			    psDec->LPC_order * sizeof(int16_t));
 	}
 
-	silk_memcpy(psDec->prevNLSF_Q15, pNLSF_Q15,
+	memcpy(psDec->prevNLSF_Q15, pNLSF_Q15,
 		    psDec->LPC_order * sizeof(int16_t));
 
 	/* After a packet loss do BWE of LPC coefs */
@@ -125,10 +126,9 @@ void silk_decode_parameters(silk_decoder_state * psDec,	/* I/O  State           
 		Ix = psDec->indices.LTP_scaleIndex;
 		psDecCtrl->LTP_scale_Q14 = silk_LTPScales_table_Q14[Ix];
 	} else {
-		silk_memset(psDecCtrl->pitchL, 0,
-			    psDec->nb_subfr * sizeof(int));
-		silk_memset(psDecCtrl->LTPCoef_Q14, 0,
-			    LTP_ORDER * psDec->nb_subfr * sizeof(int16_t));
+		memzero(psDecCtrl->pitchL, psDec->nb_subfr * sizeof(int));
+		memzero(psDecCtrl->LTPCoef_Q14,
+			LTP_ORDER * psDec->nb_subfr * sizeof(int16_t));
 		psDec->indices.PERIndex = 0;
 		psDecCtrl->LTP_scale_Q14 = 0;
 	}

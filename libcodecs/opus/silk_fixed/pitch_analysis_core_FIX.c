@@ -38,6 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "pitch_est_defines.h"
 #include "debug.h"
 #include "pitch.h"
+#include <ophtools.h>
 
 #define SCRATCH_SIZE    22
 #define SF_LENGTH_4KHZ  ( PE_SUBFR_LENGTH_MS * 4 )
@@ -141,21 +142,21 @@ int silk_pitch_analysis_core(	/* O    Voicing estimate: 0 voiced, 1 unvoiced    
 	/* Resample from input sampled at Fs_kHz to 8 kHz */
 	int16_t frame_8kHz[frame_length_8kHz];
 	if (Fs_kHz == 16) {
-		silk_memset(filt_state, 0, 2 * sizeof(int32_t));
+		memzero(filt_state, 2 * sizeof(int32_t));
 		silk_resampler_down2(filt_state, frame_8kHz, frame,
 				     frame_length);
 	} else if (Fs_kHz == 12) {
-		silk_memset(filt_state, 0, 6 * sizeof(int32_t));
+		memzero(filt_state, 6 * sizeof(int32_t));
 		silk_resampler_down2_3(filt_state, frame_8kHz, frame,
 				       frame_length);
 	} else {
 		silk_assert(Fs_kHz == 8);
-		silk_memcpy(frame_8kHz, frame,
+		memcpy(frame_8kHz, frame,
 			    frame_length_8kHz * sizeof(int16_t));
 	}
 
 	/* Decimate again to 4 kHz */
-	silk_memset(filt_state, 0, 2 * sizeof(int32_t));	/* Set state to zero */
+	memzero(filt_state, 2 * sizeof(int32_t));	/* Set state to zero */
 	int16_t frame_4kHz[frame_length_4kHz];
 	silk_resampler_down2(filt_state, frame_4kHz, frame_8kHz,
 			     frame_length_8kHz);
@@ -185,7 +186,7 @@ int silk_pitch_analysis_core(	/* O    Voicing estimate: 0 voiced, 1 unvoiced    
     ******************************************************************************/
 	int16_t C[nb_subfr * CSTRIDE_8KHZ];
 	int32_t xcorr32[MAX_LAG_4KHZ - MIN_LAG_4KHZ + 1];
-	silk_memset(C, 0, (nb_subfr >> 1) * CSTRIDE_4KHZ * sizeof(int16_t));
+	memzero(C, (nb_subfr >> 1) * CSTRIDE_4KHZ * sizeof(int16_t));
 	target_ptr = &frame_4kHz[silk_LSHIFT(SF_LENGTH_4KHZ, 2)];
 	for (k = 0; k < nb_subfr >> 1; k++) {
 		/* Check that we are within range of the array */
@@ -273,7 +274,7 @@ int silk_pitch_analysis_core(	/* O    Voicing estimate: 0 voiced, 1 unvoiced    
 	/* Escape if correlation is very low already here */
 	Cmax = (int) C[0];	/* Q14 */
 	if (Cmax < SILK_FIX_CONST(0.2, 14)) {
-		silk_memset(pitch_out, 0, nb_subfr * sizeof(int));
+		memzero(pitch_out, nb_subfr * sizeof(int));
 		*LTPCorr_Q15 = 0;
 		*lagIndex = 0;
 		*contourIndex = 0;
@@ -348,7 +349,7 @@ int silk_pitch_analysis_core(	/* O    Voicing estimate: 0 voiced, 1 unvoiced    
     /*********************************************************************************
     * Find energy of each subframe projected onto its history, for a range of delays
     *********************************************************************************/
-	silk_memset(C, 0, nb_subfr * CSTRIDE_8KHZ * sizeof(int16_t));
+	memzero(C, nb_subfr * CSTRIDE_8KHZ * sizeof(int16_t));
 
 	target_ptr = &frame_8kHz[PE_LTP_MEM_LENGTH_MS * 8];
 	for (k = 0; k < nb_subfr; k++) {
@@ -493,7 +494,7 @@ int silk_pitch_analysis_core(	/* O    Voicing estimate: 0 voiced, 1 unvoiced    
 
 	if (lag == -1) {
 		/* No suitable candidate found */
-		silk_memset(pitch_out, 0, nb_subfr * sizeof(int));
+		memzero(pitch_out, nb_subfr * sizeof(int));
 		*LTPCorr_Q15 = 0;
 		*lagIndex = 0;
 		*contourIndex = 0;
