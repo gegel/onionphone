@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -28,132 +30,152 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_main.h"
 
 /* Decode parameters from payload */
-void SKP_Silk_decode_parameters_v4(
-    SKP_Silk_decoder_state      *psDec,                                 /* I/O  State                                    */
-    SKP_Silk_decoder_control    *psDecCtrl,                             /* I/O  Decoder control                          */
-    int                     q[ MAX_FRAME_LENGTH ],                  /* O    Excitation signal                        */
-    const int               fullDecoding                            /* I    Flag to tell if only arithmetic decoding */
-)
+void SKP_Silk_decode_parameters_v4(SKP_Silk_decoder_state * psDec,	/* I/O  State                                    */
+				   SKP_Silk_decoder_control * psDecCtrl,	/* I/O  Decoder control                          */
+				   int q[MAX_FRAME_LENGTH],	/* O    Excitation signal                        */
+				   const int fullDecoding	/* I    Flag to tell if only arithmetic decoding */
+    )
 {
-    (void)fullDecoding;
+	(void)fullDecoding;
 
-    int   i, k, Ix, nBytesUsed;
-    int   pNLSF_Q15[ MAX_LPC_ORDER ], pNLSF0_Q15[ MAX_LPC_ORDER ];
-    const int16_t *cbk_ptr_Q14;
-    const SKP_Silk_NLSF_CB_struct *psNLSF_CB = NULL;
-    SKP_Silk_range_coder_state  *psRC = &psDec->sRC;
-    
-    psDec->FrameTermination       = SKP_SILK_MORE_FRAMES;
-    psDecCtrl->sigtype            = psDec->sigtype[ psDec->nFramesDecoded ];
-    psDecCtrl->QuantOffsetType    = psDec->QuantOffsetType[ psDec->nFramesDecoded ];
-    psDec->vadFlag                = psDec->vadFlagBuf[ psDec->nFramesDecoded ];
-    psDecCtrl->NLSFInterpCoef_Q2  = psDec->NLSFInterpCoef_Q2[ psDec->nFramesDecoded ];
-    psDecCtrl->Seed               = psDec->Seed[ psDec->nFramesDecoded ];
+	int i, k, Ix, nBytesUsed;
+	int pNLSF_Q15[MAX_LPC_ORDER], pNLSF0_Q15[MAX_LPC_ORDER];
+	const int16_t *cbk_ptr_Q14;
+	const SKP_Silk_NLSF_CB_struct *psNLSF_CB = NULL;
+	SKP_Silk_range_coder_state *psRC = &psDec->sRC;
 
-    /* Dequant Gains */
-    SKP_Silk_gains_dequant( psDecCtrl->Gains_Q16, psDec->GainsIndices[ psDec->nFramesDecoded ], &psDec->LastGainIndex, psDec->nFramesDecoded );
+	psDec->FrameTermination = SKP_SILK_MORE_FRAMES;
+	psDecCtrl->sigtype = psDec->sigtype[psDec->nFramesDecoded];
+	psDecCtrl->QuantOffsetType =
+	    psDec->QuantOffsetType[psDec->nFramesDecoded];
+	psDec->vadFlag = psDec->vadFlagBuf[psDec->nFramesDecoded];
+	psDecCtrl->NLSFInterpCoef_Q2 =
+	    psDec->NLSFInterpCoef_Q2[psDec->nFramesDecoded];
+	psDecCtrl->Seed = psDec->Seed[psDec->nFramesDecoded];
+
+	/* Dequant Gains */
+	SKP_Silk_gains_dequant(psDecCtrl->Gains_Q16,
+			       psDec->GainsIndices[psDec->nFramesDecoded],
+			       &psDec->LastGainIndex, psDec->nFramesDecoded);
     /****************/
-    /* Decode NLSFs */
+	/* Decode NLSFs */
     /****************/
 
-    /* Set pointer to NLSF VQ CB for the current signal type */
-    psNLSF_CB = psDec->psNLSF_CB[ psDecCtrl->sigtype ];
+	/* Set pointer to NLSF VQ CB for the current signal type */
+	psNLSF_CB = psDec->psNLSF_CB[psDecCtrl->sigtype];
 
-    /* From the NLSF path, decode an NLSF vector */
-    SKP_Silk_NLSF_MSVQ_decode( pNLSF_Q15, psNLSF_CB, psDec->NLSFIndices[ psDec->nFramesDecoded ], psDec->LPC_order );
+	/* From the NLSF path, decode an NLSF vector */
+	SKP_Silk_NLSF_MSVQ_decode(pNLSF_Q15, psNLSF_CB,
+				  psDec->NLSFIndices[psDec->nFramesDecoded],
+				  psDec->LPC_order);
 
-    /* Convert NLSF parameters to AR prediction filter coefficients */
-    SKP_Silk_NLSF2A_stable( psDecCtrl->PredCoef_Q12[ 1 ], pNLSF_Q15, psDec->LPC_order );
-    
-    /* If just reset, e.g., because internal Fs changed, do not allow interpolation */
-    /* improves the case of packet loss in the first frame after a switch           */
-    if( psDec->first_frame_after_reset == 1 ) {
-        psDecCtrl->NLSFInterpCoef_Q2 = 4;
-    }
+	/* Convert NLSF parameters to AR prediction filter coefficients */
+	SKP_Silk_NLSF2A_stable(psDecCtrl->PredCoef_Q12[1], pNLSF_Q15,
+			       psDec->LPC_order);
 
-    if( psDecCtrl->NLSFInterpCoef_Q2 < 4 ) {
-        /* Calculation of the interpolated NLSF0 vector from the interpolation factor, */ 
-        /* the previous NLSF1, and the current NLSF1                                   */
-        for( i = 0; i < psDec->LPC_order; i++ ) {
-            pNLSF0_Q15[ i ] = psDec->prevNLSF_Q15[ i ] + SKP_RSHIFT( SKP_MUL( psDecCtrl->NLSFInterpCoef_Q2, 
-                ( pNLSF_Q15[ i ] - psDec->prevNLSF_Q15[ i ] ) ), 2 );
-        }
+	/* If just reset, e.g., because internal Fs changed, do not allow interpolation */
+	/* improves the case of packet loss in the first frame after a switch           */
+	if (psDec->first_frame_after_reset == 1) {
+		psDecCtrl->NLSFInterpCoef_Q2 = 4;
+	}
 
-        /* Convert NLSF parameters to AR prediction filter coefficients */
-        SKP_Silk_NLSF2A_stable( psDecCtrl->PredCoef_Q12[ 0 ], pNLSF0_Q15, psDec->LPC_order );
-    } else {
-        /* Copy LPC coefficients for first half from second half */
-        SKP_memcpy( psDecCtrl->PredCoef_Q12[ 0 ], psDecCtrl->PredCoef_Q12[ 1 ], 
-            psDec->LPC_order * sizeof( int16_t ) );
-    }
+	if (psDecCtrl->NLSFInterpCoef_Q2 < 4) {
+		/* Calculation of the interpolated NLSF0 vector from the interpolation factor, */
+		/* the previous NLSF1, and the current NLSF1                                   */
+		for (i = 0; i < psDec->LPC_order; i++) {
+			pNLSF0_Q15[i] =
+			    psDec->prevNLSF_Q15[i] +
+			    SKP_RSHIFT(SKP_MUL
+				       (psDecCtrl->NLSFInterpCoef_Q2,
+					(pNLSF_Q15[i] -
+					 psDec->prevNLSF_Q15[i])), 2);
+		}
 
-    SKP_memcpy( psDec->prevNLSF_Q15, pNLSF_Q15, psDec->LPC_order * sizeof( int ) );
+		/* Convert NLSF parameters to AR prediction filter coefficients */
+		SKP_Silk_NLSF2A_stable(psDecCtrl->PredCoef_Q12[0], pNLSF0_Q15,
+				       psDec->LPC_order);
+	} else {
+		/* Copy LPC coefficients for first half from second half */
+		SKP_memcpy(psDecCtrl->PredCoef_Q12[0],
+			   psDecCtrl->PredCoef_Q12[1],
+			   psDec->LPC_order * sizeof(int16_t));
+	}
 
-    /* After a packet loss do BWE of LPC coefs */
-    if( psDec->lossCnt ) {
-        SKP_Silk_bwexpander( psDecCtrl->PredCoef_Q12[ 0 ], psDec->LPC_order, BWE_AFTER_LOSS_Q16 );
-        SKP_Silk_bwexpander( psDecCtrl->PredCoef_Q12[ 1 ], psDec->LPC_order, BWE_AFTER_LOSS_Q16 );
-    }
+	SKP_memcpy(psDec->prevNLSF_Q15, pNLSF_Q15,
+		   psDec->LPC_order * sizeof(int));
 
-    if( psDecCtrl->sigtype == SIG_TYPE_VOICED ) {
-        /*********************/
-        /* Decode pitch lags */
-        /*********************/
-        
-        /* Decode pitch values */
-        SKP_Silk_decode_pitch( psDec->lagIndex[ psDec->nFramesDecoded ], 
-            psDec->contourIndex[ psDec->nFramesDecoded ], psDecCtrl->pitchL, psDec->fs_kHz );
+	/* After a packet loss do BWE of LPC coefs */
+	if (psDec->lossCnt) {
+		SKP_Silk_bwexpander(psDecCtrl->PredCoef_Q12[0],
+				    psDec->LPC_order, BWE_AFTER_LOSS_Q16);
+		SKP_Silk_bwexpander(psDecCtrl->PredCoef_Q12[1],
+				    psDec->LPC_order, BWE_AFTER_LOSS_Q16);
+	}
 
-        /********************/
-        /* Decode LTP gains */
-        /********************/
-        psDecCtrl->PERIndex = psDec->PERIndex[ psDec->nFramesDecoded ];
-        
-        /* Decode Codebook Index */
-        cbk_ptr_Q14 = SKP_Silk_LTP_vq_ptrs_Q14[ psDecCtrl->PERIndex ]; /* set pointer to start of codebook */
+	if (psDecCtrl->sigtype == SIG_TYPE_VOICED) {
+	/*********************/
+		/* Decode pitch lags */
+	/*********************/
 
-        for( k = 0; k < NB_SUBFR; k++ ) {
-            Ix = psDec->LTPIndex[ psDec->nFramesDecoded ][ k ];
-            for( i = 0; i < LTP_ORDER; i++ ) {
-                psDecCtrl->LTPCoef_Q14[ SKP_SMULBB( k, LTP_ORDER ) + i ] = cbk_ptr_Q14[ SKP_SMULBB( Ix, LTP_ORDER ) + i ];
-            }
-        }
+		/* Decode pitch values */
+		SKP_Silk_decode_pitch(psDec->lagIndex[psDec->nFramesDecoded],
+				      psDec->contourIndex[psDec->
+							  nFramesDecoded],
+				      psDecCtrl->pitchL, psDec->fs_kHz);
 
-        /**********************/
-        /* Decode LTP scaling */
-        /**********************/
-        Ix = psDec->LTP_scaleIndex[ psDec->nFramesDecoded ];
-        psDecCtrl->LTP_scale_Q14 = SKP_Silk_LTPScales_table_Q14[ Ix ];
-    } else {
-        SKP_memset( psDecCtrl->pitchL,      0, NB_SUBFR * sizeof( int ) );
-        SKP_memset( psDecCtrl->LTPCoef_Q14, 0, NB_SUBFR * LTP_ORDER * sizeof( int16_t ) );
-        psDecCtrl->PERIndex      = 0;
-        psDecCtrl->LTP_scale_Q14 = 0;
-    }
+	/********************/
+		/* Decode LTP gains */
+	/********************/
+		psDecCtrl->PERIndex = psDec->PERIndex[psDec->nFramesDecoded];
+
+		/* Decode Codebook Index */
+		cbk_ptr_Q14 = SKP_Silk_LTP_vq_ptrs_Q14[psDecCtrl->PERIndex];	/* set pointer to start of codebook */
+
+		for (k = 0; k < NB_SUBFR; k++) {
+			Ix = psDec->LTPIndex[psDec->nFramesDecoded][k];
+			for (i = 0; i < LTP_ORDER; i++) {
+				psDecCtrl->
+				    LTPCoef_Q14[SKP_SMULBB(k, LTP_ORDER) + i] =
+				    cbk_ptr_Q14[SKP_SMULBB(Ix, LTP_ORDER) + i];
+			}
+		}
+
+	/**********************/
+		/* Decode LTP scaling */
+	/**********************/
+		Ix = psDec->LTP_scaleIndex[psDec->nFramesDecoded];
+		psDecCtrl->LTP_scale_Q14 = SKP_Silk_LTPScales_table_Q14[Ix];
+	} else {
+		SKP_memset(psDecCtrl->pitchL, 0, NB_SUBFR * sizeof(int));
+		SKP_memset(psDecCtrl->LTPCoef_Q14, 0,
+			   NB_SUBFR * LTP_ORDER * sizeof(int16_t));
+		psDecCtrl->PERIndex = 0;
+		psDecCtrl->LTP_scale_Q14 = 0;
+	}
 
     /*********************************************/
-    /* Decode quantization indices of excitation */
+	/* Decode quantization indices of excitation */
     /*********************************************/
-    SKP_Silk_decode_pulses( psRC, psDecCtrl, q, psDec->frame_length );
+	SKP_Silk_decode_pulses(psRC, psDecCtrl, q, psDec->frame_length);
 
     /****************************************/
-    /* get number of bytes used so far      */
+	/* get number of bytes used so far      */
     /****************************************/
-    SKP_Silk_range_coder_get_length( psRC, &nBytesUsed );
-    psDec->nBytesLeft = psRC->bufferLength - nBytesUsed;
-    if( psDec->nBytesLeft < 0 ) {
-        psRC->error = RANGE_CODER_READ_BEYOND_BUFFER;
-    }
+	SKP_Silk_range_coder_get_length(psRC, &nBytesUsed);
+	psDec->nBytesLeft = psRC->bufferLength - nBytesUsed;
+	if (psDec->nBytesLeft < 0) {
+		psRC->error = RANGE_CODER_READ_BEYOND_BUFFER;
+	}
 
     /****************************************/
-    /* check remaining bits in last byte    */
+	/* check remaining bits in last byte    */
     /****************************************/
-    if( psDec->nBytesLeft == 0 ) {
-        SKP_Silk_range_coder_check_after_decoding( psRC );
-    }
+	if (psDec->nBytesLeft == 0) {
+		SKP_Silk_range_coder_check_after_decoding(psRC);
+	}
 
-    if( psDec->nFramesInPacket == (psDec->nFramesDecoded + 1)) {
-        /* To indicate the packet has been fully decoded */
-        psDec->FrameTermination = SKP_SILK_LAST_FRAME;
-    }
+	if (psDec->nFramesInPacket == (psDec->nFramesDecoded + 1)) {
+		/* To indicate the packet has been fully decoded */
+		psDec->FrameTermination = SKP_SILK_LAST_FRAME;
+	}
 }

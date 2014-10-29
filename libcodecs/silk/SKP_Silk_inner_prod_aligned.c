@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -40,57 +42,54 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*        * len should be positive 16bit integer.                               */
 /*        * only when len>6, memory access can be reduced by half.              */
 
-int32_t SKP_Silk_inner_prod_aligned(
-    const int16_t* const inVec1,  /*    I input vector 1    */
-    const int16_t* const inVec2,  /*    I input vector 2    */
-    const int             len   /*    I vector lengths    */
-)
+int32_t SKP_Silk_inner_prod_aligned(const int16_t * const inVec1,	/*    I input vector 1    */
+				    const int16_t * const inVec2,	/*    I input vector 2    */
+				    const int len	/*    I vector lengths    */
+    )
 {
-    int   i; 
-    int32_t sum = 0;
-    for( i = 0; i < len; i++ ) {
-        sum = SKP_SMLABB( sum, inVec1[ i ], inVec2[ i ] );
-    }
-    return sum;
+	int i;
+	int32_t sum = 0;
+	for (i = 0; i < len; i++) {
+		sum = SKP_SMLABB(sum, inVec1[i], inVec2[i]);
+	}
+	return sum;
 }
 
-int64_t SKP_Silk_inner_prod_aligned_64(
-    const int32_t *inVec1,        /*    I input vector 1    */ 
-    const int32_t *inVec2,        /*    I input vector 2    */
-    const int   len             /*    I vector lengths    */
-)
+int64_t SKP_Silk_inner_prod_aligned_64(const int32_t * inVec1,	/*    I input vector 1    */
+				       const int32_t * inVec2,	/*    I input vector 2    */
+				       const int len	/*    I vector lengths    */
+    )
 {
-    int   i; 
-    int64_t sum = 0;
-    for( i = 0; i < len; i++ ) {
-        sum = SKP_SMLAL( sum, inVec1[ i ], inVec2[ i ] );
-    }
-    return sum;
-}
-int64_t SKP_Silk_inner_prod16_aligned_64(
-    const int16_t *inVec1,        /*    I input vector 1    */ 
-    const int16_t *inVec2,        /*    I input vector 2    */
-    const int   len             /*    I vector lengths    */
-)
-{
-    int   i; 
-    int64_t sum = 0;
-    for( i = 0; i < len; i++ ) {
-        sum = SKP_SMLALBB( sum, inVec1[ i ], inVec2[ i ] );
-    }
-    return sum;
+	int i;
+	int64_t sum = 0;
+	for (i = 0; i < len; i++) {
+		sum = SKP_SMLAL(sum, inVec1[i], inVec2[i]);
+	}
+	return sum;
 }
 
-int32_t SKP_Silk_inner_prod16_aligned_sat(
-    const int16_t* const inVec1,  /*    I input vector 1  */ 
-    const int16_t* const inVec2,  /*    I input vector 2  */
-    const int    len            /*    I vector lengths  */ 
-)
+int64_t SKP_Silk_inner_prod16_aligned_64(const int16_t * inVec1,	/*    I input vector 1    */
+					 const int16_t * inVec2,	/*    I input vector 2    */
+					 const int len	/*    I vector lengths    */
+    )
 {
-    int   i; 
-    int32_t sum = 0;
-    for( i = 0; i < len; i++ ) {
-        sum = SKP_ADD_SAT32( sum, SKP_SMULBB( inVec1[ i ], inVec2[ i ] ) );
-    }
-    return sum;
+	int i;
+	int64_t sum = 0;
+	for (i = 0; i < len; i++) {
+		sum = SKP_SMLALBB(sum, inVec1[i], inVec2[i]);
+	}
+	return sum;
+}
+
+int32_t SKP_Silk_inner_prod16_aligned_sat(const int16_t * const inVec1,	/*    I input vector 1  */
+					  const int16_t * const inVec2,	/*    I input vector 2  */
+					  const int len	/*    I vector lengths  */
+    )
+{
+	int i;
+	int32_t sum = 0;
+	for (i = 0; i < len; i++) {
+		sum = SKP_ADD_SAT32(sum, SKP_SMULBB(inVec1[i], inVec2[i]));
+	}
+	return sum;
 }

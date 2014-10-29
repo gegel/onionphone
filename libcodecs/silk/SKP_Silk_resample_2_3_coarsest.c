@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -40,92 +42,102 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_resample_rom.h"
 
 /* Resamples input data with a factor 2/3 */
-void SKP_Silk_resample_2_3_coarsest( 
-    int16_t           *out,           /* O:   Output signal                                                                   */
-    int16_t           *S,             /* I/O: Resampler state [ SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ]             */
-    const int16_t     *in,            /* I:   Input signal                                                                    */
-    const int       frameLenIn,     /* I:   Number of input samples                                                         */
-    int16_t           *scratch        /* I:   Scratch memory [ frameLenIn + SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ] */
-)
+void SKP_Silk_resample_2_3_coarsest(int16_t * out,	/* O:   Output signal                                                                   */
+				    int16_t * S,	/* I/O: Resampler state [ SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ]             */
+				    const int16_t * in,	/* I:   Input signal                                                                    */
+				    const int frameLenIn,	/* I:   Number of input samples                                                         */
+				    int16_t * scratch	/* I:   Scratch memory [ frameLenIn + SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ] */
+    )
 {
-    int32_t n, ind, interpol_ind, tmp, index_Q16;
-    int16_t *in_ptr;
-    int   frameLenOut;
-    const int16_t *interpol_ptr;
+	int32_t n, ind, interpol_ind, tmp, index_Q16;
+	int16_t *in_ptr;
+	int frameLenOut;
+	const int16_t *interpol_ptr;
 #if ( EMBEDDED_ARM>=6 ) && defined (__GNUC__)
-    int32_t   in_val, interpol_val;
+	int32_t in_val, interpol_val;
 #endif
 
-    /* Copy buffered samples to start of scratch */
-    SKP_memcpy( scratch, S, ( SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ) * sizeof( int16_t ) );    
-    
-    /* Then append by the input signal */
-    SKP_memcpy( &scratch[ SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ], in, frameLenIn * sizeof( int16_t ) ); 
+	/* Copy buffered samples to start of scratch */
+	SKP_memcpy(scratch, S,
+		   (SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS -
+		    1) * sizeof(int16_t));
 
-    frameLenOut = SKP_SMULWB( SKP_LSHIFT( (int32_t)frameLenIn, 1 ), 21846 ); // 21846_Q15 = (2/3)_Q0 rounded _up_
-    index_Q16 = 0;
+	/* Then append by the input signal */
+	SKP_memcpy(&scratch[SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1],
+		   in, frameLenIn * sizeof(int16_t));
 
-    SKP_assert( frameLenIn == ( ( frameLenOut * 3 ) / 2 ) );
-    
-    /* Interpolate */
-    for( n = frameLenOut; n > 0; n-- ) {
+	frameLenOut = SKP_SMULWB(SKP_LSHIFT((int32_t) frameLenIn, 1), 21846);	// 21846_Q15 = (2/3)_Q0 rounded _up_
+	index_Q16 = 0;
 
-        /* Integer part */
-        ind = SKP_RSHIFT( index_Q16, 16 );
+	SKP_assert(frameLenIn == ((frameLenOut * 3) / 2));
 
-        /* Pointer to buffered input */
-        in_ptr = scratch + ind;
+	/* Interpolate */
+	for (n = frameLenOut; n > 0; n--) {
 
-        /* Fractional part */
-        interpol_ind = ( SKP_SMULWB( index_Q16, SigProc_Resample_2_3_coarsest_NUM_INTERPOLATORS ) & 
-                       ( SigProc_Resample_2_3_coarsest_NUM_INTERPOLATORS - 1 ) );
+		/* Integer part */
+		ind = SKP_RSHIFT(index_Q16, 16);
 
-        /* Pointer to FIR taps */
-        interpol_ptr = SigProc_Resample_2_3_coarsest_INTERPOL[ interpol_ind ];
+		/* Pointer to buffered input */
+		in_ptr = scratch + ind;
 
-        /* Interpolate: Hardcoded for 10 FIR taps */
-#if ( EMBEDDED_ARM>=6 ) && defined (__GNUC__)       /*It doesn't improve efficiency on iphone.*/
-        /*tmp = SKP_SMUAD(    *((int32_t *)interpol_ptr)++, *((int32_t *)in_ptr)++);
-        tmp = SKP_SMLAD( tmp, *((int32_t *)interpol_ptr)++, *((int32_t *)in_ptr)++);
-        tmp = SKP_SMLAD( tmp, *((int32_t *)interpol_ptr),   *((int32_t *)in_ptr)  );*/
-        __asm__ __volatile__ (  "ldr    %1, [%3], #4 \n\t"
-                                "ldr    %2, [%4], #4 \n\t"
-                                "smuad  %0, %1, %2 \n\t"
-                                "ldr    %1, [%3], #4 \n\t"
-                                "ldr    %2, [%4], #4 \n\t"
-                                "smlad  %0, %1, %2, %0\n\t"
-                                "ldr    %1, [%3], #4 \n\t"
-                                "ldr    %2, [%4], #4 \n\t"
-                                "smlad  %0, %1, %2, %0\n\t"
-                                "ldr    %1, [%3], #4 \n\t"
-                                "ldr    %2, [%4], #4 \n\t"
-                                "smlad  %0, %1, %2, %0\n\t"
-                                "ldr    %1, [%3] \n\t"
-                                "ldr    %2, [%4] \n\t"
-                                "smlad  %0, %1, %2, %0\n\t"
-                                : "=r" (tmp), "=r" (interpol_val), "=r" (in_val), "=r" (interpol_ptr), "=r" (in_ptr) 
-                                : "3" (interpol_ptr), "4" (in_ptr));    
+		/* Fractional part */
+		interpol_ind =
+		    (SKP_SMULWB
+		     (index_Q16,
+		      SigProc_Resample_2_3_coarsest_NUM_INTERPOLATORS) &
+		     (SigProc_Resample_2_3_coarsest_NUM_INTERPOLATORS - 1));
+
+		/* Pointer to FIR taps */
+		interpol_ptr =
+		    SigProc_Resample_2_3_coarsest_INTERPOL[interpol_ind];
+
+		/* Interpolate: Hardcoded for 10 FIR taps */
+#if ( EMBEDDED_ARM>=6 ) && defined (__GNUC__)	/*It doesn't improve efficiency on iphone. */
+		/*tmp = SKP_SMUAD(    *((int32_t *)interpol_ptr)++, *((int32_t *)in_ptr)++);
+		   tmp = SKP_SMLAD( tmp, *((int32_t *)interpol_ptr)++, *((int32_t *)in_ptr)++);
+		   tmp = SKP_SMLAD( tmp, *((int32_t *)interpol_ptr),   *((int32_t *)in_ptr)  ); */
+		__asm__ __volatile__("ldr    %1, [%3], #4 \n\t"
+				     "ldr    %2, [%4], #4 \n\t"
+				     "smuad  %0, %1, %2 \n\t"
+				     "ldr    %1, [%3], #4 \n\t"
+				     "ldr    %2, [%4], #4 \n\t"
+				     "smlad  %0, %1, %2, %0\n\t"
+				     "ldr    %1, [%3], #4 \n\t"
+				     "ldr    %2, [%4], #4 \n\t"
+				     "smlad  %0, %1, %2, %0\n\t"
+				     "ldr    %1, [%3], #4 \n\t"
+				     "ldr    %2, [%4], #4 \n\t"
+				     "smlad  %0, %1, %2, %0\n\t"
+				     "ldr    %1, [%3] \n\t"
+				     "ldr    %2, [%4] \n\t"
+				     "smlad  %0, %1, %2, %0\n\t":"=r"(tmp),
+				     "=r"(interpol_val), "=r"(in_val),
+				     "=r"(interpol_ptr), "=r"(in_ptr)
+				     :"3"(interpol_ptr), "4"(in_ptr));
 #else
-        SKP_assert( SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS == 10 );
-        tmp = SKP_SMULBB(      interpol_ptr[ 0 ], in_ptr[ 0 ] );
-        tmp = SKP_SMLABB( tmp, interpol_ptr[ 1 ], in_ptr[ 1 ] ); 
-        tmp = SKP_SMLABB( tmp, interpol_ptr[ 2 ], in_ptr[ 2 ] );    
-        tmp = SKP_SMLABB( tmp, interpol_ptr[ 3 ], in_ptr[ 3 ] );    
-        tmp = SKP_SMLABB( tmp, interpol_ptr[ 4 ], in_ptr[ 4 ] );    
-        tmp = SKP_SMLABB( tmp, interpol_ptr[ 5 ], in_ptr[ 5 ] );    
-        tmp = SKP_SMLABB( tmp, interpol_ptr[ 6 ], in_ptr[ 6 ] );    
-        tmp = SKP_SMLABB( tmp, interpol_ptr[ 7 ], in_ptr[ 7 ] );    
-        tmp = SKP_SMLABB( tmp, interpol_ptr[ 8 ], in_ptr[ 8 ] );    
-        tmp = SKP_SMLABB( tmp, interpol_ptr[ 9 ], in_ptr[ 9 ] );
+		SKP_assert(SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS == 10);
+		tmp = SKP_SMULBB(interpol_ptr[0], in_ptr[0]);
+		tmp = SKP_SMLABB(tmp, interpol_ptr[1], in_ptr[1]);
+		tmp = SKP_SMLABB(tmp, interpol_ptr[2], in_ptr[2]);
+		tmp = SKP_SMLABB(tmp, interpol_ptr[3], in_ptr[3]);
+		tmp = SKP_SMLABB(tmp, interpol_ptr[4], in_ptr[4]);
+		tmp = SKP_SMLABB(tmp, interpol_ptr[5], in_ptr[5]);
+		tmp = SKP_SMLABB(tmp, interpol_ptr[6], in_ptr[6]);
+		tmp = SKP_SMLABB(tmp, interpol_ptr[7], in_ptr[7]);
+		tmp = SKP_SMLABB(tmp, interpol_ptr[8], in_ptr[8]);
+		tmp = SKP_SMLABB(tmp, interpol_ptr[9], in_ptr[9]);
 #endif
-        /* Round, saturate and store to output array */
-        *out++ = (int16_t)SKP_SAT16( SKP_RSHIFT_ROUND( tmp, 15 ) );
+		/* Round, saturate and store to output array */
+		*out++ = (int16_t) SKP_SAT16(SKP_RSHIFT_ROUND(tmp, 15));
 
-        /* Update index */
-        index_Q16 += ( ( 1 << 16 ) + ( 1 << 15 ) ); // (3/2)_Q0;
-    }
+		/* Update index */
+		index_Q16 += ((1 << 16) + (1 << 15));	// (3/2)_Q0;
+	}
 
-    /* Move last part of input signal to the sample buffer to prepare for the next call */
-    SKP_memcpy( S, &in[ frameLenIn - ( SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ) ],
-                ( SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1 ) * sizeof( int16_t ) );
+	/* Move last part of input signal to the sample buffer to prepare for the next call */
+	SKP_memcpy(S,
+		   &in[frameLenIn -
+		       (SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS - 1)],
+		   (SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS -
+		    1) * sizeof(int16_t));
 }

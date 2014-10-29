@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -27,26 +29,19 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_tables.h"
 
-const uint16_t SKP_Silk_type_offset_CDF[ 5 ] = {
-         0,  37522,  41030,  44212,  65535
+const uint16_t SKP_Silk_type_offset_CDF[5] = {
+	0, 37522, 41030, 44212, 65535
 };
 
 const int SKP_Silk_type_offset_CDF_offset = 2;
 
-
-const uint16_t SKP_Silk_type_offset_joint_CDF[ 4 ][ 5 ] = 
-{
-{
-         0,  57686,  61230,  62358,  65535
-},
-{
-         0,  18346,  40067,  43659,  65535
-},
-{
-         0,  22694,  24279,  35507,  65535
-},
-{
-         0,   6067,   7215,  13010,  65535
-}
+const uint16_t SKP_Silk_type_offset_joint_CDF[4][5] = {
+	{
+	 0, 57686, 61230, 62358, 65535},
+	{
+	 0, 18346, 40067, 43659, 65535},
+	{
+	 0, 22694, 24279, 35507, 65535},
+	{
+	 0, 6067, 7215, 13010, 65535}
 };
-

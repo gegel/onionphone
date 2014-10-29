@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -29,61 +31,65 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Calculates residual energies of input subframes where all subframes have LPC_order   */
 /* of preceeding samples                                                                */
-void SKP_Silk_residual_energy_FIX(
-          int32_t nrgs[ NB_SUBFR ],           /* O    Residual energy per subframe    */
-          int   nrgsQ[ NB_SUBFR ],          /* O    Q value per subframe            */
-    const int16_t x[],                        /* I    Input signal                    */
-    const int16_t a_Q12[ 2 ][ MAX_LPC_ORDER ],/* I    AR coefs for each frame half    */
-    const int32_t gains_Qx[ NB_SUBFR ],       /* I    Quantization gains in Qx        */
-    const int   Qx,                         /* I    Quantization gains Q value      */
-    const int   subfr_length,               /* I    Subframe length                 */
-    const int   LPC_order                   /* I    LPC order                       */
-)
+void SKP_Silk_residual_energy_FIX(int32_t nrgs[NB_SUBFR],	/* O    Residual energy per subframe    */
+				  int nrgsQ[NB_SUBFR],	/* O    Q value per subframe            */
+				  const int16_t x[],	/* I    Input signal                    */
+				  const int16_t a_Q12[2][MAX_LPC_ORDER],	/* I    AR coefs for each frame half    */
+				  const int32_t gains_Qx[NB_SUBFR],	/* I    Quantization gains in Qx        */
+				  const int Qx,	/* I    Quantization gains Q value      */
+				  const int subfr_length,	/* I    Subframe length                 */
+				  const int LPC_order	/* I    LPC order                       */
+    )
 {
-    int         offset, i, j, rshift, lz1, lz2;
-    int16_t       *LPC_res_ptr, LPC_res[ ( MAX_FRAME_LENGTH + NB_SUBFR * MAX_LPC_ORDER ) / 2 ];
-    const int16_t *x_ptr;
-    int16_t       S[ MAX_LPC_ORDER ];
-    int32_t       tmp32;
+	int offset, i, j, rshift, lz1, lz2;
+	int16_t *LPC_res_ptr,
+	    LPC_res[(MAX_FRAME_LENGTH + NB_SUBFR * MAX_LPC_ORDER) / 2];
+	const int16_t *x_ptr;
+	int16_t S[MAX_LPC_ORDER];
+	int32_t tmp32;
 
-    x_ptr  = x;
-    offset = LPC_order + subfr_length;
-    
-    /* Filter input to create the LPC residual for each frame half, and measure subframe energies */
-    for( i = 0; i < 2; i++ ) {
-        /* Calculate half frame LPC residual signal including preceeding samples */
-        SKP_memset( S, 0, LPC_order * sizeof( int16_t ) );
-        SKP_Silk_LPC_analysis_filter( x_ptr, a_Q12[ i ], S, LPC_res, ( NB_SUBFR >> 1 ) * offset, LPC_order );
+	x_ptr = x;
+	offset = LPC_order + subfr_length;
 
-        /* Point to first subframe of the just calculated LPC residual signal */
-        LPC_res_ptr = LPC_res + LPC_order;
-        for( j = 0; j < ( NB_SUBFR >> 1 ); j++ ) {
-            /* Measure subframe energy */
-            SKP_Silk_sum_sqr_shift( &nrgs[ i * ( NB_SUBFR >> 1 ) + j ], &rshift, LPC_res_ptr, subfr_length ); 
-            
-            /* Set Q values for the measured energy */
-            nrgsQ[ i * ( NB_SUBFR >> 1 ) + j ] = -rshift;
-            
-            /* Move to next subframe */
-            LPC_res_ptr += offset;
-        }
-        /* Move to next frame half */
-        x_ptr += ( NB_SUBFR >> 1 ) * offset;
-    }
+	/* Filter input to create the LPC residual for each frame half, and measure subframe energies */
+	for (i = 0; i < 2; i++) {
+		/* Calculate half frame LPC residual signal including preceeding samples */
+		SKP_memset(S, 0, LPC_order * sizeof(int16_t));
+		SKP_Silk_LPC_analysis_filter(x_ptr, a_Q12[i], S, LPC_res,
+					     (NB_SUBFR >> 1) * offset,
+					     LPC_order);
 
-    /* Apply the squared subframe gains */
-    for( i = 0; i < NB_SUBFR; i++ ) {
-        /* Fully upscale gains and energies */
-        lz1 = SKP_Silk_CLZ32( nrgs[ i ] ) - 1; 
-        lz2 = SKP_Silk_CLZ32( gains_Qx[ i ] ) - 1; 
-        
-        tmp32 = SKP_LSHIFT32( gains_Qx[ i ], lz2 );
+		/* Point to first subframe of the just calculated LPC residual signal */
+		LPC_res_ptr = LPC_res + LPC_order;
+		for (j = 0; j < (NB_SUBFR >> 1); j++) {
+			/* Measure subframe energy */
+			SKP_Silk_sum_sqr_shift(&nrgs[i * (NB_SUBFR >> 1) + j],
+					       &rshift, LPC_res_ptr,
+					       subfr_length);
 
-        /* Find squared gains */
-        tmp32 = SKP_SMMUL( tmp32, tmp32 ); // Q( 2 * ( Qx + lz2 ) - 32 )
+			/* Set Q values for the measured energy */
+			nrgsQ[i * (NB_SUBFR >> 1) + j] = -rshift;
 
-        /* Scale energies */
-        nrgs[ i ] = SKP_SMMUL( tmp32, SKP_LSHIFT32( nrgs[ i ], lz1 ) ); // Q( nrgsQ[ i ] + lz1 + 2 * ( Qx + lz2 ) - 32 - 32 )
-        nrgsQ[ i ] += lz1 + 2 * ( Qx + lz2 ) - 32 - 32;
-    }
+			/* Move to next subframe */
+			LPC_res_ptr += offset;
+		}
+		/* Move to next frame half */
+		x_ptr += (NB_SUBFR >> 1) * offset;
+	}
+
+	/* Apply the squared subframe gains */
+	for (i = 0; i < NB_SUBFR; i++) {
+		/* Fully upscale gains and energies */
+		lz1 = SKP_Silk_CLZ32(nrgs[i]) - 1;
+		lz2 = SKP_Silk_CLZ32(gains_Qx[i]) - 1;
+
+		tmp32 = SKP_LSHIFT32(gains_Qx[i], lz2);
+
+		/* Find squared gains */
+		tmp32 = SKP_SMMUL(tmp32, tmp32);	// Q( 2 * ( Qx + lz2 ) - 32 )
+
+		/* Scale energies */
+		nrgs[i] = SKP_SMMUL(tmp32, SKP_LSHIFT32(nrgs[i], lz1));	// Q( nrgsQ[ i ] + lz1 + 2 * ( Qx + lz2 ) - 32 - 32 )
+		nrgsQ[i] += lz1 + 2 * (Qx + lz2) - 32 - 32;
+	}
 }

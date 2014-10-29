@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -29,90 +31,110 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #if HIGH_PASS_INPUT
 
-#define SKP_RADIANS_CONSTANT_Q19            1482    // 0.45f * 2.0f * 3.14159265359 / 1000
-#define SKP_LOG2_VARIABLE_HP_MIN_FREQ_Q7    809     // log(80) in Q7
+#define SKP_RADIANS_CONSTANT_Q19            1482	// 0.45f * 2.0f * 3.14159265359 / 1000
+#define SKP_LOG2_VARIABLE_HP_MIN_FREQ_Q7    809	// log(80) in Q7
 
 /* High-pass filter with cutoff frequency adaptation based on pitch lag statistics */
-void SKP_Silk_HP_variable_cutoff_FIX(
-    SKP_Silk_encoder_state_FIX      *psEnc,             /* I/O  Encoder state FIX                           */
-    SKP_Silk_encoder_control_FIX    *psEncCtrl,         /* I/O  Encoder control FIX                         */
-    int16_t                       *out,               /* O    high-pass filtered output signal            */
-    const int16_t                 *in                 /* I    input signal                                */
-)
+void SKP_Silk_HP_variable_cutoff_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Encoder state FIX                           */
+				     SKP_Silk_encoder_control_FIX * psEncCtrl,	/* I/O  Encoder control FIX                         */
+				     int16_t * out,	/* O    high-pass filtered output signal            */
+				     const int16_t * in	/* I    input signal                                */
+    )
 {
-    int   quality_Q15;
-    int32_t B_Q28[ 3 ], A_Q28[ 2 ];
-    int32_t Fc_Q19, r_Q28, r_Q22;
-    int32_t pitch_freq_Hz_Q16, pitch_freq_log_Q7, delta_freq_Q7;
+	int quality_Q15;
+	int32_t B_Q28[3], A_Q28[2];
+	int32_t Fc_Q19, r_Q28, r_Q22;
+	int32_t pitch_freq_Hz_Q16, pitch_freq_log_Q7, delta_freq_Q7;
 
     /*********************************************/
-    /* Estimate Low End of Pitch Frequency Range */
+	/* Estimate Low End of Pitch Frequency Range */
     /*********************************************/
-    if( psEnc->sCmn.prev_sigtype == SIG_TYPE_VOICED ) {
-        /* difference, in log domain */
-        pitch_freq_Hz_Q16 = SKP_DIV32_16( SKP_LSHIFT( SKP_MUL( psEnc->sCmn.fs_kHz, 1000 ), 16 ), psEnc->sCmn.prevLag );
-        pitch_freq_log_Q7 = SKP_Silk_lin2log( pitch_freq_Hz_Q16 ) - ( 16 << 7 ); //0x70
+	if (psEnc->sCmn.prev_sigtype == SIG_TYPE_VOICED) {
+		/* difference, in log domain */
+		pitch_freq_Hz_Q16 =
+		    SKP_DIV32_16(SKP_LSHIFT
+				 (SKP_MUL(psEnc->sCmn.fs_kHz, 1000), 16),
+				 psEnc->sCmn.prevLag);
+		pitch_freq_log_Q7 = SKP_Silk_lin2log(pitch_freq_Hz_Q16) - (16 << 7);	//0x70
 
-        /* adjustment based on quality */
-        quality_Q15 = psEncCtrl->input_quality_bands_Q15[ 0 ];
-        pitch_freq_log_Q7 = SKP_SUB32( pitch_freq_log_Q7, SKP_SMULWB( SKP_SMULWB( SKP_LSHIFT( quality_Q15, 2 ), quality_Q15 ), 
-            pitch_freq_log_Q7 - SKP_LOG2_VARIABLE_HP_MIN_FREQ_Q7 ) );
-        pitch_freq_log_Q7 = SKP_ADD32( pitch_freq_log_Q7, SKP_RSHIFT( 19661 - quality_Q15, 9 ) ); // 19661_Q15 = 0.6_Q0
+		/* adjustment based on quality */
+		quality_Q15 = psEncCtrl->input_quality_bands_Q15[0];
+		pitch_freq_log_Q7 =
+		    SKP_SUB32(pitch_freq_log_Q7,
+			      SKP_SMULWB(SKP_SMULWB
+					 (SKP_LSHIFT(quality_Q15, 2),
+					  quality_Q15),
+					 pitch_freq_log_Q7 -
+					 SKP_LOG2_VARIABLE_HP_MIN_FREQ_Q7));
+		pitch_freq_log_Q7 = SKP_ADD32(pitch_freq_log_Q7, SKP_RSHIFT(19661 - quality_Q15, 9));	// 19661_Q15 = 0.6_Q0
 
-        //delta_freq = pitch_freq_log - psEnc->variable_HP_smth1;
-        delta_freq_Q7 = pitch_freq_log_Q7 - SKP_RSHIFT( psEnc->variable_HP_smth1_Q15, 8 );
-        if( delta_freq_Q7 < 0 ) {
-            /* less smoothing for decreasing pitch frequency, to track something close to the minimum */
-            delta_freq_Q7 = SKP_MUL( delta_freq_Q7, 3 );
-        }
+		//delta_freq = pitch_freq_log - psEnc->variable_HP_smth1;
+		delta_freq_Q7 =
+		    pitch_freq_log_Q7 - SKP_RSHIFT(psEnc->variable_HP_smth1_Q15,
+						   8);
+		if (delta_freq_Q7 < 0) {
+			/* less smoothing for decreasing pitch frequency, to track something close to the minimum */
+			delta_freq_Q7 = SKP_MUL(delta_freq_Q7, 3);
+		}
 
-        /* limit delta, to reduce impact of outliers */
-        delta_freq_Q7 = SKP_LIMIT( delta_freq_Q7, -VARIABLE_HP_MAX_DELTA_FREQ_Q7, VARIABLE_HP_MAX_DELTA_FREQ_Q7 );
+		/* limit delta, to reduce impact of outliers */
+		delta_freq_Q7 =
+		    SKP_LIMIT(delta_freq_Q7, -VARIABLE_HP_MAX_DELTA_FREQ_Q7,
+			      VARIABLE_HP_MAX_DELTA_FREQ_Q7);
 
-        /* update smoother */
-        psEnc->variable_HP_smth1_Q15 = SKP_SMLAWB( psEnc->variable_HP_smth1_Q15, 
-            SKP_MUL( SKP_LSHIFT( psEnc->speech_activity_Q8, 1 ), delta_freq_Q7 ), VARIABLE_HP_SMTH_COEF1_Q16 );
-    }
-    /* second smoother */
-    psEnc->variable_HP_smth2_Q15 = SKP_SMLAWB( psEnc->variable_HP_smth2_Q15, 
-        psEnc->variable_HP_smth1_Q15 - psEnc->variable_HP_smth2_Q15, VARIABLE_HP_SMTH_COEF2_Q16 );
+		/* update smoother */
+		psEnc->variable_HP_smth1_Q15 =
+		    SKP_SMLAWB(psEnc->variable_HP_smth1_Q15,
+			       SKP_MUL(SKP_LSHIFT(psEnc->speech_activity_Q8, 1),
+				       delta_freq_Q7),
+			       VARIABLE_HP_SMTH_COEF1_Q16);
+	}
+	/* second smoother */
+	psEnc->variable_HP_smth2_Q15 = SKP_SMLAWB(psEnc->variable_HP_smth2_Q15,
+						  psEnc->variable_HP_smth1_Q15 -
+						  psEnc->variable_HP_smth2_Q15,
+						  VARIABLE_HP_SMTH_COEF2_Q16);
 
-    /* convert from log scale to Hertz */
-    psEncCtrl->pitch_freq_low_Hz = SKP_Silk_log2lin( SKP_RSHIFT( psEnc->variable_HP_smth2_Q15, 8 ) ); //pow( 2.0, psEnc->variable_HP_smth2 );
+	/* convert from log scale to Hertz */
+	psEncCtrl->pitch_freq_low_Hz = SKP_Silk_log2lin(SKP_RSHIFT(psEnc->variable_HP_smth2_Q15, 8));	//pow( 2.0, psEnc->variable_HP_smth2 );
 
-    /* limit frequency range */
-    psEncCtrl->pitch_freq_low_Hz = SKP_LIMIT( psEncCtrl->pitch_freq_low_Hz, VARIABLE_HP_MIN_FREQ_Q0, VARIABLE_HP_MAX_FREQ_Q0 );
-
-    /********************************/
-    /* Compute Filter Coefficients  */
-    /********************************/
-    /* compute cut-off frequency, in radians */
-    //Fc_num   = (SKP_float)( 0.45f * 2.0f * 3.14159265359 * psEncCtrl->pitch_freq_low_Hz );
-    //Fc_denom = (SKP_float)( 1e3f * psEnc->sCmn.fs_kHz );
-    SKP_assert( psEncCtrl->pitch_freq_low_Hz <= int32_t_MAX / SKP_RADIANS_CONSTANT_Q19 );
-    Fc_Q19 = SKP_DIV32_16( SKP_SMULBB( SKP_RADIANS_CONSTANT_Q19, psEncCtrl->pitch_freq_low_Hz ), psEnc->sCmn.fs_kHz ); // range: 3704 - 27787, 11-15 bits
-    SKP_assert( Fc_Q19 >=  3704 );
-    SKP_assert( Fc_Q19 <= 27787 );
-
-    r_Q28 = ( 1 << 28 ) - SKP_MUL( 471, Fc_Q19 ); // 471_Q9 = 0.92_Q0, range: 255347779 to 266690872, 27-28 bits
-    SKP_assert( r_Q28 >= 255347779 );
-    SKP_assert( r_Q28 <= 266690872 );
-
-    /* b = r * [ 1; -2; 1 ]; */
-    /* a = [ 1; -2 * r * ( 1 - 0.5 * Fc^2 ); r^2 ]; */
-    B_Q28[ 0 ] = r_Q28;
-    B_Q28[ 1 ] = SKP_LSHIFT( -r_Q28, 1 );
-    B_Q28[ 2 ] = r_Q28;
-    
-    // -r * ( 2 - Fc * Fc );
-    r_Q22  = SKP_RSHIFT( r_Q28, 6 );
-    A_Q28[ 0 ] = SKP_SMULWW( r_Q22, SKP_SMULWW( Fc_Q19, Fc_Q19 ) - ( 2 << 22 ) );
-    A_Q28[ 1 ] = SKP_SMULWW( r_Q22, r_Q22 );
+	/* limit frequency range */
+	psEncCtrl->pitch_freq_low_Hz =
+	    SKP_LIMIT(psEncCtrl->pitch_freq_low_Hz, VARIABLE_HP_MIN_FREQ_Q0,
+		      VARIABLE_HP_MAX_FREQ_Q0);
 
     /********************************/
-    /* High-Pass Filter             */
+	/* Compute Filter Coefficients  */
     /********************************/
-    SKP_Silk_biquad_alt( in, B_Q28, A_Q28, psEnc->sCmn.In_HP_State, out, psEnc->sCmn.frame_length );
+	/* compute cut-off frequency, in radians */
+	//Fc_num   = (SKP_float)( 0.45f * 2.0f * 3.14159265359 * psEncCtrl->pitch_freq_low_Hz );
+	//Fc_denom = (SKP_float)( 1e3f * psEnc->sCmn.fs_kHz );
+	SKP_assert(psEncCtrl->pitch_freq_low_Hz <=
+		   int32_t_MAX / SKP_RADIANS_CONSTANT_Q19);
+	Fc_Q19 = SKP_DIV32_16(SKP_SMULBB(SKP_RADIANS_CONSTANT_Q19, psEncCtrl->pitch_freq_low_Hz), psEnc->sCmn.fs_kHz);	// range: 3704 - 27787, 11-15 bits
+	SKP_assert(Fc_Q19 >= 3704);
+	SKP_assert(Fc_Q19 <= 27787);
+
+	r_Q28 = (1 << 28) - SKP_MUL(471, Fc_Q19);	// 471_Q9 = 0.92_Q0, range: 255347779 to 266690872, 27-28 bits
+	SKP_assert(r_Q28 >= 255347779);
+	SKP_assert(r_Q28 <= 266690872);
+
+	/* b = r * [ 1; -2; 1 ]; */
+	/* a = [ 1; -2 * r * ( 1 - 0.5 * Fc^2 ); r^2 ]; */
+	B_Q28[0] = r_Q28;
+	B_Q28[1] = SKP_LSHIFT(-r_Q28, 1);
+	B_Q28[2] = r_Q28;
+
+	// -r * ( 2 - Fc * Fc );
+	r_Q22 = SKP_RSHIFT(r_Q28, 6);
+	A_Q28[0] = SKP_SMULWW(r_Q22, SKP_SMULWW(Fc_Q19, Fc_Q19) - (2 << 22));
+	A_Q28[1] = SKP_SMULWW(r_Q22, r_Q22);
+
+    /********************************/
+	/* High-Pass Filter             */
+    /********************************/
+	SKP_Silk_biquad_alt(in, B_Q28, A_Q28, psEnc->sCmn.In_HP_State, out,
+			    psEnc->sCmn.frame_length);
 }
 
-#endif // HIGH_PASS_INPUT
+#endif				// HIGH_PASS_INPUT

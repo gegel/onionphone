@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -39,58 +41,61 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Faster than schur64(), but much less accurate.                       */
-/* uses SMLAWB(), requiring armv5E and higher.                          */ 
-void SKP_Silk_schur(
-    int16_t            *rc_Q15,                /* O:    reflection coefficients [order] Q15         */
-    const int32_t      *c,                     /* I:    correlations [order+1]                      */
-    const int32_t      order                   /* I:    prediction order                            */
-)
+/* uses SMLAWB(), requiring armv5E and higher.                          */
+void SKP_Silk_schur(int16_t * rc_Q15,	/* O:    reflection coefficients [order] Q15         */
+		    const int32_t * c,	/* I:    correlations [order+1]                      */
+		    const int32_t order	/* I:    prediction order                            */
+    )
 {
-    int        k, n, lz;
-    int32_t    C[ SigProc_MAX_ORDER_LPC + 1 ][ 2 ];
-    int32_t    Ctmp1, Ctmp2, rc_tmp_Q15;
+	int k, n, lz;
+	int32_t C[SigProc_MAX_ORDER_LPC + 1][2];
+	int32_t Ctmp1, Ctmp2, rc_tmp_Q15;
 
-    memzero(C, 2 * (SigProc_MAX_ORDER_LPC + 1) * sizeof(int32_t));
+	memzero(C, 2 * (SigProc_MAX_ORDER_LPC + 1) * sizeof(int32_t));
 
-    /* Get number of leading zeros */
-    lz = SKP_Silk_CLZ32( c[ 0 ] );
+	/* Get number of leading zeros */
+	lz = SKP_Silk_CLZ32(c[0]);
 
-    /* Copy correlations and adjust level to Q30 */
-    if( lz < 2 ) {
-        /* lz must be 1, so shift one to the right */
-        for( k = 0; k < order + 1; k++ ) {
-            C[ k ][ 0 ] = C[ k ][ 1 ] = SKP_RSHIFT( c[ k ], 1 );
-        }
-    } else if( lz > 2 ) {
-        /* Shift to the left */
-        lz -= 2; 
-        for( k = 0; k < order + 1; k++ ) {
-            C[ k ][ 0 ] = C[ k ][ 1 ] = SKP_LSHIFT( c[k], lz );
-        }
-    } else {
-        /* No need to shift */
-        for( k = 0; k < order + 1; k++ ) {
-            C[ k ][ 0 ] = C[ k ][ 1 ] = c[ k ];
-        }
-    }
+	/* Copy correlations and adjust level to Q30 */
+	if (lz < 2) {
+		/* lz must be 1, so shift one to the right */
+		for (k = 0; k < order + 1; k++) {
+			C[k][0] = C[k][1] = SKP_RSHIFT(c[k], 1);
+		}
+	} else if (lz > 2) {
+		/* Shift to the left */
+		lz -= 2;
+		for (k = 0; k < order + 1; k++) {
+			C[k][0] = C[k][1] = SKP_LSHIFT(c[k], lz);
+		}
+	} else {
+		/* No need to shift */
+		for (k = 0; k < order + 1; k++) {
+			C[k][0] = C[k][1] = c[k];
+		}
+	}
 
-    for( k = 0; k < order; k++ ) {
-        
-        /* Get reflection coefficient */
-        rc_tmp_Q15 = -SKP_DIV32_16( C[ k + 1 ][ 0 ], SKP_max_32( SKP_RSHIFT( C[ 0 ][ 1 ], 15 ), 1 ) );
+	for (k = 0; k < order; k++) {
 
-        /* Clip (shouldn't happen for properly conditioned inputs) */
-        rc_tmp_Q15 = SKP_SAT16( rc_tmp_Q15 );
+		/* Get reflection coefficient */
+		rc_tmp_Q15 =
+		    -SKP_DIV32_16(C[k + 1][0],
+				  SKP_max_32(SKP_RSHIFT(C[0][1], 15), 1));
 
-        /* Store */
-        rc_Q15[ k ] = (int16_t)rc_tmp_Q15;
+		/* Clip (shouldn't happen for properly conditioned inputs) */
+		rc_tmp_Q15 = SKP_SAT16(rc_tmp_Q15);
 
-        /* Update correlations */
-        for( n = 0; n < order - k; n++ ) {
-            Ctmp1 = C[ n + k + 1 ][ 0 ];
-            Ctmp2 = C[ n ][ 1 ];
-            C[ n + k + 1 ][ 0 ] = SKP_SMLAWB( Ctmp1, SKP_LSHIFT( Ctmp2, 1 ), rc_tmp_Q15 );
-            C[ n ][ 1 ]         = SKP_SMLAWB( Ctmp2, SKP_LSHIFT( Ctmp1, 1 ), rc_tmp_Q15 );
-        }
-    }
+		/* Store */
+		rc_Q15[k] = (int16_t) rc_tmp_Q15;
+
+		/* Update correlations */
+		for (n = 0; n < order - k; n++) {
+			Ctmp1 = C[n + k + 1][0];
+			Ctmp2 = C[n][1];
+			C[n + k + 1][0] =
+			    SKP_SMLAWB(Ctmp1, SKP_LSHIFT(Ctmp2, 1), rc_tmp_Q15);
+			C[n][1] =
+			    SKP_SMLAWB(Ctmp2, SKP_LSHIFT(Ctmp1, 1), rc_tmp_Q15);
+		}
+	}
 }

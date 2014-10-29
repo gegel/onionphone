@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -28,22 +30,25 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Chirp (bandwidth expand) LP AR filter */
-void SKP_Silk_bwexpander( 
-    int16_t            *ar,        /* I/O  AR filter to be expanded (without leading 1)    */
-    const int        d,          /* I    Length of ar                                    */
-    int32_t            chirp_Q16   /* I    Chirp factor (typically in the range 0 to 1)    */
-)
+void SKP_Silk_bwexpander(int16_t * ar,	/* I/O  AR filter to be expanded (without leading 1)    */
+			 const int d,	/* I    Length of ar                                    */
+			 int32_t chirp_Q16	/* I    Chirp factor (typically in the range 0 to 1)    */
+    )
 {
-    int   i;
-    int32_t chirp_minus_one_Q16;
+	int i;
+	int32_t chirp_minus_one_Q16;
 
-    chirp_minus_one_Q16 = chirp_Q16 - 65536;
+	chirp_minus_one_Q16 = chirp_Q16 - 65536;
 
-    /* NB: Dont use SKP_SMULWB, instead of SKP_RSHIFT_ROUND( SKP_MUL() , 16 ), below. */
-    /* Bias in SKP_SMULWB can lead to unstable filters                                */
-    for( i = 0; i < d - 1; i++ ) {
-        ar[ i ]    = (int16_t)SKP_RSHIFT_ROUND( SKP_MUL( chirp_Q16, ar[ i ]             ), 16 );
-        chirp_Q16 +=            SKP_RSHIFT_ROUND( SKP_MUL( chirp_Q16, chirp_minus_one_Q16 ), 16 );
-    }
-    ar[ d - 1 ] = (int16_t)SKP_RSHIFT_ROUND( SKP_MUL( chirp_Q16, ar[ d - 1 ] ), 16 );
+	/* NB: Dont use SKP_SMULWB, instead of SKP_RSHIFT_ROUND( SKP_MUL() , 16 ), below. */
+	/* Bias in SKP_SMULWB can lead to unstable filters                                */
+	for (i = 0; i < d - 1; i++) {
+		ar[i] =
+		    (int16_t) SKP_RSHIFT_ROUND(SKP_MUL(chirp_Q16, ar[i]), 16);
+		chirp_Q16 +=
+		    SKP_RSHIFT_ROUND(SKP_MUL(chirp_Q16, chirp_minus_one_Q16),
+				     16);
+	}
+	ar[d - 1] =
+	    (int16_t) SKP_RSHIFT_ROUND(SKP_MUL(chirp_Q16, ar[d - 1]), 16);
 }

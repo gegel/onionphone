@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -37,25 +39,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* First order low-pass filter, with input as int32_t, running at 48 kHz        */
-void SKP_Silk_lowpass_int(
-    const int32_t      *in,            /* I:    Q25 48 kHz signal; length = len */
-    int32_t            *S,             /* I/O: Q25 state; length = 1            */
-    int32_t            *out,           /* O:    Q25 48 kHz signal; length = len */
-    const int32_t      len             /* I:    Number of samples               */
-)
-{
-    int        k;
-    int32_t    in_tmp, out_tmp, state;
-    
-    state = S[ 0 ];
-    for( k = len; k > 0; k-- ) {    
-        in_tmp  = *in++;
-        in_tmp -= SKP_RSHIFT( in_tmp, 2 );              /* multiply by 0.75 */
-        out_tmp = state + in_tmp;                       /* zero at nyquist  */
-        state   = in_tmp - SKP_RSHIFT( out_tmp, 1 );    /* pole             */
-        *out++  = out_tmp;
-    }
-    S[ 0 ] = state;
+void SKP_Silk_lowpass_int(const int32_t * in,	/* I:    Q25 48 kHz signal; length = len */
+			  int32_t * S,	/* I/O: Q25 state; length = 1            */
+			  int32_t * out,	/* O:    Q25 48 kHz signal; length = len */
+			  const int32_t len	/* I:    Number of samples               */
+    ) {
+	int k;
+	int32_t in_tmp, out_tmp, state;
+
+	state = S[0];
+	for (k = len; k > 0; k--) {
+		in_tmp = *in++;
+		in_tmp -= SKP_RSHIFT(in_tmp, 2);	/* multiply by 0.75 */
+		out_tmp = state + in_tmp;	/* zero at nyquist  */
+		state = in_tmp - SKP_RSHIFT(out_tmp, 1);	/* pole             */
+		*out++ = out_tmp;
+	}
+	S[0] = state;
 }
-
-

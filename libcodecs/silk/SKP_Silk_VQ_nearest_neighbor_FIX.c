@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -28,83 +30,90 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_main_FIX.h"
 
 /* Entropy constrained MATRIX-weighted VQ, hard-coded to 5-element vectors, for a single input data vector */
-void SKP_Silk_VQ_WMat_EC_FIX(
-    int                         *ind,               /* O    index of best codebook vector               */
-    int32_t                       *rate_dist_Q14,     /* O    best weighted quantization error + mu * rate*/
-    const int16_t                 *in_Q14,            /* I    input vector to be quantized                */
-    const int32_t                 *W_Q18,             /* I    weighting matrix                            */
-    const int16_t                 *cb_Q14,            /* I    codebook                                    */
-    const int16_t                 *cl_Q6,             /* I    code length for each codebook vector        */
-    const int                   mu_Q8,              /* I    tradeoff between weighted error and rate    */
-    int                         L                   /* I    number of vectors in codebook               */
-)
+void SKP_Silk_VQ_WMat_EC_FIX(int *ind,	/* O    index of best codebook vector               */
+			     int32_t * rate_dist_Q14,	/* O    best weighted quantization error + mu * rate */
+			     const int16_t * in_Q14,	/* I    input vector to be quantized                */
+			     const int32_t * W_Q18,	/* I    weighting matrix                            */
+			     const int16_t * cb_Q14,	/* I    codebook                                    */
+			     const int16_t * cl_Q6,	/* I    code length for each codebook vector        */
+			     const int mu_Q8,	/* I    tradeoff between weighted error and rate    */
+			     int L	/* I    number of vectors in codebook               */
+    )
 {
-    int   k;
-    const int16_t *cb_row_Q14;
-    int32_t sum1_Q14, sum2_Q16, diff_Q14_01, diff_Q14_23, diff_Q14_4;
+	int k;
+	const int16_t *cb_row_Q14;
+	int32_t sum1_Q14, sum2_Q16, diff_Q14_01, diff_Q14_23, diff_Q14_4;
 
-    /* Loop over codebook */
-    *rate_dist_Q14 = int32_t_MAX;
-    cb_row_Q14 = cb_Q14;
-    for( k = 0; k < L; k++ ) {
-        /* Pack pairs of int16 values per int32 */
-        diff_Q14_01 = (uint16_t)( in_Q14[ 0 ] - cb_row_Q14[ 0 ] ) | SKP_LSHIFT( ( int32_t )in_Q14[ 1 ] - cb_row_Q14[ 1 ], 16 );
-        diff_Q14_23 = (uint16_t)( in_Q14[ 2 ] - cb_row_Q14[ 2 ] ) | SKP_LSHIFT( ( int32_t )in_Q14[ 3 ] - cb_row_Q14[ 3 ], 16 );
-        diff_Q14_4  = in_Q14[ 4 ] - cb_row_Q14[ 4 ];
+	/* Loop over codebook */
+	*rate_dist_Q14 = int32_t_MAX;
+	cb_row_Q14 = cb_Q14;
+	for (k = 0; k < L; k++) {
+		/* Pack pairs of int16 values per int32 */
+		diff_Q14_01 =
+		    (uint16_t) (in_Q14[0] -
+				cb_row_Q14[0]) | SKP_LSHIFT((int32_t) in_Q14[1]
+							    - cb_row_Q14[1],
+							    16);
+		diff_Q14_23 =
+		    (uint16_t) (in_Q14[2] -
+				cb_row_Q14[2]) | SKP_LSHIFT((int32_t) in_Q14[3]
+							    - cb_row_Q14[3],
+							    16);
+		diff_Q14_4 = in_Q14[4] - cb_row_Q14[4];
 
-        /* Weighted rate */
-        sum1_Q14 = SKP_SMULBB( mu_Q8, cl_Q6[ k ] );
+		/* Weighted rate */
+		sum1_Q14 = SKP_SMULBB(mu_Q8, cl_Q6[k]);
 
-        SKP_assert( sum1_Q14 >= 0 );
+		SKP_assert(sum1_Q14 >= 0);
 
-        /* Add weighted quantization error, assuming W_Q18 is symmetric */
-        /* NOTE: the code below loads two int16 values as one int32, and multiplies each using the  */
-        /* SMLAWB and SMLAWT instructions. On a big-endian CPU the two int16 variables would be     */
-        /* loaded in reverse order and the code will give the wrong result. In that case swapping   */
-        /* the SMLAWB and SMLAWT instructions should solve the problem.                             */
-        /* first row of W_Q18 */
-        sum2_Q16 = SKP_SMULWT(           W_Q18[ 1 ], diff_Q14_01 );
-        sum2_Q16 = SKP_SMLAWB( sum2_Q16, W_Q18[ 2 ], diff_Q14_23 );
-        sum2_Q16 = SKP_SMLAWT( sum2_Q16, W_Q18[ 3 ], diff_Q14_23 );
-        sum2_Q16 = SKP_SMLAWB( sum2_Q16, W_Q18[ 4 ], diff_Q14_4  );
-        sum2_Q16 = SKP_LSHIFT( sum2_Q16, 1 );
-        sum2_Q16 = SKP_SMLAWB( sum2_Q16, W_Q18[ 0 ], diff_Q14_01 );
-        sum1_Q14 = SKP_SMLAWB( sum1_Q14, sum2_Q16,   diff_Q14_01 );
+		/* Add weighted quantization error, assuming W_Q18 is symmetric */
+		/* NOTE: the code below loads two int16 values as one int32, and multiplies each using the  */
+		/* SMLAWB and SMLAWT instructions. On a big-endian CPU the two int16 variables would be     */
+		/* loaded in reverse order and the code will give the wrong result. In that case swapping   */
+		/* the SMLAWB and SMLAWT instructions should solve the problem.                             */
+		/* first row of W_Q18 */
+		sum2_Q16 = SKP_SMULWT(W_Q18[1], diff_Q14_01);
+		sum2_Q16 = SKP_SMLAWB(sum2_Q16, W_Q18[2], diff_Q14_23);
+		sum2_Q16 = SKP_SMLAWT(sum2_Q16, W_Q18[3], diff_Q14_23);
+		sum2_Q16 = SKP_SMLAWB(sum2_Q16, W_Q18[4], diff_Q14_4);
+		sum2_Q16 = SKP_LSHIFT(sum2_Q16, 1);
+		sum2_Q16 = SKP_SMLAWB(sum2_Q16, W_Q18[0], diff_Q14_01);
+		sum1_Q14 = SKP_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14_01);
 
-        /* second row of W_Q18 */
-        sum2_Q16 = SKP_SMULWB(           W_Q18[ 7 ], diff_Q14_23 );
-        sum2_Q16 = SKP_SMLAWT( sum2_Q16, W_Q18[ 8 ], diff_Q14_23 );
-        sum2_Q16 = SKP_SMLAWB( sum2_Q16, W_Q18[ 9 ], diff_Q14_4  );
-        sum2_Q16 = SKP_LSHIFT( sum2_Q16, 1 );
-        sum2_Q16 = SKP_SMLAWT( sum2_Q16, W_Q18[ 6 ], diff_Q14_01 );
-        sum1_Q14 = SKP_SMLAWT( sum1_Q14, sum2_Q16,   diff_Q14_01 );
+		/* second row of W_Q18 */
+		sum2_Q16 = SKP_SMULWB(W_Q18[7], diff_Q14_23);
+		sum2_Q16 = SKP_SMLAWT(sum2_Q16, W_Q18[8], diff_Q14_23);
+		sum2_Q16 = SKP_SMLAWB(sum2_Q16, W_Q18[9], diff_Q14_4);
+		sum2_Q16 = SKP_LSHIFT(sum2_Q16, 1);
+		sum2_Q16 = SKP_SMLAWT(sum2_Q16, W_Q18[6], diff_Q14_01);
+		sum1_Q14 = SKP_SMLAWT(sum1_Q14, sum2_Q16, diff_Q14_01);
 
-        /* third row of W_Q18 */
-        sum2_Q16 = SKP_SMULWT(           W_Q18[ 13 ], diff_Q14_23 );
-        sum2_Q16 = SKP_SMLAWB( sum2_Q16, W_Q18[ 14 ], diff_Q14_4  );
-        sum2_Q16 = SKP_LSHIFT( sum2_Q16, 1 );
-        sum2_Q16 = SKP_SMLAWB( sum2_Q16, W_Q18[ 12 ], diff_Q14_23 );
-        sum1_Q14 = SKP_SMLAWB( sum1_Q14, sum2_Q16,    diff_Q14_23 );
+		/* third row of W_Q18 */
+		sum2_Q16 = SKP_SMULWT(W_Q18[13], diff_Q14_23);
+		sum2_Q16 = SKP_SMLAWB(sum2_Q16, W_Q18[14], diff_Q14_4);
+		sum2_Q16 = SKP_LSHIFT(sum2_Q16, 1);
+		sum2_Q16 = SKP_SMLAWB(sum2_Q16, W_Q18[12], diff_Q14_23);
+		sum1_Q14 = SKP_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14_23);
 
-        /* fourth row of W_Q18 */
-        sum2_Q16 = SKP_SMULWB(           W_Q18[ 19 ], diff_Q14_4  );
-        sum2_Q16 = SKP_LSHIFT( sum2_Q16, 1 );
-        sum2_Q16 = SKP_SMLAWT( sum2_Q16, W_Q18[ 18 ], diff_Q14_23 );
-        sum1_Q14 = SKP_SMLAWT( sum1_Q14, sum2_Q16,    diff_Q14_23 );
+		/* fourth row of W_Q18 */
+		sum2_Q16 = SKP_SMULWB(W_Q18[19], diff_Q14_4);
+		sum2_Q16 = SKP_LSHIFT(sum2_Q16, 1);
+		sum2_Q16 = SKP_SMLAWT(sum2_Q16, W_Q18[18], diff_Q14_23);
+		sum1_Q14 = SKP_SMLAWT(sum1_Q14, sum2_Q16, diff_Q14_23);
 
-        /* last row of W_Q18 */
-        sum2_Q16 = SKP_SMULWB(           W_Q18[ 24 ], diff_Q14_4  );
-        sum1_Q14 = SKP_SMLAWB( sum1_Q14, sum2_Q16,    diff_Q14_4  );
+		/* last row of W_Q18 */
+		sum2_Q16 = SKP_SMULWB(W_Q18[24], diff_Q14_4);
+		sum1_Q14 = SKP_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14_4);
 
-        SKP_assert( sum1_Q14 >= 0 );
+		SKP_assert(sum1_Q14 >= 0);
 
-        /* find best */
-        if( sum1_Q14 < *rate_dist_Q14 ) {
-            *rate_dist_Q14 = sum1_Q14;
-            *ind = k;
-        }
+		/* find best */
+		if (sum1_Q14 < *rate_dist_Q14) {
+			*rate_dist_Q14 = sum1_Q14;
+			*ind = k;
+		}
 
-        /* Go to next cbk vector */
-        cb_row_Q14 += LTP_ORDER;
-    }
+		/* Go to next cbk vector */
+		cb_row_Q14 += LTP_ORDER;
+	}
 }

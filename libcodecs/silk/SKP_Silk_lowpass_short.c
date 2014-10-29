@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -36,26 +38,21 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *                                                                      */
 #include "SKP_Silk_SigProc_FIX.h"
 
-
 /* First order low-pass filter, with input as int16_t, running at 48 kHz   */
-void SKP_Silk_lowpass_short(
-    const int16_t          *in,        /* I:   Q15 48 kHz signal; [len]    */
-    int32_t                *S,         /* I/O: Q25 state; length = 1       */
-    int32_t                *out,       /* O:   Q25 48 kHz signal; [len]    */
-    const int32_t          len         /* O:   Signal length               */
-)
-{
-    int        k;
-    int32_t    in_tmp, out_tmp, state;
-    
-    state = S[ 0 ];
-    for( k = 0; k < len; k++ ) {    
-        in_tmp   = SKP_MUL( 768, (int32_t)in[k] );    /* multiply by 0.75, going from Q15 to Q25 */
-        out_tmp  = state + in_tmp;                      /* zero at nyquist                         */
-        state    = in_tmp - SKP_RSHIFT( out_tmp, 1 );   /* pole                                    */
-        out[ k ] = out_tmp;
-    }
-    S[ 0 ] = state;
+void SKP_Silk_lowpass_short(const int16_t * in,	/* I:   Q15 48 kHz signal; [len]    */
+			    int32_t * S,	/* I/O: Q25 state; length = 1       */
+			    int32_t * out,	/* O:   Q25 48 kHz signal; [len]    */
+			    const int32_t len	/* O:   Signal length               */
+    ) {
+	int k;
+	int32_t in_tmp, out_tmp, state;
+
+	state = S[0];
+	for (k = 0; k < len; k++) {
+		in_tmp = SKP_MUL(768, (int32_t) in[k]);	/* multiply by 0.75, going from Q15 to Q25 */
+		out_tmp = state + in_tmp;	/* zero at nyquist                         */
+		state = in_tmp - SKP_RSHIFT(out_tmp, 1);	/* pole                                    */
+		out[k] = out_tmp;
+	}
+	S[0] = state;
 }
-
-

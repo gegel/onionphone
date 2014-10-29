@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -36,63 +38,64 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 /* Compute number of bits to right shift the sum of squares of a vector */
 /* of int16s to make it fit in an int32                                 */
-void SKP_Silk_sum_sqr_shift(
-    int32_t            *energy,            /* O    Energy of x, after shifting to the right            */
-    int              *shift,             /* O    Number of bits right shift applied to energy        */
-    const int16_t      *x,                 /* I    Input vector                                        */
-    int              len                 /* I    Length of input vector                              */
-)
+void SKP_Silk_sum_sqr_shift(int32_t * energy,	/* O    Energy of x, after shifting to the right            */
+			    int *shift,	/* O    Number of bits right shift applied to energy        */
+			    const int16_t * x,	/* I    Input vector                                        */
+			    int len	/* I    Length of input vector                              */
+    )
 {
-    int   i, shft;
-    int32_t in32, nrg_tmp, nrg;
+	int i, shft;
+	int32_t in32, nrg_tmp, nrg;
 
-    if( (int32_t)( (int_ptr_size)x & 2 ) != 0 ) {
-        /* Input is not 4-byte aligned */
-        nrg = SKP_SMULBB( x[ 0 ], x[ 0 ] );
-        i = 1;
-    } else {
-        nrg = 0;
-        i   = 0;
-    }
-    shft = 0;
-    len--;
-    for( ; i < len; i += 2 ) {
-        /* Load two values at once */
-        in32 = *( (int32_t *)&x[ i ] );
-        nrg = SKP_SMLABB_ovflw( nrg, in32, in32 );
-        nrg = SKP_SMLATT_ovflw( nrg, in32, in32 );
-        if( nrg < 0 ) {
-            /* Scale down */
-            nrg = (int32_t)SKP_RSHIFT_uint( (uint32_t)nrg, 2 );
-            shft = 2;
-            break;
-        }
-    }
-    for( ; i < len; i += 2 ) {
-        /* Load two values at once */
-        in32 = *( (int32_t *)&x[ i ] );
-        nrg_tmp = SKP_SMULBB( in32, in32 );
-        nrg_tmp = SKP_SMLATT_ovflw( nrg_tmp, in32, in32 );
-        nrg = (int32_t)SKP_ADD_RSHIFT_uint( nrg, (uint32_t)nrg_tmp, shft );
-        if( nrg < 0 ) {
-            /* Scale down */
-            nrg = (int32_t)SKP_RSHIFT_uint( (uint32_t)nrg, 2 );
-            shft += 2;
-        }
-    }
-    if( i == len ) {
-        /* One sample left to process */
-        nrg_tmp = SKP_SMULBB( x[ i ], x[ i ] );
-        nrg = (int32_t)SKP_ADD_RSHIFT_uint( nrg, nrg_tmp, shft );
-    }
+	if ((int32_t) ((int_ptr_size) x & 2) != 0) {
+		/* Input is not 4-byte aligned */
+		nrg = SKP_SMULBB(x[0], x[0]);
+		i = 1;
+	} else {
+		nrg = 0;
+		i = 0;
+	}
+	shft = 0;
+	len--;
+	for (; i < len; i += 2) {
+		/* Load two values at once */
+		in32 = *((int32_t *) & x[i]);
+		nrg = SKP_SMLABB_ovflw(nrg, in32, in32);
+		nrg = SKP_SMLATT_ovflw(nrg, in32, in32);
+		if (nrg < 0) {
+			/* Scale down */
+			nrg = (int32_t) SKP_RSHIFT_uint((uint32_t) nrg, 2);
+			shft = 2;
+			break;
+		}
+	}
+	for (; i < len; i += 2) {
+		/* Load two values at once */
+		in32 = *((int32_t *) & x[i]);
+		nrg_tmp = SKP_SMULBB(in32, in32);
+		nrg_tmp = SKP_SMLATT_ovflw(nrg_tmp, in32, in32);
+		nrg =
+		    (int32_t) SKP_ADD_RSHIFT_uint(nrg, (uint32_t) nrg_tmp,
+						  shft);
+		if (nrg < 0) {
+			/* Scale down */
+			nrg = (int32_t) SKP_RSHIFT_uint((uint32_t) nrg, 2);
+			shft += 2;
+		}
+	}
+	if (i == len) {
+		/* One sample left to process */
+		nrg_tmp = SKP_SMULBB(x[i], x[i]);
+		nrg = (int32_t) SKP_ADD_RSHIFT_uint(nrg, nrg_tmp, shft);
+	}
 
-    /* Make sure to have at least one extra leading zero (two leading zeros in total) */
-    if( nrg & 0xC0000000 ) {
-        nrg = SKP_RSHIFT_uint( (uint32_t)nrg, 2 );
-        shft += 2;
-    }
+	/* Make sure to have at least one extra leading zero (two leading zeros in total) */
+	if (nrg & 0xC0000000) {
+		nrg = SKP_RSHIFT_uint((uint32_t) nrg, 2);
+		shft += 2;
+	}
 
-    /* Output arguments */
-    *shift  = shft;
-    *energy = nrg;
+	/* Output arguments */
+	*shift = shft;
+	*energy = nrg;
 }

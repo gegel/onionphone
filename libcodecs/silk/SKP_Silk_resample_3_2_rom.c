@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -38,9 +40,11 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_resample_rom.h"
 
-const int16_t SigProc_Resample_3_2_coarse_INTERPOL[ SigProc_Resample_3_2_coarse_NUM_INTERPOLATORS ][ SigProc_Resample_3_2_coarse_NUM_FIR_COEFS ] = {
-    {    0,     0,     0, 32768,     0,     0,     0,     0 },
-    { -384,  1630, -5217, 26674, 12714, -3572,  1050,  -236 },
-    { -236,  1050, -3572, 12714, 26674, -5217,  1630,  -384 },
+const int16_t
+    SigProc_Resample_3_2_coarse_INTERPOL
+    [SigProc_Resample_3_2_coarse_NUM_INTERPOLATORS]
+    [SigProc_Resample_3_2_coarse_NUM_FIR_COEFS] = {
+	{0, 0, 0, 32768, 0, 0, 0, 0},
+	{-384, 1630, -5217, 26674, 12714, -3572, 1050, -236},
+	{-236, 1050, -3572, 12714, 26674, -5217, 1630, -384},
 };
-

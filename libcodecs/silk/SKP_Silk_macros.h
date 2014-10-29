@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -71,23 +73,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SKP_SUB_SAT32(a, b)				((((a)-(b)) & 0x80000000) == 0 ?										\
 										(( (a) & ((b)^0x80000000) & 0x80000000) ? int32_t_MIN : (a)-(b)) :	\
 										((((a)^0x80000000) & (b)  & 0x80000000) ? int32_t_MAX : (a)-(b)) )
-	
+
 SKP_INLINE int32_t SKP_Silk_CLZ16(int16_t in16)
 {
 	int32_t out32 = 0;
-	if( in16 == 0 ) {
+	if (in16 == 0) {
 		return 16;
 	}
 	/* test nibbles */
-	if( in16 & 0xFF00 ) {
-		if( in16 & 0xF000 )	{
+	if (in16 & 0xFF00) {
+		if (in16 & 0xF000) {
 			in16 >>= 12;
 		} else {
 			out32 += 4;
 			in16 >>= 8;
 		}
 	} else {
-		if( in16 & 0xFFF0 )	{
+		if (in16 & 0xFFF0) {
 			out32 += 8;
 			in16 >>= 4;
 		} else {
@@ -95,13 +97,13 @@ SKP_INLINE int32_t SKP_Silk_CLZ16(int16_t in16)
 		}
 	}
 	/* test bits and return */
-	if( in16 & 0xC ) {
-		if( in16 & 0x8 )
+	if (in16 & 0xC) {
+		if (in16 & 0x8)
 			return out32 + 0;
 		else
 			return out32 + 1;
 	} else {
-		if( in16 & 0xE )
+		if (in16 & 0xE)
 			return out32 + 2;
 		else
 			return out32 + 3;
@@ -111,12 +113,11 @@ SKP_INLINE int32_t SKP_Silk_CLZ16(int16_t in16)
 SKP_INLINE int32_t SKP_Silk_CLZ32(int32_t in32)
 {
 	/* test highest 16 bits and convert to int16_t */
-	if( in32 & 0xFFFF0000 ) {
-		return SKP_Silk_CLZ16((int16_t)(in32 >> 16));
+	if (in32 & 0xFFFF0000) {
+		return SKP_Silk_CLZ16((int16_t) (in32 >> 16));
 	} else {
-		return SKP_Silk_CLZ16((int16_t)in32) + 16;
+		return SKP_Silk_CLZ16((int16_t) in32) + 16;
 	}
 }
 
-#endif //_SKP_SILK_API_C_H_
-
+#endif				//_SKP_SILK_API_C_H_

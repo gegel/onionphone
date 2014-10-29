@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -38,35 +40,34 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Second order ARMA filter */
 /* Can handle slowly varying filter coefficients */
-void SKP_Silk_biquad(
-    const int16_t      *in,        /* I:    input signal               */
-    const int16_t      *B,         /* I:    MA coefficients, Q13 [3]   */
-    const int16_t      *A,         /* I:    AR coefficients, Q13 [2]   */
-    int32_t            *S,         /* I/O: state vector [2]            */
-    int16_t            *out,       /* O:    output signal              */
-    const int32_t      len         /* I:    signal length              */
-)
+void SKP_Silk_biquad(const int16_t * in,	/* I:    input signal               */
+		     const int16_t * B,	/* I:    MA coefficients, Q13 [3]   */
+		     const int16_t * A,	/* I:    AR coefficients, Q13 [2]   */
+		     int32_t * S,	/* I/O: state vector [2]            */
+		     int16_t * out,	/* O:    output signal              */
+		     const int32_t len	/* I:    signal length              */
+    )
 {
-    int   k, in16;
-    int32_t A0_neg, A1_neg, S0, S1, out32, tmp32;
+	int k, in16;
+	int32_t A0_neg, A1_neg, S0, S1, out32, tmp32;
 
-    S0 = S[ 0 ];
-    S1 = S[ 1 ];
-    A0_neg = -A[ 0 ];
-    A1_neg = -A[ 1 ];
-    for( k = 0; k < len; k++ ) {
-        /* S[ 0 ], S[ 1 ]: Q13 */
-        in16  = in[ k ];
-        out32 = SKP_SMLABB( S0, in16, B[ 0 ] );
+	S0 = S[0];
+	S1 = S[1];
+	A0_neg = -A[0];
+	A1_neg = -A[1];
+	for (k = 0; k < len; k++) {
+		/* S[ 0 ], S[ 1 ]: Q13 */
+		in16 = in[k];
+		out32 = SKP_SMLABB(S0, in16, B[0]);
 
-        S0 = SKP_SMLABB( S1, in16, B[ 1 ] );
-        S0 += SKP_LSHIFT( SKP_SMULWB( out32, A0_neg ), 3 );
+		S0 = SKP_SMLABB(S1, in16, B[1]);
+		S0 += SKP_LSHIFT(SKP_SMULWB(out32, A0_neg), 3);
 
-        S1 = SKP_LSHIFT( SKP_SMULWB( out32, A1_neg ), 3 );
-        S1 = SKP_SMLABB( S1, in16, B[ 2 ] );
-        tmp32    = SKP_RSHIFT_ROUND( out32, 13 ) + 1;
-        out[ k ] = (int16_t)SKP_SAT16( tmp32 );
-    }
-    S[ 0 ] = S0;
-    S[ 1 ] = S1;
+		S1 = SKP_LSHIFT(SKP_SMULWB(out32, A1_neg), 3);
+		S1 = SKP_SMLABB(S1, in16, B[2]);
+		tmp32 = SKP_RSHIFT_ROUND(out32, 13) + 1;
+		out[k] = (int16_t) SKP_SAT16(tmp32);
+	}
+	S[0] = S0;
+	S[1] = S1;
 }

@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -30,52 +32,60 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define NB_THRESHOLDS           11
 
 /* Table containing trained thresholds for LTP scaling */
-static const int16_t LTPScaleThresholds_Q15[ NB_THRESHOLDS ] = 
-{
-    31129, 26214, 16384, 13107, 9830, 6554,
-     4915,  3276,  2621,  2458,    0
+static const int16_t LTPScaleThresholds_Q15[NB_THRESHOLDS] = {
+	31129, 26214, 16384, 13107, 9830, 6554,
+	4915, 3276, 2621, 2458, 0
 };
 
-void SKP_Silk_LTP_scale_ctrl_FIX(
-    SKP_Silk_encoder_state_FIX      *psEnc,     /* I/O  encoder state FIX                           */
-    SKP_Silk_encoder_control_FIX    *psEncCtrl  /* I/O  encoder control FIX                         */
-)
+void SKP_Silk_LTP_scale_ctrl_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  encoder state FIX                           */
+				 SKP_Silk_encoder_control_FIX * psEncCtrl	/* I/O  encoder control FIX                         */
+    )
 {
-    int round_loss, frames_per_packet;
-    int g_out_Q5, g_limit_Q15, thrld1_Q15, thrld2_Q15;
+	int round_loss, frames_per_packet;
+	int g_out_Q5, g_limit_Q15, thrld1_Q15, thrld2_Q15;
 
-    /* 1st order high-pass filter */
-    psEnc->HPLTPredCodGain_Q7 = SKP_max_int( psEncCtrl->LTPredCodGain_Q7 - psEnc->prevLTPredCodGain_Q7, 0 ) 
-        + SKP_RSHIFT_ROUND( psEnc->HPLTPredCodGain_Q7, 1 );
-    
-    psEnc->prevLTPredCodGain_Q7 = psEncCtrl->LTPredCodGain_Q7;
+	/* 1st order high-pass filter */
+	psEnc->HPLTPredCodGain_Q7 =
+	    SKP_max_int(psEncCtrl->LTPredCodGain_Q7 -
+			psEnc->prevLTPredCodGain_Q7, 0)
+	    + SKP_RSHIFT_ROUND(psEnc->HPLTPredCodGain_Q7, 1);
 
-    /* combine input and filtered input */
-    g_out_Q5    = SKP_RSHIFT_ROUND( SKP_RSHIFT( psEncCtrl->LTPredCodGain_Q7, 1 ) + SKP_RSHIFT( psEnc->HPLTPredCodGain_Q7, 1 ), 3 );
-    g_limit_Q15 = SKP_Silk_sigm_Q15( g_out_Q5 - ( 3 << 5 ) ); /* mulitplid with 0.5 */
-            
-    /* Default is minimum scaling */
-    psEncCtrl->sCmn.LTP_scaleIndex = 0;
+	psEnc->prevLTPredCodGain_Q7 = psEncCtrl->LTPredCodGain_Q7;
 
-    /* Round the loss measure to whole pct */
-    round_loss = ( int )psEnc->sCmn.PacketLoss_perc;
+	/* combine input and filtered input */
+	g_out_Q5 =
+	    SKP_RSHIFT_ROUND(SKP_RSHIFT(psEncCtrl->LTPredCodGain_Q7, 1) +
+			     SKP_RSHIFT(psEnc->HPLTPredCodGain_Q7, 1), 3);
+	g_limit_Q15 = SKP_Silk_sigm_Q15(g_out_Q5 - (3 << 5));	/* mulitplid with 0.5 */
 
-    /* Only scale if first frame in packet 0% */
-    if( psEnc->sCmn.nFramesInPayloadBuf == 0 ) {
-        
-        frames_per_packet = SKP_DIV32_16( psEnc->sCmn.PacketSize_ms, FRAME_LENGTH_MS );
+	/* Default is minimum scaling */
+	psEncCtrl->sCmn.LTP_scaleIndex = 0;
 
-        round_loss += frames_per_packet - 1;
-        thrld1_Q15 = LTPScaleThresholds_Q15[ SKP_min_int( round_loss,     NB_THRESHOLDS - 1 ) ];
-        thrld2_Q15 = LTPScaleThresholds_Q15[ SKP_min_int( round_loss + 1, NB_THRESHOLDS - 1 ) ];
-    
-        if( g_limit_Q15 > thrld1_Q15 ) {
-            /* Maximum scaling */
-            psEncCtrl->sCmn.LTP_scaleIndex = 2;
-        } else if( g_limit_Q15 > thrld2_Q15 ) {
-            /* Medium scaling */
-            psEncCtrl->sCmn.LTP_scaleIndex = 1;
-        }
-    }
-    psEncCtrl->LTP_scale_Q14 = SKP_Silk_LTPScales_table_Q14[ psEncCtrl->sCmn.LTP_scaleIndex ];
+	/* Round the loss measure to whole pct */
+	round_loss = (int)psEnc->sCmn.PacketLoss_perc;
+
+	/* Only scale if first frame in packet 0% */
+	if (psEnc->sCmn.nFramesInPayloadBuf == 0) {
+
+		frames_per_packet =
+		    SKP_DIV32_16(psEnc->sCmn.PacketSize_ms, FRAME_LENGTH_MS);
+
+		round_loss += frames_per_packet - 1;
+		thrld1_Q15 =
+		    LTPScaleThresholds_Q15[SKP_min_int
+					   (round_loss, NB_THRESHOLDS - 1)];
+		thrld2_Q15 =
+		    LTPScaleThresholds_Q15[SKP_min_int
+					   (round_loss + 1, NB_THRESHOLDS - 1)];
+
+		if (g_limit_Q15 > thrld1_Q15) {
+			/* Maximum scaling */
+			psEncCtrl->sCmn.LTP_scaleIndex = 2;
+		} else if (g_limit_Q15 > thrld2_Q15) {
+			/* Medium scaling */
+			psEncCtrl->sCmn.LTP_scaleIndex = 1;
+		}
+	}
+	psEncCtrl->LTP_scale_Q14 =
+	    SKP_Silk_LTPScales_table_Q14[psEncCtrl->sCmn.LTP_scaleIndex];
 }

@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -34,162 +36,157 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_SigProc_FIX.h"
 
-void SKP_Silk_insertion_sort_increasing(
-    int32_t           *a,             /* I/O:  Unsorted / Sorted vector               */
-    int             *index,         /* O:    Index vector for the sorted elements   */
-    const int       L,              /* I:    Vector length                          */
-    const int       K               /* I:    Number of correctly sorted positions   */
-)
+void SKP_Silk_insertion_sort_increasing(int32_t * a,	/* I/O:  Unsorted / Sorted vector               */
+					int *index,	/* O:    Index vector for the sorted elements   */
+					const int L,	/* I:    Vector length                          */
+					const int K	/* I:    Number of correctly sorted positions   */
+    )
 {
-    int32_t    value;
-    int        i, j;
+	int32_t value;
+	int i, j;
 
-    /* Safety checks */
-    SKP_assert( K >  0 );
-    SKP_assert( L >  0 );
-    SKP_assert( L >= K );
+	/* Safety checks */
+	SKP_assert(K > 0);
+	SKP_assert(L > 0);
+	SKP_assert(L >= K);
 
-    /* Write start indices in index vector */
-    for( i = 0; i < K; i++ ) {
-        index[ i ] = i;
-    }
+	/* Write start indices in index vector */
+	for (i = 0; i < K; i++) {
+		index[i] = i;
+	}
 
-    /* Sort vector elements by value, increasing order */
-    for( i = 1; i < K; i++ ) {
-        value = a[ i ];
-        for( j = i - 1; ( j >= 0 ) && ( value < a[ j ] ); j-- ) {
-            a[ j + 1 ]     = a[ j ];     /* Shift value */
-            index[ j + 1 ] = index[ j ]; /* Shift index */
-        }
-        a[ j + 1 ]     = value; /* Write value */
-        index[ j + 1 ] = i;     /* Write index */
-    }
+	/* Sort vector elements by value, increasing order */
+	for (i = 1; i < K; i++) {
+		value = a[i];
+		for (j = i - 1; (j >= 0) && (value < a[j]); j--) {
+			a[j + 1] = a[j];	/* Shift value */
+			index[j + 1] = index[j];	/* Shift index */
+		}
+		a[j + 1] = value;	/* Write value */
+		index[j + 1] = i;	/* Write index */
+	}
 
-    /* If less than L values are asked check the remaining values,      */
-    /* but only spend CPU to ensure that the K first values are correct */
-    for( i = K; i < L; i++ ) {
-        value = a[ i ];
-        if( value < a[ K - 1 ] ) {
-            for( j = K - 2; ( j >= 0 ) && ( value < a[ j ] ); j-- ) {
-                a[ j + 1 ]     = a[ j ];     /* Shift value */
-                index[ j + 1 ] = index[ j ]; /* Shift index */
-            }
-            a[ j + 1 ]     = value; /* Write value */
-            index[ j + 1 ] = i;        /* Write index */
-        }
-    }
+	/* If less than L values are asked check the remaining values,      */
+	/* but only spend CPU to ensure that the K first values are correct */
+	for (i = K; i < L; i++) {
+		value = a[i];
+		if (value < a[K - 1]) {
+			for (j = K - 2; (j >= 0) && (value < a[j]); j--) {
+				a[j + 1] = a[j];	/* Shift value */
+				index[j + 1] = index[j];	/* Shift index */
+			}
+			a[j + 1] = value;	/* Write value */
+			index[j + 1] = i;	/* Write index */
+		}
+	}
 }
 
-void SKP_Silk_insertion_sort_decreasing(
-    int             *a,             /* I/O: Unsorted / Sorted vector                */
-    int             *index,         /* O:   Index vector for the sorted elements    */
-    const int       L,              /* I:   Vector length                           */
-    const int       K               /* I:   Number of correctly sorted positions    */
-)
+void SKP_Silk_insertion_sort_decreasing(int *a,	/* I/O: Unsorted / Sorted vector                */
+					int *index,	/* O:   Index vector for the sorted elements    */
+					const int L,	/* I:   Vector length                           */
+					const int K	/* I:   Number of correctly sorted positions    */
+    )
 {
-    int    value;
-    int    i, j;
+	int value;
+	int i, j;
 
-    /* Safety checks */
-    SKP_assert( K >  0 );
-    SKP_assert( L >  0 );
-    SKP_assert( L >= K );
+	/* Safety checks */
+	SKP_assert(K > 0);
+	SKP_assert(L > 0);
+	SKP_assert(L >= K);
 
-    /* Write start indices in index vector */
-    for( i = 0; i < K; i++ ) {
-        index[ i ] = i;
-    }
+	/* Write start indices in index vector */
+	for (i = 0; i < K; i++) {
+		index[i] = i;
+	}
 
-    /* Sort vector elements by value, decreasing order */
-    for( i = 1; i < K; i++ ) {
-        value = a[ i ];
-        for( j = i - 1; ( j >= 0 ) && ( value > a[ j ] ); j-- ) {
-            a[ j + 1 ]     = a[ j ];     /* Shift value */
-            index[ j + 1 ] = index[ j ]; /* Shift index */
-        }
-        a[ j + 1 ]     = value; /* Write value */
-        index[ j + 1 ] = i;     /* Write index */
-    }
+	/* Sort vector elements by value, decreasing order */
+	for (i = 1; i < K; i++) {
+		value = a[i];
+		for (j = i - 1; (j >= 0) && (value > a[j]); j--) {
+			a[j + 1] = a[j];	/* Shift value */
+			index[j + 1] = index[j];	/* Shift index */
+		}
+		a[j + 1] = value;	/* Write value */
+		index[j + 1] = i;	/* Write index */
+	}
 
-    /* If less than L values are asked check the remaining values,      */
-    /* but only spend CPU to ensure that the K first values are correct */
-    for( i = K; i < L; i++ ) {
-        value = a[ i ];
-        if( value > a[ K - 1 ] ) {
-            for( j = K - 2; ( j >= 0 ) && ( value > a[ j ] ); j-- ) {
-                a[ j + 1 ]     = a[ j ];     /* Shift value */
-                index[ j + 1 ] = index[ j ]; /* Shift index */
-            }
-            a[ j + 1 ]     = value; /* Write value */
-            index[ j + 1 ] = i;     /* Write index */
-        }
-    }
+	/* If less than L values are asked check the remaining values,      */
+	/* but only spend CPU to ensure that the K first values are correct */
+	for (i = K; i < L; i++) {
+		value = a[i];
+		if (value > a[K - 1]) {
+			for (j = K - 2; (j >= 0) && (value > a[j]); j--) {
+				a[j + 1] = a[j];	/* Shift value */
+				index[j + 1] = index[j];	/* Shift index */
+			}
+			a[j + 1] = value;	/* Write value */
+			index[j + 1] = i;	/* Write index */
+		}
+	}
 }
 
-void SKP_Silk_insertion_sort_decreasing_int16(
-    int16_t           *a,             /* I/O: Unsorted / Sorted vector                */
-    int             *index,         /* O:   Index vector for the sorted elements    */
-    const int       L,              /* I:   Vector length                           */
-    const int       K               /* I:   Number of correctly sorted positions    */
-)
+void SKP_Silk_insertion_sort_decreasing_int16(int16_t * a,	/* I/O: Unsorted / Sorted vector                */
+					      int *index,	/* O:   Index vector for the sorted elements    */
+					      const int L,	/* I:   Vector length                           */
+					      const int K	/* I:   Number of correctly sorted positions    */
+    )
 {
-    int i, j;
-    int value;
+	int i, j;
+	int value;
 
-    /* Safety checks */
-    SKP_assert( K >  0 );
-    SKP_assert( L >  0 );
-    SKP_assert( L >= K );
+	/* Safety checks */
+	SKP_assert(K > 0);
+	SKP_assert(L > 0);
+	SKP_assert(L >= K);
 
-    /* Write start indices in index vector */
-    for( i = 0; i < K; i++ ) {
-        index[ i ] = i;
-    }
+	/* Write start indices in index vector */
+	for (i = 0; i < K; i++) {
+		index[i] = i;
+	}
 
-    /* Sort vector elements by value, decreasing order */
-    for( i = 1; i < K; i++ ) {
-        value = a[ i ];
-        for( j = i - 1; ( j >= 0 ) && ( value > a[ j ] ); j-- ) {    
-            a[ j + 1 ]     = a[ j ];     /* Shift value */
-            index[ j + 1 ] = index[ j ]; /* Shift index */
-        }
-        a[ j + 1 ]     = value; /* Write value */
-        index[ j + 1 ] = i;     /* Write index */
-    }
+	/* Sort vector elements by value, decreasing order */
+	for (i = 1; i < K; i++) {
+		value = a[i];
+		for (j = i - 1; (j >= 0) && (value > a[j]); j--) {
+			a[j + 1] = a[j];	/* Shift value */
+			index[j + 1] = index[j];	/* Shift index */
+		}
+		a[j + 1] = value;	/* Write value */
+		index[j + 1] = i;	/* Write index */
+	}
 
-    /* If less than L values are asked check the remaining values,        */
-    /* but only spend CPU to ensure that the K first values are correct */
-    for( i = K; i < L; i++ ) {
-        value = a[ i ];
-        if( value > a[ K - 1 ] ) {
-            for( j = K - 2; ( j >= 0 ) && ( value > a[ j ] ); j-- ) {    
-                a[ j + 1 ]     = a[ j ];     /* Shift value */
-                index[ j + 1 ] = index[ j ]; /* Shift index */
-            }
-            a[ j + 1 ]     = value; /* Write value */
-            index[ j + 1 ] = i;     /* Write index */
-        }
-    }
+	/* If less than L values are asked check the remaining values,        */
+	/* but only spend CPU to ensure that the K first values are correct */
+	for (i = K; i < L; i++) {
+		value = a[i];
+		if (value > a[K - 1]) {
+			for (j = K - 2; (j >= 0) && (value > a[j]); j--) {
+				a[j + 1] = a[j];	/* Shift value */
+				index[j + 1] = index[j];	/* Shift index */
+			}
+			a[j + 1] = value;	/* Write value */
+			index[j + 1] = i;	/* Write index */
+		}
+	}
 }
 
-void SKP_Silk_insertion_sort_increasing_all_values(
-    int             *a,             /* I/O: Unsorted / Sorted vector                */
-    const int       L               /* I:   Vector length                           */
-)
+void SKP_Silk_insertion_sort_increasing_all_values(int *a,	/* I/O: Unsorted / Sorted vector                */
+						   const int L	/* I:   Vector length                           */
+    )
 {
-    int    value;
-    int    i, j;
+	int value;
+	int i, j;
 
-    /* Safety checks */
-    SKP_assert( L >  0 );
+	/* Safety checks */
+	SKP_assert(L > 0);
 
-    /* Sort vector elements by value, increasing order */
-    for( i = 1; i < L; i++ ) {
-        value = a[ i ];
-        for( j = i - 1; ( j >= 0 ) && ( value < a[ j ] ); j-- ) {
-            a[ j + 1 ] = a[ j ]; /* Shift value */
-        }
-        a[ j + 1 ] = value; /* Write value */
-    }
+	/* Sort vector elements by value, increasing order */
+	for (i = 1; i < L; i++) {
+		value = a[i];
+		for (j = i - 1; (j >= 0) && (value < a[j]); j--) {
+			a[j + 1] = a[j];	/* Shift value */
+		}
+		a[j + 1] = value;	/* Write value */
+	}
 }
-

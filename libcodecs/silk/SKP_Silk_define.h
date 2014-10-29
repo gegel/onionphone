@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -32,16 +34,13 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_typedef.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
-
 
 #define MAX_FRAMES_PER_PACKET                   5
 #define BIT_STREAM_V3                           3
 #define BIT_STREAM_V4                           4
-#define USE_BIT_STREAM_V                        BIT_STREAM_V3 // Should be moved to a API call
-
+#define USE_BIT_STREAM_V                        BIT_STREAM_V3	// Should be moved to a API call
 
 /* MAX DELTA LAG used for multiframe packets */
 #define MAX_DELTA_LAG                           10
@@ -63,12 +62,12 @@ extern "C"
 
 /* Integration/hysteresis threshold for lowering internal sample frequency */
 /* 30000000 -> 6 sec if bitrate is 5000 bps below limit; 3 sec if bitrate is 10000 bps below limit */
-#define ACCUM_BITS_DIFF_THRESHOLD               30000000 
+#define ACCUM_BITS_DIFF_THRESHOLD               30000000
 #define TARGET_RATE_TAB_SZ                      8
 
 /* DTX settings                                 */
-#define NO_SPEECH_FRAMES_BEFORE_DTX             5       /* eq 100 ms */
-#define MAX_CONSECUTIVE_DTX                     20      /* eq 400 ms */
+#define NO_SPEECH_FRAMES_BEFORE_DTX             5	/* eq 100 ms */
+#define MAX_CONSECUTIVE_DTX                     20	/* eq 400 ms */
 
 #define USE_LBRR                                1
 
@@ -79,42 +78,42 @@ extern "C"
 #define MAX_LBRR_DELAY                          2
 #define LBRR_IDX_MASK                           1
 
-#define INBAND_FEC_MIN_RATE_BPS                 18000  /* Dont use inband FEC below this total target rate  */
-#define LBRR_LOSS_THRES                         2   /* Start adding LBRR at this loss rate (needs tuning)   */
+#define INBAND_FEC_MIN_RATE_BPS                 18000	/* Dont use inband FEC below this total target rate  */
+#define LBRR_LOSS_THRES                         2	/* Start adding LBRR at this loss rate (needs tuning)   */
 
 /* LBRR usage defines */
-#define SKP_SILK_NO_LBRR                        0   /* No LBRR information for this packet                  */
-#define SKP_SILK_ADD_LBRR_TO_PLUS1              1   /* Add LBRR for this packet to packet n + 1             */
-#define SKP_SILK_ADD_LBRR_TO_PLUS2              2   /* Add LBRR for this packet to packet n + 2             */
+#define SKP_SILK_NO_LBRR                        0	/* No LBRR information for this packet                  */
+#define SKP_SILK_ADD_LBRR_TO_PLUS1              1	/* Add LBRR for this packet to packet n + 1             */
+#define SKP_SILK_ADD_LBRR_TO_PLUS2              2	/* Add LBRR for this packet to packet n + 2             */
 
 /* Frame termination indicator defines */
-#define SKP_SILK_LAST_FRAME                     0   /* Last frames in packet                                */
-#define SKP_SILK_MORE_FRAMES                    1   /* More frames to follow this one                       */
-#define SKP_SILK_LBRR_VER1                      2   /* LBRR information from packet n - 1                   */
-#define SKP_SILK_LBRR_VER2                      3   /* LBRR information from packet n - 2                   */
-#define SKP_SILK_EXT_LAYER                      4   /* Extension layers added                               */
+#define SKP_SILK_LAST_FRAME                     0	/* Last frames in packet                                */
+#define SKP_SILK_MORE_FRAMES                    1	/* More frames to follow this one                       */
+#define SKP_SILK_LBRR_VER1                      2	/* LBRR information from packet n - 1                   */
+#define SKP_SILK_LBRR_VER2                      3	/* LBRR information from packet n - 2                   */
+#define SKP_SILK_EXT_LAYER                      4	/* Extension layers added                               */
 
 /* Number of Second order Sections for SWB detection HP filter */
 #define NB_SOS                                  3
-#define HP_8_KHZ_THRES                          10          /* average energy per sample, above 8 kHz       */
-#define CONCEC_SWB_SMPLS_THRES                  480 * 15    /* 300 ms                                       */
-#define WB_DETECT_ACTIVE_SPEECH_MS_THRES        15000       /* ms of active speech needed for WB detection  */
+#define HP_8_KHZ_THRES                          10	/* average energy per sample, above 8 kHz       */
+#define CONCEC_SWB_SMPLS_THRES                  480 * 15	/* 300 ms                                       */
+#define WB_DETECT_ACTIVE_SPEECH_MS_THRES        15000	/* ms of active speech needed for WB detection  */
 
 /* Low complexity setting */
 #ifdef EMBEDDED_OPT
-#   define LOW_COMPLEXITY_ONLY                  1
+#define LOW_COMPLEXITY_ONLY                  1
 #else
-#   define LOW_COMPLEXITY_ONLY                  0
+#define LOW_COMPLEXITY_ONLY                  0
 #endif
 
 /* Activate bandwidth transition filtering for mode switching */
 #ifdef EMBEDDED_OPT
-#   define SWITCH_TRANSITION_FILTERING          0
+#define SWITCH_TRANSITION_FILTERING          0
 #else
-#ifndef FORCE_FS_KHZ 
-#   define SWITCH_TRANSITION_FILTERING          1
+#ifndef FORCE_FS_KHZ
+#define SWITCH_TRANSITION_FILTERING          1
 #else
-#   define SWITCH_TRANSITION_FILTERING          0
+#define SWITCH_TRANSITION_FILTERING          0
 #endif
 #endif
 
@@ -122,7 +121,7 @@ extern "C"
 #define DEC_HP_ORDER                            2
 
 /* Maximum sampling frequency, should be 16 for embedded */
-#define MAX_FS_KHZ                              24 
+#define MAX_FS_KHZ                              24
 
 /* Signal Types used by silk */
 #define SIG_TYPE_VOICED                         0
@@ -132,8 +131,8 @@ extern "C"
 #define NO_VOICE_ACTIVITY                       0
 #define VOICE_ACTIVITY                          1
 
-/* number of samples per frame */ 
-#define FRAME_LENGTH_MS                         20 /* 20 ms */
+/* number of samples per frame */
+#define FRAME_LENGTH_MS                         20	/* 20 ms */
 #define MAX_FRAME_LENGTH                        (FRAME_LENGTH_MS * MAX_FS_KHZ)
 
 /* number of lookahead samples for pitch analysis */
@@ -154,7 +153,6 @@ extern "C"
 #define PITCH_EST_COMPLEXITY_HC_MODE            SigProc_PITCH_EST_MAX_COMPLEX
 #define PITCH_EST_COMPLEXITY_MC_MODE            SigProc_PITCH_EST_MID_COMPLEX
 #define PITCH_EST_COMPLEXITY_LC_MODE            SigProc_PITCH_EST_MIN_COMPLEX
-
 
 /* Max number of bytes in payload output buffer (may contain multiple frames) */
 #define MAX_ARITHM_BYTES                        1024
@@ -233,12 +231,12 @@ extern "C"
 /* maximum sum of pulses per shell coding frame */
 #define MAX_PULSES                              18
 
-#define MAX_MATRIX_SIZE                         MAX_LPC_ORDER /* Max of LPC Order and LTP order */
+#define MAX_MATRIX_SIZE                         MAX_LPC_ORDER	/* Max of LPC Order and LTP order */
 
 #if( MAX_LPC_ORDER > DECISION_DELAY )
-# define NSQ_LPC_BUF_LENGTH                     MAX_LPC_ORDER
+#define NSQ_LPC_BUF_LENGTH                     MAX_LPC_ORDER
 #else
-# define NSQ_LPC_BUF_LENGTH                     DECISION_DELAY
+#define NSQ_LPC_BUF_LENGTH                     DECISION_DELAY
 #endif
 
 /***********************/
@@ -249,17 +247,17 @@ extern "C"
 /***************************/
 /* Voice activity detector */
 /***************************/
-#define VAD_N_BANDS                             4       /* 0-1, 1-2, 2-4, and 4-8 kHz                       */
+#define VAD_N_BANDS                             4	/* 0-1, 1-2, 2-4, and 4-8 kHz                       */
 
 #define VAD_INTERNAL_SUBFRAMES_LOG2             2
 #define VAD_INTERNAL_SUBFRAMES                  (1 << VAD_INTERNAL_SUBFRAMES_LOG2)
-    
-#define VAD_NOISE_LEVEL_SMOOTH_COEF_Q16         1024    /* Must be <  4096                                  */
-#define VAD_NOISE_LEVELS_BIAS                   50 
+
+#define VAD_NOISE_LEVEL_SMOOTH_COEF_Q16         1024	/* Must be <  4096                                  */
+#define VAD_NOISE_LEVELS_BIAS                   50
 
 /* Sigmoid settings */
-#define VAD_NEGATIVE_OFFSET_Q5                  128     /* sigmoid is 0 at -128                             */
-#define VAD_SNR_FACTOR_Q16                      45000 
+#define VAD_NEGATIVE_OFFSET_Q5                  128	/* sigmoid is 0 at -128                             */
+#define VAD_SNR_FACTOR_Q16                      45000
 
 /* smoothing for SNR measurement */
 #define VAD_SNR_SMOOTH_COEF_Q18                 4096
@@ -268,13 +266,13 @@ extern "C"
 /* NLSF quantizer */
 /******************/
 #ifdef NLSF_TRAINING
-#   define NLSF_MSVQ_MAX_CB_STAGES                      30 
-#   define NLSF_MSVQ_MAX_VECTORS_IN_STAGE               256
-#   define NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END    128
+#define NLSF_MSVQ_MAX_CB_STAGES                      30
+#define NLSF_MSVQ_MAX_VECTORS_IN_STAGE               256
+#define NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END    128
 #else
-#   define NLSF_MSVQ_MAX_CB_STAGES                      10  /* Update manually when changing codebooks      */
-#   define NLSF_MSVQ_MAX_VECTORS_IN_STAGE               128 /* Update manually when changing codebooks      */
-#   define NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END    16  /* Update manually when changing codebooks      */
+#define NLSF_MSVQ_MAX_CB_STAGES                      10	/* Update manually when changing codebooks      */
+#define NLSF_MSVQ_MAX_VECTORS_IN_STAGE               128	/* Update manually when changing codebooks      */
+#define NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END    16	/* Update manually when changing codebooks      */
 #endif
 
 #define NLSF_MSVQ_FLUCTUATION_REDUCTION         1
@@ -284,30 +282,30 @@ extern "C"
 
 /* Based on above defines, calculate how much memory is necessary to allocate */
 #if( NLSF_MSVQ_MAX_VECTORS_IN_STAGE > ( MAX_NLSF_MSVQ_SURVIVORS_LC_MODE * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END ) )
-#   define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED_LC_MODE  NLSF_MSVQ_MAX_VECTORS_IN_STAGE
+#define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED_LC_MODE  NLSF_MSVQ_MAX_VECTORS_IN_STAGE
 #else
-#   define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED_LC_MODE  MAX_NLSF_MSVQ_SURVIVORS_LC_MODE * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END
+#define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED_LC_MODE  MAX_NLSF_MSVQ_SURVIVORS_LC_MODE * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END
 #endif
 
 #if( NLSF_MSVQ_MAX_VECTORS_IN_STAGE > ( MAX_NLSF_MSVQ_SURVIVORS * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END ) )
-#   define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED  NLSF_MSVQ_MAX_VECTORS_IN_STAGE
+#define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED  NLSF_MSVQ_MAX_VECTORS_IN_STAGE
 #else
-#   define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED  MAX_NLSF_MSVQ_SURVIVORS * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END
+#define NLSF_MSVQ_TREE_SEARCH_MAX_VECTORS_EVALUATED  MAX_NLSF_MSVQ_SURVIVORS * NLSF_MSVQ_MAX_VECTORS_IN_STAGE_TWO_TO_END
 #endif
 
 #define NLSF_MSVQ_SURV_MAX_REL_RD               4
 
 /* Transition filtering for mode switching */
 #if SWITCH_TRANSITION_FILTERING
-#  define TRANSITION_TIME_UP_MS             5120 // 5120 = 64 * FRAME_LENGTH_MS * ( TRANSITION_INT_NUM - 1 ) = 64*(20*4)
-#  define TRANSITION_TIME_DOWN_MS           2560 // 2560 = 32 * FRAME_LENGTH_MS * ( TRANSITION_INT_NUM - 1 ) = 32*(20*4)
-#  define TRANSITION_NB                     3 /* Hardcoded in tables */
-#  define TRANSITION_NA                     2 /* Hardcoded in tables */
-#  define TRANSITION_INT_NUM                5 /* Hardcoded in tables */
-#  define TRANSITION_FRAMES_UP          ( TRANSITION_TIME_UP_MS   / FRAME_LENGTH_MS )
-#  define TRANSITION_FRAMES_DOWN        ( TRANSITION_TIME_DOWN_MS / FRAME_LENGTH_MS )
-#  define TRANSITION_INT_STEPS_UP       ( TRANSITION_FRAMES_UP    / ( TRANSITION_INT_NUM - 1 )  )
-#  define TRANSITION_INT_STEPS_DOWN     ( TRANSITION_FRAMES_DOWN  / ( TRANSITION_INT_NUM - 1 )  )
+#define TRANSITION_TIME_UP_MS             5120	// 5120 = 64 * FRAME_LENGTH_MS * ( TRANSITION_INT_NUM - 1 ) = 64*(20*4)
+#define TRANSITION_TIME_DOWN_MS           2560	// 2560 = 32 * FRAME_LENGTH_MS * ( TRANSITION_INT_NUM - 1 ) = 32*(20*4)
+#define TRANSITION_NB                     3	/* Hardcoded in tables */
+#define TRANSITION_NA                     2	/* Hardcoded in tables */
+#define TRANSITION_INT_NUM                5	/* Hardcoded in tables */
+#define TRANSITION_FRAMES_UP          ( TRANSITION_TIME_UP_MS   / FRAME_LENGTH_MS )
+#define TRANSITION_FRAMES_DOWN        ( TRANSITION_TIME_DOWN_MS / FRAME_LENGTH_MS )
+#define TRANSITION_INT_STEPS_UP       ( TRANSITION_FRAMES_UP    / ( TRANSITION_INT_NUM - 1 )  )
+#define TRANSITION_INT_STEPS_DOWN     ( TRANSITION_FRAMES_DOWN  / ( TRANSITION_INT_NUM - 1 )  )
 #endif
 
 /* Row based */
@@ -316,7 +314,7 @@ extern "C"
 
 /* Column based */
 #ifndef matrix_c_ptr
-#   define matrix_c_ptr(Matrix_base_adr, row, column, M)    *(Matrix_base_adr + ((row)+(M)*(column)))
+#define matrix_c_ptr(Matrix_base_adr, row, column, M)    *(Matrix_base_adr + ((row)+(M)*(column)))
 #endif
 #define matrix_c_adr(Matrix_base_adr, row, column, M)        (Matrix_base_adr + ((row)+(M)*(column)))
 
@@ -326,5 +324,4 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
 #endif

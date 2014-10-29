@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -30,138 +32,151 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*******************************************/
 /* Encode parameters to create the payload */
 /*******************************************/
-void SKP_Silk_encode_parameters(
-    SKP_Silk_encoder_state          *psEncC,        /* I/O  Encoder state                   */
-    SKP_Silk_encoder_control        *psEncCtrlC,    /* I/O  Encoder control                 */
-    SKP_Silk_range_coder_state      *psRC,          /* I/O  Range encoder state             */
-    const int                   *q              /* I    Quantization indices            */
-)
+void SKP_Silk_encode_parameters(SKP_Silk_encoder_state * psEncC,	/* I/O  Encoder state                   */
+				SKP_Silk_encoder_control * psEncCtrlC,	/* I/O  Encoder control                 */
+				SKP_Silk_range_coder_state * psRC,	/* I/O  Range encoder state             */
+				const int *q	/* I    Quantization indices            */
+    )
 {
-    int   i, k, typeOffset;
-    const SKP_Silk_NLSF_CB_struct *psNLSF_CB;
-
+	int i, k, typeOffset;
+	const SKP_Silk_NLSF_CB_struct *psNLSF_CB;
 
     /************************/
-    /* Encode sampling rate */
+	/* Encode sampling rate */
     /************************/
-    /* only done for first frame in packet */
-    if( psEncC->nFramesInPayloadBuf == 0 ) {
-        
-        /* Initialize arithmetic coder */
-        SKP_Silk_range_enc_init( &psEncC->sRC );
-        psEncC->nBytesInPayloadBuf = 0;
+	/* only done for first frame in packet */
+	if (psEncC->nFramesInPayloadBuf == 0) {
 
-        /* get sampling rate index */
-        for( i = 0; i < 3; i++ ) {
-            if( SKP_Silk_SamplingRates_table[ i ] == psEncC->fs_kHz ) {
-                break;
-            }
-        }
-        SKP_Silk_range_encoder( psRC, i, SKP_Silk_SamplingRates_CDF );
-    }
+		/* Initialize arithmetic coder */
+		SKP_Silk_range_enc_init(&psEncC->sRC);
+		psEncC->nBytesInPayloadBuf = 0;
+
+		/* get sampling rate index */
+		for (i = 0; i < 3; i++) {
+			if (SKP_Silk_SamplingRates_table[i] == psEncC->fs_kHz) {
+				break;
+			}
+		}
+		SKP_Silk_range_encoder(psRC, i, SKP_Silk_SamplingRates_CDF);
+	}
 
     /*******************************************/
-    /* Encode signal type and quantizer offset */
+	/* Encode signal type and quantizer offset */
     /*******************************************/
-    typeOffset = 2 * psEncCtrlC->sigtype + psEncCtrlC->QuantOffsetType;
-    if( psEncC->nFramesInPayloadBuf == 0 ) {
-        /* first frame in packet: independent coding */
-        SKP_Silk_range_encoder( psRC, typeOffset, SKP_Silk_type_offset_CDF );
-    } else {
-        /* condidtional coding */
-        SKP_Silk_range_encoder( psRC, typeOffset, SKP_Silk_type_offset_joint_CDF[ psEncC->typeOffsetPrev ] );
-    }
-    psEncC->typeOffsetPrev = typeOffset;
+	typeOffset = 2 * psEncCtrlC->sigtype + psEncCtrlC->QuantOffsetType;
+	if (psEncC->nFramesInPayloadBuf == 0) {
+		/* first frame in packet: independent coding */
+		SKP_Silk_range_encoder(psRC, typeOffset,
+				       SKP_Silk_type_offset_CDF);
+	} else {
+		/* condidtional coding */
+		SKP_Silk_range_encoder(psRC, typeOffset,
+				       SKP_Silk_type_offset_joint_CDF[psEncC->
+								      typeOffsetPrev]);
+	}
+	psEncC->typeOffsetPrev = typeOffset;
 
     /****************/
-    /* Encode gains */
+	/* Encode gains */
     /****************/
-    /* first subframe */
-    if( psEncC->nFramesInPayloadBuf == 0 ) {
-        /* first frame in packet: independent coding */
-        SKP_Silk_range_encoder( psRC, psEncCtrlC->GainsIndices[ 0 ], SKP_Silk_gain_CDF[ psEncCtrlC->sigtype ] );
-    } else {
-        /* condidtional coding */
-        SKP_Silk_range_encoder( psRC, psEncCtrlC->GainsIndices[ 0 ], SKP_Silk_delta_gain_CDF );
-    }
+	/* first subframe */
+	if (psEncC->nFramesInPayloadBuf == 0) {
+		/* first frame in packet: independent coding */
+		SKP_Silk_range_encoder(psRC, psEncCtrlC->GainsIndices[0],
+				       SKP_Silk_gain_CDF[psEncCtrlC->sigtype]);
+	} else {
+		/* condidtional coding */
+		SKP_Silk_range_encoder(psRC, psEncCtrlC->GainsIndices[0],
+				       SKP_Silk_delta_gain_CDF);
+	}
 
-    /* remaining subframes */
-    for( i = 1; i < NB_SUBFR; i++ ) {
-        SKP_Silk_range_encoder( psRC, psEncCtrlC->GainsIndices[ i ], SKP_Silk_delta_gain_CDF );
-    }
-
+	/* remaining subframes */
+	for (i = 1; i < NB_SUBFR; i++) {
+		SKP_Silk_range_encoder(psRC, psEncCtrlC->GainsIndices[i],
+				       SKP_Silk_delta_gain_CDF);
+	}
 
     /****************/
-    /* Encode NLSFs */
+	/* Encode NLSFs */
     /****************/
-    /* Range encoding of the NLSF path */
-    psNLSF_CB = psEncC->psNLSF_CB[ psEncCtrlC->sigtype ];
-    SKP_Silk_range_encoder_multi( psRC, psEncCtrlC->NLSFIndices, psNLSF_CB->StartPtr, psNLSF_CB->nStages );
+	/* Range encoding of the NLSF path */
+	psNLSF_CB = psEncC->psNLSF_CB[psEncCtrlC->sigtype];
+	SKP_Silk_range_encoder_multi(psRC, psEncCtrlC->NLSFIndices,
+				     psNLSF_CB->StartPtr, psNLSF_CB->nStages);
 
-    /* Encode NLSF interpolation factor */
-    SKP_assert( psEncC->useInterpolatedNLSFs == 1 || psEncCtrlC->NLSFInterpCoef_Q2 == ( 1 << 2 ) );
-    SKP_Silk_range_encoder( psRC, psEncCtrlC->NLSFInterpCoef_Q2, SKP_Silk_NLSF_interpolation_factor_CDF );
+	/* Encode NLSF interpolation factor */
+	SKP_assert(psEncC->useInterpolatedNLSFs == 1
+		   || psEncCtrlC->NLSFInterpCoef_Q2 == (1 << 2));
+	SKP_Silk_range_encoder(psRC, psEncCtrlC->NLSFInterpCoef_Q2,
+			       SKP_Silk_NLSF_interpolation_factor_CDF);
 
+	if (psEncCtrlC->sigtype == SIG_TYPE_VOICED) {
+	/*********************/
+		/* Encode pitch lags */
+	/*********************/
 
-    if( psEncCtrlC->sigtype == SIG_TYPE_VOICED ) {
-        /*********************/
-        /* Encode pitch lags */
-        /*********************/
+		/* lag index */
+		if (psEncC->fs_kHz == 8) {
+			SKP_Silk_range_encoder(psRC, psEncCtrlC->lagIndex,
+					       SKP_Silk_pitch_lag_NB_CDF);
+		} else if (psEncC->fs_kHz == 12) {
+			SKP_Silk_range_encoder(psRC, psEncCtrlC->lagIndex,
+					       SKP_Silk_pitch_lag_MB_CDF);
+		} else if (psEncC->fs_kHz == 16) {
+			SKP_Silk_range_encoder(psRC, psEncCtrlC->lagIndex,
+					       SKP_Silk_pitch_lag_WB_CDF);
+		} else {
+			SKP_Silk_range_encoder(psRC, psEncCtrlC->lagIndex,
+					       SKP_Silk_pitch_lag_SWB_CDF);
+		}
 
+		/* countour index */
+		if (psEncC->fs_kHz == 8) {
+			/* Less codevectors used in 8 khz mode */
+			SKP_Silk_range_encoder(psRC, psEncCtrlC->contourIndex,
+					       SKP_Silk_pitch_contour_NB_CDF);
+		} else {
+			/* Joint for 12, 16, 24 khz */
+			SKP_Silk_range_encoder(psRC, psEncCtrlC->contourIndex,
+					       SKP_Silk_pitch_contour_CDF);
+		}
 
-        /* lag index */
-        if( psEncC->fs_kHz == 8 ) {
-            SKP_Silk_range_encoder( psRC, psEncCtrlC->lagIndex, SKP_Silk_pitch_lag_NB_CDF );
-        } else if( psEncC->fs_kHz == 12 ) {
-            SKP_Silk_range_encoder( psRC, psEncCtrlC->lagIndex, SKP_Silk_pitch_lag_MB_CDF );
-        } else if( psEncC->fs_kHz == 16 ) {
-            SKP_Silk_range_encoder( psRC, psEncCtrlC->lagIndex, SKP_Silk_pitch_lag_WB_CDF );
-        } else {
-            SKP_Silk_range_encoder( psRC, psEncCtrlC->lagIndex, SKP_Silk_pitch_lag_SWB_CDF );
-        }
+	/********************/
+		/* Encode LTP gains */
+	/********************/
 
+		/* PERIndex value */
+		SKP_Silk_range_encoder(psRC, psEncCtrlC->PERIndex,
+				       SKP_Silk_LTP_per_index_CDF);
 
-        /* countour index */
-        if( psEncC->fs_kHz == 8 ) {
-            /* Less codevectors used in 8 khz mode */
-            SKP_Silk_range_encoder( psRC, psEncCtrlC->contourIndex, SKP_Silk_pitch_contour_NB_CDF );
-        } else {
-            /* Joint for 12, 16, 24 khz */
-            SKP_Silk_range_encoder( psRC, psEncCtrlC->contourIndex, SKP_Silk_pitch_contour_CDF );
-        }
+		/* Codebook Indices */
+		for (k = 0; k < NB_SUBFR; k++) {
+			SKP_Silk_range_encoder(psRC, psEncCtrlC->LTPIndex[k],
+					       SKP_Silk_LTP_gain_CDF_ptrs
+					       [psEncCtrlC->PERIndex]);
+		}
 
-        /********************/
-        /* Encode LTP gains */
-        /********************/
-
-        /* PERIndex value */
-        SKP_Silk_range_encoder( psRC, psEncCtrlC->PERIndex, SKP_Silk_LTP_per_index_CDF );
-
-        /* Codebook Indices */
-        for( k = 0; k < NB_SUBFR; k++ ) {
-            SKP_Silk_range_encoder( psRC, psEncCtrlC->LTPIndex[ k ], SKP_Silk_LTP_gain_CDF_ptrs[ psEncCtrlC->PERIndex ] );
-        }
-
-        /**********************/
-        /* Encode LTP scaling */
-        /**********************/
-        SKP_Silk_range_encoder( psRC, psEncCtrlC->LTP_scaleIndex, SKP_Silk_LTPscale_CDF );
-    }
-
+	/**********************/
+		/* Encode LTP scaling */
+	/**********************/
+		SKP_Silk_range_encoder(psRC, psEncCtrlC->LTP_scaleIndex,
+				       SKP_Silk_LTPscale_CDF);
+	}
 
     /***************/
-    /* Encode seed */
+	/* Encode seed */
     /***************/
-    SKP_Silk_range_encoder( psRC, psEncCtrlC->Seed, SKP_Silk_Seed_CDF );
+	SKP_Silk_range_encoder(psRC, psEncCtrlC->Seed, SKP_Silk_Seed_CDF);
 
     /*********************************************/
-    /* Encode quantization indices of excitation */
+	/* Encode quantization indices of excitation */
     /*********************************************/
-    SKP_Silk_encode_pulses( psRC, psEncCtrlC->sigtype, psEncCtrlC->QuantOffsetType, q, psEncC->frame_length );
+	SKP_Silk_encode_pulses(psRC, psEncCtrlC->sigtype,
+			       psEncCtrlC->QuantOffsetType, q,
+			       psEncC->frame_length);
 
-
     /*********************************************/
-    /* Encode VAD flag                           */
+	/* Encode VAD flag                           */
     /*********************************************/
-    SKP_Silk_range_encoder( psRC, psEncC->vadFlag, SKP_Silk_vadflag_CDF );
+	SKP_Silk_range_encoder(psRC, psEncC->vadFlag, SKP_Silk_vadflag_CDF);
 }

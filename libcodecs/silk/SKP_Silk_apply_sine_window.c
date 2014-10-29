@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -33,60 +35,67 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*    1 -> sine window from 0 to pi/2                                       */
 /*    2 -> sine window from pi/2 to pi                                      */
 /* every other sample of window is linearly interpolated, for speed         */
-void SKP_Silk_apply_sine_window(
-    int16_t                        px_win[],            /* O    Pointer to windowed signal                  */
-    const int16_t                  px[],                /* I    Pointer to input signal                     */
-    const int                    win_type,            /* I    Selects a window type                       */
-    const int                    length               /* I    Window length, multiple of 4                */
-)
+void SKP_Silk_apply_sine_window(int16_t px_win[],	/* O    Pointer to windowed signal                  */
+				const int16_t px[],	/* I    Pointer to input signal                     */
+				const int win_type,	/* I    Selects a window type                       */
+				const int length	/* I    Window length, multiple of 4                */
+    )
 {
-    int   k;
-    int32_t px32, f_Q16, c_Q20, S0_Q16, S1_Q16;
+	int k;
+	int32_t px32, f_Q16, c_Q20, S0_Q16, S1_Q16;
 
-    /* Length must be multiple of 4 */
-    SKP_assert( ( length & 3 ) == 0 );
+	/* Length must be multiple of 4 */
+	SKP_assert((length & 3) == 0);
 
-    /* Input pointer must be 4-byte aligned */
-    SKP_assert( ( (int64_t)px & 3 ) == 0 );
+	/* Input pointer must be 4-byte aligned */
+	SKP_assert(((int64_t) px & 3) == 0);
 
-    if( win_type == 0 ) {
-        f_Q16 = SKP_DIV32_16( 411775, length + 1 );        // 411775 = 2 * 65536 * pi
-    } else {
-        f_Q16 = SKP_DIV32_16( 205887, length + 1 );        // 205887 = 65536 * pi
-    }
+	if (win_type == 0) {
+		f_Q16 = SKP_DIV32_16(411775, length + 1);	// 411775 = 2 * 65536 * pi
+	} else {
+		f_Q16 = SKP_DIV32_16(205887, length + 1);	// 205887 = 65536 * pi
+	}
 
-    /* factor used for cosine approximation */
-    c_Q20 = -SKP_RSHIFT( SKP_MUL( f_Q16, f_Q16 ), 12 );
+	/* factor used for cosine approximation */
+	c_Q20 = -SKP_RSHIFT(SKP_MUL(f_Q16, f_Q16), 12);
 
-    /* c_Q20 becomes too large if length is too small */
-    SKP_assert( c_Q20 >= -32768 );
+	/* c_Q20 becomes too large if length is too small */
+	SKP_assert(c_Q20 >= -32768);
 
-    /* initialize state */
-    if( win_type < 2 ) {
-        /* start from 0 */
-        S0_Q16 = 0;
-        /* approximation of sin(f) */
-        S1_Q16 = f_Q16;
-    } else {
-        /* start from 1 */
-        S0_Q16 = ( 1 << 16 );
-        /* approximation of cos(f) */
-        S1_Q16 = ( 1 << 16 ) + SKP_RSHIFT( c_Q20, 5 );
-    }
+	/* initialize state */
+	if (win_type < 2) {
+		/* start from 0 */
+		S0_Q16 = 0;
+		/* approximation of sin(f) */
+		S1_Q16 = f_Q16;
+	} else {
+		/* start from 1 */
+		S0_Q16 = (1 << 16);
+		/* approximation of cos(f) */
+		S1_Q16 = (1 << 16) + SKP_RSHIFT(c_Q20, 5);
+	}
 
-    /* Uses the recursive equation:   sin(n*f) = 2 * cos(f) * sin((n-1)*f) - sin((n-2)*f)    */
-    /* 4 samples at a time */
-    for( k = 0; k < length; k += 4 ) {
-        px32 = *( (int32_t *)&px[ k ] );                        /* load two values at once */
-        px_win[ k ]     = (int16_t)SKP_SMULWB( SKP_RSHIFT( S0_Q16 + S1_Q16, 1 ), px32 );
-        px_win[ k + 1 ] = (int16_t)SKP_SMULWT( S1_Q16, px32 );
-        S0_Q16 = SKP_RSHIFT( SKP_MUL( c_Q20, S1_Q16 ), 20 ) + SKP_LSHIFT( S1_Q16, 1 ) - S0_Q16 + 1;
-        S0_Q16 = SKP_min( S0_Q16, ( 1 << 16 ) );
+	/* Uses the recursive equation:   sin(n*f) = 2 * cos(f) * sin((n-1)*f) - sin((n-2)*f)    */
+	/* 4 samples at a time */
+	for (k = 0; k < length; k += 4) {
+		px32 = *((int32_t *) & px[k]);	/* load two values at once */
+		px_win[k] =
+		    (int16_t) SKP_SMULWB(SKP_RSHIFT(S0_Q16 + S1_Q16, 1), px32);
+		px_win[k + 1] = (int16_t) SKP_SMULWT(S1_Q16, px32);
+		S0_Q16 =
+		    SKP_RSHIFT(SKP_MUL(c_Q20, S1_Q16), 20) + SKP_LSHIFT(S1_Q16,
+									1) -
+		    S0_Q16 + 1;
+		S0_Q16 = SKP_min(S0_Q16, (1 << 16));
 
-        px32 = *( (int32_t *)&px[k + 2] );                    /* load two values at once */
-        px_win[ k + 2 ] = (int16_t)SKP_SMULWB( SKP_RSHIFT( S0_Q16 + S1_Q16, 1 ), px32 );
-        px_win[ k + 3 ] = (int16_t)SKP_SMULWT( S0_Q16, px32 );
-        S1_Q16 = SKP_RSHIFT( SKP_MUL( c_Q20, S0_Q16 ), 20 ) + SKP_LSHIFT( S0_Q16, 1 ) - S1_Q16;
-        S1_Q16 = SKP_min( S1_Q16, ( 1 << 16 ) );
-    }
+		px32 = *((int32_t *) & px[k + 2]);	/* load two values at once */
+		px_win[k + 2] =
+		    (int16_t) SKP_SMULWB(SKP_RSHIFT(S0_Q16 + S1_Q16, 1), px32);
+		px_win[k + 3] = (int16_t) SKP_SMULWT(S0_Q16, px32);
+		S1_Q16 =
+		    SKP_RSHIFT(SKP_MUL(c_Q20, S0_Q16), 20) + SKP_LSHIFT(S0_Q16,
+									1) -
+		    S1_Q16;
+		S1_Q16 = SKP_min(S1_Q16, (1 << 16));
+	}
 }

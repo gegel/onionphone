@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -28,95 +30,90 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Multiply a vector by a constant */
-void SKP_Silk_scale_vector16_Q14( 
-    int16_t           *data1, 
-    int             gain_Q14,       /* Gain in Q14 */ 
-    int             dataSize
-)
+void SKP_Silk_scale_vector16_Q14(int16_t * data1, int gain_Q14,	/* Gain in Q14 */
+				 int dataSize)
 {
-    int   i;
-    int32_t data32, gain_Q16;
+	int i;
+	int32_t data32, gain_Q16;
 
-    SKP_assert( gain_Q14 <   32768 );
-    SKP_assert( gain_Q14 >= -32768 );
+	SKP_assert(gain_Q14 < 32768);
+	SKP_assert(gain_Q14 >= -32768);
 
-    gain_Q16 = SKP_LSHIFT( gain_Q14, 2 );
+	gain_Q16 = SKP_LSHIFT(gain_Q14, 2);
 
-    if( (int32_t)( (int_ptr_size)data1 & 3 ) != 0 ) {
-        /* Input is not 4-byte aligned */
-        data1[ 0 ] = SKP_SMULWB( gain_Q16, data1[ 0 ] );
-        i = 1;
-    } else {
-        i = 0;
-    }
-    dataSize--;
-    for( ; i < dataSize; i += 2 ) {
-        data32 = *( (int32_t *)&data1[ i ] );                     /* load two values at once */
-        data1[ i     ] = SKP_SMULWB( gain_Q16, data32 );
-        data1[ i + 1 ] = SKP_SMULWT( gain_Q16, data32 );
-    }
-    if( i == dataSize ) {
-        /* One sample left to process */
-        data1[ i ] = SKP_SMULWB( gain_Q16, data1[ i ] );
-    }
+	if ((int32_t) ((int_ptr_size) data1 & 3) != 0) {
+		/* Input is not 4-byte aligned */
+		data1[0] = SKP_SMULWB(gain_Q16, data1[0]);
+		i = 1;
+	} else {
+		i = 0;
+	}
+	dataSize--;
+	for (; i < dataSize; i += 2) {
+		data32 = *((int32_t *) & data1[i]);	/* load two values at once */
+		data1[i] = SKP_SMULWB(gain_Q16, data32);
+		data1[i + 1] = SKP_SMULWT(gain_Q16, data32);
+	}
+	if (i == dataSize) {
+		/* One sample left to process */
+		data1[i] = SKP_SMULWB(gain_Q16, data1[i]);
+	}
 }
 
 /* Multiply a vector by a constant */
-void SKP_Silk_scale_vector32_Q26_lshift_18( 
-    int32_t           *data1,                     /* (I/O): Q0/Q18        */
-    int32_t           gain_Q26,                   /* (I):   Q26           */
-    int             dataSize                    /* (I):   length        */
-)
+void SKP_Silk_scale_vector32_Q26_lshift_18(int32_t * data1,	/* (I/O): Q0/Q18        */
+					   int32_t gain_Q26,	/* (I):   Q26           */
+					   int dataSize	/* (I):   length        */
+    )
 {
-    int  i;
+	int i;
 
-    for( i = 0; i < dataSize; i++ ) {
-        data1[ i ] = (int32_t)SKP_CHECK_FIT32( SKP_RSHIFT64( SKP_SMULL( data1[ i ], gain_Q26 ), 8 ) );// OUTPUT: Q18
-    }
+	for (i = 0; i < dataSize; i++) {
+		data1[i] = (int32_t) SKP_CHECK_FIT32(SKP_RSHIFT64(SKP_SMULL(data1[i], gain_Q26), 8));	// OUTPUT: Q18
+	}
 }
 
 /* Multiply a vector by a constant */
-void SKP_Silk_scale_vector32_16_Q14( 
-    int32_t           *data1,                     /* (I/O): Q0/Q0         */
-    int             gain_Q14,                   /* (I):   Q14           */
-    int             dataSize                    /* (I):   length        */
-)
+void SKP_Silk_scale_vector32_16_Q14(int32_t * data1,	/* (I/O): Q0/Q0         */
+				    int gain_Q14,	/* (I):   Q14           */
+				    int dataSize	/* (I):   length        */
+    )
 {
-    int  i, gain_Q16;
+	int i, gain_Q16;
 
-    if( gain_Q14 < ( int16_t_MAX >> 2 ) ) {
-        gain_Q16 = SKP_LSHIFT( gain_Q14, 2 );
-        for( i = 0; i < dataSize; i++ ) {
-            data1[ i ] = SKP_SMULWB( data1[ i ], gain_Q16 );
-        }
-    } else {
-        SKP_assert( gain_Q14 >= int16_t_MIN );
-        for( i = 0; i < dataSize; i++ ) {
-            data1[ i ] = SKP_LSHIFT( SKP_SMULWB( data1[ i ], gain_Q14 ), 2 );
-        }
-    }
+	if (gain_Q14 < (int16_t_MAX >> 2)) {
+		gain_Q16 = SKP_LSHIFT(gain_Q14, 2);
+		for (i = 0; i < dataSize; i++) {
+			data1[i] = SKP_SMULWB(data1[i], gain_Q16);
+		}
+	} else {
+		SKP_assert(gain_Q14 >= int16_t_MIN);
+		for (i = 0; i < dataSize; i++) {
+			data1[i] =
+			    SKP_LSHIFT(SKP_SMULWB(data1[i], gain_Q14), 2);
+		}
+	}
 }
 
 /* Multiply a vector by a constant, does not saturate output data */
-void SKP_Silk_scale_vector32_Q16( 
-    int32_t           *data1,                     /* (I/O): Q0/Q0         */
-    int32_t           gain_Q16,                   /* (I):   gain in Q16 ( int16_t_MIN <= gain_Q16 <= int16_t_MAX + 65536 ) */
-    const int       dataSize                    /* (I):   length        */
-)
+void SKP_Silk_scale_vector32_Q16(int32_t * data1,	/* (I/O): Q0/Q0         */
+				 int32_t gain_Q16,	/* (I):   gain in Q16 ( int16_t_MIN <= gain_Q16 <= int16_t_MAX + 65536 ) */
+				 const int dataSize	/* (I):   length        */
+    )
 {
-    int     i;
+	int i;
 
-    SKP_assert( gain_Q16 <= int16_t_MAX + 65536 );
-    SKP_assert( gain_Q16 >= int16_t_MIN );
+	SKP_assert(gain_Q16 <= int16_t_MAX + 65536);
+	SKP_assert(gain_Q16 >= int16_t_MIN);
 
-    if( gain_Q16 > int16_t_MAX ) {
-        gain_Q16 -= 65536;
-        for( i = 0; i < dataSize; i++ ) {
-            data1[ i ] = SKP_SMLAWB( data1[ i ], data1[ i ], gain_Q16 );
-        }
-    } else {
-        for( i = 0; i < dataSize; i++ ) {
-            data1[ i ] = SKP_SMULWB( data1[ i ], gain_Q16 );
-        }
-    }
+	if (gain_Q16 > int16_t_MAX) {
+		gain_Q16 -= 65536;
+		for (i = 0; i < dataSize; i++) {
+			data1[i] = SKP_SMLAWB(data1[i], data1[i], gain_Q16);
+		}
+	} else {
+		for (i = 0; i < dataSize; i++) {
+			data1[i] = SKP_SMULWB(data1[i], gain_Q16);
+		}
+	}
 }

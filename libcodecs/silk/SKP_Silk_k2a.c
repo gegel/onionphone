@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -37,22 +39,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Step up function, converts reflection coefficients to prediction coefficients */
-void SKP_Silk_k2a(
-    int32_t            *A_Q24,                 /* O:    Prediction coefficients [order] Q24         */
-    const int16_t      *rc_Q15,                /* I:    Reflection coefficients [order] Q15         */
-    const int32_t      order                   /* I:    Prediction order                            */
-)
+void SKP_Silk_k2a(int32_t * A_Q24,	/* O:    Prediction coefficients [order] Q24         */
+		  const int16_t * rc_Q15,	/* I:    Reflection coefficients [order] Q15         */
+		  const int32_t order	/* I:    Prediction order                            */
+    )
 {
-    int   k, n;
-    int32_t Atmp[ SigProc_MAX_ORDER_LPC ];
+	int k, n;
+	int32_t Atmp[SigProc_MAX_ORDER_LPC];
 
-    for( k = 0; k < order; k++ ) {
-        for( n = 0; n < k; n++ ) {
-            Atmp[ n ] = A_Q24[ n ];
-        }
-        for( n = 0; n < k; n++ ) {
-            A_Q24[ n ] = SKP_SMLAWB( A_Q24[ n ], SKP_LSHIFT( Atmp[ k - n - 1 ], 1 ), rc_Q15[ k ] );
-        }
-        A_Q24[ k ] = -SKP_LSHIFT( (int32_t)rc_Q15[ k ], 9 );
-    }
+	for (k = 0; k < order; k++) {
+		for (n = 0; n < k; n++) {
+			Atmp[n] = A_Q24[n];
+		}
+		for (n = 0; n < k; n++) {
+			A_Q24[n] =
+			    SKP_SMLAWB(A_Q24[n], SKP_LSHIFT(Atmp[k - n - 1], 1),
+				       rc_Q15[k]);
+		}
+		A_Q24[k] = -SKP_LSHIFT((int32_t) rc_Q15[k], 9);
+	}
 }

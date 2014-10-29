@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -38,64 +40,71 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define OUT_SUBFR_LEN        80
 
 /* Downsamples by a factor 3 */
-void SKP_Silk_resample_1_3(
-    int16_t            *out,       /* O:   Fs_low signal  [inLen/3]                */
-    int32_t            *S,         /* I/O: State vector   [7]                      */
-    const int16_t      *in,        /* I:   Fs_high signal [inLen]                  */
-    const int32_t      inLen       /* I:   Input length, must be a multiple of 3   */
-)
+void SKP_Silk_resample_1_3(int16_t * out,	/* O:   Fs_low signal  [inLen/3]                */
+			   int32_t * S,	/* I/O: State vector   [7]                      */
+			   const int16_t * in,	/* I:   Fs_high signal [inLen]                  */
+			   const int32_t inLen	/* I:   Input length, must be a multiple of 3   */
+    )
 {
-    int      k, outLen, LSubFrameIn, LSubFrameOut;
-    int32_t    out_tmp, limit = 102258000; // (102258000 + 1560) * 21 * 2^(-16) = 32767.5
-    int32_t    scratch0[ 3 * OUT_SUBFR_LEN ];
-    int32_t    scratch10[ OUT_SUBFR_LEN ], scratch11[ OUT_SUBFR_LEN ], scratch12[ OUT_SUBFR_LEN ];
-    /* coefficients for 3-fold resampling */
-    const int16_t A30[ 2 ] = {  1773, 17818 };
-    const int16_t A31[ 2 ] = {  4942, 25677 };
-    const int16_t A32[ 2 ] = { 11786, 29304 };
+	int k, outLen, LSubFrameIn, LSubFrameOut;
+	int32_t out_tmp, limit = 102258000;	// (102258000 + 1560) * 21 * 2^(-16) = 32767.5
+	int32_t scratch0[3 * OUT_SUBFR_LEN];
+	int32_t scratch10[OUT_SUBFR_LEN], scratch11[OUT_SUBFR_LEN],
+	    scratch12[OUT_SUBFR_LEN];
+	/* coefficients for 3-fold resampling */
+	const int16_t A30[2] = { 1773, 17818 };
+	const int16_t A31[2] = { 4942, 25677 };
+	const int16_t A32[2] = { 11786, 29304 };
 
-    /* Check that input is multiple of 3 */
-    SKP_assert( inLen % 3 == 0 );
+	/* Check that input is multiple of 3 */
+	SKP_assert(inLen % 3 == 0);
 
-    outLen = SKP_DIV32_16( inLen, 3 );
-    while( outLen > 0 ) {
-        LSubFrameOut = SKP_min_int( OUT_SUBFR_LEN, outLen );
-        LSubFrameIn  = SKP_SMULBB( 3, LSubFrameOut );
+	outLen = SKP_DIV32_16(inLen, 3);
+	while (outLen > 0) {
+		LSubFrameOut = SKP_min_int(OUT_SUBFR_LEN, outLen);
+		LSubFrameIn = SKP_SMULBB(3, LSubFrameOut);
 
-        /* Low-pass filter, Q15 -> Q25 */
-        SKP_Silk_lowpass_short( in, S, scratch0, LSubFrameIn );
+		/* Low-pass filter, Q15 -> Q25 */
+		SKP_Silk_lowpass_short(in, S, scratch0, LSubFrameIn);
 
-        /* De-interleave three allpass inputs */
-        for( k = 0; k < LSubFrameOut; k++ ) {
-            scratch10[ k ] = scratch0[ 3 * k     ];
-            scratch11[ k ] = scratch0[ 3 * k + 1 ];
-            scratch12[ k ] = scratch0[ 3 * k + 2 ];
-        }
+		/* De-interleave three allpass inputs */
+		for (k = 0; k < LSubFrameOut; k++) {
+			scratch10[k] = scratch0[3 * k];
+			scratch11[k] = scratch0[3 * k + 1];
+			scratch12[k] = scratch0[3 * k + 2];
+		}
 
-        /* Allpass filters */
-        SKP_Silk_allpass_int( scratch10, S + 1, A32[ 0 ], scratch0,  LSubFrameOut );
-        SKP_Silk_allpass_int( scratch0,  S + 2, A32[ 1 ], scratch10, LSubFrameOut );
+		/* Allpass filters */
+		SKP_Silk_allpass_int(scratch10, S + 1, A32[0], scratch0,
+				     LSubFrameOut);
+		SKP_Silk_allpass_int(scratch0, S + 2, A32[1], scratch10,
+				     LSubFrameOut);
 
-        SKP_Silk_allpass_int( scratch11, S + 3, A31[ 0 ], scratch0,  LSubFrameOut );
-        SKP_Silk_allpass_int( scratch0,  S + 4, A31[ 1 ], scratch11, LSubFrameOut );
+		SKP_Silk_allpass_int(scratch11, S + 3, A31[0], scratch0,
+				     LSubFrameOut);
+		SKP_Silk_allpass_int(scratch0, S + 4, A31[1], scratch11,
+				     LSubFrameOut);
 
-        SKP_Silk_allpass_int( scratch12, S + 5, A30[ 0 ], scratch0,  LSubFrameOut );
-        SKP_Silk_allpass_int( scratch0,  S + 6, A30[ 1 ], scratch12, LSubFrameOut );
+		SKP_Silk_allpass_int(scratch12, S + 5, A30[0], scratch0,
+				     LSubFrameOut);
+		SKP_Silk_allpass_int(scratch0, S + 6, A30[1], scratch12,
+				     LSubFrameOut);
 
-        /* Add three allpass outputs */
-        for( k = 0; k < LSubFrameOut; k++ ) {
-            out_tmp = scratch10[ k ] + scratch11[ k ] + scratch12[ k ];
-            if( out_tmp - limit > 0 ) {
-                out[ k ] = int16_t_MAX;
-            } else if( out_tmp + limit < 0 ) {
-                out[ k ] = int16_t_MIN;
-            } else {
-                out[ k ] = (int16_t) SKP_SMULWB( out_tmp + 1560, 21 );
-            }
-        }
+		/* Add three allpass outputs */
+		for (k = 0; k < LSubFrameOut; k++) {
+			out_tmp = scratch10[k] + scratch11[k] + scratch12[k];
+			if (out_tmp - limit > 0) {
+				out[k] = int16_t_MAX;
+			} else if (out_tmp + limit < 0) {
+				out[k] = int16_t_MIN;
+			} else {
+				out[k] =
+				    (int16_t) SKP_SMULWB(out_tmp + 1560, 21);
+			}
+		}
 
-        in     += LSubFrameIn;
-        out    += LSubFrameOut;
-        outLen -= LSubFrameOut;
-    }
+		in += LSubFrameIn;
+		out += LSubFrameOut;
+		outLen -= LSubFrameOut;
+	}
 }
