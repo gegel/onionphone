@@ -3,7 +3,7 @@ BLOB = builtin.o
 APPS = celt silk_common src
 
 # FIXED FLOAT
-export ARITHMETICS=FLOAT
+export ARITHMETICS=FIXED
 
 ifeq ($(ARITHMETICS),FIXED)
 	APPS += silk_fixed
