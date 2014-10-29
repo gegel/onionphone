@@ -41,10 +41,10 @@ POSSIBILITY OF SUCH DAMAGE.
 /* this code is based on silk_a2k_FLP()                                 */
 silk_float silk_LPC_inverse_pred_gain_FLP(	/* O    return inverse prediction gain, energy domain               */
 						 const silk_float * A,	/* I    prediction coefficients [order]                             */
-						 opus_int32 order	/* I    prediction order                                            */
+						 int32_t order	/* I    prediction order                                            */
     )
 {
-	opus_int k, n;
+	int k, n;
 	double invGain, rc, rc_mult1, rc_mult2;
 	silk_float Atmp[2][SILK_MAX_ORDER_LPC];
 	silk_float *Aold, *Anew;

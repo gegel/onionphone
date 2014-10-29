@@ -68,7 +68,7 @@ struct OpusCustomEncoder {
 	int upsample;
 	int start, end;
 
-	opus_int32 bitrate;
+	int32_t bitrate;
 	int vbr;
 	int signalling;
 	int constrained_vbr;	/* If zero, VBR can do whatever it likes with the rate */
@@ -81,7 +81,7 @@ struct OpusCustomEncoder {
 	/* Everything beyond this point gets cleared on a reset */
 #define ENCODER_RESET_START rng
 
-	opus_uint32 rng;
+	uint32_t rng;
 	int spread_decision;
 	opus_val32 delayedIntra;
 	int tonal_average;
@@ -104,10 +104,10 @@ struct OpusCustomEncoder {
 	opus_val32 preemph_memD[2];
 
 	/* VBR-related parameters */
-	opus_int32 vbr_reservoir;
-	opus_int32 vbr_drift;
-	opus_int32 vbr_offset;
-	opus_int32 vbr_count;
+	int32_t vbr_reservoir;
+	int32_t vbr_drift;
+	int32_t vbr_offset;
+	int32_t vbr_count;
 	opus_val32 overlap_max;
 	opus_val16 stereo_saving;
 	int intensity;
@@ -210,7 +210,7 @@ int opus_custom_encoder_init(CELTEncoder * st, const CELTMode * mode,
 }
 #endif
 
-int celt_encoder_init(CELTEncoder * st, opus_int32 sampling_rate, int channels,
+int celt_encoder_init(CELTEncoder * st, int32_t sampling_rate, int channels,
 		      int arch)
 {
 	int ret;
@@ -238,7 +238,7 @@ static int transient_analysis(const opus_val32 * OPUS_RESTRICT in, int len,
 	opus_val16 tmp[len];
 	opus_val32 mem0, mem1;
 	int is_transient = 0;
-	opus_int32 mask_metric = 0;
+	int32_t mask_metric = 0;
 	int c;
 	opus_val16 tf_max;
 	int len2;
@@ -258,7 +258,7 @@ static int transient_analysis(const opus_val32 * OPUS_RESTRICT in, int len,
 	len2 = len / 2;
 	for (c = 0; c < C; c++) {
 		opus_val32 mean;
-		opus_int32 unmask = 0;
+		int32_t unmask = 0;
 		opus_val32 norm;
 		opus_val16 maxE;
 		mem0 = 0;
@@ -733,8 +733,8 @@ static void tf_encode(int start, int end, int isTransient, int *tf_res, int LM,
 	int tf_select_rsv;
 	int tf_changed;
 	int logp;
-	opus_uint32 budget;
-	opus_uint32 tell;
+	uint32_t budget;
+	uint32_t tell;
 	budget = enc->storage * 8;
 	tell = ec_tell(enc);
 	logp = isTransient ? 2 : 4;
@@ -838,7 +838,7 @@ static int alloc_trim_analysis(const CELTMode * m, const celt_norm * X,
 	do {
 		for (i = 0; i < end - 1; i++) {
 			diff +=
-			    bandLogE[i + c * m->nbEBands] * (opus_int32) (2 +
+			    bandLogE[i + c * m->nbEBands] * (int32_t) (2 +
 									  2 *
 									  i -
 									  end);
@@ -923,15 +923,15 @@ static int stereo_analysis(const CELTMode * m, const celt_norm * X,
 static opus_val16 dynalloc_analysis(const opus_val16 * bandLogE,
 				    const opus_val16 * bandLogE2, int nbEBands,
 				    int start, int end, int C, int *offsets,
-				    int lsb_depth, const opus_int16 * logN,
+				    int lsb_depth, const int16_t * logN,
 				    int isTransient, int vbr,
 				    int constrained_vbr,
-				    const opus_int16 * eBands, int LM,
-				    int effectiveBytes, opus_int32 * tot_boost_,
+				    const int16_t * eBands, int LM,
+				    int effectiveBytes, int32_t * tot_boost_,
 				    int lfe, opus_val16 * surround_dynalloc)
 {
 	int i, c;
-	opus_int32 tot_boost = 0;
+	int32_t tot_boost = 0;
 	opus_val16 maxDepth;
 	opus_val16 follower[C * nbEBands];
 	opus_val16 noise_floor[C * nbEBands];
@@ -1047,7 +1047,7 @@ static opus_val16 dynalloc_analysis(const opus_val16 * bandLogE,
 			if ((!vbr || (constrained_vbr && !isTransient))
 			    && (tot_boost + boost_bits) >> BITRES >> 3 >
 			    effectiveBytes / 4) {
-				opus_int32 cap =
+				int32_t cap =
 				    ((effectiveBytes / 4) << BITRES << 3);
 				offsets[i] = cap - tot_boost;
 				tot_boost = cap;
@@ -1203,7 +1203,7 @@ static int run_prefilter(CELTEncoder * st, celt_sig * in,
 }
 
 static int compute_vbr(const CELTMode * mode, AnalysisInfo * analysis,
-		       opus_int32 base_target, int LM, opus_int32 bitrate,
+		       int32_t base_target, int LM, int32_t bitrate,
 		       int lastCodedBands, int C, int intensity,
 		       int constrained_vbr, opus_val16 stereo_saving,
 		       int tot_boost, opus_val16 tf_estimate, int pitch_change,
@@ -1212,12 +1212,12 @@ static int compute_vbr(const CELTMode * mode, AnalysisInfo * analysis,
 		       opus_val16 temporal_vbr)
 {
 	/* The target rate in 8th bits per frame */
-	opus_int32 target;
+	int32_t target;
 	int coded_bins;
 	int coded_bands;
 	opus_val16 tf_calibration;
 	int nbEBands;
-	const opus_int16 *eBands;
+	const int16_t *eBands;
 
 	nbEBands = mode->nbEBands;
 	eBands = mode->eBands;
@@ -1233,7 +1233,7 @@ static int compute_vbr(const CELTMode * mode, AnalysisInfo * analysis,
 #ifndef DISABLE_FLOAT_API
 	if (analysis->valid && analysis->activity < .4)
 		target -=
-		    (opus_int32) ((coded_bins << BITRES) *
+		    (int32_t) ((coded_bins << BITRES) *
 				  (.4f - analysis->activity));
 #endif
 	/* Stereo savings */
@@ -1250,7 +1250,7 @@ static int compute_vbr(const CELTMode * mode, AnalysisInfo * analysis,
 			     coded_bins);
 		stereo_saving = MIN16(stereo_saving, QCONST16(1.f, 8));
 		/*printf("%d %d %d ", coded_stereo_dof, coded_bins, tot_boost); */
-		target -= (opus_int32) MIN32(MULT16_32_Q15(max_frac, target),
+		target -= (int32_t) MIN32(MULT16_32_Q15(max_frac, target),
 					     SHR32(MULT16_16
 						   (stereo_saving -
 						    QCONST16(0.1f, 8),
@@ -1263,32 +1263,32 @@ static int compute_vbr(const CELTMode * mode, AnalysisInfo * analysis,
 	tf_calibration = variable_duration == OPUS_FRAMESIZE_VARIABLE ?
 	    QCONST16(0.02f, 14) : QCONST16(0.04f, 14);
 	target +=
-	    (opus_int32)
+	    (int32_t)
 	    SHL32(MULT16_32_Q15(tf_estimate - tf_calibration, target), 1);
 
 #ifndef DISABLE_FLOAT_API
 	/* Apply tonality boost */
 	if (analysis->valid && !lfe) {
-		opus_int32 tonal_target;
+		int32_t tonal_target;
 		float tonal;
 
 		/* Tonality boost (compensating for the average). */
 		tonal = MAX16(0.f, analysis->tonality - .15f) - 0.09f;
 		tonal_target =
 		    target +
-		    (opus_int32) ((coded_bins << BITRES) * 1.2f * tonal);
+		    (int32_t) ((coded_bins << BITRES) * 1.2f * tonal);
 		if (pitch_change)
 			tonal_target +=
-			    (opus_int32) ((coded_bins << BITRES) * .8f);
+			    (int32_t) ((coded_bins << BITRES) * .8f);
 		/*printf("%f %f ", analysis->tonality, tonal); */
 		target = tonal_target;
 	}
 #endif
 
 	if (has_surround_mask && !lfe) {
-		opus_int32 surround_target =
+		int32_t surround_target =
 		    target +
-		    (opus_int32)
+		    (int32_t)
 		    SHR32(MULT16_16(surround_masking, coded_bins << BITRES),
 			  DB_SHIFT);
 		/*printf("%f %d %d %d %d %d %d ", surround_masking, coded_bins, st->end, st->intensity, surround_target, target, st->bitrate); */
@@ -1296,12 +1296,12 @@ static int compute_vbr(const CELTMode * mode, AnalysisInfo * analysis,
 	}
 
 	{
-		opus_int32 floor_depth;
+		int32_t floor_depth;
 		int bins;
 		bins = eBands[nbEBands - 2] << LM;
 		/*floor_depth = SHR32(MULT16_16((C*bins<<BITRES),celt_log2(SHL32(MAX16(1,sample_max),13))), DB_SHIFT); */
 		floor_depth =
-		    (opus_int32)
+		    (int32_t)
 		    SHR32(MULT16_16((C * bins << BITRES), maxDepth), DB_SHIFT);
 		floor_depth = IMAX(floor_depth, target >> 2);
 		target = IMIN(target, floor_depth);
@@ -1318,7 +1318,7 @@ static int compute_vbr(const CELTMode * mode, AnalysisInfo * analysis,
 		if (constrained_vbr)
 			rate_factor = MIN16(rate_factor, QCONST16(0.67f, 15));
 		target =
-		    base_target + (opus_int32) MULT16_32_Q15(rate_factor,
+		    base_target + (int32_t) MULT16_32_Q15(rate_factor,
 							     target -
 							     base_target);
 
@@ -1331,7 +1331,7 @@ static int compute_vbr(const CELTMode * mode, AnalysisInfo * analysis,
 		    MULT16_16_Q15(QCONST16(.0000031f, 30),
 				  IMAX(0, IMIN(32000, 96000 - bitrate)));
 		tvbr_factor = SHR32(MULT16_16(temporal_vbr, amount), DB_SHIFT);
-		target += (opus_int32) MULT16_32_Q15(tvbr_factor, target);
+		target += (int32_t) MULT16_32_Q15(tvbr_factor, target);
 	}
 
 	/* Don't allow more than doubling the rate */
@@ -1345,7 +1345,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 			int nbCompressedBytes, ec_enc * enc)
 {
 	int i, c, N;
-	opus_int32 bits;
+	int32_t bits;
 	ec_enc _enc;
 	celt_sig *prefilter_mem;
 	opus_val16 *oldBandE, *oldLogE, *oldLogE2;
@@ -1365,11 +1365,11 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 	int dual_stereo = 0;
 	int effectiveBytes;
 	int dynalloc_logp;
-	opus_int32 vbr_rate;
-	opus_int32 total_bits;
-	opus_int32 total_boost;
-	opus_int32 balance;
-	opus_int32 tell;
+	int32_t vbr_rate;
+	int32_t total_bits;
+	int32_t total_boost;
+	int32_t balance;
+	int32_t tell;
 	int prefilter_tapset = 0;
 	int pf_on;
 	int anti_collapse_rsv;
@@ -1378,20 +1378,20 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 	int tf_chan = 0;
 	opus_val16 tf_estimate;
 	int pitch_change = 0;
-	opus_int32 tot_boost;
+	int32_t tot_boost;
 	opus_val32 sample_max;
 	opus_val16 maxDepth;
 	const OpusCustomMode *mode;
 	int nbEBands;
 	int overlap;
-	const opus_int16 *eBands;
+	const int16_t *eBands;
 	int secondMdct;
 	int signalBandwidth;
 	int transient_got_disabled = 0;
 	opus_val16 surround_masking = 0;
 	opus_val16 temporal_vbr = 0;
 	opus_val16 surround_trim = 0;
-	opus_int32 equiv_rate = 510000;
+	int32_t equiv_rate = 510000;
 
 	mode = st->mode;
 	nbEBands = mode->nbEBands;
@@ -1457,7 +1457,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 	nbAvailableBytes = nbCompressedBytes - nbFilledBytes;
 
 	if (st->vbr && st->bitrate != OPUS_BITRATE_MAX) {
-		opus_int32 den = mode->Fs >> BITRES;
+		int32_t den = mode->Fs >> BITRES;
 		vbr_rate = (st->bitrate * frame_size + (den >> 1)) / den;
 #ifdef CUSTOM_MODES
 		if (st->signalling)
@@ -1465,7 +1465,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 #endif
 		effectiveBytes = vbr_rate >> (3 + BITRES);
 	} else {
-		opus_int32 tmp;
+		int32_t tmp;
 		vbr_rate = 0;
 		tmp = st->bitrate * frame_size;
 		if (tell > 1)
@@ -1493,8 +1493,8 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 		   We must do this up front so that bust-prevention logic triggers
 		   correctly if we don't have enough bits. */
 		if (st->constrained_vbr) {
-			opus_int32 vbr_bound;
-			opus_int32 max_allowed;
+			int32_t vbr_bound;
+			int32_t max_allowed;
 			/* We could use any multiple of vbr_rate as bound (depending on the
 			   delay).
 			   This is clamped to ensure we use at least two bytes if the encoder
@@ -1968,10 +1968,10 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 	/* Variable bitrate */
 	if (vbr_rate > 0) {
 		opus_val16 alpha;
-		opus_int32 delta;
+		int32_t delta;
 		/* The target rate in 8th bits per frame */
-		opus_int32 target, base_target;
-		opus_int32 min_allowed;
+		int32_t target, base_target;
+		int32_t min_allowed;
 		int lm_diff = mode->maxLM - LM;
 
 		/* Don't attempt to use more than 510 kb/s, even for frames smaller than 20 ms.
@@ -2040,7 +2040,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 		/* Compute the offset we need to apply in order to reach the target */
 		if (st->constrained_vbr) {
 			st->vbr_drift +=
-			    (opus_int32) MULT16_32_Q15(alpha,
+			    (int32_t) MULT16_32_Q15(alpha,
 						       (delta *
 							(1 << lm_diff)) -
 						       st->vbr_offset -
@@ -2071,7 +2071,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 
 	/* bits =           packet size                    - where we are - safety */
 	bits =
-	    (((opus_int32) nbCompressedBytes * 8) << BITRES) -
+	    (((int32_t) nbCompressedBytes * 8) << BITRES) -
 	    ec_tell_frac(enc) - 1;
 	anti_collapse_rsv = isTransient && LM >= 2
 	    && bits >= ((LM + 2) << BITRES) ? (1 << BITRES) : 0;
@@ -2080,13 +2080,13 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 #ifndef DISABLE_FLOAT_API
 	if (st->analysis.valid) {
 		int min_bandwidth;
-		if (equiv_rate < (opus_int32) 32000 * C)
+		if (equiv_rate < (int32_t) 32000 * C)
 			min_bandwidth = 13;
-		else if (equiv_rate < (opus_int32) 48000 * C)
+		else if (equiv_rate < (int32_t) 48000 * C)
 			min_bandwidth = 16;
-		else if (equiv_rate < (opus_int32) 60000 * C)
+		else if (equiv_rate < (int32_t) 60000 * C)
 			min_bandwidth = 18;
-		else if (equiv_rate < (opus_int32) 80000 * C)
+		else if (equiv_rate < (int32_t) 80000 * C)
 			min_bandwidth = 19;
 		else
 			min_bandwidth = 20;
@@ -2269,7 +2269,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 #ifdef CUSTOM_MODES
 
 #ifdef FIXED_POINT
-int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const opus_int16 * pcm,
+int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const int16_t * pcm,
 		       int frame_size, unsigned char *compressed,
 		       int nbCompressedBytes)
 {
@@ -2289,7 +2289,7 @@ int opus_custom_encode_float(CELTEncoder * OPUS_RESTRICT st, const float *pcm,
 
 	C = st->channels;
 	N = frame_size;
-	opus_int16 in[C * N];
+	int16_t in[C * N];
 
 	for (j = 0; j < C * N; j++)
 		in[j] = FLOAT2INT16(pcm[j]);
@@ -2307,7 +2307,7 @@ int opus_custom_encode_float(CELTEncoder * OPUS_RESTRICT st, const float *pcm,
 #endif				/* DISABLE_FLOAT_API */
 #else
 
-int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const opus_int16 * pcm,
+int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const int16_t * pcm,
 		       int frame_size, unsigned char *compressed,
 		       int nbCompressedBytes)
 {
@@ -2328,7 +2328,7 @@ int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const opus_int16 * pcm,
 				nbCompressedBytes, NULL);
 #ifdef RESYNTH
 	for (j = 0; j < C * N; j++)
-		((opus_int16 *) pcm)[j] = FLOAT2INT16(in[j]);
+		((int16_t *) pcm)[j] = FLOAT2INT16(in[j]);
 #endif
 
 	return ret;
@@ -2354,7 +2354,7 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 	switch (request) {
 	case OPUS_SET_COMPLEXITY_REQUEST:
 		{
-			int value = va_arg(ap, opus_int32);
+			int value = va_arg(ap, int32_t);
 			if (value < 0 || value > 10)
 				goto bad_arg;
 			st->complexity = value;
@@ -2362,7 +2362,7 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case CELT_SET_START_BAND_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			if (value < 0 || value >= st->mode->nbEBands)
 				goto bad_arg;
 			st->start = value;
@@ -2370,7 +2370,7 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case CELT_SET_END_BAND_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			if (value < 1 || value > st->mode->nbEBands)
 				goto bad_arg;
 			st->end = value;
@@ -2378,7 +2378,7 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case CELT_SET_PREDICTION_REQUEST:
 		{
-			int value = va_arg(ap, opus_int32);
+			int value = va_arg(ap, int32_t);
 			if (value < 0 || value > 2)
 				goto bad_arg;
 			st->disable_pf = value <= 1;
@@ -2387,7 +2387,7 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case OPUS_SET_PACKET_LOSS_PERC_REQUEST:
 		{
-			int value = va_arg(ap, opus_int32);
+			int value = va_arg(ap, int32_t);
 			if (value < 0 || value > 100)
 				goto bad_arg;
 			st->loss_rate = value;
@@ -2395,19 +2395,19 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case OPUS_SET_VBR_CONSTRAINT_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			st->constrained_vbr = value;
 		}
 		break;
 	case OPUS_SET_VBR_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			st->vbr = value;
 		}
 		break;
 	case OPUS_SET_BITRATE_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			if (value <= 500 && value != OPUS_BITRATE_MAX)
 				goto bad_arg;
 			value = IMIN(value, 260000 * st->channels);
@@ -2416,7 +2416,7 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case CELT_SET_CHANNELS_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			if (value < 1 || value > 2)
 				goto bad_arg;
 			st->stream_channels = value;
@@ -2424,7 +2424,7 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case OPUS_SET_LSB_DEPTH_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			if (value < 8 || value > 24)
 				goto bad_arg;
 			st->lsb_depth = value;
@@ -2432,13 +2432,13 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case OPUS_GET_LSB_DEPTH_REQUEST:
 		{
-			opus_int32 *value = va_arg(ap, opus_int32 *);
+			int32_t *value = va_arg(ap, int32_t *);
 			*value = st->lsb_depth;
 		}
 		break;
 	case OPUS_SET_EXPERT_FRAME_DURATION_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			st->variable_duration = value;
 		}
 		break;
@@ -2471,14 +2471,14 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 #ifdef CUSTOM_MODES
 	case CELT_SET_INPUT_CLIPPING_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			st->clip = value;
 		}
 		break;
 #endif
 	case CELT_SET_SIGNALLING_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			st->signalling = value;
 		}
 		break;
@@ -2499,7 +2499,7 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case OPUS_GET_FINAL_RANGE_REQUEST:
 		{
-			opus_uint32 *value = va_arg(ap, opus_uint32 *);
+			uint32_t *value = va_arg(ap, uint32_t *);
 			if (value == 0)
 				goto bad_arg;
 			*value = st->rng;
@@ -2507,7 +2507,7 @@ int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case OPUS_SET_LFE_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			st->lfe = value;
 		}
 		break;

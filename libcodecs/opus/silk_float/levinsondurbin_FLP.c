@@ -37,10 +37,10 @@ POSSIBILITY OF SUCH DAMAGE.
 silk_float silk_levinsondurbin_FLP(	/* O    prediction error energy                                     */
 					  silk_float A[],	/* O    prediction coefficients    [order]                          */
 					  const silk_float corr[],	/* I    input auto-correlations [order + 1]                         */
-					  const opus_int order	/* I    prediction order                                            */
+					  const int order	/* I    prediction order                                            */
     )
 {
-	opus_int i, mHalf, m;
+	int i, mHalf, m;
 	silk_float min_nrg, nrg, t, km, Atmp1, Atmp2;
 
 	min_nrg = 1e-12f * corr[0] + 1e-9f;

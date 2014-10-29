@@ -35,13 +35,13 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "tuning_parameters.h"
 
 /* Control SNR of redidual quantizer */
-opus_int silk_control_SNR(silk_encoder_state * psEncC,	/* I/O  Pointer to Silk encoder state               */
-			  opus_int32 TargetRate_bps	/* I    Target max bitrate (bps)                    */
+int silk_control_SNR(silk_encoder_state * psEncC,	/* I/O  Pointer to Silk encoder state               */
+			  int32_t TargetRate_bps	/* I    Target max bitrate (bps)                    */
     )
 {
-	opus_int k, ret = SILK_NO_ERROR;
-	opus_int32 frac_Q6;
-	const opus_int32 *rateTable;
+	int k, ret = SILK_NO_ERROR;
+	int32_t frac_Q6;
+	const int32_t *rateTable;
 
 	/* Set bitrate/coding quality */
 	TargetRate_bps =

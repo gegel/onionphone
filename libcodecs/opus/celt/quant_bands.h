@@ -51,7 +51,7 @@ void log2Amp(const CELTMode * m, int start, int end,
 
 void quant_coarse_energy(const CELTMode * m, int start, int end, int effEnd,
 			 const opus_val16 * eBands, opus_val16 * oldEBands,
-			 opus_uint32 budget, opus_val16 * error, ec_enc * enc,
+			 uint32_t budget, opus_val16 * error, ec_enc * enc,
 			 int C, int LM, int nbAvailableBytes, int force_intra,
 			 opus_val32 * delayedIntra, int two_pass, int loss_rate,
 			 int lfe);

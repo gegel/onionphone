@@ -74,10 +74,10 @@ LARGE_INTEGER silk_Timer_start[silk_NUM_TIMERS_MAX];
 unsigned long silk_Timer_start[silk_NUM_TIMERS_MAX];
 #endif
 unsigned int silk_Timer_cnt[silk_NUM_TIMERS_MAX];
-opus_int64 silk_Timer_min[silk_NUM_TIMERS_MAX];
-opus_int64 silk_Timer_sum[silk_NUM_TIMERS_MAX];
-opus_int64 silk_Timer_max[silk_NUM_TIMERS_MAX];
-opus_int64 silk_Timer_depth[silk_NUM_TIMERS_MAX];
+int64_t silk_Timer_min[silk_NUM_TIMERS_MAX];
+int64_t silk_Timer_sum[silk_NUM_TIMERS_MAX];
+int64_t silk_Timer_max[silk_NUM_TIMERS_MAX];
+int64_t silk_Timer_depth[silk_NUM_TIMERS_MAX];
 
 #ifdef WIN32
 void silk_TimerSave(char *file_name)

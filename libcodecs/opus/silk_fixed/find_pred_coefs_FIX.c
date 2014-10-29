@@ -35,20 +35,20 @@ POSSIBILITY OF SUCH DAMAGE.
 
 void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder state                                                               */
 			      silk_encoder_control_FIX * psEncCtrl,	/* I/O  encoder control                                                             */
-			      const opus_int16 res_pitch[],	/* I    Residual from pitch analysis                                                */
-			      const opus_int16 x[],	/* I    Speech signal                                                               */
-			      opus_int condCoding	/* I    The type of conditional coding to use                                       */
+			      const int16_t res_pitch[],	/* I    Residual from pitch analysis                                                */
+			      const int16_t x[],	/* I    Speech signal                                                               */
+			      int condCoding	/* I    The type of conditional coding to use                                       */
     )
 {
-	opus_int i;
-	opus_int32 invGains_Q16[MAX_NB_SUBFR], local_gains[MAX_NB_SUBFR],
+	int i;
+	int32_t invGains_Q16[MAX_NB_SUBFR], local_gains[MAX_NB_SUBFR],
 	    Wght_Q15[MAX_NB_SUBFR];
-	opus_int16 NLSF_Q15[MAX_LPC_ORDER];
-	const opus_int16 *x_ptr;
-	opus_int16 *x_pre_ptr;
+	int16_t NLSF_Q15[MAX_LPC_ORDER];
+	const int16_t *x_ptr;
+	int16_t *x_pre_ptr;
 
-	opus_int32 tmp, min_gain_Q16, minInvGain_Q30;
-	opus_int LTP_corrs_rshift[MAX_NB_SUBFR];
+	int32_t tmp, min_gain_Q16, minInvGain_Q30;
+	int LTP_corrs_rshift[MAX_NB_SUBFR];
 
 	/* weighting for weighted least squares */
 	min_gain_Q16 = silk_int32_MAX >> 6;
@@ -73,10 +73,10 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 
 		/* Invert the inverted and normalized gains */
 		local_gains[i] =
-		    silk_DIV32(((opus_int32) 1 << 16), invGains_Q16[i]);
+		    silk_DIV32(((int32_t) 1 << 16), invGains_Q16[i]);
 	}
 
-	opus_int16 LPC_in_pre[psEnc->sCmn.nb_subfr *
+	int16_t LPC_in_pre[psEnc->sCmn.nb_subfr *
 			      psEnc->sCmn.predictLPCOrder +
 			      psEnc->sCmn.frame_length];
 	if (psEnc->sCmn.indices.signalType == TYPE_VOICED) {
@@ -88,7 +88,7 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 			    psEnc->sCmn.predictLPCOrder >=
 			    psEncCtrl->pitchL[0] + LTP_ORDER / 2);
 
-		opus_int32 WLTP[psEnc->sCmn.nb_subfr * LTP_ORDER * LTP_ORDER];
+		int32_t WLTP[psEnc->sCmn.nb_subfr * LTP_ORDER * LTP_ORDER];
 
 		/* LTP analysis */
 		silk_find_LTP_FIX(psEncCtrl->LTPCoef_Q14, WLTP,
@@ -139,7 +139,7 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 
 		silk_memset(psEncCtrl->LTPCoef_Q14, 0,
 			    psEnc->sCmn.nb_subfr * LTP_ORDER *
-			    sizeof(opus_int16));
+			    sizeof(int16_t));
 		psEncCtrl->LTPredCodGain_Q7 = 0;
 		psEnc->sCmn.sum_log_gain_Q7 = 0;
 	}
@@ -150,7 +150,7 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 		    SILK_FIX_CONST(1.0f / MAX_PREDICTION_POWER_GAIN_AFTER_RESET,
 				   30);
 	} else {
-		minInvGain_Q30 = silk_log2lin(silk_SMLAWB(16 << 7, (opus_int32) psEncCtrl->LTPredCodGain_Q7, SILK_FIX_CONST(1.0 / 3, 16)));	/* Q16 */
+		minInvGain_Q30 = silk_log2lin(silk_SMLAWB(16 << 7, (int32_t) psEncCtrl->LTPredCodGain_Q7, SILK_FIX_CONST(1.0 / 3, 16)));	/* Q16 */
 		minInvGain_Q30 = silk_DIV32_varQ(minInvGain_Q30,
 						 silk_SMULWW(SILK_FIX_CONST
 							     (MAX_PREDICTION_POWER_GAIN,

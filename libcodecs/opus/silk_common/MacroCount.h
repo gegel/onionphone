@@ -32,18 +32,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <stdio.h>
 
 #ifdef    silk_MACRO_COUNT
-#define varDefine opus_int64 ops_count = 0;
+#define varDefine int64_t ops_count = 0;
 
-extern opus_int64 ops_count;
+extern int64_t ops_count;
 
-static inline opus_int64 silk_SaveCount()
+static inline int64_t silk_SaveCount()
 {
 	return (ops_count);
 }
 
-static inline opus_int64 silk_SaveResetCount()
+static inline int64_t silk_SaveResetCount()
 {
-	opus_int64 ret;
+	int64_t ret;
 
 	ret = ops_count;
 	ops_count = 0;
@@ -52,76 +52,76 @@ static inline opus_int64 silk_SaveResetCount()
 
 static inline silk_PrintCount()
 {
-	printf("ops_count = %d \n ", (opus_int32) ops_count);
+	printf("ops_count = %d \n ", (int32_t) ops_count);
 }
 
 #undef silk_MUL
-static inline opus_int32 silk_MUL(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_MUL(int32_t a32, int32_t b32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 4;
 	ret = a32 * b32;
 	return ret;
 }
 
 #undef silk_MUL_uint
-static inline opus_uint32 silk_MUL_uint(opus_uint32 a32, opus_uint32 b32)
+static inline uint32_t silk_MUL_uint(uint32_t a32, uint32_t b32)
 {
-	opus_uint32 ret;
+	uint32_t ret;
 	ops_count += 4;
 	ret = a32 * b32;
 	return ret;
 }
 
 #undef silk_MLA
-static inline opus_int32 silk_MLA(opus_int32 a32, opus_int32 b32,
-				  opus_int32 c32)
+static inline int32_t silk_MLA(int32_t a32, int32_t b32,
+				  int32_t c32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 4;
 	ret = a32 + b32 * c32;
 	return ret;
 }
 
 #undef silk_MLA_uint
-static inline opus_int32 silk_MLA_uint(opus_uint32 a32, opus_uint32 b32,
-				       opus_uint32 c32)
+static inline int32_t silk_MLA_uint(uint32_t a32, uint32_t b32,
+				       uint32_t c32)
 {
-	opus_uint32 ret;
+	uint32_t ret;
 	ops_count += 4;
 	ret = a32 + b32 * c32;
 	return ret;
 }
 
 #undef silk_SMULWB
-static inline opus_int32 silk_SMULWB(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_SMULWB(int32_t a32, int32_t b32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 5;
 	ret =
-	    (a32 >> 16) * (opus_int32) ((opus_int16) b32) +
-	    (((a32 & 0x0000FFFF) * (opus_int32) ((opus_int16) b32)) >> 16);
+	    (a32 >> 16) * (int32_t) ((int16_t) b32) +
+	    (((a32 & 0x0000FFFF) * (int32_t) ((int16_t) b32)) >> 16);
 	return ret;
 }
 
 #undef    silk_SMLAWB
-static inline opus_int32 silk_SMLAWB(opus_int32 a32, opus_int32 b32,
-				     opus_int32 c32)
+static inline int32_t silk_SMLAWB(int32_t a32, int32_t b32,
+				     int32_t c32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 5;
 	ret =
 	    ((a32) +
-	     ((((b32) >> 16) * (opus_int32) ((opus_int16) (c32))) +
+	     ((((b32) >> 16) * (int32_t) ((int16_t) (c32))) +
 	      ((((b32) & 0x0000FFFF) *
-		(opus_int32) ((opus_int16) (c32))) >> 16)));
+		(int32_t) ((int16_t) (c32))) >> 16)));
 	return ret;
 }
 
 #undef silk_SMULWT
-static inline opus_int32 silk_SMULWT(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_SMULWT(int32_t a32, int32_t b32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 4;
 	ret =
 	    (a32 >> 16) * (b32 >> 16) +
@@ -130,10 +130,10 @@ static inline opus_int32 silk_SMULWT(opus_int32 a32, opus_int32 b32)
 }
 
 #undef silk_SMLAWT
-static inline opus_int32 silk_SMLAWT(opus_int32 a32, opus_int32 b32,
-				     opus_int32 c32)
+static inline int32_t silk_SMLAWT(int32_t a32, int32_t b32,
+				     int32_t c32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 4;
 	ret =
 	    a32 + ((b32 >> 16) * (c32 >> 16)) +
@@ -142,59 +142,59 @@ static inline opus_int32 silk_SMLAWT(opus_int32 a32, opus_int32 b32,
 }
 
 #undef silk_SMULBB
-static inline opus_int32 silk_SMULBB(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_SMULBB(int32_t a32, int32_t b32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
-	ret = (opus_int32) ((opus_int16) a32) * (opus_int32) ((opus_int16) b32);
+	ret = (int32_t) ((int16_t) a32) * (int32_t) ((int16_t) b32);
 	return ret;
 }
 
 #undef silk_SMLABB
-static inline opus_int32 silk_SMLABB(opus_int32 a32, opus_int32 b32,
-				     opus_int32 c32)
+static inline int32_t silk_SMLABB(int32_t a32, int32_t b32,
+				     int32_t c32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret =
 	    a32 +
-	    (opus_int32) ((opus_int16) b32) * (opus_int32) ((opus_int16) c32);
+	    (int32_t) ((int16_t) b32) * (int32_t) ((int16_t) c32);
 	return ret;
 }
 
 #undef silk_SMULBT
-static inline opus_int32 silk_SMULBT(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_SMULBT(int32_t a32, int32_t b32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 4;
-	ret = ((opus_int32) ((opus_int16) a32)) * (b32 >> 16);
+	ret = ((int32_t) ((int16_t) a32)) * (b32 >> 16);
 	return ret;
 }
 
 #undef silk_SMLABT
-static inline opus_int32 silk_SMLABT(opus_int32 a32, opus_int32 b32,
-				     opus_int32 c32)
+static inline int32_t silk_SMLABT(int32_t a32, int32_t b32,
+				     int32_t c32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
-	ret = a32 + ((opus_int32) ((opus_int16) b32)) * (c32 >> 16);
+	ret = a32 + ((int32_t) ((int16_t) b32)) * (c32 >> 16);
 	return ret;
 }
 
 #undef silk_SMULTT
-static inline opus_int32 silk_SMULTT(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_SMULTT(int32_t a32, int32_t b32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = (a32 >> 16) * (b32 >> 16);
 	return ret;
 }
 
 #undef    silk_SMLATT
-static inline opus_int32 silk_SMLATT(opus_int32 a32, opus_int32 b32,
-				     opus_int32 c32)
+static inline int32_t silk_SMLATT(int32_t a32, int32_t b32,
+				     int32_t c32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a32 + (b32 >> 16) * (c32 >> 16);
 	return ret;
@@ -220,38 +220,38 @@ static inline opus_int32 silk_SMLATT(opus_int32 a32, opus_int32 b32,
 #define silk_SMLAWT_ovflw silk_SMLAWT
 
 #undef silk_SMULL
-static inline opus_int64 silk_SMULL(opus_int32 a32, opus_int32 b32)
+static inline int64_t silk_SMULL(int32_t a32, int32_t b32)
 {
-	opus_int64 ret;
+	int64_t ret;
 	ops_count += 8;
-	ret = ((opus_int64) (a32) * /*(opus_int64) */ (b32));
+	ret = ((int64_t) (a32) * /*(int64_t) */ (b32));
 	return ret;
 }
 
 #undef    silk_SMLAL
-static inline opus_int64 silk_SMLAL(opus_int64 a64, opus_int32 b32,
-				    opus_int32 c32)
+static inline int64_t silk_SMLAL(int64_t a64, int32_t b32,
+				    int32_t c32)
 {
-	opus_int64 ret;
+	int64_t ret;
 	ops_count += 8;
-	ret = a64 + ((opus_int64) (b32) * /*(opus_int64) */ (c32));
+	ret = a64 + ((int64_t) (b32) * /*(int64_t) */ (c32));
 	return ret;
 }
 
 #undef    silk_SMLALBB
-static inline opus_int64 silk_SMLALBB(opus_int64 a64, opus_int16 b16,
-				      opus_int16 c16)
+static inline int64_t silk_SMLALBB(int64_t a64, int16_t b16,
+				      int16_t c16)
 {
-	opus_int64 ret;
+	int64_t ret;
 	ops_count += 4;
-	ret = a64 + ((opus_int64) (b16) * /*(opus_int64) */ (c16));
+	ret = a64 + ((int64_t) (b16) * /*(int64_t) */ (c16));
 	return ret;
 }
 
 #undef    SigProcFIX_CLZ16
-static inline opus_int32 SigProcFIX_CLZ16(opus_int16 in16)
+static inline int32_t SigProcFIX_CLZ16(int16_t in16)
 {
-	opus_int32 out32 = 0;
+	int32_t out32 = 0;
 	ops_count += 10;
 	if (in16 == 0) {
 		return 16;
@@ -287,105 +287,105 @@ static inline opus_int32 SigProcFIX_CLZ16(opus_int16 in16)
 }
 
 #undef SigProcFIX_CLZ32
-static inline opus_int32 SigProcFIX_CLZ32(opus_int32 in32)
+static inline int32_t SigProcFIX_CLZ32(int32_t in32)
 {
-	/* test highest 16 bits and convert to opus_int16 */
+	/* test highest 16 bits and convert to int16_t */
 	ops_count += 2;
 	if (in32 & 0xFFFF0000) {
-		return SigProcFIX_CLZ16((opus_int16) (in32 >> 16));
+		return SigProcFIX_CLZ16((int16_t) (in32 >> 16));
 	} else {
-		return SigProcFIX_CLZ16((opus_int16) in32) + 16;
+		return SigProcFIX_CLZ16((int16_t) in32) + 16;
 	}
 }
 
 #undef silk_DIV32
-static inline opus_int32 silk_DIV32(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_DIV32(int32_t a32, int32_t b32)
 {
 	ops_count += 64;
 	return a32 / b32;
 }
 
 #undef silk_DIV32_16
-static inline opus_int32 silk_DIV32_16(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_DIV32_16(int32_t a32, int32_t b32)
 {
 	ops_count += 32;
 	return a32 / b32;
 }
 
 #undef silk_SAT8
-static inline opus_int8 silk_SAT8(opus_int64 a)
+static inline int8_t silk_SAT8(int64_t a)
 {
-	opus_int8 tmp;
+	int8_t tmp;
 	ops_count += 1;
-	tmp = (opus_int8) ((a) > silk_int8_MAX ? silk_int8_MAX :
+	tmp = (int8_t) ((a) > silk_int8_MAX ? silk_int8_MAX :
 			   ((a) < silk_int8_MIN ? silk_int8_MIN : (a)));
 	return (tmp);
 }
 
 #undef silk_SAT16
-static inline opus_int16 silk_SAT16(opus_int64 a)
+static inline int16_t silk_SAT16(int64_t a)
 {
-	opus_int16 tmp;
+	int16_t tmp;
 	ops_count += 1;
-	tmp = (opus_int16) ((a) > silk_int16_MAX ? silk_int16_MAX :
+	tmp = (int16_t) ((a) > silk_int16_MAX ? silk_int16_MAX :
 			    ((a) < silk_int16_MIN ? silk_int16_MIN : (a)));
 	return (tmp);
 }
 
 #undef silk_SAT32
-static inline opus_int32 silk_SAT32(opus_int64 a)
+static inline int32_t silk_SAT32(int64_t a)
 {
-	opus_int32 tmp;
+	int32_t tmp;
 	ops_count += 1;
-	tmp = (opus_int32) ((a) > silk_int32_MAX ? silk_int32_MAX :
+	tmp = (int32_t) ((a) > silk_int32_MAX ? silk_int32_MAX :
 			    ((a) < silk_int32_MIN ? silk_int32_MIN : (a)));
 	return (tmp);
 }
 
 #undef silk_POS_SAT32
-static inline opus_int32 silk_POS_SAT32(opus_int64 a)
+static inline int32_t silk_POS_SAT32(int64_t a)
 {
-	opus_int32 tmp;
+	int32_t tmp;
 	ops_count += 1;
-	tmp = (opus_int32) ((a) > silk_int32_MAX ? silk_int32_MAX : (a));
+	tmp = (int32_t) ((a) > silk_int32_MAX ? silk_int32_MAX : (a));
 	return (tmp);
 }
 
 #undef silk_ADD_POS_SAT8
-static inline opus_int8 silk_ADD_POS_SAT8(opus_int64 a, opus_int64 b)
+static inline int8_t silk_ADD_POS_SAT8(int64_t a, int64_t b)
 {
-	opus_int8 tmp;
+	int8_t tmp;
 	ops_count += 1;
-	tmp = (opus_int8) ((((a) + (b)) & 0x80) ? silk_int8_MAX : ((a) + (b)));
+	tmp = (int8_t) ((((a) + (b)) & 0x80) ? silk_int8_MAX : ((a) + (b)));
 	return (tmp);
 }
 
 #undef silk_ADD_POS_SAT16
-static inline opus_int16 silk_ADD_POS_SAT16(opus_int64 a, opus_int64 b)
+static inline int16_t silk_ADD_POS_SAT16(int64_t a, int64_t b)
 {
-	opus_int16 tmp;
+	int16_t tmp;
 	ops_count += 1;
 	tmp =
-	    (opus_int16) ((((a) + (b)) & 0x8000) ? silk_int16_MAX : ((a) +
+	    (int16_t) ((((a) + (b)) & 0x8000) ? silk_int16_MAX : ((a) +
 								     (b)));
 	return (tmp);
 }
 
 #undef silk_ADD_POS_SAT32
-static inline opus_int32 silk_ADD_POS_SAT32(opus_int64 a, opus_int64 b)
+static inline int32_t silk_ADD_POS_SAT32(int64_t a, int64_t b)
 {
-	opus_int32 tmp;
+	int32_t tmp;
 	ops_count += 1;
 	tmp =
-	    (opus_int32) ((((a) + (b)) & 0x80000000) ? silk_int32_MAX : ((a) +
+	    (int32_t) ((((a) + (b)) & 0x80000000) ? silk_int32_MAX : ((a) +
 									 (b)));
 	return (tmp);
 }
 
 #undef silk_ADD_POS_SAT64
-static inline opus_int64 silk_ADD_POS_SAT64(opus_int64 a, opus_int64 b)
+static inline int64_t silk_ADD_POS_SAT64(int64_t a, int64_t b)
 {
-	opus_int64 tmp;
+	int64_t tmp;
 	ops_count += 1;
 	tmp =
 	    ((((a) + (b)) & 0x8000000000000000LL) ? silk_int64_MAX : ((a) +
@@ -394,197 +394,197 @@ static inline opus_int64 silk_ADD_POS_SAT64(opus_int64 a, opus_int64 b)
 }
 
 #undef    silk_LSHIFT8
-static inline opus_int8 silk_LSHIFT8(opus_int8 a, opus_int32 shift)
+static inline int8_t silk_LSHIFT8(int8_t a, int32_t shift)
 {
-	opus_int8 ret;
+	int8_t ret;
 	ops_count += 1;
 	ret = a << shift;
 	return ret;
 }
 
 #undef    silk_LSHIFT16
-static inline opus_int16 silk_LSHIFT16(opus_int16 a, opus_int32 shift)
+static inline int16_t silk_LSHIFT16(int16_t a, int32_t shift)
 {
-	opus_int16 ret;
+	int16_t ret;
 	ops_count += 1;
 	ret = a << shift;
 	return ret;
 }
 
 #undef    silk_LSHIFT32
-static inline opus_int32 silk_LSHIFT32(opus_int32 a, opus_int32 shift)
+static inline int32_t silk_LSHIFT32(int32_t a, int32_t shift)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a << shift;
 	return ret;
 }
 
 #undef    silk_LSHIFT64
-static inline opus_int64 silk_LSHIFT64(opus_int64 a, opus_int shift)
+static inline int64_t silk_LSHIFT64(int64_t a, int shift)
 {
 	ops_count += 1;
 	return a << shift;
 }
 
 #undef    silk_LSHIFT_ovflw
-static inline opus_int32 silk_LSHIFT_ovflw(opus_int32 a, opus_int32 shift)
+static inline int32_t silk_LSHIFT_ovflw(int32_t a, int32_t shift)
 {
 	ops_count += 1;
 	return a << shift;
 }
 
 #undef    silk_LSHIFT_uint
-static inline opus_uint32 silk_LSHIFT_uint(opus_uint32 a, opus_int32 shift)
+static inline uint32_t silk_LSHIFT_uint(uint32_t a, int32_t shift)
 {
-	opus_uint32 ret;
+	uint32_t ret;
 	ops_count += 1;
 	ret = a << shift;
 	return ret;
 }
 
 #undef    silk_RSHIFT8
-static inline opus_int8 silk_RSHIFT8(opus_int8 a, opus_int32 shift)
+static inline int8_t silk_RSHIFT8(int8_t a, int32_t shift)
 {
 	ops_count += 1;
 	return a >> shift;
 }
 
 #undef    silk_RSHIFT16
-static inline opus_int16 silk_RSHIFT16(opus_int16 a, opus_int32 shift)
+static inline int16_t silk_RSHIFT16(int16_t a, int32_t shift)
 {
 	ops_count += 1;
 	return a >> shift;
 }
 
 #undef    silk_RSHIFT32
-static inline opus_int32 silk_RSHIFT32(opus_int32 a, opus_int32 shift)
+static inline int32_t silk_RSHIFT32(int32_t a, int32_t shift)
 {
 	ops_count += 1;
 	return a >> shift;
 }
 
 #undef    silk_RSHIFT64
-static inline opus_int64 silk_RSHIFT64(opus_int64 a, opus_int64 shift)
+static inline int64_t silk_RSHIFT64(int64_t a, int64_t shift)
 {
 	ops_count += 1;
 	return a >> shift;
 }
 
 #undef    silk_RSHIFT_uint
-static inline opus_uint32 silk_RSHIFT_uint(opus_uint32 a, opus_int32 shift)
+static inline uint32_t silk_RSHIFT_uint(uint32_t a, int32_t shift)
 {
 	ops_count += 1;
 	return a >> shift;
 }
 
 #undef    silk_ADD_LSHIFT
-static inline opus_int32 silk_ADD_LSHIFT(opus_int32 a, opus_int32 b,
-					 opus_int32 shift)
+static inline int32_t silk_ADD_LSHIFT(int32_t a, int32_t b,
+					 int32_t shift)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a + (b << shift);
 	return ret;		/* shift >= 0 */
 }
 
 #undef    silk_ADD_LSHIFT32
-static inline opus_int32 silk_ADD_LSHIFT32(opus_int32 a, opus_int32 b,
-					   opus_int32 shift)
+static inline int32_t silk_ADD_LSHIFT32(int32_t a, int32_t b,
+					   int32_t shift)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a + (b << shift);
 	return ret;		/* shift >= 0 */
 }
 
 #undef    silk_ADD_LSHIFT_uint
-static inline opus_uint32 silk_ADD_LSHIFT_uint(opus_uint32 a, opus_uint32 b,
-					       opus_int32 shift)
+static inline uint32_t silk_ADD_LSHIFT_uint(uint32_t a, uint32_t b,
+					       int32_t shift)
 {
-	opus_uint32 ret;
+	uint32_t ret;
 	ops_count += 1;
 	ret = a + (b << shift);
 	return ret;		/* shift >= 0 */
 }
 
 #undef    silk_ADD_RSHIFT
-static inline opus_int32 silk_ADD_RSHIFT(opus_int32 a, opus_int32 b,
-					 opus_int32 shift)
+static inline int32_t silk_ADD_RSHIFT(int32_t a, int32_t b,
+					 int32_t shift)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a + (b >> shift);
 	return ret;		/* shift  > 0 */
 }
 
 #undef    silk_ADD_RSHIFT32
-static inline opus_int32 silk_ADD_RSHIFT32(opus_int32 a, opus_int32 b,
-					   opus_int32 shift)
+static inline int32_t silk_ADD_RSHIFT32(int32_t a, int32_t b,
+					   int32_t shift)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a + (b >> shift);
 	return ret;		/* shift  > 0 */
 }
 
 #undef    silk_ADD_RSHIFT_uint
-static inline opus_uint32 silk_ADD_RSHIFT_uint(opus_uint32 a, opus_uint32 b,
-					       opus_int32 shift)
+static inline uint32_t silk_ADD_RSHIFT_uint(uint32_t a, uint32_t b,
+					       int32_t shift)
 {
-	opus_uint32 ret;
+	uint32_t ret;
 	ops_count += 1;
 	ret = a + (b >> shift);
 	return ret;		/* shift  > 0 */
 }
 
 #undef    silk_SUB_LSHIFT32
-static inline opus_int32 silk_SUB_LSHIFT32(opus_int32 a, opus_int32 b,
-					   opus_int32 shift)
+static inline int32_t silk_SUB_LSHIFT32(int32_t a, int32_t b,
+					   int32_t shift)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a - (b << shift);
 	return ret;		/* shift >= 0 */
 }
 
 #undef    silk_SUB_RSHIFT32
-static inline opus_int32 silk_SUB_RSHIFT32(opus_int32 a, opus_int32 b,
-					   opus_int32 shift)
+static inline int32_t silk_SUB_RSHIFT32(int32_t a, int32_t b,
+					   int32_t shift)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a - (b >> shift);
 	return ret;		/* shift  > 0 */
 }
 
 #undef    silk_RSHIFT_ROUND
-static inline opus_int32 silk_RSHIFT_ROUND(opus_int32 a, opus_int32 shift)
+static inline int32_t silk_RSHIFT_ROUND(int32_t a, int32_t shift)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 3;
 	ret = shift == 1 ? (a >> 1) + (a & 1) : ((a >> (shift - 1)) + 1) >> 1;
 	return ret;
 }
 
 #undef    silk_RSHIFT_ROUND64
-static inline opus_int64 silk_RSHIFT_ROUND64(opus_int64 a, opus_int32 shift)
+static inline int64_t silk_RSHIFT_ROUND64(int64_t a, int32_t shift)
 {
-	opus_int64 ret;
+	int64_t ret;
 	ops_count += 6;
 	ret = shift == 1 ? (a >> 1) + (a & 1) : ((a >> (shift - 1)) + 1) >> 1;
 	return ret;
 }
 
 #undef    silk_abs_int64
-static inline opus_int64 silk_abs_int64(opus_int64 a)
+static inline int64_t silk_abs_int64(int64_t a)
 {
 	ops_count += 1;
 	return (((a) > 0) ? (a) : -(a));	/* Be careful, silk_abs returns wrong when input equals to silk_intXX_MIN */
 }
 
 #undef    silk_abs_int32
-static inline opus_int32 silk_abs_int32(opus_int32 a)
+static inline int32_t silk_abs_int32(int32_t a)
 {
 	ops_count += 1;
 	return silk_abs(a);
@@ -612,72 +612,72 @@ static silk_sign(a)
 }
 
 #undef    silk_ADD16
-static inline opus_int16 silk_ADD16(opus_int16 a, opus_int16 b)
+static inline int16_t silk_ADD16(int16_t a, int16_t b)
 {
-	opus_int16 ret;
+	int16_t ret;
 	ops_count += 1;
 	ret = a + b;
 	return ret;
 }
 
 #undef    silk_ADD32
-static inline opus_int32 silk_ADD32(opus_int32 a, opus_int32 b)
+static inline int32_t silk_ADD32(int32_t a, int32_t b)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a + b;
 	return ret;
 }
 
 #undef    silk_ADD64
-static inline opus_int64 silk_ADD64(opus_int64 a, opus_int64 b)
+static inline int64_t silk_ADD64(int64_t a, int64_t b)
 {
-	opus_int64 ret;
+	int64_t ret;
 	ops_count += 2;
 	ret = a + b;
 	return ret;
 }
 
 #undef    silk_SUB16
-static inline opus_int16 silk_SUB16(opus_int16 a, opus_int16 b)
+static inline int16_t silk_SUB16(int16_t a, int16_t b)
 {
-	opus_int16 ret;
+	int16_t ret;
 	ops_count += 1;
 	ret = a - b;
 	return ret;
 }
 
 #undef    silk_SUB32
-static inline opus_int32 silk_SUB32(opus_int32 a, opus_int32 b)
+static inline int32_t silk_SUB32(int32_t a, int32_t b)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 1;
 	ret = a - b;
 	return ret;
 }
 
 #undef    silk_SUB64
-static inline opus_int64 silk_SUB64(opus_int64 a, opus_int64 b)
+static inline int64_t silk_SUB64(int64_t a, int64_t b)
 {
-	opus_int64 ret;
+	int64_t ret;
 	ops_count += 2;
 	ret = a - b;
 	return ret;
 }
 
 #undef silk_ADD_SAT16
-static inline opus_int16 silk_ADD_SAT16(opus_int16 a16, opus_int16 b16)
+static inline int16_t silk_ADD_SAT16(int16_t a16, int16_t b16)
 {
-	opus_int16 res;
+	int16_t res;
 	/* Nb will be counted in AKP_add32 and silk_SAT16 */
-	res = (opus_int16) silk_SAT16(silk_ADD32((opus_int32) (a16), (b16)));
+	res = (int16_t) silk_SAT16(silk_ADD32((int32_t) (a16), (b16)));
 	return res;
 }
 
 #undef silk_ADD_SAT32
-static inline opus_int32 silk_ADD_SAT32(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_ADD_SAT32(int32_t a32, int32_t b32)
 {
-	opus_int32 res;
+	int32_t res;
 	ops_count += 1;
 	res = ((((a32) + (b32)) & 0x80000000) == 0 ?
 	       ((((a32) & (b32)) & 0x80000000) !=
@@ -688,9 +688,9 @@ static inline opus_int32 silk_ADD_SAT32(opus_int32 a32, opus_int32 b32)
 }
 
 #undef silk_ADD_SAT64
-static inline opus_int64 silk_ADD_SAT64(opus_int64 a64, opus_int64 b64)
+static inline int64_t silk_ADD_SAT64(int64_t a64, int64_t b64)
 {
-	opus_int64 res;
+	int64_t res;
 	ops_count += 1;
 	res = ((((a64) + (b64)) & 0x8000000000000000LL) == 0 ?
 	       ((((a64) & (b64)) & 0x8000000000000000LL) !=
@@ -701,19 +701,19 @@ static inline opus_int64 silk_ADD_SAT64(opus_int64 a64, opus_int64 b64)
 }
 
 #undef silk_SUB_SAT16
-static inline opus_int16 silk_SUB_SAT16(opus_int16 a16, opus_int16 b16)
+static inline int16_t silk_SUB_SAT16(int16_t a16, int16_t b16)
 {
-	opus_int16 res;
+	int16_t res;
 	silk_assert(0);
 	/* Nb will be counted in sub-macros */
-	res = (opus_int16) silk_SAT16(silk_SUB32((opus_int32) (a16), (b16)));
+	res = (int16_t) silk_SAT16(silk_SUB32((int32_t) (a16), (b16)));
 	return res;
 }
 
 #undef silk_SUB_SAT32
-static inline opus_int32 silk_SUB_SAT32(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_SUB_SAT32(int32_t a32, int32_t b32)
 {
-	opus_int32 res;
+	int32_t res;
 	ops_count += 1;
 	res = ((((a32) - (b32)) & 0x80000000) == 0 ?
 	       (((a32) & ((b32) ^ 0x80000000) & 0x80000000) ? silk_int32_MIN
@@ -724,9 +724,9 @@ static inline opus_int32 silk_SUB_SAT32(opus_int32 a32, opus_int32 b32)
 }
 
 #undef silk_SUB_SAT64
-static inline opus_int64 silk_SUB_SAT64(opus_int64 a64, opus_int64 b64)
+static inline int64_t silk_SUB_SAT64(int64_t a64, int64_t b64)
 {
-	opus_int64 res;
+	int64_t res;
 	ops_count += 1;
 	res = ((((a64) - (b64)) & 0x8000000000000000LL) == 0 ?
 	       (((a64) & ((b64) ^ 0x8000000000000000LL) & 0x8000000000000000LL)
@@ -739,9 +739,9 @@ static inline opus_int64 silk_SUB_SAT64(opus_int64 a64, opus_int64 b64)
 }
 
 #undef    silk_SMULWW
-static inline opus_int32 silk_SMULWW(opus_int32 a32, opus_int32 b32)
+static inline int32_t silk_SMULWW(int32_t a32, int32_t b32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	/* Nb will be counted in sub-macros */
 	ret =
 	    silk_MLA(silk_SMULWB((a32), (b32)), (a32),
@@ -750,10 +750,10 @@ static inline opus_int32 silk_SMULWW(opus_int32 a32, opus_int32 b32)
 }
 
 #undef    silk_SMLAWW
-static inline opus_int32 silk_SMLAWW(opus_int32 a32, opus_int32 b32,
-				     opus_int32 c32)
+static inline int32_t silk_SMLAWW(int32_t a32, int32_t b32,
+				     int32_t c32)
 {
-	opus_int32 ret;
+	int32_t ret;
 	/* Nb will be counted in sub-macros */
 	ret =
 	    silk_MLA(silk_SMLAWB((a32), (b32), (c32)), (b32),
@@ -762,28 +762,28 @@ static inline opus_int32 silk_SMLAWW(opus_int32 a32, opus_int32 b32,
 }
 
 #undef    silk_min_int
-static inline opus_int silk_min_int(opus_int a, opus_int b)
+static inline int silk_min_int(int a, int b)
 {
 	ops_count += 1;
 	return (((a) < (b)) ? (a) : (b));
 }
 
 #undef    silk_min_16
-static inline opus_int16 silk_min_16(opus_int16 a, opus_int16 b)
+static inline int16_t silk_min_16(int16_t a, int16_t b)
 {
 	ops_count += 1;
 	return (((a) < (b)) ? (a) : (b));
 }
 
 #undef    silk_min_32
-static inline opus_int32 silk_min_32(opus_int32 a, opus_int32 b)
+static inline int32_t silk_min_32(int32_t a, int32_t b)
 {
 	ops_count += 1;
 	return (((a) < (b)) ? (a) : (b));
 }
 
 #undef    silk_min_64
-static inline opus_int64 silk_min_64(opus_int64 a, opus_int64 b)
+static inline int64_t silk_min_64(int64_t a, int64_t b)
 {
 	ops_count += 1;
 	return (((a) < (b)) ? (a) : (b));
@@ -791,38 +791,38 @@ static inline opus_int64 silk_min_64(opus_int64 a, opus_int64 b)
 
 /* silk_min() versions with typecast in the function call */
 #undef    silk_max_int
-static inline opus_int silk_max_int(opus_int a, opus_int b)
+static inline int silk_max_int(int a, int b)
 {
 	ops_count += 1;
 	return (((a) > (b)) ? (a) : (b));
 }
 
 #undef    silk_max_16
-static inline opus_int16 silk_max_16(opus_int16 a, opus_int16 b)
+static inline int16_t silk_max_16(int16_t a, int16_t b)
 {
 	ops_count += 1;
 	return (((a) > (b)) ? (a) : (b));
 }
 
 #undef    silk_max_32
-static inline opus_int32 silk_max_32(opus_int32 a, opus_int32 b)
+static inline int32_t silk_max_32(int32_t a, int32_t b)
 {
 	ops_count += 1;
 	return (((a) > (b)) ? (a) : (b));
 }
 
 #undef    silk_max_64
-static inline opus_int64 silk_max_64(opus_int64 a, opus_int64 b)
+static inline int64_t silk_max_64(int64_t a, int64_t b)
 {
 	ops_count += 1;
 	return (((a) > (b)) ? (a) : (b));
 }
 
 #undef silk_LIMIT_int
-static inline opus_int silk_LIMIT_int(opus_int a, opus_int limit1,
-				      opus_int limit2)
+static inline int silk_LIMIT_int(int a, int limit1,
+				      int limit2)
 {
-	opus_int ret;
+	int ret;
 	ops_count += 6;
 
 	ret =
@@ -836,10 +836,10 @@ static inline opus_int silk_LIMIT_int(opus_int a, opus_int limit1,
 }
 
 #undef silk_LIMIT_16
-static inline opus_int16 silk_LIMIT_16(opus_int16 a, opus_int16 limit1,
-				       opus_int16 limit2)
+static inline int16_t silk_LIMIT_16(int16_t a, int16_t limit1,
+				       int16_t limit2)
 {
-	opus_int16 ret;
+	int16_t ret;
 	ops_count += 6;
 
 	ret =
@@ -853,10 +853,10 @@ static inline opus_int16 silk_LIMIT_16(opus_int16 a, opus_int16 limit1,
 }
 
 #undef silk_LIMIT_32
-static inline opus_int silk_LIMIT_32(opus_int32 a, opus_int32 limit1,
-				     opus_int32 limit2)
+static inline int silk_LIMIT_32(int32_t a, int32_t limit1,
+				     int32_t limit2)
 {
-	opus_int32 ret;
+	int32_t ret;
 	ops_count += 6;
 
 	ret =

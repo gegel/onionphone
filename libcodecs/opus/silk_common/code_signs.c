@@ -41,17 +41,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Encodes signs of excitation */
 void silk_encode_signs(ec_enc * psRangeEnc,	/* I/O  Compressor data structure                   */
-		       const opus_int8 pulses[],	/* I    pulse signal                                */
-		       opus_int length,	/* I    length of input                             */
-		       const opus_int signalType,	/* I    Signal type                                 */
-		       const opus_int quantOffsetType,	/* I    Quantization offset type                    */
-		       const opus_int sum_pulses[MAX_NB_SHELL_BLOCKS]	/* I    Sum of absolute pulses per block            */
+		       const int8_t pulses[],	/* I    pulse signal                                */
+		       int length,	/* I    length of input                             */
+		       const int signalType,	/* I    Signal type                                 */
+		       const int quantOffsetType,	/* I    Quantization offset type                    */
+		       const int sum_pulses[MAX_NB_SHELL_BLOCKS]	/* I    Sum of absolute pulses per block            */
     )
 {
-	opus_int i, j, p;
-	opus_uint8 icdf[2];
-	const opus_int8 *q_ptr;
-	const opus_uint8 *icdf_ptr;
+	int i, j, p;
+	uint8_t icdf[2];
+	const int8_t *q_ptr;
+	const uint8_t *icdf_ptr;
 
 	icdf[1] = 0;
 	q_ptr = pulses;
@@ -78,17 +78,17 @@ void silk_encode_signs(ec_enc * psRangeEnc,	/* I/O  Compressor data structure   
 
 /* Decodes signs of excitation */
 void silk_decode_signs(ec_dec * psRangeDec,	/* I/O  Compressor data structure                   */
-		       opus_int pulses[],	/* I/O  pulse signal                                */
-		       opus_int length,	/* I    length of input                             */
-		       const opus_int signalType,	/* I    Signal type                                 */
-		       const opus_int quantOffsetType,	/* I    Quantization offset type                    */
-		       const opus_int sum_pulses[MAX_NB_SHELL_BLOCKS]	/* I    Sum of absolute pulses per block            */
+		       int pulses[],	/* I/O  pulse signal                                */
+		       int length,	/* I    length of input                             */
+		       const int signalType,	/* I    Signal type                                 */
+		       const int quantOffsetType,	/* I    Quantization offset type                    */
+		       const int sum_pulses[MAX_NB_SHELL_BLOCKS]	/* I    Sum of absolute pulses per block            */
     )
 {
-	opus_int i, j, p;
-	opus_uint8 icdf[2];
-	opus_int *q_ptr;
-	const opus_uint8 *icdf_ptr;
+	int i, j, p;
+	uint8_t icdf[2];
+	int *q_ptr;
+	const uint8_t *icdf_ptr;
 
 	icdf[1] = 0;
 	q_ptr = pulses;

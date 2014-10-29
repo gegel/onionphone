@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 /************************/
 /* Init Decoder State   */
 /************************/
-opus_int silk_init_decoder(silk_decoder_state * psDec	/* I/O  Decoder state pointer                       */
+int silk_init_decoder(silk_decoder_state * psDec	/* I/O  Decoder state pointer                       */
     )
 {
 	/* Clear the entire encoder state, except anything copied */

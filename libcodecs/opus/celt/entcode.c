@@ -40,7 +40,7 @@
   If you are optimizing Opus on a new platform and it has a native CLZ or
    BZR (e.g. cell, MIPS, x86, etc) then making it available to Opus will be
    an easy performance win.*/
-int ec_ilog(opus_uint32 _v)
+int ec_ilog(uint32_t _v)
 {
 	/*On a Pentium M, this branchless version tested as the fastest on
 	   1,000,000,000 random 32-bit integers, edging out a similar version with
@@ -65,10 +65,10 @@ int ec_ilog(opus_uint32 _v)
 }
 #endif
 
-opus_uint32 ec_tell_frac(ec_ctx * _this)
+uint32_t ec_tell_frac(ec_ctx * _this)
 {
-	opus_uint32 nbits;
-	opus_uint32 r;
+	uint32_t nbits;
+	uint32_t r;
 	int l;
 	int i;
 	/*To handle the non-integral number of bits still left in the encoder/decoder

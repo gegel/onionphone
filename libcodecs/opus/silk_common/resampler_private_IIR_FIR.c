@@ -34,18 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FIX.h"
 #include "resampler_private.h"
 
-static inline opus_int16 *silk_resampler_private_IIR_FIR_INTERPOL(opus_int16 *
+static inline int16_t *silk_resampler_private_IIR_FIR_INTERPOL(int16_t *
 								  out,
-								  opus_int16 *
+								  int16_t *
 								  buf,
-								  opus_int32
+								  int32_t
 								  max_index_Q16,
-								  opus_int32
+								  int32_t
 								  index_increment_Q16)
 {
-	opus_int32 index_Q16, res_Q15;
-	opus_int16 *buf_ptr;
-	opus_int32 table_index;
+	int32_t index_Q16, res_Q15;
+	int16_t *buf_ptr;
+	int32_t table_index;
 
 	/* Interpolate upsampled signal and store in output array */
 	for (index_Q16 = 0; index_Q16 < max_index_Q16;
@@ -82,27 +82,27 @@ static inline opus_int16 *silk_resampler_private_IIR_FIR_INTERPOL(opus_int16 *
 				silk_resampler_frac_FIR_12[11 -
 							   table_index][0]);
 		*out++ =
-		    (opus_int16) silk_SAT16(silk_RSHIFT_ROUND(res_Q15, 15));
+		    (int16_t) silk_SAT16(silk_RSHIFT_ROUND(res_Q15, 15));
 	}
 	return out;
 }
 
 /* Upsample using a combination of allpass-based 2x upsampling and FIR interpolation */
 void silk_resampler_private_IIR_FIR(void *SS,	/* I/O  Resampler state             */
-				    opus_int16 out[],	/* O    Output signal               */
-				    const opus_int16 in[],	/* I    Input signal                */
-				    opus_int32 inLen	/* I    Number of input samples     */
+				    int16_t out[],	/* O    Output signal               */
+				    const int16_t in[],	/* I    Input signal                */
+				    int32_t inLen	/* I    Number of input samples     */
     )
 {
 	silk_resampler_state_struct *S = (silk_resampler_state_struct *) SS;
-	opus_int32 nSamplesIn;
-	opus_int32 max_index_Q16, index_increment_Q16;
+	int32_t nSamplesIn;
+	int32_t max_index_Q16, index_increment_Q16;
 
-	opus_int16 buf[2 * S->batchSize + RESAMPLER_ORDER_FIR_12];
+	int16_t buf[2 * S->batchSize + RESAMPLER_ORDER_FIR_12];
 
 	/* Copy buffered samples to start of buffer */
 	silk_memcpy(buf, S->sFIR.i16,
-		    RESAMPLER_ORDER_FIR_12 * sizeof(opus_int16));
+		    RESAMPLER_ORDER_FIR_12 * sizeof(int16_t));
 
 	/* Iterate over blocks of frameSizeIn input samples */
 	index_increment_Q16 = S->invRatio_Q16;
@@ -126,7 +126,7 @@ void silk_resampler_private_IIR_FIR(void *SS,	/* I/O  Resampler state           
 			/* More iterations to do; copy last part of filtered signal to beginning of buffer */
 			silk_memcpy(buf, &buf[nSamplesIn << 1],
 				    RESAMPLER_ORDER_FIR_12 *
-				    sizeof(opus_int16));
+				    sizeof(int16_t));
 		} else {
 			break;
 		}
@@ -134,6 +134,6 @@ void silk_resampler_private_IIR_FIR(void *SS,	/* I/O  Resampler state           
 
 	/* Copy last part of filtered signal to the state for the next call */
 	silk_memcpy(S->sFIR.i16, &buf[nSamplesIn << 1],
-		    RESAMPLER_ORDER_FIR_12 * sizeof(opus_int16));
+		    RESAMPLER_ORDER_FIR_12 * sizeof(int16_t));
 
 }

@@ -32,7 +32,7 @@
 #ifndef MODES_H
 #define MODES_H
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "celt.h"
 #include "arch.h"
 #include "mdct.h"
@@ -51,7 +51,7 @@
 
 typedef struct {
 	int size;
-	const opus_int16 *index;
+	const int16_t *index;
 	const unsigned char *bits;
 	const unsigned char *caps;
 } PulseCache;
@@ -60,13 +60,13 @@ typedef struct {
  @brief Mode definition
  */
 struct OpusCustomMode {
-	opus_int32 Fs;
+	int32_t Fs;
 	int overlap;
 
 	int nbEBands;
 	int effEBands;
 	opus_val16 preemph[4];
-	const opus_int16 *eBands;/**< Definition for each "pseudo-critical band" */
+	const int16_t *eBands;/**< Definition for each "pseudo-critical band" */
 
 	int maxLM;
 	int nbShortMdcts;
@@ -74,7 +74,7 @@ struct OpusCustomMode {
 
 	int nbAllocVectors;	/**< Number of lines in the matrix below */
 	const unsigned char *allocVectors;/**< Number of bits in each band for several rates */
-	const opus_int16 *logN;
+	const int16_t *logN;
 
 	const opus_val16 *window;
 	mdct_lookup mdct;

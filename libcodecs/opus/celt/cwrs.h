@@ -37,10 +37,10 @@
 #include "entdec.h"
 
 #ifdef CUSTOM_MODES
-int log2_frac(opus_uint32 val, int frac);
+int log2_frac(uint32_t val, int frac);
 #endif
 
-void get_required_bits(opus_int16 * bits, int N, int K, int frac);
+void get_required_bits(int16_t * bits, int N, int K, int frac);
 
 void encode_pulses(const int *_y, int N, int K, ec_enc * enc);
 

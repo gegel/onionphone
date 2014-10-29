@@ -55,7 +55,7 @@
 #define PACKAGE_VERSION "unknown"
 #endif
 
-int resampling_factor(opus_int32 rate)
+int resampling_factor(int32_t rate)
 {
 	int ret;
 	switch (rate) {

@@ -140,8 +140,8 @@ int encode_size(int size, unsigned char *data)
 	}
 }
 
-static int parse_size(const unsigned char *data, opus_int32 len,
-		      opus_int16 * size)
+static int parse_size(const unsigned char *data, int32_t len,
+		      int16_t * size)
 {
 	if (len < 1) {
 		*size = -1;
@@ -158,18 +158,18 @@ static int parse_size(const unsigned char *data, opus_int32 len,
 	}
 }
 
-int opus_packet_parse_impl(const unsigned char *data, opus_int32 len,
+int opus_packet_parse_impl(const unsigned char *data, int32_t len,
 			   int self_delimited, unsigned char *out_toc,
-			   const unsigned char *frames[48], opus_int16 size[48],
-			   int *payload_offset, opus_int32 * packet_offset)
+			   const unsigned char *frames[48], int16_t size[48],
+			   int *payload_offset, int32_t * packet_offset)
 {
 	int i, bytes;
 	int count;
 	int cbr;
 	unsigned char ch, toc;
 	int framesize;
-	opus_int32 last_size;
-	opus_int32 pad = 0;
+	int32_t last_size;
+	int32_t pad = 0;
 	const unsigned char *data0 = data;
 
 	if (size == NULL)
@@ -195,7 +195,7 @@ int opus_packet_parse_impl(const unsigned char *data, opus_int32 len,
 				return OPUS_INVALID_PACKET;
 			last_size = len / 2;
 			/* If last_size doesn't fit in size[0], we'll catch it later */
-			size[0] = (opus_int16) last_size;
+			size[0] = (int16_t) last_size;
 		}
 		break;
 		/* Two VBR frames */
@@ -255,7 +255,7 @@ int opus_packet_parse_impl(const unsigned char *data, opus_int32 len,
 			if (last_size * count != len)
 				return OPUS_INVALID_PACKET;
 			for (i = 0; i < count - 1; i++)
-				size[i] = (opus_int16) last_size;
+				size[i] = (int16_t) last_size;
 		}
 		break;
 	}
@@ -280,7 +280,7 @@ int opus_packet_parse_impl(const unsigned char *data, opus_int32 len,
 		   1275. Reject them here. */
 		if (last_size > 1275)
 			return OPUS_INVALID_PACKET;
-		size[count - 1] = (opus_int16) last_size;
+		size[count - 1] = (int16_t) last_size;
 	}
 
 	if (payload_offset)
@@ -293,7 +293,7 @@ int opus_packet_parse_impl(const unsigned char *data, opus_int32 len,
 	}
 
 	if (packet_offset)
-		*packet_offset = pad + (opus_int32) (data - data0);
+		*packet_offset = pad + (int32_t) (data - data0);
 
 	if (out_toc)
 		*out_toc = toc;
@@ -301,9 +301,9 @@ int opus_packet_parse_impl(const unsigned char *data, opus_int32 len,
 	return count;
 }
 
-int opus_packet_parse(const unsigned char *data, opus_int32 len,
+int opus_packet_parse(const unsigned char *data, int32_t len,
 		      unsigned char *out_toc, const unsigned char *frames[48],
-		      opus_int16 size[48], int *payload_offset)
+		      int16_t size[48], int *payload_offset)
 {
 	return opus_packet_parse_impl(data, len, 0, out_toc,
 				      frames, size, payload_offset, NULL);

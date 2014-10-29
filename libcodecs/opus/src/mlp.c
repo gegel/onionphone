@@ -31,7 +31,7 @@
 #include "config.h"
 #endif
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "opus_defines.h"
 
 #include <math.h>

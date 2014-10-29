@@ -42,7 +42,7 @@ extern "C" {
 /* Noise shaping analysis state */
 /********************************/
 	typedef struct {
-		opus_int8 LastGainIndex;
+		int8_t LastGainIndex;
 		silk_float HarmBoost_smth;
 		silk_float HarmShapeGain_smth;
 		silk_float Tilt_smth;
@@ -54,12 +54,12 @@ extern "C" {
 	typedef struct {
 		silk_float sLTP_shp[LTP_BUF_LENGTH];
 		silk_float sAR_shp[MAX_SHAPE_LPC_ORDER + 1];
-		opus_int sLTP_shp_buf_idx;
+		int sLTP_shp_buf_idx;
 		silk_float sLF_AR_shp;
 		silk_float sLF_MA_shp;
 		silk_float sHarmHP;
-		opus_int32 rand_seed;
-		opus_int lagPrev;
+		int32_t rand_seed;
+		int lagPrev;
 	} silk_prefilter_state_FLP;
 
 /********************************/
@@ -84,7 +84,7 @@ extern "C" {
 		silk_float PredCoef[2][MAX_LPC_ORDER];	/* holds interpolated and final coefficients */
 		silk_float LTPCoef[LTP_ORDER * MAX_NB_SUBFR];
 		silk_float LTP_scale;
-		opus_int pitchL[MAX_NB_SUBFR];
+		int pitchL[MAX_NB_SUBFR];
 
 		/* Noise shaping parameters */
 		silk_float AR1[MAX_NB_SUBFR * MAX_SHAPE_LPC_ORDER];
@@ -106,8 +106,8 @@ extern "C" {
 		silk_float ResNrg[MAX_NB_SUBFR];	/* Residual energy per subframe */
 
 		/* Parameters for CBR mode */
-		opus_int32 GainsUnq_Q16[MAX_NB_SUBFR];
-		opus_int8 lastGainIndexPrev;
+		int32_t GainsUnq_Q16[MAX_NB_SUBFR];
+		int8_t lastGainIndexPrev;
 	} silk_encoder_control_FLP;
 
 /************************/
@@ -116,13 +116,13 @@ extern "C" {
 	typedef struct {
 		silk_encoder_state_FLP state_Fxx[ENCODER_NUM_CHANNELS];
 		stereo_enc_state sStereo;
-		opus_int32 nBitsExceeded;
-		opus_int nChannelsAPI;
-		opus_int nChannelsInternal;
-		opus_int nPrevChannelsInternal;
-		opus_int timeSinceSwitchAllowed_ms;
-		opus_int allowBandwidthSwitch;
-		opus_int prev_decode_only_middle;
+		int32_t nBitsExceeded;
+		int nChannelsAPI;
+		int nChannelsInternal;
+		int nPrevChannelsInternal;
+		int timeSinceSwitchAllowed_ms;
+		int allowBandwidthSwitch;
+		int prev_decode_only_middle;
 	} silk_encoder;
 
 #ifdef __cplusplus

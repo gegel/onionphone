@@ -34,18 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 
 /* Silk VAD noise level estimation */
-static inline void silk_VAD_GetNoiseLevels(const opus_int32 pX[VAD_N_BANDS],	/* I    subband energies                            */
+static inline void silk_VAD_GetNoiseLevels(const int32_t pX[VAD_N_BANDS],	/* I    subband energies                            */
 					   silk_VAD_state * psSilk_VAD	/* I/O  Pointer to Silk VAD state                   */
     );
 
 /**********************************/
 /* Initialization of the Silk VAD */
 /**********************************/
-opus_int silk_VAD_Init(		/* O    Return value, 0 if success                  */
+int silk_VAD_Init(		/* O    Return value, 0 if success                  */
 			      silk_VAD_state * psSilk_VAD	/* I/O  Pointer to Silk VAD state                   */
     )
 {
-	opus_int b, ret = 0;
+	int b, ret = 0;
 
 	/* reset state memory */
 	silk_memset(psSilk_VAD, 0, sizeof(silk_VAD_state));
@@ -75,29 +75,29 @@ opus_int silk_VAD_Init(		/* O    Return value, 0 if success                  */
 }
 
 /* Weighting factors for tilt measure */
-static const opus_int32 tiltWeights[VAD_N_BANDS] =
+static const int32_t tiltWeights[VAD_N_BANDS] =
     { 30000, 6000, -12000, -12000 };
 
 /***************************************/
 /* Get the speech activity level in Q8 */
 /***************************************/
-opus_int silk_VAD_GetSA_Q8(	/* O    Return value, 0 if success                  */
+int silk_VAD_GetSA_Q8(	/* O    Return value, 0 if success                  */
 				  silk_encoder_state * psEncC,	/* I/O  Encoder state                               */
-				  const opus_int16 pIn[]	/* I    PCM input                                   */
+				  const int16_t pIn[]	/* I    PCM input                                   */
     )
 {
-	opus_int SA_Q15, pSNR_dB_Q7, input_tilt;
-	opus_int decimated_framelength1, decimated_framelength2;
-	opus_int decimated_framelength;
-	opus_int dec_subframe_length, dec_subframe_offset, SNR_Q7, i, b, s;
-	opus_int32 sumSquared, smooth_coef_Q16;
-	opus_int16 HPstateTmp;
+	int SA_Q15, pSNR_dB_Q7, input_tilt;
+	int decimated_framelength1, decimated_framelength2;
+	int decimated_framelength;
+	int dec_subframe_length, dec_subframe_offset, SNR_Q7, i, b, s;
+	int32_t sumSquared, smooth_coef_Q16;
+	int16_t HPstateTmp;
 
-	opus_int32 Xnrg[VAD_N_BANDS];
-	opus_int32 NrgToNoiseRatio_Q8[VAD_N_BANDS];
-	opus_int32 speech_nrg, x_tmp;
-	opus_int X_offset[VAD_N_BANDS];
-	opus_int ret = 0;
+	int32_t Xnrg[VAD_N_BANDS];
+	int32_t NrgToNoiseRatio_Q8[VAD_N_BANDS];
+	int32_t speech_nrg, x_tmp;
+	int X_offset[VAD_N_BANDS];
+	int ret = 0;
 	silk_VAD_state *psSilk_VAD = &psEncC->sVAD;
 
 	/* Safety checks */
@@ -126,7 +126,7 @@ opus_int silk_VAD_GetSA_Q8(	/* O    Return value, 0 if success                  
 	X_offset[1] = decimated_framelength + decimated_framelength2;
 	X_offset[2] = X_offset[1] + decimated_framelength;
 	X_offset[3] = X_offset[2] + decimated_framelength2;
-	opus_int16 X[X_offset[3] + decimated_framelength1];
+	int16_t X[X_offset[3] + decimated_framelength1];
 
 	/* 0-8 kHz to 0-4 kHz and 4-8 kHz */
 	silk_ana_filt_bank_1(pIn, &psSilk_VAD->AnaState[0],
@@ -236,7 +236,7 @@ opus_int silk_VAD_GetSA_Q8(	/* O    Return value, 0 if success                  
 			sumSquared = silk_SMLABB(sumSquared, SNR_Q7, SNR_Q7);	/* Q14 */
 
 			/* Tilt measure */
-			if (speech_nrg < ((opus_int32) 1 << 20)) {
+			if (speech_nrg < ((int32_t) 1 << 20)) {
 				/* Scale down SNR value for small subband speech energies */
 				SNR_Q7 =
 				    silk_SMULWB(silk_LSHIFT
@@ -254,7 +254,7 @@ opus_int silk_VAD_GetSA_Q8(	/* O    Return value, 0 if success                  
 	sumSquared = silk_DIV32_16(sumSquared, VAD_N_BANDS);	/* Q14 */
 
 	/* Root-mean-square approximation, scale to dBs, and write to output pointer */
-	pSNR_dB_Q7 = (opus_int16) (3 * silk_SQRT_APPROX(sumSquared));	/* Q7 */
+	pSNR_dB_Q7 = (int16_t) (3 * silk_SQRT_APPROX(sumSquared));	/* Q7 */
 
     /*********************************/
 	/* Speech Probability Estimation */
@@ -304,7 +304,7 @@ opus_int silk_VAD_GetSA_Q8(	/* O    Return value, 0 if success                  
 	/* Smoothing coefficient */
 	smooth_coef_Q16 =
 	    silk_SMULWB(VAD_SNR_SMOOTH_COEF_Q18,
-			silk_SMULWB((opus_int32) SA_Q15, SA_Q15));
+			silk_SMULWB((int32_t) SA_Q15, SA_Q15));
 
 	if (psEncC->frame_length == 10 * psEncC->fs_kHz) {
 		smooth_coef_Q16 >>= 1;
@@ -333,13 +333,13 @@ opus_int silk_VAD_GetSA_Q8(	/* O    Return value, 0 if success                  
 /**************************/
 /* Noise level estimation */
 /**************************/
-static inline void silk_VAD_GetNoiseLevels(const opus_int32 pX[VAD_N_BANDS],	/* I    subband energies                            */
+static inline void silk_VAD_GetNoiseLevels(const int32_t pX[VAD_N_BANDS],	/* I    subband energies                            */
 					   silk_VAD_state * psSilk_VAD	/* I/O  Pointer to Silk VAD state                   */
     )
 {
-	opus_int k;
-	opus_int32 nl, nrg, inv_nrg;
-	opus_int coef, min_coef;
+	int k;
+	int32_t nl, nrg, inv_nrg;
+	int coef, min_coef;
 
 	/* Initially faster smoothing */
 	if (psSilk_VAD->counter < 1000) {	/* 1000 = 20 sec */

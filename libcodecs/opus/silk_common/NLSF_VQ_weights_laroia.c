@@ -41,49 +41,49 @@ Signal Processing, pp. 641-644, 1991.
 */
 
 /* Laroia low complexity NLSF weights */
-void silk_NLSF_VQ_weights_laroia(opus_int16 * pNLSFW_Q_OUT,	/* O     Pointer to input vector weights [D]                        */
-				 const opus_int16 * pNLSF_Q15,	/* I     Pointer to input vector         [D]                        */
-				 const opus_int D	/* I     Input vector dimension (even)                              */
+void silk_NLSF_VQ_weights_laroia(int16_t * pNLSFW_Q_OUT,	/* O     Pointer to input vector weights [D]                        */
+				 const int16_t * pNLSF_Q15,	/* I     Pointer to input vector         [D]                        */
+				 const int D	/* I     Input vector dimension (even)                              */
     )
 {
-	opus_int k;
-	opus_int32 tmp1_int, tmp2_int;
+	int k;
+	int32_t tmp1_int, tmp2_int;
 
 	silk_assert(D > 0);
 	silk_assert((D & 1) == 0);
 
 	/* First value */
 	tmp1_int = silk_max_int(pNLSF_Q15[0], 1);
-	tmp1_int = silk_DIV32_16((opus_int32) 1 << (15 + NLSF_W_Q), tmp1_int);
+	tmp1_int = silk_DIV32_16((int32_t) 1 << (15 + NLSF_W_Q), tmp1_int);
 	tmp2_int = silk_max_int(pNLSF_Q15[1] - pNLSF_Q15[0], 1);
-	tmp2_int = silk_DIV32_16((opus_int32) 1 << (15 + NLSF_W_Q), tmp2_int);
+	tmp2_int = silk_DIV32_16((int32_t) 1 << (15 + NLSF_W_Q), tmp2_int);
 	pNLSFW_Q_OUT[0] =
-	    (opus_int16) silk_min_int(tmp1_int + tmp2_int, silk_int16_MAX);
+	    (int16_t) silk_min_int(tmp1_int + tmp2_int, silk_int16_MAX);
 	silk_assert(pNLSFW_Q_OUT[0] > 0);
 
 	/* Main loop */
 	for (k = 1; k < D - 1; k += 2) {
 		tmp1_int = silk_max_int(pNLSF_Q15[k + 1] - pNLSF_Q15[k], 1);
 		tmp1_int =
-		    silk_DIV32_16((opus_int32) 1 << (15 + NLSF_W_Q), tmp1_int);
+		    silk_DIV32_16((int32_t) 1 << (15 + NLSF_W_Q), tmp1_int);
 		pNLSFW_Q_OUT[k] =
-		    (opus_int16) silk_min_int(tmp1_int + tmp2_int,
+		    (int16_t) silk_min_int(tmp1_int + tmp2_int,
 					      silk_int16_MAX);
 		silk_assert(pNLSFW_Q_OUT[k] > 0);
 
 		tmp2_int = silk_max_int(pNLSF_Q15[k + 2] - pNLSF_Q15[k + 1], 1);
 		tmp2_int =
-		    silk_DIV32_16((opus_int32) 1 << (15 + NLSF_W_Q), tmp2_int);
+		    silk_DIV32_16((int32_t) 1 << (15 + NLSF_W_Q), tmp2_int);
 		pNLSFW_Q_OUT[k + 1] =
-		    (opus_int16) silk_min_int(tmp1_int + tmp2_int,
+		    (int16_t) silk_min_int(tmp1_int + tmp2_int,
 					      silk_int16_MAX);
 		silk_assert(pNLSFW_Q_OUT[k + 1] > 0);
 	}
 
 	/* Last value */
 	tmp1_int = silk_max_int((1 << 15) - pNLSF_Q15[D - 1], 1);
-	tmp1_int = silk_DIV32_16((opus_int32) 1 << (15 + NLSF_W_Q), tmp1_int);
+	tmp1_int = silk_DIV32_16((int32_t) 1 << (15 + NLSF_W_Q), tmp1_int);
 	pNLSFW_Q_OUT[D - 1] =
-	    (opus_int16) silk_min_int(tmp1_int + tmp2_int, silk_int16_MAX);
+	    (int16_t) silk_min_int(tmp1_int + tmp2_int, silk_int16_MAX);
 	silk_assert(pNLSFW_Q_OUT[D - 1] > 0);
 }

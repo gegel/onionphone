@@ -37,20 +37,20 @@ POSSIBILITY OF SUCH DAMAGE.
 #define ORDER_FIR                   4
 
 /* Downsample by a factor 2/3, low quality */
-void silk_resampler_down2_3(opus_int32 * S,	/* I/O  State vector [ 6 ]                                          */
-			    opus_int16 * out,	/* O    Output signal [ floor(2*inLen/3) ]                          */
-			    const opus_int16 * in,	/* I    Input signal [ inLen ]                                      */
-			    opus_int32 inLen	/* I    Number of input samples                                     */
+void silk_resampler_down2_3(int32_t * S,	/* I/O  State vector [ 6 ]                                          */
+			    int16_t * out,	/* O    Output signal [ floor(2*inLen/3) ]                          */
+			    const int16_t * in,	/* I    Input signal [ inLen ]                                      */
+			    int32_t inLen	/* I    Number of input samples                                     */
     )
 {
-	opus_int32 nSamplesIn, counter, res_Q6;
+	int32_t nSamplesIn, counter, res_Q6;
 
-	opus_int32 *buf_ptr;
+	int32_t *buf_ptr;
 
-	opus_int32 buf[RESAMPLER_MAX_BATCH_SIZE_IN + ORDER_FIR];
+	int32_t buf[RESAMPLER_MAX_BATCH_SIZE_IN + ORDER_FIR];
 
 	/* Copy buffered samples to start of buffer */
-	silk_memcpy(buf, S, ORDER_FIR * sizeof(opus_int32));
+	silk_memcpy(buf, S, ORDER_FIR * sizeof(int32_t));
 
 	/* Iterate over blocks of frameSizeIn input samples */
 	while (1) {
@@ -81,7 +81,7 @@ void silk_resampler_down2_3(opus_int32 * S,	/* I/O  State vector [ 6 ]          
 
 			/* Scale down, saturate and store in output array */
 			*out++ =
-			    (opus_int16)
+			    (int16_t)
 			    silk_SAT16(silk_RSHIFT_ROUND(res_Q6, 6));
 
 			res_Q6 =
@@ -99,7 +99,7 @@ void silk_resampler_down2_3(opus_int32 * S,	/* I/O  State vector [ 6 ]          
 
 			/* Scale down, saturate and store in output array */
 			*out++ =
-			    (opus_int16)
+			    (int16_t)
 			    silk_SAT16(silk_RSHIFT_ROUND(res_Q6, 6));
 
 			buf_ptr += 3;
@@ -112,13 +112,13 @@ void silk_resampler_down2_3(opus_int32 * S,	/* I/O  State vector [ 6 ]          
 		if (inLen > 0) {
 			/* More iterations to do; copy last part of filtered signal to beginning of buffer */
 			silk_memcpy(buf, &buf[nSamplesIn],
-				    ORDER_FIR * sizeof(opus_int32));
+				    ORDER_FIR * sizeof(int32_t));
 		} else {
 			break;
 		}
 	}
 
 	/* Copy last part of filtered signal to the state for the next call */
-	silk_memcpy(S, &buf[nSamplesIn], ORDER_FIR * sizeof(opus_int32));
+	silk_memcpy(S, &buf[nSamplesIn], ORDER_FIR * sizeof(int32_t));
 
 }

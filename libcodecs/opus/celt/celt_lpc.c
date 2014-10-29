@@ -265,7 +265,7 @@ int _celt_autocorr(const opus_val16 * x,	/*  in: [0...n-1] samples x   */
 #ifdef FIXED_POINT
 	shift = 2 * shift;
 	if (shift <= 0)
-		ac[0] += SHL32((opus_int32) 1, -shift);
+		ac[0] += SHL32((int32_t) 1, -shift);
 	if (ac[0] < 268435456) {
 		int shift2 = 29 - EC_ILOG(ac[0]);
 		for (i = 0; i <= lag; i++)

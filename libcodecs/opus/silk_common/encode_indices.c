@@ -36,15 +36,15 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Encode side-information parameters to payload */
 void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state                               */
 			 ec_enc * psRangeEnc,	/* I/O  Compressor data structure                   */
-			 opus_int FrameIndex,	/* I    Frame number                                */
-			 opus_int encode_LBRR,	/* I    Flag indicating LBRR data is being encoded  */
-			 opus_int condCoding	/* I    The type of conditional coding to use       */
+			 int FrameIndex,	/* I    Frame number                                */
+			 int encode_LBRR,	/* I    Flag indicating LBRR data is being encoded  */
+			 int condCoding	/* I    The type of conditional coding to use       */
     )
 {
-	opus_int i, k, typeOffset;
-	opus_int encode_absolute_lagIndex, delta_lagIndex;
-	opus_int16 ec_ix[MAX_LPC_ORDER];
-	opus_uint8 pred_Q8[MAX_LPC_ORDER];
+	int i, k, typeOffset;
+	int encode_absolute_lagIndex, delta_lagIndex;
+	int16_t ec_ix[MAX_LPC_ORDER];
+	uint8_t pred_Q8[MAX_LPC_ORDER];
 	const SideInfoIndices *psIndices;
 
 	if (encode_LBRR) {
@@ -163,7 +163,7 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 		}
 		if (encode_absolute_lagIndex) {
 			/* Absolute encoding */
-			opus_int32 pitch_high_bits, pitch_low_bits;
+			int32_t pitch_high_bits, pitch_low_bits;
 			pitch_high_bits =
 			    silk_DIV32_16(psIndices->lagIndex,
 					  silk_RSHIFT(psEncC->fs_kHz, 1));

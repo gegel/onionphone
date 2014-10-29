@@ -32,10 +32,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #define SILK_SIGPROC_FIX_ARMv4_H
 
 #undef silk_MLA
-static inline opus_int32 silk_MLA_armv4(opus_int32 a, opus_int32 b,
-					opus_int32 c)
+static inline int32_t silk_MLA_armv4(int32_t a, int32_t b,
+					int32_t c)
 {
-	opus_int32 res;
+	int32_t res;
  __asm__("#silk_MLA\n\t" "mla %0, %1, %2, %3\n\t":"=&r"(res)
  :		"r"(b), "r"(c), "r"(a)
 	    );

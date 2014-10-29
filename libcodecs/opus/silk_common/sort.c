@@ -39,14 +39,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "SigProc_FIX.h"
 
-void silk_insertion_sort_increasing(opus_int32 * a,	/* I/O   Unsorted / Sorted vector               */
-				    opus_int * idx,	/* O     Index vector for the sorted elements   */
-				    const opus_int L,	/* I     Vector length                          */
-				    const opus_int K	/* I     Number of correctly sorted positions   */
+void silk_insertion_sort_increasing(int32_t * a,	/* I/O   Unsorted / Sorted vector               */
+				    int * idx,	/* O     Index vector for the sorted elements   */
+				    const int L,	/* I     Vector length                          */
+				    const int K	/* I     Number of correctly sorted positions   */
     )
 {
-	opus_int32 value;
-	opus_int i, j;
+	int32_t value;
+	int i, j;
 
 	/* Safety checks */
 	silk_assert(K > 0);
@@ -86,14 +86,14 @@ void silk_insertion_sort_increasing(opus_int32 * a,	/* I/O   Unsorted / Sorted v
 
 #ifdef FIXED_POINT
 /* This function is only used by the fixed-point build */
-void silk_insertion_sort_decreasing_int16(opus_int16 * a,	/* I/O   Unsorted / Sorted vector                                   */
-					  opus_int * idx,	/* O     Index vector for the sorted elements                       */
-					  const opus_int L,	/* I     Vector length                                              */
-					  const opus_int K	/* I     Number of correctly sorted positions                       */
+void silk_insertion_sort_decreasing_int16(int16_t * a,	/* I/O   Unsorted / Sorted vector                                   */
+					  int * idx,	/* O     Index vector for the sorted elements                       */
+					  const int L,	/* I     Vector length                                              */
+					  const int K	/* I     Number of correctly sorted positions                       */
     )
 {
-	opus_int i, j;
-	opus_int value;
+	int i, j;
+	int value;
 
 	/* Safety checks */
 	silk_assert(K > 0);
@@ -132,12 +132,12 @@ void silk_insertion_sort_decreasing_int16(opus_int16 * a,	/* I/O   Unsorted / So
 }
 #endif
 
-void silk_insertion_sort_increasing_all_values_int16(opus_int16 * a,	/* I/O   Unsorted / Sorted vector                                   */
-						     const opus_int L	/* I     Vector length                                              */
+void silk_insertion_sort_increasing_all_values_int16(int16_t * a,	/* I/O   Unsorted / Sorted vector                                   */
+						     const int L	/* I     Vector length                                              */
     )
 {
-	opus_int value;
-	opus_int i, j;
+	int value;
+	int i, j;
 
 	/* Safety checks */
 	silk_assert(L > 0);

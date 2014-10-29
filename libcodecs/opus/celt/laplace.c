@@ -47,7 +47,7 @@ static unsigned ec_laplace_get_freq1(unsigned fs0, int decay)
 {
 	unsigned ft;
 	ft = 32768 - LAPLACE_MINP * (2 * LAPLACE_NMIN) - fs0;
-	return ft * (opus_int32) (16384 - decay) >> 15;
+	return ft * (int32_t) (16384 - decay) >> 15;
 }
 
 void ec_laplace_encode(ec_enc * enc, int *value, unsigned fs, int decay)
@@ -66,7 +66,7 @@ void ec_laplace_encode(ec_enc * enc, int *value, unsigned fs, int decay)
 		for (i = 1; fs > 0 && i < val; i++) {
 			fs *= 2;
 			fl += fs + 2 * LAPLACE_MINP;
-			fs = (fs * (opus_int32) decay) >> 15;
+			fs = (fs * (int32_t) decay) >> 15;
 		}
 		/* Everything beyond that has probability LAPLACE_MINP. */
 		if (!fs) {
@@ -105,7 +105,7 @@ int ec_laplace_decode(ec_dec * dec, unsigned fs, int decay)
 			fs *= 2;
 			fl += fs;
 			fs = ((fs -
-			       2 * LAPLACE_MINP) * (opus_int32) decay) >> 15;
+			       2 * LAPLACE_MINP) * (int32_t) decay) >> 15;
 			fs += LAPLACE_MINP;
 			val++;
 		}

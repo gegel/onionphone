@@ -40,12 +40,12 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Calculates correlation vector X'*t */
 void silk_corrVector_FLP(const silk_float * x,	/* I    x vector [L+order-1] used to create X       */
 			 const silk_float * t,	/* I    Target vector [L]                           */
-			 const opus_int L,	/* I    Length of vecors                            */
-			 const opus_int Order,	/* I    Max lag for correlation                     */
+			 const int L,	/* I    Length of vecors                            */
+			 const int Order,	/* I    Max lag for correlation                     */
 			 silk_float * Xt	/* O    X'*t correlation vector [order]             */
     )
 {
-	opus_int lag;
+	int lag;
 	const silk_float *ptr1;
 
 	ptr1 = &x[Order - 1];	/* Points to first sample of column 0 of X: X[:,0] */
@@ -58,12 +58,12 @@ void silk_corrVector_FLP(const silk_float * x,	/* I    x vector [L+order-1] used
 
 /* Calculates correlation matrix X'*X */
 void silk_corrMatrix_FLP(const silk_float * x,	/* I    x vector [ L+order-1 ] used to create X     */
-			 const opus_int L,	/* I    Length of vectors                           */
-			 const opus_int Order,	/* I    Max lag for correlation                     */
+			 const int L,	/* I    Length of vectors                           */
+			 const int Order,	/* I    Max lag for correlation                     */
 			 silk_float * XX	/* O    X'*X correlation matrix [order x order]     */
     )
 {
-	opus_int j, lag;
+	int j, lag;
 	double energy;
 	const silk_float *ptr1, *ptr2;
 

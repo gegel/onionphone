@@ -34,18 +34,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main_FIX.h"
 
 /* Residual energy: nrg = wxx - 2 * wXx * c + c' * wXX * c */
-opus_int32 silk_residual_energy16_covar_FIX(const opus_int16 * c,	/* I    Prediction vector                                                           */
-					    const opus_int32 * wXX,	/* I    Correlation matrix                                                          */
-					    const opus_int32 * wXx,	/* I    Correlation vector                                                          */
-					    opus_int32 wxx,	/* I    Signal energy                                                               */
-					    opus_int D,	/* I    Dimension                                                                   */
-					    opus_int cQ	/* I    Q value for c vector 0 - 15                                                 */
+int32_t silk_residual_energy16_covar_FIX(const int16_t * c,	/* I    Prediction vector                                                           */
+					    const int32_t * wXX,	/* I    Correlation matrix                                                          */
+					    const int32_t * wXx,	/* I    Correlation vector                                                          */
+					    int32_t wxx,	/* I    Signal energy                                                               */
+					    int D,	/* I    Dimension                                                                   */
+					    int cQ	/* I    Q value for c vector 0 - 15                                                 */
     )
 {
-	opus_int i, j, lshifts, Qxtra;
-	opus_int32 c_max, w_max, tmp, tmp2, nrg;
-	opus_int cn[MAX_MATRIX_SIZE];
-	const opus_int32 *pRow;
+	int i, j, lshifts, Qxtra;
+	int32_t c_max, w_max, tmp, tmp2, nrg;
+	int cn[MAX_MATRIX_SIZE];
+	const int32_t *pRow;
 
 	/* Safety checks */
 	silk_assert(D >= 0);
@@ -58,7 +58,7 @@ opus_int32 silk_residual_energy16_covar_FIX(const opus_int16 * c,	/* I    Predic
 
 	c_max = 0;
 	for (i = 0; i < D; i++) {
-		c_max = silk_max_32(c_max, silk_abs((opus_int32) c[i]));
+		c_max = silk_max_32(c_max, silk_abs((int32_t) c[i]));
 	}
 	Qxtra = silk_min_int(Qxtra, silk_CLZ32(c_max) - 17);
 
@@ -71,7 +71,7 @@ opus_int32 silk_residual_energy16_covar_FIX(const opus_int16 * c,	/* I    Predic
 						 4))) - 5);
 	Qxtra = silk_max_int(Qxtra, 0);
 	for (i = 0; i < D; i++) {
-		cn[i] = silk_LSHIFT((opus_int) c[i], Qxtra);
+		cn[i] = silk_LSHIFT((int) c[i], Qxtra);
 		silk_assert(silk_abs(cn[i]) <= (silk_int16_MAX + 1));	/* Check that silk_SMLAWB can be used */
 	}
 	lshifts -= Qxtra;

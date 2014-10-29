@@ -41,21 +41,21 @@ POSSIBILITY OF SUCH DAMAGE.
 /* first d output samples are set to zero  */
 /*******************************************/
 
-void silk_LPC_analysis_filter(opus_int16 * out,	/* O    Output signal                                               */
-			      const opus_int16 * in,	/* I    Input signal                                                */
-			      const opus_int16 * B,	/* I    MA prediction coefficients, Q12 [order]                     */
-			      const opus_int32 len,	/* I    Signal length                                               */
-			      const opus_int32 d	/* I    Filter order                                                */
+void silk_LPC_analysis_filter(int16_t * out,	/* O    Output signal                                               */
+			      const int16_t * in,	/* I    Input signal                                                */
+			      const int16_t * B,	/* I    MA prediction coefficients, Q12 [order]                     */
+			      const int32_t len,	/* I    Signal length                                               */
+			      const int32_t d	/* I    Filter order                                                */
     )
 {
-	opus_int j;
+	int j;
 #ifdef FIXED_POINT
-	opus_int16 mem[SILK_MAX_ORDER_LPC];
-	opus_int16 num[SILK_MAX_ORDER_LPC];
+	int16_t mem[SILK_MAX_ORDER_LPC];
+	int16_t num[SILK_MAX_ORDER_LPC];
 #else
 	int ix;
-	opus_int32 out32_Q12, out32;
-	const opus_int16 *in_ptr;
+	int32_t out32_Q12, out32;
+	const int16_t *in_ptr;
 #endif
 
 	silk_assert(d >= 6);
@@ -96,17 +96,17 @@ void silk_LPC_analysis_filter(opus_int16 * out,	/* O    Output signal           
 
 		/* Subtract prediction */
 		out32_Q12 =
-		    silk_SUB32_ovflw(silk_LSHIFT((opus_int32) in_ptr[1], 12),
+		    silk_SUB32_ovflw(silk_LSHIFT((int32_t) in_ptr[1], 12),
 				     out32_Q12);
 
 		/* Scale to Q0 */
 		out32 = silk_RSHIFT_ROUND(out32_Q12, 12);
 
 		/* Saturate output */
-		out[ix] = (opus_int16) silk_SAT16(out32);
+		out[ix] = (int16_t) silk_SAT16(out32);
 	}
 
 	/* Set first d output samples to zero */
-	silk_memset(out, 0, d * sizeof(opus_int16));
+	silk_memset(out, 0, d * sizeof(int16_t));
 #endif
 }

@@ -76,7 +76,7 @@ struct OpusCustomDecoder {
 	/* Everything beyond this point gets cleared on a reset */
 #define DECODER_RESET_START rng
 
-	opus_uint32 rng;
+	uint32_t rng;
 	int error;
 	int last_pitch_index;
 	int loss_count;
@@ -133,7 +133,7 @@ CELTDecoder *opus_custom_decoder_create(const CELTMode * mode, int channels,
 }
 #endif				/* CUSTOM_MODES */
 
-int celt_decoder_init(CELTDecoder * st, opus_int32 sampling_rate, int channels)
+int celt_decoder_init(CELTDecoder * st, int32_t sampling_rate, int channels)
 {
 	int ret;
 	ret =
@@ -301,8 +301,8 @@ static void tf_decode(int start, int end, int isTransient, int *tf_res, int LM,
 	int tf_select_rsv;
 	int tf_changed;
 	int logp;
-	opus_uint32 budget;
-	opus_uint32 tell;
+	uint32_t budget;
+	uint32_t tell;
 
 	budget = dec->storage * 8;
 	tell = ec_tell(dec);
@@ -357,7 +357,7 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st,
 	int downsample;
 	int loss_count;
 	int noise_based;
-	const opus_int16 *eBands;
+	const int16_t *eBands;
 
 	mode = st->mode;
 	nbEBands = mode->nbEBands;
@@ -386,7 +386,7 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st,
 	if (noise_based) {
 		/* Noise-based PLC/CNG */
 		celt_sig *freq;
-		opus_uint32 seed;
+		uint32_t seed;
 		opus_val16 *plcLogE;
 		int end;
 		int effEnd;
@@ -424,7 +424,7 @@ static void celt_decode_lost(CELTDecoder * OPUS_RESTRICT st,
 				for (j = 0; j < blen; j++) {
 					seed = celt_lcg_rand(seed);
 					X[boffs + j] =
-					    (celt_norm) ((opus_int32) seed >>
+					    (celt_norm) ((int32_t) seed >>
 							 20);
 				}
 				renormalise_vector(X + boffs, blen, Q15ONE);
@@ -710,7 +710,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st,
 {
 	int c, i, N;
 	int spread_decision;
-	opus_int32 bits;
+	int32_t bits;
 	ec_dec _dec;
 	celt_sig *decode_mem[2];
 	celt_sig *out_syn[2];
@@ -729,9 +729,9 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st,
 	opus_val16 postfilter_gain;
 	int intensity = 0;
 	int dual_stereo = 0;
-	opus_int32 total_bits;
-	opus_int32 balance;
-	opus_int32 tell;
+	int32_t total_bits;
+	int32_t balance;
+	int32_t tell;
 	int dynalloc_logp;
 	int postfilter_tapset;
 	int anti_collapse_rsv;
@@ -741,7 +741,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st,
 	const OpusCustomMode *mode;
 	int nbEBands;
 	int overlap;
-	const opus_int16 *eBands;
+	const int16_t *eBands;
 
 	mode = st->mode;
 	nbEBands = mode->nbEBands;
@@ -918,7 +918,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st,
 	alloc_trim = tell + (6 << BITRES) <= total_bits ?
 	    ec_dec_icdf(dec, trim_icdf, 7) : 5;
 
-	bits = (((opus_int32) len * 8) << BITRES) - ec_tell_frac(dec) - 1;
+	bits = (((int32_t) len * 8) << BITRES) - ec_tell_frac(dec) - 1;
 	anti_collapse_rsv = isTransient && LM >= 2
 	    && bits >= ((LM + 2) << BITRES) ? (1 << BITRES) : 0;
 	bits -= anti_collapse_rsv;
@@ -1087,7 +1087,7 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st,
 #ifdef FIXED_POINT
 int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st,
 		       const unsigned char *data, int len,
-		       opus_int16 * OPUS_RESTRICT pcm, int frame_size)
+		       int16_t * OPUS_RESTRICT pcm, int frame_size)
 {
 	return celt_decode_with_ec(st, data, len, pcm, frame_size, NULL);
 }
@@ -1105,7 +1105,7 @@ int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st,
 	C = st->channels;
 	N = frame_size;
 
-	opus_int16 out[C * N];
+	int16_t out[C * N];
 	ret = celt_decode_with_ec(st, data, len, out, frame_size, NULL);
 	if (ret > 0)
 		for (j = 0; j < C * ret; j++)
@@ -1126,7 +1126,7 @@ int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st,
 
 int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st,
 		       const unsigned char *data, int len,
-		       opus_int16 * OPUS_RESTRICT pcm, int frame_size)
+		       int16_t * OPUS_RESTRICT pcm, int frame_size)
 {
 	int j, ret, C, N;
 
@@ -1157,7 +1157,7 @@ int opus_custom_decoder_ctl(CELTDecoder * OPUS_RESTRICT st, int request, ...)
 	switch (request) {
 	case CELT_SET_START_BAND_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			if (value < 0 || value >= st->mode->nbEBands)
 				goto bad_arg;
 			st->start = value;
@@ -1165,7 +1165,7 @@ int opus_custom_decoder_ctl(CELTDecoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case CELT_SET_END_BAND_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			if (value < 1 || value > st->mode->nbEBands)
 				goto bad_arg;
 			st->end = value;
@@ -1173,7 +1173,7 @@ int opus_custom_decoder_ctl(CELTDecoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case CELT_SET_CHANNELS_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			if (value < 1 || value > 2)
 				goto bad_arg;
 			st->stream_channels = value;
@@ -1181,7 +1181,7 @@ int opus_custom_decoder_ctl(CELTDecoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case CELT_GET_AND_CLEAR_ERROR_REQUEST:
 		{
-			opus_int32 *value = va_arg(ap, opus_int32 *);
+			int32_t *value = va_arg(ap, int32_t *);
 			if (value == NULL)
 				goto bad_arg;
 			*value = st->error;
@@ -1190,7 +1190,7 @@ int opus_custom_decoder_ctl(CELTDecoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case OPUS_GET_LOOKAHEAD_REQUEST:
 		{
-			opus_int32 *value = va_arg(ap, opus_int32 *);
+			int32_t *value = va_arg(ap, int32_t *);
 			if (value == NULL)
 				goto bad_arg;
 			*value = st->overlap / st->downsample;
@@ -1219,7 +1219,7 @@ int opus_custom_decoder_ctl(CELTDecoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case OPUS_GET_PITCH_REQUEST:
 		{
-			opus_int32 *value = va_arg(ap, opus_int32 *);
+			int32_t *value = va_arg(ap, int32_t *);
 			if (value == NULL)
 				goto bad_arg;
 			*value = st->postfilter_period;
@@ -1235,13 +1235,13 @@ int opus_custom_decoder_ctl(CELTDecoder * OPUS_RESTRICT st, int request, ...)
 		break;
 	case CELT_SET_SIGNALLING_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			st->signalling = value;
 		}
 		break;
 	case OPUS_GET_FINAL_RANGE_REQUEST:
 		{
-			opus_uint32 *value = va_arg(ap, opus_uint32 *);
+			uint32_t *value = va_arg(ap, uint32_t *);
 			if (value == 0)
 				goto bad_arg;
 			*value = st->rng;

@@ -121,7 +121,7 @@ extern "C" {
   * @return A newly created mode
   */
 	OPUS_CUSTOM_EXPORT OPUS_WARN_UNUSED_RESULT OpusCustomMode
-	    *opus_custom_mode_create(opus_int32 Fs, int frame_size, int *error);
+	    *opus_custom_mode_create(int32_t Fs, int frame_size, int *error);
 
 /** Destroys a mode struct. Only call this after all encoders and
   * decoders using this mode are destroyed as well.
@@ -207,7 +207,7 @@ extern "C" {
 
 /** Encodes a frame of audio.
   * @param [in] st <tt>OpusCustomEncoder*</tt>: Encoder state
-  * @param [in] pcm <tt>opus_int16*</tt>: PCM audio in signed 16-bit format (native endian).
+  * @param [in] pcm <tt>int16_t*</tt>: PCM audio in signed 16-bit format (native endian).
   *          There must be exactly frame_size samples per channel.
   * @param [in] frame_size <tt>int</tt>: Number of samples per frame of input signal
   * @param [out] compressed <tt>char *</tt>: The compressed data is written here. This may not alias pcm and must be at least maxCompressedBytes long.
@@ -219,7 +219,7 @@ extern "C" {
   *       decoding is possible.
  */
 	OPUS_CUSTOM_EXPORT OPUS_WARN_UNUSED_RESULT int
-	    opus_custom_encode(OpusCustomEncoder * st, const opus_int16 * pcm,
+	    opus_custom_encode(OpusCustomEncoder * st, const int16_t * pcm,
 			       int frame_size, unsigned char *compressed,
 			       int maxCompressedBytes) OPUS_ARG_NONNULL(1)
 	    OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
@@ -308,15 +308,15 @@ extern "C" {
   * @param [in] st <tt>OpusCustomDecoder*</tt>: Decoder state
   * @param [in] data <tt>char*</tt>: Input payload. Use a NULL pointer to indicate packet loss
   * @param [in] len <tt>int</tt>: Number of bytes in payload
-  * @param [out] pcm <tt>opus_int16*</tt>: Output signal (interleaved if 2 channels). length
-  *  is frame_size*channels*sizeof(opus_int16)
+  * @param [out] pcm <tt>int16_t*</tt>: Output signal (interleaved if 2 channels). length
+  *  is frame_size*channels*sizeof(int16_t)
   * @param [in] frame_size Number of samples per channel of available space in *pcm.
   * @returns Number of decoded samples or @ref opus_errorcodes
   */
 	OPUS_CUSTOM_EXPORT OPUS_WARN_UNUSED_RESULT int
 	    opus_custom_decode(OpusCustomDecoder * st,
 			       const unsigned char *data, int len,
-			       opus_int16 * pcm,
+			       int16_t * pcm,
 			       int frame_size) OPUS_ARG_NONNULL(1)
 	    OPUS_ARG_NONNULL(4);
 

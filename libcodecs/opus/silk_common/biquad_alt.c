@@ -41,18 +41,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FIX.h"
 
 /* Second order ARMA filter, alternative implementation */
-void silk_biquad_alt(const opus_int16 * in,	/* I     input signal                                               */
-		     const opus_int32 * B_Q28,	/* I     MA coefficients [3]                                        */
-		     const opus_int32 * A_Q28,	/* I     AR coefficients [2]                                        */
-		     opus_int32 * S,	/* I/O   State vector [2]                                           */
-		     opus_int16 * out,	/* O     output signal                                              */
-		     const opus_int32 len,	/* I     signal length (must be even)                               */
-		     opus_int stride	/* I     Operate on interleaved signal if > 1                       */
+void silk_biquad_alt(const int16_t * in,	/* I     input signal                                               */
+		     const int32_t * B_Q28,	/* I     MA coefficients [3]                                        */
+		     const int32_t * A_Q28,	/* I     AR coefficients [2]                                        */
+		     int32_t * S,	/* I/O   State vector [2]                                           */
+		     int16_t * out,	/* O     output signal                                              */
+		     const int32_t len,	/* I     signal length (must be even)                               */
+		     int stride	/* I     Operate on interleaved signal if > 1                       */
     )
 {
 	/* DIRECT FORM II TRANSPOSED (uses 2 element state vector) */
-	opus_int k;
-	opus_int32 inval, A0_U_Q28, A0_L_Q28, A1_U_Q28, A1_L_Q28, out32_Q14;
+	int k;
+	int32_t inval, A0_U_Q28, A0_L_Q28, A1_U_Q28, A1_L_Q28, out32_Q14;
 
 	/* Negate A_Q28 values and split in two parts */
 	A0_L_Q28 = (-A_Q28[0]) & 0x00003FFF;	/* lower part */
@@ -77,7 +77,7 @@ void silk_biquad_alt(const opus_int16 * in,	/* I     input signal               
 
 		/* Scale back to Q0 and saturate */
 		out[k * stride] =
-		    (opus_int16)
+		    (int16_t)
 		    silk_SAT16(silk_RSHIFT(out32_Q14 + (1 << 14) - 1, 14));
 	}
 }

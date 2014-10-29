@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* multiply a vector by a constant */
 void silk_scale_vector_FLP(silk_float * data1,
-			   silk_float gain, opus_int dataSize)
+			   silk_float gain, int dataSize)
 {
-	opus_int i, dataSize4;
+	int i, dataSize4;
 
 	/* 4x unrolled loop */
 	dataSize4 = dataSize & 0xFFFC;

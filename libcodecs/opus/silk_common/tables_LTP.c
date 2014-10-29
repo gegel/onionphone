@@ -33,57 +33,57 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "tables.h"
 
-const opus_uint8 silk_LTP_per_index_iCDF[3] = {
+const uint8_t silk_LTP_per_index_iCDF[3] = {
 	179, 99, 0
 };
 
-static const opus_uint8 silk_LTP_gain_iCDF_0[8] = {
+static const uint8_t silk_LTP_gain_iCDF_0[8] = {
 	71, 56, 43, 30, 21, 12, 6, 0
 };
 
-static const opus_uint8 silk_LTP_gain_iCDF_1[16] = {
+static const uint8_t silk_LTP_gain_iCDF_1[16] = {
 	199, 165, 144, 124, 109, 96, 84, 71,
 	61, 51, 42, 32, 23, 15, 8, 0
 };
 
-static const opus_uint8 silk_LTP_gain_iCDF_2[32] = {
+static const uint8_t silk_LTP_gain_iCDF_2[32] = {
 	241, 225, 211, 199, 187, 175, 164, 153,
 	142, 132, 123, 114, 105, 96, 88, 80,
 	72, 64, 57, 50, 44, 38, 33, 29,
 	24, 20, 16, 12, 9, 5, 2, 0
 };
 
-const opus_int16 silk_LTP_gain_middle_avg_RD_Q14 = 12304;
+const int16_t silk_LTP_gain_middle_avg_RD_Q14 = 12304;
 
-static const opus_uint8 silk_LTP_gain_BITS_Q5_0[8] = {
+static const uint8_t silk_LTP_gain_BITS_Q5_0[8] = {
 	15, 131, 138, 138, 155, 155, 173, 173
 };
 
-static const opus_uint8 silk_LTP_gain_BITS_Q5_1[16] = {
+static const uint8_t silk_LTP_gain_BITS_Q5_1[16] = {
 	69, 93, 115, 118, 131, 138, 141, 138,
 	150, 150, 155, 150, 155, 160, 166, 160
 };
 
-static const opus_uint8 silk_LTP_gain_BITS_Q5_2[32] = {
+static const uint8_t silk_LTP_gain_BITS_Q5_2[32] = {
 	131, 128, 134, 141, 141, 141, 145, 145,
 	145, 150, 155, 155, 155, 155, 160, 160,
 	160, 160, 166, 166, 173, 173, 182, 192,
 	182, 192, 192, 192, 205, 192, 205, 224
 };
 
-const opus_uint8 *const silk_LTP_gain_iCDF_ptrs[NB_LTP_CBKS] = {
+const uint8_t *const silk_LTP_gain_iCDF_ptrs[NB_LTP_CBKS] = {
 	silk_LTP_gain_iCDF_0,
 	silk_LTP_gain_iCDF_1,
 	silk_LTP_gain_iCDF_2
 };
 
-const opus_uint8 *const silk_LTP_gain_BITS_Q5_ptrs[NB_LTP_CBKS] = {
+const uint8_t *const silk_LTP_gain_BITS_Q5_ptrs[NB_LTP_CBKS] = {
 	silk_LTP_gain_BITS_Q5_0,
 	silk_LTP_gain_BITS_Q5_1,
 	silk_LTP_gain_BITS_Q5_2
 };
 
-static const opus_int8 silk_LTP_gain_vq_0[8][5] = {
+static const int8_t silk_LTP_gain_vq_0[8][5] = {
 	{
 	 4, 6, 24, 7, 5},
 	{
@@ -102,7 +102,7 @@ static const opus_int8 silk_LTP_gain_vq_0[8][5] = {
 	 16, 14, 38, -3, 33}
 };
 
-static const opus_int8 silk_LTP_gain_vq_1[16][5] = {
+static const int8_t silk_LTP_gain_vq_1[16][5] = {
 	{
 	 13, 22, 39, 23, 12},
 	{
@@ -137,7 +137,7 @@ static const opus_int8 silk_LTP_gain_vq_1[16][5] = {
 	 3, -1, 21, 16, 41}
 };
 
-static const opus_int8 silk_LTP_gain_vq_2[32][5] = {
+static const int8_t silk_LTP_gain_vq_2[32][5] = {
 	{
 	 -6, 27, 61, 39, 5},
 	{
@@ -204,36 +204,36 @@ static const opus_int8 silk_LTP_gain_vq_2[32][5] = {
 	 2, 0, 9, 10, 88}
 };
 
-const opus_int8 *const silk_LTP_vq_ptrs_Q7[NB_LTP_CBKS] = {
-	(opus_int8 *) & silk_LTP_gain_vq_0[0][0],
-	(opus_int8 *) & silk_LTP_gain_vq_1[0][0],
-	(opus_int8 *) & silk_LTP_gain_vq_2[0][0]
+const int8_t *const silk_LTP_vq_ptrs_Q7[NB_LTP_CBKS] = {
+	(int8_t *) & silk_LTP_gain_vq_0[0][0],
+	(int8_t *) & silk_LTP_gain_vq_1[0][0],
+	(int8_t *) & silk_LTP_gain_vq_2[0][0]
 };
 
 /* Maximum frequency-dependent response of the pitch taps above,
    computed as max(abs(freqz(taps))) */
-static const opus_uint8 silk_LTP_gain_vq_0_gain[8] = {
+static const uint8_t silk_LTP_gain_vq_0_gain[8] = {
 	46, 2, 90, 87, 93, 91, 82, 98
 };
 
-static const opus_uint8 silk_LTP_gain_vq_1_gain[16] = {
+static const uint8_t silk_LTP_gain_vq_1_gain[16] = {
 	109, 120, 118, 12, 113, 115, 117, 119,
 	99, 59, 87, 111, 63, 111, 112, 80
 };
 
-static const opus_uint8 silk_LTP_gain_vq_2_gain[32] = {
+static const uint8_t silk_LTP_gain_vq_2_gain[32] = {
 	126, 124, 125, 124, 129, 121, 126, 23,
 	132, 127, 127, 127, 126, 127, 122, 133,
 	130, 134, 101, 118, 119, 145, 126, 86,
 	124, 120, 123, 119, 170, 173, 107, 109
 };
 
-const opus_uint8 *const silk_LTP_vq_gain_ptrs_Q7[NB_LTP_CBKS] = {
+const uint8_t *const silk_LTP_vq_gain_ptrs_Q7[NB_LTP_CBKS] = {
 	&silk_LTP_gain_vq_0_gain[0],
 	&silk_LTP_gain_vq_1_gain[0],
 	&silk_LTP_gain_vq_2_gain[0]
 };
 
-const opus_int8 silk_LTP_vq_sizes[NB_LTP_CBKS] = {
+const int8_t silk_LTP_vq_sizes[NB_LTP_CBKS] = {
 	8, 16, 32
 };

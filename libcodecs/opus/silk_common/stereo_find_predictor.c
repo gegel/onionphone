@@ -34,17 +34,17 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 
 /* Find least-squares prediction gain for one signal based on another and quantize it */
-opus_int32 silk_stereo_find_predictor(	/* O    Returns predictor in Q13                    */
-					     opus_int32 * ratio_Q14,	/* O    Ratio of residual and mid energies          */
-					     const opus_int16 x[],	/* I    Basis signal                                */
-					     const opus_int16 y[],	/* I    Target signal                               */
-					     opus_int32 mid_res_amp_Q0[],	/* I/O  Smoothed mid, residual norms                */
-					     opus_int length,	/* I    Number of samples                           */
-					     opus_int smooth_coef_Q16	/* I    Smoothing coefficient                       */
+int32_t silk_stereo_find_predictor(	/* O    Returns predictor in Q13                    */
+					     int32_t * ratio_Q14,	/* O    Ratio of residual and mid energies          */
+					     const int16_t x[],	/* I    Basis signal                                */
+					     const int16_t y[],	/* I    Target signal                               */
+					     int32_t mid_res_amp_Q0[],	/* I/O  Smoothed mid, residual norms                */
+					     int length,	/* I    Number of samples                           */
+					     int smooth_coef_Q16	/* I    Smoothing coefficient                       */
     )
 {
-	opus_int scale, scale1, scale2;
-	opus_int32 nrgx, nrgy, corr, pred_Q13, pred2_Q10;
+	int scale, scale1, scale2;
+	int32_t nrgx, nrgy, corr, pred_Q13, pred2_Q10;
 
 	/* Find  predictor */
 	silk_sum_sqr_shift(&nrgx, &scale1, x, length);
@@ -61,7 +61,7 @@ opus_int32 silk_stereo_find_predictor(	/* O    Returns predictor in Q13         
 
 	/* Faster update for signals with large prediction parameters */
 	smooth_coef_Q16 =
-	    (opus_int) silk_max_int(smooth_coef_Q16, silk_abs(pred2_Q10));
+	    (int) silk_max_int(smooth_coef_Q16, silk_abs(pred2_Q10));
 
 	/* Smoothed mid and residual norms */
 	silk_assert(smooth_coef_Q16 < 32768);

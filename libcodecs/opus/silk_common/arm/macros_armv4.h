@@ -30,9 +30,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifndef SILK_MACROS_ARMv4_H
 #define SILK_MACROS_ARMv4_H
 
-/* (a32 * (opus_int32)((opus_int16)(b32))) >> 16 output have to be 32bit int */
+/* (a32 * (int32_t)((int16_t)(b32))) >> 16 output have to be 32bit int */
 #undef silk_SMULWB
-static inline opus_int32 silk_SMULWB_armv4(opus_int32 a, opus_int16 b)
+static inline int32_t silk_SMULWB_armv4(int32_t a, int16_t b)
 {
 	unsigned rd_lo;
 	int rd_hi;
@@ -46,13 +46,13 @@ static inline opus_int32 silk_SMULWB_armv4(opus_int32 a, opus_int16 b)
 
 #define silk_SMULWB(a, b) (silk_SMULWB_armv4(a, b))
 
-/* a32 + (b32 * (opus_int32)((opus_int16)(c32))) >> 16 output have to be 32bit int */
+/* a32 + (b32 * (int32_t)((int16_t)(c32))) >> 16 output have to be 32bit int */
 #undef silk_SMLAWB
 #define silk_SMLAWB(a, b, c) ((a) + silk_SMULWB(b, c))
 
 /* (a32 * (b32 >> 16)) >> 16 */
 #undef silk_SMULWT
-static inline opus_int32 silk_SMULWT_armv4(opus_int32 a, opus_int32 b)
+static inline int32_t silk_SMULWT_armv4(int32_t a, int32_t b)
 {
 	unsigned rd_lo;
 	int rd_hi;
@@ -72,7 +72,7 @@ static inline opus_int32 silk_SMULWT_armv4(opus_int32 a, opus_int32 b)
 
 /* (a32 * b32) >> 16 */
 #undef silk_SMULWW
-static inline opus_int32 silk_SMULWW_armv4(opus_int32 a, opus_int32 b)
+static inline int32_t silk_SMULWW_armv4(int32_t a, int32_t b)
 {
 	unsigned rd_lo;
 	int rd_hi;
@@ -87,8 +87,8 @@ static inline opus_int32 silk_SMULWW_armv4(opus_int32 a, opus_int32 b)
 #define silk_SMULWW(a, b) (silk_SMULWW_armv4(a, b))
 
 #undef silk_SMLAWW
-static inline opus_int32 silk_SMLAWW_armv4(opus_int32 a, opus_int32 b,
-					   opus_int32 c)
+static inline int32_t silk_SMLAWW_armv4(int32_t a, int32_t b,
+					   int32_t c)
 {
 	unsigned rd_lo;
 	int rd_hi;

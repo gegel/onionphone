@@ -34,12 +34,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 
 /* Set decoder sampling rate */
-opus_int silk_decoder_set_fs(silk_decoder_state * psDec,	/* I/O  Decoder state pointer                       */
-			     opus_int fs_kHz,	/* I    Sampling frequency (kHz)                    */
-			     opus_int32 fs_API_Hz	/* I    API Sampling frequency (Hz)                 */
+int silk_decoder_set_fs(silk_decoder_state * psDec,	/* I/O  Decoder state pointer                       */
+			     int fs_kHz,	/* I    Sampling frequency (kHz)                    */
+			     int32_t fs_API_Hz	/* I    API Sampling frequency (Hz)                 */
     )
 {
-	opus_int frame_length, ret = 0;
+	int frame_length, ret = 0;
 
 	silk_assert(fs_kHz == 8 || fs_kHz == 12 || fs_kHz == 16);
 	silk_assert(psDec->nb_subfr == MAX_NB_SUBFR

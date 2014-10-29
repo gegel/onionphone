@@ -34,9 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FLP.h"
 
 /* sum of squares of a silk_float array, with result as double */
-double silk_energy_FLP(const silk_float * data, opus_int dataSize)
+double silk_energy_FLP(const silk_float * data, int dataSize)
 {
-	opus_int i, dataSize4;
+	int i, dataSize4;
 	double result;
 
 	/* 4x unrolled loop */

@@ -35,14 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Compute number of bits to right shift the sum of squares of a vector */
 /* of int16s to make it fit in an int32                                 */
-void silk_sum_sqr_shift(opus_int32 * energy,	/* O   Energy of x, after shifting to the right                     */
-			opus_int * shift,	/* O   Number of bits right shift applied to energy                 */
-			const opus_int16 * x,	/* I   Input vector                                                 */
-			opus_int len	/* I   Length of input vector                                       */
+void silk_sum_sqr_shift(int32_t * energy,	/* O   Energy of x, after shifting to the right                     */
+			int * shift,	/* O   Number of bits right shift applied to energy                 */
+			const int16_t * x,	/* I   Input vector                                                 */
+			int len	/* I   Length of input vector                                       */
     )
 {
-	opus_int i, shft;
-	opus_int32 nrg_tmp, nrg;
+	int i, shft;
+	int32_t nrg_tmp, nrg;
 
 	nrg = 0;
 	shft = 0;
@@ -53,7 +53,7 @@ void silk_sum_sqr_shift(opus_int32 * energy,	/* O   Energy of x, after shifting 
 		if (nrg < 0) {
 			/* Scale down */
 			nrg =
-			    (opus_int32) silk_RSHIFT_uint((opus_uint32) nrg, 2);
+			    (int32_t) silk_RSHIFT_uint((uint32_t) nrg, 2);
 			shft = 2;
 			break;
 		}
@@ -62,25 +62,25 @@ void silk_sum_sqr_shift(opus_int32 * energy,	/* O   Energy of x, after shifting 
 		nrg_tmp = silk_SMULBB(x[i], x[i]);
 		nrg_tmp = silk_SMLABB_ovflw(nrg_tmp, x[i + 1], x[i + 1]);
 		nrg =
-		    (opus_int32) silk_ADD_RSHIFT_uint(nrg,
-						      (opus_uint32) nrg_tmp,
+		    (int32_t) silk_ADD_RSHIFT_uint(nrg,
+						      (uint32_t) nrg_tmp,
 						      shft);
 		if (nrg < 0) {
 			/* Scale down */
 			nrg =
-			    (opus_int32) silk_RSHIFT_uint((opus_uint32) nrg, 2);
+			    (int32_t) silk_RSHIFT_uint((uint32_t) nrg, 2);
 			shft += 2;
 		}
 	}
 	if (i == len) {
 		/* One sample left to process */
 		nrg_tmp = silk_SMULBB(x[i], x[i]);
-		nrg = (opus_int32) silk_ADD_RSHIFT_uint(nrg, nrg_tmp, shft);
+		nrg = (int32_t) silk_ADD_RSHIFT_uint(nrg, nrg_tmp, shft);
 	}
 
 	/* Make sure to have at least one extra leading zero (two leading zeros in total) */
 	if (nrg & 0xC0000000) {
-		nrg = silk_RSHIFT_uint((opus_uint32) nrg, 2);
+		nrg = silk_RSHIFT_uint((uint32_t) nrg, 2);
 		shft += 2;
 	}
 

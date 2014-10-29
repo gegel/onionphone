@@ -125,7 +125,7 @@ static void ec_dec_normalize(ec_dec * _this)
 	}
 }
 
-void ec_dec_init(ec_dec * _this, unsigned char *_buf, opus_uint32 _storage)
+void ec_dec_init(ec_dec * _this, unsigned char *_buf, uint32_t _storage)
 {
 	_this->buf = _buf;
 	_this->storage = _storage;
@@ -165,7 +165,7 @@ unsigned ec_decode_bin(ec_dec * _this, unsigned _bits)
 
 void ec_dec_update(ec_dec * _this, unsigned _fl, unsigned _fh, unsigned _ft)
 {
-	opus_uint32 s;
+	uint32_t s;
 	s = IMUL32(_this->ext, _ft - _fh);
 	_this->val -= s;
 	_this->rng = _fl > 0 ? IMUL32(_this->ext, _fh - _fl) : _this->rng - s;
@@ -175,9 +175,9 @@ void ec_dec_update(ec_dec * _this, unsigned _fl, unsigned _fh, unsigned _ft)
 /*The probability of having a "one" is 1/(1<<_logp).*/
 int ec_dec_bit_logp(ec_dec * _this, unsigned _logp)
 {
-	opus_uint32 r;
-	opus_uint32 d;
-	opus_uint32 s;
+	uint32_t r;
+	uint32_t d;
+	uint32_t s;
 	int ret;
 	r = _this->rng;
 	d = _this->val;
@@ -192,10 +192,10 @@ int ec_dec_bit_logp(ec_dec * _this, unsigned _logp)
 
 int ec_dec_icdf(ec_dec * _this, const unsigned char *_icdf, unsigned _ftb)
 {
-	opus_uint32 r;
-	opus_uint32 d;
-	opus_uint32 s;
-	opus_uint32 t;
+	uint32_t r;
+	uint32_t d;
+	uint32_t s;
+	uint32_t t;
 	int ret;
 	s = _this->rng;
 	d = _this->val;
@@ -212,7 +212,7 @@ int ec_dec_icdf(ec_dec * _this, const unsigned char *_icdf, unsigned _ftb)
 	return ret;
 }
 
-opus_uint32 ec_dec_uint(ec_dec * _this, opus_uint32 _ft)
+uint32_t ec_dec_uint(ec_dec * _this, uint32_t _ft)
 {
 	unsigned ft;
 	unsigned s;
@@ -222,12 +222,12 @@ opus_uint32 ec_dec_uint(ec_dec * _this, opus_uint32 _ft)
 	_ft--;
 	ftb = EC_ILOG(_ft);
 	if (ftb > EC_UINT_BITS) {
-		opus_uint32 t;
+		uint32_t t;
 		ftb -= EC_UINT_BITS;
 		ft = (unsigned)(_ft >> ftb) + 1;
 		s = ec_decode(_this, ft);
 		ec_dec_update(_this, s, s + 1, ft);
-		t = (opus_uint32) s << ftb | ec_dec_bits(_this, ftb);
+		t = (uint32_t) s << ftb | ec_dec_bits(_this, ftb);
 		if (t <= _ft)
 			return t;
 		_this->error = 1;
@@ -240,11 +240,11 @@ opus_uint32 ec_dec_uint(ec_dec * _this, opus_uint32 _ft)
 	}
 }
 
-opus_uint32 ec_dec_bits(ec_dec * _this, unsigned _bits)
+uint32_t ec_dec_bits(ec_dec * _this, unsigned _bits)
 {
 	ec_window window;
 	int available;
-	opus_uint32 ret;
+	uint32_t ret;
 	window = _this->end_window;
 	available = _this->nend_bits;
 	if ((unsigned)available < _bits) {
@@ -256,7 +256,7 @@ opus_uint32 ec_dec_bits(ec_dec * _this, unsigned _bits)
 		}
 		while (available <= EC_WINDOW_SIZE - EC_SYM_BITS);
 	}
-	ret = (opus_uint32) window & (((opus_uint32) 1 << _bits) - 1U);
+	ret = (uint32_t) window & (((uint32_t) 1 << _bits) - 1U);
 	window >>= _bits;
 	available -= _bits;
 	_this->end_window = window;

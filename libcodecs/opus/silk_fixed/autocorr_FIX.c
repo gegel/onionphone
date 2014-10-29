@@ -35,15 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "celt_lpc.h"
 
 /* Compute autocorrelation */
-void silk_autocorr(opus_int32 * results,	/* O    Result (length correlationCount)                            */
-		   opus_int * scale,	/* O    Scaling of the correlation vector                           */
-		   const opus_int16 * inputData,	/* I    Input data to correlate                                     */
-		   const opus_int inputDataSize,	/* I    Length of input                                             */
-		   const opus_int correlationCount,	/* I    Number of correlation taps to compute                       */
+void silk_autocorr(int32_t * results,	/* O    Result (length correlationCount)                            */
+		   int * scale,	/* O    Scaling of the correlation vector                           */
+		   const int16_t * inputData,	/* I    Input data to correlate                                     */
+		   const int inputDataSize,	/* I    Length of input                                             */
+		   const int correlationCount,	/* I    Number of correlation taps to compute                       */
 		   int arch	/* I    Run-time architecture                                       */
     )
 {
-	opus_int corrCount;
+	int corrCount;
 	corrCount = silk_min_int(inputDataSize, correlationCount);
 	*scale =
 	    _celt_autocorr(inputData, results, NULL, 0, corrCount - 1,

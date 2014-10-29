@@ -75,7 +75,7 @@ extern "C" {
 /**@{*/
 
 /** Gets the encoder state for an individual stream of a multistream encoder.
-  * @param[in] x <tt>opus_int32</tt>: The index of the stream whose encoder you
+  * @param[in] x <tt>int32_t</tt>: The index of the stream whose encoder you
   *                                   wish to retrieve.
   *                                   This must be non-negative and less than
   *                                   the <code>streams</code> parameter used
@@ -88,7 +88,7 @@ extern "C" {
 #define OPUS_MULTISTREAM_GET_ENCODER_STATE(x,y) OPUS_MULTISTREAM_GET_ENCODER_STATE_REQUEST, __opus_check_int(x), __opus_check_encstate_ptr(y)
 
 /** Gets the decoder state for an individual stream of a multistream decoder.
-  * @param[in] x <tt>opus_int32</tt>: The index of the stream whose decoder you
+  * @param[in] x <tt>int32_t</tt>: The index of the stream whose decoder you
   *                                   wish to retrieve.
   *                                   This must be non-negative and less than
   *                                   the <code>streams</code> parameter used
@@ -202,17 +202,17 @@ extern "C" {
   * @returns The size in bytes on success, or a negative error code
   *          (see @ref opus_errorcodes) on error.
   */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int32_t
 	    opus_multistream_encoder_get_size(int streams, int coupled_streams);
 
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int32_t
 	    opus_multistream_surround_encoder_get_size(int channels,
 						       int mapping_family);
 
 /** Allocates and initializes a multistream encoder state.
   * Call opus_multistream_encoder_destroy() to release
   * this object when finished.
-  * @param Fs <tt>opus_int32</tt>: Sampling rate of the input signal (in Hz).
+  * @param Fs <tt>int32_t</tt>: Sampling rate of the input signal (in Hz).
   *                                This must be one of 8000, 12000, 16000,
   *                                24000, or 48000.
   * @param channels <tt>int</tt>: Number of channels in the input signal.
@@ -253,14 +253,14 @@ extern "C" {
   *                                   failure.
   */
 	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSEncoder
-	    *opus_multistream_encoder_create(opus_int32 Fs, int channels,
+	    *opus_multistream_encoder_create(int32_t Fs, int channels,
 					     int streams, int coupled_streams,
 					     const unsigned char *mapping,
 					     int application,
 					     int *error) OPUS_ARG_NONNULL(5);
 
 	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSEncoder
-	    *opus_multistream_surround_encoder_create(opus_int32 Fs,
+	    *opus_multistream_surround_encoder_create(int32_t Fs,
 						      int channels,
 						      int mapping_family,
 						      int *streams,
@@ -279,7 +279,7 @@ extern "C" {
   * @see opus_multistream_encoder_create
   * @see opus_multistream_encoder_get_size
   * @param st <tt>OpusMSEncoder*</tt>: Multistream encoder state to initialize.
-  * @param Fs <tt>opus_int32</tt>: Sampling rate of the input signal (in Hz).
+  * @param Fs <tt>int32_t</tt>: Sampling rate of the input signal (in Hz).
   *                                This must be one of 8000, 12000, 16000,
   *                                24000, or 48000.
   * @param channels <tt>int</tt>: Number of channels in the input signal.
@@ -319,7 +319,7 @@ extern "C" {
   *          on failure.
   */
 	OPUS_EXPORT int opus_multistream_encoder_init(OpusMSEncoder * st,
-						      opus_int32 Fs,
+						      int32_t Fs,
 						      int channels,
 						      int streams,
 						      int coupled_streams,
@@ -330,7 +330,7 @@ extern "C" {
 
 	OPUS_EXPORT int opus_multistream_surround_encoder_init(OpusMSEncoder *
 							       st,
-							       opus_int32 Fs,
+							       int32_t Fs,
 							       int channels,
 							       int
 							       mapping_family,
@@ -344,7 +344,7 @@ extern "C" {
 
 /** Encodes a multistream Opus frame.
   * @param st <tt>OpusMSEncoder*</tt>: Multistream encoder state.
-  * @param[in] pcm <tt>const opus_int16*</tt>: The input signal as interleaved
+  * @param[in] pcm <tt>const int16_t*</tt>: The input signal as interleaved
   *                                            samples.
   *                                            This must contain
   *                                            <code>frame_size*channels</code>
@@ -361,7 +361,7 @@ extern "C" {
   * @param[out] data <tt>unsigned char*</tt>: Output payload.
   *                                           This must contain storage for at
   *                                           least \a max_data_bytes.
-  * @param [in] max_data_bytes <tt>opus_int32</tt>: Size of the allocated
+  * @param [in] max_data_bytes <tt>int32_t</tt>: Size of the allocated
   *                                                 memory for the output
   *                                                 payload. This may be
   *                                                 used to impose an upper limit on
@@ -373,9 +373,9 @@ extern "C" {
   *          negative error code (see @ref opus_errorcodes) on failure.
   */
 	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
-	    opus_multistream_encode(OpusMSEncoder * st, const opus_int16 * pcm,
+	    opus_multistream_encode(OpusMSEncoder * st, const int16_t * pcm,
 				    int frame_size, unsigned char *data,
-				    opus_int32 max_data_bytes)
+				    int32_t max_data_bytes)
 	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
 
 /** Encodes a multistream Opus frame from floating point input.
@@ -404,7 +404,7 @@ extern "C" {
   * @param[out] data <tt>unsigned char*</tt>: Output payload.
   *                                           This must contain storage for at
   *                                           least \a max_data_bytes.
-  * @param [in] max_data_bytes <tt>opus_int32</tt>: Size of the allocated
+  * @param [in] max_data_bytes <tt>int32_t</tt>: Size of the allocated
   *                                                 memory for the output
   *                                                 payload. This may be
   *                                                 used to impose an upper limit on
@@ -418,7 +418,7 @@ extern "C" {
 	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
 	    opus_multistream_encode_float(OpusMSEncoder * st, const float *pcm,
 					  int frame_size, unsigned char *data,
-					  opus_int32 max_data_bytes)
+					  int32_t max_data_bytes)
 	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2) OPUS_ARG_NONNULL(4);
 
 /** Frees an <code>OpusMSEncoder</code> allocated by
@@ -463,13 +463,13 @@ extern "C" {
   * @returns The size in bytes on success, or a negative error code
   *          (see @ref opus_errorcodes) on error.
   */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT opus_int32
+	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int32_t
 	    opus_multistream_decoder_get_size(int streams, int coupled_streams);
 
 /** Allocates and initializes a multistream decoder state.
   * Call opus_multistream_decoder_destroy() to release
   * this object when finished.
-  * @param Fs <tt>opus_int32</tt>: Sampling rate to decode at (in Hz).
+  * @param Fs <tt>int32_t</tt>: Sampling rate to decode at (in Hz).
   *                                This must be one of 8000, 12000, 16000,
   *                                24000, or 48000.
   * @param channels <tt>int</tt>: Number of channels to output.
@@ -496,7 +496,7 @@ extern "C" {
   *                                   failure.
   */
 	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusMSDecoder
-	    *opus_multistream_decoder_create(opus_int32 Fs, int channels,
+	    *opus_multistream_decoder_create(int32_t Fs, int channels,
 					     int streams, int coupled_streams,
 					     const unsigned char *mapping,
 					     int *error) OPUS_ARG_NONNULL(5);
@@ -510,7 +510,7 @@ extern "C" {
   * @see opus_multistream_decoder_create
   * @see opus_multistream_deocder_get_size
   * @param st <tt>OpusMSEncoder*</tt>: Multistream encoder state to initialize.
-  * @param Fs <tt>opus_int32</tt>: Sampling rate to decode at (in Hz).
+  * @param Fs <tt>int32_t</tt>: Sampling rate to decode at (in Hz).
   *                                This must be one of 8000, 12000, 16000,
   *                                24000, or 48000.
   * @param channels <tt>int</tt>: Number of channels to output.
@@ -536,7 +536,7 @@ extern "C" {
   *          on failure.
   */
 	OPUS_EXPORT int opus_multistream_decoder_init(OpusMSDecoder * st,
-						      opus_int32 Fs,
+						      int32_t Fs,
 						      int channels,
 						      int streams,
 						      int coupled_streams,
@@ -550,8 +550,8 @@ extern "C" {
   *                                                Use a <code>NULL</code>
   *                                                pointer to indicate packet
   *                                                loss.
-  * @param len <tt>opus_int32</tt>: Number of bytes in payload.
-  * @param[out] pcm <tt>opus_int16*</tt>: Output signal, with interleaved
+  * @param len <tt>int32_t</tt>: Number of bytes in payload.
+  * @param[out] pcm <tt>int16_t*</tt>: Output signal, with interleaved
   *                                       samples.
   *                                       This must contain room for
   *                                       <code>frame_size*channels</code>
@@ -575,8 +575,8 @@ extern "C" {
   */
 	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
 	    opus_multistream_decode(OpusMSDecoder * st,
-				    const unsigned char *data, opus_int32 len,
-				    opus_int16 * pcm, int frame_size,
+				    const unsigned char *data, int32_t len,
+				    int16_t * pcm, int frame_size,
 				    int decode_fec) OPUS_ARG_NONNULL(1)
 	    OPUS_ARG_NONNULL(4);
 
@@ -586,8 +586,8 @@ extern "C" {
   *                                                Use a <code>NULL</code>
   *                                                pointer to indicate packet
   *                                                loss.
-  * @param len <tt>opus_int32</tt>: Number of bytes in payload.
-  * @param[out] pcm <tt>opus_int16*</tt>: Output signal, with interleaved
+  * @param len <tt>int32_t</tt>: Number of bytes in payload.
+  * @param[out] pcm <tt>int16_t*</tt>: Output signal, with interleaved
   *                                       samples.
   *                                       This must contain room for
   *                                       <code>frame_size*channels</code>
@@ -612,7 +612,7 @@ extern "C" {
 	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
 	    opus_multistream_decode_float(OpusMSDecoder * st,
 					  const unsigned char *data,
-					  opus_int32 len, float *pcm,
+					  int32_t len, float *pcm,
 					  int frame_size,
 					  int decode_fec) OPUS_ARG_NONNULL(1)
 	    OPUS_ARG_NONNULL(4);

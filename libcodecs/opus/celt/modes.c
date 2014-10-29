@@ -41,7 +41,7 @@
 #include <math.h>
 #include <ophmconsts.h>
 
-static const opus_int16 eband5ms[] = {
+static const int16_t eband5ms[] = {
 /*0  200 400 600 800  1k 1.2 1.4 1.6  2k 2.4 2.8 3.2  4k 4.8 5.6 6.8  8k 9.6 12k 15.6 */
 	0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 12, 14, 16, 20, 24, 28, 34, 40, 48, 60,
 	    78, 100
@@ -88,7 +88,7 @@ static const unsigned char band_allocation[] = {
 /* Defining 25 critical bands for the full 0-20 kHz audio bandwidth
    Taken from http://ccrma.stanford.edu/~jos/bbt/Bark_Frequency_Scale.html */
 #define BARK_BANDS 25
-static const opus_int16 bark_freq[BARK_BANDS + 1] = {
+static const int16_t bark_freq[BARK_BANDS + 1] = {
 	0, 100, 200, 300, 400,
 	510, 630, 770, 920, 1080,
 	1270, 1480, 1720, 2000, 2320,
@@ -97,16 +97,16 @@ static const opus_int16 bark_freq[BARK_BANDS + 1] = {
 	20000
 };
 
-static opus_int16 *compute_ebands(opus_int32 Fs, int frame_size, int res,
+static int16_t *compute_ebands(int32_t Fs, int frame_size, int res,
 				  int *nbEBands)
 {
-	opus_int16 *eBands;
+	int16_t *eBands;
 	int i, j, lin, low, high, nBark, offset = 0;
 
 	/* All modes that have 2.5 ms short blocks use the same definition */
-	if (Fs == 400 * (opus_int32) frame_size) {
+	if (Fs == 400 * (int32_t) frame_size) {
 		*nbEBands = sizeof(eband5ms) / sizeof(eband5ms[0]) - 1;
-		eBands = opus_alloc(sizeof(opus_int16) * (*nbEBands + 1));
+		eBands = opus_alloc(sizeof(int16_t) * (*nbEBands + 1));
 		for (i = 0; i < *nbEBands + 1; i++)
 			eBands[i] = eband5ms[i];
 		return eBands;
@@ -124,7 +124,7 @@ static opus_int16 *compute_ebands(opus_int32 Fs, int frame_size, int res,
 	low = (bark_freq[lin] + res / 2) / res;
 	high = nBark - lin;
 	*nbEBands = low + high;
-	eBands = opus_alloc(sizeof(opus_int16) * (*nbEBands + 2));
+	eBands = opus_alloc(sizeof(int16_t) * (*nbEBands + 2));
 
 	if (eBands == NULL)
 		return NULL;
@@ -187,7 +187,7 @@ static void compute_allocation_table(CELTMode * mode)
 		return;
 
 	/* Check for standard mode */
-	if (mode->Fs == 400 * (opus_int32) mode->shortMdctSize) {
+	if (mode->Fs == 400 * (int32_t) mode->shortMdctSize) {
 		for (i = 0; i < BITALLOC_SIZE * mode->nbEBands; i++)
 			allocVectors[i] = band_allocation[i];
 		mode->allocVectors = allocVectors;
@@ -199,8 +199,8 @@ static void compute_allocation_table(CELTMode * mode)
 		for (j = 0; j < mode->nbEBands; j++) {
 			int k;
 			for (k = 0; k < maxBands; k++) {
-				if (400 * (opus_int32) eband5ms[k] >
-				    mode->eBands[j] * (opus_int32) mode->Fs /
+				if (400 * (int32_t) eband5ms[k] >
+				    mode->eBands[j] * (int32_t) mode->Fs /
 				    mode->shortMdctSize)
 					break;
 			}
@@ -209,12 +209,12 @@ static void compute_allocation_table(CELTMode * mode)
 				    band_allocation[i * maxBands + maxBands -
 						    1];
 			else {
-				opus_int32 a0, a1;
-				a1 = mode->eBands[j] * (opus_int32) mode->Fs /
+				int32_t a0, a1;
+				a1 = mode->eBands[j] * (int32_t) mode->Fs /
 				    mode->shortMdctSize -
-				    400 * (opus_int32) eband5ms[k - 1];
-				a0 = 400 * (opus_int32) eband5ms[k] -
-				    mode->eBands[j] * (opus_int32) mode->Fs /
+				    400 * (int32_t) eband5ms[k - 1];
+				a0 = 400 * (int32_t) eband5ms[k] -
+				    mode->eBands[j] * (int32_t) mode->Fs /
 				    mode->shortMdctSize;
 				allocVectors[i * mode->nbEBands + j] =
 				    (a0 * band_allocation[i * maxBands + k - 1]
@@ -238,14 +238,14 @@ static void compute_allocation_table(CELTMode * mode)
 
 #endif				/* CUSTOM_MODES */
 
-CELTMode *opus_custom_mode_create(opus_int32 Fs, int frame_size, int *error)
+CELTMode *opus_custom_mode_create(int32_t Fs, int frame_size, int *error)
 {
 	int i;
 #ifdef CUSTOM_MODES
 	CELTMode *mode = NULL;
 	int res;
 	opus_val16 *window;
-	opus_int16 *logN;
+	int16_t *logN;
 	int LM;
 
 #endif
@@ -285,24 +285,24 @@ CELTMode *opus_custom_mode_create(opus_int32 Fs, int frame_size, int *error)
 		return NULL;
 	}
 	/* Frames of less than 1ms are not supported. */
-	if ((opus_int32) frame_size * 1000 < Fs) {
+	if ((int32_t) frame_size * 1000 < Fs) {
 		if (error)
 			*error = OPUS_BAD_ARG;
 		return NULL;
 	}
 
-	if ((opus_int32) frame_size * 75 >= Fs && (frame_size % 16) == 0) {
+	if ((int32_t) frame_size * 75 >= Fs && (frame_size % 16) == 0) {
 		LM = 3;
-	} else if ((opus_int32) frame_size * 150 >= Fs && (frame_size % 8) == 0) {
+	} else if ((int32_t) frame_size * 150 >= Fs && (frame_size % 8) == 0) {
 		LM = 2;
-	} else if ((opus_int32) frame_size * 300 >= Fs && (frame_size % 4) == 0) {
+	} else if ((int32_t) frame_size * 300 >= Fs && (frame_size % 4) == 0) {
 		LM = 1;
 	} else {
 		LM = 0;
 	}
 
 	/* Shorts longer than 3.3ms are not supported. */
-	if ((opus_int32) (frame_size >> LM) * 300 > Fs) {
+	if ((int32_t) (frame_size >> LM) * 300 > Fs) {
 		if (error)
 			*error = OPUS_BAD_ARG;
 		return NULL;
@@ -394,7 +394,7 @@ CELTMode *opus_custom_mode_create(opus_int32 Fs, int frame_size, int *error)
 #endif
 	mode->window = window;
 
-	logN = (opus_int16 *) opus_alloc(mode->nbEBands * sizeof(opus_int16));
+	logN = (int16_t *) opus_alloc(mode->nbEBands * sizeof(int16_t));
 	if (logN == NULL)
 		goto failure;
 
@@ -438,13 +438,13 @@ void opus_custom_mode_destroy(CELTMode * mode)
 		}
 	}
 #endif				/* CUSTOM_MODES_ONLY */
-	opus_free((opus_int16 *) mode->eBands);
-	opus_free((opus_int16 *) mode->allocVectors);
+	opus_free((int16_t *) mode->eBands);
+	opus_free((int16_t *) mode->allocVectors);
 
 	opus_free((opus_val16 *) mode->window);
-	opus_free((opus_int16 *) mode->logN);
+	opus_free((int16_t *) mode->logN);
 
-	opus_free((opus_int16 *) mode->cache.index);
+	opus_free((int16_t *) mode->cache.index);
 	opus_free((unsigned char *)mode->cache.bits);
 	opus_free((unsigned char *)mode->cache.caps);
 	clt_mdct_clear(&mode->mdct);

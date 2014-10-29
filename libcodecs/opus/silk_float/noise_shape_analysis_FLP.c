@@ -39,9 +39,9 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Note: A monic filter is one with the first coefficient equal to 1.0. In Silk we omit the first */
 /* coefficient in an array of coefficients, for monic filters.                                    */
 static inline silk_float warped_gain(const silk_float * coefs,
-				     silk_float lambda, opus_int order)
+				     silk_float lambda, int order)
 {
-	opus_int i;
+	int i;
 	silk_float gain;
 
 	lambda = -lambda;
@@ -57,9 +57,9 @@ static inline silk_float warped_gain(const silk_float * coefs,
 static inline void warped_true2monic_coefs(silk_float * coefs_syn,
 					   silk_float * coefs_ana,
 					   silk_float lambda,
-					   silk_float limit, opus_int order)
+					   silk_float limit, int order)
 {
-	opus_int i, iter, ind = 0;
+	int i, iter, ind = 0;
 	silk_float tmp, maxabs, chirp, gain_syn, gain_ana;
 
 	/* Convert to monic coefficients */
@@ -137,7 +137,7 @@ void silk_noise_shape_analysis_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encod
     )
 {
 	silk_shape_state_FLP *psShapeSt = &psEnc->sShape;
-	opus_int k, nSamples;
+	int k, nSamples;
 	silk_float SNR_adj_dB, HarmBoost, HarmShapeGain, Tilt;
 	silk_float nrg, pre_nrg, log_energy, log_energy_prev, energy_variation;
 	silk_float delta, BWExp1, BWExp2, gain_mult, gain_add, strength, b,
@@ -257,7 +257,7 @@ void silk_noise_shape_analysis_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encod
     /********************************************/
 	for (k = 0; k < psEnc->sCmn.nb_subfr; k++) {
 		/* Apply window: sine slope followed by flat part followed by cosine slope */
-		opus_int shift, slope_part, flat_part;
+		int shift, slope_part, flat_part;
 		flat_part = psEnc->sCmn.fs_kHz * 3;
 		slope_part = (psEnc->sCmn.shapeWinLength - flat_part) / 2;
 

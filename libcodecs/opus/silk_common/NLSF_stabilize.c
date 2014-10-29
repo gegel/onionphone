@@ -46,16 +46,16 @@ POSSIBILITY OF SUCH DAMAGE.
 #define MAX_LOOPS        20
 
 /* NLSF stabilizer, for a single input data vector */
-void silk_NLSF_stabilize(opus_int16 * NLSF_Q15,	/* I/O   Unstable/stabilized normalized LSF vector in Q15 [L]       */
-			 const opus_int16 * NDeltaMin_Q15,	/* I     Min distance vector, NDeltaMin_Q15[L] must be >= 1 [L+1]   */
-			 const opus_int L	/* I     Number of NLSF parameters in the input vector              */
+void silk_NLSF_stabilize(int16_t * NLSF_Q15,	/* I/O   Unstable/stabilized normalized LSF vector in Q15 [L]       */
+			 const int16_t * NDeltaMin_Q15,	/* I     Min distance vector, NDeltaMin_Q15[L] must be >= 1 [L+1]   */
+			 const int L	/* I     Number of NLSF parameters in the input vector              */
     )
 {
-	opus_int i, I = 0, k, loops;
-	opus_int16 center_freq_Q15;
-	opus_int32 diff_Q15, min_diff_Q15, min_center_Q15, max_center_Q15;
+	int i, I = 0, k, loops;
+	int16_t center_freq_Q15;
+	int32_t diff_Q15, min_diff_Q15, min_center_Q15, max_center_Q15;
 
-	/* This is necessary to ensure an output within range of a opus_int16 */
+	/* This is necessary to ensure an output within range of a int16_t */
 	silk_assert(NDeltaMin_Q15[L] >= 1);
 
 	for (loops = 0; loops < MAX_LOOPS; loops++) {
@@ -113,10 +113,10 @@ void silk_NLSF_stabilize(opus_int16 * NLSF_Q15,	/* I/O   Unstable/stabilized nor
 
 			/* Move apart, sorted by value, keeping the same center frequency */
 			center_freq_Q15 =
-			    (opus_int16)
+			    (int16_t)
 			    silk_LIMIT_32(silk_RSHIFT_ROUND
-					  ((opus_int32) NLSF_Q15[I - 1] +
-					   (opus_int32) NLSF_Q15[I], 1),
+					  ((int32_t) NLSF_Q15[I - 1] +
+					   (int32_t) NLSF_Q15[I], 1),
 					  min_center_Q15, max_center_Q15);
 			NLSF_Q15[I - 1] =
 			    center_freq_Q15 - silk_RSHIFT(NDeltaMin_Q15[I], 1);

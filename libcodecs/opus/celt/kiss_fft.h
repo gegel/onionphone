@@ -50,8 +50,8 @@ extern "C" {
 #ifdef FIXED_POINT
 #include "arch.h"
 
-#define kiss_fft_scalar opus_int32
-#define kiss_twiddle_scalar opus_int16
+#define kiss_fft_scalar int32_t
+#define kiss_twiddle_scalar int16_t
 
 #else
 #ifndef kiss_fft_scalar
@@ -84,8 +84,8 @@ extern "C" {
 		kiss_fft_scalar scale;
 #endif
 		int shift;
-		opus_int16 factors[2 * MAXFACTORS];
-		const opus_int16 *bitrev;
+		int16_t factors[2 * MAXFACTORS];
+		const int16_t *bitrev;
 		const kiss_twiddle_cpx *twiddles;
 	} kiss_fft_state;
 
