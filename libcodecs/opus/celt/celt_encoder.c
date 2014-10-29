@@ -2119,9 +2119,10 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 			balance, enc, LM, codedBands, &st->rng);
 
 	if (anti_collapse_rsv > 0) {
-		anti_collapse_on = st->consec_transient < 2;
 #ifdef FUZZING
 		anti_collapse_on = rand() & 0x1;
+#else
+		anti_collapse_on = st->consec_transient < 2;
 #endif
 		ec_enc_bits(enc, anti_collapse_on, 1);
 	}
