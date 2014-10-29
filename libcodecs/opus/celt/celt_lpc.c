@@ -218,7 +218,7 @@ int _celt_autocorr(const opus_val16 * x,	/*  in: [0...n-1] samples x   */
 	opus_val32 d;
 	int i, k;
 	int fastN = n - lag;
-	int shift;
+	int shift = 0;
 	const opus_val16 *xptr;
 	opus_val16 xx[n];
 
@@ -237,7 +237,6 @@ int _celt_autocorr(const opus_val16 * x,	/*  in: [0...n-1] samples x   */
 		}
 		xptr = xx;
 	}
-	shift = 0;
 #ifdef FIXED_POINT
 	{
 		opus_val32 ac0;

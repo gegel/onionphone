@@ -33,6 +33,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -300,6 +302,10 @@ void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp,
 	opus_val16 x_lp4[len >> 2];
 	opus_val16 y_lp4[lag >> 2];
 	opus_val32 xcorr[max_pitch >> 1];
+
+	memzero(x_lp4, (len >> 2) * sizeof(opus_val16));
+	memzero(y_lp4, (lag >> 2) * sizeof(opus_val16));
+	memzero(xcorr, (max_pitch >> 1) * sizeof(opus_val32));
 
 #ifdef FIXED_POINT
 	opus_val32 maxcorr;

@@ -29,11 +29,13 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <math.h>
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include <math.h>
 #include "bands.h"
 #include "modes.h"
 #include "vq.h"
@@ -581,7 +583,10 @@ static void deinterleave_hadamard(celt_norm * X, int N0, int stride,
 
 	N = N0 * stride;
 	celt_norm tmp[N];
+
+	memzero(tmp, N * sizeof(celt_norm));
 	assert(stride > 0);
+
 	if (hadamard) {
 		const int *ordery = ordery_table + stride - 2;
 		for (i = 0; i < stride; i++) {
@@ -605,6 +610,9 @@ static void interleave_hadamard(celt_norm * X, int N0, int stride, int hadamard)
 
 	N = N0 * stride;
 	celt_norm tmp[N];
+
+	memzero(tmp, N * sizeof(celt_norm));
+
 	if (hadamard) {
 		const int *ordery = ordery_table + stride - 2;
 		for (i = 0; i < stride; i++)
