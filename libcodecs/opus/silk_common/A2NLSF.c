@@ -207,7 +207,7 @@ void silk_A2NLSF(int16_t * NLSF,	/* O    Normalized Line Spectral Frequencies in
 			    silk_min_32(silk_LSHIFT((int32_t) k, 8) + ffrac,
 					silk_int16_MAX);
 
-			silk_assert(NLSF[root_ix] >= 0);
+			assert(NLSF[root_ix] >= 0);
 
 			root_ix++;	/* Next root */
 			if (root_ix >= d) {

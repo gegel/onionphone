@@ -53,7 +53,7 @@ void silk_find_pred_coefs_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder st
 
 	/* Weighting for weighted least squares */
 	for (i = 0; i < psEnc->sCmn.nb_subfr; i++) {
-		silk_assert(psEncCtrl->Gains[i] > 0.0f);
+		assert(psEncCtrl->Gains[i] > 0.0f);
 		invGains[i] = 1.0f / psEncCtrl->Gains[i];
 		Wght[i] = invGains[i] * invGains[i];
 	}
@@ -62,7 +62,7 @@ void silk_find_pred_coefs_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder st
 	/**********/
 		/* VOICED */
 	/**********/
-		silk_assert(psEnc->sCmn.ltp_mem_length -
+		assert(psEnc->sCmn.ltp_mem_length -
 			    psEnc->sCmn.predictLPCOrder >=
 			    psEncCtrl->pitchL[0] + LTP_ORDER / 2);
 

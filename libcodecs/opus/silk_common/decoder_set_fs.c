@@ -42,8 +42,8 @@ int silk_decoder_set_fs(silk_decoder_state * psDec,	/* I/O  Decoder state pointe
 {
 	int frame_length, ret = 0;
 
-	silk_assert(fs_kHz == 8 || fs_kHz == 12 || fs_kHz == 16);
-	silk_assert(psDec->nb_subfr == MAX_NB_SUBFR
+	assert(fs_kHz == 8 || fs_kHz == 12 || fs_kHz == 16);
+	assert(psDec->nb_subfr == MAX_NB_SUBFR
 		    || psDec->nb_subfr == MAX_NB_SUBFR / 2);
 
 	/* New (sub)frame length */
@@ -100,7 +100,7 @@ int silk_decoder_set_fs(silk_decoder_state * psDec,	/* I/O  Decoder state pointe
 				    silk_uniform4_iCDF;
 			} else {
 				/* unsupported sampling rate */
-				silk_assert(0);
+				assert(0);
 			}
 			psDec->first_frame_after_reset = 1;
 			psDec->lagPrev = 100;
@@ -116,7 +116,7 @@ int silk_decoder_set_fs(silk_decoder_state * psDec,	/* I/O  Decoder state pointe
 	}
 
 	/* Check that settings are valid */
-	silk_assert(psDec->frame_length > 0
+	assert(psDec->frame_length > 0
 		    && psDec->frame_length <= MAX_FRAME_LENGTH);
 
 	return ret;

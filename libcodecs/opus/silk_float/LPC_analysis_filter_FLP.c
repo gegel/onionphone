@@ -207,7 +207,7 @@ void silk_LPC_analysis_filter_FLP(silk_float r_LPC[],	/* O    LPC residual signa
 				  const int Order	/* I    LPC order                                   */
     )
 {
-	silk_assert(Order <= length);
+	assert(Order <= length);
 
 	switch (Order) {
 	case 6:
@@ -231,7 +231,7 @@ void silk_LPC_analysis_filter_FLP(silk_float r_LPC[],	/* O    LPC residual signa
 		break;
 
 	default:
-		silk_assert(0);
+		assert(0);
 		break;
 	}
 

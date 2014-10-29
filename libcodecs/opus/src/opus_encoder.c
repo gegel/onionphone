@@ -335,13 +335,13 @@ static void hp_cutoff(const opus_val16 * in, int32_t cutoff_Hz,
 	int32_t B_Q28[3], A_Q28[2];
 	int32_t Fc_Q19, r_Q28, r_Q22;
 
-	silk_assert(cutoff_Hz <=
+	assert(cutoff_Hz <=
 		    silk_int32_MAX / SILK_FIX_CONST(1.5 * 3.14159 / 1000, 19));
 	Fc_Q19 =
 	    silk_DIV32_16(silk_SMULBB
 			  (SILK_FIX_CONST(1.5 * 3.14159 / 1000, 19), cutoff_Hz),
 			  Fs / 1000);
-	silk_assert(Fc_Q19 > 0 && Fc_Q19 < 32768);
+	assert(Fc_Q19 > 0 && Fc_Q19 < 32768);
 
 	r_Q28 =
 	    SILK_FIX_CONST(1.0, 28) - silk_MUL(SILK_FIX_CONST(0.92, 9), Fc_Q19);
@@ -1684,7 +1684,7 @@ int32_t opus_encode_native(OpusEncoder * st, const opus_val16 * pcm,
 		} else if (curr_bandwidth == OPUS_BANDWIDTH_MEDIUMBAND) {
 			st->silk_mode.desiredInternalSampleRate = 12000;
 		} else {
-			silk_assert(st->mode == MODE_HYBRID
+			assert(st->mode == MODE_HYBRID
 				    || curr_bandwidth ==
 				    OPUS_BANDWIDTH_WIDEBAND);
 			st->silk_mode.desiredInternalSampleRate = 16000;
@@ -1801,7 +1801,7 @@ int32_t opus_encode_native(OpusEncoder * st, const opus_val16 * pcm,
 				curr_bandwidth = OPUS_BANDWIDTH_WIDEBAND;
 			}
 		} else {
-			silk_assert(st->silk_mode.internalSampleRate == 16000);
+			assert(st->silk_mode.internalSampleRate == 16000);
 		}
 
 		st->silk_mode.opusCanSwitch = st->silk_mode.switchReady;

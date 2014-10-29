@@ -67,13 +67,13 @@ void silk_burg_modified(int32_t * res_nrg,	/* O    Residual energy              
 	int32_t CAb[SILK_MAX_ORDER_LPC + 1];
 	int32_t xcorr[SILK_MAX_ORDER_LPC];
 
-	silk_assert(subfr_length * nb_subfr <= MAX_FRAME_SIZE);
+	assert(subfr_length * nb_subfr <= MAX_FRAME_SIZE);
 
 	/* Compute autocorrelations, added over subframes */
 	silk_sum_sqr_shift(&C0, &rshifts, x, nb_subfr * subfr_length);
 	if (rshifts > MAX_RSHIFTS) {
 		C0 = silk_LSHIFT32(C0, rshifts - MAX_RSHIFTS);
-		silk_assert(C0 > 0);
+		assert(C0 > 0);
 		rshifts = MAX_RSHIFTS;
 	} else {
 		lz = silk_CLZ32(C0) - 1;

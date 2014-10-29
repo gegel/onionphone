@@ -56,11 +56,11 @@ void silk_decode_pulses(ec_dec * psRangeDec,	/* I/O  Compressor data structure  
 	    ec_dec_icdf(psRangeDec, silk_rate_levels_iCDF[signalType >> 1], 8);
 
 	/* Calculate number of shell blocks */
-	silk_assert(1 << LOG2_SHELL_CODEC_FRAME_LENGTH ==
+	assert(1 << LOG2_SHELL_CODEC_FRAME_LENGTH ==
 		    SHELL_CODEC_FRAME_LENGTH);
 	iter = silk_RSHIFT(frame_length, LOG2_SHELL_CODEC_FRAME_LENGTH);
 	if (iter * SHELL_CODEC_FRAME_LENGTH < frame_length) {
-		silk_assert(frame_length == 12 * 10);	/* Make sure only happens for 10 ms @ 12 kHz */
+		assert(frame_length == 12 * 10);	/* Make sure only happens for 10 ms @ 12 kHz */
 		iter++;
 	}
 

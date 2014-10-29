@@ -58,9 +58,9 @@ int32_t silk_NLSF_encode(	/* O    Returns RD value in Q25                     */
 	int16_t ec_ix[MAX_LPC_ORDER];
 	const uint8_t *pCB_element, *iCDF_ptr;
 
-	silk_assert(nSurvivors <= NLSF_VQ_MAX_SURVIVORS);
-	silk_assert(signalType >= 0 && signalType <= 2);
-	silk_assert(NLSF_mu_Q20 <= 32767 && NLSF_mu_Q20 >= 0);
+	assert(nSurvivors <= NLSF_VQ_MAX_SURVIVORS);
+	assert(signalType >= 0 && signalType <= 2);
+	assert(NLSF_mu_Q20 <= 32767 && NLSF_mu_Q20 >= 0);
 
 	/* NLSF stabilization */
 	silk_NLSF_stabilize(pNLSF_Q15, psNLSF_CB->deltaMin_Q15,

@@ -59,7 +59,7 @@ int32_t silk_NLSF_del_dec_quant(	/* O    Returns RD value in Q25                
 	int32_t RD_max_Q25[NLSF_QUANT_DEL_DEC_STATES];
 	const uint8_t *rates_Q5;
 
-	silk_assert((NLSF_QUANT_DEL_DEC_STATES & (NLSF_QUANT_DEL_DEC_STATES - 1)) == 0);	/* must be power of two */
+	assert((NLSF_QUANT_DEL_DEC_STATES & (NLSF_QUANT_DEL_DEC_STATES - 1)) == 0);	/* must be power of two */
 
 	nStates = 1;
 	RD_Q25[0] = 0;
@@ -270,11 +270,11 @@ int32_t silk_NLSF_del_dec_quant(	/* O    Returns RD value in Q25                
 	}
 	for (j = 0; j < order; j++) {
 		indices[j] = ind[ind_tmp & (NLSF_QUANT_DEL_DEC_STATES - 1)][j];
-		silk_assert(indices[j] >= -NLSF_QUANT_MAX_AMPLITUDE_EXT);
-		silk_assert(indices[j] <= NLSF_QUANT_MAX_AMPLITUDE_EXT);
+		assert(indices[j] >= -NLSF_QUANT_MAX_AMPLITUDE_EXT);
+		assert(indices[j] <= NLSF_QUANT_MAX_AMPLITUDE_EXT);
 	}
 	indices[0] += silk_RSHIFT(ind_tmp, NLSF_QUANT_DEL_DEC_STATES_LOG2);
-	silk_assert(indices[0] <= NLSF_QUANT_MAX_AMPLITUDE_EXT);
-	silk_assert(min_Q25 >= 0);
+	assert(indices[0] <= NLSF_QUANT_MAX_AMPLITUDE_EXT);
+	assert(min_Q25 >= 0);
 	return min_Q25;
 }

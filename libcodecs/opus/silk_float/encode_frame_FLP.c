@@ -246,7 +246,7 @@ int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state 
 					memcpy(psRangeEnc,
 						    &sRangeEnc_copy2,
 						    sizeof(ec_enc));
-					silk_assert(sRangeEnc_copy2.offs <=
+					assert(sRangeEnc_copy2.offs <=
 						    1275);
 					memcpy(psRangeEnc->buf,
 						    ec_buf_copy,
@@ -281,7 +281,7 @@ int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state 
 					/* Copy part of the output state */
 					memcpy(&sRangeEnc_copy2,
 						    psRangeEnc, sizeof(ec_enc));
-					silk_assert(psRangeEnc->offs <= 1275);
+					assert(psRangeEnc->offs <= 1275);
 					memcpy(ec_buf_copy,
 						    psRangeEnc->buf,
 						    psRangeEnc->offs);

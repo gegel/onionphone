@@ -159,7 +159,7 @@ void silk_NSQ_wrapper_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state 
 
 	for (i = 0; i < psEnc->sCmn.nb_subfr; i++) {
 		Gains_Q16[i] = silk_float2int(psEncCtrl->Gains[i] * 65536.0f);
-		silk_assert(Gains_Q16[i] > 0);
+		assert(Gains_Q16[i] > 0);
 	}
 
 	if (psIndices->signalType == TYPE_VOICED) {

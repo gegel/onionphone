@@ -48,9 +48,9 @@ void silk_insertion_sort_decreasing_FLP(silk_float * a,	/* I/O  Unsorted / Sorte
 	int i, j;
 
 	/* Safety checks */
-	silk_assert(K > 0);
-	silk_assert(L > 0);
-	silk_assert(L >= K);
+	assert(K > 0);
+	assert(L > 0);
+	assert(L >= K);
 
 	/* Write start indices in index vector */
 	for (i = 0; i < K; i++) {

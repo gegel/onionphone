@@ -56,7 +56,7 @@ void silk_residual_energy_FIX(int32_t nrgs[MAX_NB_SUBFR],	/* O    Residual energ
 
 	/* Filter input to create the LPC residual for each frame half, and measure subframe energies */
 	int16_t LPC_res[(MAX_NB_SUBFR >> 1) * offset];
-	silk_assert((nb_subfr >> 1) * (MAX_NB_SUBFR >> 1) == nb_subfr);
+	assert((nb_subfr >> 1) * (MAX_NB_SUBFR >> 1) == nb_subfr);
 	for (i = 0; i < nb_subfr >> 1; i++) {
 		/* Calculate half frame LPC residual signal including preceding samples */
 		silk_LPC_analysis_filter(LPC_res, x_ptr, a_Q12[i],

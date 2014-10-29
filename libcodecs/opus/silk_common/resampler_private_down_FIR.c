@@ -262,7 +262,7 @@ static inline int16_t *silk_resampler_private_down_FIR_INTERPOL(int16_t *
 		}
 		break;
 	default:
-		silk_assert(0);
+		assert(0);
 	}
 	return out;
 }

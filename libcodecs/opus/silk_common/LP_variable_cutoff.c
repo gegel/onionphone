@@ -72,7 +72,7 @@ static inline void silk_LP_interpolate_filter_taps(int32_t
 							[ind][na], fac_Q16);
 				}
 			} else {	/* ( fac_Q16 - ( 1 << 16 ) ) is in range of a 16-bit int */
-				silk_assert(fac_Q16 - (1 << 16) ==
+				assert(fac_Q16 - (1 << 16) ==
 					    silk_SAT16(fac_Q16 - (1 << 16)));
 				/* Piece-wise linear interpolation of B and A */
 				for (nb = 0; nb < TRANSITION_NB; nb++) {
@@ -126,7 +126,7 @@ void silk_LP_variable_cutoff(silk_LP_state * psLP,	/* I/O  LP filter state      
 	int32_t B_Q28[TRANSITION_NB], A_Q28[TRANSITION_NA], fac_Q16 = 0;
 	int ind = 0;
 
-	silk_assert(psLP->transition_frame_no >= 0
+	assert(psLP->transition_frame_no >= 0
 		    && psLP->transition_frame_no <= TRANSITION_FRAMES);
 
 	/* Run filter if needed */
@@ -146,8 +146,8 @@ void silk_LP_variable_cutoff(silk_LP_state * psLP,	/* I/O  LP filter state      
 		ind = silk_RSHIFT(fac_Q16, 16);
 		fac_Q16 -= silk_LSHIFT(ind, 16);
 
-		silk_assert(ind >= 0);
-		silk_assert(ind < TRANSITION_INT_NUM);
+		assert(ind >= 0);
+		assert(ind < TRANSITION_INT_NUM);
 
 		/* Interpolate filter coefficients */
 		silk_LP_interpolate_filter_taps(B_Q28, A_Q28, ind, fac_Q16);
@@ -158,7 +158,7 @@ void silk_LP_variable_cutoff(silk_LP_state * psLP,	/* I/O  LP filter state      
 			       TRANSITION_FRAMES);
 
 		/* ARMA low-pass filtering */
-		silk_assert(TRANSITION_NB == 3 && TRANSITION_NA == 2);
+		assert(TRANSITION_NB == 3 && TRANSITION_NA == 2);
 		silk_biquad_alt(frame, B_Q28, A_Q28, psLP->In_LP_State, frame,
 				frame_length, 1);
 	}

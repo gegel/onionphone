@@ -138,7 +138,7 @@ void silk_NSQ_del_dec(const silk_encoder_state * psEncC,	/* I/O  Encoder State  
 	/* Set unvoiced lag to the previous one, overwrite later for voiced */
 	lag = NSQ->lagPrev;
 
-	silk_assert(NSQ->prev_gain_Q16 != 0);
+	assert(NSQ->prev_gain_Q16 != 0);
 
 	/* Initialize delayed decision states */
 	NSQ_del_dec_struct psDelDec[psEncC->nStatesDelayedDecision];
@@ -205,7 +205,7 @@ void silk_NSQ_del_dec(const silk_encoder_state * psEncC,	/* I/O  Encoder State  
 		AR_shp_Q13 = &AR2_Q13[k * MAX_SHAPE_LPC_ORDER];
 
 		/* Noise shape parameters */
-		silk_assert(HarmShapeGain_Q14[k] >= 0);
+		assert(HarmShapeGain_Q14[k] >= 0);
 		HarmShapeFIRPacked_Q14 = silk_RSHIFT(HarmShapeGain_Q14[k], 2);
 		HarmShapeFIRPacked_Q14 |=
 		    silk_LSHIFT((int32_t)
@@ -241,7 +241,7 @@ void silk_NSQ_del_dec(const silk_encoder_state * psEncC,	/* I/O  Encoder State  
 							psDelDec[i].RD_Q10 +=
 							    (silk_int32_MAX >>
 							     4);
-							silk_assert(psDelDec[i].
+							assert(psDelDec[i].
 								    RD_Q10 >=
 								    0);
 						}
@@ -286,7 +286,7 @@ void silk_NSQ_del_dec(const silk_encoder_state * psEncC,	/* I/O  Encoder State  
 				start_idx =
 				    psEncC->ltp_mem_length - lag -
 				    psEncC->predictLPCOrder - LTP_ORDER / 2;
-				silk_assert(start_idx > 0);
+				assert(start_idx > 0);
 
 				silk_LPC_analysis_filter(&sLTP[start_idx],
 							 &NSQ->xq[start_idx +
@@ -426,8 +426,10 @@ static inline void silk_noise_shape_quantizer_del_dec(silk_nsq_state * NSQ,	/* I
 	NSQ_del_dec_struct *psDD;
 	NSQ_sample_struct *psSS;
 
-	silk_assert(nStatesDelayedDecision > 0);
+	assert(nStatesDelayedDecision > 0);
 	NSQ_sample_pair psSampleState[nStatesDelayedDecision];
+
+	memzero(psSampleState, nStatesDelayedDecision * sizeof(NSQ_sample_pair));
 
 	shp_lag_ptr =
 	    &NSQ->sLTP_shp_Q14[NSQ->sLTP_shp_buf_idx - lag +
@@ -493,7 +495,7 @@ static inline void silk_noise_shape_quantizer_del_dec(silk_nsq_state * NSQ,	/* I
 			/* Pointer used in short term prediction and shaping */
 			psLPC_Q14 = &psDD->sLPC_Q14[NSQ_LPC_BUF_LENGTH - 1 + i];
 			/* Short-term prediction */
-			silk_assert(predictLPCOrder == 10
+			assert(predictLPCOrder == 10
 				    || predictLPCOrder == 16);
 			/* Avoids introducing a bias because silk_SMLAWB() always rounds to -inf */
 			LPC_pred_Q14 = silk_RSHIFT(predictLPCOrder, 1);
@@ -540,7 +542,7 @@ static inline void silk_noise_shape_quantizer_del_dec(silk_nsq_state * NSQ,	/* I
 			LPC_pred_Q14 = silk_LSHIFT(LPC_pred_Q14, 4);	/* Q10 -> Q14 */
 
 			/* Noise shape feedback */
-			silk_assert((shapingLPCOrder & 1) == 0);	/* check that order is even */
+			assert((shapingLPCOrder & 1) == 0);	/* check that order is even */
 			/* Output of lowpass section */
 			tmp2 =
 			    silk_SMLAWB(psLPC_Q14[0], psDD->sAR2_Q14[0],
@@ -725,7 +727,7 @@ static inline void silk_noise_shape_quantizer_del_dec(silk_nsq_state * NSQ,	/* I
 				psSampleState[k][1].RD_Q10 =
 				    silk_ADD32(psSampleState[k][1].RD_Q10,
 					       silk_int32_MAX >> 4);
-				silk_assert(psSampleState[k][0].RD_Q10 >= 0);
+				assert(psSampleState[k][0].RD_Q10 >= 0);
 			}
 		}
 
@@ -831,7 +833,7 @@ static inline void silk_nsq_del_dec_scale_states(const silk_encoder_state * psEn
 
 	lag = pitchL[subfr];
 	inv_gain_Q31 = silk_INVERSE32_varQ(silk_max(Gains_Q16[subfr], 1), 47);
-	silk_assert(inv_gain_Q31 != 0);
+	assert(inv_gain_Q31 != 0);
 
 	/* Calculate gain adjustment factor */
 	if (Gains_Q16[subfr] != NSQ->prev_gain_Q16) {
@@ -860,7 +862,7 @@ static inline void silk_nsq_del_dec_scale_states(const silk_encoder_state * psEn
 		}
 		for (i = NSQ->sLTP_buf_idx - lag - LTP_ORDER / 2;
 		     i < NSQ->sLTP_buf_idx; i++) {
-			silk_assert(i < MAX_FRAME_LENGTH);
+			assert(i < MAX_FRAME_LENGTH);
 			sLTP_Q15[i] = silk_SMULWB(inv_gain_Q31, sLTP[i]);
 		}
 	}

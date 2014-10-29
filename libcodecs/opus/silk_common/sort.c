@@ -49,9 +49,9 @@ void silk_insertion_sort_increasing(int32_t * a,	/* I/O   Unsorted / Sorted vect
 	int i, j;
 
 	/* Safety checks */
-	silk_assert(K > 0);
-	silk_assert(L > 0);
-	silk_assert(L >= K);
+	assert(K > 0);
+	assert(L > 0);
+	assert(L >= K);
 
 	/* Write start indices in index vector */
 	for (i = 0; i < K; i++) {
@@ -96,9 +96,9 @@ void silk_insertion_sort_decreasing_int16(int16_t * a,	/* I/O   Unsorted / Sorte
 	int value;
 
 	/* Safety checks */
-	silk_assert(K > 0);
-	silk_assert(L > 0);
-	silk_assert(L >= K);
+	assert(K > 0);
+	assert(L > 0);
+	assert(L >= K);
 
 	/* Write start indices in index vector */
 	for (i = 0; i < K; i++) {
@@ -140,7 +140,7 @@ void silk_insertion_sort_increasing_all_values_int16(int16_t * a,	/* I/O   Unsor
 	int i, j;
 
 	/* Safety checks */
-	silk_assert(L > 0);
+	assert(L > 0);
 
 	/* Sort vector elements by value, increasing order */
 	for (i = 1; i < L; i++) {

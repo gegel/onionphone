@@ -54,8 +54,8 @@ static inline void silk_CNG_exc(int32_t residual_Q10[],	/* O    CNG residual sig
 	for (i = 0; i < length; i++) {
 		seed = silk_RAND(seed);
 		idx = (int) (silk_RSHIFT(seed, 24) & exc_mask);
-		silk_assert(idx >= 0);
-		silk_assert(idx <= CNG_BUF_MASK_MAX);
+		assert(idx >= 0);
+		assert(idx <= CNG_BUF_MASK_MAX);
 		residual_Q10[i] =
 		    (int16_t)
 		    silk_SAT16(silk_SMULWW(exc_buf_Q14[idx], Gain_Q16 >> 4));
@@ -151,7 +151,7 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 		memcpy(CNG_sig_Q10, psCNG->CNG_synth_state,
 			    MAX_LPC_ORDER * sizeof(int32_t));
 		for (i = 0; i < length; i++) {
-			silk_assert(psDec->LPC_order == 10
+			assert(psDec->LPC_order == 10
 				    || psDec->LPC_order == 16);
 			/* Avoids introducing a bias because silk_SMLAWB() always rounds to -inf */
 			sum_Q6 = silk_RSHIFT(psDec->LPC_order, 1);

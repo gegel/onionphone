@@ -95,7 +95,7 @@ void silk_decode_indices(silk_decoder_state * psDec,	/* I/O  State              
 					     psDec->psNLSF_CB->nVectors], 8);
 	silk_NLSF_unpack(ec_ix, pred_Q8, psDec->psNLSF_CB,
 			 psDec->indices.NLSFIndices[0]);
-	silk_assert(psDec->psNLSF_CB->order == psDec->LPC_order);
+	assert(psDec->psNLSF_CB->order == psDec->LPC_order);
 	for (i = 0; i < psDec->psNLSF_CB->order; i++) {
 		Ix = ec_dec_icdf(psRangeDec,
 				 &psDec->psNLSF_CB->ec_iCDF[ec_ix[i]], 8);

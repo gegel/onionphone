@@ -95,7 +95,7 @@ void silk_process_gains_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encoder stat
 			gain_squared =
 			    silk_SMLAWW(silk_LSHIFT(ResNrgPart, 16), gain,
 					gain);
-			silk_assert(gain_squared > 0);
+			assert(gain_squared > 0);
 			gain = silk_SQRT_APPROX(gain_squared);	/* Q8   */
 			gain = silk_min(gain, silk_int32_MAX >> 8);
 			psEncCtrl->Gains_Q16[k] = silk_LSHIFT_SAT32(gain, 8);	/* Q16  */
@@ -145,6 +145,6 @@ void silk_process_gains_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encoder stat
 	    + silk_SMULWB(SILK_FIX_CONST(LAMBDA_QUANT_OFFSET, 16),
 			  quant_offset_Q10);
 
-	silk_assert(psEncCtrl->Lambda_Q10 > 0);
-	silk_assert(psEncCtrl->Lambda_Q10 < SILK_FIX_CONST(2, 10));
+	assert(psEncCtrl->Lambda_Q10 > 0);
+	assert(psEncCtrl->Lambda_Q10 < SILK_FIX_CONST(2, 10));
 }

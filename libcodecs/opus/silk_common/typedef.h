@@ -52,13 +52,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #define silk_TRUE        1
 #define silk_FALSE       0
 
-/* assertions */
-#if (defined _WIN32 && !defined _WINCE && !defined(__GNUC__) && !defined(NO_ASSERTS))
-#ifndef silk_assert
-#include <crtdbg.h>		/* ASSERTE() */
-#define silk_assert(COND)   _ASSERTE(COND)
-#endif
-#else
 #ifdef ENABLE_ASSERTIONS
 #include <stdio.h>
 #include <stdlib.h>
@@ -73,10 +66,6 @@ static inline void _silk_fatal(const char *str, const char *file, int line)
 	abort();
 }
 
-#define silk_assert(COND) {if (!(COND)) {silk_fatal("assertion failed: " #COND);}}
-#else
-#define silk_assert(COND)
-#endif
 #endif
 
 #endif				/* SILK_TYPEDEF_H */

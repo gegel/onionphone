@@ -51,8 +51,8 @@ void silk_warped_autocorrelation_FIX(int32_t * corr,	/* O    Result [order + 1] 
 	int64_t corr_QC[MAX_SHAPE_LPC_ORDER + 1] = { 0 };
 
 	/* Order must be even */
-	silk_assert((order & 1) == 0);
-	silk_assert(2 * QS - QC >= 0);
+	assert((order & 1) == 0);
+	assert(2 * QS - QC >= 0);
 
 	/* Loop over samples */
 	for (n = 0; n < length; n++) {
@@ -85,7 +85,7 @@ void silk_warped_autocorrelation_FIX(int32_t * corr,	/* O    Result [order + 1] 
 	lsh = silk_CLZ64(corr_QC[0]) - 35;
 	lsh = silk_LIMIT(lsh, -12 - QC, 30 - QC);
 	*scale = -(QC + lsh);
-	silk_assert(*scale >= -30 && *scale <= 12);
+	assert(*scale >= -30 && *scale <= 12);
 	if (lsh >= 0) {
 		for (i = 0; i < order + 1; i++) {
 			corr[i] =
@@ -99,5 +99,5 @@ void silk_warped_autocorrelation_FIX(int32_t * corr,	/* O    Result [order + 1] 
 			    silk_CHECK_FIT32(silk_RSHIFT64(corr_QC[i], -lsh));
 		}
 	}
-	silk_assert(corr_QC[0] >= 0);	/* If breaking, decrease QC */
+	assert(corr_QC[0] >= 0);	/* If breaking, decrease QC */
 }

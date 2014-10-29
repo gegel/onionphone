@@ -51,7 +51,7 @@ void silk_decode_core(silk_decoder_state * psDec,	/* I/O  Decoder state         
 	    gain_adj_Q16, rand_seed, offset_Q10;
 	int32_t *pred_lag_ptr, *pexc_Q14, *pres_Q14;
 
-	silk_assert(psDec->prev_gain_Q16 != 0);
+	assert(psDec->prev_gain_Q16 != 0);
 
 	int16_t sLTP[psDec->ltp_mem_length];
 	int32_t sLTP_Q15[psDec->ltp_mem_length + psDec->frame_length];
@@ -124,7 +124,7 @@ void silk_decode_core(silk_decoder_state * psDec,	/* I/O  Decoder state         
 		}
 
 		/* Save inv_gain */
-		silk_assert(inv_gain_Q31 != 0);
+		assert(inv_gain_Q31 != 0);
 		psDec->prev_gain_Q16 = psDecCtrl->Gains_Q16[k];
 
 		/* Avoid abrupt transition from voiced PLC to unvoiced normal decoding */
@@ -149,7 +149,7 @@ void silk_decode_core(silk_decoder_state * psDec,	/* I/O  Decoder state         
 				start_idx =
 				    psDec->ltp_mem_length - lag -
 				    psDec->LPC_order - LTP_ORDER / 2;
-				silk_assert(start_idx > 0);
+				assert(start_idx > 0);
 
 				if (k == 2) {
 					memcpy(&psDec->
@@ -243,7 +243,7 @@ void silk_decode_core(silk_decoder_state * psDec,	/* I/O  Decoder state         
 
 		for (i = 0; i < psDec->subfr_length; i++) {
 			/* Short-term prediction */
-			silk_assert(psDec->LPC_order == 10
+			assert(psDec->LPC_order == 10
 				    || psDec->LPC_order == 16);
 			/* Avoids introducing a bias because silk_SMLAWB() always rounds to -inf */
 			LPC_pred_Q10 = silk_RSHIFT(psDec->LPC_order, 1);

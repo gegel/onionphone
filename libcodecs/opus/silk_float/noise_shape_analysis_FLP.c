@@ -126,7 +126,7 @@ static inline void warped_true2monic_coefs(silk_float * coefs_syn,
 			coefs_ana[i] *= gain_ana;
 		}
 	}
-	silk_assert(0);
+	assert(0);
 }
 
 /* Compute noise shaping coefficients and initial gain values */

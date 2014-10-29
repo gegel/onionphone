@@ -80,7 +80,7 @@ void silk_solve_LDL_FIX(int32_t * A,	/* I    Pointer to symetric square matrix A
 	int32_t Y[MAX_MATRIX_SIZE];
 	inv_D_t inv_D[MAX_MATRIX_SIZE];
 
-	silk_assert(M <= MAX_MATRIX_SIZE);
+	assert(M <= MAX_MATRIX_SIZE);
 	int32_t L_Q16[M * M];
 
     /***************************************************
@@ -120,7 +120,7 @@ static inline void silk_LDL_factorize_FIX(int32_t * A,	/* I/O Pointer to Symetri
 	int32_t v_Q0[MAX_MATRIX_SIZE], D_Q0[MAX_MATRIX_SIZE];
 	int32_t one_div_diag_Q36, one_div_diag_Q40, one_div_diag_Q48;
 
-	silk_assert(M <= MAX_MATRIX_SIZE);
+	assert(M <= MAX_MATRIX_SIZE);
 
 	status = 1;
 	diag_min_value =
@@ -189,7 +189,7 @@ static inline void silk_LDL_factorize_FIX(int32_t * A,	/* I/O Pointer to Symetri
 		}
 	}
 
-	silk_assert(status == 0);
+	assert(status == 0);
 }
 
 static inline void silk_LS_divide_Q16_FIX(int32_t T[],	/* I/O  Numenator vector                                            */

@@ -82,7 +82,7 @@ void silk_find_LPC_FIX(silk_encoder_state * psEncC,	/* I/O  Encoder state       
 				    res_nrg - silk_RSHIFT(res_tmp_nrg, shift);
 			}
 		} else {
-			silk_assert(shift > -32);
+			assert(shift > -32);
 			res_nrg = silk_RSHIFT(res_nrg, -shift) - res_tmp_nrg;
 			res_nrg_Q = res_tmp_nrg_Q;
 		}
@@ -166,7 +166,7 @@ void silk_find_LPC_FIX(silk_encoder_state * psEncC,	/* I/O  Encoder state       
 		silk_A2NLSF(NLSF_Q15, a_Q16, psEncC->predictLPCOrder);
 	}
 
-	silk_assert(psEncC->indices.NLSFInterpCoef_Q2 == 4
+	assert(psEncC->indices.NLSFInterpCoef_Q2 == 4
 		    || (psEncC->useInterpolatedNLSFs
 			&& !psEncC->first_frame_after_reset
 			&& psEncC->nb_subfr == MAX_NB_SUBFR));

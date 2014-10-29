@@ -58,7 +58,7 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 	}
 	for (i = 0; i < psEnc->sCmn.nb_subfr; i++) {
 		/* Divide to Q16 */
-		silk_assert(psEncCtrl->Gains_Q16[i] > 0);
+		assert(psEncCtrl->Gains_Q16[i] > 0);
 		/* Invert and normalize gains, and ensure that maximum invGains_Q16 is within range of a 16 bit int */
 		invGains_Q16[i] =
 		    silk_DIV32_varQ(min_gain_Q16, psEncCtrl->Gains_Q16[i],
@@ -68,7 +68,7 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 		invGains_Q16[i] = silk_max(invGains_Q16[i], 363);
 
 		/* Square the inverted gains */
-		silk_assert(invGains_Q16[i] == silk_SAT16(invGains_Q16[i]));
+		assert(invGains_Q16[i] == silk_SAT16(invGains_Q16[i]));
 		tmp = silk_SMULWB(invGains_Q16[i], invGains_Q16[i]);
 		Wght_Q15[i] = silk_RSHIFT(tmp, 1);
 
@@ -85,7 +85,7 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 	/**********/
 		/* VOICED */
 	/**********/
-		silk_assert(psEnc->sCmn.ltp_mem_length -
+		assert(psEnc->sCmn.ltp_mem_length -
 			    psEnc->sCmn.predictLPCOrder >=
 			    psEncCtrl->pitchL[0] + LTP_ORDER / 2);
 

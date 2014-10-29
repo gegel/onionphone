@@ -95,7 +95,7 @@ int silk_resampler_init(silk_resampler_state_struct * S,	/* I/O  Resampler state
 		     && Fs_Hz_in != 24000 && Fs_Hz_in != 48000)
 		    || (Fs_Hz_out != 8000 && Fs_Hz_out != 12000
 			&& Fs_Hz_out != 16000)) {
-			silk_assert(0);
+			assert(0);
 			return -1;
 		}
 		S->inputDelay =
@@ -105,7 +105,7 @@ int silk_resampler_init(silk_resampler_state_struct * S,	/* I/O  Resampler state
 		    || (Fs_Hz_out != 8000 && Fs_Hz_out != 12000
 			&& Fs_Hz_out != 16000 && Fs_Hz_out != 24000
 			&& Fs_Hz_out != 48000)) {
-			silk_assert(0);
+			assert(0);
 			return -1;
 		}
 		S->inputDelay =
@@ -161,7 +161,7 @@ int silk_resampler_init(silk_resampler_state_struct * S,	/* I/O  Resampler state
 			S->Coefs = silk_Resampler_1_6_COEFS;
 		} else {
 			/* None available */
-			silk_assert(0);
+			assert(0);
 			return -1;
 		}
 	} else {
@@ -193,9 +193,9 @@ int silk_resampler(silk_resampler_state_struct * S,	/* I/O  Resampler state     
 	int nSamples;
 
 	/* Need at least 1 ms of input data */
-	silk_assert(inLen >= S->Fs_in_kHz);
+	assert(inLen >= S->Fs_in_kHz);
 	/* Delay can't exceed the 1 ms of buffering */
-	silk_assert(S->inputDelay <= S->Fs_in_kHz);
+	assert(S->inputDelay <= S->Fs_in_kHz);
 
 	nSamples = S->Fs_in_kHz - S->inputDelay;
 

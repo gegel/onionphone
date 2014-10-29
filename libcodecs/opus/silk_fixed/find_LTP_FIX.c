@@ -93,7 +93,7 @@ void silk_find_LTP_FIX(int16_t b_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* O    LTP coef
 		if (corr_rshifts[k] > rr_shifts) {
 			rr[k] = silk_RSHIFT(rr[k], corr_rshifts[k] - rr_shifts);	/* rr[ k ] in Q( -corr_rshifts[ k ] ) */
 		}
-		silk_assert(rr[k] >= 0);
+		assert(rr[k] >= 0);
 
 		regu = 1;
 		regu =
@@ -124,7 +124,7 @@ void silk_find_LTP_FIX(int16_t b_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* O    LTP coef
 		denom32 = silk_LSHIFT_SAT32(silk_SMULWB(nrg[k], Wght_Q15[k]), 1 + extra_shifts) +	/* Q( -corr_rshifts[ k ] + extra_shifts ) */
 		    silk_RSHIFT(silk_SMULWB((int32_t) subfr_length, 655), corr_rshifts[k] - extra_shifts);	/* Q( -corr_rshifts[ k ] + extra_shifts ) */
 		denom32 = silk_max(denom32, 1);
-		silk_assert(((int64_t) Wght_Q15[k] << 16) < silk_int32_MAX);	/* Wght always < 0.5 in Q0 */
+		assert(((int64_t) Wght_Q15[k] << 16) < silk_int32_MAX);	/* Wght always < 0.5 in Q0 */
 		temp32 = silk_DIV32(silk_LSHIFT((int32_t) Wght_Q15[k], 16), denom32);	/* Q( 15 + 16 + corr_rshifts[k] - extra_shifts ) */
 		temp32 = silk_RSHIFT(temp32, 31 + corr_rshifts[k] - extra_shifts - 26);	/* Q26 */
 
@@ -134,7 +134,7 @@ void silk_find_LTP_FIX(int16_t b_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* O    LTP coef
 			WLTP_max = silk_max(WLTP_ptr[i], WLTP_max);
 		}
 		lshift = silk_CLZ32(WLTP_max) - 1 - 3;	/* keep 3 bits free for vq_nearest_neighbor_fix */
-		silk_assert(26 - 18 + lshift >= 0);
+		assert(26 - 18 + lshift >= 0);
 		if (26 - 18 + lshift < 31) {
 			temp32 =
 			    silk_min_32(temp32,
@@ -145,7 +145,7 @@ void silk_find_LTP_FIX(int16_t b_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* O    LTP coef
 		silk_scale_vector32_Q26_lshift_18(WLTP_ptr, temp32, LTP_ORDER * LTP_ORDER);	/* WLTP_ptr in Q( 18 - corr_rshifts[ k ] ) */
 
 		w[k] = matrix_ptr(WLTP_ptr, LTP_ORDER / 2, LTP_ORDER / 2, LTP_ORDER);	/* w in Q( 18 - corr_rshifts[ k ] ) */
-		silk_assert(w[k] >= 0);
+		assert(w[k] >= 0);
 
 		r_ptr += subfr_length;
 		b_Q14_ptr += LTP_ORDER;
@@ -161,7 +161,7 @@ void silk_find_LTP_FIX(int16_t b_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* O    LTP coef
 	if (LTPredCodGain_Q7 != NULL) {
 		LPC_LTP_res_nrg = 0;
 		LPC_res_nrg = 0;
-		silk_assert(LTP_CORRS_HEAD_ROOM >= 2);	/* Check that no overflow will happen when adding */
+		assert(LTP_CORRS_HEAD_ROOM >= 2);	/* Check that no overflow will happen when adding */
 		for (k = 0; k < nb_subfr; k++) {
 			LPC_res_nrg = silk_ADD32(LPC_res_nrg, silk_RSHIFT(silk_ADD32(silk_SMULWB(rr[k], Wght_Q15[k]), 1), 1 + (maxRshifts - corr_rshifts[k])));	/* Q( -maxRshifts ) */
 			LPC_LTP_res_nrg = silk_ADD32(LPC_LTP_res_nrg, silk_RSHIFT(silk_ADD32(silk_SMULWB(nrg[k], Wght_Q15[k]), 1), 1 + (maxRshifts - corr_rshifts[k])));	/* Q( -maxRshifts ) */
@@ -173,7 +173,7 @@ void silk_find_LTP_FIX(int16_t b_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* O    LTP coef
 		    (int) silk_SMULBB(3,
 					   silk_lin2log(div_Q16) - (16 << 7));
 
-		silk_assert(*LTPredCodGain_Q7 ==
+		assert(*LTPredCodGain_Q7 ==
 			    (int)
 			    silk_SAT16(silk_MUL
 				       (3, silk_lin2log(div_Q16) - (16 << 7))));
@@ -206,7 +206,7 @@ void silk_find_LTP_FIX(int16_t b_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* O    LTP coef
 	}
 
 	/* max_abs_d_Q14 = (5 << 15); worst case, i.e. LTP_ORDER * -silk_int16_MIN */
-	silk_assert(max_abs_d_Q14 <= (5 << 15));
+	assert(max_abs_d_Q14 <= (5 << 15));
 
 	/* How many bits is needed for w*d' in Q( 18 - maxRshifts ) in the worst case, of all d_Q14's being equal to max_abs_d_Q14 */
 	extra_shifts = max_w_bits + 32 - silk_CLZ32(max_abs_d_Q14) - 14;

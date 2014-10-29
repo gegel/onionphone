@@ -92,7 +92,7 @@ int silk_Decode(		/* O    Returns error code                              */
     )
 {
 	int i, n, decode_only_middle = 0, ret = SILK_NO_ERROR;
-	int32_t nSamplesOutDec, LBRR_symbol;
+	int32_t nSamplesOutDec = 0, LBRR_symbol = 0;
 	int16_t *samplesOut1_tmp[2];
 
 	int32_t MS_pred_Q13[2] = { 0 };
@@ -102,7 +102,7 @@ int silk_Decode(		/* O    Returns error code                              */
 	int has_side;
 	int stereo_to_mono;
 
-	silk_assert(decControl->nChannelsInternal == 1
+	assert(decControl->nChannelsInternal == 1
 		    || decControl->nChannelsInternal == 2);
 
     /**********************************/
@@ -144,14 +144,14 @@ int silk_Decode(		/* O    Returns error code                              */
 				channel_state[n].nFramesPerPacket = 3;
 				channel_state[n].nb_subfr = 4;
 			} else {
-				silk_assert(0);
+				assert(0);
 
 				return SILK_DEC_INVALID_FRAME_SIZE;
 			}
 			fs_kHz_dec = (decControl->internalSampleRate >> 10) + 1;
 			if (fs_kHz_dec != 8 && fs_kHz_dec != 12
 			    && fs_kHz_dec != 16) {
-				silk_assert(0);
+				assert(0);
 
 				return SILK_DEC_INVALID_SAMPLING_FREQUENCY;
 			}

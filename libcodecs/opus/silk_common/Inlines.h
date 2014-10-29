@@ -34,6 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifndef SILK_FIX_INLINES_H
 #define SILK_FIX_INLINES_H
 
+#include <assert.h>
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
@@ -99,8 +101,8 @@ extern "C" {
 		int a_headrm, b_headrm, lshift;
 		int32_t b32_inv, a32_nrm, b32_nrm, result;
 
-		silk_assert(b32 != 0);
-		silk_assert(Qres >= 0);
+		assert(b32 != 0);
+		assert(Qres >= 0);
 
 		/* Compute number of bits head room and normalize inputs */
 		a_headrm = silk_CLZ32(silk_abs(a32)) - 1;
@@ -143,8 +145,8 @@ extern "C" {
 		int b_headrm, lshift;
 		int32_t b32_inv, b32_nrm, err_Q32, result;
 
-		silk_assert(b32 != 0);
-		silk_assert(Qres > 0);
+		assert(b32 != 0);
+		assert(Qres > 0);
 
 		/* Compute number of bits head room and normalize input */
 		b_headrm = silk_CLZ32(silk_abs(b32)) - 1;

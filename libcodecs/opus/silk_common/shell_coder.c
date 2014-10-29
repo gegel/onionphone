@@ -85,7 +85,7 @@ void silk_shell_encoder(ec_enc * psRangeEnc,	/* I/O  compressor data structure  
 	int pulses1[8], pulses2[4], pulses3[2], pulses4[1];
 
 	/* this function operates on one shell code frame of 16 pulses */
-	silk_assert(SHELL_CODEC_FRAME_LENGTH == 16);
+	assert(SHELL_CODEC_FRAME_LENGTH == 16);
 
 	/* tree representation per pulse-subframe */
 	combine_pulses(pulses1, pulses0, 8);
@@ -140,7 +140,7 @@ void silk_shell_decoder(int * pulses0,	/* O    data: nonnegative pulse amplitude
 	int pulses3[2], pulses2[4], pulses1[8];
 
 	/* this function operates on one shell code frame of 16 pulses */
-	silk_assert(SHELL_CODEC_FRAME_LENGTH == 16);
+	assert(SHELL_CODEC_FRAME_LENGTH == 16);
 
 	decode_split(&pulses3[0], &pulses3[1], psRangeDec, pulses4,
 		     silk_shell_code_table3);
