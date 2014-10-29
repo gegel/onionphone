@@ -194,10 +194,10 @@ int silk_Encode(		/* O    Returns error code                              */
 		psEnc->sStereo.width_prev_Q14 = 0;
 		psEnc->sStereo.smth_width_Q14 = SILK_FIX_CONST(1, 14);
 		if (psEnc->nChannelsAPI == 2) {
-			silk_memcpy(&psEnc->state_Fxx[1].sCmn.resampler_state,
+			memcpy(&psEnc->state_Fxx[1].sCmn.resampler_state,
 				    &psEnc->state_Fxx[0].sCmn.resampler_state,
 				    sizeof(silk_resampler_state_struct));
-			silk_memcpy(&psEnc->state_Fxx[1].sCmn.In_HP_State,
+			memcpy(&psEnc->state_Fxx[1].sCmn.In_HP_State,
 				    &psEnc->state_Fxx[0].sCmn.In_HP_State,
 				    sizeof(psEnc->state_Fxx[1].sCmn.
 					   In_HP_State));
@@ -314,7 +314,7 @@ int silk_Encode(		/* O    Returns error code                              */
 			}
 			/* Making sure to start both resamplers from the same state when switching from mono to stereo */
 			if (psEnc->nPrevChannelsInternal == 1 && id == 0) {
-				silk_memcpy(&psEnc->state_Fxx[1].sCmn.
+				memcpy(&psEnc->state_Fxx[1].sCmn.
 					    resampler_state,
 					    &psEnc->state_Fxx[0].sCmn.
 					    resampler_state,
@@ -401,7 +401,7 @@ int silk_Encode(		/* O    Returns error code                              */
 		} else {
 			silk_assert(encControl->nChannelsAPI == 1
 				    && encControl->nChannelsInternal == 1);
-			silk_memcpy(buf, samplesIn,
+			memcpy(buf, samplesIn,
 				    nSamplesFromInput * sizeof(int16_t));
 			ret +=
 			    silk_resampler(&psEnc->state_Fxx[0].sCmn.
@@ -667,10 +667,10 @@ int silk_Encode(		/* O    Returns error code                              */
 				}
 			} else {
 				/* Buffering */
-				silk_memcpy(psEnc->state_Fxx[0].sCmn.inputBuf,
+				memcpy(psEnc->state_Fxx[0].sCmn.inputBuf,
 					    psEnc->sStereo.sMid,
 					    2 * sizeof(int16_t));
-				silk_memcpy(psEnc->sStereo.sMid,
+				memcpy(psEnc->sStereo.sMid,
 					    &psEnc->state_Fxx[0].sCmn.
 					    inputBuf[psEnc->state_Fxx[0].sCmn.
 						     frame_length],

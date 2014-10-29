@@ -68,7 +68,7 @@ silk_float silk_burg_modified_FLP(	/* O    returns residual energy              
 						   subfr_length - n);
 		}
 	}
-	silk_memcpy(C_last_row, C_first_row,
+	memcpy(C_last_row, C_first_row,
 		    SILK_MAX_ORDER_LPC * sizeof(double));
 
 	/* Initialize */

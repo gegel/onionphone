@@ -151,7 +151,7 @@ int silk_pitch_analysis_core(	/* O    Voicing estimate: 0 voiced, 1 unvoiced    
 				       frame_length);
 	} else {
 		silk_assert(Fs_kHz == 8);
-		silk_memcpy(frame_8kHz, frame,
+		memcpy(frame_8kHz, frame,
 			    frame_length_8kHz * sizeof(int16_t));
 	}
 

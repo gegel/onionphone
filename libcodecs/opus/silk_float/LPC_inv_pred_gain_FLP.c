@@ -50,7 +50,7 @@ silk_float silk_LPC_inverse_pred_gain_FLP(	/* O    return inverse prediction gai
 	silk_float *Aold, *Anew;
 
 	Anew = Atmp[order & 1];
-	silk_memcpy(Anew, A, order * sizeof(silk_float));
+	memcpy(Anew, A, order * sizeof(silk_float));
 
 	invGain = 1.0;
 	for (k = order - 1; k > 0; k--) {

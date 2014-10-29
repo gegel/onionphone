@@ -339,7 +339,7 @@ void silk_noise_shape_analysis_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encod
 
 		silk_apply_sine_window(x_windowed, x_ptr, 1, slope_part);
 		shift = slope_part;
-		silk_memcpy(x_windowed + shift, x_ptr + shift,
+		memcpy(x_windowed + shift, x_ptr + shift,
 			    flat_part * sizeof(int16_t));
 		shift += flat_part;
 		silk_apply_sine_window(x_windowed + shift, x_ptr + shift, 2,
@@ -419,7 +419,7 @@ void silk_noise_shape_analysis_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encod
 				   BWExp2_Q16);
 
 		/* Compute noise shaping filter coefficients */
-		silk_memcpy(AR1_Q24, AR2_Q24,
+		memcpy(AR1_Q24, AR2_Q24,
 			    psEnc->sCmn.shapingLPCOrder * sizeof(int32_t));
 
 		/* Bandwidth expansion for analysis filter shaping */

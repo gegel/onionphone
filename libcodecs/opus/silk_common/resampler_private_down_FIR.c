@@ -283,7 +283,7 @@ void silk_resampler_private_down_FIR(void *SS,	/* I/O  Resampler state          
 	int32_t buf[S->batchSize + S->FIR_Order];
 
 	/* Copy buffered samples to start of buffer */
-	silk_memcpy(buf, S->sFIR.i32, S->FIR_Order * sizeof(int32_t));
+	memcpy(buf, S->sFIR.i32, S->FIR_Order * sizeof(int32_t));
 
 	FIR_Coefs = &S->Coefs[2];
 
@@ -312,7 +312,7 @@ void silk_resampler_private_down_FIR(void *SS,	/* I/O  Resampler state          
 
 		if (inLen > 1) {
 			/* More iterations to do; copy last part of filtered signal to beginning of buffer */
-			silk_memcpy(buf, &buf[nSamplesIn],
+			memcpy(buf, &buf[nSamplesIn],
 				    S->FIR_Order * sizeof(int32_t));
 		} else {
 			break;
@@ -320,7 +320,7 @@ void silk_resampler_private_down_FIR(void *SS,	/* I/O  Resampler state          
 	}
 
 	/* Copy last part of filtered signal to the state for the next call */
-	silk_memcpy(S->sFIR.i32, &buf[nSamplesIn],
+	memcpy(S->sFIR.i32, &buf[nSamplesIn],
 		    S->FIR_Order * sizeof(int32_t));
 
 }

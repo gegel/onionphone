@@ -101,7 +101,7 @@ void silk_resampler_private_IIR_FIR(void *SS,	/* I/O  Resampler state           
 	int16_t buf[2 * S->batchSize + RESAMPLER_ORDER_FIR_12];
 
 	/* Copy buffered samples to start of buffer */
-	silk_memcpy(buf, S->sFIR.i16,
+	memcpy(buf, S->sFIR.i16,
 		    RESAMPLER_ORDER_FIR_12 * sizeof(int16_t));
 
 	/* Iterate over blocks of frameSizeIn input samples */
@@ -124,7 +124,7 @@ void silk_resampler_private_IIR_FIR(void *SS,	/* I/O  Resampler state           
 
 		if (inLen > 0) {
 			/* More iterations to do; copy last part of filtered signal to beginning of buffer */
-			silk_memcpy(buf, &buf[nSamplesIn << 1],
+			memcpy(buf, &buf[nSamplesIn << 1],
 				    RESAMPLER_ORDER_FIR_12 *
 				    sizeof(int16_t));
 		} else {
@@ -133,7 +133,7 @@ void silk_resampler_private_IIR_FIR(void *SS,	/* I/O  Resampler state           
 	}
 
 	/* Copy last part of filtered signal to the state for the next call */
-	silk_memcpy(S->sFIR.i16, &buf[nSamplesIn << 1],
+	memcpy(S->sFIR.i16, &buf[nSamplesIn << 1],
 		    RESAMPLER_ORDER_FIR_12 * sizeof(int16_t));
 
 }

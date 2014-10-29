@@ -166,7 +166,7 @@ int silk_Decode(		/* O    Returns error code                              */
 		memzero(psDec->sStereo.pred_prev_Q13,
 			sizeof(psDec->sStereo.pred_prev_Q13));
 		memzero(psDec->sStereo.sSide, sizeof(psDec->sStereo.sSide));
-		silk_memcpy(&channel_state[1].resampler_state,
+		memcpy(&channel_state[1].resampler_state,
 			    &channel_state[0].resampler_state,
 			    sizeof(silk_resampler_state_struct));
 	}
@@ -370,9 +370,9 @@ int silk_Decode(		/* O    Returns error code                              */
 				     channel_state[0].fs_kHz, nSamplesOutDec);
 	} else {
 		/* Buffering */
-		silk_memcpy(samplesOut1_tmp[0], psDec->sStereo.sMid,
+		memcpy(samplesOut1_tmp[0], psDec->sStereo.sMid,
 			    2 * sizeof(int16_t));
-		silk_memcpy(psDec->sStereo.sMid,
+		memcpy(psDec->sStereo.sMid,
 			    &samplesOut1_tmp[0][nSamplesOutDec],
 			    2 * sizeof(int16_t));
 	}

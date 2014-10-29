@@ -153,9 +153,9 @@ void silk_NSQ_del_dec(const silk_encoder_state * psEncC,	/* I/O  Encoder State  
 		psDD->LF_AR_Q14 = NSQ->sLF_AR_shp_Q14;
 		psDD->Shape_Q14[0] =
 		    NSQ->sLTP_shp_Q14[psEncC->ltp_mem_length - 1];
-		silk_memcpy(psDD->sLPC_Q14, NSQ->sLPC_Q14,
+		memcpy(psDD->sLPC_Q14, NSQ->sLPC_Q14,
 			    NSQ_LPC_BUF_LENGTH * sizeof(int32_t));
-		silk_memcpy(psDD->sAR2_Q14, NSQ->sAR2_Q14,
+		memcpy(psDD->sAR2_Q14, NSQ->sAR2_Q14,
 			    sizeof(NSQ->sAR2_Q14));
 	}
 
@@ -364,9 +364,9 @@ void silk_NSQ_del_dec(const silk_encoder_state * psEncC,	/* I/O  Encoder State  
 		NSQ->sLTP_shp_Q14[NSQ->sLTP_shp_buf_idx - decisionDelay + i] =
 		    psDD->Shape_Q14[last_smple_idx];
 	}
-	silk_memcpy(NSQ->sLPC_Q14, &psDD->sLPC_Q14[psEncC->subfr_length],
+	memcpy(NSQ->sLPC_Q14, &psDD->sLPC_Q14[psEncC->subfr_length],
 		    NSQ_LPC_BUF_LENGTH * sizeof(int32_t));
-	silk_memcpy(NSQ->sAR2_Q14, psDD->sAR2_Q14, sizeof(psDD->sAR2_Q14));
+	memcpy(NSQ->sAR2_Q14, psDD->sAR2_Q14, sizeof(psDD->sAR2_Q14));
 
 	/* Update states */
 	NSQ->sLF_AR_shp_Q14 = psDD->LF_AR_Q14;
@@ -749,11 +749,11 @@ static inline void silk_noise_shape_quantizer_del_dec(silk_nsq_state * NSQ,	/* I
 
 		/* Replace a state if best from second set outperforms worst in first set */
 		if (RDmin_Q10 < RDmax_Q10) {
-			silk_memcpy(((int32_t *) & psDelDec[RDmax_ind]) + i,
+			memcpy(((int32_t *) & psDelDec[RDmax_ind]) + i,
 				    ((int32_t *) & psDelDec[RDmin_ind]) + i,
 				    sizeof(NSQ_del_dec_struct) -
 				    i * sizeof(int32_t));
-			silk_memcpy(&psSampleState[RDmax_ind][0],
+			memcpy(&psSampleState[RDmax_ind][0],
 				    &psSampleState[RDmin_ind][1],
 				    sizeof(NSQ_sample_struct));
 		}
@@ -803,7 +803,7 @@ static inline void silk_noise_shape_quantizer_del_dec(silk_nsq_state * NSQ,	/* I
 	/* Update LPC states */
 	for (k = 0; k < nStatesDelayedDecision; k++) {
 		psDD = &psDelDec[k];
-		silk_memcpy(psDD->sLPC_Q14, &psDD->sLPC_Q14[length],
+		memcpy(psDD->sLPC_Q14, &psDD->sLPC_Q14[length],
 			    NSQ_LPC_BUF_LENGTH * sizeof(int32_t));
 	}
 

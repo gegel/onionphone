@@ -81,12 +81,12 @@ void silk_decode_parameters(silk_decoder_state * psDec,	/* I/O  State           
 			    psDec->LPC_order);
 	} else {
 		/* Copy LPC coefficients for first half from second half */
-		silk_memcpy(psDecCtrl->PredCoef_Q12[0],
+		memcpy(psDecCtrl->PredCoef_Q12[0],
 			    psDecCtrl->PredCoef_Q12[1],
 			    psDec->LPC_order * sizeof(int16_t));
 	}
 
-	silk_memcpy(psDec->prevNLSF_Q15, pNLSF_Q15,
+	memcpy(psDec->prevNLSF_Q15, pNLSF_Q15,
 		    psDec->LPC_order * sizeof(int16_t));
 
 	/* After a packet loss do BWE of LPC coefs */

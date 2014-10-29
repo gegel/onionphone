@@ -118,7 +118,7 @@ void silk_process_NLSFs(silk_encoder_state * psEncC,	/* I/O  Encoder state      
 
 	} else {
 		/* Copy LPC coefficients for first half from second half */
-		silk_memcpy(PredCoef_Q12[0], PredCoef_Q12[1],
+		memcpy(PredCoef_Q12[0], PredCoef_Q12[1],
 			    psEncC->predictLPCOrder * sizeof(int16_t));
 	}
 }

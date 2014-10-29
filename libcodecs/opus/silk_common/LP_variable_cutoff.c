@@ -99,16 +99,16 @@ static inline void silk_LP_interpolate_filter_taps(int32_t
 				}
 			}
 		} else {
-			silk_memcpy(B_Q28, silk_Transition_LP_B_Q28[ind],
+			memcpy(B_Q28, silk_Transition_LP_B_Q28[ind],
 				    TRANSITION_NB * sizeof(int32_t));
-			silk_memcpy(A_Q28, silk_Transition_LP_A_Q28[ind],
+			memcpy(A_Q28, silk_Transition_LP_A_Q28[ind],
 				    TRANSITION_NA * sizeof(int32_t));
 		}
 	} else {
-		silk_memcpy(B_Q28,
+		memcpy(B_Q28,
 			    silk_Transition_LP_B_Q28[TRANSITION_INT_NUM - 1],
 			    TRANSITION_NB * sizeof(int32_t));
-		silk_memcpy(A_Q28,
+		memcpy(A_Q28,
 			    silk_Transition_LP_A_Q28[TRANSITION_INT_NUM - 1],
 			    TRANSITION_NA * sizeof(int32_t));
 	}

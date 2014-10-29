@@ -121,7 +121,7 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 		memmove(&psCNG->CNG_exc_buf_Q14[psDec->subfr_length],
 			psCNG->CNG_exc_buf_Q14,
 			(psDec->nb_subfr - 1) * psDec->subfr_length * sizeof(int32_t));
-		silk_memcpy(psCNG->CNG_exc_buf_Q14,
+		memcpy(psCNG->CNG_exc_buf_Q14,
 			    &psDec->exc_Q14[subfr * psDec->subfr_length],
 			    psDec->subfr_length * sizeof(int32_t));
 
@@ -148,7 +148,7 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 		silk_NLSF2A(A_Q12, psCNG->CNG_smth_NLSF_Q15, psDec->LPC_order);
 
 		/* Generate CNG signal, by synthesis filtering */
-		silk_memcpy(CNG_sig_Q10, psCNG->CNG_synth_state,
+		memcpy(CNG_sig_Q10, psCNG->CNG_synth_state,
 			    MAX_LPC_ORDER * sizeof(int32_t));
 		for (i = 0; i < length; i++) {
 			silk_assert(psDec->LPC_order == 10
@@ -231,7 +231,7 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 			    silk_ADD_SAT16(frame[i],
 					   silk_RSHIFT_ROUND(sum_Q6, 6));
 		}
-		silk_memcpy(psCNG->CNG_synth_state, &CNG_sig_Q10[length],
+		memcpy(psCNG->CNG_synth_state, &CNG_sig_Q10[length],
 			    MAX_LPC_ORDER * sizeof(int32_t));
 	} else {
 		memzero(psCNG->CNG_synth_state,

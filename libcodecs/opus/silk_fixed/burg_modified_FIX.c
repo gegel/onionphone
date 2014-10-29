@@ -123,7 +123,7 @@ void silk_burg_modified(int32_t * res_nrg,	/* O    Residual energy              
 			}
 		}
 	}
-	silk_memcpy(C_last_row, C_first_row,
+	memcpy(C_last_row, C_first_row,
 		    SILK_MAX_ORDER_LPC * sizeof(int32_t));
 
 	/* Initialize */

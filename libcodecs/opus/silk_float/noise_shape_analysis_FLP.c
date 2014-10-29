@@ -263,7 +263,7 @@ void silk_noise_shape_analysis_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encod
 
 		silk_apply_sine_window_FLP(x_windowed, x_ptr, 1, slope_part);
 		shift = slope_part;
-		silk_memcpy(x_windowed + shift, x_ptr + shift,
+		memcpy(x_windowed + shift, x_ptr + shift,
 			    flat_part * sizeof(silk_float));
 		shift += flat_part;
 		silk_apply_sine_window_FLP(x_windowed + shift, x_ptr + shift, 2,
@@ -312,7 +312,7 @@ void silk_noise_shape_analysis_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encod
 				    psEnc->sCmn.shapingLPCOrder, BWExp2);
 
 		/* Compute noise shaping filter coefficients */
-		silk_memcpy(&psEncCtrl->AR1[k * MAX_SHAPE_LPC_ORDER],
+		memcpy(&psEncCtrl->AR1[k * MAX_SHAPE_LPC_ORDER],
 			    &psEncCtrl->AR2[k * MAX_SHAPE_LPC_ORDER],
 			    psEnc->sCmn.shapingLPCOrder * sizeof(silk_float));
 

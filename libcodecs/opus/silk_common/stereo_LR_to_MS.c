@@ -65,10 +65,10 @@ void silk_stereo_LR_to_MS(stereo_enc_state * state,	/* I/O  State               
 	}
 
 	/* Buffering */
-	silk_memcpy(mid, state->sMid, 2 * sizeof(int16_t));
-	silk_memcpy(side, state->sSide, 2 * sizeof(int16_t));
-	silk_memcpy(state->sMid, &mid[frame_length], 2 * sizeof(int16_t));
-	silk_memcpy(state->sSide, &side[frame_length], 2 * sizeof(int16_t));
+	memcpy(mid, state->sMid, 2 * sizeof(int16_t));
+	memcpy(side, state->sSide, 2 * sizeof(int16_t));
+	memcpy(state->sMid, &mid[frame_length], 2 * sizeof(int16_t));
+	memcpy(state->sSide, &side[frame_length], 2 * sizeof(int16_t));
 
 	/* LP and HP filter mid signal */
 	int16_t LP_mid[frame_length];

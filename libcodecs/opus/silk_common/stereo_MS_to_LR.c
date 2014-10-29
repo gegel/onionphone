@@ -46,10 +46,10 @@ void silk_stereo_MS_to_LR(stereo_dec_state * state,	/* I/O  State               
 	int32_t sum, diff, pred0_Q13, pred1_Q13;
 
 	/* Buffering */
-	silk_memcpy(x1, state->sMid, 2 * sizeof(int16_t));
-	silk_memcpy(x2, state->sSide, 2 * sizeof(int16_t));
-	silk_memcpy(state->sMid, &x1[frame_length], 2 * sizeof(int16_t));
-	silk_memcpy(state->sSide, &x2[frame_length], 2 * sizeof(int16_t));
+	memcpy(x1, state->sMid, 2 * sizeof(int16_t));
+	memcpy(x2, state->sSide, 2 * sizeof(int16_t));
+	memcpy(state->sMid, &x1[frame_length], 2 * sizeof(int16_t));
+	memcpy(state->sSide, &x2[frame_length], 2 * sizeof(int16_t));
 
 	/* Interpolate predictors and add prediction to side channel */
 	pred0_Q13 = state->pred_prev_Q13[0];

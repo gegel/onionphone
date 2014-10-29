@@ -50,7 +50,7 @@ void silk_resampler_down2_3(int32_t * S,	/* I/O  State vector [ 6 ]             
 	int32_t buf[RESAMPLER_MAX_BATCH_SIZE_IN + ORDER_FIR];
 
 	/* Copy buffered samples to start of buffer */
-	silk_memcpy(buf, S, ORDER_FIR * sizeof(int32_t));
+	memcpy(buf, S, ORDER_FIR * sizeof(int32_t));
 
 	/* Iterate over blocks of frameSizeIn input samples */
 	while (1) {
@@ -111,7 +111,7 @@ void silk_resampler_down2_3(int32_t * S,	/* I/O  State vector [ 6 ]             
 
 		if (inLen > 0) {
 			/* More iterations to do; copy last part of filtered signal to beginning of buffer */
-			silk_memcpy(buf, &buf[nSamplesIn],
+			memcpy(buf, &buf[nSamplesIn],
 				    ORDER_FIR * sizeof(int32_t));
 		} else {
 			break;
@@ -119,6 +119,6 @@ void silk_resampler_down2_3(int32_t * S,	/* I/O  State vector [ 6 ]             
 	}
 
 	/* Copy last part of filtered signal to the state for the next call */
-	silk_memcpy(S, &buf[nSamplesIn], ORDER_FIR * sizeof(int32_t));
+	memcpy(S, &buf[nSamplesIn], ORDER_FIR * sizeof(int32_t));
 
 }

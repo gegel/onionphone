@@ -88,7 +88,7 @@ void silk_decode_core(silk_decoder_state * psDec,	/* I/O  Decoder state         
 	}
 
 	/* Copy LPC state */
-	silk_memcpy(sLPC_Q14, psDec->sLPC_Q14_buf,
+	memcpy(sLPC_Q14, psDec->sLPC_Q14_buf,
 		    MAX_LPC_ORDER * sizeof(int32_t));
 
 	pexc_Q14 = psDec->exc_Q14;
@@ -100,7 +100,7 @@ void silk_decode_core(silk_decoder_state * psDec,	/* I/O  Decoder state         
 		A_Q12 = psDecCtrl->PredCoef_Q12[k >> 1];
 
 		/* Preload LPC coeficients to array on stack. Gives small performance gain */
-		silk_memcpy(A_Q12_tmp, A_Q12,
+		memcpy(A_Q12_tmp, A_Q12,
 			    psDec->LPC_order * sizeof(int16_t));
 		B_Q14 = &psDecCtrl->LTPCoef_Q14[k * LTP_ORDER];
 		signalType = psDec->indices.signalType;
@@ -152,7 +152,7 @@ void silk_decode_core(silk_decoder_state * psDec,	/* I/O  Decoder state         
 				silk_assert(start_idx > 0);
 
 				if (k == 2) {
-					silk_memcpy(&psDec->
+					memcpy(&psDec->
 						    outBuf[psDec->
 							   ltp_mem_length], xq,
 						    2 * psDec->subfr_length *
@@ -330,14 +330,14 @@ void silk_decode_core(silk_decoder_state * psDec,	/* I/O  Decoder state         
 		/* DEBUG_STORE_DATA( dec.pcm, pxq, psDec->subfr_length * sizeof( int16_t ) ) */
 
 		/* Update LPC filter state */
-		silk_memcpy(sLPC_Q14, &sLPC_Q14[psDec->subfr_length],
+		memcpy(sLPC_Q14, &sLPC_Q14[psDec->subfr_length],
 			    MAX_LPC_ORDER * sizeof(int32_t));
 		pexc_Q14 += psDec->subfr_length;
 		pxq += psDec->subfr_length;
 	}
 
 	/* Save LPC state */
-	silk_memcpy(psDec->sLPC_Q14_buf, sLPC_Q14,
+	memcpy(psDec->sLPC_Q14_buf, sLPC_Q14,
 		    MAX_LPC_ORDER * sizeof(int32_t));
 
 }

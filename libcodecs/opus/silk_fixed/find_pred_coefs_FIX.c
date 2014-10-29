@@ -180,7 +180,7 @@ void silk_find_pred_coefs_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  encoder st
 				 psEnc->sCmn.predictLPCOrder);
 
 	/* Copy to prediction struct for use in next frame for interpolation */
-	silk_memcpy(psEnc->sCmn.prev_NLSFq_Q15, NLSF_Q15,
+	memcpy(psEnc->sCmn.prev_NLSFq_Q15, NLSF_Q15,
 		    sizeof(psEnc->sCmn.prev_NLSFq_Q15));
 
 }

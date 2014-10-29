@@ -349,9 +349,6 @@ extern "C" {
 #define silk_DWORD_ALIGN
 #endif
 
-/* Useful Macros that can be adjusted to other platforms */
-#define silk_memcpy(dest, src, size)        memcpy((dest), (src), (size))
-
 /* Fixed point macros */
 
 /* (a32 * b32) output have to be 32bit int */

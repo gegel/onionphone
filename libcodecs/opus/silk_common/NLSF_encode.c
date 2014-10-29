@@ -144,7 +144,7 @@ int32_t silk_NLSF_encode(	/* O    Returns RD value in Q25                     */
 	silk_insertion_sort_increasing(RD_Q25, &bestIndex, nSurvivors, 1);
 
 	NLSFIndices[0] = (int8_t) tempIndices1[bestIndex];
-	silk_memcpy(&NLSFIndices[1], &tempIndices2[bestIndex * MAX_LPC_ORDER],
+	memcpy(&NLSFIndices[1], &tempIndices2[bestIndex * MAX_LPC_ORDER],
 		    psNLSF_CB->order * sizeof(int8_t));
 
 	/* Decode */

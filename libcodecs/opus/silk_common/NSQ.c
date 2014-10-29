@@ -446,7 +446,7 @@ static inline void silk_noise_shape_quantizer(silk_nsq_state * NSQ,	/* I/O  NSQ 
 	}
 
 	/* Update LPC synth buffer */
-	silk_memcpy(NSQ->sLPC_Q14, &NSQ->sLPC_Q14[length],
+	memcpy(NSQ->sLPC_Q14, &NSQ->sLPC_Q14[length],
 		    NSQ_LPC_BUF_LENGTH * sizeof(int32_t));
 }
 
