@@ -1449,7 +1449,7 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 		nbCompressedBytes--;
 	}
 #else
-	celt_assert(st->signalling == 0);
+	assert(st->signalling == 0);
 #endif
 
 	/* Can't produce more than 1275 output bytes */

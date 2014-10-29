@@ -27,12 +27,14 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+#include <ophtools.h>
+#include <stdarg.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include <stdarg.h>
-#include <ophtools.h>
 #include "celt.h"
 #include "entenc.h"
 #include "modes.h"
@@ -712,7 +714,7 @@ int optimize_framesize(const opus_val16 * x, int len, int C, int32_t Fs,
 		/* Consider the CELT delay when not in restricted-lowdelay */
 		/* We assume the buffering is between 2.5 and 5 ms */
 		int offset = 2 * subframe - buffering;
-		celt_assert(offset >= 0 && offset <= subframe);
+		assert(offset >= 0 && offset <= subframe);
 		x += C * offset;
 		len -= offset;
 		e[1] = mem[1];

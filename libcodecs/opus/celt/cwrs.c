@@ -29,6 +29,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -517,7 +519,7 @@ void get_required_bits(int16_t * _bits, int _n, int _maxk, int _frac)
 {
 	int k;
   /*_maxk==0 => there's nothing to do.*/
-	celt_assert(_maxk > 0);
+	assert(_maxk > 0);
 	_bits[0] = 0;
 	for (k = 1; k <= _maxk; k++)
 		_bits[k] = log2_frac(CELT_PVQ_V(_n, k), _frac);
@@ -529,7 +531,7 @@ static uint32_t icwrs(int _n, const int *_y)
 	uint32_t i;
 	int j;
 	int k;
-	celt_assert(_n >= 2);
+	assert(_n >= 2);
 	j = _n - 1;
 	i = _y[j] < 0;
 	k = abs(_y[j]);
@@ -546,7 +548,7 @@ static uint32_t icwrs(int _n, const int *_y)
 
 void encode_pulses(const int *_y, int _n, int _k, ec_enc * _enc)
 {
-	celt_assert(_k > 0);
+	assert(_k > 0);
 	ec_enc_uint(_enc, icwrs(_n, _y), CELT_PVQ_V(_n, _k));
 }
 
@@ -555,8 +557,8 @@ static void cwrsi(int _n, int _k, uint32_t _i, int *_y)
 	uint32_t p;
 	int s;
 	int k0;
-	celt_assert(_k > 0);
-	celt_assert(_n > 1);
+	assert(_k > 0);
+	assert(_n > 1);
 	while (_n > 2) {
 		uint32_t q;
 		/*Lots of pulses case: */
@@ -571,7 +573,7 @@ static void cwrsi(int _n, int _k, uint32_t _i, int *_y)
 			k0 = _k;
 			q = row[_n];
 			if (q > _i) {
-				celt_assert(p > q);
+				assert(p > q);
 				_k = _n;
 				do
 					p = CELT_PVQ_U_ROW[--_k][_n];
@@ -670,14 +672,14 @@ static uint32_t ncwrs_urow(unsigned _n, unsigned _k, uint32_t * _u)
 	unsigned k;
 	len = _k + 2;
 	/*We require storage at least 3 values (e.g., _k>0). */
-	celt_assert(len >= 3);
+	assert(len >= 3);
 	_u[0] = 0;
 	_u[1] = 1;
 	/*If _n==0, _u[0] should be 1 and the rest should be 0. */
 	/*If _n==1, _u[i] should be 1 for i>1. */
-	celt_assert(_n >= 2);
+	assert(_n >= 2);
 	/*If _k==0, the following do-while loop will overflow the buffer. */
-	celt_assert(_k > 0);
+	assert(_k > 0);
 	k = 2;
 	do
 		_u[k] = (k << 1) - 1;
@@ -695,7 +697,7 @@ static uint32_t ncwrs_urow(unsigned _n, unsigned _k, uint32_t * _u)
 static void cwrsi(int _n, int _k, uint32_t _i, int *_y, uint32_t * _u)
 {
 	int j;
-	celt_assert(_n > 0);
+	assert(_n > 0);
 	j = 0;
 	do {
 		uint32_t p;
@@ -737,7 +739,7 @@ static inline uint32_t icwrs(int _n, int _k, uint32_t * _nc,
 	int j;
 	int k;
 	/*We can't unroll the first two iterations of the loop unless _n>=2. */
-	celt_assert(_n >= 2);
+	assert(_n >= 2);
 	_u[0] = 0;
 	for (k = 1; k <= _k + 1; k++)
 		_u[k] = (k << 1) - 1;
@@ -763,7 +765,7 @@ void get_required_bits(int16_t * _bits, int _n, int _maxk, int _frac)
 {
 	int k;
   /*_maxk==0 => there's nothing to do.*/
-	celt_assert(_maxk > 0);
+	assert(_maxk > 0);
 	_bits[0] = 0;
 	if (_n == 1) {
 		for (k = 1; k <= _maxk; k++)
@@ -784,7 +786,7 @@ void encode_pulses(const int *_y, int _n, int _k, ec_enc * _enc)
 	uint32_t i;
 	uint32_t nc;
 
-	celt_assert(_k > 0);
+	assert(_k > 0);
 	uint32_t u[_k + 2U];
 	i = icwrs(_n, _k, &nc, _y, u);
 	ec_enc_uint(_enc, i, nc);
@@ -794,7 +796,7 @@ void encode_pulses(const int *_y, int _n, int _k, ec_enc * _enc)
 void decode_pulses(int *_y, int _n, int _k, ec_dec * _dec)
 {
 
-	celt_assert(_k > 0);
+	assert(_k > 0);
 	uint32_t u[_k + 2U];
 	cwrsi(_n, _k, ec_dec_uint(_dec, ncwrs_urow(_n, _k, u)), _y, u);
 

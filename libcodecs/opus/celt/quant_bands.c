@@ -28,18 +28,20 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+#include <math.h>
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "quant_bands.h"
 #include "laplace.h"
-#include <math.h>
 #include "os_support.h"
 #include "arch.h"
 #include "mathops.h"
 #include "rate.h"
-#include <ophtools.h>
 
 #ifdef FIXED_POINT
 /* Mean energy in each band quantized in Q4 */
@@ -503,7 +505,7 @@ void unquant_coarse_energy(const CELTMode * m, int start, int end,
 			/* It would be better to express this invariant as a
 			   test on C at function entry, but that isn't enough
 			   to make the static analyzer happy. */
-			celt_assert(c < 2);
+			assert(c < 2);
 			tell = ec_tell(dec);
 			if (budget - tell >= 15) {
 				int pi;

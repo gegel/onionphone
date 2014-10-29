@@ -34,6 +34,7 @@
 #include "celt_lpc.h"
 #include "mathops.h"
 #include "pitch.h"
+#include <ophtools.h>
 
 void _celt_lpc(opus_val16 * _lpc,	/* out: [0...p-1] LPC coefficients      */
 	       const opus_val32 * ac,	/* in:  [0...p] autocorrelation values  */
@@ -163,7 +164,7 @@ void celt_iir(const opus_val32 * _x,
 	opus_val16 rden[ord];
 	opus_val16 y[N + ord];
 
-	celt_assert((ord & 3) == 0);
+	assert((ord & 3) == 0);
 	for (i = 0; i < ord; i++)
 		rden[i] = den[ord - i - 1];
 	for (i = 0; i < ord; i++)
@@ -217,12 +218,14 @@ int _celt_autocorr(const opus_val16 * x,	/*  in: [0...n-1] samples x   */
 	opus_val32 d;
 	int i, k;
 	int fastN = n - lag;
-	int shift;
+	int shift = 0;
 	const opus_val16 *xptr;
 	opus_val16 xx[n];
 
-	celt_assert(n > 0);
-	celt_assert(overlap >= 0);
+	memzero(xx, n * sizeof(opus_val16));
+
+	assert(n > 0);
+	assert(overlap >= 0);
 	if (overlap == 0) {
 		xptr = x;
 	} else {
@@ -234,7 +237,6 @@ int _celt_autocorr(const opus_val16 * x,	/*  in: [0...n-1] samples x   */
 		}
 		xptr = xx;
 	}
-	shift = 0;
 #ifdef FIXED_POINT
 	{
 		opus_val32 ac0;

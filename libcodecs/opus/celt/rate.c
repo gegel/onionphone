@@ -28,11 +28,13 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+#include <math.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include <math.h>
 #include "modes.h"
 #include "cwrs.h"
 #include "arch.h"
@@ -213,7 +215,7 @@ void compute_pulse_cache(CELTMode * m, int LM)
 						qb = IMIN((num +
 							   (den >> 1)) / den,
 							  57);
-						celt_assert(qb >= 0);
+						assert(qb >= 0);
 						max_bits += qb;
 						N <<= 1;
 					}
@@ -241,7 +243,7 @@ void compute_pulse_cache(CELTMode * m, int LM)
 						qb = IMIN((num +
 							   (den >> 1)) / den,
 							  (N == 2 ? 64 : 61));
-						celt_assert(qb >= 0);
+						assert(qb >= 0);
 						max_bits += qb;
 					}
 					/* Add the fine bits we'll use. */
@@ -263,7 +265,7 @@ void compute_pulse_cache(CELTMode * m, int LM)
 					den = (ndof - 1) << BITRES;
 					qb = IMIN((num + (den >> 1)) / den,
 						  MAX_FINE_BITS);
-					celt_assert(qb >= 0);
+					assert(qb >= 0);
 					max_bits += C * qb << BITRES;
 				}
 				max_bits =
@@ -271,8 +273,8 @@ void compute_pulse_cache(CELTMode * m, int LM)
 				     (C *
 				      ((m->eBands[j + 1] -
 					m->eBands[j]) << i))) - 64;
-				celt_assert(max_bits >= 0);
-				celt_assert(max_bits < 256);
+				assert(max_bits >= 0);
+				assert(max_bits < 256);
 				*cap++ = (unsigned char)max_bits;
 			}
 		}
@@ -423,7 +425,7 @@ static inline int interp_bits2pulses(const CELTMode * m, int start, int end,
 		}
 	}
 
-	celt_assert(codedBands > start);
+	assert(codedBands > start);
 	/* Code the intensity and dual stereo parameters. */
 	if (intensity_rsv > 0) {
 		if (encode) {
@@ -467,7 +469,7 @@ static inline int interp_bits2pulses(const CELTMode * m, int start, int end,
 		int NClogN;
 		int32_t excess, bit;
 
-		celt_assert(bits[j] >= 0);
+		assert(bits[j] >= 0);
 		N0 = m->eBands[j + 1] - m->eBands[j];
 		N = N0 << LM;
 		bit = (int32_t) bits[j] + balance;
@@ -544,8 +546,8 @@ static inline int interp_bits2pulses(const CELTMode * m, int start, int end,
 		}
 		balance = excess;
 
-		celt_assert(bits[j] >= 0);
-		celt_assert(ebits[j] >= 0);
+		assert(bits[j] >= 0);
+		assert(ebits[j] >= 0);
 	}
 	/* Save any remaining bits over the cap for the rebalancing in
 	   quant_all_bands(). */
@@ -554,7 +556,7 @@ static inline int interp_bits2pulses(const CELTMode * m, int start, int end,
 	/* The skipped bands use all their bits for fine energy. */
 	for (; j < end; j++) {
 		ebits[j] = bits[j] >> stereo >> BITRES;
-		celt_assert(C * ebits[j] << BITRES == bits[j]);
+		assert(C * ebits[j] << BITRES == bits[j]);
 		bits[j] = 0;
 		fine_priority[j] = ebits[j] < 1;
 	}

@@ -33,6 +33,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -255,8 +257,8 @@ celt_pitch_xcorr_c(const opus_val16 * _x, const opus_val16 * _y,
 	/*The EDSP version requires that max_pitch is at least 1, and that _x is
 	   32-bit aligned.
 	   Since it's hard to put asserts in assembly, put them here. */
-	celt_assert(max_pitch > 0);
-	celt_assert((((unsigned char *)_x - (unsigned char *)NULL) & 3) == 0);
+	assert(max_pitch > 0);
+	assert((((unsigned char *)_x - (unsigned char *)NULL) & 3) == 0);
 #ifdef FIXED_POINT
 	opus_val32 maxcorr = 1;
 #endif
@@ -301,6 +303,10 @@ void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp,
 	opus_val16 y_lp4[lag >> 2];
 	opus_val32 xcorr[max_pitch >> 1];
 
+	memzero(x_lp4, (len >> 2) * sizeof(opus_val16));
+	memzero(y_lp4, (lag >> 2) * sizeof(opus_val16));
+	memzero(xcorr, (max_pitch >> 1) * sizeof(opus_val32));
+
 #ifdef FIXED_POINT
 	opus_val32 maxcorr;
 	opus_val32 xmax, ymax;
@@ -308,8 +314,8 @@ void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp,
 #endif
 	int offset;
 
-	celt_assert(len > 0);
-	celt_assert(max_pitch > 0);
+	assert(len > 0);
+	assert(max_pitch > 0);
 
 	/* Downsample by 2 again */
 	for (j = 0; j < len >> 2; j++)

@@ -163,10 +163,10 @@ static int16_t *compute_ebands(int32_t Fs, int frame_size, int res,
 
 	for (i = 1; i < *nbEBands; i++) {
 		/* Every band must be smaller than the last band. */
-		celt_assert(eBands[i] - eBands[i - 1] <=
+		assert(eBands[i] - eBands[i - 1] <=
 			    eBands[*nbEBands] - eBands[*nbEBands - 1]);
 		/* Each band must be no larger than twice the size of the previous one. */
-		celt_assert(eBands[i + 1] - eBands[i] <=
+		assert(eBands[i + 1] - eBands[i] <=
 			    2 * (eBands[i] - eBands[i - 1]));
 	}
 

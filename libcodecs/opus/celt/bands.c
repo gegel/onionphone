@@ -29,11 +29,13 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <math.h>
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include <math.h>
 #include "bands.h"
 #include "modes.h"
 #include "vq.h"
@@ -71,14 +73,14 @@ static int16_t bitexact_cos(int16_t x)
 	int32_t tmp;
 	int16_t x2;
 	tmp = (4096 + ((int32_t) (x) * (x))) >> 13;
-	celt_assert(tmp <= 32767);
+	assert(tmp <= 32767);
 	x2 = tmp;
 	x2 = (32767 - x2) + FRAC_MUL16(x2,
 				       (-7651 +
 					FRAC_MUL16(x2,
 						   (8277 +
 						    FRAC_MUL16(-626, x2)))));
-	celt_assert(x2 <= 32766);
+	assert(x2 <= 32766);
 	return 1 + x2;
 }
 
@@ -277,7 +279,7 @@ void denormalise_bands(const CELTMode * m, const celt_norm * OPUS_RESTRICT X,
 					*f++ = SHR32(MULT16_16(*x++, g), shift);
 				} while (++j < band_end);
 		}
-		celt_assert(start <= end);
+		assert(start <= end);
 		for (i = M * eBands[end]; i < N; i++)
 			*f++ = 0;
 	} while (++c < C);
@@ -483,7 +485,7 @@ int spreading_decision(const CELTMode * m, celt_norm * X, int *average,
 	int decision;
 	int hf_sum = 0;
 
-	celt_assert(end > 0);
+	assert(end > 0);
 
 	N0 = M * m->shortMdctSize;
 
@@ -539,7 +541,7 @@ int spreading_decision(const CELTMode * m, celt_norm * X, int *average,
 			*tapset_decision = 0;
 	}
 	/*printf("%d %d %d\n", hf_sum, *hf_average, *tapset_decision); */
-	celt_assert(nbBands > 0);	/* end has to be non-zero */
+	assert(nbBands > 0);	/* end has to be non-zero */
 	sum /= nbBands;
 	/* Recursive averaging */
 	sum = (sum + *average) >> 1;
@@ -581,7 +583,10 @@ static void deinterleave_hadamard(celt_norm * X, int N0, int stride,
 
 	N = N0 * stride;
 	celt_norm tmp[N];
-	celt_assert(stride > 0);
+
+	memzero(tmp, N * sizeof(celt_norm));
+	assert(stride > 0);
+
 	if (hadamard) {
 		const int *ordery = ordery_table + stride - 2;
 		for (i = 0; i < stride; i++) {
@@ -605,6 +610,9 @@ static void interleave_hadamard(celt_norm * X, int N0, int stride, int hadamard)
 
 	N = N0 * stride;
 	celt_norm tmp[N];
+
+	memzero(tmp, N * sizeof(celt_norm));
+
 	if (hadamard) {
 		const int *ordery = ordery_table + stride - 2;
 		for (i = 0; i < stride; i++)
@@ -659,7 +667,7 @@ static int compute_qn(int N, int b, int offset, int pulse_cap, int stereo)
 		qn = exp2_table8[qb & 0x7] >> (14 - (qb >> BITRES));
 		qn = (qn + 1) >> 1 << 1;
 	}
-	celt_assert(qn <= 256);
+	assert(qn <= 256);
 	return qn;
 }
 
