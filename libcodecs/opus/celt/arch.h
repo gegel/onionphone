@@ -89,12 +89,12 @@ static inline void _celt_fatal(const char *str, const char *file, int line)
 
 #ifdef FIXED_POINT
 
-typedef int16_t opus_val16;
-typedef int32_t opus_val32;
+#define opus_val16 int16_t
+#define opus_val32 int32_t
 
-typedef opus_val32 celt_sig;
-typedef opus_val16 celt_norm;
-typedef opus_val32 celt_ener;
+#define celt_sig opus_val32
+#define celt_norm opus_val16
+#define celt_ener opus_val32
 
 #define Q15ONE 32767
 
@@ -134,12 +134,12 @@ typedef opus_val32 celt_ener;
 
 #else				/* FIXED_POINT */
 
-typedef float opus_val16;
-typedef float opus_val32;
+#define opus_val16 float
+#define opus_val32 float
 
-typedef float celt_sig;
-typedef float celt_norm;
-typedef float celt_ener;
+#define celt_sig float
+#define celt_norm float
+#define celt_ener float
 
 #define Q15ONE 1.0f
 
