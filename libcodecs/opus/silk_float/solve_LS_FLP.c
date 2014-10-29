@@ -27,13 +27,14 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "main_FLP.h"
 #include "tuning_parameters.h"
-#include <ophtools.h>
 
 /**********************************************************************
  * LDL Factorisation. Finds the upper triangular matrix L and the diagonal
@@ -82,6 +83,8 @@ void silk_solve_LDL_FLP(silk_float * A,	/* I/O  Symmetric square matrix, out: re
 	silk_float Dinv[MAX_MATRIX_SIZE];	/* inverse diagonal elements of D */
 
 	assert(M <= MAX_MATRIX_SIZE);
+
+	memzero(T, MAX_MATRIX_SIZE * sizeof(silk_float));
 
     /***************************************************
     Factorize A by LDL such that A = L*D*(L^T),

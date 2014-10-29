@@ -27,6 +27,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -82,6 +84,8 @@ void silk_solve_LDL_FIX(int32_t * A,	/* I    Pointer to symetric square matrix A
 
 	assert(M <= MAX_MATRIX_SIZE);
 	int32_t L_Q16[M * M];
+
+	memzero(Y, MAX_MATRIX_SIZE * sizeof(int32_t));
 
     /***************************************************
     Factorize A by LDL such that A = L*D*L',
