@@ -58,12 +58,12 @@ void silk_LPC_analysis_filter(int16_t * out,	/* O    Output signal              
 	const int16_t *in_ptr;
 #endif
 
-	silk_assert(d >= 6);
-	silk_assert((d & 1) == 0);
-	silk_assert(d <= len);
+	assert(d >= 6);
+	assert((d & 1) == 0);
+	assert(d <= len);
 
 #ifdef FIXED_POINT
-	silk_assert(d <= SILK_MAX_ORDER_LPC);
+	assert(d <= SILK_MAX_ORDER_LPC);
 	for (j = 0; j < d; j++) {
 		num[j] = -B[j];
 	}

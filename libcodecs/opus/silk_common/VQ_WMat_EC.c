@@ -74,7 +74,7 @@ void silk_VQ_WMat_EC(int8_t * ind,	/* O    index of best codebook vector        
 					       (gain_tmp_Q7, max_gain_Q7), 0),
 				      10);
 
-		silk_assert(sum1_Q14 >= 0);
+		assert(sum1_Q14 >= 0);
 
 		/* first row of W_Q18 */
 		sum2_Q16 = silk_SMULWB(W_Q18[1], diff_Q14[1]);
@@ -110,7 +110,7 @@ void silk_VQ_WMat_EC(int8_t * ind,	/* O    index of best codebook vector        
 		sum2_Q16 = silk_SMULWB(W_Q18[24], diff_Q14[4]);
 		sum1_Q14 = silk_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14[4]);
 
-		silk_assert(sum1_Q14 >= 0);
+		assert(sum1_Q14 >= 0);
 
 		/* find best */
 		if (sum1_Q14 < *rate_dist_Q14) {

@@ -43,8 +43,8 @@ void silk_interpolate(int16_t xi[MAX_LPC_ORDER],	/* O    interpolated vector    
 {
 	int i;
 
-	silk_assert(ifact_Q2 >= 0);
-	silk_assert(ifact_Q2 <= 4);
+	assert(ifact_Q2 >= 0);
+	assert(ifact_Q2 <= 4);
 
 	for (i = 0; i < d; i++) {
 		xi[i] =

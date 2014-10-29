@@ -61,7 +61,7 @@ static void silk_warped_LPC_analysis_filter_FLP(silk_float state[],	/* I/O  Stat
 	silk_float acc, tmp1, tmp2;
 
 	/* Order must be even */
-	silk_assert((order & 1) == 0);
+	assert((order & 1) == 0);
 
 	for (n = 0; n < length; n++) {
 		/* Output of lowpass section */
@@ -186,7 +186,7 @@ static inline void silk_prefilt_FLP(silk_prefilter_state_FLP * P,	/* I/O state *
 
 	for (i = 0; i < length; i++) {
 		if (lag > 0) {
-			silk_assert(HARM_SHAPE_FIR_TAPS == 3);
+			assert(HARM_SHAPE_FIR_TAPS == 3);
 			idx = lag + LTP_shp_buf_idx;
 			n_LTP =
 			    LTP_shp_buf[(idx - HARM_SHAPE_FIR_TAPS / 2 -

@@ -55,7 +55,7 @@ int silk_decode_frame(silk_decoder_state * psDec,	/* I/O  Pointer to Silk decode
 	psDecCtrl->LTP_scale_Q14 = 0;
 
 	/* Safety checks */
-	silk_assert(L > 0 && L <= MAX_FRAME_LENGTH);
+	assert(L > 0 && L <= MAX_FRAME_LENGTH);
 
 	if (lostFlag == FLAG_DECODE_NORMAL ||
 	    (lostFlag == FLAG_DECODE_LBRR
@@ -91,7 +91,7 @@ int silk_decode_frame(silk_decoder_state * psDec,	/* I/O  Pointer to Silk decode
 
 		psDec->lossCnt = 0;
 		psDec->prevSignalType = psDec->indices.signalType;
-		silk_assert(psDec->prevSignalType >= 0
+		assert(psDec->prevSignalType >= 0
 			    && psDec->prevSignalType <= 2);
 
 		/* A frame has been decoded without errors */
@@ -104,7 +104,7 @@ int silk_decode_frame(silk_decoder_state * psDec,	/* I/O  Pointer to Silk decode
     /*************************/
 	/* Update output buffer. */
     /*************************/
-	silk_assert(psDec->ltp_mem_length >= psDec->frame_length);
+	assert(psDec->ltp_mem_length >= psDec->frame_length);
 	mv_len = psDec->ltp_mem_length - psDec->frame_length;
 	memmove(psDec->outBuf, &psDec->outBuf[psDec->frame_length],
 		mv_len * sizeof(int16_t));

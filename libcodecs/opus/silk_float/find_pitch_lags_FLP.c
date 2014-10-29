@@ -60,7 +60,7 @@ void silk_find_pitch_lags_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder st
 	    psEnc->sCmn.ltp_mem_length;
 
 	/* Safety check */
-	silk_assert(buf_len >= psEnc->sCmn.pitch_LPC_win_length);
+	assert(buf_len >= psEnc->sCmn.pitch_LPC_win_length);
 
 	x_buf = x - psEnc->sCmn.ltp_mem_length;
 

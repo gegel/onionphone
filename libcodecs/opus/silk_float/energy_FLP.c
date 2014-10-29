@@ -54,6 +54,6 @@ double silk_energy_FLP(const silk_float * data, int dataSize)
 		result += data[i] * (double)data[i];
 	}
 
-	silk_assert(result >= 0.0);
+	assert(result >= 0.0);
 	return result;
 }

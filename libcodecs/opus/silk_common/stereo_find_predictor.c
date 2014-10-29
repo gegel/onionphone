@@ -64,7 +64,7 @@ int32_t silk_stereo_find_predictor(	/* O    Returns predictor in Q13            
 	    (int) silk_max_int(smooth_coef_Q16, silk_abs(pred2_Q10));
 
 	/* Smoothed mid and residual norms */
-	silk_assert(smooth_coef_Q16 < 32768);
+	assert(smooth_coef_Q16 < 32768);
 	scale = silk_RSHIFT(scale, 1);
 	mid_res_amp_Q0[0] =
 	    silk_SMLAWB(mid_res_amp_Q0[0],

@@ -704,7 +704,7 @@ static inline int64_t silk_ADD_SAT64(int64_t a64, int64_t b64)
 static inline int16_t silk_SUB_SAT16(int16_t a16, int16_t b16)
 {
 	int16_t res;
-	silk_assert(0);
+	assert(0);
 	/* Nb will be counted in sub-macros */
 	res = (int16_t) silk_SAT16(silk_SUB32((int32_t) (a16), (b16)));
 	return res;

@@ -58,7 +58,7 @@ void silk_warped_LPC_analysis_filter_FIX(int32_t state[],	/* I/O  State [order +
 	int32_t acc_Q11, tmp1, tmp2;
 
 	/* Order must be even */
-	silk_assert((order & 1) == 0);
+	assert((order & 1) == 0);
 
 	for (n = 0; n < length; n++) {
 		/* Output of lowpass section */
@@ -125,7 +125,7 @@ void silk_prefilter_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encoder state   
 		HarmShapeGain_Q12 =
 		    silk_SMULWB((int32_t) psEncCtrl->HarmShapeGain_Q14[k],
 				16384 - psEncCtrl->HarmBoost_Q14[k]);
-		silk_assert(HarmShapeGain_Q12 >= 0);
+		assert(HarmShapeGain_Q12 >= 0);
 		HarmShapeFIRPacked_Q12 = silk_RSHIFT(HarmShapeGain_Q12, 2);
 		HarmShapeFIRPacked_Q12 |=
 		    silk_LSHIFT((int32_t) silk_RSHIFT(HarmShapeGain_Q12, 1),
@@ -196,7 +196,7 @@ static inline void silk_prefilt_FIX(silk_prefilter_state_FIX * P,	/* I/O  state 
 	for (i = 0; i < length; i++) {
 		if (lag > 0) {
 			/* unrolled loop */
-			silk_assert(HARM_SHAPE_FIR_TAPS == 3);
+			assert(HARM_SHAPE_FIR_TAPS == 3);
 			idx = lag + LTP_shp_buf_idx;
 			n_LTP_Q12 =
 			    silk_SMULBB(LTP_shp_buf

@@ -48,7 +48,7 @@ static inline int16_t silk_ADD16_(int16_t a, int16_t b, char *file,
 		fprintf(stderr, "silk_ADD16(%d, %d) in %s: line %d\n", a, b,
 			file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -66,7 +66,7 @@ static inline int32_t silk_ADD32_(int32_t a, int32_t b, char *file,
 		fprintf(stderr, "silk_ADD32(%d, %d) in %s: line %d\n", a, b,
 			file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -84,7 +84,7 @@ static inline int64_t silk_ADD64_(int64_t a, int64_t b, char *file,
 		fprintf(stderr, "silk_ADD64(%lld, %lld) in %s: line %d\n",
 			(long long)a, (long long)b, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -102,7 +102,7 @@ static inline int16_t silk_SUB16_(int16_t a, int16_t b, char *file,
 		fprintf(stderr, "silk_SUB16(%d, %d) in %s: line %d\n", a, b,
 			file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -120,7 +120,7 @@ static inline int32_t silk_SUB32_(int32_t a, int32_t b, char *file,
 		fprintf(stderr, "silk_SUB32(%d, %d) in %s: line %d\n", a, b,
 			file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -138,7 +138,7 @@ static inline int64_t silk_SUB64_(int64_t a, int64_t b, char *file,
 		fprintf(stderr, "silk_SUB64(%lld, %lld) in %s: line %d\n",
 			(long long)a, (long long)b, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -155,7 +155,7 @@ static inline int16_t silk_ADD_SAT16_(int16_t a16, int16_t b16,
 		fprintf(stderr, "silk_ADD_SAT16(%d, %d) in %s: line %d\n", a16,
 			b16, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return res;
@@ -176,7 +176,7 @@ static inline int32_t silk_ADD_SAT32_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_ADD_SAT32(%d, %d) in %s: line %d\n", a32,
 			b32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return res;
@@ -212,7 +212,7 @@ static inline int64_t silk_ADD_SAT64_(int64_t a64, int64_t b64,
 		fprintf(stderr, "silk_ADD_SAT64(%lld, %lld) in %s: line %d\n",
 			(long long)a64, (long long)b64, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return res;
@@ -229,7 +229,7 @@ static inline int16_t silk_SUB_SAT16_(int16_t a16, int16_t b16,
 		fprintf(stderr, "silk_SUB_SAT16(%d, %d) in %s: line %d\n", a16,
 			b16, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return res;
@@ -250,7 +250,7 @@ static inline int32_t silk_SUB_SAT32_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SUB_SAT32(%d, %d) in %s: line %d\n", a32,
 			b32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return res;
@@ -287,7 +287,7 @@ static inline int64_t silk_SUB_SAT64_(int64_t a64, int64_t b64,
 		fprintf(stderr, "silk_SUB_SAT64(%lld, %lld) in %s: line %d\n",
 			(long long)a64, (long long)b64, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return res;
@@ -306,7 +306,7 @@ static inline int32_t silk_MUL_(int32_t a32, int32_t b32, char *file,
 		fprintf(stderr, "silk_MUL(%d, %d) in %s: line %d\n", a32, b32,
 			file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -323,7 +323,7 @@ static inline uint32_t silk_MUL_uint_(uint32_t a32, uint32_t b32,
 		fprintf(stderr, "silk_MUL_uint(%u, %u) in %s: line %d\n", a32,
 			b32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -341,7 +341,7 @@ static inline int32_t silk_MLA_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_MLA(%d, %d, %d) in %s: line %d\n", a32,
 			b32, c32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -359,7 +359,7 @@ static inline int32_t silk_MLA_uint_(uint32_t a32, uint32_t b32,
 		fprintf(stderr, "silk_MLA_uint(%d, %d, %d) in %s: line %d\n",
 			a32, b32, c32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -378,7 +378,7 @@ static inline int32_t silk_SMULWB_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SMULWB(%d, %d) in %s: line %d\n", a32,
 			b32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -396,7 +396,7 @@ static inline int32_t silk_SMLAWB_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SMLAWB(%d, %d, %d) in %s: line %d\n", a32,
 			b32, c32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -415,7 +415,7 @@ static inline int32_t silk_SMULWT_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SMULWT(%d, %d) in %s: line %d\n", a32,
 			b32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -435,7 +435,7 @@ static inline int32_t silk_SMLAWT_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SMLAWT(%d, %d, %d) in %s: line %d\n", a32,
 			b32, c32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -458,7 +458,7 @@ static inline int64_t silk_SMULL_(int64_t a64, int64_t b64, char *file,
 		fprintf(stderr, "silk_SMULL(%lld, %lld) in %s: line %d\n",
 			(long long)a64, (long long)b64, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret64;
@@ -479,7 +479,7 @@ static inline int32_t silk_SMLABB_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SMLABB(%d, %d, %d) in %s: line %d\n", a32,
 			b32, c32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -498,7 +498,7 @@ static inline int32_t silk_SMLABT_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SMLABT(%d, %d, %d) in %s: line %d\n", a32,
 			b32, c32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -516,7 +516,7 @@ static inline int32_t silk_SMLATT_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SMLATT(%d, %d, %d) in %s: line %d\n", a32,
 			b32, c32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -548,7 +548,7 @@ static inline int32_t silk_SMULWW_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SMULWT(%d, %d) in %s: line %d\n", a32,
 			b32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 
@@ -568,7 +568,7 @@ static inline int32_t silk_SMLAWW_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_SMLAWW(%d, %d, %d) in %s: line %d\n", a32,
 			b32, c32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -595,7 +595,7 @@ static inline int32_t silk_DIV32_(int32_t a32, int32_t b32, char *file,
 		fprintf(stderr, "silk_DIV32(%d, %d) in %s: line %d\n", a32, b32,
 			file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return a32 / b32;
@@ -614,7 +614,7 @@ static inline int32_t silk_DIV32_16_(int32_t a32, int32_t b32,
 		fprintf(stderr, "silk_DIV32_16(%d, %d) in %s: line %d\n", a32,
 			b32, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return a32 / b32;
@@ -644,7 +644,7 @@ static inline int8_t silk_LSHIFT8_(int8_t a, int32_t shift, char *file,
 		fprintf(stderr, "silk_LSHIFT8(%d, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -665,7 +665,7 @@ static inline int16_t silk_LSHIFT16_(int16_t a, int32_t shift,
 		fprintf(stderr, "silk_LSHIFT16(%d, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -686,7 +686,7 @@ static inline int32_t silk_LSHIFT32_(int32_t a, int32_t shift,
 		fprintf(stderr, "silk_LSHIFT32(%d, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -707,7 +707,7 @@ static inline int64_t silk_LSHIFT64_(int64_t a, int shift,
 		fprintf(stderr, "silk_LSHIFT64(%lld, %d) in %s: line %d\n",
 			(long long)a, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -722,7 +722,7 @@ static inline int32_t silk_LSHIFT_ovflw_(int32_t a, int32_t shift,
 		fprintf(stderr, "silk_LSHIFT_ovflw(%d, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return a << shift;
@@ -739,7 +739,7 @@ static inline uint32_t silk_LSHIFT_uint_(uint32_t a, int32_t shift,
 		fprintf(stderr, "silk_LSHIFT_uint(%u, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -754,7 +754,7 @@ static inline int8_t silk_RSHIFT8_(int8_t a, int32_t shift, char *file,
 		fprintf(stderr, "silk_RSHITF8(%d, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return a >> shift;
@@ -769,7 +769,7 @@ static inline int16_t silk_RSHIFT16_(int16_t a, int32_t shift,
 		fprintf(stderr, "silk_RSHITF16(%d, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return a >> shift;
@@ -784,7 +784,7 @@ static inline int32_t silk_RSHIFT32_(int32_t a, int32_t shift,
 		fprintf(stderr, "silk_RSHITF32(%d, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return a >> shift;
@@ -799,7 +799,7 @@ static inline int64_t silk_RSHIFT64_(int64_t a, int64_t shift,
 		fprintf(stderr, "silk_RSHITF64(%lld, %lld) in %s: line %d\n",
 			(long long)a, (long long)shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return a >> shift;
@@ -814,7 +814,7 @@ static inline uint32_t silk_RSHIFT_uint_(uint32_t a, int32_t shift,
 		fprintf(stderr, "silk_RSHIFT_uint(%u, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return a >> shift;
@@ -833,7 +833,7 @@ static inline int silk_ADD_LSHIFT_(int a, int b, int shift, char *file,
 		fprintf(stderr, "silk_ADD_LSHIFT(%d, %d, %d) in %s: line %d\n",
 			a, b, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;		/* shift >= 0 */
@@ -854,7 +854,7 @@ static inline int32_t silk_ADD_LSHIFT32_(int32_t a, int32_t b,
 			"silk_ADD_LSHIFT32(%d, %d, %d) in %s: line %d\n", a, b,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;		/* shift >= 0 */
@@ -875,7 +875,7 @@ static inline uint32_t silk_ADD_LSHIFT_uint_(uint32_t a, uint32_t b,
 			"silk_ADD_LSHIFT_uint(%u, %u, %d) in %s: line %d\n", a,
 			b, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;		/* shift >= 0 */
@@ -894,7 +894,7 @@ static inline int silk_ADD_RSHIFT_(int a, int b, int shift, char *file,
 		fprintf(stderr, "silk_ADD_RSHIFT(%d, %d, %d) in %s: line %d\n",
 			a, b, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;		/* shift  > 0 */
@@ -915,7 +915,7 @@ static inline int32_t silk_ADD_RSHIFT32_(int32_t a, int32_t b,
 			"silk_ADD_RSHIFT32(%d, %d, %d) in %s: line %d\n", a, b,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;		/* shift  > 0 */
@@ -936,7 +936,7 @@ static inline uint32_t silk_ADD_RSHIFT_uint_(uint32_t a, uint32_t b,
 			"silk_ADD_RSHIFT_uint(%u, %u, %d) in %s: line %d\n", a,
 			b, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;		/* shift  > 0 */
@@ -957,7 +957,7 @@ static inline int32_t silk_SUB_LSHIFT32_(int32_t a, int32_t b,
 			"silk_SUB_LSHIFT32(%d, %d, %d) in %s: line %d\n", a, b,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;		/* shift >= 0 */
@@ -978,7 +978,7 @@ static inline int32_t silk_SUB_RSHIFT32_(int32_t a, int32_t b,
 			"silk_SUB_RSHIFT32(%d, %d, %d) in %s: line %d\n", a, b,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;		/* shift  > 0 */
@@ -998,7 +998,7 @@ static inline int32_t silk_RSHIFT_ROUND_(int32_t a, int32_t shift,
 		fprintf(stderr, "silk_RSHIFT_ROUND(%d, %d) in %s: line %d\n", a,
 			shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return ret;
@@ -1016,7 +1016,7 @@ static inline int64_t silk_RSHIFT_ROUND64_(int64_t a, int32_t shift,
 			"silk_RSHIFT_ROUND64(%lld, %d) in %s: line %d\n",
 			(long long)a, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	ret = shift == 1 ? (a >> 1) + (a & 1) : ((a >> (shift - 1)) + 1) >> 1;
@@ -1026,7 +1026,7 @@ static inline int64_t silk_RSHIFT_ROUND64_(int64_t a, int32_t shift,
 /* silk_abs is used on floats also, so doesn't work... */
 /*#undef silk_abs
 static inline int32_t silk_abs(int32_t a){
-    silk_assert(a != 0x80000000);
+    assert(a != 0x80000000);
     return (((a) >  0)  ? (a) : -(a));            // Be careful, silk_abs returns wrong when input equals to silk_intXX_MIN
 }*/
 
@@ -1038,7 +1038,7 @@ static inline int64_t silk_abs_int64_(int64_t a, char *file, int line)
 		fprintf(stderr, "silk_abs_int64(%lld) in %s: line %d\n",
 			(long long)a, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return (((a) > 0) ? (a) : -(a));	/* Be careful, silk_abs returns wrong when input equals to silk_intXX_MIN */
@@ -1052,7 +1052,7 @@ static inline int32_t silk_abs_int32_(int32_t a, char *file, int line)
 		fprintf(stderr, "silk_abs_int32(%d) in %s: line %d\n", a, file,
 			line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return silk_abs(a);
@@ -1068,7 +1068,7 @@ static inline int8_t silk_CHECK_FIT8_(int64_t a, char *file, int line)
 		fprintf(stderr, "silk_CHECK_FIT8(%lld) in %s: line %d\n",
 			(long long)a, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return (ret);
@@ -1084,7 +1084,7 @@ static inline int16_t silk_CHECK_FIT16_(int64_t a, char *file, int line)
 		fprintf(stderr, "silk_CHECK_FIT16(%lld) in %s: line %d\n",
 			(long long)a, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return (ret);
@@ -1100,7 +1100,7 @@ static inline int32_t silk_CHECK_FIT32_(int64_t a, char *file, int line)
 		fprintf(stderr, "silk_CHECK_FIT32(%lld) in %s: line %d\n",
 			(long long)a, file, line);
 #ifdef FIXED_DEBUG_ASSERT
-		silk_assert(0);
+		assert(0);
 #endif
 	}
 	return (ret);

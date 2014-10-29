@@ -325,7 +325,7 @@ static inline void silk_PLC_conceal(silk_decoder_state * psDec,	/* I/O Decoder s
 
 	/* Rewhiten LTP state */
 	idx = psDec->ltp_mem_length - lag - psDec->LPC_order - LTP_ORDER / 2;
-	silk_assert(idx > 0);
+	assert(idx > 0);
 	silk_LPC_analysis_filter(&sLTP[idx], &psDec->outBuf[idx], A_Q12,
 				 psDec->ltp_mem_length - idx, psDec->LPC_order);
 	/* Scale LTP state */
@@ -403,7 +403,7 @@ static inline void silk_PLC_conceal(silk_decoder_state * psDec,	/* I/O Decoder s
 	memcpy(sLPC_Q14_ptr, psDec->sLPC_Q14_buf,
 		    MAX_LPC_ORDER * sizeof(int32_t));
 
-	silk_assert(psDec->LPC_order >= 10);	/* check that unrolling works */
+	assert(psDec->LPC_order >= 10);	/* check that unrolling works */
 	for (i = 0; i < psDec->frame_length; i++) {
 		/* partly unrolled */
 		/* Avoids introducing a bias because silk_SMLAWB() always rounds to -inf */

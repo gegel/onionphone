@@ -66,8 +66,8 @@ static int32_t LPC_inverse_pred_gain_QA(	/* O   Returns inverse prediction gain 
 		/* rc_mult1_Q30 range: [ 1 : 2^30 ] */
 		rc_mult1_Q30 =
 		    ((int32_t) 1 << 30) - silk_SMMUL(rc_Q31, rc_Q31);
-		silk_assert(rc_mult1_Q30 > (1 << 15));	/* reduce A_LIMIT if fails */
-		silk_assert(rc_mult1_Q30 <= (1 << 30));
+		assert(rc_mult1_Q30 > (1 << 15));	/* reduce A_LIMIT if fails */
+		assert(rc_mult1_Q30 <= (1 << 30));
 
 		/* rc_mult2 range: [ 2^30 : silk_int32_MAX ] */
 		mult2Q = 32 - silk_CLZ32(silk_abs(rc_mult1_Q30));
@@ -77,8 +77,8 @@ static int32_t LPC_inverse_pred_gain_QA(	/* O   Returns inverse prediction gain 
 		/* invGain_Q30 range: [ 0 : 2^30 ] */
 		invGain_Q30 =
 		    silk_LSHIFT(silk_SMMUL(invGain_Q30, rc_mult1_Q30), 2);
-		silk_assert(invGain_Q30 >= 0);
-		silk_assert(invGain_Q30 <= (1 << 30));
+		assert(invGain_Q30 >= 0);
+		assert(invGain_Q30 <= (1 << 30));
 
 		/* Swap pointers */
 		Aold_QA = Anew_QA;
@@ -107,8 +107,8 @@ static int32_t LPC_inverse_pred_gain_QA(	/* O   Returns inverse prediction gain 
 	/* Update inverse gain */
 	/* Range: [ 0 : 2^30 ] */
 	invGain_Q30 = silk_LSHIFT(silk_SMMUL(invGain_Q30, rc_mult1_Q30), 2);
-	silk_assert(invGain_Q30 >= 0);
-	silk_assert(invGain_Q30 <= 1 << 30);
+	assert(invGain_Q30 >= 0);
+	assert(invGain_Q30 <= 1 << 30);
 
 	return invGain_Q30;
 }

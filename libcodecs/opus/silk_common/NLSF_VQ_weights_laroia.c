@@ -49,8 +49,8 @@ void silk_NLSF_VQ_weights_laroia(int16_t * pNLSFW_Q_OUT,	/* O     Pointer to inp
 	int k;
 	int32_t tmp1_int, tmp2_int;
 
-	silk_assert(D > 0);
-	silk_assert((D & 1) == 0);
+	assert(D > 0);
+	assert((D & 1) == 0);
 
 	/* First value */
 	tmp1_int = silk_max_int(pNLSF_Q15[0], 1);
@@ -59,7 +59,7 @@ void silk_NLSF_VQ_weights_laroia(int16_t * pNLSFW_Q_OUT,	/* O     Pointer to inp
 	tmp2_int = silk_DIV32_16((int32_t) 1 << (15 + NLSF_W_Q), tmp2_int);
 	pNLSFW_Q_OUT[0] =
 	    (int16_t) silk_min_int(tmp1_int + tmp2_int, silk_int16_MAX);
-	silk_assert(pNLSFW_Q_OUT[0] > 0);
+	assert(pNLSFW_Q_OUT[0] > 0);
 
 	/* Main loop */
 	for (k = 1; k < D - 1; k += 2) {
@@ -69,7 +69,7 @@ void silk_NLSF_VQ_weights_laroia(int16_t * pNLSFW_Q_OUT,	/* O     Pointer to inp
 		pNLSFW_Q_OUT[k] =
 		    (int16_t) silk_min_int(tmp1_int + tmp2_int,
 					      silk_int16_MAX);
-		silk_assert(pNLSFW_Q_OUT[k] > 0);
+		assert(pNLSFW_Q_OUT[k] > 0);
 
 		tmp2_int = silk_max_int(pNLSF_Q15[k + 2] - pNLSF_Q15[k + 1], 1);
 		tmp2_int =
@@ -77,7 +77,7 @@ void silk_NLSF_VQ_weights_laroia(int16_t * pNLSFW_Q_OUT,	/* O     Pointer to inp
 		pNLSFW_Q_OUT[k + 1] =
 		    (int16_t) silk_min_int(tmp1_int + tmp2_int,
 					      silk_int16_MAX);
-		silk_assert(pNLSFW_Q_OUT[k + 1] > 0);
+		assert(pNLSFW_Q_OUT[k + 1] > 0);
 	}
 
 	/* Last value */
@@ -85,5 +85,5 @@ void silk_NLSF_VQ_weights_laroia(int16_t * pNLSFW_Q_OUT,	/* O     Pointer to inp
 	tmp1_int = silk_DIV32_16((int32_t) 1 << (15 + NLSF_W_Q), tmp1_int);
 	pNLSFW_Q_OUT[D - 1] =
 	    (int16_t) silk_min_int(tmp1_int + tmp2_int, silk_int16_MAX);
-	silk_assert(pNLSFW_Q_OUT[D - 1] > 0);
+	assert(pNLSFW_Q_OUT[D - 1] > 0);
 }

@@ -48,10 +48,10 @@ int32_t silk_residual_energy16_covar_FIX(const int16_t * c,	/* I    Prediction v
 	const int32_t *pRow;
 
 	/* Safety checks */
-	silk_assert(D >= 0);
-	silk_assert(D <= 16);
-	silk_assert(cQ > 0);
-	silk_assert(cQ < 16);
+	assert(D >= 0);
+	assert(D <= 16);
+	assert(cQ > 0);
+	assert(cQ < 16);
 
 	lshifts = 16 - cQ;
 	Qxtra = lshifts;
@@ -72,7 +72,7 @@ int32_t silk_residual_energy16_covar_FIX(const int16_t * c,	/* I    Prediction v
 	Qxtra = silk_max_int(Qxtra, 0);
 	for (i = 0; i < D; i++) {
 		cn[i] = silk_LSHIFT((int) c[i], Qxtra);
-		silk_assert(silk_abs(cn[i]) <= (silk_int16_MAX + 1));	/* Check that silk_SMLAWB can be used */
+		assert(silk_abs(cn[i]) <= (silk_int16_MAX + 1));	/* Check that silk_SMLAWB can be used */
 	}
 	lshifts -= Qxtra;
 

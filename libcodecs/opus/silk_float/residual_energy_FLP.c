@@ -49,7 +49,7 @@ silk_float silk_residual_energy_covar_FLP(	/* O    Weighted residual energy     
 	silk_float tmp, nrg = 0.0f, regularization;
 
 	/* Safety checks */
-	silk_assert(D >= 0);
+	assert(D >= 0);
 
 	regularization = REGULARIZATION_FACTOR * (wXX[0] + wXX[D * D - 1]);
 	for (k = 0; k < MAX_ITERATIONS_RESIDUAL_NRG; k++) {
@@ -83,7 +83,7 @@ silk_float silk_residual_energy_covar_FLP(	/* O    Weighted residual energy     
 		}
 	}
 	if (k == MAX_ITERATIONS_RESIDUAL_NRG) {
-		silk_assert(nrg == 0);
+		assert(nrg == 0);
 		nrg = 1.0f;
 	}
 

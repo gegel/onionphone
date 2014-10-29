@@ -95,8 +95,8 @@ void silk_NLSF2A(int16_t * a_Q12,	/* O    monic whitening filter coefficients in
 	int32_t a32_QA1[SILK_MAX_ORDER_LPC];
 	int32_t maxabs, absval, idx = 0, sc_Q16;
 
-	silk_assert(LSF_COS_TAB_SZ_FIX == 128);
-	silk_assert(d == 10 || d == 16);
+	assert(LSF_COS_TAB_SZ_FIX == 128);
+	assert(d == 10 || d == 16);
 
 	memzero(cos_LSF_QA, SILK_MAX_ORDER_LPC * sizeof(int32_t));
 	memzero(a32_QA1, SILK_MAX_ORDER_LPC * sizeof(int32_t));
@@ -104,7 +104,7 @@ void silk_NLSF2A(int16_t * a_Q12,	/* O    monic whitening filter coefficients in
 	/* convert LSFs to 2*cos(LSF), using piecewise linear curve from table */
 	ordering = d == 16 ? ordering16 : ordering10;
 	for (k = 0; k < d; k++) {
-		silk_assert(NLSF[k] >= 0);
+		assert(NLSF[k] >= 0);
 
 		/* f_int on a scale 0-127 (rounded down) */
 		f_int = silk_RSHIFT(NLSF[k], 15 - 7);
@@ -112,8 +112,8 @@ void silk_NLSF2A(int16_t * a_Q12,	/* O    monic whitening filter coefficients in
 		/* f_frac, range: 0..255 */
 		f_frac = NLSF[k] - silk_LSHIFT(f_int, 15 - 7);
 
-		silk_assert(f_int >= 0);
-		silk_assert(f_int < LSF_COS_TAB_SZ_FIX);
+		assert(f_int >= 0);
+		assert(f_int < LSF_COS_TAB_SZ_FIX);
 
 		/* Read start and end value from table */
 		cos_val = silk_LSFCosTab_FIX_Q12[f_int];	/* Q12 */

@@ -57,8 +57,8 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 	/* Encode signal type and quantizer offset */
     /*******************************************/
 	typeOffset = 2 * psIndices->signalType + psIndices->quantOffsetType;
-	silk_assert(typeOffset >= 0 && typeOffset < 6);
-	silk_assert(encode_LBRR == 0 || typeOffset >= 2);
+	assert(typeOffset >= 0 && typeOffset < 6);
+	assert(encode_LBRR == 0 || typeOffset >= 2);
 	if (encode_LBRR || typeOffset >= 2) {
 		ec_enc_icdf(psRangeEnc, typeOffset - 2,
 			    silk_type_offset_VAD_iCDF, 8);
@@ -73,14 +73,14 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 	/* first subframe */
 	if (condCoding == CODE_CONDITIONALLY) {
 		/* conditional coding */
-		silk_assert(psIndices->GainsIndices[0] >= 0
+		assert(psIndices->GainsIndices[0] >= 0
 			    && psIndices->GainsIndices[0] <
 			    MAX_DELTA_GAIN_QUANT - MIN_DELTA_GAIN_QUANT + 1);
 		ec_enc_icdf(psRangeEnc, psIndices->GainsIndices[0],
 			    silk_delta_gain_iCDF, 8);
 	} else {
 		/* independent coding, in two stages: MSB bits followed by 3 LSBs */
-		silk_assert(psIndices->GainsIndices[0] >= 0
+		assert(psIndices->GainsIndices[0] >= 0
 			    && psIndices->GainsIndices[0] < N_LEVELS_QGAIN);
 		ec_enc_icdf(psRangeEnc,
 			    silk_RSHIFT(psIndices->GainsIndices[0], 3),
@@ -91,7 +91,7 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 
 	/* remaining subframes */
 	for (i = 1; i < psEncC->nb_subfr; i++) {
-		silk_assert(psIndices->GainsIndices[i] >= 0
+		assert(psIndices->GainsIndices[i] >= 0
 			    && psIndices->GainsIndices[i] <
 			    MAX_DELTA_GAIN_QUANT - MIN_DELTA_GAIN_QUANT + 1);
 		ec_enc_icdf(psRangeEnc, psIndices->GainsIndices[i],
@@ -107,7 +107,7 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 		    8);
 	silk_NLSF_unpack(ec_ix, pred_Q8, psEncC->psNLSF_CB,
 			 psIndices->NLSFIndices[0]);
-	silk_assert(psEncC->psNLSF_CB->order == psEncC->predictLPCOrder);
+	assert(psEncC->psNLSF_CB->order == psEncC->predictLPCOrder);
 	for (i = 0; i < psEncC->psNLSF_CB->order; i++) {
 		if (psIndices->NLSFIndices[i + 1] >= NLSF_QUANT_MAX_AMPLITUDE) {
 			ec_enc_icdf(psRangeEnc, 2 * NLSF_QUANT_MAX_AMPLITUDE,
@@ -134,7 +134,7 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 
 	/* Encode NLSF interpolation factor */
 	if (psEncC->nb_subfr == MAX_NB_SUBFR) {
-		silk_assert(psIndices->NLSFInterpCoef_Q2 >= 0
+		assert(psIndices->NLSFInterpCoef_Q2 >= 0
 			    && psIndices->NLSFInterpCoef_Q2 < 5);
 		ec_enc_icdf(psRangeEnc, psIndices->NLSFInterpCoef_Q2,
 			    silk_NLSF_interpolation_factor_iCDF, 8);
@@ -157,7 +157,7 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 				delta_lagIndex = delta_lagIndex + 9;
 				encode_absolute_lagIndex = 0;	/* Only use delta */
 			}
-			silk_assert(delta_lagIndex >= 0 && delta_lagIndex < 21);
+			assert(delta_lagIndex >= 0 && delta_lagIndex < 21);
 			ec_enc_icdf(psRangeEnc, delta_lagIndex,
 				    silk_pitch_delta_iCDF, 8);
 		}
@@ -172,8 +172,8 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 							      silk_RSHIFT
 							      (psEncC->fs_kHz,
 							       1));
-			silk_assert(pitch_low_bits < psEncC->fs_kHz / 2);
-			silk_assert(pitch_high_bits < 32);
+			assert(pitch_low_bits < psEncC->fs_kHz / 2);
+			assert(pitch_high_bits < 32);
 			ec_enc_icdf(psRangeEnc, pitch_high_bits,
 				    silk_pitch_lag_iCDF, 8);
 			ec_enc_icdf(psRangeEnc, pitch_low_bits,
@@ -182,8 +182,8 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 		psEncC->ec_prevLagIndex = psIndices->lagIndex;
 
 		/* Countour index */
-		silk_assert(psIndices->contourIndex >= 0);
-		silk_assert((psIndices->contourIndex < 34 && psEncC->fs_kHz > 8
+		assert(psIndices->contourIndex >= 0);
+		assert((psIndices->contourIndex < 34 && psEncC->fs_kHz > 8
 			     && psEncC->nb_subfr == 4)
 			    || (psIndices->contourIndex < 11
 				&& psEncC->fs_kHz == 8 && psEncC->nb_subfr == 4)
@@ -199,14 +199,14 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 		/* Encode LTP gains */
 	/********************/
 		/* PERIndex value */
-		silk_assert(psIndices->PERIndex >= 0
+		assert(psIndices->PERIndex >= 0
 			    && psIndices->PERIndex < 3);
 		ec_enc_icdf(psRangeEnc, psIndices->PERIndex,
 			    silk_LTP_per_index_iCDF, 8);
 
 		/* Codebook Indices */
 		for (k = 0; k < psEncC->nb_subfr; k++) {
-			silk_assert(psIndices->LTPIndex[k] >= 0
+			assert(psIndices->LTPIndex[k] >= 0
 				    && psIndices->LTPIndex[k] <
 				    (8 << psIndices->PERIndex));
 			ec_enc_icdf(psRangeEnc, psIndices->LTPIndex[k],
@@ -218,12 +218,12 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
 		/* Encode LTP scaling */
 	/**********************/
 		if (condCoding == CODE_INDEPENDENTLY) {
-			silk_assert(psIndices->LTP_scaleIndex >= 0
+			assert(psIndices->LTP_scaleIndex >= 0
 				    && psIndices->LTP_scaleIndex < 3);
 			ec_enc_icdf(psRangeEnc, psIndices->LTP_scaleIndex,
 				    silk_LTPscale_iCDF, 8);
 		}
-		silk_assert(!condCoding || psIndices->LTP_scaleIndex == 0);
+		assert(!condCoding || psIndices->LTP_scaleIndex == 0);
 	}
 
 	psEncC->ec_prevSignalType = psIndices->signalType;
@@ -231,6 +231,6 @@ void silk_encode_indices(silk_encoder_state * psEncC,	/* I/O  Encoder state     
     /***************/
 	/* Encode seed */
     /***************/
-	silk_assert(psIndices->Seed >= 0 && psIndices->Seed < 4);
+	assert(psIndices->Seed >= 0 && psIndices->Seed < 4);
 	ec_enc_icdf(psRangeEnc, psIndices->Seed, silk_uniform4_iCDF, 8);
 }

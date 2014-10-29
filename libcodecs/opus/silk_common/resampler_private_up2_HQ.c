@@ -46,12 +46,12 @@ void silk_resampler_private_up2_HQ(int32_t * S,	/* I/O  Resampler state [ 6 ]   
 	int32_t k;
 	int32_t in32, out32_1, out32_2, Y, X;
 
-	silk_assert(silk_resampler_up2_hq_0[0] > 0);
-	silk_assert(silk_resampler_up2_hq_0[1] > 0);
-	silk_assert(silk_resampler_up2_hq_0[2] < 0);
-	silk_assert(silk_resampler_up2_hq_1[0] > 0);
-	silk_assert(silk_resampler_up2_hq_1[1] > 0);
-	silk_assert(silk_resampler_up2_hq_1[2] < 0);
+	assert(silk_resampler_up2_hq_0[0] > 0);
+	assert(silk_resampler_up2_hq_0[1] > 0);
+	assert(silk_resampler_up2_hq_0[2] < 0);
+	assert(silk_resampler_up2_hq_1[0] > 0);
+	assert(silk_resampler_up2_hq_1[1] > 0);
+	assert(silk_resampler_up2_hq_1[2] < 0);
 
 	/* Internal variables and state are in Q10 format */
 	for (k = 0; k < len; k++) {

@@ -47,9 +47,9 @@ void silk_process_NLSFs(silk_encoder_state * psEncC,	/* I/O  Encoder state      
 	int16_t pNLSFW_QW[MAX_LPC_ORDER];
 	int16_t pNLSFW0_temp_QW[MAX_LPC_ORDER];
 
-	silk_assert(psEncC->speech_activity_Q8 >= 0);
-	silk_assert(psEncC->speech_activity_Q8 <= SILK_FIX_CONST(1.0, 8));
-	silk_assert(psEncC->useInterpolatedNLSFs == 1
+	assert(psEncC->speech_activity_Q8 >= 0);
+	assert(psEncC->speech_activity_Q8 <= SILK_FIX_CONST(1.0, 8));
+	assert(psEncC->useInterpolatedNLSFs == 1
 		    || psEncC->indices.NLSFInterpCoef_Q2 == (1 << 2));
 
     /***********************/
@@ -64,8 +64,8 @@ void silk_process_NLSFs(silk_encoder_state * psEncC,	/* I/O  Encoder state      
 		NLSF_mu_Q20 = silk_ADD_RSHIFT(NLSF_mu_Q20, NLSF_mu_Q20, 1);
 	}
 
-	silk_assert(NLSF_mu_Q20 > 0);
-	silk_assert(NLSF_mu_Q20 <= SILK_FIX_CONST(0.005, 20));
+	assert(NLSF_mu_Q20 > 0);
+	assert(NLSF_mu_Q20 <= SILK_FIX_CONST(0.005, 20));
 
 	/* Calculate NLSF weights */
 	silk_NLSF_VQ_weights_laroia(pNLSFW_QW, pNLSF_Q15,
@@ -94,7 +94,7 @@ void silk_process_NLSFs(silk_encoder_state * psEncC,	/* I/O  Encoder state      
 			    silk_SMLAWB(silk_RSHIFT(pNLSFW_QW[i], 1),
 					(int32_t) pNLSFW0_temp_QW[i],
 					i_sqr_Q15);
-			silk_assert(pNLSFW_QW[i] >= 1);
+			assert(pNLSFW_QW[i] >= 1);
 		}
 	}
 

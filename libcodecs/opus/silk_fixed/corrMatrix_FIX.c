@@ -66,7 +66,7 @@ void silk_corrVector_FIX(const int16_t * x,	/* I    x vector [L + order - 1] use
 			ptr1--;	/* Go to next column of X */
 		}
 	} else {
-		silk_assert(rshifts == 0);
+		assert(rshifts == 0);
 		for (lag = 0; lag < order; lag++) {
 			Xt[lag] = silk_inner_prod_aligned(ptr1, ptr2, L);	/* X[:,lag]'*t */
 			ptr1--;	/* Go to next column of X */

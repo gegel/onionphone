@@ -55,7 +55,7 @@ silk_float silk_burg_modified_FLP(	/* O    returns residual energy              
 	double CAf[SILK_MAX_ORDER_LPC + 1], CAb[SILK_MAX_ORDER_LPC + 1];
 	double Af[SILK_MAX_ORDER_LPC];
 
-	silk_assert(subfr_length * nb_subfr <= MAX_FRAME_SIZE);
+	assert(subfr_length * nb_subfr <= MAX_FRAME_SIZE);
 
 	/* Compute autocorrelations, added over subframes */
 	C0 = silk_energy_FLP(x, nb_subfr * subfr_length);
@@ -119,12 +119,12 @@ silk_float silk_burg_modified_FLP(	/* O    returns residual energy              
 			nrg_b += CAb[k + 1] * Atmp;
 			nrg_f += CAf[k + 1] * Atmp;
 		}
-		silk_assert(nrg_f > 0.0);
-		silk_assert(nrg_b > 0.0);
+		assert(nrg_f > 0.0);
+		assert(nrg_b > 0.0);
 
 		/* Calculate the next order reflection (parcor) coefficient */
 		rc = -2.0 * num / (nrg_f + nrg_b);
-		silk_assert(rc > -1.0 && rc < 1.0);
+		assert(rc > -1.0 && rc < 1.0);
 
 		/* Update inverse prediction gain */
 		tmp1 = invGain * (1.0 - rc * rc);

@@ -81,7 +81,7 @@ void silk_solve_LDL_FLP(silk_float * A,	/* I/O  Symmetric square matrix, out: re
 	silk_float T[MAX_MATRIX_SIZE];
 	silk_float Dinv[MAX_MATRIX_SIZE];	/* inverse diagonal elements of D */
 
-	silk_assert(M <= MAX_MATRIX_SIZE);
+	assert(M <= MAX_MATRIX_SIZE);
 
     /***************************************************
     Factorize A by LDL such that A = L*D*(L^T),
@@ -163,7 +163,7 @@ static inline void silk_LDL_FLP(silk_float * A,	/* I/O  Pointer to Symetric Squa
 
 	memzero(v, MAX_MATRIX_SIZE);
 
-	silk_assert(M <= MAX_MATRIX_SIZE);
+	assert(M <= MAX_MATRIX_SIZE);
 
 	diag_min_value = FIND_LTP_COND_FAC * 0.5f * (A[0] + A[M * M - 1]);
 	for (loop_count = 0; loop_count < M && err == 1; loop_count++) {
@@ -202,5 +202,5 @@ static inline void silk_LDL_FLP(silk_float * A,	/* I/O  Pointer to Symetric Squa
 			}
 		}
 	}
-	silk_assert(err == 0);
+	assert(err == 0);
 }

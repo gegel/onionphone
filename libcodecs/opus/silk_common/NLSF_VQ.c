@@ -44,8 +44,8 @@ void silk_NLSF_VQ(int32_t err_Q26[],	/* O    Quantization errors [K]            
 	int i, m;
 	int32_t diff_Q15, sum_error_Q30, sum_error_Q26;
 
-	silk_assert(LPC_order <= 16);
-	silk_assert((LPC_order & 1) == 0);
+	assert(LPC_order <= 16);
+	assert((LPC_order & 1) == 0);
 
 	/* Loop over codebook */
 	for (i = 0; i < K; i++) {
@@ -63,8 +63,8 @@ void silk_NLSF_VQ(int32_t err_Q26[],	/* O    Quantization errors [K]            
 			sum_error_Q26 =
 			    silk_ADD_RSHIFT32(sum_error_Q26, sum_error_Q30, 4);
 
-			silk_assert(sum_error_Q26 >= 0);
-			silk_assert(sum_error_Q30 >= 0);
+			assert(sum_error_Q26 >= 0);
+			assert(sum_error_Q30 >= 0);
 		}
 		err_Q26[i] = sum_error_Q26;
 	}

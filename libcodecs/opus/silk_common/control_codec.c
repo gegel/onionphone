@@ -262,8 +262,8 @@ static int silk_setup_fs(silk_encoder_state_Fxx * psEnc,	/* I/O                 
 	}
 
 	/* Set internal sampling frequency */
-	silk_assert(fs_kHz == 8 || fs_kHz == 12 || fs_kHz == 16);
-	silk_assert(psEnc->sCmn.nb_subfr == 2 || psEnc->sCmn.nb_subfr == 4);
+	assert(fs_kHz == 8 || fs_kHz == 12 || fs_kHz == 16);
+	assert(psEnc->sCmn.nb_subfr == 2 || psEnc->sCmn.nb_subfr == 4);
 	if (psEnc->sCmn.fs_kHz != fs_kHz) {
 		/* reset part of the state */
 		memzero(&psEnc->sShape, sizeof(psEnc->sShape));
@@ -344,7 +344,7 @@ static int silk_setup_fs(silk_encoder_state_Fxx * psEnc,	/* I/O                 
 	}
 
 	/* Check that settings are valid */
-	silk_assert((psEnc->sCmn.subfr_length * psEnc->sCmn.nb_subfr) ==
+	assert((psEnc->sCmn.subfr_length * psEnc->sCmn.nb_subfr) ==
 		    psEnc->sCmn.frame_length);
 
 	return ret;
@@ -357,7 +357,7 @@ static int silk_setup_complexity(silk_encoder_state * psEncC,	/* I/O            
 	int ret = 0;
 
 	/* Set encoding complexity */
-	silk_assert(Complexity >= 0 && Complexity <= 10);
+	assert(Complexity >= 0 && Complexity <= 10);
 	if (Complexity < 2) {
 		psEncC->pitchEstimationComplexity = SILK_PE_MIN_COMPLEX;
 		psEncC->pitchEstimationThreshold_Q16 = SILK_FIX_CONST(0.8, 16);
@@ -426,14 +426,14 @@ static int silk_setup_complexity(silk_encoder_state * psEncC,	/* I/O            
 	    SUB_FRAME_LENGTH_MS * psEncC->fs_kHz + 2 * psEncC->la_shape;
 	psEncC->Complexity = Complexity;
 
-	silk_assert(psEncC->pitchEstimationLPCOrder <=
+	assert(psEncC->pitchEstimationLPCOrder <=
 		    MAX_FIND_PITCH_LPC_ORDER);
-	silk_assert(psEncC->shapingLPCOrder <= MAX_SHAPE_LPC_ORDER);
-	silk_assert(psEncC->nStatesDelayedDecision <= MAX_DEL_DEC_STATES);
-	silk_assert(psEncC->warping_Q16 <= 32767);
-	silk_assert(psEncC->la_shape <= LA_SHAPE_MAX);
-	silk_assert(psEncC->shapeWinLength <= SHAPE_LPC_WIN_MAX);
-	silk_assert(psEncC->NLSF_MSVQ_Survivors <= NLSF_VQ_MAX_SURVIVORS);
+	assert(psEncC->shapingLPCOrder <= MAX_SHAPE_LPC_ORDER);
+	assert(psEncC->nStatesDelayedDecision <= MAX_DEL_DEC_STATES);
+	assert(psEncC->warping_Q16 <= 32767);
+	assert(psEncC->la_shape <= LA_SHAPE_MAX);
+	assert(psEncC->shapeWinLength <= SHAPE_LPC_WIN_MAX);
+	assert(psEncC->NLSF_MSVQ_Survivors <= NLSF_VQ_MAX_SURVIVORS);
 
 	return ret;
 }

@@ -98,7 +98,7 @@ void silk_find_LTP_FLP(silk_float b[MAX_NB_SUBFR * LTP_ORDER],	/* O    LTP coefs
 			LPC_LTP_res_nrg += nrg[k] * Wght[k];
 		}
 
-		silk_assert(LPC_LTP_res_nrg > 0);
+		assert(LPC_LTP_res_nrg > 0);
 		*LTPredCodGain =
 		    3.0f * silk_log2(LPC_res_nrg / LPC_LTP_res_nrg);
 	}

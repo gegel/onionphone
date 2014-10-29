@@ -84,7 +84,7 @@ int silk_InitEncoder(	/* O    Returns error code                              */
 	memzero(psEnc, sizeof(silk_encoder));
 	for (n = 0; n < ENCODER_NUM_CHANNELS; n++) {
 		if (ret += silk_init_encoder(&psEnc->state_Fxx[n], arch)) {
-			silk_assert(0);
+			assert(0);
 		}
 	}
 
@@ -93,7 +93,7 @@ int silk_InitEncoder(	/* O    Returns error code                              */
 
 	/* Read control structure */
 	if (ret += silk_QueryEncoder(encState, encStatus)) {
-		silk_assert(0);
+		assert(0);
 	}
 
 	return ret;
@@ -172,7 +172,7 @@ int silk_Encode(		/* O    Returns error code                              */
 
 	/* Check values in encoder control structure */
 	if ((ret = check_control_input(encControl) != 0)) {
-		silk_assert(0);
+		assert(0);
 
 		return ret;
 	}
@@ -219,7 +219,7 @@ int silk_Encode(		/* O    Returns error code                              */
 	if (prefillFlag) {
 		/* Only accept input length of 10 ms */
 		if (nBlocksOf10ms != 1) {
-			silk_assert(0);
+			assert(0);
 
 			return SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
 		}
@@ -228,7 +228,7 @@ int silk_Encode(		/* O    Returns error code                              */
 			ret =
 			    silk_init_encoder(&psEnc->state_Fxx[n],
 					      psEnc->state_Fxx[n].sCmn.arch);
-			silk_assert(!ret);
+			assert(!ret);
 		}
 		tmp_payloadSize_ms = encControl->payloadSize_ms;
 		encControl->payloadSize_ms = 10;
@@ -243,14 +243,14 @@ int silk_Encode(		/* O    Returns error code                              */
 		/* Only accept input lengths that are a multiple of 10 ms */
 		if (nBlocksOf10ms * encControl->API_sampleRate !=
 		    100 * nSamplesIn || nSamplesIn < 0) {
-			silk_assert(0);
+			assert(0);
 
 			return SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
 		}
 		/* Make sure no more than one packet can be produced */
 		if (1000 * (int32_t) nSamplesIn >
 		    encControl->payloadSize_ms * encControl->API_sampleRate) {
-			silk_assert(0);
+			assert(0);
 
 			return SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
 		}
@@ -268,7 +268,7 @@ int silk_Encode(		/* O    Returns error code                              */
 					  TargetRate_bps,
 					  psEnc->allowBandwidthSwitch, n,
 					  force_fs_kHz)) != 0) {
-			silk_assert(0);
+			assert(0);
 
 			return ret;
 		}
@@ -283,7 +283,7 @@ int silk_Encode(		/* O    Returns error code                              */
 		psEnc->state_Fxx[n].sCmn.inDTX =
 		    psEnc->state_Fxx[n].sCmn.useDTX;
 	}
-	silk_assert(encControl->nChannelsInternal == 1
+	assert(encControl->nChannelsInternal == 1
 		    || psEnc->state_Fxx[0].sCmn.fs_kHz ==
 		    psEnc->state_Fxx[1].sCmn.fs_kHz);
 
@@ -399,7 +399,7 @@ int silk_Encode(		/* O    Returns error code                              */
 			}
 			psEnc->state_Fxx[0].sCmn.inputBufIx += nSamplesToBuffer;
 		} else {
-			silk_assert(encControl->nChannelsAPI == 1
+			assert(encControl->nChannelsAPI == 1
 				    && encControl->nChannelsInternal == 1);
 			memcpy(buf, samplesIn,
 				    nSamplesFromInput * sizeof(int16_t));
@@ -423,9 +423,9 @@ int silk_Encode(		/* O    Returns error code                              */
 		if (psEnc->state_Fxx[0].sCmn.inputBufIx >=
 		    psEnc->state_Fxx[0].sCmn.frame_length) {
 			/* Enough data in input buffer, so encode */
-			silk_assert(psEnc->state_Fxx[0].sCmn.inputBufIx ==
+			assert(psEnc->state_Fxx[0].sCmn.inputBufIx ==
 				    psEnc->state_Fxx[0].sCmn.frame_length);
-			silk_assert(encControl->nChannelsInternal == 1
+			assert(encControl->nChannelsInternal == 1
 				    || psEnc->state_Fxx[1].sCmn.inputBufIx ==
 				    psEnc->state_Fxx[1].sCmn.frame_length);
 
@@ -738,7 +738,7 @@ int silk_Encode(		/* O    Returns error code                              */
 								   maxBits,
 								   useCBR)) !=
 					    0) {
-						silk_assert(0);
+						assert(0);
 					}
 				}
 				psEnc->state_Fxx[n].sCmn.

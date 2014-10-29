@@ -117,6 +117,6 @@ void silk_process_gains_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder stat
 	    LAMBDA_CODING_QUALITY * psEncCtrl->coding_quality +
 	    LAMBDA_QUANT_OFFSET * quant_offset;
 
-	silk_assert(psEncCtrl->Lambda > 0.0f);
-	silk_assert(psEncCtrl->Lambda < 2.0f);
+	assert(psEncCtrl->Lambda > 0.0f);
+	assert(psEncCtrl->Lambda < 2.0f);
 }

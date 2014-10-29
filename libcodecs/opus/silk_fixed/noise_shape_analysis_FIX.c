@@ -167,7 +167,7 @@ static inline void limit_warped_coefs(int32_t * coefs_syn_Q24,
 			    silk_SMULWW(gain_ana_Q16, coefs_ana_Q24[i]);
 		}
 	}
-	silk_assert(0);
+	assert(0);
 }
 
 /**************************************************************/
@@ -376,15 +376,15 @@ void silk_noise_shape_analysis_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encod
 		nrg =
 		    silk_schur64(refl_coef_Q16, auto_corr,
 				 psEnc->sCmn.shapingLPCOrder);
-		silk_assert(nrg >= 0);
+		assert(nrg >= 0);
 
 		/* Convert reflection coefficients to prediction coefficients */
 		silk_k2a_Q16(AR2_Q24, refl_coef_Q16,
 			     psEnc->sCmn.shapingLPCOrder);
 
 		Qnrg = -scale;	/* range: -12...30 */
-		silk_assert(Qnrg >= -12);
-		silk_assert(Qnrg <= 30);
+		assert(Qnrg >= -12);
+		assert(Qnrg <= 30);
 
 		/* Make sure that Qnrg is an even number */
 		if (Qnrg & 1) {
@@ -402,7 +402,7 @@ void silk_noise_shape_analysis_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encod
 			gain_mult_Q16 =
 			    warped_gain(AR2_Q24, warping_Q16,
 					psEnc->sCmn.shapingLPCOrder);
-			silk_assert(psEncCtrl->Gains_Q16[k] >= 0);
+			assert(psEncCtrl->Gains_Q16[k] >= 0);
 			if (silk_SMULWW
 			    (silk_RSHIFT_ROUND(psEncCtrl->Gains_Q16[k], 1),
 			     gain_mult_Q16) >= (silk_int32_MAX >> 1)) {
@@ -423,7 +423,7 @@ void silk_noise_shape_analysis_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encod
 			    psEnc->sCmn.shapingLPCOrder * sizeof(int32_t));
 
 		/* Bandwidth expansion for analysis filter shaping */
-		silk_assert(BWExp1_Q16 <= SILK_FIX_CONST(1.0, 16));
+		assert(BWExp1_Q16 <= SILK_FIX_CONST(1.0, 16));
 		silk_bwexpander_32(AR1_Q24, psEnc->sCmn.shapingLPCOrder,
 				   BWExp1_Q16);
 
@@ -473,11 +473,11 @@ void silk_noise_shape_analysis_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encod
 			 (SILK_FIX_CONST(16.0, 7),
 			  SILK_FIX_CONST(MIN_QGAIN_DB, 7), SILK_FIX_CONST(0.16,
 									  16)));
-	silk_assert(gain_mult_Q16 > 0);
+	assert(gain_mult_Q16 > 0);
 	for (k = 0; k < psEnc->sCmn.nb_subfr; k++) {
 		psEncCtrl->Gains_Q16[k] =
 		    silk_SMULWW(psEncCtrl->Gains_Q16[k], gain_mult_Q16);
-		silk_assert(psEncCtrl->Gains_Q16[k] >= 0);
+		assert(psEncCtrl->Gains_Q16[k] >= 0);
 		psEncCtrl->Gains_Q16[k] =
 		    silk_ADD_POS_SAT32(psEncCtrl->Gains_Q16[k], gain_add_Q16);
 	}
@@ -524,7 +524,7 @@ void silk_noise_shape_analysis_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Encod
 			psEncCtrl->LF_shp_Q14[k] |=
 			    (uint16_t) (b_Q14 - SILK_FIX_CONST(1.0, 14));
 		}
-		silk_assert(SILK_FIX_CONST(HARM_HP_NOISE_COEF, 24) < SILK_FIX_CONST(0.5, 24));	/* Guarantees that second argument to SMULWB() is within range of an int16_t */
+		assert(SILK_FIX_CONST(HARM_HP_NOISE_COEF, 24) < SILK_FIX_CONST(0.5, 24));	/* Guarantees that second argument to SMULWB() is within range of an int16_t */
 		Tilt_Q16 = -SILK_FIX_CONST(HP_NOISE_COEF, 16) -
 		    silk_SMULWB(SILK_FIX_CONST(1.0, 16) -
 				SILK_FIX_CONST(HP_NOISE_COEF, 16),

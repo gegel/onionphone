@@ -56,7 +56,7 @@ void silk_NLSF_stabilize(int16_t * NLSF_Q15,	/* I/O   Unstable/stabilized normal
 	int32_t diff_Q15, min_diff_Q15, min_center_Q15, max_center_Q15;
 
 	/* This is necessary to ensure an output within range of a int16_t */
-	silk_assert(NDeltaMin_Q15[L] >= 1);
+	assert(NDeltaMin_Q15[L] >= 1);
 
 	for (loops = 0; loops < MAX_LOOPS; loops++) {
 	/**************************/

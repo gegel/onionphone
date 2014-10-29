@@ -96,7 +96,7 @@ void silk_NSQ(const silk_encoder_state * psEncC,	/* I/O  Encoder State          
 	/* Set unvoiced lag to the previous one, overwrite later for voiced */
 	lag = NSQ->lagPrev;
 
-	silk_assert(NSQ->prev_gain_Q16 != 0);
+	assert(NSQ->prev_gain_Q16 != 0);
 
 	offset_Q10 =
 	    silk_Quantization_Offsets_Q10[psIndices->
@@ -124,7 +124,7 @@ void silk_NSQ(const silk_encoder_state * psEncC,	/* I/O  Encoder State          
 		AR_shp_Q13 = &AR2_Q13[k * MAX_SHAPE_LPC_ORDER];
 
 		/* Noise shape parameters */
-		silk_assert(HarmShapeGain_Q14[k] >= 0);
+		assert(HarmShapeGain_Q14[k] >= 0);
 		HarmShapeFIRPacked_Q14 = silk_RSHIFT(HarmShapeGain_Q14[k], 2);
 		HarmShapeFIRPacked_Q14 |=
 		    silk_LSHIFT((int32_t)
@@ -142,7 +142,7 @@ void silk_NSQ(const silk_encoder_state * psEncC,	/* I/O  Encoder State          
 				start_idx =
 				    psEncC->ltp_mem_length - lag -
 				    psEncC->predictLPCOrder - LTP_ORDER / 2;
-				silk_assert(start_idx > 0);
+				assert(start_idx > 0);
 
 				silk_LPC_analysis_filter(&sLTP[start_idx],
 							 &NSQ->xq[start_idx +
@@ -239,7 +239,7 @@ static inline void silk_noise_shape_quantizer(silk_nsq_state * NSQ,	/* I/O  NSQ 
 		NSQ->rand_seed = silk_RAND(NSQ->rand_seed);
 
 		/* Short-term prediction */
-		silk_assert(predictLPCOrder == 10 || predictLPCOrder == 16);
+		assert(predictLPCOrder == 10 || predictLPCOrder == 16);
 		/* Avoids introducing a bias because silk_SMLAWB() always rounds to -inf */
 		LPC_pred_Q10 = silk_RSHIFT(predictLPCOrder, 1);
 		LPC_pred_Q10 =
@@ -309,7 +309,7 @@ static inline void silk_noise_shape_quantizer(silk_nsq_state * NSQ,	/* I/O  NSQ 
 		}
 
 		/* Noise shape feedback */
-		silk_assert((shapingLPCOrder & 1) == 0);	/* check that order is even */
+		assert((shapingLPCOrder & 1) == 0);	/* check that order is even */
 		tmp2 = psLPC_Q14[0];
 		tmp1 = NSQ->sAR2_Q14[0];
 		NSQ->sAR2_Q14[0] = tmp2;
@@ -338,7 +338,7 @@ static inline void silk_noise_shape_quantizer(silk_nsq_state * NSQ,	/* I/O  NSQ 
 		n_LF_Q12 =
 		    silk_SMLAWT(n_LF_Q12, NSQ->sLF_AR_shp_Q14, LF_shp_Q14);
 
-		silk_assert(lag > 0 || signalType != TYPE_VOICED);
+		assert(lag > 0 || signalType != TYPE_VOICED);
 
 		/* Combine prediction and noise shaping signals */
 		tmp1 = silk_SUB32(silk_LSHIFT32(LPC_pred_Q10, 2), n_AR_Q12);	/* Q12 */
@@ -468,7 +468,7 @@ static inline void silk_nsq_scale_states(const silk_encoder_state * psEncC,	/* I
 
 	lag = pitchL[subfr];
 	inv_gain_Q31 = silk_INVERSE32_varQ(silk_max(Gains_Q16[subfr], 1), 47);
-	silk_assert(inv_gain_Q31 != 0);
+	assert(inv_gain_Q31 != 0);
 
 	/* Calculate gain adjustment factor */
 	if (Gains_Q16[subfr] != NSQ->prev_gain_Q16) {
@@ -497,7 +497,7 @@ static inline void silk_nsq_scale_states(const silk_encoder_state * psEncC,	/* I
 		}
 		for (i = NSQ->sLTP_buf_idx - lag - LTP_ORDER / 2;
 		     i < NSQ->sLTP_buf_idx; i++) {
-			silk_assert(i < MAX_FRAME_LENGTH);
+			assert(i < MAX_FRAME_LENGTH);
 			sLTP_Q15[i] = silk_SMULWB(inv_gain_Q31, sLTP[i]);
 		}
 	}
