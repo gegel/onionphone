@@ -34,6 +34,7 @@
 #include "celt_lpc.h"
 #include "mathops.h"
 #include "pitch.h"
+#include <ophtools.h>
 
 void _celt_lpc(opus_val16 * _lpc,	/* out: [0...p-1] LPC coefficients      */
 	       const opus_val32 * ac,	/* in:  [0...p] autocorrelation values  */
@@ -220,6 +221,8 @@ int _celt_autocorr(const opus_val16 * x,	/*  in: [0...n-1] samples x   */
 	int shift;
 	const opus_val16 *xptr;
 	opus_val16 xx[n];
+
+	memzero(xx, n * sizeof(opus_val16));
 
 	celt_assert(n > 0);
 	celt_assert(overlap >= 0);
