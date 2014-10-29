@@ -27,6 +27,9 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+#include <stdarg.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -39,7 +42,6 @@
 #pragma message "You appear to be compiling without optimization, if so opus will be very slow."
 #endif
 
-#include <stdarg.h>
 #include "celt.h"
 #include "opus.h"
 #include "entdec.h"
@@ -611,7 +613,7 @@ int opus_decode_native(OpusDecoder * st, const unsigned char *data,
 				return ret;
 			pcm_count += ret;
 		} while (pcm_count < frame_size);
-		celt_assert(pcm_count == frame_size);
+		assert(pcm_count == frame_size);
 		st->last_packet_duration = pcm_count;
 		return pcm_count;
 	} else if (len < 0)
@@ -649,7 +651,7 @@ int opus_decode_native(OpusDecoder * st, const unsigned char *data,
 				st->last_packet_duration = duration_copy;
 				return ret;
 			}
-			celt_assert(ret == frame_size - packet_frame_size);
+			assert(ret == frame_size - packet_frame_size);
 		}
 		/* Complete with FEC */
 		st->mode = packet_mode;
@@ -687,7 +689,7 @@ int opus_decode_native(OpusDecoder * st, const unsigned char *data,
 				      frame_size - nb_samples, 0);
 		if (ret < 0)
 			return ret;
-		celt_assert(ret == packet_frame_size);
+		assert(ret == packet_frame_size);
 		data += size[i];
 		nb_samples += ret;
 	}

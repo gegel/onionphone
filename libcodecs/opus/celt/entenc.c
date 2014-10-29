@@ -27,9 +27,12 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+
 #if defined(HAVE_CONFIG_H)
 #include "config.h"
 #endif
+
 #include "os_support.h"
 #include "arch.h"
 #include "entenc.h"
@@ -197,7 +200,7 @@ void ec_enc_uint(ec_enc * _this, uint32_t _fl, uint32_t _ft)
 	unsigned fl;
 	int ftb;
 	/*In order to optimize EC_ILOG(), it is undefined for the value 0. */
-	celt_assert(_ft > 1);
+	assert(_ft > 1);
 	_ft--;
 	ftb = EC_ILOG(_ft);
 	if (ftb > EC_UINT_BITS) {
@@ -216,7 +219,7 @@ void ec_enc_bits(ec_enc * _this, uint32_t _fl, unsigned _bits)
 	int used;
 	window = _this->end_window;
 	used = _this->nend_bits;
-	celt_assert(_bits > 0);
+	assert(_bits > 0);
 	if (used + _bits > EC_WINDOW_SIZE) {
 		do {
 			_this->error |=
@@ -238,7 +241,7 @@ void ec_enc_patch_initial_bits(ec_enc * _this, unsigned _val, unsigned _nbits)
 {
 	int shift;
 	unsigned mask;
-	celt_assert(_nbits <= EC_SYM_BITS);
+	assert(_nbits <= EC_SYM_BITS);
 	shift = EC_SYM_BITS - _nbits;
 	mask = ((1 << _nbits) - 1) << shift;
 	if (_this->offs > 0) {
@@ -262,7 +265,7 @@ void ec_enc_patch_initial_bits(ec_enc * _this, unsigned _val, unsigned _nbits)
 
 void ec_enc_shrink(ec_enc * _this, uint32_t _size)
 {
-	celt_assert(_this->offs + _this->end_offs <= _size);
+	assert(_this->offs + _this->end_offs <= _size);
 	OPUS_MOVE(_this->buf + _size - _this->end_offs,
 		  _this->buf + _this->storage - _this->end_offs,
 		  _this->end_offs);

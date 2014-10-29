@@ -64,10 +64,8 @@ static inline void _celt_fatal(const char *str, const char *file, int line)
 	abort();
 }
 
-#define celt_assert(cond) {if (!(cond)) {celt_fatal("assertion failed: " #cond);}}
 #define celt_assert2(cond, message) {if (!(cond)) {celt_fatal("assertion failed: " #cond "\n" message);}}
 #else
-#define celt_assert(cond)
 #define celt_assert2(cond, message)
 #endif
 

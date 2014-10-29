@@ -255,8 +255,8 @@ celt_pitch_xcorr_c(const opus_val16 * _x, const opus_val16 * _y,
 	/*The EDSP version requires that max_pitch is at least 1, and that _x is
 	   32-bit aligned.
 	   Since it's hard to put asserts in assembly, put them here. */
-	celt_assert(max_pitch > 0);
-	celt_assert((((unsigned char *)_x - (unsigned char *)NULL) & 3) == 0);
+	assert(max_pitch > 0);
+	assert((((unsigned char *)_x - (unsigned char *)NULL) & 3) == 0);
 #ifdef FIXED_POINT
 	opus_val32 maxcorr = 1;
 #endif
@@ -308,8 +308,8 @@ void pitch_search(const opus_val16 * OPUS_RESTRICT x_lp,
 #endif
 	int offset;
 
-	celt_assert(len > 0);
-	celt_assert(max_pitch > 0);
+	assert(len > 0);
+	assert(max_pitch > 0);
 
 	/* Downsample by 2 again */
 	for (j = 0; j < len >> 2; j++)

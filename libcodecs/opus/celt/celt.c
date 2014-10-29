@@ -76,7 +76,7 @@ int resampling_factor(int32_t rate)
 		break;
 	default:
 #ifndef CUSTOM_MODES
-		celt_assert(0);
+		assert(0);
 #endif
 		ret = 0;
 		break;

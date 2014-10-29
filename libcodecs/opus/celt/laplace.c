@@ -28,6 +28,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -83,8 +85,8 @@ void ec_laplace_encode(ec_enc * enc, int *value, unsigned fs, int decay)
 			fs += LAPLACE_MINP;
 			fl += fs & ~s;
 		}
-		celt_assert(fl + fs <= 32768);
-		celt_assert(fs > 0);
+		assert(fl + fs <= 32768);
+		assert(fs > 0);
 	}
 	ec_encode_bin(enc, fl, fl + fs, 15);
 }
@@ -121,10 +123,10 @@ int ec_laplace_decode(ec_dec * dec, unsigned fs, int decay)
 		else
 			fl += fs;
 	}
-	celt_assert(fl < 32768);
-	celt_assert(fs > 0);
-	celt_assert(fl <= fm);
-	celt_assert(fm < IMIN(fl + fs, 32768));
+	assert(fl < 32768);
+	assert(fs > 0);
+	assert(fl <= fm);
+	assert(fm < IMIN(fl + fs, 32768));
 	ec_dec_update(dec, fl, IMIN(fl + fs, 32768), 32768);
 	return val;
 }

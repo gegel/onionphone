@@ -27,11 +27,13 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+#include <stddef.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
-#include <stddef.h>
 #include "os_support.h"
 #include "arch.h"
 #include "entdec.h"
@@ -218,7 +220,7 @@ uint32_t ec_dec_uint(ec_dec * _this, uint32_t _ft)
 	unsigned s;
 	int ftb;
 	/*In order to optimize EC_ILOG(), it is undefined for the value 0. */
-	celt_assert(_ft > 1);
+	assert(_ft > 1);
 	_ft--;
 	ftb = EC_ILOG(_ft);
 	if (ftb > EC_UINT_BITS) {

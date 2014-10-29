@@ -27,6 +27,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -212,7 +214,7 @@ int32_t opus_repacketizer_out_range_impl(OpusRepacketizer * rp, int begin,
 	for (i = 0; i < count; i++) {
 		/* Using OPUS_MOVE() instead of OPUS_COPY() in case we're doing in-place
 		   padding from opus_packet_pad or opus_packet_unpad(). */
-		celt_assert(frames[i] + len[i] <= data || ptr <= frames[i]);
+		assert(frames[i] + len[i] <= data || ptr <= frames[i]);
 		OPUS_MOVE(ptr, frames[i], len[i]);
 		ptr += len[i];
 	}
@@ -274,7 +276,7 @@ int32_t opus_packet_unpad(unsigned char *data, int32_t len)
 	ret =
 	    opus_repacketizer_out_range_impl(&rp, 0, rp.nb_frames, data, len, 0,
 					     0);
-	celt_assert(ret > 0 && ret <= len);
+	assert(ret > 0 && ret <= len);
 	return ret;
 }
 
