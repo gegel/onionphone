@@ -14,3 +14,4 @@ int SILK8_decode
 
 //free SILK memory
 void SILK8_close (void);
+
