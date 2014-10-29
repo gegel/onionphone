@@ -36,23 +36,23 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Finds LPC vector from correlations, and converts to NLSF */
 void silk_find_LPC_FIX(silk_encoder_state * psEncC,	/* I/O  Encoder state                                                               */
-		       opus_int16 NLSF_Q15[],	/* O    NLSFs                                                                       */
-		       const opus_int16 x[],	/* I    Input signal                                                                */
-		       const opus_int32 minInvGain_Q30	/* I    Inverse of max prediction gain                                              */
+		       int16_t NLSF_Q15[],	/* O    NLSFs                                                                       */
+		       const int16_t x[],	/* I    Input signal                                                                */
+		       const int32_t minInvGain_Q30	/* I    Inverse of max prediction gain                                              */
     )
 {
-	opus_int k, subfr_length;
-	opus_int32 a_Q16[MAX_LPC_ORDER];
-	opus_int isInterpLower, shift;
-	opus_int32 res_nrg0, res_nrg1;
-	opus_int rshift0, rshift1;
+	int k, subfr_length;
+	int32_t a_Q16[MAX_LPC_ORDER];
+	int isInterpLower, shift;
+	int32_t res_nrg0, res_nrg1;
+	int rshift0, rshift1;
 
 	/* Used only for LSF interpolation */
-	opus_int32 a_tmp_Q16[MAX_LPC_ORDER], res_nrg_interp, res_nrg,
+	int32_t a_tmp_Q16[MAX_LPC_ORDER], res_nrg_interp, res_nrg,
 	    res_tmp_nrg;
-	opus_int res_nrg_interp_Q, res_nrg_Q, res_tmp_nrg_Q;
-	opus_int16 a_tmp_Q12[MAX_LPC_ORDER];
-	opus_int16 NLSF0_Q15[MAX_LPC_ORDER];
+	int res_nrg_interp_Q, res_nrg_Q, res_tmp_nrg_Q;
+	int16_t a_tmp_Q12[MAX_LPC_ORDER];
+	int16_t NLSF0_Q15[MAX_LPC_ORDER];
 
 	subfr_length = psEncC->subfr_length + psEncC->predictLPCOrder;
 
@@ -90,7 +90,7 @@ void silk_find_LPC_FIX(silk_encoder_state * psEncC,	/* I/O  Encoder state       
 		/* Convert to NLSFs */
 		silk_A2NLSF(NLSF_Q15, a_tmp_Q16, psEncC->predictLPCOrder);
 
-		opus_int16 LPC_res[2 * subfr_length];
+		int16_t LPC_res[2 * subfr_length];
 
 		/* Search over interpolation indices to find the one with lowest residual energy */
 		for (k = 3; k >= 0; k--) {
@@ -156,7 +156,7 @@ void silk_find_LPC_FIX(silk_encoder_state * psEncC,	/* I/O  Encoder state       
 				res_nrg = res_nrg_interp;
 				res_nrg_Q = res_nrg_interp_Q;
 				psEncC->indices.NLSFInterpCoef_Q2 =
-				    (opus_int8) k;
+				    (int8_t) k;
 			}
 		}
 	}

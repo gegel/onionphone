@@ -41,9 +41,9 @@
 #include "os_support.h"
 
 /* Multiplies two 16-bit fractional values. Bit-exactness of this macro is important */
-#define FRAC_MUL16(a,b) ((16384+((opus_int32)(opus_int16)(a)*(opus_int16)(b)))>>15)
+#define FRAC_MUL16(a,b) ((16384+((int32_t)(int16_t)(a)*(int16_t)(b)))>>15)
 
-unsigned isqrt32(opus_uint32 _val);
+unsigned isqrt32(uint32_t _val);
 
 #ifndef OVERRIDE_CELT_MAXABS16
 static inline opus_val32 celt_maxabs16(const opus_val16 * x, int len)
@@ -100,7 +100,7 @@ static inline float celt_log2(float x)
 	float frac;
 	union {
 		float f;
-		opus_uint32 i;
+		uint32_t i;
 	} in;
 	in.f = x;
 	integer = (in.i >> 23) - 127;
@@ -119,7 +119,7 @@ static inline float celt_exp2(float x)
 	float frac;
 	union {
 		float f;
-		opus_uint32 i;
+		uint32_t i;
 	} res;
 	integer = floor(x);
 	if (integer < -50)
@@ -146,7 +146,7 @@ static inline float celt_exp2(float x)
 
 #ifndef OVERRIDE_CELT_ILOG2
 /** Integer log in base2. Undefined for zero and negative numbers */
-static inline opus_int16 celt_ilog2(opus_int32 x)
+static inline int16_t celt_ilog2(int32_t x)
 {
 	celt_assert2(x > 0,
 		     "celt_ilog2() only defined for strictly positive numbers");
@@ -155,7 +155,7 @@ static inline opus_int16 celt_ilog2(opus_int32 x)
 #endif
 
 /** Integer log in base2. Defined for zero, but not for negative numbers */
-static inline opus_int16 celt_zlog2(opus_val32 x)
+static inline int16_t celt_zlog2(opus_val32 x)
 {
 	return x <= 0 ? 0 : celt_ilog2(x);
 }

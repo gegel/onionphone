@@ -36,7 +36,7 @@
 #ifndef ARCH_H
 #define ARCH_H
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "opus_defines.h"
 
 #if !defined(__GNUC_PREREQ)
@@ -89,8 +89,8 @@ static inline void _celt_fatal(const char *str, const char *file, int line)
 
 #ifdef FIXED_POINT
 
-typedef opus_int16 opus_val16;
-typedef opus_int32 opus_val32;
+typedef int16_t opus_val16;
+typedef int32_t opus_val32;
 
 typedef opus_val32 celt_sig;
 typedef opus_val16 celt_norm;

@@ -39,11 +39,11 @@ POSSIBILITY OF SUCH DAMAGE.
 /*  2 -> sine window from pi/2 to pi    */
 void silk_apply_sine_window_FLP(silk_float px_win[],	/* O    Pointer to windowed signal                  */
 				const silk_float px[],	/* I    Pointer to input signal                     */
-				const opus_int win_type,	/* I    Selects a window type                       */
-				const opus_int length	/* I    Window length, multiple of 4                */
+				const int win_type,	/* I    Selects a window type                       */
+				const int length	/* I    Window length, multiple of 4                */
     )
 {
-	opus_int k;
+	int k;
 	silk_float freq, c, S0, S1;
 
 	silk_assert(win_type == 1 || win_type == 2);

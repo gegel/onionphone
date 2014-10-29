@@ -40,14 +40,14 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 
 /* Helper function, interpolates the filter taps */
-static inline void silk_LP_interpolate_filter_taps(opus_int32
+static inline void silk_LP_interpolate_filter_taps(int32_t
 						   B_Q28[TRANSITION_NB],
-						   opus_int32
+						   int32_t
 						   A_Q28[TRANSITION_NA],
-						   const opus_int ind,
-						   const opus_int32 fac_Q16)
+						   const int ind,
+						   const int32_t fac_Q16)
 {
-	opus_int nb, na;
+	int nb, na;
 
 	if (ind < TRANSITION_INT_NUM - 1) {
 		if (fac_Q16 > 0) {
@@ -84,7 +84,7 @@ static inline void silk_LP_interpolate_filter_taps(opus_int32
 							silk_Transition_LP_B_Q28
 							[ind][nb],
 							fac_Q16 -
-							((opus_int32) 1 << 16));
+							((int32_t) 1 << 16));
 				}
 				for (na = 0; na < TRANSITION_NA; na++) {
 					A_Q28[na] =
@@ -95,22 +95,22 @@ static inline void silk_LP_interpolate_filter_taps(opus_int32
 							silk_Transition_LP_A_Q28
 							[ind][na],
 							fac_Q16 -
-							((opus_int32) 1 << 16));
+							((int32_t) 1 << 16));
 				}
 			}
 		} else {
 			silk_memcpy(B_Q28, silk_Transition_LP_B_Q28[ind],
-				    TRANSITION_NB * sizeof(opus_int32));
+				    TRANSITION_NB * sizeof(int32_t));
 			silk_memcpy(A_Q28, silk_Transition_LP_A_Q28[ind],
-				    TRANSITION_NA * sizeof(opus_int32));
+				    TRANSITION_NA * sizeof(int32_t));
 		}
 	} else {
 		silk_memcpy(B_Q28,
 			    silk_Transition_LP_B_Q28[TRANSITION_INT_NUM - 1],
-			    TRANSITION_NB * sizeof(opus_int32));
+			    TRANSITION_NB * sizeof(int32_t));
 		silk_memcpy(A_Q28,
 			    silk_Transition_LP_A_Q28[TRANSITION_INT_NUM - 1],
-			    TRANSITION_NA * sizeof(opus_int32));
+			    TRANSITION_NA * sizeof(int32_t));
 	}
 }
 
@@ -119,12 +119,12 @@ static inline void silk_LP_interpolate_filter_taps(opus_int32
 /* Start by setting psEncC->mode <> 0;                      */
 /* Deactivate by setting psEncC->mode = 0;                  */
 void silk_LP_variable_cutoff(silk_LP_state * psLP,	/* I/O  LP filter state                             */
-			     opus_int16 * frame,	/* I/O  Low-pass filtered output signal             */
-			     const opus_int frame_length	/* I    Frame length                                */
+			     int16_t * frame,	/* I/O  Low-pass filtered output signal             */
+			     const int frame_length	/* I    Frame length                                */
     )
 {
-	opus_int32 B_Q28[TRANSITION_NB], A_Q28[TRANSITION_NA], fac_Q16 = 0;
-	opus_int ind = 0;
+	int32_t B_Q28[TRANSITION_NB], A_Q28[TRANSITION_NA], fac_Q16 = 0;
+	int ind = 0;
 
 	silk_assert(psLP->transition_frame_no >= 0
 		    && psLP->transition_frame_no <= TRANSITION_FRAMES);

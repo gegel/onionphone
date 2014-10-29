@@ -37,14 +37,14 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Upsample by a factor 2, high quality */
 /* Uses 2nd order allpass filters for the 2x upsampling, followed by a      */
 /* notch filter just above Nyquist.                                         */
-void silk_resampler_private_up2_HQ(opus_int32 * S,	/* I/O  Resampler state [ 6 ]       */
-				   opus_int16 * out,	/* O    Output signal [ 2 * len ]   */
-				   const opus_int16 * in,	/* I    Input signal [ len ]        */
-				   opus_int32 len	/* I    Number of input samples     */
+void silk_resampler_private_up2_HQ(int32_t * S,	/* I/O  Resampler state [ 6 ]       */
+				   int16_t * out,	/* O    Output signal [ 2 * len ]   */
+				   const int16_t * in,	/* I    Input signal [ len ]        */
+				   int32_t len	/* I    Number of input samples     */
     )
 {
-	opus_int32 k;
-	opus_int32 in32, out32_1, out32_2, Y, X;
+	int32_t k;
+	int32_t in32, out32_1, out32_2, Y, X;
 
 	silk_assert(silk_resampler_up2_hq_0[0] > 0);
 	silk_assert(silk_resampler_up2_hq_0[1] > 0);
@@ -56,7 +56,7 @@ void silk_resampler_private_up2_HQ(opus_int32 * S,	/* I/O  Resampler state [ 6 ]
 	/* Internal variables and state are in Q10 format */
 	for (k = 0; k < len; k++) {
 		/* Convert to Q10 */
-		in32 = silk_LSHIFT((opus_int32) in[k], 10);
+		in32 = silk_LSHIFT((int32_t) in[k], 10);
 
 		/* First all-pass section for even output sample */
 		Y = silk_SUB32(in32, S[0]);
@@ -78,7 +78,7 @@ void silk_resampler_private_up2_HQ(opus_int32 * S,	/* I/O  Resampler state [ 6 ]
 
 		/* Apply gain in Q15, convert back to int16 and store to output */
 		out[2 * k] =
-		    (opus_int16) silk_SAT16(silk_RSHIFT_ROUND(out32_1, 10));
+		    (int16_t) silk_SAT16(silk_RSHIFT_ROUND(out32_1, 10));
 
 		/* First all-pass section for odd output sample */
 		Y = silk_SUB32(in32, S[3]);
@@ -100,14 +100,14 @@ void silk_resampler_private_up2_HQ(opus_int32 * S,	/* I/O  Resampler state [ 6 ]
 
 		/* Apply gain in Q15, convert back to int16 and store to output */
 		out[2 * k + 1] =
-		    (opus_int16) silk_SAT16(silk_RSHIFT_ROUND(out32_1, 10));
+		    (int16_t) silk_SAT16(silk_RSHIFT_ROUND(out32_1, 10));
 	}
 }
 
 void silk_resampler_private_up2_HQ_wrapper(void *SS,	/* I/O  Resampler state (unused)    */
-					   opus_int16 * out,	/* O    Output signal [ 2 * len ]   */
-					   const opus_int16 * in,	/* I    Input signal [ len ]        */
-					   opus_int32 len	/* I    Number of input samples     */
+					   int16_t * out,	/* O    Output signal [ 2 * len ]   */
+					   const int16_t * in,	/* I    Input signal [ len ]        */
+					   int32_t len	/* I    Number of input samples     */
     )
 {
 	silk_resampler_state_struct *S = (silk_resampler_state_struct *) SS;

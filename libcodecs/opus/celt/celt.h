@@ -37,7 +37,7 @@
 #ifndef CELT_H
 #define CELT_H
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "opus_defines.h"
 #include "opus_custom.h"
 #include "entenc.h"
@@ -125,14 +125,14 @@ extern "C" {
 				unsigned char *compressed,
 				int nbCompressedBytes, ec_enc * enc);
 
-	int celt_encoder_init(CELTEncoder * st, opus_int32 sampling_rate,
+	int celt_encoder_init(CELTEncoder * st, int32_t sampling_rate,
 			      int channels, int arch);
 
 /* Decoder stuff */
 
 	int celt_decoder_get_size(int channels);
 
-	int celt_decoder_init(CELTDecoder * st, opus_int32 sampling_rate,
+	int celt_decoder_init(CELTDecoder * st, int32_t sampling_rate,
 			      int channels);
 
 	int celt_decode_with_ec(OpusCustomDecoder * OPUS_RESTRICT st,
@@ -195,7 +195,7 @@ extern "C" {
 
 	extern const signed char tf_select_table[4][8];
 
-	int resampling_factor(opus_int32 rate);
+	int resampling_factor(int32_t rate);
 
 	void celt_preemphasis(const opus_val16 * OPUS_RESTRICT pcmp,
 			      celt_sig * OPUS_RESTRICT inp, int N, int CC,

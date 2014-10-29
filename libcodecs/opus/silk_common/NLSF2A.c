@@ -43,13 +43,13 @@ POSSIBILITY OF SUCH DAMAGE.
 #define QA      16
 
 /* helper function for NLSF2A(..) */
-static inline void silk_NLSF2A_find_poly(opus_int32 * out,	/* O    intermediate polynomial, QA [dd+1]        */
-					 const opus_int32 * cLSF,	/* I    vector of interleaved 2*cos(LSFs), QA [d] */
-					 opus_int dd	/* I    polynomial order (= 1/2 * filter order)   */
+static inline void silk_NLSF2A_find_poly(int32_t * out,	/* O    intermediate polynomial, QA [dd+1]        */
+					 const int32_t * cLSF,	/* I    vector of interleaved 2*cos(LSFs), QA [d] */
+					 int dd	/* I    polynomial order (= 1/2 * filter order)   */
     )
 {
-	opus_int k, n;
-	opus_int32 ftmp;
+	int k, n;
+	int32_t ftmp;
 
 	out[0] = silk_LSHIFT(1, QA);
 	out[1] = -cLSF[0];
@@ -58,12 +58,12 @@ static inline void silk_NLSF2A_find_poly(opus_int32 * out,	/* O    intermediate 
 		out[k + 1] =
 		    silk_LSHIFT(out[k - 1],
 				1) -
-		    (opus_int32) silk_RSHIFT_ROUND64(silk_SMULL(ftmp, out[k]),
+		    (int32_t) silk_RSHIFT_ROUND64(silk_SMULL(ftmp, out[k]),
 						     QA);
 		for (n = k; n > 1; n--) {
 			out[n] +=
 			    out[n - 2] -
-			    (opus_int32)
+			    (int32_t)
 			    silk_RSHIFT_ROUND64(silk_SMULL(ftmp, out[n - 1]),
 						QA);
 		}
@@ -72,9 +72,9 @@ static inline void silk_NLSF2A_find_poly(opus_int32 * out,	/* O    intermediate 
 }
 
 /* compute whitening filter coefficients from normalized line spectral frequencies */
-void silk_NLSF2A(opus_int16 * a_Q12,	/* O    monic whitening filter coefficients in Q12,  [ d ]          */
-		 const opus_int16 * NLSF,	/* I    normalized line spectral frequencies in Q15, [ d ]          */
-		 const opus_int d	/* I    filter order (should be even)                               */
+void silk_NLSF2A(int16_t * a_Q12,	/* O    monic whitening filter coefficients in Q12,  [ d ]          */
+		 const int16_t * NLSF,	/* I    normalized line spectral frequencies in Q15, [ d ]          */
+		 const int d	/* I    filter order (should be even)                               */
     )
 {
 	/* This ordering was found to maximize quality. It improves numerical accuracy of
@@ -86,12 +86,12 @@ void silk_NLSF2A(opus_int16 * a_Q12,	/* O    monic whitening filter coefficients
 		0, 9, 6, 3, 4, 5, 8, 1, 2, 7
 	};
 	const unsigned char *ordering;
-	opus_int k, i, dd;
-	opus_int32 cos_LSF_QA[SILK_MAX_ORDER_LPC];
-	opus_int32 P[SILK_MAX_ORDER_LPC / 2 + 1], Q[SILK_MAX_ORDER_LPC / 2 + 1];
-	opus_int32 Ptmp, Qtmp, f_int, f_frac, cos_val, delta;
-	opus_int32 a32_QA1[SILK_MAX_ORDER_LPC];
-	opus_int32 maxabs, absval, idx = 0, sc_Q16;
+	int k, i, dd;
+	int32_t cos_LSF_QA[SILK_MAX_ORDER_LPC];
+	int32_t P[SILK_MAX_ORDER_LPC / 2 + 1], Q[SILK_MAX_ORDER_LPC / 2 + 1];
+	int32_t Ptmp, Qtmp, f_int, f_frac, cos_val, delta;
+	int32_t a32_QA1[SILK_MAX_ORDER_LPC];
+	int32_t maxabs, absval, idx = 0, sc_Q16;
 
 	silk_assert(LSF_COS_TAB_SZ_FIX == 128);
 	silk_assert(d == 10 || d == 16);
@@ -124,7 +124,7 @@ void silk_NLSF2A(opus_int16 * a_Q12,	/* O    monic whitening filter coefficients
 	silk_NLSF2A_find_poly(P, &cos_LSF_QA[0], dd);
 	silk_NLSF2A_find_poly(Q, &cos_LSF_QA[1], dd);
 
-	/* convert even and odd polynomials to opus_int32 Q12 filter coefs */
+	/* convert even and odd polynomials to int32_t Q12 filter coefs */
 	for (k = 0; k < dd; k++) {
 		Ptmp = P[k + 1] + P[k];
 		Qtmp = Q[k + 1] - Q[k];
@@ -168,13 +168,13 @@ void silk_NLSF2A(opus_int16 * a_Q12,	/* O    monic whitening filter coefficients
 	if (i == 10) {
 		/* Reached the last iteration, clip the coefficients */
 		for (k = 0; k < d; k++) {
-			a_Q12[k] = (opus_int16) silk_SAT16(silk_RSHIFT_ROUND(a32_QA1[k], QA + 1 - 12));	/* QA+1 -> Q12 */
+			a_Q12[k] = (int16_t) silk_SAT16(silk_RSHIFT_ROUND(a32_QA1[k], QA + 1 - 12));	/* QA+1 -> Q12 */
 			a32_QA1[k] =
-			    silk_LSHIFT((opus_int32) a_Q12[k], QA + 1 - 12);
+			    silk_LSHIFT((int32_t) a_Q12[k], QA + 1 - 12);
 		}
 	} else {
 		for (k = 0; k < d; k++) {
-			a_Q12[k] = (opus_int16) silk_RSHIFT_ROUND(a32_QA1[k], QA + 1 - 12);	/* QA+1 -> Q12 */
+			a_Q12[k] = (int16_t) silk_RSHIFT_ROUND(a32_QA1[k], QA + 1 - 12);	/* QA+1 -> Q12 */
 		}
 	}
 
@@ -186,7 +186,7 @@ void silk_NLSF2A(opus_int16 * a_Q12,	/* O    monic whitening filter coefficients
 			silk_bwexpander_32(a32_QA1, d,
 					   65536 - silk_LSHIFT(2, i));
 			for (k = 0; k < d; k++) {
-				a_Q12[k] = (opus_int16) silk_RSHIFT_ROUND(a32_QA1[k], QA + 1 - 12);	/* QA+1 -> Q12 */
+				a_Q12[k] = (int16_t) silk_RSHIFT_ROUND(a32_QA1[k], QA + 1 - 12);	/* QA+1 -> Q12 */
 			}
 		} else {
 			break;

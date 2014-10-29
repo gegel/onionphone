@@ -45,7 +45,7 @@ struct OpusMSDecoder {
 
 /* DECODER */
 
-opus_int32 opus_multistream_decoder_get_size(int nb_streams,
+int32_t opus_multistream_decoder_get_size(int nb_streams,
 					     int nb_coupled_streams)
 {
 	int coupled_size;
@@ -62,7 +62,7 @@ opus_int32 opus_multistream_decoder_get_size(int nb_streams,
 }
 
 int opus_multistream_decoder_init(OpusMSDecoder * st,
-				  opus_int32 Fs,
+				  int32_t Fs,
 				  int channels,
 				  int streams,
 				  int coupled_streams,
@@ -106,7 +106,7 @@ int opus_multistream_decoder_init(OpusMSDecoder * st,
 	return OPUS_OK;
 }
 
-OpusMSDecoder *opus_multistream_decoder_create(opus_int32 Fs,
+OpusMSDecoder *opus_multistream_decoder_create(int32_t Fs,
 					       int channels,
 					       int streams,
 					       int coupled_streams,
@@ -149,15 +149,15 @@ typedef void (*opus_copy_channel_out_func) (void *dst,
 					    int src_stride, int frame_size);
 
 static int opus_multistream_packet_validate(const unsigned char *data,
-					    opus_int32 len, int nb_streams,
-					    opus_int32 Fs)
+					    int32_t len, int nb_streams,
+					    int32_t Fs)
 {
 	int s;
 	int count;
 	unsigned char toc;
-	opus_int16 size[48];
+	int16_t size[48];
 	int samples = 0;
-	opus_int32 packet_offset;
+	int32_t packet_offset;
 
 	for (s = 0; s < nb_streams; s++) {
 		int tmp_samples;
@@ -181,13 +181,13 @@ static int opus_multistream_packet_validate(const unsigned char *data,
 
 static int opus_multistream_decode_native(OpusMSDecoder * st,
 					  const unsigned char *data,
-					  opus_int32 len,
+					  int32_t len,
 					  void *pcm,
 					  opus_copy_channel_out_func
 					  copy_channel_out, int frame_size,
 					  int decode_fec, int soft_clip)
 {
-	opus_int32 Fs;
+	int32_t Fs;
 	int coupled_size;
 	int mono_size;
 	int s, c;
@@ -306,7 +306,7 @@ static void opus_copy_channel_out_float(void *dst,
 					int src_stride, int frame_size)
 {
 	float *float_dst;
-	opus_int32 i;
+	int32_t i;
 	float_dst = (float *)dst;
 	if (src != NULL) {
 		for (i = 0; i < frame_size; i++)
@@ -330,9 +330,9 @@ static void opus_copy_channel_out_short(void *dst,
 					const opus_val16 * src,
 					int src_stride, int frame_size)
 {
-	opus_int16 *short_dst;
-	opus_int32 i;
-	short_dst = (opus_int16 *) dst;
+	int16_t *short_dst;
+	int32_t i;
+	short_dst = (int16_t *) dst;
 	if (src != NULL) {
 		for (i = 0; i < frame_size; i++)
 #if defined(FIXED_POINT)
@@ -351,8 +351,8 @@ static void opus_copy_channel_out_short(void *dst,
 #ifdef FIXED_POINT
 int opus_multistream_decode(OpusMSDecoder * st,
 			    const unsigned char *data,
-			    opus_int32 len,
-			    opus_int16 * pcm, int frame_size, int decode_fec)
+			    int32_t len,
+			    int16_t * pcm, int frame_size, int decode_fec)
 {
 	return opus_multistream_decode_native(st, data, len,
 					      pcm, opus_copy_channel_out_short,
@@ -361,7 +361,7 @@ int opus_multistream_decode(OpusMSDecoder * st,
 
 #ifndef DISABLE_FLOAT_API
 int opus_multistream_decode_float(OpusMSDecoder * st, const unsigned char *data,
-				  opus_int32 len, float *pcm, int frame_size,
+				  int32_t len, float *pcm, int frame_size,
 				  int decode_fec)
 {
 	return opus_multistream_decode_native(st, data, len,
@@ -373,7 +373,7 @@ int opus_multistream_decode_float(OpusMSDecoder * st, const unsigned char *data,
 #else
 
 int opus_multistream_decode(OpusMSDecoder * st, const unsigned char *data,
-			    opus_int32 len, opus_int16 * pcm, int frame_size,
+			    int32_t len, int16_t * pcm, int frame_size,
 			    int decode_fec)
 {
 	return opus_multistream_decode_native(st, data, len,
@@ -383,7 +383,7 @@ int opus_multistream_decode(OpusMSDecoder * st, const unsigned char *data,
 
 int opus_multistream_decode_float(OpusMSDecoder * st,
 				  const unsigned char *data,
-				  opus_int32 len,
+				  int32_t len,
 				  float *pcm, int frame_size, int decode_fec)
 {
 	return opus_multistream_decode_native(st, data, len,
@@ -412,7 +412,7 @@ int opus_multistream_decoder_ctl(OpusMSDecoder * st, int request, ...)
 		{
 			OpusDecoder *dec;
 			/* For int32* GET params, just query the first stream */
-			opus_int32 *value = va_arg(ap, opus_int32 *);
+			int32_t *value = va_arg(ap, int32_t *);
 			dec = (OpusDecoder *) ptr;
 			ret = opus_decoder_ctl(dec, request, value);
 		}
@@ -420,8 +420,8 @@ int opus_multistream_decoder_ctl(OpusMSDecoder * st, int request, ...)
 	case OPUS_GET_FINAL_RANGE_REQUEST:
 		{
 			int s;
-			opus_uint32 *value = va_arg(ap, opus_uint32 *);
-			opus_uint32 tmp;
+			uint32_t *value = va_arg(ap, uint32_t *);
+			uint32_t tmp;
 			if (!value) {
 				goto bad_arg;
 			}
@@ -460,9 +460,9 @@ int opus_multistream_decoder_ctl(OpusMSDecoder * st, int request, ...)
 	case OPUS_MULTISTREAM_GET_DECODER_STATE_REQUEST:
 		{
 			int s;
-			opus_int32 stream_id;
+			int32_t stream_id;
 			OpusDecoder **value;
-			stream_id = va_arg(ap, opus_int32);
+			stream_id = va_arg(ap, int32_t);
 			if (stream_id < 0 || stream_id >= st->layout.nb_streams)
 				ret = OPUS_BAD_ARG;
 			value = va_arg(ap, OpusDecoder **);
@@ -482,7 +482,7 @@ int opus_multistream_decoder_ctl(OpusMSDecoder * st, int request, ...)
 		{
 			int s;
 			/* This works for int32 params */
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			for (s = 0; s < st->layout.nb_streams; s++) {
 				OpusDecoder *dec;
 

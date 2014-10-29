@@ -121,7 +121,7 @@ static void ec_enc_normalize(ec_enc * _this)
 	}
 }
 
-void ec_enc_init(ec_enc * _this, unsigned char *_buf, opus_uint32 _size)
+void ec_enc_init(ec_enc * _this, unsigned char *_buf, uint32_t _size)
 {
 	_this->buf = _buf;
 	_this->end_offs = 0;
@@ -140,7 +140,7 @@ void ec_enc_init(ec_enc * _this, unsigned char *_buf, opus_uint32 _size)
 
 void ec_encode(ec_enc * _this, unsigned _fl, unsigned _fh, unsigned _ft)
 {
-	opus_uint32 r;
+	uint32_t r;
 	r = _this->rng / _ft;
 	if (_fl > 0) {
 		_this->val += _this->rng - IMUL32(r, (_ft - _fl));
@@ -152,7 +152,7 @@ void ec_encode(ec_enc * _this, unsigned _fl, unsigned _fh, unsigned _ft)
 
 void ec_encode_bin(ec_enc * _this, unsigned _fl, unsigned _fh, unsigned _bits)
 {
-	opus_uint32 r;
+	uint32_t r;
 	r = _this->rng >> _bits;
 	if (_fl > 0) {
 		_this->val += _this->rng - IMUL32(r, ((1U << _bits) - _fl));
@@ -165,9 +165,9 @@ void ec_encode_bin(ec_enc * _this, unsigned _fl, unsigned _fh, unsigned _bits)
 /*The probability of having a "one" is 1/(1<<_logp).*/
 void ec_enc_bit_logp(ec_enc * _this, int _val, unsigned _logp)
 {
-	opus_uint32 r;
-	opus_uint32 s;
-	opus_uint32 l;
+	uint32_t r;
+	uint32_t s;
+	uint32_t l;
 	r = _this->rng;
 	l = _this->val;
 	s = r >> _logp;
@@ -181,7 +181,7 @@ void ec_enc_bit_logp(ec_enc * _this, int _val, unsigned _logp)
 void ec_enc_icdf(ec_enc * _this, int _s, const unsigned char *_icdf,
 		 unsigned _ftb)
 {
-	opus_uint32 r;
+	uint32_t r;
 	r = _this->rng >> _ftb;
 	if (_s > 0) {
 		_this->val += _this->rng - IMUL32(r, _icdf[_s - 1]);
@@ -191,7 +191,7 @@ void ec_enc_icdf(ec_enc * _this, int _s, const unsigned char *_icdf,
 	ec_enc_normalize(_this);
 }
 
-void ec_enc_uint(ec_enc * _this, opus_uint32 _fl, opus_uint32 _ft)
+void ec_enc_uint(ec_enc * _this, uint32_t _fl, uint32_t _ft)
 {
 	unsigned ft;
 	unsigned fl;
@@ -205,12 +205,12 @@ void ec_enc_uint(ec_enc * _this, opus_uint32 _fl, opus_uint32 _ft)
 		ft = (_ft >> ftb) + 1;
 		fl = (unsigned)(_fl >> ftb);
 		ec_encode(_this, fl, fl + 1, ft);
-		ec_enc_bits(_this, _fl & (((opus_uint32) 1 << ftb) - 1U), ftb);
+		ec_enc_bits(_this, _fl & (((uint32_t) 1 << ftb) - 1U), ftb);
 	} else
 		ec_encode(_this, _fl, _fl + 1, _ft + 1);
 }
 
-void ec_enc_bits(ec_enc * _this, opus_uint32 _fl, unsigned _bits)
+void ec_enc_bits(ec_enc * _this, uint32_t _fl, unsigned _bits)
 {
 	ec_window window;
 	int used;
@@ -252,15 +252,15 @@ void ec_enc_patch_initial_bits(ec_enc * _this, unsigned _val, unsigned _nbits)
 		/*The renormalization loop has never been run. */
 		_this->val =
 		    (_this->
-		     val & ~((opus_uint32) mask << EC_CODE_SHIFT)) |
-		    (opus_uint32) _val << (EC_CODE_SHIFT + shift);
+		     val & ~((uint32_t) mask << EC_CODE_SHIFT)) |
+		    (uint32_t) _val << (EC_CODE_SHIFT + shift);
 	}
 	/*The encoder hasn't even encoded _nbits of data yet. */
 	else
 		_this->error = -1;
 }
 
-void ec_enc_shrink(ec_enc * _this, opus_uint32 _size)
+void ec_enc_shrink(ec_enc * _this, uint32_t _size)
 {
 	celt_assert(_this->offs + _this->end_offs <= _size);
 	OPUS_MOVE(_this->buf + _size - _this->end_offs,
@@ -273,8 +273,8 @@ void ec_enc_done(ec_enc * _this)
 {
 	ec_window window;
 	int used;
-	opus_uint32 msk;
-	opus_uint32 end;
+	uint32_t msk;
+	uint32_t end;
 	int l;
 	/*We output the minimum number of bits that ensures that the symbols encoded
 	   thus far will be decoded correctly regardless of the bits that follow. */

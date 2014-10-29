@@ -37,20 +37,20 @@ POSSIBILITY OF SUCH DAMAGE.
 /****************/
 /* Decode frame */
 /****************/
-opus_int silk_decode_frame(silk_decoder_state * psDec,	/* I/O  Pointer to Silk decoder state               */
+int silk_decode_frame(silk_decoder_state * psDec,	/* I/O  Pointer to Silk decoder state               */
 			   ec_dec * psRangeDec,	/* I/O  Compressor data structure                   */
-			   opus_int16 pOut[],	/* O    Pointer to output speech frame              */
-			   opus_int32 * pN,	/* O    Pointer to size of output frame             */
-			   opus_int lostFlag,	/* I    0: no loss, 1 loss, 2 decode fec            */
-			   opus_int condCoding	/* I    The type of conditional coding to use       */
+			   int16_t pOut[],	/* O    Pointer to output speech frame              */
+			   int32_t * pN,	/* O    Pointer to size of output frame             */
+			   int lostFlag,	/* I    0: no loss, 1 loss, 2 decode fec            */
+			   int condCoding	/* I    The type of conditional coding to use       */
     )
 {
 
-	opus_int L, mv_len, ret = 0;
+	int L, mv_len, ret = 0;
 
 	L = psDec->frame_length;
 	silk_decoder_control psDecCtrl[1];
-	opus_int pulses[(L + SHELL_CODEC_FRAME_LENGTH - 1) &
+	int pulses[(L + SHELL_CODEC_FRAME_LENGTH - 1) &
 			~(SHELL_CODEC_FRAME_LENGTH - 1)];
 	psDecCtrl->LTP_scale_Q14 = 0;
 
@@ -107,9 +107,9 @@ opus_int silk_decode_frame(silk_decoder_state * psDec,	/* I/O  Pointer to Silk d
 	silk_assert(psDec->ltp_mem_length >= psDec->frame_length);
 	mv_len = psDec->ltp_mem_length - psDec->frame_length;
 	silk_memmove(psDec->outBuf, &psDec->outBuf[psDec->frame_length],
-		     mv_len * sizeof(opus_int16));
+		     mv_len * sizeof(int16_t));
 	silk_memcpy(&psDec->outBuf[mv_len], pOut,
-		    psDec->frame_length * sizeof(opus_int16));
+		    psDec->frame_length * sizeof(int16_t));
 
     /****************************************************************/
 	/* Ensure smooth connection of extrapolated and good frames     */

@@ -37,12 +37,12 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Processing of gains */
 void silk_process_gains_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state FLP                           */
 			    silk_encoder_control_FLP * psEncCtrl,	/* I/O  Encoder control FLP                         */
-			    opus_int condCoding	/* I    The type of conditional coding to use       */
+			    int condCoding	/* I    The type of conditional coding to use       */
     )
 {
 	silk_shape_state_FLP *psShapeSt = &psEnc->sShape;
-	opus_int k;
-	opus_int32 pGains_Q16[MAX_NB_SUBFR];
+	int k;
+	int32_t pGains_Q16[MAX_NB_SUBFR];
 	silk_float s, InvMaxSqrVal, gain, quant_offset;
 
 	/* Gain reduction when LTP coding gain is high */
@@ -74,12 +74,12 @@ void silk_process_gains_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder stat
 
 	/* Prepare gains for noise shaping quantization */
 	for (k = 0; k < psEnc->sCmn.nb_subfr; k++) {
-		pGains_Q16[k] = (opus_int32) (psEncCtrl->Gains[k] * 65536.0f);
+		pGains_Q16[k] = (int32_t) (psEncCtrl->Gains[k] * 65536.0f);
 	}
 
 	/* Save unquantized gains and gain Index */
 	silk_memcpy(psEncCtrl->GainsUnq_Q16, pGains_Q16,
-		    psEnc->sCmn.nb_subfr * sizeof(opus_int32));
+		    psEnc->sCmn.nb_subfr * sizeof(int32_t));
 	psEncCtrl->lastGainIndexPrev = psShapeSt->LastGainIndex;
 
 	/* Quantize gains */

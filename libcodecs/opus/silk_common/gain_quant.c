@@ -38,14 +38,14 @@ POSSIBILITY OF SUCH DAMAGE.
 #define INV_SCALE_Q16           ( ( 65536 * ( ( ( MAX_QGAIN_DB - MIN_QGAIN_DB ) * 128 ) / 6 ) ) / ( N_LEVELS_QGAIN - 1 ) )
 
 /* Gain scalar quantization with hysteresis, uniform on log scale */
-void silk_gains_quant(opus_int8 ind[MAX_NB_SUBFR],	/* O    gain indices                                */
-		      opus_int32 gain_Q16[MAX_NB_SUBFR],	/* I/O  gains (quantized out)                       */
-		      opus_int8 * prev_ind,	/* I/O  last index in previous frame                */
-		      const opus_int conditional,	/* I    first gain is delta coded if 1              */
-		      const opus_int nb_subfr	/* I    number of subframes                         */
+void silk_gains_quant(int8_t ind[MAX_NB_SUBFR],	/* O    gain indices                                */
+		      int32_t gain_Q16[MAX_NB_SUBFR],	/* I/O  gains (quantized out)                       */
+		      int8_t * prev_ind,	/* I/O  last index in previous frame                */
+		      const int conditional,	/* I    first gain is delta coded if 1              */
+		      const int nb_subfr	/* I    number of subframes                         */
     )
 {
-	opus_int k, double_step_size_threshold;
+	int k, double_step_size_threshold;
 
 	for (k = 0; k < nb_subfr; k++) {
 		/* Convert to log scale, scale, floor() */
@@ -105,14 +105,14 @@ void silk_gains_quant(opus_int8 ind[MAX_NB_SUBFR],	/* O    gain indices         
 }
 
 /* Gains scalar dequantization, uniform on log scale */
-void silk_gains_dequant(opus_int32 gain_Q16[MAX_NB_SUBFR],	/* O    quantized gains                             */
-			const opus_int8 ind[MAX_NB_SUBFR],	/* I    gain indices                                */
-			opus_int8 * prev_ind,	/* I/O  last index in previous frame                */
-			const opus_int conditional,	/* I    first gain is delta coded if 1              */
-			const opus_int nb_subfr	/* I    number of subframes                          */
+void silk_gains_dequant(int32_t gain_Q16[MAX_NB_SUBFR],	/* O    quantized gains                             */
+			const int8_t ind[MAX_NB_SUBFR],	/* I    gain indices                                */
+			int8_t * prev_ind,	/* I/O  last index in previous frame                */
+			const int conditional,	/* I    first gain is delta coded if 1              */
+			const int nb_subfr	/* I    number of subframes                          */
     )
 {
-	opus_int k, ind_tmp, double_step_size_threshold;
+	int k, ind_tmp, double_step_size_threshold;
 
 	for (k = 0; k < nb_subfr; k++) {
 		if (k == 0 && conditional == 0) {
@@ -142,13 +142,13 @@ void silk_gains_dequant(opus_int32 gain_Q16[MAX_NB_SUBFR],	/* O    quantized gai
 }
 
 /* Compute unique identifier of gain indices vector */
-opus_int32 silk_gains_ID(	/* O    returns unique identifier of gains          */
-				const opus_int8 ind[MAX_NB_SUBFR],	/* I    gain indices                                */
-				const opus_int nb_subfr	/* I    number of subframes                         */
+int32_t silk_gains_ID(	/* O    returns unique identifier of gains          */
+				const int8_t ind[MAX_NB_SUBFR],	/* I    gain indices                                */
+				const int nb_subfr	/* I    number of subframes                         */
     )
 {
-	opus_int k;
-	opus_int32 gainsID;
+	int k;
+	int32_t gainsID;
 
 	gainsID = 0;
 	for (k = 0; k < nb_subfr; k++) {

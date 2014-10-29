@@ -42,12 +42,12 @@ silk_float silk_burg_modified_FLP(	/* O    returns residual energy              
 					 silk_float A[],	/* O    prediction coefficients (length order)                      */
 					 const silk_float x[],	/* I    input signal, length: nb_subfr*(D+L_sub)                    */
 					 const silk_float minInvGain,	/* I    minimum inverse prediction gain                             */
-					 const opus_int subfr_length,	/* I    input signal subframe length (incl. D preceding samples)    */
-					 const opus_int nb_subfr,	/* I    number of subframes stacked in x                            */
-					 const opus_int D	/* I    order                                                       */
+					 const int subfr_length,	/* I    input signal subframe length (incl. D preceding samples)    */
+					 const int nb_subfr,	/* I    number of subframes stacked in x                            */
+					 const int D	/* I    order                                                       */
     )
 {
-	opus_int k, n, s, reached_max_gain;
+	int k, n, s, reached_max_gain;
 	double C0, invGain, num, nrg_f, nrg_b, rc, Atmp, tmp1, tmp2;
 	const silk_float *x_ptr;
 	double C_first_row[SILK_MAX_ORDER_LPC], C_last_row[SILK_MAX_ORDER_LPC];

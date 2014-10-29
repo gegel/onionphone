@@ -34,25 +34,25 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 #include "tuning_parameters.h"
 
-void silk_quant_LTP_gains(opus_int16 B_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* I/O  (un)quantized LTP gains         */
-			  opus_int8 cbk_index[MAX_NB_SUBFR],	/* O    Codebook Index                  */
-			  opus_int8 * periodicity_index,	/* O    Periodicity Index               */
-			  opus_int32 * sum_log_gain_Q7,	/* I/O  Cumulative max prediction gain  */
-			  const opus_int32 W_Q18[MAX_NB_SUBFR * LTP_ORDER * LTP_ORDER],	/* I    Error Weights in Q18            */
-			  opus_int mu_Q9,	/* I    Mu value (R/D tradeoff)         */
-			  opus_int lowComplexity,	/* I    Flag for low complexity         */
-			  const opus_int nb_subfr	/* I    number of subframes             */
+void silk_quant_LTP_gains(int16_t B_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* I/O  (un)quantized LTP gains         */
+			  int8_t cbk_index[MAX_NB_SUBFR],	/* O    Codebook Index                  */
+			  int8_t * periodicity_index,	/* O    Periodicity Index               */
+			  int32_t * sum_log_gain_Q7,	/* I/O  Cumulative max prediction gain  */
+			  const int32_t W_Q18[MAX_NB_SUBFR * LTP_ORDER * LTP_ORDER],	/* I    Error Weights in Q18            */
+			  int mu_Q9,	/* I    Mu value (R/D tradeoff)         */
+			  int lowComplexity,	/* I    Flag for low complexity         */
+			  const int nb_subfr	/* I    number of subframes             */
     )
 {
-	opus_int j, k, cbk_size;
-	opus_int8 temp_idx[MAX_NB_SUBFR];
-	const opus_uint8 *cl_ptr_Q5;
-	const opus_int8 *cbk_ptr_Q7;
-	const opus_uint8 *cbk_gain_ptr_Q7;
-	const opus_int16 *b_Q14_ptr;
-	const opus_int32 *W_Q18_ptr;
-	opus_int32 rate_dist_Q14_subfr, rate_dist_Q14, min_rate_dist_Q14;
-	opus_int32 sum_log_gain_tmp_Q7, best_sum_log_gain_Q7, max_gain_Q7,
+	int j, k, cbk_size;
+	int8_t temp_idx[MAX_NB_SUBFR];
+	const uint8_t *cl_ptr_Q5;
+	const int8_t *cbk_ptr_Q7;
+	const uint8_t *cbk_gain_ptr_Q7;
+	const int16_t *b_Q14_ptr;
+	const int32_t *W_Q18_ptr;
+	int32_t rate_dist_Q14_subfr, rate_dist_Q14, min_rate_dist_Q14;
+	int32_t sum_log_gain_tmp_Q7, best_sum_log_gain_Q7, max_gain_Q7,
 	    gain_Q7;
 
     /***************************************************/
@@ -64,7 +64,7 @@ void silk_quant_LTP_gains(opus_int16 B_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* I/O  (u
 	for (k = 0; k < 3; k++) {
 		/* Safety margin for pitch gain control, to take into account factors
 		   such as state rescaling/rewhitening. */
-		opus_int32 gain_safety = SILK_FIX_CONST(0.4, 7);
+		int32_t gain_safety = SILK_FIX_CONST(0.4, 7);
 
 		cl_ptr_Q5 = silk_LTP_gain_BITS_Q5_ptrs[k];
 		cbk_ptr_Q7 = silk_LTP_vq_ptrs_Q7[k];
@@ -115,9 +115,9 @@ void silk_quant_LTP_gains(opus_int16 B_Q14[MAX_NB_SUBFR * LTP_ORDER],	/* I/O  (u
 
 		if (rate_dist_Q14 < min_rate_dist_Q14) {
 			min_rate_dist_Q14 = rate_dist_Q14;
-			*periodicity_index = (opus_int8) k;
+			*periodicity_index = (int8_t) k;
 			silk_memcpy(cbk_index, temp_idx,
-				    nb_subfr * sizeof(opus_int8));
+				    nb_subfr * sizeof(int8_t));
 			best_sum_log_gain_Q7 = sum_log_gain_tmp_Q7;
 		}
 

@@ -34,13 +34,13 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FIX.h"
 
 /* Step up function, converts reflection coefficients to prediction coefficients */
-void silk_k2a(opus_int32 * A_Q24,	/* O    Prediction coefficients [order] Q24                         */
-	      const opus_int16 * rc_Q15,	/* I    Reflection coefficients [order] Q15                         */
-	      const opus_int32 order	/* I    Prediction order                                            */
+void silk_k2a(int32_t * A_Q24,	/* O    Prediction coefficients [order] Q24                         */
+	      const int16_t * rc_Q15,	/* I    Reflection coefficients [order] Q15                         */
+	      const int32_t order	/* I    Prediction order                                            */
     )
 {
-	opus_int k, n;
-	opus_int32 Atmp[SILK_MAX_ORDER_LPC];
+	int k, n;
+	int32_t Atmp[SILK_MAX_ORDER_LPC];
 
 	for (k = 0; k < order; k++) {
 		for (n = 0; n < k; n++) {
@@ -52,6 +52,6 @@ void silk_k2a(opus_int32 * A_Q24,	/* O    Prediction coefficients [order] Q24   
 					silk_LSHIFT(Atmp[k - n - 1], 1),
 					rc_Q15[k]);
 		}
-		A_Q24[k] = -silk_LSHIFT((opus_int32) rc_Q15[k], 9);
+		A_Q24[k] = -silk_LSHIFT((int32_t) rc_Q15[k], 9);
 	}
 }

@@ -34,15 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 
 /* Unpack predictor values and indices for entropy coding tables */
-void silk_NLSF_unpack(opus_int16 ec_ix[],	/* O    Indices to entropy tables [ LPC_ORDER ]     */
-		      opus_uint8 pred_Q8[],	/* O    LSF predictor [ LPC_ORDER ]                 */
+void silk_NLSF_unpack(int16_t ec_ix[],	/* O    Indices to entropy tables [ LPC_ORDER ]     */
+		      uint8_t pred_Q8[],	/* O    LSF predictor [ LPC_ORDER ]                 */
 		      const silk_NLSF_CB_struct * psNLSF_CB,	/* I    Codebook object                             */
-		      const opus_int CB1_index	/* I    Index of vector in first LSF codebook       */
+		      const int CB1_index	/* I    Index of vector in first LSF codebook       */
     )
 {
-	opus_int i;
-	opus_uint8 entry;
-	const opus_uint8 *ec_sel_ptr;
+	int i;
+	uint8_t entry;
+	const uint8_t *ec_sel_ptr;
 
 	ec_sel_ptr = &psNLSF_CB->ec_sel[CB1_index * psNLSF_CB->order / 2];
 	for (i = 0; i < psNLSF_CB->order; i += 2) {

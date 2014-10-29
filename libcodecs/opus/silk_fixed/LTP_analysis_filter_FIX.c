@@ -33,21 +33,21 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "main_FIX.h"
 
-void silk_LTP_analysis_filter_FIX(opus_int16 * LTP_res,	/* O    LTP residual signal of length MAX_NB_SUBFR * ( pre_length + subfr_length )  */
-				  const opus_int16 * x,	/* I    Pointer to input signal with at least max( pitchL ) preceding samples       */
-				  const opus_int16 LTPCoef_Q14[LTP_ORDER * MAX_NB_SUBFR],	/* I    LTP_ORDER LTP coefficients for each MAX_NB_SUBFR subframe                   */
-				  const opus_int pitchL[MAX_NB_SUBFR],	/* I    Pitch lag, one for each subframe                                            */
-				  const opus_int32 invGains_Q16[MAX_NB_SUBFR],	/* I    Inverse quantization gains, one for each subframe                           */
-				  const opus_int subfr_length,	/* I    Length of each subframe                                                     */
-				  const opus_int nb_subfr,	/* I    Number of subframes                                                         */
-				  const opus_int pre_length	/* I    Length of the preceding samples starting at &x[0] for each subframe         */
+void silk_LTP_analysis_filter_FIX(int16_t * LTP_res,	/* O    LTP residual signal of length MAX_NB_SUBFR * ( pre_length + subfr_length )  */
+				  const int16_t * x,	/* I    Pointer to input signal with at least max( pitchL ) preceding samples       */
+				  const int16_t LTPCoef_Q14[LTP_ORDER * MAX_NB_SUBFR],	/* I    LTP_ORDER LTP coefficients for each MAX_NB_SUBFR subframe                   */
+				  const int pitchL[MAX_NB_SUBFR],	/* I    Pitch lag, one for each subframe                                            */
+				  const int32_t invGains_Q16[MAX_NB_SUBFR],	/* I    Inverse quantization gains, one for each subframe                           */
+				  const int subfr_length,	/* I    Length of each subframe                                                     */
+				  const int nb_subfr,	/* I    Number of subframes                                                         */
+				  const int pre_length	/* I    Length of the preceding samples starting at &x[0] for each subframe         */
     )
 {
-	const opus_int16 *x_ptr, *x_lag_ptr;
-	opus_int16 Btmp_Q14[LTP_ORDER];
-	opus_int16 *LTP_res_ptr;
-	opus_int k, i, j;
-	opus_int32 LTP_est;
+	const int16_t *x_ptr, *x_lag_ptr;
+	int16_t Btmp_Q14[LTP_ORDER];
+	int16_t *LTP_res_ptr;
+	int k, i, j;
+	int32_t LTP_est;
 
 	x_ptr = x;
 	LTP_res_ptr = LTP_res;
@@ -76,7 +76,7 @@ void silk_LTP_analysis_filter_FIX(opus_int16 * LTP_res,	/* O    LTP residual sig
 
 			/* Subtract long-term prediction */
 			LTP_res_ptr[i] =
-			    (opus_int16) silk_SAT16((opus_int32) x_ptr[i] -
+			    (int16_t) silk_SAT16((int32_t) x_ptr[i] -
 						    LTP_est);
 
 			/* Scale residual */

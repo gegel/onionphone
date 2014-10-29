@@ -35,9 +35,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* inner product of two silk_float arrays, with result as double */
 double silk_inner_product_FLP(const silk_float * data1,
-			      const silk_float * data2, opus_int dataSize)
+			      const silk_float * data2, int dataSize)
 {
-	opus_int i, dataSize4;
+	int i, dataSize4;
 	double result;
 
 	/* 4x unrolled loop */

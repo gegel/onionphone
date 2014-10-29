@@ -34,15 +34,15 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 
 /* Generates excitation for CNG LPC synthesis */
-static inline void silk_CNG_exc(opus_int32 residual_Q10[],	/* O    CNG residual signal Q10                     */
-				opus_int32 exc_buf_Q14[],	/* I    Random samples buffer Q10                   */
-				opus_int32 Gain_Q16,	/* I    Gain to apply                               */
-				opus_int length,	/* I    Length                                      */
-				opus_int32 * rand_seed	/* I/O  Seed to random index generator              */
+static inline void silk_CNG_exc(int32_t residual_Q10[],	/* O    CNG residual signal Q10                     */
+				int32_t exc_buf_Q14[],	/* I    Random samples buffer Q10                   */
+				int32_t Gain_Q16,	/* I    Gain to apply                               */
+				int length,	/* I    Length                                      */
+				int32_t * rand_seed	/* I/O  Seed to random index generator              */
     )
 {
-	opus_int32 seed;
-	opus_int i, idx, exc_mask;
+	int32_t seed;
+	int i, idx, exc_mask;
 
 	exc_mask = CNG_BUF_MASK_MAX;
 	while (exc_mask > length) {
@@ -52,11 +52,11 @@ static inline void silk_CNG_exc(opus_int32 residual_Q10[],	/* O    CNG residual 
 	seed = *rand_seed;
 	for (i = 0; i < length; i++) {
 		seed = silk_RAND(seed);
-		idx = (opus_int) (silk_RSHIFT(seed, 24) & exc_mask);
+		idx = (int) (silk_RSHIFT(seed, 24) & exc_mask);
 		silk_assert(idx >= 0);
 		silk_assert(idx <= CNG_BUF_MASK_MAX);
 		residual_Q10[i] =
-		    (opus_int16)
+		    (int16_t)
 		    silk_SAT16(silk_SMULWW(exc_buf_Q14[idx], Gain_Q16 >> 4));
 	}
 	*rand_seed = seed;
@@ -65,7 +65,7 @@ static inline void silk_CNG_exc(opus_int32 residual_Q10[],	/* O    CNG residual 
 void silk_CNG_Reset(silk_decoder_state * psDec	/* I/O  Decoder state                               */
     )
 {
-	opus_int i, NLSF_step_Q15, NLSF_acc_Q15;
+	int i, NLSF_step_Q15, NLSF_acc_Q15;
 
 	NLSF_step_Q15 = silk_DIV32_16(silk_int16_MAX, psDec->LPC_order + 1);
 	NLSF_acc_Q15 = 0;
@@ -80,13 +80,13 @@ void silk_CNG_Reset(silk_decoder_state * psDec	/* I/O  Decoder state            
 /* Updates CNG estimate, and applies the CNG when packet was lost   */
 void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                               */
 	      silk_decoder_control * psDecCtrl,	/* I/O  Decoder control                             */
-	      opus_int16 frame[],	/* I/O  Signal                                      */
-	      opus_int length	/* I    Length of residual                          */
+	      int16_t frame[],	/* I/O  Signal                                      */
+	      int length	/* I    Length of residual                          */
     )
 {
-	opus_int i, subfr;
-	opus_int32 sum_Q6, max_Gain_Q16;
-	opus_int16 A_Q12[MAX_LPC_ORDER];
+	int i, subfr;
+	int32_t sum_Q6, max_Gain_Q16;
+	int16_t A_Q12[MAX_LPC_ORDER];
 	silk_CNG_struct *psCNG = &psDec->sCNG;
 
 	if (psDec->fs_kHz != psCNG->fs_kHz) {
@@ -102,8 +102,8 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 		/* Smoothing of LSF's  */
 		for (i = 0; i < psDec->LPC_order; i++) {
 			psCNG->CNG_smth_NLSF_Q15[i] +=
-			    silk_SMULWB((opus_int32) psDec->prevNLSF_Q15[i] -
-					(opus_int32) psCNG->
+			    silk_SMULWB((int32_t) psDec->prevNLSF_Q15[i] -
+					(int32_t) psCNG->
 					CNG_smth_NLSF_Q15[i],
 					CNG_NLSF_SMTH_Q16);
 		}
@@ -120,10 +120,10 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 		silk_memmove(&psCNG->CNG_exc_buf_Q14[psDec->subfr_length],
 			     psCNG->CNG_exc_buf_Q14,
 			     (psDec->nb_subfr -
-			      1) * psDec->subfr_length * sizeof(opus_int32));
+			      1) * psDec->subfr_length * sizeof(int32_t));
 		silk_memcpy(psCNG->CNG_exc_buf_Q14,
 			    &psDec->exc_Q14[subfr * psDec->subfr_length],
-			    psDec->subfr_length * sizeof(opus_int32));
+			    psDec->subfr_length * sizeof(int32_t));
 
 		/* Smooth gains */
 		for (i = 0; i < psDec->nb_subfr; i++) {
@@ -137,7 +137,7 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 	/* Add CNG when packet is lost or during DTX */
 	if (psDec->lossCnt) {
 
-		opus_int32 CNG_sig_Q10[length + MAX_LPC_ORDER];
+		int32_t CNG_sig_Q10[length + MAX_LPC_ORDER];
 
 		/* Generate CNG excitation */
 		silk_CNG_exc(CNG_sig_Q10 + MAX_LPC_ORDER,
@@ -149,7 +149,7 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 
 		/* Generate CNG signal, by synthesis filtering */
 		silk_memcpy(CNG_sig_Q10, psCNG->CNG_synth_state,
-			    MAX_LPC_ORDER * sizeof(opus_int32));
+			    MAX_LPC_ORDER * sizeof(int32_t));
 		for (i = 0; i < length; i++) {
 			silk_assert(psDec->LPC_order == 10
 				    || psDec->LPC_order == 16);
@@ -232,10 +232,10 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 					   silk_RSHIFT_ROUND(sum_Q6, 6));
 		}
 		silk_memcpy(psCNG->CNG_synth_state, &CNG_sig_Q10[length],
-			    MAX_LPC_ORDER * sizeof(opus_int32));
+			    MAX_LPC_ORDER * sizeof(int32_t));
 	} else {
 		silk_memset(psCNG->CNG_synth_state, 0,
-			    psDec->LPC_order * sizeof(opus_int32));
+			    psDec->LPC_order * sizeof(int32_t));
 	}
 
 }

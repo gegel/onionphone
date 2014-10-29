@@ -35,15 +35,15 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Faster than schur64(), but much less accurate.                       */
 /* uses SMLAWB(), requiring armv5E and higher.                          */
-opus_int32 silk_schur(		/* O    Returns residual energy                                     */
-			     opus_int16 * rc_Q15,	/* O    reflection coefficients [order] Q15                         */
-			     const opus_int32 * c,	/* I    correlations [order+1]                                      */
-			     const opus_int32 order	/* I    prediction order                                            */
+int32_t silk_schur(		/* O    Returns residual energy                                     */
+			     int16_t * rc_Q15,	/* O    reflection coefficients [order] Q15                         */
+			     const int32_t * c,	/* I    correlations [order+1]                                      */
+			     const int32_t order	/* I    prediction order                                            */
     )
 {
-	opus_int k, n, lz;
-	opus_int32 C[SILK_MAX_ORDER_LPC + 1][2];
-	opus_int32 Ctmp1, Ctmp2, rc_tmp_Q15;
+	int k, n, lz;
+	int32_t C[SILK_MAX_ORDER_LPC + 1][2];
+	int32_t Ctmp1, Ctmp2, rc_tmp_Q15;
 
 	silk_assert(order == 6 || order == 8 || order == 10 || order == 12
 		    || order == 14 || order == 16);
@@ -91,7 +91,7 @@ opus_int32 silk_schur(		/* O    Returns residual energy                         
 		rc_tmp_Q15 = silk_SAT16(rc_tmp_Q15);
 
 		/* Store */
-		rc_Q15[k] = (opus_int16) rc_tmp_Q15;
+		rc_Q15[k] = (int16_t) rc_tmp_Q15;
 
 		/* Update correlations */
 		for (n = 0; n < order - k; n++) {

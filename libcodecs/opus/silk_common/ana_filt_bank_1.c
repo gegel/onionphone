@@ -34,24 +34,24 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FIX.h"
 
 /* Coefficients for 2-band filter bank based on first-order allpass filters */
-static opus_int16 A_fb1_20 = 5394 << 1;
-static opus_int16 A_fb1_21 = -24290;	/* (opus_int16)(20623 << 1) */
+static int16_t A_fb1_20 = 5394 << 1;
+static int16_t A_fb1_21 = -24290;	/* (int16_t)(20623 << 1) */
 
 /* Split signal into two decimated bands using first-order allpass filters */
-void silk_ana_filt_bank_1(const opus_int16 * in,	/* I    Input signal [N]                                            */
-			  opus_int32 * S,	/* I/O  State vector [2]                                            */
-			  opus_int16 * outL,	/* O    Low band [N/2]                                              */
-			  opus_int16 * outH,	/* O    High band [N/2]                                             */
-			  const opus_int32 N	/* I    Number of input samples                                     */
+void silk_ana_filt_bank_1(const int16_t * in,	/* I    Input signal [N]                                            */
+			  int32_t * S,	/* I/O  State vector [2]                                            */
+			  int16_t * outL,	/* O    Low band [N/2]                                              */
+			  int16_t * outH,	/* O    High band [N/2]                                             */
+			  const int32_t N	/* I    Number of input samples                                     */
     )
 {
-	opus_int k, N2 = silk_RSHIFT(N, 1);
-	opus_int32 in32, X, Y, out_1, out_2;
+	int k, N2 = silk_RSHIFT(N, 1);
+	int32_t in32, X, Y, out_1, out_2;
 
 	/* Internal variables and state are in Q10 format */
 	for (k = 0; k < N2; k++) {
 		/* Convert to Q10 */
-		in32 = silk_LSHIFT((opus_int32) in[2 * k], 10);
+		in32 = silk_LSHIFT((int32_t) in[2 * k], 10);
 
 		/* All-pass section for even input sample */
 		Y = silk_SUB32(in32, S[0]);
@@ -60,7 +60,7 @@ void silk_ana_filt_bank_1(const opus_int16 * in,	/* I    Input signal [N]       
 		S[0] = silk_ADD32(in32, X);
 
 		/* Convert to Q10 */
-		in32 = silk_LSHIFT((opus_int32) in[2 * k + 1], 10);
+		in32 = silk_LSHIFT((int32_t) in[2 * k + 1], 10);
 
 		/* All-pass section for odd input sample, and add to output of previous section */
 		Y = silk_SUB32(in32, S[1]);
@@ -70,10 +70,10 @@ void silk_ana_filt_bank_1(const opus_int16 * in,	/* I    Input signal [N]       
 
 		/* Add/subtract, convert back to int16 and store to output */
 		outL[k] =
-		    (opus_int16)
+		    (int16_t)
 		    silk_SAT16(silk_RSHIFT_ROUND(silk_ADD32(out_2, out_1), 11));
 		outH[k] =
-		    (opus_int16)
+		    (int16_t)
 		    silk_SAT16(silk_RSHIFT_ROUND(silk_SUB32(out_2, out_1), 11));
 	}
 }

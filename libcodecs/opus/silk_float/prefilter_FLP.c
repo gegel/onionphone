@@ -44,8 +44,8 @@ static inline void silk_prefilt_FLP(silk_prefilter_state_FLP * P,	/* I/O state *
 				    silk_float Tilt,	/* I */
 				    silk_float LF_MA_shp,	/* I */
 				    silk_float LF_AR_shp,	/* I */
-				    opus_int lag,	/* I */
-				    opus_int length	/* I */
+				    int lag,	/* I */
+				    int length	/* I */
     );
 
 static void silk_warped_LPC_analysis_filter_FLP(silk_float state[],	/* I/O  State [order + 1]                       */
@@ -53,11 +53,11 @@ static void silk_warped_LPC_analysis_filter_FLP(silk_float state[],	/* I/O  Stat
 						const silk_float coef[],	/* I    Coefficients [order]                    */
 						const silk_float input[],	/* I    Input signal [length]                   */
 						const silk_float lambda,	/* I    Warping factor                          */
-						const opus_int length,	/* I    Length of input signal                  */
-						const opus_int order	/* I    Filter order (even)                     */
+						const int length,	/* I    Length of input signal                  */
+						const int order	/* I    Filter order (even)                     */
     )
 {
-	opus_int n, i;
+	int n, i;
 	silk_float acc, tmp1, tmp2;
 
 	/* Order must be even */
@@ -98,7 +98,7 @@ void silk_prefilter_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state FL
     )
 {
 	silk_prefilter_state_FLP *P = &psEnc->sPrefilt;
-	opus_int j, k, lag;
+	int j, k, lag;
 	silk_float HarmShapeGain, Tilt, LF_MA_shp, LF_AR_shp;
 	silk_float B[2];
 	const silk_float *AR1_shp;
@@ -168,12 +168,12 @@ static inline void silk_prefilt_FLP(silk_prefilter_state_FLP * P,	/* I/O state *
 				    silk_float Tilt,	/* I */
 				    silk_float LF_MA_shp,	/* I */
 				    silk_float LF_AR_shp,	/* I */
-				    opus_int lag,	/* I */
-				    opus_int length	/* I */
+				    int lag,	/* I */
+				    int length	/* I */
     )
 {
-	opus_int i;
-	opus_int idx, LTP_shp_buf_idx;
+	int i;
+	int idx, LTP_shp_buf_idx;
 	silk_float n_Tilt, n_LF, n_LTP;
 	silk_float sLF_AR_shp, sLF_MA_shp;
 	silk_float *LTP_shp_buf;

@@ -73,7 +73,7 @@ struct OpusMSEncoder {
 	int application;
 	int variable_duration;
 	int surround;
-	opus_int32 bitrate_bps;
+	int32_t bitrate_bps;
 	float subframe_mem[3];
 	/* Encoder states go here */
 	/* then opus_val32 window_mem[channels*120]; */
@@ -346,7 +346,7 @@ void surround_analysis(const CELTMode * celt_mode, const void *pcm,
 
 }
 
-opus_int32 opus_multistream_encoder_get_size(int nb_streams,
+int32_t opus_multistream_encoder_get_size(int nb_streams,
 					     int nb_coupled_streams)
 {
 	int coupled_size;
@@ -362,12 +362,12 @@ opus_int32 opus_multistream_encoder_get_size(int nb_streams,
 	    + (nb_streams - nb_coupled_streams) * align(mono_size);
 }
 
-opus_int32 opus_multistream_surround_encoder_get_size(int channels,
+int32_t opus_multistream_surround_encoder_get_size(int channels,
 						      int mapping_family)
 {
 	int nb_streams;
 	int nb_coupled_streams;
-	opus_int32 size;
+	int32_t size;
 
 	if (mapping_family == 0) {
 		if (channels == 1) {
@@ -397,7 +397,7 @@ opus_int32 opus_multistream_surround_encoder_get_size(int channels,
 }
 
 static int opus_multistream_encoder_init_impl(OpusMSEncoder * st,
-					      opus_int32 Fs,
+					      int32_t Fs,
 					      int channels,
 					      int streams,
 					      int coupled_streams,
@@ -459,7 +459,7 @@ static int opus_multistream_encoder_init_impl(OpusMSEncoder * st,
 }
 
 int opus_multistream_encoder_init(OpusMSEncoder * st,
-				  opus_int32 Fs,
+				  int32_t Fs,
 				  int channels,
 				  int streams,
 				  int coupled_streams,
@@ -471,7 +471,7 @@ int opus_multistream_encoder_init(OpusMSEncoder * st,
 }
 
 int opus_multistream_surround_encoder_init(OpusMSEncoder * st,
-					   opus_int32 Fs,
+					   int32_t Fs,
 					   int channels,
 					   int mapping_family,
 					   int *streams,
@@ -517,7 +517,7 @@ int opus_multistream_surround_encoder_init(OpusMSEncoder * st,
 						  && mapping_family == 1);
 }
 
-OpusMSEncoder *opus_multistream_encoder_create(opus_int32 Fs,
+OpusMSEncoder *opus_multistream_encoder_create(int32_t Fs,
 					       int channels,
 					       int streams,
 					       int coupled_streams,
@@ -554,7 +554,7 @@ OpusMSEncoder *opus_multistream_encoder_create(opus_int32 Fs,
 	return st;
 }
 
-OpusMSEncoder *opus_multistream_surround_encoder_create(opus_int32 Fs,
+OpusMSEncoder *opus_multistream_surround_encoder_create(int32_t Fs,
 							int channels,
 							int mapping_family,
 							int *streams,
@@ -593,11 +593,11 @@ OpusMSEncoder *opus_multistream_surround_encoder_create(opus_int32 Fs,
 }
 
 static void surround_rate_allocation(OpusMSEncoder * st,
-				     opus_int32 * rate, int frame_size)
+				     int32_t * rate, int frame_size)
 {
 	int i;
-	opus_int32 channel_rate;
-	opus_int32 Fs;
+	int32_t channel_rate;
+	int32_t Fs;
 	char *ptr;
 	int stream_offset;
 	int lfe_offset;
@@ -644,7 +644,7 @@ static void surround_rate_allocation(OpusMSEncoder * st,
 #ifndef FIXED_POINT
 	if (st->variable_duration == OPUS_FRAMESIZE_VARIABLE
 	    && frame_size != Fs / 50) {
-		opus_int32 bonus;
+		int32_t bonus;
 		bonus = 60 * (Fs / frame_size - 50);
 		channel_rate += bonus;
 	}
@@ -669,8 +669,8 @@ static int opus_multistream_encode_native
      const void *pcm,
      int analysis_frame_size,
      unsigned char *data,
-     opus_int32 max_data_bytes, int lsb_depth, downmix_func downmix) {
-	opus_int32 Fs;
+     int32_t max_data_bytes, int lsb_depth, downmix_func downmix) {
+	int32_t Fs;
 	int coupled_size;
 	int mono_size;
 	int s;
@@ -679,9 +679,9 @@ static int opus_multistream_encode_native
 
 	unsigned char tmp_data[MS_FRAME_TMP];
 	OpusRepacketizer rp;
-	opus_int32 vbr;
+	int32_t vbr;
 	const CELTMode *celt_mode;
-	opus_int32 bitrates[256];
+	int32_t bitrates[256];
 	opus_val16 bandLogE[42];
 	opus_val32 *mem = NULL;
 	opus_val32 *preemph_mem = NULL;
@@ -698,7 +698,7 @@ static int opus_multistream_encode_native
 	opus_encoder_ctl((OpusEncoder *) ptr, CELT_GET_MODE(&celt_mode));
 
 	{
-		opus_int32 delay_compensation;
+		int32_t delay_compensation;
 		int channels;
 
 		channels =
@@ -762,7 +762,7 @@ static int opus_multistream_encode_native
 			ptr += align(mono_size);
 		opus_encoder_ctl(enc, OPUS_SET_BITRATE(bitrates[s]));
 		if (st->surround) {
-			opus_int32 equiv_rate;
+			int32_t equiv_rate;
 			equiv_rate = st->bitrate_bps;
 			if (frame_size * 50 < Fs)
 				equiv_rate -=
@@ -891,7 +891,7 @@ static void opus_copy_channel_in_float(opus_val16 * dst,
 				       int src_channel, int frame_size)
 {
 	const float *float_src;
-	opus_int32 i;
+	int32_t i;
 	float_src = (const float *)src;
 	for (i = 0; i < frame_size; i++)
 #if defined(FIXED_POINT)
@@ -909,9 +909,9 @@ static void opus_copy_channel_in_short(opus_val16 * dst,
 				       int src_stride,
 				       int src_channel, int frame_size)
 {
-	const opus_int16 *short_src;
-	opus_int32 i;
-	short_src = (const opus_int16 *)src;
+	const int16_t *short_src;
+	int32_t i;
+	short_src = (const int16_t *)src;
 	for (i = 0; i < frame_size; i++)
 #if defined(FIXED_POINT)
 		dst[i * dst_stride] = short_src[i * src_stride + src_channel];
@@ -925,7 +925,7 @@ static void opus_copy_channel_in_short(opus_val16 * dst,
 int opus_multistream_encode(OpusMSEncoder * st,
 			    const opus_val16 * pcm,
 			    int frame_size,
-			    unsigned char *data, opus_int32 max_data_bytes)
+			    unsigned char *data, int32_t max_data_bytes)
 {
 	return opus_multistream_encode_native(st, opus_copy_channel_in_short,
 					      pcm, frame_size, data,
@@ -937,7 +937,7 @@ int opus_multistream_encode_float(OpusMSEncoder * st,
 				  const float *pcm,
 				  int frame_size,
 				  unsigned char *data,
-				  opus_int32 max_data_bytes)
+				  int32_t max_data_bytes)
 {
 	return opus_multistream_encode_native(st, opus_copy_channel_in_float,
 					      pcm, frame_size, data,
@@ -951,7 +951,7 @@ int opus_multistream_encode_float(OpusMSEncoder * st,
 int opus_multistream_encode_float
     (OpusMSEncoder * st,
      const opus_val16 * pcm,
-     int frame_size, unsigned char *data, opus_int32 max_data_bytes) {
+     int frame_size, unsigned char *data, int32_t max_data_bytes) {
 	return opus_multistream_encode_native(st, opus_copy_channel_in_float,
 					      pcm, frame_size, data,
 					      max_data_bytes, 24,
@@ -959,9 +959,9 @@ int opus_multistream_encode_float
 }
 
 int opus_multistream_encode(OpusMSEncoder * st,
-			    const opus_int16 * pcm,
+			    const int16_t * pcm,
 			    int frame_size,
-			    unsigned char *data, opus_int32 max_data_bytes)
+			    unsigned char *data, int32_t max_data_bytes)
 {
 	return opus_multistream_encode_native(st, opus_copy_channel_in_short,
 					      pcm, frame_size, data,
@@ -984,7 +984,7 @@ int opus_multistream_encoder_ctl(OpusMSEncoder * st, int request, ...)
 	switch (request) {
 	case OPUS_SET_BITRATE_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			if (value < 0 && value != OPUS_AUTO
 			    && value != OPUS_BITRATE_MAX) {
 				goto bad_arg;
@@ -995,13 +995,13 @@ int opus_multistream_encoder_ctl(OpusMSEncoder * st, int request, ...)
 	case OPUS_GET_BITRATE_REQUEST:
 		{
 			int s;
-			opus_int32 *value = va_arg(ap, opus_int32 *);
+			int32_t *value = va_arg(ap, int32_t *);
 			if (!value) {
 				goto bad_arg;
 			}
 			*value = 0;
 			for (s = 0; s < st->layout.nb_streams; s++) {
-				opus_int32 rate;
+				int32_t rate;
 				OpusEncoder *enc;
 				enc = (OpusEncoder *) ptr;
 				if (s < st->layout.nb_coupled_streams)
@@ -1031,7 +1031,7 @@ int opus_multistream_encoder_ctl(OpusMSEncoder * st, int request, ...)
 		{
 			OpusEncoder *enc;
 			/* For int32* GET params, just query the first stream */
-			opus_int32 *value = va_arg(ap, opus_int32 *);
+			int32_t *value = va_arg(ap, int32_t *);
 			enc = (OpusEncoder *) ptr;
 			ret = opus_encoder_ctl(enc, request, value);
 		}
@@ -1039,8 +1039,8 @@ int opus_multistream_encoder_ctl(OpusMSEncoder * st, int request, ...)
 	case OPUS_GET_FINAL_RANGE_REQUEST:
 		{
 			int s;
-			opus_uint32 *value = va_arg(ap, opus_uint32 *);
-			opus_uint32 tmp;
+			uint32_t *value = va_arg(ap, uint32_t *);
+			uint32_t tmp;
 			if (!value) {
 				goto bad_arg;
 			}
@@ -1076,7 +1076,7 @@ int opus_multistream_encoder_ctl(OpusMSEncoder * st, int request, ...)
 		{
 			int s;
 			/* This works for int32 params */
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			for (s = 0; s < st->layout.nb_streams; s++) {
 				OpusEncoder *enc;
 
@@ -1094,9 +1094,9 @@ int opus_multistream_encoder_ctl(OpusMSEncoder * st, int request, ...)
 	case OPUS_MULTISTREAM_GET_ENCODER_STATE_REQUEST:
 		{
 			int s;
-			opus_int32 stream_id;
+			int32_t stream_id;
 			OpusEncoder **value;
-			stream_id = va_arg(ap, opus_int32);
+			stream_id = va_arg(ap, int32_t);
 			if (stream_id < 0 || stream_id >= st->layout.nb_streams)
 				ret = OPUS_BAD_ARG;
 			value = va_arg(ap, OpusEncoder **);
@@ -1114,13 +1114,13 @@ int opus_multistream_encoder_ctl(OpusMSEncoder * st, int request, ...)
 		break;
 	case OPUS_SET_EXPERT_FRAME_DURATION_REQUEST:
 		{
-			opus_int32 value = va_arg(ap, opus_int32);
+			int32_t value = va_arg(ap, int32_t);
 			st->variable_duration = value;
 		}
 		break;
 	case OPUS_GET_EXPERT_FRAME_DURATION_REQUEST:
 		{
-			opus_int32 *value = va_arg(ap, opus_int32 *);
+			int32_t *value = va_arg(ap, int32_t *);
 			if (!value) {
 				goto bad_arg;
 			}

@@ -35,14 +35,14 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "resampler_rom.h"
 
 /* Downsample by a factor 2 */
-void silk_resampler_down2(opus_int32 * S,	/* I/O  State vector [ 2 ]                                          */
-			  opus_int16 * out,	/* O    Output signal [ floor(len/2) ]                              */
-			  const opus_int16 * in,	/* I    Input signal [ len ]                                        */
-			  opus_int32 inLen	/* I    Number of input samples                                     */
+void silk_resampler_down2(int32_t * S,	/* I/O  State vector [ 2 ]                                          */
+			  int16_t * out,	/* O    Output signal [ floor(len/2) ]                              */
+			  const int16_t * in,	/* I    Input signal [ len ]                                        */
+			  int32_t inLen	/* I    Number of input samples                                     */
     )
 {
-	opus_int32 k, len2 = silk_RSHIFT32(inLen, 1);
-	opus_int32 in32, out32, Y, X;
+	int32_t k, len2 = silk_RSHIFT32(inLen, 1);
+	int32_t in32, out32, Y, X;
 
 	silk_assert(silk_resampler_down2_0 > 0);
 	silk_assert(silk_resampler_down2_1 < 0);
@@ -50,7 +50,7 @@ void silk_resampler_down2(opus_int32 * S,	/* I/O  State vector [ 2 ]            
 	/* Internal variables and state are in Q10 format */
 	for (k = 0; k < len2; k++) {
 		/* Convert to Q10 */
-		in32 = silk_LSHIFT((opus_int32) in[2 * k], 10);
+		in32 = silk_LSHIFT((int32_t) in[2 * k], 10);
 
 		/* All-pass section for even input sample */
 		Y = silk_SUB32(in32, S[0]);
@@ -59,7 +59,7 @@ void silk_resampler_down2(opus_int32 * S,	/* I/O  State vector [ 2 ]            
 		S[0] = silk_ADD32(in32, X);
 
 		/* Convert to Q10 */
-		in32 = silk_LSHIFT((opus_int32) in[2 * k + 1], 10);
+		in32 = silk_LSHIFT((int32_t) in[2 * k + 1], 10);
 
 		/* All-pass section for odd input sample, and add to output of previous section */
 		Y = silk_SUB32(in32, S[1]);
@@ -69,6 +69,6 @@ void silk_resampler_down2(opus_int32 * S,	/* I/O  State vector [ 2 ]            
 		S[1] = silk_ADD32(in32, X);
 
 		/* Add, convert back to int16 and store to output */
-		out[k] = (opus_int16) silk_SAT16(silk_RSHIFT_ROUND(out32, 11));
+		out[k] = (int16_t) silk_SAT16(silk_RSHIFT_ROUND(out32, 11));
 	}
 }

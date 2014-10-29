@@ -127,12 +127,12 @@ __inline long int float2int(float flt)
 #endif
 
 #ifndef DISABLE_FLOAT_API
-static inline opus_int16 FLOAT2INT16(float x)
+static inline int16_t FLOAT2INT16(float x)
 {
 	x = x * CELT_SIG_SCALE;
 	x = MAX32(x, -32768);
 	x = MIN32(x, 32767);
-	return (opus_int16) float2int(x);
+	return (int16_t) float2int(x);
 }
 #endif				/* DISABLE_FLOAT_API */
 

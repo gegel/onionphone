@@ -38,7 +38,7 @@
 #include "armcpu.h"
 #include "cpu_support.h"
 #include "os_support.h"
-#include "opus_types.h"
+#include <stdint.h>
 
 #define OPUS_CPU_ARM_V4    (1)
 #define OPUS_CPU_ARM_EDSP  (1<<1)
@@ -51,9 +51,9 @@
 #define WIN32_EXTRA_LEAN
 #include <windows.h>
 
-static inline opus_uint32 opus_cpu_capabilities(void)
+static inline uint32_t opus_cpu_capabilities(void)
 {
-	opus_uint32 flags;
+	uint32_t flags;
 	flags = 0;
 	/* MSVC has no inline __asm support for ARM, but it does let you __emit
 	 * instructions via their assembled hex code.
@@ -93,9 +93,9 @@ static inline opus_uint32 opus_cpu_capabilities(void)
 
 #elif defined(__linux__)
 /* Linux based */
-opus_uint32 opus_cpu_capabilities(void)
+uint32_t opus_cpu_capabilities(void)
 {
-	opus_uint32 flags = 0;
+	uint32_t flags = 0;
 	FILE *cpuinfo;
 
 	/* Reading /proc/self/auxv would be easier, but that doesn't work reliably on
@@ -152,7 +152,7 @@ opus_uint32 opus_cpu_capabilities(void)
 
 int opus_select_arch(void)
 {
-	opus_uint32 flags = opus_cpu_capabilities();
+	uint32_t flags = opus_cpu_capabilities();
 	int arch = 0;
 
 	if (!(flags & OPUS_CPU_ARM_EDSP))

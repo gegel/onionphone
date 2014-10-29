@@ -36,10 +36,10 @@ POSSIBILITY OF SUCH DAMAGE.
 silk_float silk_schur_FLP(	/* O    returns residual energy                                     */
 				 silk_float refl_coef[],	/* O    reflection coefficients (length order)                      */
 				 const silk_float auto_corr[],	/* I    autocorrelation sequence (length order+1)                   */
-				 opus_int order	/* I    order                                                       */
+				 int order	/* I    order                                                       */
     )
 {
-	opus_int k, n;
+	int k, n;
 	silk_float C[SILK_MAX_ORDER_LPC + 1][2];
 	silk_float Ctmp1, Ctmp2, rc_tmp;
 

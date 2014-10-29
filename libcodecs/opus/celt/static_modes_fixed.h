@@ -38,14 +38,14 @@ static const opus_val16 window120[120] = {
 
 #ifndef DEF_LOGN400
 #define DEF_LOGN400
-static const opus_int16 logN400[21] = {
+static const int16_t logN400[21] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 8, 8, 8, 8, 16, 16, 16, 21, 21, 24, 29, 34, 36,
 };
 #endif
 
 #ifndef DEF_PULSE_CACHE50
 #define DEF_PULSE_CACHE50
-static const opus_int16 cache_index50[105] = {
+static const int16_t cache_index50[105] = {
 	-1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 41, 41, 41,
 	82, 82, 123, 164, 200, 222, 0, 0, 0, 0, 0, 0, 0, 0, 41,
 	41, 41, 41, 123, 123, 123, 164, 164, 240, 266, 283, 295, 41, 41, 41,
@@ -359,7 +359,7 @@ static const kiss_twiddle_cpx fft_twiddles48000_960[480] = {
 
 #ifndef FFT_BITREV480
 #define FFT_BITREV480
-static const opus_int16 fft_bitrev480[480] = {
+static const int16_t fft_bitrev480[480] = {
 	0, 120, 240, 360, 30, 150, 270, 390, 60, 180, 300, 420, 90, 210, 330,
 	450, 15, 135, 255, 375, 45, 165, 285, 405, 75, 195, 315, 435, 105, 225,
 	345, 465, 5, 125, 245, 365, 35, 155, 275, 395, 65, 185, 305, 425, 95,
@@ -397,7 +397,7 @@ static const opus_int16 fft_bitrev480[480] = {
 
 #ifndef FFT_BITREV240
 #define FFT_BITREV240
-static const opus_int16 fft_bitrev240[240] = {
+static const int16_t fft_bitrev240[240] = {
 	0, 60, 120, 180, 15, 75, 135, 195, 30, 90, 150, 210, 45, 105, 165,
 	225, 5, 65, 125, 185, 20, 80, 140, 200, 35, 95, 155, 215, 50, 110,
 	170, 230, 10, 70, 130, 190, 25, 85, 145, 205, 40, 100, 160, 220, 55,
@@ -419,7 +419,7 @@ static const opus_int16 fft_bitrev240[240] = {
 
 #ifndef FFT_BITREV120
 #define FFT_BITREV120
-static const opus_int16 fft_bitrev120[120] = {
+static const int16_t fft_bitrev120[120] = {
 	0, 30, 60, 90, 15, 45, 75, 105, 5, 35, 65, 95, 20, 50, 80,
 	110, 10, 40, 70, 100, 25, 55, 85, 115, 1, 31, 61, 91, 16, 46,
 	76, 106, 6, 36, 66, 96, 21, 51, 81, 111, 11, 41, 71, 101, 26,
@@ -433,7 +433,7 @@ static const opus_int16 fft_bitrev120[120] = {
 
 #ifndef FFT_BITREV60
 #define FFT_BITREV60
-static const opus_int16 fft_bitrev60[60] = {
+static const int16_t fft_bitrev60[60] = {
 	0, 15, 30, 45, 5, 20, 35, 50, 10, 25, 40, 55, 1, 16, 31,
 	46, 6, 21, 36, 51, 11, 26, 41, 56, 2, 17, 32, 47, 7, 22,
 	37, 52, 12, 27, 42, 57, 3, 18, 33, 48, 8, 23, 38, 53, 13,

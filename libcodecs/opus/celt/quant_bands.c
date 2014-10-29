@@ -155,8 +155,8 @@ static opus_val32 loss_distortion(const opus_val16 * eBands,
 
 static int quant_coarse_energy_impl(const CELTMode * m, int start, int end,
 				    const opus_val16 * eBands,
-				    opus_val16 * oldEBands, opus_int32 budget,
-				    opus_int32 tell,
+				    opus_val16 * oldEBands, int32_t budget,
+				    int32_t tell,
 				    const unsigned char *prob_model,
 				    opus_val16 * error, ec_enc * enc, int C,
 				    int LM, int intra, opus_val16 max_decay,
@@ -272,7 +272,7 @@ static int quant_coarse_energy_impl(const CELTMode * m, int start, int end,
 
 void quant_coarse_energy(const CELTMode * m, int start, int end, int effEnd,
 			 const opus_val16 * eBands, opus_val16 * oldEBands,
-			 opus_uint32 budget, opus_val16 * error, ec_enc * enc,
+			 uint32_t budget, opus_val16 * error, ec_enc * enc,
 			 int C, int LM, int nbAvailableBytes, int force_intra,
 			 opus_val32 * delayedIntra, int two_pass, int loss_rate,
 			 int lfe)
@@ -280,9 +280,9 @@ void quant_coarse_energy(const CELTMode * m, int start, int end, int effEnd,
 	int intra;
 	opus_val16 max_decay;
 	ec_enc enc_start_state;
-	opus_uint32 tell;
+	uint32_t tell;
 	int badness1 = 0;
-	opus_int32 intra_bias;
+	int32_t intra_bias;
 	opus_val32 new_distortion;
 	opus_val16 oldEBands_intra[C * m->nbEBands];
 	opus_val16 error_intra[C * m->nbEBands];
@@ -291,7 +291,7 @@ void quant_coarse_energy(const CELTMode * m, int start, int end, int effEnd,
 				&& *delayedIntra > 2 * C * (end - start)
 				&& nbAvailableBytes > (end - start) * C);
 	intra_bias =
-	    (opus_int32) ((budget ** delayedIntra * loss_rate) / (C * 512));
+	    (int32_t) ((budget ** delayedIntra * loss_rate) / (C * 512));
 	new_distortion =
 	    loss_distortion(eBands, oldEBands, start, effEnd, m->nbEBands, C);
 
@@ -326,10 +326,10 @@ void quant_coarse_energy(const CELTMode * m, int start, int end, int effEnd,
 	if (!intra) {
 		unsigned char *intra_buf;
 		ec_enc enc_intra_state;
-		opus_int32 tell_intra;
-		opus_uint32 nstart_bytes;
-		opus_uint32 nintra_bytes;
-		opus_uint32 save_bytes;
+		int32_t tell_intra;
+		uint32_t nstart_bytes;
+		uint32_t nintra_bytes;
+		uint32_t save_bytes;
 		int badness2;
 
 		tell_intra = ec_tell_frac(enc);
@@ -357,7 +357,7 @@ void quant_coarse_energy(const CELTMode * m, int start, int end, int effEnd,
 		if (two_pass
 		    && (badness1 < badness2
 			|| (badness1 == badness2
-			    && ((opus_int32) ec_tell_frac(enc)) + intra_bias >
+			    && ((int32_t) ec_tell_frac(enc)) + intra_bias >
 			    tell_intra))) {
 			*enc = enc_intra_state;
 			/* Copy intra bits to bit-stream */
@@ -390,7 +390,7 @@ void quant_fine_energy(const CELTMode * m, int start, int end,
 
 	/* Encode finer resolution */
 	for (i = start; i < end; i++) {
-		opus_int16 frac = 1 << fine_quant[i];
+		int16_t frac = 1 << fine_quant[i];
 		if (fine_quant[i] <= 0)
 			continue;
 		c = 0;
@@ -477,8 +477,8 @@ void unquant_coarse_energy(const CELTMode * m, int start, int end,
 	opus_val32 prev[2] = { 0, 0 };
 	opus_val16 coef;
 	opus_val16 beta;
-	opus_int32 budget;
-	opus_int32 tell;
+	int32_t budget;
+	int32_t tell;
 
 	if (intra) {
 		coef = 0;

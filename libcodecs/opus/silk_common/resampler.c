@@ -52,7 +52,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "resampler_private.h"
 
 /* Tables with delay compensation values to equalize total delay for different modes */
-static const opus_int8 delay_matrix_enc[5][3] = {
+static const int8_t delay_matrix_enc[5][3] = {
 /* in  \ out  8  12  16 */
 /*  8 */ {6, 0, 3},
 /* 12 */ {0, 7, 3},
@@ -61,7 +61,7 @@ static const opus_int8 delay_matrix_enc[5][3] = {
 /* 48 */ {18, 10, 12}
 };
 
-static const opus_int8 delay_matrix_dec[3][5] = {
+static const int8_t delay_matrix_dec[3][5] = {
 /* in  \ out  8  12  16  24  48 */
 /*  8 */ {4, 0, 2, 0, 0},
 /* 12 */ {0, 9, 4, 7, 4},
@@ -77,12 +77,12 @@ static const opus_int8 delay_matrix_dec[3][5] = {
 #define USE_silk_resampler_private_down_FIR         (3)
 
 /* Initialize/reset the resampler state for a given pair of input/output sampling rates */
-opus_int silk_resampler_init(silk_resampler_state_struct * S,	/* I/O  Resampler state                                             */
-			     opus_int32 Fs_Hz_in,	/* I    Input sampling rate (Hz)                                    */
-			     opus_int32 Fs_Hz_out,	/* I    Output sampling rate (Hz)                                   */
-			     opus_int forEnc	/* I    If 1: encoder; if 0: decoder                                */
+int silk_resampler_init(silk_resampler_state_struct * S,	/* I/O  Resampler state                                             */
+			     int32_t Fs_Hz_in,	/* I    Input sampling rate (Hz)                                    */
+			     int32_t Fs_Hz_out,	/* I    Output sampling rate (Hz)                                   */
+			     int forEnc	/* I    If 1: encoder; if 0: decoder                                */
     ) {
-	opus_int up2x;
+	int up2x;
 
 	/* Clear state */
 	silk_memset(S, 0, sizeof(silk_resampler_state_struct));
@@ -182,13 +182,13 @@ opus_int silk_resampler_init(silk_resampler_state_struct * S,	/* I/O  Resampler 
 
 /* Resampler: convert from one sampling rate to another */
 /* Input and output sampling rate are at most 48000 Hz  */
-opus_int silk_resampler(silk_resampler_state_struct * S,	/* I/O  Resampler state                                             */
-			opus_int16 out[],	/* O    Output signal                                               */
-			const opus_int16 in[],	/* I    Input signal                                                */
-			opus_int32 inLen	/* I    Number of input samples                                     */
+int silk_resampler(silk_resampler_state_struct * S,	/* I/O  Resampler state                                             */
+			int16_t out[],	/* O    Output signal                                               */
+			const int16_t in[],	/* I    Input signal                                                */
+			int32_t inLen	/* I    Number of input samples                                     */
     )
 {
-	opus_int nSamples;
+	int nSamples;
 
 	/* Need at least 1 ms of input data */
 	silk_assert(inLen >= S->Fs_in_kHz);
@@ -199,7 +199,7 @@ opus_int silk_resampler(silk_resampler_state_struct * S,	/* I/O  Resampler state
 
 	/* Copy to delay buffer */
 	silk_memcpy(&S->delayBuf[S->inputDelay], in,
-		    nSamples * sizeof(opus_int16));
+		    nSamples * sizeof(int16_t));
 
 	switch (S->resampler_function) {
 	case USE_silk_resampler_private_up2_HQ_wrapper:
@@ -225,14 +225,14 @@ opus_int silk_resampler(silk_resampler_state_struct * S,	/* I/O  Resampler state
 		break;
 	default:
 		silk_memcpy(out, S->delayBuf,
-			    S->Fs_in_kHz * sizeof(opus_int16));
+			    S->Fs_in_kHz * sizeof(int16_t));
 		silk_memcpy(&out[S->Fs_out_kHz], &in[nSamples],
-			    (inLen - S->Fs_in_kHz) * sizeof(opus_int16));
+			    (inLen - S->Fs_in_kHz) * sizeof(int16_t));
 	}
 
 	/* Copy to delay buffer */
 	silk_memcpy(S->delayBuf, &in[inLen - S->inputDelay],
-		    S->inputDelay * sizeof(opus_int16));
+		    S->inputDelay * sizeof(int16_t));
 
 	return 0;
 }

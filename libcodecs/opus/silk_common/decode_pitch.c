@@ -37,15 +37,15 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FIX.h"
 #include "pitch_est_defines.h"
 
-void silk_decode_pitch(opus_int16 lagIndex,	/* I                                                                */
-		       opus_int8 contourIndex,	/* O                                                                */
-		       opus_int pitch_lags[],	/* O    4 pitch values                                              */
-		       const opus_int Fs_kHz,	/* I    sampling frequency (kHz)                                    */
-		       const opus_int nb_subfr	/* I    number of sub frames                                        */
+void silk_decode_pitch(int16_t lagIndex,	/* I                                                                */
+		       int8_t contourIndex,	/* O                                                                */
+		       int pitch_lags[],	/* O    4 pitch values                                              */
+		       const int Fs_kHz,	/* I    sampling frequency (kHz)                                    */
+		       const int nb_subfr	/* I    number of sub frames                                        */
     )
 {
-	opus_int lag, k, min_lag, max_lag, cbk_size;
-	const opus_int8 *Lag_CB_ptr;
+	int lag, k, min_lag, max_lag, cbk_size;
+	const int8_t *Lag_CB_ptr;
 
 	if (Fs_kHz == 8) {
 		if (nb_subfr == PE_MAX_NB_SUBFR) {

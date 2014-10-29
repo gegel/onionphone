@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
 static inline void silk_LBRR_encode_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state FLP                           */
 					silk_encoder_control_FLP * psEncCtrl,	/* I/O  Encoder control FLP                         */
 					const silk_float xfw[],	/* I    Input signal                                */
-					opus_int condCoding	/* I    The type of conditional coding used so far for this frame */
+					int condCoding	/* I    The type of conditional coding used so far for this frame */
     );
 
 void silk_encode_do_VAD_FLP(silk_encoder_state_FLP * psEnc	/* I/O  Encoder state FLP                           */
@@ -76,29 +76,29 @@ void silk_encode_do_VAD_FLP(silk_encoder_state_FLP * psEnc	/* I/O  Encoder state
 /****************/
 /* Encode frame */
 /****************/
-opus_int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state FLP                           */
-			       opus_int32 * pnBytesOut,	/* O    Number of payload bytes;                    */
+int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state FLP                           */
+			       int32_t * pnBytesOut,	/* O    Number of payload bytes;                    */
 			       ec_enc * psRangeEnc,	/* I/O  compressor data structure                   */
-			       opus_int condCoding,	/* I    The type of conditional coding to use       */
-			       opus_int maxBits,	/* I    If > 0: maximum number of output bits       */
-			       opus_int useCBR	/* I    Flag to force constant-bitrate operation    */
+			       int condCoding,	/* I    The type of conditional coding to use       */
+			       int maxBits,	/* I    If > 0: maximum number of output bits       */
+			       int useCBR	/* I    Flag to force constant-bitrate operation    */
     ) {
 	silk_encoder_control_FLP sEncCtrl;
-	opus_int i, iter, maxIter, found_upper, found_lower, ret = 0;
+	int i, iter, maxIter, found_upper, found_lower, ret = 0;
 	silk_float *x_frame, *res_pitch_frame;
 	silk_float xfw[MAX_FRAME_LENGTH];
 	silk_float res_pitch[2 * MAX_FRAME_LENGTH + LA_PITCH_MAX];
 	ec_enc sRangeEnc_copy, sRangeEnc_copy2;
 	silk_nsq_state sNSQ_copy, sNSQ_copy2;
-	opus_int32 seed_copy, nBits, nBits_lower, nBits_upper, gainMult_lower,
+	int32_t seed_copy, nBits, nBits_lower, nBits_upper, gainMult_lower,
 	    gainMult_upper;
-	opus_int32 gainsID, gainsID_lower, gainsID_upper;
-	opus_int16 gainMult_Q8;
-	opus_int16 ec_prevLagIndex_copy;
-	opus_int ec_prevSignalType_copy;
-	opus_int8 LastGainIndex_copy2;
-	opus_int32 pGains_Q16[MAX_NB_SUBFR];
-	opus_uint8 ec_buf_copy[1275];
+	int32_t gainsID, gainsID_lower, gainsID_upper;
+	int16_t gainMult_Q8;
+	int16_t ec_prevLagIndex_copy;
+	int ec_prevSignalType_copy;
+	int8_t LastGainIndex_copy2;
+	int32_t pGains_Q16[MAX_NB_SUBFR];
+	uint8_t ec_buf_copy[1275];
 
 	/* This is totally unnecessary but many compilers (including gcc) are too dumb to realise it */
 	LastGainIndex_copy2 = nBits_lower = nBits_upper = gainMult_lower =
@@ -298,7 +298,7 @@ opus_int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder s
 
 			if ((found_lower & found_upper) == 0) {
 				/* Adjust gain according to high-rate rate/distortion curve */
-				opus_int32 gain_factor_Q16;
+				int32_t gain_factor_Q16;
 				gain_factor_Q16 =
 				    silk_log2lin(silk_LSHIFT(nBits - maxBits, 7)
 						 / psEnc->sCmn.frame_length +
@@ -403,11 +403,11 @@ opus_int silk_encode_frame_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder s
 static inline void silk_LBRR_encode_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state FLP                           */
 					silk_encoder_control_FLP * psEncCtrl,	/* I/O  Encoder control FLP                         */
 					const silk_float xfw[],	/* I    Input signal                                */
-					opus_int condCoding	/* I    The type of conditional coding used so far for this frame */
+					int condCoding	/* I    The type of conditional coding used so far for this frame */
     )
 {
-	opus_int k;
-	opus_int32 Gains_Q16[MAX_NB_SUBFR];
+	int k;
+	int32_t Gains_Q16[MAX_NB_SUBFR];
 	silk_float TempGains[MAX_NB_SUBFR];
 	SideInfoIndices *psIndices_LBRR =
 	    &psEnc->sCmn.indices_LBRR[psEnc->sCmn.nFramesEncoded];

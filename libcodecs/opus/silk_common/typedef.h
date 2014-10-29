@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #ifndef SILK_TYPEDEF_H
 #define SILK_TYPEDEF_H
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "opus_defines.h"
 
 #ifndef FIXED_POINT
@@ -39,14 +39,14 @@ POSSIBILITY OF SUCH DAMAGE.
 #define silk_float_MAX  FLT_MAX
 #endif
 
-#define silk_int64_MAX   ((opus_int64)0x7FFFFFFFFFFFFFFFLL)	/*  2^63 - 1 */
-#define silk_int64_MIN   ((opus_int64)0x8000000000000000LL)	/* -2^63 */
+#define silk_int64_MAX   ((int64_t)0x7FFFFFFFFFFFFFFFLL)	/*  2^63 - 1 */
+#define silk_int64_MIN   ((int64_t)0x8000000000000000LL)	/* -2^63 */
 #define silk_int32_MAX   0x7FFFFFFF	/*  2^31 - 1 =  2147483647 */
-#define silk_int32_MIN   ((opus_int32)0x80000000)	/* -2^31     = -2147483648 */
+#define silk_int32_MIN   ((int32_t)0x80000000)	/* -2^31     = -2147483648 */
 #define silk_int16_MAX   0x7FFF	/*  2^15 - 1 =  32767 */
-#define silk_int16_MIN   ((opus_int16)0x8000)	/* -2^15     = -32768 */
+#define silk_int16_MIN   ((int16_t)0x8000)	/* -2^15     = -32768 */
 #define silk_int8_MAX    0x7F	/*  2^7 - 1  =  127 */
-#define silk_int8_MIN    ((opus_int8)0x80)	/* -2^7      = -128 */
+#define silk_int8_MIN    ((int8_t)0x80)	/* -2^7      = -128 */
 #define silk_uint8_MAX   0xFF	/*  2^8 - 1 = 255 */
 
 #define silk_TRUE        1

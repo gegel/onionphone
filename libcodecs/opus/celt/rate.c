@@ -55,11 +55,11 @@ static const unsigned char LOG2_FRAC_TABLE[24] = {
   N and K are themselves limited to 15 bits.*/
 static int fits_in32(int _n, int _k)
 {
-	static const opus_int16 maxN[15] = {
+	static const int16_t maxN[15] = {
 		32767, 32767, 32767, 1476, 283, 109, 60, 40,
 		29, 24, 20, 18, 16, 14, 13
 	};
-	static const opus_int16 maxK[15] = {
+	static const int16_t maxK[15] = {
 		32767, 32767, 32767, 32767, 1172, 238, 95, 53,
 		36, 27, 22, 18, 16, 15, 13
 	};
@@ -81,14 +81,14 @@ void compute_pulse_cache(CELTMode * m, int LM)
 	int curr = 0;
 	int nbEntries = 0;
 	int entryN[100], entryK[100], entryI[100];
-	const opus_int16 *eBands = m->eBands;
+	const int16_t *eBands = m->eBands;
 	PulseCache *cache = &m->cache;
-	opus_int16 *cindex;
+	int16_t *cindex;
 	unsigned char *bits;
 	unsigned char *cap;
 
 	cindex =
-	    (opus_int16 *) opus_alloc(sizeof(cache->index[0]) * m->nbEBands *
+	    (int16_t *) opus_alloc(sizeof(cache->index[0]) * m->nbEBands *
 				      (LM + 2));
 	cache->index = cindex;
 
@@ -135,7 +135,7 @@ void compute_pulse_cache(CELTMode * m, int LM)
 	/* Compute the cache for all unique sizes */
 	for (i = 0; i < nbEntries; i++) {
 		unsigned char *ptr = bits + entryI[i];
-		opus_int16 tmp[MAX_PULSES + 1];
+		int16_t tmp[MAX_PULSES + 1];
 		get_required_bits(tmp, entryN[i], get_pulses(entryK[i]),
 				  BITRES);
 		for (j = 1; j <= entryK[i]; j++)
@@ -160,8 +160,8 @@ void compute_pulse_cache(CELTMode * m, int LM)
 					    C * (1 + MAX_FINE_BITS) << BITRES;
 				else {
 					const unsigned char *pcache;
-					opus_int32 num;
-					opus_int32 den;
+					int32_t num;
+					int32_t den;
 					int LM0;
 					int N;
 					int offset;
@@ -204,11 +204,11 @@ void compute_pulse_cache(CELTMode * m, int LM)
 						   approximated here as 459/512. */
 						num =
 						    459 *
-						    (opus_int32) ((2 * N -
+						    (int32_t) ((2 * N -
 								   1) * offset +
 								  max_bits);
 						den =
-						    ((opus_int32) (2 * N - 1) <<
+						    ((int32_t) (2 * N - 1) <<
 						     9) - 459;
 						qb = IMIN((num +
 							   (den >> 1)) / den,
@@ -232,11 +232,11 @@ void compute_pulse_cache(CELTMode * m, int LM)
 						num =
 						    (N ==
 						     2 ? 512 : 487) *
-						    (opus_int32) (max_bits +
+						    (int32_t) (max_bits +
 								  ndof *
 								  offset);
 						den =
-						    ((opus_int32) ndof << 9) -
+						    ((int32_t) ndof << 9) -
 						    (N == 2 ? 512 : 487);
 						qb = IMIN((num +
 							   (den >> 1)) / den,
@@ -286,24 +286,24 @@ void compute_pulse_cache(CELTMode * m, int LM)
 static inline int interp_bits2pulses(const CELTMode * m, int start, int end,
 				     int skip_start, const int *bits1,
 				     const int *bits2, const int *thresh,
-				     const int *cap, opus_int32 total,
-				     opus_int32 * _balance, int skip_rsv,
+				     const int *cap, int32_t total,
+				     int32_t * _balance, int skip_rsv,
 				     int *intensity, int intensity_rsv,
 				     int *dual_stereo, int dual_stereo_rsv,
 				     int *bits, int *ebits, int *fine_priority,
 				     int C, int LM, ec_ctx * ec, int encode,
 				     int prev, int signalBandwidth)
 {
-	opus_int32 psum;
+	int32_t psum;
 	int lo, hi;
 	int i, j;
 	int logM;
 	int stereo;
 	int codedBands = -1;
 	int alloc_floor;
-	opus_int32 left, percoeff;
+	int32_t left, percoeff;
 	int done;
-	opus_int32 balance;
+	int32_t balance;
 
 	alloc_floor = C << BITRES;
 	stereo = C > 1;
@@ -318,7 +318,7 @@ static inline int interp_bits2pulses(const CELTMode * m, int start, int end,
 		for (j = end; j-- > start;) {
 			int tmp =
 			    bits1[j] +
-			    (mid * (opus_int32) bits2[j] >> ALLOC_STEPS);
+			    (mid * (int32_t) bits2[j] >> ALLOC_STEPS);
 			if (tmp >= thresh[j] || done) {
 				done = 1;
 				/* Don't allocate more than we can actually use */
@@ -465,12 +465,12 @@ static inline int interp_bits2pulses(const CELTMode * m, int start, int end,
 		int N0, N, den;
 		int offset;
 		int NClogN;
-		opus_int32 excess, bit;
+		int32_t excess, bit;
 
 		celt_assert(bits[j] >= 0);
 		N0 = m->eBands[j + 1] - m->eBands[j];
 		N = N0 << LM;
-		bit = (opus_int32) bits[j] + balance;
+		bit = (int32_t) bits[j] + balance;
 
 		if (N > 1) {
 			excess = MAX32(bit - cap[j], 0);
@@ -564,8 +564,8 @@ static inline int interp_bits2pulses(const CELTMode * m, int start, int end,
 
 int compute_allocation(const CELTMode * m, int start, int end,
 		       const int *offsets, const int *cap, int alloc_trim,
-		       int *intensity, int *dual_stereo, opus_int32 total,
-		       opus_int32 * balance, int *pulses, int *ebits,
+		       int *intensity, int *dual_stereo, int32_t total,
+		       int32_t * balance, int *pulses, int *ebits,
 		       int *fine_priority, int C, int LM, ec_ctx * ec,
 		       int encode, int prev, int signalBandwidth)
 {

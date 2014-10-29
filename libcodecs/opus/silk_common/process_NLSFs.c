@@ -35,17 +35,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Limit, stabilize, convert and quantize NLSFs */
 void silk_process_NLSFs(silk_encoder_state * psEncC,	/* I/O  Encoder state                               */
-			opus_int16 PredCoef_Q12[2][MAX_LPC_ORDER],	/* O    Prediction coefficients                     */
-			opus_int16 pNLSF_Q15[MAX_LPC_ORDER],	/* I/O  Normalized LSFs (quant out) (0 - (2^15-1))  */
-			const opus_int16 prev_NLSFq_Q15[MAX_LPC_ORDER]	/* I    Previous Normalized LSFs (0 - (2^15-1))     */
+			int16_t PredCoef_Q12[2][MAX_LPC_ORDER],	/* O    Prediction coefficients                     */
+			int16_t pNLSF_Q15[MAX_LPC_ORDER],	/* I/O  Normalized LSFs (quant out) (0 - (2^15-1))  */
+			const int16_t prev_NLSFq_Q15[MAX_LPC_ORDER]	/* I    Previous Normalized LSFs (0 - (2^15-1))     */
     )
 {
-	opus_int i, doInterpolate;
-	opus_int NLSF_mu_Q20;
-	opus_int32 i_sqr_Q15;
-	opus_int16 pNLSF0_temp_Q15[MAX_LPC_ORDER];
-	opus_int16 pNLSFW_QW[MAX_LPC_ORDER];
-	opus_int16 pNLSFW0_temp_QW[MAX_LPC_ORDER];
+	int i, doInterpolate;
+	int NLSF_mu_Q20;
+	int32_t i_sqr_Q15;
+	int16_t pNLSF0_temp_Q15[MAX_LPC_ORDER];
+	int16_t pNLSFW_QW[MAX_LPC_ORDER];
+	int16_t pNLSFW0_temp_QW[MAX_LPC_ORDER];
 
 	silk_assert(psEncC->speech_activity_Q8 >= 0);
 	silk_assert(psEncC->speech_activity_Q8 <= SILK_FIX_CONST(1.0, 8));
@@ -92,7 +92,7 @@ void silk_process_NLSFs(silk_encoder_state * psEncC,	/* I/O  Encoder state      
 		for (i = 0; i < psEncC->predictLPCOrder; i++) {
 			pNLSFW_QW[i] =
 			    silk_SMLAWB(silk_RSHIFT(pNLSFW_QW[i], 1),
-					(opus_int32) pNLSFW0_temp_QW[i],
+					(int32_t) pNLSFW0_temp_QW[i],
 					i_sqr_Q15);
 			silk_assert(pNLSFW_QW[i] >= 1);
 		}
@@ -119,6 +119,6 @@ void silk_process_NLSFs(silk_encoder_state * psEncC,	/* I/O  Encoder state      
 	} else {
 		/* Copy LPC coefficients for first half from second half */
 		silk_memcpy(PredCoef_Q12[0], PredCoef_Q12[1],
-			    psEncC->predictLPCOrder * sizeof(opus_int16));
+			    psEncC->predictLPCOrder * sizeof(int16_t));
 	}
 }

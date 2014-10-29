@@ -35,10 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* Approximation of 2^() (very close inverse of silk_lin2log()) */
 /* Convert input to a linear scale    */
-opus_int32 silk_log2lin(const opus_int32 inLog_Q7	/* I  input on log scale                                            */
+int32_t silk_log2lin(const int32_t inLog_Q7	/* I  input on log scale                                            */
     )
 {
-	opus_int32 out, frac_Q7;
+	int32_t out, frac_Q7;
 
 	if (inLog_Q7 < 0) {
 		return 0;

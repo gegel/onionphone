@@ -35,12 +35,12 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "tuning_parameters.h"
 
 /* Control internal sampling rate */
-opus_int silk_control_audio_bandwidth(silk_encoder_state * psEncC,	/* I/O  Pointer to Silk encoder state               */
+int silk_control_audio_bandwidth(silk_encoder_state * psEncC,	/* I/O  Pointer to Silk encoder state               */
 				      silk_EncControlStruct * encControl	/* I    Control structure                           */
     )
 {
-	opus_int fs_kHz;
-	opus_int32 fs_Hz;
+	int fs_kHz;
+	int32_t fs_Hz;
 
 	fs_kHz = psEncC->fs_kHz;
 	fs_Hz = silk_SMULBB(fs_kHz, 1000);

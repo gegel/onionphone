@@ -47,13 +47,13 @@ void silk_PLC_Reset(silk_decoder_state * psDec	/* I/O Decoder state        */
 
 void silk_PLC(silk_decoder_state * psDec,	/* I/O Decoder state        */
 	      silk_decoder_control * psDecCtrl,	/* I/O Decoder control      */
-	      opus_int16 frame[],	/* I/O  signal              */
-	      opus_int lost	/* I Loss flag              */
+	      int16_t frame[],	/* I/O  signal              */
+	      int lost	/* I Loss flag              */
     );
 
 void silk_PLC_glue_frames(silk_decoder_state * psDec,	/* I/O decoder state        */
-			  opus_int16 frame[],	/* I/O signal               */
-			  opus_int length	/* I length of signal       */
+			  int16_t frame[],	/* I/O signal               */
+			  int length	/* I length of signal       */
     );
 
 #endif

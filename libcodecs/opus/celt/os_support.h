@@ -37,7 +37,7 @@
 #include "custom_support.h"
 #endif
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "opus_defines.h"
 
 #include <string.h>

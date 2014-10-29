@@ -35,18 +35,18 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "resampler_private.h"
 
 /* Second order AR filter with single delay elements */
-void silk_resampler_private_AR2(opus_int32 S[],	/* I/O  State vector [ 2 ]          */
-				opus_int32 out_Q8[],	/* O    Output signal               */
-				const opus_int16 in[],	/* I    Input signal                */
-				const opus_int16 A_Q14[],	/* I    AR coefficients, Q14        */
-				opus_int32 len	/* I    Signal length               */
+void silk_resampler_private_AR2(int32_t S[],	/* I/O  State vector [ 2 ]          */
+				int32_t out_Q8[],	/* O    Output signal               */
+				const int16_t in[],	/* I    Input signal                */
+				const int16_t A_Q14[],	/* I    AR coefficients, Q14        */
+				int32_t len	/* I    Signal length               */
     )
 {
-	opus_int32 k;
-	opus_int32 out32;
+	int32_t k;
+	int32_t out32;
 
 	for (k = 0; k < len; k++) {
-		out32 = silk_ADD_LSHIFT32(S[0], (opus_int32) in[k], 8);
+		out32 = silk_ADD_LSHIFT32(S[0], (int32_t) in[k], 8);
 		out_Q8[k] = out32;
 		out32 = silk_LSHIFT(out32, 2);
 		S[0] = silk_SMLAWB(S[1], out32, A_Q14[0]);

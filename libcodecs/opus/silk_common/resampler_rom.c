@@ -39,10 +39,10 @@ POSSIBILITY OF SUCH DAMAGE.
 /* Matlab code for the notch filter coefficients: */
 /* B = [1, 0.147, 1];  A = [1, 0.107, 0.89]; G = 0.93; freqz(G * B, A, 2^14, 16e3); axis([0, 8000, -10, 1]) */
 /* fprintf('\t%6d, %6d, %6d, %6d\n', round(B(2)*2^16), round(-A(2)*2^16), round((1-A(3))*2^16), round(G*2^15)) */
-/* const opus_int16 silk_resampler_up2_hq_notch[ 4 ] = { 9634,  -7012,   7209,  30474 }; */
+/* const int16_t silk_resampler_up2_hq_notch[ 4 ] = { 9634,  -7012,   7209,  30474 }; */
 
 /* Tables with IIR and FIR coefficients for fractional downsamplers (123 Words) */
-silk_DWORD_ALIGN const opus_int16 silk_Resampler_3_4_COEFS[2 +
+silk_DWORD_ALIGN const int16_t silk_Resampler_3_4_COEFS[2 +
 							   3 *
 							   RESAMPLER_DOWN_ORDER_FIR0
 							   / 2] = {
@@ -52,7 +52,7 @@ silk_DWORD_ALIGN const opus_int16 silk_Resampler_3_4_COEFS[2 +
 	-19, -36, 102, -89, -24, 328, -951, 2568, 15909,
 };
 
-silk_DWORD_ALIGN const opus_int16 silk_Resampler_2_3_COEFS[2 +
+silk_DWORD_ALIGN const int16_t silk_Resampler_2_3_COEFS[2 +
 							   2 *
 							   RESAMPLER_DOWN_ORDER_FIR0
 							   / 2] = {
@@ -61,14 +61,14 @@ silk_DWORD_ALIGN const opus_int16 silk_Resampler_2_3_COEFS[2 +
 	12, 128, 18, -142, 288, -117, -865, 4123, 14459,
 };
 
-silk_DWORD_ALIGN const opus_int16 silk_Resampler_1_2_COEFS[2 +
+silk_DWORD_ALIGN const int16_t silk_Resampler_1_2_COEFS[2 +
 							   RESAMPLER_DOWN_ORDER_FIR1
 							   / 2] = {
 	616, -14323,
 	-10, 39, 58, -46, -84, 120, 184, -315, -541, 1284, 5380, 9024,
 };
 
-silk_DWORD_ALIGN const opus_int16 silk_Resampler_1_3_COEFS[2 +
+silk_DWORD_ALIGN const int16_t silk_Resampler_1_3_COEFS[2 +
 							   RESAMPLER_DOWN_ORDER_FIR2
 							   / 2] = {
 	16102, -15162,
@@ -76,7 +76,7 @@ silk_DWORD_ALIGN const opus_int16 silk_Resampler_1_3_COEFS[2 +
 	    2612, 3271,
 };
 
-silk_DWORD_ALIGN const opus_int16 silk_Resampler_1_4_COEFS[2 +
+silk_DWORD_ALIGN const int16_t silk_Resampler_1_4_COEFS[2 +
 							   RESAMPLER_DOWN_ORDER_FIR2
 							   / 2] = {
 	22500, -15099,
@@ -84,7 +84,7 @@ silk_DWORD_ALIGN const opus_int16 silk_Resampler_1_4_COEFS[2 +
 	    1288, 1464,
 };
 
-silk_DWORD_ALIGN const opus_int16 silk_Resampler_1_6_COEFS[2 +
+silk_DWORD_ALIGN const int16_t silk_Resampler_1_6_COEFS[2 +
 							   RESAMPLER_DOWN_ORDER_FIR2
 							   / 2] = {
 	27540, -15257,
@@ -92,14 +92,14 @@ silk_DWORD_ALIGN const opus_int16 silk_Resampler_1_6_COEFS[2 +
 	    429, 455,
 };
 
-silk_DWORD_ALIGN const opus_int16 silk_Resampler_2_3_COEFS_LQ[2 + 2 * 2] = {
+silk_DWORD_ALIGN const int16_t silk_Resampler_2_3_COEFS_LQ[2 + 2 * 2] = {
 	-2797, -6507,
 	4697, 10739,
 	1567, 8276,
 };
 
 /* Table with interplation fractions of 1/24, 3/24, 5/24, ... , 23/24 : 23/24 (46 Words) */
-silk_DWORD_ALIGN const opus_int16
+silk_DWORD_ALIGN const int16_t
     silk_resampler_frac_FIR_12[12][RESAMPLER_ORDER_FIR_12 / 2] = {
 	{189, -600, 617, 30567},
 	{117, -159, -1070, 29704},

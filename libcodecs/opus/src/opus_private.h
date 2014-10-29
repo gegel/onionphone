@@ -38,7 +38,7 @@ struct OpusRepacketizer {
 	unsigned char toc;
 	int nb_frames;
 	const unsigned char *frames[48];
-	opus_int16 len[48];
+	int16_t len[48];
 	int framesize;
 };
 
@@ -87,17 +87,17 @@ void downmix_float(const void *_x, opus_val32 * sub, int subframe, int offset,
 void downmix_int(const void *_x, opus_val32 * sub, int subframe, int offset,
 		 int c1, int c2, int C);
 
-int optimize_framesize(const opus_val16 * x, int len, int C, opus_int32 Fs,
+int optimize_framesize(const opus_val16 * x, int len, int C, int32_t Fs,
 		       int bitrate, opus_val16 tonality, float *mem,
 		       int buffering, downmix_func downmix);
 
 int encode_size(int size, unsigned char *data);
 
-opus_int32 frame_size_select(opus_int32 frame_size, int variable_duration,
-			     opus_int32 Fs);
+int32_t frame_size_select(int32_t frame_size, int variable_duration,
+			     int32_t Fs);
 
-opus_int32 compute_frame_size(const void *analysis_pcm, int frame_size,
-			      int variable_duration, int C, opus_int32 Fs,
+int32_t compute_frame_size(const void *analysis_pcm, int frame_size,
+			      int variable_duration, int C, int32_t Fs,
 			      int bitrate_bps, int delay_compensation,
 			      downmix_func downmix
 #ifndef DISABLE_FLOAT_API
@@ -105,17 +105,17 @@ opus_int32 compute_frame_size(const void *analysis_pcm, int frame_size,
 #endif
     );
 
-opus_int32 opus_encode_native(OpusEncoder * st, const opus_val16 * pcm,
+int32_t opus_encode_native(OpusEncoder * st, const opus_val16 * pcm,
 			      int frame_size, unsigned char *data,
-			      opus_int32 out_data_bytes, int lsb_depth,
+			      int32_t out_data_bytes, int lsb_depth,
 			      const void *analysis_pcm,
-			      opus_int32 analysis_size, int c1, int c2,
+			      int32_t analysis_size, int c1, int c2,
 			      int analysis_channels, downmix_func downmix);
 
 int opus_decode_native(OpusDecoder * st, const unsigned char *data,
-		       opus_int32 len, opus_val16 * pcm, int frame_size,
+		       int32_t len, opus_val16 * pcm, int frame_size,
 		       int decode_fec, int self_delimited,
-		       opus_int32 * packet_offset, int soft_clip);
+		       int32_t * packet_offset, int soft_clip);
 
 /* Make sure everything's aligned to sizeof(void *) bytes */
 static inline int align(int i)
@@ -123,16 +123,16 @@ static inline int align(int i)
 	return (i + (int)sizeof(void *) - 1) & -(int)sizeof(void *);
 }
 
-int opus_packet_parse_impl(const unsigned char *data, opus_int32 len,
+int opus_packet_parse_impl(const unsigned char *data, int32_t len,
 			   int self_delimited, unsigned char *out_toc,
-			   const unsigned char *frames[48], opus_int16 size[48],
-			   int *payload_offset, opus_int32 * packet_offset);
+			   const unsigned char *frames[48], int16_t size[48],
+			   int *payload_offset, int32_t * packet_offset);
 
-opus_int32 opus_repacketizer_out_range_impl(OpusRepacketizer * rp, int begin,
+int32_t opus_repacketizer_out_range_impl(OpusRepacketizer * rp, int begin,
 					    int end, unsigned char *data,
-					    opus_int32 maxlen,
+					    int32_t maxlen,
 					    int self_delimited, int pad);
 
-int pad_frame(unsigned char *data, opus_int32 len, opus_int32 new_len);
+int pad_frame(unsigned char *data, int32_t len, int32_t new_len);
 
 #endif				/* OPUS_PRIVATE_H */
