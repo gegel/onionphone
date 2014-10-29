@@ -262,9 +262,11 @@ void tonality_analysis(TonalityAnalysisState * tonal, AnalysisInfo * info_out,
 	float frame_noisiness;
 	const float pi4 = (float)(M_PI * M_PI * M_PI * M_PI);
 	float slope = 0;
-	float frame_stationarity;
 	float relativeE;
+#ifndef DISABLE_FLOAT_API
+	float frame_stationarity;
 	float frame_probs[2];
+#endif
 	float alpha, alphaE, alphaE2;
 	float frame_loudness;
 	float bandwidth_mask;
@@ -358,7 +360,9 @@ void tonality_analysis(TonalityAnalysisState * tonal, AnalysisInfo * info_out,
 	/*tw_sum = 0; */
 	info->activity = 0;
 	frame_noisiness = 0;
+#ifndef DISABLE_FLOAT_API
 	frame_stationarity = 0;
+#endif
 	if (!tonal->count) {
 		for (b = 0; b < NB_TBANDS; b++) {
 			tonal->lowE[b] = 1e10;
@@ -410,7 +414,9 @@ void tonality_analysis(TonalityAnalysisState * tonal, AnalysisInfo * info_out,
 		    MIN16(0.99f, L1 / (float)sqrt(1e-15 + NB_FRAMES * L2));
 		stationarity *= stationarity;
 		stationarity *= stationarity;
+#ifndef DISABLE_FLOAT_API
 		frame_stationarity += stationarity;
+#endif
 		/*band_tonality[b] = tE/(1e-15+E) */ ;
 		band_tonality[b] =
 		    MAX16(tE / (1e-15f + E),
@@ -486,7 +492,9 @@ void tonality_analysis(TonalityAnalysisState * tonal, AnalysisInfo * info_out,
 		BFCC[i] = sum;
 	}
 
+#ifndef DISABLE_FLOAT_API
 	frame_stationarity /= NB_TBANDS;
+#endif
 	relativeE /= NB_TBANDS;
 	if (tonal->count < 10)
 		relativeE = .5;
@@ -541,6 +549,7 @@ void tonality_analysis(TonalityAnalysisState * tonal, AnalysisInfo * info_out,
 		tonal->mem[i + 8] = tonal->mem[i];
 		tonal->mem[i] = BFCC[i];
 	}
+#ifndef DISABLE_FLOAT_API
 	for (i = 0; i < 9; i++)
 		features[11 + i] = (float)sqrt(tonal->std[i]);
 	features[20] = info->tonality;
@@ -549,7 +558,6 @@ void tonality_analysis(TonalityAnalysisState * tonal, AnalysisInfo * info_out,
 	features[23] = info->tonality_slope;
 	features[24] = tonal->lowECount;
 
-#ifndef DISABLE_FLOAT_API
 	mlp_process(&net, features, frame_probs);
 	frame_probs[0] = .5f * (frame_probs[0] + 1);
 	/* Curve fitting between the MLP probability and the actual probability */
@@ -640,9 +648,6 @@ void tonality_analysis(TonalityAnalysisState * tonal, AnalysisInfo * info_out,
 			tonal->pspeech[i] *= psum;
 			tonal->pmusic[i] *= psum;
 		}
-		psum = tonal->pmusic[0];
-		for (i = 1; i < DETECT_SIZE; i++)
-			psum += tonal->pspeech[i];
 
 		/* Estimate our confidence in the speech/music decisions */
 		if (frame_probs[1] > .75) {
