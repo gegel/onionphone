@@ -120,9 +120,9 @@ SKP_int SKP_Silk_LPC_inverse_pred_gain_Q13(   /* O:   Returns 1 if unstable, oth
     const SKP_int       order                   /* I:   Prediction order                            */
 )
 {
-    SKP_int   k, n, headrm;
-    SKP_int32 rc_Q31, rc_mult1_Q30, rc_mult2_Q16;
-    SKP_int32 Atmp_QA[ 2 ][ SigProc_MAX_ORDER_LPC ], tmp_QA;
+    SKP_int   k, n, headrm = 0;
+    SKP_int32 rc_Q31 = 0, rc_mult1_Q30 = 0, rc_mult2_Q16 = 0;
+    SKP_int32 Atmp_QA[ 2 ][ SigProc_MAX_ORDER_LPC ], tmp_QA = 0;
     SKP_int32 *Aold_QA, *Anew_QA;
 
     Anew_QA = Atmp_QA[ order & 1 ];

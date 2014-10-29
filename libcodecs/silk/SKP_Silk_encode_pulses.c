@@ -25,6 +25,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
+
 #include "SKP_Silk_main.h"
 
 /*********************************************/
@@ -72,6 +74,7 @@ void SKP_Silk_encode_pulses(
     const SKP_int16 *nBits_ptr;
 
     SKP_memset( pulses_comb, 0, 8 * sizeof( SKP_int ) ); // Fixing Valgrind reported problem
+    memzero(abs_pulses, MAX_FRAME_LENGTH * sizeof(SKP_int));
 
     /****************************/
     /* Prepare for shell coding */

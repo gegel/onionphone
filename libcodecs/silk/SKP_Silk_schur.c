@@ -33,6 +33,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Copyright 2008 (c), Skype Limited                                    *
  * Date: 080103                                                         *
  *                                                                      */
+
+#include <ophtools.h>
+
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Faster than schur64(), but much less accurate.                       */
@@ -46,6 +49,8 @@ void SKP_Silk_schur(
     SKP_int        k, n, lz;
     SKP_int32    C[ SigProc_MAX_ORDER_LPC + 1 ][ 2 ];
     SKP_int32    Ctmp1, Ctmp2, rc_tmp_Q15;
+
+    memzero(C, 2 * (SigProc_MAX_ORDER_LPC + 1) * sizeof(SKP_int32));
 
     /* Get number of leading zeros */
     lz = SKP_Silk_CLZ32( c[ 0 ] );

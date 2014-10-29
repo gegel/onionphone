@@ -25,6 +25,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
+
 #include "SKP_Silk_main.h"
 
 typedef struct {
@@ -331,6 +333,8 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer_del_dec(
     NSQ_sample_struct  psSampleState[ DEL_DEC_STATES_MAX ][ 2 ];
     NSQ_del_dec_struct *psDD;
     NSQ_sample_struct  *psSS;
+
+    memzero(psSampleState, 2 * DEL_DEC_STATES_MAX * sizeof(NSQ_sample_struct));
 
     shp_lag_ptr  = &NSQ->sLTP_shp_Q10[ NSQ->sLTP_shp_buf_idx - lag + HARM_SHAPE_FIR_TAPS / 2 ];
     pred_lag_ptr = &sLTP_Q16[ NSQ->sLTP_buf_idx - lag + LTP_ORDER / 2 ];

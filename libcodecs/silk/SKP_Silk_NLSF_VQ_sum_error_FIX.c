@@ -25,6 +25,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
+
 #include "SKP_Silk_main_FIX.h"
 
 /* Compute weighted quantization errors for an LPC_order element input vector, over one codebook stage */
@@ -45,6 +47,8 @@ void SKP_Silk_NLSF_VQ_sum_error_FIX(
 
     SKP_assert( LPC_order <= 16 );
     SKP_assert( ( LPC_order & 1 ) == 0 );
+
+    memzero(Wcpy_Q6, (MAX_LPC_ORDER / 2) * sizeof(SKP_int32));
 
     /* Copy to local stack and pack two weights per int32 */
     for( m = 0; m < SKP_RSHIFT( LPC_order, 1 ); m++ ) {

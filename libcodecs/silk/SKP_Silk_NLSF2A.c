@@ -31,6 +31,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* therefore the result is not accurate LSFs, but the two       */
 /* function are accurate inverses of each other                 */
 
+#include <ophtools.h>
+
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* helper function for NLSF2A(..) */
@@ -73,6 +75,9 @@ void SKP_Silk_NLSF2A(
     SKP_int32 maxabs, absval, idx=0, sc_Q16; 
 
     SKP_assert(LSF_COS_TAB_SZ_FIX == 128);
+
+    memzero(a_int32, SigProc_MAX_ORDER_LPC * sizeof(SKP_int32));
+    memzero(cos_LSF_Q20, SigProc_MAX_ORDER_LPC * sizeof(SKP_int32));
 
     /* convert LSFs to 2*cos(LSF(i)), using piecewise linear curve from table */
     for( k = 0; k < d; k++ ) {

@@ -33,6 +33,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Copyright 2006 (c), Skype Limited                                    *
  * Date: 060221                                                         *
  *                                                                      */
+
+#include <ophtools.h>
+
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Variable order MA filter */
@@ -187,6 +190,8 @@ void SKP_Silk_LPC_analysis_filter(
     SKP_int16 SA, SB;
     /* Order must be even */
     SKP_assert( 2 * Order_half == Order );
+
+    memzero(B_align_Q12, (SigProc_MAX_ORDER_LPC >> 1) * sizeof(SKP_int32));
 
     /* Combine two A_Q12 values and ensure 32-bit alignment */
     for( k = 0; k < Order_half; k++ ) {

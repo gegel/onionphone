@@ -25,6 +25,8 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
+
 #include "SKP_Silk_main_FIX.h"
 
 /*****************************/
@@ -79,6 +81,8 @@ void SKP_Silk_solve_LDL_FIX(
     inv_D_t   inv_D[  MAX_MATRIX_SIZE ];
 
     SKP_assert( M <= MAX_MATRIX_SIZE );
+
+    memzero(Y, MAX_MATRIX_SIZE * sizeof(SKP_int32));
 
     /***************************************************
     Factorize A by LDL such that A = L*D*L',

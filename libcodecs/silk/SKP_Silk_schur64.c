@@ -34,6 +34,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Copyright 2008 (c), Skype Limited                                    *
  * Date: 080103                                                         *
  *                                                                      */
+
+#include <ophtools.h>
+
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Slower than schur(), but more accurate.                              */
@@ -47,6 +50,8 @@ SKP_int32 SKP_Silk_schur64(                    /* O:    Returns residual energy 
     SKP_int   k, n;
     SKP_int32 C[ SigProc_MAX_ORDER_LPC + 1 ][ 2 ];
     SKP_int32 Ctmp1_Q30, Ctmp2_Q30, rc_tmp_Q31;
+
+    memzero(C, 2 * (SigProc_MAX_ORDER_LPC + 1) * sizeof(SKP_int32));
 
     /* Check for invalid input */
     if( c[ 0 ] <= 0 ) {

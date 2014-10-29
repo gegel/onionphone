@@ -35,6 +35,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Date: 100105                                                         *
  */
 
+#include <ophtools.h>
+
 #include "SKP_Silk_SigProc_FIX.h"
 
 #define MAX_FRAME_SIZE              544 // subfr_length * nb_subfr = ( 0.005 * 24000 + 16 ) * 4 = 544
@@ -71,6 +73,8 @@ void SKP_Silk_burg_modified(
     SKP_assert( subfr_length * nb_subfr <= MAX_FRAME_SIZE );
     SKP_assert( nb_subfr <= MAX_NB_SUBFR );
 
+    memzero(Af_QA, SigProc_MAX_ORDER_LPC * sizeof(SKP_int32));
+    memzero(CAf, (SigProc_MAX_ORDER_LPC + 1) * sizeof(SKP_int32));
 
     /* Compute autocorrelations, added over subframes */
     SKP_Silk_sum_sqr_shift( &C0, &rshifts, x, nb_subfr * subfr_length );
