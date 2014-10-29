@@ -39,6 +39,7 @@
 #include "arch.h"
 #include "mathops.h"
 #include "rate.h"
+#include <ophtools.h>
 
 #ifdef FIXED_POINT
 /* Mean energy in each band quantized in Q4 */
@@ -286,6 +287,8 @@ void quant_coarse_energy(const CELTMode * m, int start, int end, int effEnd,
 	opus_val32 new_distortion;
 	opus_val16 oldEBands_intra[C * m->nbEBands];
 	opus_val16 error_intra[C * m->nbEBands];
+
+	memzero(error_intra, (C * m->nbEBands) * sizeof(opus_val16));
 
 	intra = force_intra || (!two_pass
 				&& *delayedIntra > 2 * C * (end - start)

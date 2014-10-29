@@ -666,14 +666,13 @@ static inline void uprev(uint32_t * _ui, unsigned _n, uint32_t _ui0)
   _u: On exit, _u[i] contains U(_n,i) for i in [0..._k+1].*/
 static uint32_t ncwrs_urow(unsigned _n, unsigned _k, uint32_t * _u)
 {
-	uint32_t um2;
 	unsigned len;
 	unsigned k;
 	len = _k + 2;
 	/*We require storage at least 3 values (e.g., _k>0). */
 	celt_assert(len >= 3);
 	_u[0] = 0;
-	_u[1] = um2 = 1;
+	_u[1] = 1;
 	/*If _n==0, _u[0] should be 1 and the rest should be 0. */
 	/*If _n==1, _u[i] should be 1 for i>1. */
 	celt_assert(_n >= 2);

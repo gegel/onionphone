@@ -240,7 +240,9 @@ static void compute_allocation_table(CELTMode * mode)
 
 CELTMode *opus_custom_mode_create(int32_t Fs, int frame_size, int *error)
 {
+#ifndef CUSTOM_MODES_ONLY
 	int i;
+#endif
 #ifdef CUSTOM_MODES
 	CELTMode *mode = NULL;
 	int res;

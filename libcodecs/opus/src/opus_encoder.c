@@ -32,6 +32,7 @@
 #endif
 
 #include <stdarg.h>
+#include <ophtools.h>
 #include "celt.h"
 #include "entenc.h"
 #include "modes.h"
@@ -872,8 +873,7 @@ int32_t compute_frame_size(const void *analysis_pcm, int frame_size,
 #ifndef DISABLE_FLOAT_API
 	if (variable_duration == OPUS_FRAMESIZE_VARIABLE
 	    && frame_size >= Fs / 200) {
-		int LM = 3;
-		LM = optimize_framesize(analysis_pcm, frame_size, C, Fs,
+		int LM = optimize_framesize(analysis_pcm, frame_size, C, Fs,
 					bitrate_bps, 0, subframe_mem,
 					delay_compensation, downmix);
 		while ((Fs / 400 << LM) > frame_size)
@@ -969,7 +969,7 @@ opus_val16 compute_stereo_width(const opus_val16 * pcm, int frame_size,
 			  mem->smoothed_width);
 	} else {
 		width = 0;
-		corr = Q15ONE;
+		/*corr = Q15ONE;*/
 		ldiff = 0;
 	}
 	/*printf("%f %f %f %f %f ", corr/(float)Q15ONE, ldiff/(float)Q15ONE, width/(float)Q15ONE, mem->smoothed_width/(float)Q15ONE, mem->max_follower/(float)Q15ONE); */
@@ -1009,11 +1009,15 @@ int32_t opus_encode_native(OpusEncoder * st, const opus_val16 * pcm,
 	opus_val16 HB_gain;
 	int32_t max_data_bytes;	/* Max number of bytes we're allowed to use */
 	int total_buffer;
+#ifndef FUZZING
 	opus_val16 stereo_width;
+#endif
 	const CELTMode *celt_mode;
 	AnalysisInfo analysis_info;
+#ifndef DISABLE_FLOAT_API
 	int analysis_read_pos_bak = -1;
 	int analysis_read_subframe_bak = -1;
+#endif
 
 	max_data_bytes = IMIN(1276, out_data_bytes);
 
@@ -1080,11 +1084,15 @@ int32_t opus_encode_native(OpusEncoder * st, const opus_val16 * pcm,
 #endif
 
 	if (st->channels == 2 && st->force_channels != 1)
+#ifndef FUZZING
 		stereo_width =
+#endif
 		    compute_stereo_width(pcm, frame_size, st->Fs,
 					 &st->width_mem);
+#ifndef FUZZING
 	else
 		stereo_width = 0;
+#endif
 	total_buffer = delay_compensation;
 	st->bitrate_bps =
 	    user_bitrate_to_bitrate(st, frame_size, max_data_bytes);
@@ -1444,6 +1452,7 @@ int32_t opus_encode_native(OpusEncoder * st, const opus_val16 * pcm,
 		bytes_per_frame = IMIN(1276, (out_data_bytes - 3) / nb_frames);
 
 		unsigned char tmp_data[nb_frames * bytes_per_frame];
+		memzero(tmp_data, nb_frames * bytes_per_frame);
 
 		OpusRepacketizer rp[1];
 		opus_repacketizer_init(rp);
