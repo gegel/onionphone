@@ -405,9 +405,8 @@ int silk_encode_frame_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Pointer to Sil
 	}
 
 	/* Update input buffer */
-	silk_memmove(psEnc->x_buf, &psEnc->x_buf[psEnc->sCmn.frame_length],
-		     (psEnc->sCmn.ltp_mem_length +
-		      LA_SHAPE_MS * psEnc->sCmn.fs_kHz) * sizeof(int16_t));
+	memmove(psEnc->x_buf, &psEnc->x_buf[psEnc->sCmn.frame_length],
+		(psEnc->sCmn.ltp_mem_length + LA_SHAPE_MS * psEnc->sCmn.fs_kHz) * sizeof(int16_t));
 
 	/* Exit without entropy coding */
 	if (psEnc->sCmn.prefillFlag) {

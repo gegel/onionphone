@@ -374,9 +374,9 @@ void silk_NSQ_del_dec(const silk_encoder_state * psEncC,	/* I/O  Encoder State  
 
 	/* Save quantized speech signal */
 	/* DEBUG_STORE_DATA( enc.pcm, &NSQ->xq[psEncC->ltp_mem_length], psEncC->frame_length * sizeof( int16_t ) ) */
-	silk_memmove(NSQ->xq, &NSQ->xq[psEncC->frame_length],
+	memmove(NSQ->xq, &NSQ->xq[psEncC->frame_length],
 		     psEncC->ltp_mem_length * sizeof(int16_t));
-	silk_memmove(NSQ->sLTP_shp_Q14,
+	memmove(NSQ->sLTP_shp_Q14,
 		     &NSQ->sLTP_shp_Q14[psEncC->frame_length],
 		     psEncC->ltp_mem_length * sizeof(int32_t));
 

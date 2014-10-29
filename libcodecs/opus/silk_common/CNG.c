@@ -118,10 +118,9 @@ void silk_CNG(silk_decoder_state * psDec,	/* I/O  Decoder state                 
 			}
 		}
 		/* Update CNG excitation buffer with excitation from this subframe */
-		silk_memmove(&psCNG->CNG_exc_buf_Q14[psDec->subfr_length],
-			     psCNG->CNG_exc_buf_Q14,
-			     (psDec->nb_subfr -
-			      1) * psDec->subfr_length * sizeof(int32_t));
+		memmove(&psCNG->CNG_exc_buf_Q14[psDec->subfr_length],
+			psCNG->CNG_exc_buf_Q14,
+			(psDec->nb_subfr - 1) * psDec->subfr_length * sizeof(int32_t));
 		silk_memcpy(psCNG->CNG_exc_buf_Q14,
 			    &psDec->exc_Q14[subfr * psDec->subfr_length],
 			    psDec->subfr_length * sizeof(int32_t));
