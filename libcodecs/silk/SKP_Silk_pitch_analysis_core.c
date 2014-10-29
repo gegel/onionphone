@@ -232,8 +232,6 @@ SKP_int SKP_Silk_pitch_analysis_core(  /* O    Voicing estimate: 0 voiced, 1 unv
         SKP_assert( basis_ptr >= signal_4kHz );
         SKP_assert( basis_ptr + sf_length_8kHz <= signal_4kHz + frame_length_4kHz );
 
-        normalizer = 0;
-        cross_corr = 0;
         /* Calculate first vector products before loop */
         cross_corr = SKP_Silk_inner_prod_aligned( target_ptr, basis_ptr, sf_length_8kHz );
         normalizer = SKP_Silk_inner_prod_aligned( basis_ptr,  basis_ptr, sf_length_8kHz );

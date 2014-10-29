@@ -153,8 +153,6 @@ void SKP_Silk_NSQ(
     }
 
     /* Save scalars for this layer */
-    NSQ->sLF_AR_shp_Q12             = NSQ->sLF_AR_shp_Q12;
-    NSQ->prev_inv_gain_Q16          = NSQ->prev_inv_gain_Q16;
     NSQ->lagPrev                        = psEncCtrlC->pitchL[ NB_SUBFR - 1 ];
     /* Save quantized speech and noise shaping signals */
     SKP_memcpy( NSQ->xq,           &NSQ->xq[           psEncC->frame_length ], psEncC->frame_length * sizeof( SKP_int16 ) );

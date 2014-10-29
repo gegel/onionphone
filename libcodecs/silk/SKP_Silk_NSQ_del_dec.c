@@ -272,14 +272,12 @@ void SKP_Silk_NSQ_del_dec(
         pxq[ i - decisionDelay ] = ( SKP_int16 )SKP_SAT16( SKP_RSHIFT_ROUND( 
             SKP_SMULWW( psDD->Xq_Q10[ last_smple_idx ], psDD->Gain_Q16[ last_smple_idx ] ), 10 ) );
         NSQ->sLTP_shp_Q10[ NSQ->sLTP_shp_buf_idx - decisionDelay + i ] = psDD->Shape_Q10[ last_smple_idx ];
-        sLTP_Q16[          NSQ->sLTP_buf_idx     - decisionDelay + i ] = psDD->Pred_Q16[  last_smple_idx ];
 
     }
     SKP_memcpy( NSQ->sLPC_Q14, &psDD->sLPC_Q14[ psEncC->subfr_length ], NSQ_LPC_BUF_LENGTH * sizeof( SKP_int32 ) );
 
     /* Update states */
     NSQ->sLF_AR_shp_Q12    = psDD->LF_AR_Q12;
-    NSQ->prev_inv_gain_Q16 = NSQ->prev_inv_gain_Q16;
     NSQ->lagPrev           = psEncCtrlC->pitchL[ NB_SUBFR - 1 ];
 
     /* Save quantized speech and noise shaping signals */

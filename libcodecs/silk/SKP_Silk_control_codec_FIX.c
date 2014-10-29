@@ -192,7 +192,7 @@ SKP_int SKP_Silk_control_encoder_FIX(
                     
                         /* set the first frame to zero, no performance difference was noticed though */
                         SKP_memset( x_bufout, 0, 240 * sizeof( SKP_int16 ) );
-                        SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                        SKP_memcpy( psEnc->x_buf, x_bufout, ( (2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX) / 4 ) * sizeof( SKP_int16 ) );
                     }
 #if SWITCH_TRANSITION_FILTERING
                     psEnc->sCmn.sLP.transition_frame_no = 0; /* Transition phase complete */
@@ -317,7 +317,7 @@ SKP_int SKP_Silk_control_encoder_FIX(
 #endif
                         /* set the first frame to zero, no performance difference was noticed though */
                         SKP_memset( x_bufout, 0, 160 * sizeof( SKP_int16 ) );
-                        SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX ) * sizeof( SKP_int16 ) );
+                        SKP_memcpy( psEnc->x_buf, x_bufout, ( 2 * (2 * MAX_FRAME_LENGTH + LA_SHAPE_MAX) /3 ) * sizeof( SKP_int16 ) );
                     }
 #if SWITCH_TRANSITION_FILTERING
                     psEnc->sCmn.sLP.transition_frame_no = 0; /* Transition phase complete */
