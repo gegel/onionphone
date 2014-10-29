@@ -27,6 +27,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -106,6 +108,8 @@ void silk_prefilter_FLP(silk_encoder_state_FLP * psEnc,	/* I/O  Encoder state FL
 	silk_float *pxw;
 	silk_float HarmShapeFIR[3];
 	silk_float st_res[MAX_SUB_FRAME_LENGTH + MAX_LPC_ORDER];
+
+	memzero(st_res, (MAX_SUB_FRAME_LENGTH + MAX_LPC_ORDER) * sizeof(silk_float));
 
 	/* Set up pointers */
 	px = x;
