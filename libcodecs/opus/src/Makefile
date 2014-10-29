@@ -13,7 +13,6 @@ EXTRADEFS = -DHAVE_CONFIG_H -D$(ARITHMETICS)_POINT
 CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = opus.o \
-      opus_compare.o \
       opus_decoder.o \
       opus_encoder.o \
       opus_multistream.o \
