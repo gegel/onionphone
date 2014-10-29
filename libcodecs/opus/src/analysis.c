@@ -589,7 +589,6 @@ void tonality_analysis(TonalityAnalysisState * tonal, AnalysisInfo * info_out,
 
 		/* One transition every 3 minutes of active audio */
 		tau = .00005f * frame_probs[1];
-		beta = .05f;
 		if (1) {
 			/* Adapt beta based on how "unexpected" the new prob is */
 			float p, q;

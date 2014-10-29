@@ -708,6 +708,9 @@ int optimize_framesize(const opus_val16 * x, int len, int C, int32_t Fs,
 
 	subframe = Fs / 400;
 	opus_val32 sub[subframe];
+
+	memzero(sub, subframe * sizeof(opus_val32));
+
 	e[0] = mem[0];
 	e_1[0] = 1.f / (EPSILON + mem[0]);
 	if (buffering) {
@@ -969,12 +972,12 @@ opus_val16 compute_stereo_width(const opus_val16 * pcm, int frame_size,
 		mem->max_follower =
 		    MAX16(mem->max_follower - QCONST16(.02f, 15) / frame_rate,
 			  mem->smoothed_width);
-	} else {
+	} /* else {
 		width = 0;
-		/*corr = Q15ONE;*/
+		corr = Q15ONE;
 		ldiff = 0;
 	}
-	/*printf("%f %f %f %f %f ", corr/(float)Q15ONE, ldiff/(float)Q15ONE, width/(float)Q15ONE, mem->smoothed_width/(float)Q15ONE, mem->max_follower/(float)Q15ONE); */
+	printf("%f %f %f %f %f ", corr/(float)Q15ONE, ldiff/(float)Q15ONE, width/(float)Q15ONE, mem->smoothed_width/(float)Q15ONE, mem->max_follower/(float)Q15ONE); */
 	return EXTRACT16(MIN32(Q15ONE, 20 * mem->max_follower));
 }
 
