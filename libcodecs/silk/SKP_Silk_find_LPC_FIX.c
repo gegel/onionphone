@@ -78,7 +78,7 @@ void SKP_Silk_find_LPC_FIX(int NLSF_Q15[],	/* O    NLSFs                        
 				    res_nrg - SKP_RSHIFT(res_tmp_nrg, shift);
 			}
 		} else {
-			SKP_assert(shift > -32);
+			assert(shift > -32);
 			res_nrg = SKP_RSHIFT(res_nrg, -shift) - res_tmp_nrg;
 			res_nrg_Q = res_tmp_nrg_Q;
 		}

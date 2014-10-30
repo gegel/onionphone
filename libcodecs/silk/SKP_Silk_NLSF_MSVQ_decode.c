@@ -41,7 +41,7 @@ void SKP_Silk_NLSF_MSVQ_decode(int *pNLSF_Q15,	/* O    Pointer to decoded output
 	int i;
 
 	/* Check that each index is within valid range */
-	SKP_assert(0 <= NLSFIndices[0]
+	assert(0 <= NLSFIndices[0]
 		   && NLSFIndices[0] < psNLSF_CB->CBStages[0].nVectors);
 
 	/* Point to the first vector element */
@@ -56,7 +56,7 @@ void SKP_Silk_NLSF_MSVQ_decode(int *pNLSF_Q15,	/* O    Pointer to decoded output
 
 	for (s = 1; s < psNLSF_CB->nStages; s++) {
 		/* Check that each index is within valid range */
-		SKP_assert(0 <= NLSFIndices[s]
+		assert(0 <= NLSFIndices[s]
 			   && NLSFIndices[s] < psNLSF_CB->CBStages[s].nVectors);
 
 		if (LPC_order == 16) {

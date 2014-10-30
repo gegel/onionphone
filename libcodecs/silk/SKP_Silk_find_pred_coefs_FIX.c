@@ -64,7 +64,7 @@ void SKP_Silk_find_pred_coefs_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  en
 #endif
 	for (i = 0; i < NB_SUBFR; i++) {
 		/* Divide to Q16 */
-		SKP_assert(psEncCtrl->Gains_Q16[i] > 0);
+		assert(psEncCtrl->Gains_Q16[i] > 0);
 #if VARQ
 		/* Invert and normalize gains, and ensure that maximum invGains_Q16 is within range of a 16 bit int */
 		invGains_Q16[i] =
@@ -80,7 +80,7 @@ void SKP_Silk_find_pred_coefs_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  en
 		invGains_Q16[i] = SKP_max(invGains_Q16[i], 363);
 
 		/* Square the inverted gains */
-		SKP_assert(invGains_Q16[i] == SKP_SAT16(invGains_Q16[i]));
+		assert(invGains_Q16[i] == SKP_SAT16(invGains_Q16[i]));
 		tmp = SKP_SMULWB(invGains_Q16[i], invGains_Q16[i]);
 		Wght_Q15[i] = SKP_RSHIFT(tmp, 1);
 
@@ -93,7 +93,7 @@ void SKP_Silk_find_pred_coefs_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  en
 	/**********/
 		/* VOICED */
 	/**********/
-		SKP_assert(psEnc->sCmn.frame_length -
+		assert(psEnc->sCmn.frame_length -
 			   psEnc->sCmn.predictLPCOrder >=
 			   psEncCtrl->sCmn.pitchL[0] + LTP_ORDER / 2);
 

@@ -100,9 +100,9 @@ int SKP_Silk_VAD_GetSA_Q8(	/* O    Return value, 0 if success      */
 	int ret = 0;
 
 	/* Safety checks */
-	SKP_assert(VAD_N_BANDS == 4);
-	SKP_assert(MAX_FRAME_LENGTH >= framelength);
-	SKP_assert(framelength <= 512);
+	assert(VAD_N_BANDS == 4);
+	assert(MAX_FRAME_LENGTH >= framelength);
+	assert(framelength <= 512);
 
     /***********************/
 	/* Filter and Decimate */
@@ -165,7 +165,7 @@ int SKP_Silk_VAD_GetSA_Q8(	/* O    Return value, 0 if success      */
 				    SKP_SMLABB(sumSquared, x_tmp, x_tmp);
 
 				/* Safety check */
-				SKP_assert(sumSquared >= 0);
+				assert(sumSquared >= 0);
 			}
 
 			/* add/saturate summed energy of current subframe */
@@ -320,15 +320,15 @@ void SKP_Silk_VAD_GetNoiseLevels(const int32_t pX[VAD_N_BANDS],	/* I    subband 
 	for (k = 0; k < VAD_N_BANDS; k++) {
 		/* Get old noise level estimate for current band */
 		nl = psSilk_VAD->NL[k];
-		SKP_assert(nl >= 0);
+		assert(nl >= 0);
 
 		/* Add bias */
 		nrg = SKP_ADD_POS_SAT32(pX[k], psSilk_VAD->NoiseLevelBias[k]);
-		SKP_assert(nrg > 0);
+		assert(nrg > 0);
 
 		/* Invert energies */
 		inv_nrg = SKP_DIV32(int32_t_MAX, nrg);
-		SKP_assert(inv_nrg >= 0);
+		assert(inv_nrg >= 0);
 
 		/* Less update when subband energy is high */
 		if (nrg > SKP_LSHIFT(nl, 3)) {
@@ -348,11 +348,11 @@ void SKP_Silk_VAD_GetNoiseLevels(const int32_t pX[VAD_N_BANDS],	/* I    subband 
 		psSilk_VAD->inv_NL[k] =
 		    SKP_SMLAWB(psSilk_VAD->inv_NL[k],
 			       inv_nrg - psSilk_VAD->inv_NL[k], coef);
-		SKP_assert(psSilk_VAD->inv_NL[k] >= 0);
+		assert(psSilk_VAD->inv_NL[k] >= 0);
 
 		/* Compute noise level by inverting again */
 		nl = SKP_DIV32(int32_t_MAX, psSilk_VAD->inv_NL[k]);
-		SKP_assert(nl >= 0);
+		assert(nl >= 0);
 
 		/* Limit noise levels (guarantee 7 bits of head room) */
 		nl = SKP_min(nl, 0x00FFFFFF);

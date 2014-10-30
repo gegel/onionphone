@@ -191,7 +191,7 @@ void SKP_Silk_LPC_analysis_filter(const int16_t * in,	/* I:   Input signal      
 	int32_t Btmp, B_align_Q12[SigProc_MAX_ORDER_LPC >> 1], out32_Q12, out32;
 	int16_t SA, SB;
 	/* Order must be even */
-	SKP_assert(2 * Order_half == Order);
+	assert(2 * Order_half == Order);
 
 	memzero(B_align_Q12, (SigProc_MAX_ORDER_LPC >> 1) * sizeof(int32_t));
 

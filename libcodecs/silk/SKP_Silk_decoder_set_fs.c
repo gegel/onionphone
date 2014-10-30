@@ -74,11 +74,11 @@ void SKP_Silk_decoder_set_fs(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder sta
 			psDec->HP_B = SKP_Silk_Dec_B_HP_8;
 		} else {
 			/* unsupported sampling rate */
-			SKP_assert(0);
+			assert(0);
 		}
 	}
 
 	/* Check that settings are valid */
-	SKP_assert(psDec->frame_length > 0
+	assert(psDec->frame_length > 0
 		   && psDec->frame_length <= MAX_FRAME_LENGTH);
 }

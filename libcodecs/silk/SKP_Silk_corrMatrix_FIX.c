@@ -62,7 +62,7 @@ void SKP_Silk_corrVector_FIX(const int16_t * x,	/* I    x vector [L + order - 1]
 			ptr1--;	/* Go to next column of X */
 		}
 	} else {
-		SKP_assert(rshifts == 0);
+		assert(rshifts == 0);
 		for (lag = 0; lag < order; lag++) {
 			Xt[lag] = SKP_Silk_inner_prod_aligned(ptr1, ptr2, L);	/* X[:,lag]'*t */
 			ptr1--;	/* Go to next column of X */

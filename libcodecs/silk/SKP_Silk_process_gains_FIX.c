@@ -88,7 +88,7 @@ void SKP_Silk_process_gains_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Enco
 			/* recalculate with higher precision */
 			gain_squared =
 			    SKP_SMLAWW(SKP_LSHIFT(ResNrgPart, 16), gain, gain);
-			SKP_assert(gain_squared > 0);
+			assert(gain_squared > 0);
 			gain = SKP_Silk_SQRT_APPROX(gain_squared);	/* Q8   */
 			psEncCtrl->Gains_Q16[k] = SKP_LSHIFT_SAT32(gain, 8);	/* Q16  */
 		} else {
@@ -133,7 +133,7 @@ void SKP_Silk_process_gains_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Enco
 		    - SKP_SMULWB(SKP_FIX_CONST(0.1, 12),
 				 psEncCtrl->coding_quality_Q14);
 	}
-	SKP_assert(psEncCtrl->Lambda_Q10 >= 0);
-	SKP_assert(psEncCtrl->Lambda_Q10 < SKP_FIX_CONST(2, 10));
+	assert(psEncCtrl->Lambda_Q10 >= 0);
+	assert(psEncCtrl->Lambda_Q10 < SKP_FIX_CONST(2, 10));
 
 }

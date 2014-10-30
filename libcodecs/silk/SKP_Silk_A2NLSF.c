@@ -222,8 +222,8 @@ void SKP_Silk_A2NLSF(int *NLSF,	/* O    Normalized Line Spectral Frequencies, Q1
 					    int16_t_MAX);
 #endif
 
-			SKP_assert(NLSF[root_ix] >= 0);
-			SKP_assert(NLSF[root_ix] <= 32767);
+			assert(NLSF[root_ix] >= 0);
+			assert(NLSF[root_ix] <= 32767);
 
 			root_ix++;	/* Next root */
 			if (root_ix >= d) {

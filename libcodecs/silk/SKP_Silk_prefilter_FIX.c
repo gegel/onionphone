@@ -73,7 +73,7 @@ void SKP_Silk_prefilter_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Encoder 
 		HarmShapeGain_Q12 =
 		    SKP_SMULWB(psEncCtrl->HarmShapeGain_Q14[k],
 			       16384 - psEncCtrl->HarmBoost_Q14[k]);
-		SKP_assert(HarmShapeGain_Q12 >= 0);
+		assert(HarmShapeGain_Q12 >= 0);
 		HarmShapeFIRPacked_Q12 = SKP_RSHIFT(HarmShapeGain_Q12, 2);
 		HarmShapeFIRPacked_Q12 |=
 		    SKP_LSHIFT((int32_t) SKP_RSHIFT(HarmShapeGain_Q12, 1), 16);
@@ -150,7 +150,7 @@ SKP_INLINE void SKP_Silk_prefilt_FIX(SKP_Silk_prefilter_state_FIX * P,	/* I/O st
 	for (i = 0; i < length; i++) {
 		if (lag > 0) {
 			/* unrolled loop */
-			SKP_assert(HARM_SHAPE_FIR_TAPS == 3);
+			assert(HARM_SHAPE_FIR_TAPS == 3);
 			idx = lag + LTP_shp_buf_idx;
 			n_LTP_Q12 =
 			    SKP_SMULBB(LTP_shp_buf

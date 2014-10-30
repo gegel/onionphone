@@ -69,7 +69,7 @@ void SKP_Silk_resample_2_3_coarsest(int16_t * out,	/* O:   Output signal        
 	frameLenOut = SKP_SMULWB(SKP_LSHIFT((int32_t) frameLenIn, 1), 21846);	// 21846_Q15 = (2/3)_Q0 rounded _up_
 	index_Q16 = 0;
 
-	SKP_assert(frameLenIn == ((frameLenOut * 3) / 2));
+	assert(frameLenIn == ((frameLenOut * 3) / 2));
 
 	/* Interpolate */
 	for (n = frameLenOut; n > 0; n--) {
@@ -115,7 +115,7 @@ void SKP_Silk_resample_2_3_coarsest(int16_t * out,	/* O:   Output signal        
 				     "=r"(interpol_ptr), "=r"(in_ptr)
 				     :"3"(interpol_ptr), "4"(in_ptr));
 #else
-		SKP_assert(SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS == 10);
+		assert(SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS == 10);
 		tmp = SKP_SMULBB(interpol_ptr[0], in_ptr[0]);
 		tmp = SKP_SMLABB(tmp, interpol_ptr[1], in_ptr[1]);
 		tmp = SKP_SMLABB(tmp, interpol_ptr[2], in_ptr[2]);

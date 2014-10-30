@@ -34,6 +34,8 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef _SKP_SILK_FIX_INLINES_H_
 #define _SKP_SILK_FIX_INLINES_H_
 
+#include <assert.h>
+
 #ifdef  __cplusplus
 extern "C" {
 #endif
@@ -132,8 +134,8 @@ extern "C" {
 		int a_headrm, b_headrm, lshift;
 		int32_t b32_inv, a32_nrm, b32_nrm, result;
 
-		SKP_assert(b32 != 0);
-		SKP_assert(Qres >= 0);
+		assert(b32 != 0);
+		assert(Qres >= 0);
 
 		/* Compute number of bits head room and normalize inputs */
 		a_headrm = SKP_Silk_CLZ32(SKP_abs(a32)) - 1;
@@ -175,8 +177,8 @@ extern "C" {
 		int b_headrm, lshift;
 		int32_t b32_inv, b32_nrm, err_Q32, result;
 
-		SKP_assert(b32 != 0);
-		SKP_assert(Qres > 0);
+		assert(b32 != 0);
+		assert(Qres > 0);
 
 		/* Compute number of bits head room and normalize input */
 		b_headrm = SKP_Silk_CLZ32(SKP_abs(b32)) - 1;

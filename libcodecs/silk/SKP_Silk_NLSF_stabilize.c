@@ -52,7 +52,7 @@ void SKP_Silk_NLSF_stabilize(int *NLSF_Q15,	/* I/O:  Unstable/stabilized normali
 	int i, I = 0, k;
 
 	/* This is necessary to ensure an output within range of a int16_t */
-	SKP_assert(NDeltaMin_Q15[L] >= 1);
+	assert(NDeltaMin_Q15[L] >= 1);
 
 	for (loops = 0; loops < MAX_LOOPS; loops++) {
 	/**************************/

@@ -79,8 +79,8 @@ void SKP_Silk_NLSF_MSVQ_encode_FIX(int *NLSFIndices,	/* O    Codebook path vecto
 	const int16_t *pCB_element;
 	const SKP_Silk_NLSF_CBS *pCurrentCBStage;
 
-	SKP_assert(NLSF_MSVQ_Survivors <= MAX_NLSF_MSVQ_SURVIVORS);
-	SKP_assert((LOW_COMPLEXITY_ONLY == 0)
+	assert(NLSF_MSVQ_Survivors <= MAX_NLSF_MSVQ_SURVIVORS);
+	assert((LOW_COMPLEXITY_ONLY == 0)
 		   || (NLSF_MSVQ_Survivors <= MAX_NLSF_MSVQ_SURVIVORS_LC_MODE));
 
 	/* Copy the input vector */
@@ -253,7 +253,7 @@ void SKP_Silk_NLSF_MSVQ_encode_FIX(int *NLSFIndices,	/* O    Codebook path vecto
 					       SKP_SMULBB(se_Q15, se_Q15),
 					       pW_Q6[i + 1]);
 			}
-			SKP_assert(wsse_Q20 >= 0);
+			assert(wsse_Q20 >= 0);
 
 			/* Add the fluctuation reduction penalty to the rate distortion error */
 			wsse_Q20 =

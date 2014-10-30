@@ -66,7 +66,7 @@ void SKP_Silk_resample_2_3_coarse(int16_t * out,	/* O:   Output signal          
 	frameLenOut = SKP_DIV32_16(SKP_MUL(2, frameLenIn), 3);
 	index_Q16 = 0;
 
-	SKP_assert(frameLenIn == ((frameLenOut * 3) / 2));
+	assert(frameLenIn == ((frameLenOut * 3) / 2));
 
 	/* Interpolate */
 	for (n = frameLenOut; n > 0; n--) {
@@ -90,7 +90,7 @@ void SKP_Silk_resample_2_3_coarse(int16_t * out,	/* O:   Output signal          
 
 		/* Interpolate */
 		/* Hardcoded for 32 FIR taps */
-		SKP_assert(SigProc_Resample_2_3_coarse_NUM_FIR_COEFS == 32);
+		assert(SigProc_Resample_2_3_coarse_NUM_FIR_COEFS == 32);
 		tmp =
 		    (int32_t) interpol_ptr[0] * in_ptr[0] +
 		    (int32_t) interpol_ptr[1] * in_ptr[1] +

@@ -76,14 +76,4 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SKP_TRUE        1
 #define SKP_FALSE       0
 
-/* assertions */
-#if (defined _WIN32 && !defined _WINCE && !defined(__GNUC__) && !defined(NO_ASSERTS))
-#ifndef SKP_assert
-#include <crtdbg.h>		/* ASSERTE() */
-#define SKP_assert(COND)   _ASSERTE(COND)
-#endif
-#else
-#define SKP_assert(COND)
-#endif
-
 #endif

@@ -46,9 +46,9 @@ void SKP_Silk_insertion_sort_increasing(int32_t * a,	/* I/O:  Unsorted / Sorted 
 	int i, j;
 
 	/* Safety checks */
-	SKP_assert(K > 0);
-	SKP_assert(L > 0);
-	SKP_assert(L >= K);
+	assert(K > 0);
+	assert(L > 0);
+	assert(L >= K);
 
 	/* Write start indices in index vector */
 	for (i = 0; i < K; i++) {
@@ -91,9 +91,9 @@ void SKP_Silk_insertion_sort_decreasing(int *a,	/* I/O: Unsorted / Sorted vector
 	int i, j;
 
 	/* Safety checks */
-	SKP_assert(K > 0);
-	SKP_assert(L > 0);
-	SKP_assert(L >= K);
+	assert(K > 0);
+	assert(L > 0);
+	assert(L >= K);
 
 	/* Write start indices in index vector */
 	for (i = 0; i < K; i++) {
@@ -136,9 +136,9 @@ void SKP_Silk_insertion_sort_decreasing_int16(int16_t * a,	/* I/O: Unsorted / So
 	int value;
 
 	/* Safety checks */
-	SKP_assert(K > 0);
-	SKP_assert(L > 0);
-	SKP_assert(L >= K);
+	assert(K > 0);
+	assert(L > 0);
+	assert(L >= K);
 
 	/* Write start indices in index vector */
 	for (i = 0; i < K; i++) {
@@ -179,7 +179,7 @@ void SKP_Silk_insertion_sort_increasing_all_values(int *a,	/* I/O: Unsorted / So
 	int i, j;
 
 	/* Safety checks */
-	SKP_assert(L > 0);
+	assert(L > 0);
 
 	/* Sort vector elements by value, increasing order */
 	for (i = 1; i < L; i++) {

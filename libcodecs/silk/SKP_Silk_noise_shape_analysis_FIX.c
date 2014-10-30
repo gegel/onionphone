@@ -218,7 +218,7 @@ void SKP_Silk_noise_shape_analysis_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/
 			   psEnc->sCmn.shapingLPCOrder * sizeof(int16_t));
 
 		/* Bandwidth expansion for analysis filter shaping */
-		SKP_assert(BWExp1_Q16 <= (1 << 16));	// If ever breaking, use LPC_stabilize() in these cases to stay within range
+		assert(BWExp1_Q16 <= (1 << 16));	// If ever breaking, use LPC_stabilize() in these cases to stay within range
 		SKP_Silk_bwexpander(&psEncCtrl->
 				    AR1_Q13[k * SHAPE_LPC_ORDER_MAX],
 				    psEnc->sCmn.shapingLPCOrder, BWExp1_Q16);
@@ -229,8 +229,8 @@ void SKP_Silk_noise_shape_analysis_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/
 			       SHAPE_MIN_ENERGY_RATIO_Q24);
 
 		Qnrg = -scale;	// range: -12...30
-		SKP_assert(Qnrg >= -12);
-		SKP_assert(Qnrg <= 30);
+		assert(Qnrg >= -12);
+		assert(Qnrg <= 30);
 
 		/* Make sure that Qnrg is an even number */
 		if (Qnrg & 1) {
@@ -268,12 +268,12 @@ void SKP_Silk_noise_shape_analysis_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/
 	tmp32 = SKP_Silk_log2lin(SKP_SMLAWB(16 << 7, RELATIVE_MIN_GAIN_dB_Q7, 10486));	// 10486_Q16 = 0.16_Q0
 	tmp32 = SKP_SMULWW(psEnc->avgGain_Q16, tmp32);
 	gain_add_Q16 = SKP_ADD_SAT32(gain_add_Q16, tmp32);
-	SKP_assert(gain_mult_Q16 >= 0);
+	assert(gain_mult_Q16 >= 0);
 
 	for (k = 0; k < NB_SUBFR; k++) {
 		psEncCtrl->Gains_Q16[k] =
 		    SKP_SMULWW(psEncCtrl->Gains_Q16[k], gain_mult_Q16);
-		SKP_assert(psEncCtrl->Gains_Q16[k] >= 0);
+		assert(psEncCtrl->Gains_Q16[k] >= 0);
 	}
 
 	for (k = 0; k < NB_SUBFR; k++) {
@@ -319,7 +319,7 @@ void SKP_Silk_noise_shape_analysis_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/
 			tmp32 = SKP_Silk_log2lin((16 << 7) - SKP_SMULWB(essStrength_Q15, SKP_SMULWB(DE_ESSER_COEF_WB_dB_Q7, 20972)));	// 20972_Q17 = 0.16_Q0
 			gain_mult_Q16 = SKP_SMULWW(gain_mult_Q16, tmp32);
 		} else {
-			SKP_assert(psEnc->sCmn.fs_kHz == 12
+			assert(psEnc->sCmn.fs_kHz == 12
 				   || psEnc->sCmn.fs_kHz == 8);
 		}
 	}
@@ -355,7 +355,7 @@ void SKP_Silk_noise_shape_analysis_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/
 			psEncCtrl->LF_shp_Q14[k] |=
 			    (uint16_t) (b_Q14 - (1 << 14));
 		}
-		SKP_assert(HARM_HP_NOISE_COEF_Q24 < (1 << 23));	// Guarantees that second argument to SMULWB() is within range of an int16_t
+		assert(HARM_HP_NOISE_COEF_Q24 < (1 << 23));	// Guarantees that second argument to SMULWB() is within range of an int16_t
 		Tilt_Q16 = -HP_NOISE_COEF_Q16 -
 		    SKP_SMULWB((1 << 16) - HP_NOISE_COEF_Q16,
 			       SKP_SMULWB(HARM_HP_NOISE_COEF_Q24,

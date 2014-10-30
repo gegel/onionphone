@@ -350,7 +350,7 @@ void SKP_Silk_PLC_conceal(SKP_Silk_decoder_state * psDec,	/* I/O Decoder state *
 	/* Preload LPC coeficients to array on stack. Gives small performance gain */
 	SKP_memcpy(A_Q12_tmp, psPLC->prevLPC_Q12,
 		   psDec->LPC_order * sizeof(int16_t));
-	SKP_assert(psDec->LPC_order >= 10);	/* check that unrolling works */
+	assert(psDec->LPC_order >= 10);	/* check that unrolling works */
 	for (k = 0; k < NB_SUBFR; k++) {
 		for (i = 0; i < psDec->subfr_length; i++) {
 			/* unrolled */

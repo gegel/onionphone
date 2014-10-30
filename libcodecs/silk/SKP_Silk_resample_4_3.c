@@ -55,7 +55,7 @@ void SKP_Silk_resample_4_3(int16_t * out,	/* O:   Fs_low signal    [inLen * 4/3]
 	int32_t scratch[9 * OUT_SUBFR_LEN / 2];
 
 	/* Check that input is multiple of 3 */
-	SKP_assert(inLen % 3 == 0);
+	assert(inLen % 3 == 0);
 
 	outLen = SKP_DIV32_16(SKP_LSHIFT(inLen, 2), 3);
 	while (outLen > 0) {

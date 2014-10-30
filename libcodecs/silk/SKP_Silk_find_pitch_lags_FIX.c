@@ -55,7 +55,7 @@ void SKP_Silk_find_pitch_lags_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  en
 	    SKP_ADD_LSHIFT(psEnc->sCmn.la_pitch, psEnc->sCmn.frame_length, 1);
 
 	/* Safty check */
-	SKP_assert(buf_len >= psPredSt->pitch_LPC_win_length);
+	assert(buf_len >= psPredSt->pitch_LPC_win_length);
 
 	x_buf = x - psEnc->sCmn.frame_length;
 

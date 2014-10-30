@@ -50,7 +50,7 @@ void SKP_Silk_LPC_synthesis_filter(const int16_t * in,	/* I:   excitation signal
 	    out32_Q10, out32;
 
 	/* Order must be even */
-	SKP_assert(2 * Order_half == Order);
+	assert(2 * Order_half == Order);
 
 	/* combine two A_Q12 values and ensure 32-bit alignment */
 	for (k = 0; k < Order_half; k++) {

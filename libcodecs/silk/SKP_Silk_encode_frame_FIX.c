@@ -321,13 +321,13 @@ int SKP_Silk_encode_frame_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Pointe
 	}
 
 	/* simulate number of ms buffered in channel because of exceeding TargetRate */
-	SKP_assert((8 * 1000 *
+	assert((8 * 1000 *
 		    ((int64_t) nBytes -
 		     (int64_t) psEnc->sCmn.nBytesInPayloadBuf)) ==
 		   SKP_SAT32(8 * 1000 *
 			     ((int64_t) nBytes -
 			      (int64_t) psEnc->sCmn.nBytesInPayloadBuf)));
-	SKP_assert(psEnc->sCmn.TargetRate_bps > 0);
+	assert(psEnc->sCmn.TargetRate_bps > 0);
 	psEnc->BufferedInChannel_ms +=
 	    SKP_DIV32(8 * 1000 * (nBytes - psEnc->sCmn.nBytesInPayloadBuf),
 		      psEnc->sCmn.TargetRate_bps);
@@ -382,7 +382,7 @@ void SKP_Silk_LBRR_encode_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Pointe
 		} else if (psEnc->sCmn.fs_kHz == 24) {
 			Rate_only_parameters = 19500;
 		} else {
-			SKP_assert(0);
+			assert(0);
 		}
 
 		if (psEnc->sCmn.Complexity > 0
@@ -527,7 +527,7 @@ void SKP_Silk_LBRR_encode_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Pointe
 			} else {
 				/* not enough space: payload will be discarded */
 				*pnBytesOut = 0;
-				SKP_assert(0);
+				assert(0);
 			}
 		} else {
 			/* no payload for you this time */

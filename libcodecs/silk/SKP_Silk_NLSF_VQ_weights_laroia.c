@@ -47,8 +47,8 @@ void SKP_Silk_NLSF_VQ_weights_laroia(int *pNLSFW_Q6,	/* O: Pointer to input vect
 	int32_t tmp1_int, tmp2_int;
 
 	/* Check that we are guaranteed to end up within the required range */
-	SKP_assert(D > 0);
-	SKP_assert((D & 1) == 0);
+	assert(D > 0);
+	assert((D & 1) == 0);
 
 	/* First value */
 	tmp1_int = SKP_max_int(pNLSF_Q15[0], 1);
@@ -56,7 +56,7 @@ void SKP_Silk_NLSF_VQ_weights_laroia(int *pNLSFW_Q6,	/* O: Pointer to input vect
 	tmp2_int = SKP_max_int(pNLSF_Q15[1] - pNLSF_Q15[0], 1);
 	tmp2_int = SKP_DIV32_16(1 << (15 + Q_OUT), tmp2_int);
 	pNLSFW_Q6[0] = (int)SKP_min_int(tmp1_int + tmp2_int, int16_t_MAX);
-	SKP_assert(pNLSFW_Q6[0] > 0);
+	assert(pNLSFW_Q6[0] > 0);
 
 	/* Main loop */
 	for (k = 1; k < D - 1; k += 2) {
@@ -64,18 +64,18 @@ void SKP_Silk_NLSF_VQ_weights_laroia(int *pNLSFW_Q6,	/* O: Pointer to input vect
 		tmp1_int = SKP_DIV32_16(1 << (15 + Q_OUT), tmp1_int);
 		pNLSFW_Q6[k] =
 		    (int)SKP_min_int(tmp1_int + tmp2_int, int16_t_MAX);
-		SKP_assert(pNLSFW_Q6[k] > 0);
+		assert(pNLSFW_Q6[k] > 0);
 
 		tmp2_int = SKP_max_int(pNLSF_Q15[k + 2] - pNLSF_Q15[k + 1], 1);
 		tmp2_int = SKP_DIV32_16(1 << (15 + Q_OUT), tmp2_int);
 		pNLSFW_Q6[k + 1] =
 		    (int)SKP_min_int(tmp1_int + tmp2_int, int16_t_MAX);
-		SKP_assert(pNLSFW_Q6[k + 1] > 0);
+		assert(pNLSFW_Q6[k + 1] > 0);
 	}
 
 	/* Last value */
 	tmp1_int = SKP_max_int((1 << 15) - pNLSF_Q15[D - 1], 1);
 	tmp1_int = SKP_DIV32_16(1 << (15 + Q_OUT), tmp1_int);
 	pNLSFW_Q6[D - 1] = (int)SKP_min_int(tmp1_int + tmp2_int, int16_t_MAX);
-	SKP_assert(pNLSFW_Q6[D - 1] > 0);
+	assert(pNLSFW_Q6[D - 1] > 0);
 }

@@ -93,7 +93,7 @@ void SKP_Silk_NSQ(SKP_Silk_encoder_state * psEncC,	/* I/O  Encoder State        
 	/* Set unvoiced lag to the previous one, overwrite later for voiced */
 	lag = NSQ->lagPrev;
 
-	SKP_assert(NSQ->prev_inv_gain_Q16 != 0);
+	assert(NSQ->prev_inv_gain_Q16 != 0);
 
 	offset_Q10 =
 	    SKP_Silk_Quantization_Offsets_Q10[psEncCtrlC->sigtype][psEncCtrlC->
@@ -117,7 +117,7 @@ void SKP_Silk_NSQ(SKP_Silk_encoder_state * psEncC,	/* I/O  Encoder State        
 		AR_shp_Q13 = &AR2_Q13[k * SHAPE_LPC_ORDER_MAX];
 
 		/* Noise shape parameters */
-		SKP_assert(HarmShapeGain_Q14[k] >= 0);
+		assert(HarmShapeGain_Q14[k] >= 0);
 		HarmShapeFIRPacked_Q14 = SKP_RSHIFT(HarmShapeGain_Q14[k], 2);
 		HarmShapeFIRPacked_Q14 |=
 		    SKP_LSHIFT((int32_t) SKP_RSHIFT(HarmShapeGain_Q14[k], 1),
@@ -250,9 +250,9 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer(SKP_Silk_nsq_state * NSQ,	/* I/O 
 		dither = SKP_RSHIFT(NSQ->rand_seed, 31);
 
 		/* Short-term prediction */
-		SKP_assert((predictLPCOrder & 1) == 0);	/* check that order is even */
-		SKP_assert(((int64_t) a_Q12 & 3) == 0);	/* check that array starts at 4-byte aligned address */
-		SKP_assert(predictLPCOrder >= 10);	/* check that unrolling works */
+		assert((predictLPCOrder & 1) == 0);	/* check that order is even */
+		assert(((int64_t) a_Q12 & 3) == 0);	/* check that array starts at 4-byte aligned address */
+		assert(predictLPCOrder >= 10);	/* check that unrolling works */
 
 		/* NOTE: the code below loads two int16 values in an int32, and multiplies each using the   */
 		/* SMLAWB and SMLAWT instructions. On a big-endian CPU the two int16 variables would be     */
@@ -304,9 +304,9 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer(SKP_Silk_nsq_state * NSQ,	/* I/O 
 		}
 
 		/* Noise shape feedback */
-		SKP_assert((shapingLPCOrder & 1) == 0);	/* check that order is even */
-		SKP_assert(((int64_t) AR_shp_Q13 & 3) == 0);	/* check that array starts at 4-byte aligned address */
-		SKP_assert(shapingLPCOrder >= 12);	/* check that unrolling works */
+		assert((shapingLPCOrder & 1) == 0);	/* check that order is even */
+		assert(((int64_t) AR_shp_Q13 & 3) == 0);	/* check that array starts at 4-byte aligned address */
+		assert(shapingLPCOrder >= 12);	/* check that unrolling works */
 
 		/* Partially unrolled */
 		Atmp = AR_shp_Q13_tmp[0];	/* read two coefficients at once */
@@ -343,7 +343,7 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer(SKP_Silk_nsq_state * NSQ,	/* I/O 
 		n_LF_Q10 =
 		    SKP_SMLAWT(n_LF_Q10, NSQ->sLF_AR_shp_Q12, LF_shp_Q14);
 
-		SKP_assert(lag > 0 || sigtype == SIG_TYPE_UNVOICED);
+		assert(lag > 0 || sigtype == SIG_TYPE_UNVOICED);
 
 		/* Long-term shaping */
 		if (lag > 0) {
@@ -505,6 +505,6 @@ SKP_INLINE void SKP_Silk_nsq_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O NSQ s
 	}
 
 	/* save inv_gain */
-	SKP_assert(inv_gain_Q16 != 0);
+	assert(inv_gain_Q16 != 0);
 	NSQ->prev_inv_gain_Q16 = inv_gain_Q16;
 }

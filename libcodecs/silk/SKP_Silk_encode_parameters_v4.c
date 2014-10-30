@@ -110,7 +110,7 @@ void SKP_Silk_encode_parameters_v4(SKP_Silk_encoder_state * psEncC,	/* I/O  Enco
 				     psNLSF_CB->StartPtr, psNLSF_CB->nStages);
 
 	/* Encode NLSF interpolation factor */
-	SKP_assert(psEncC->useInterpolatedNLSFs == 1
+	assert(psEncC->useInterpolatedNLSFs == 1
 		   || psEncCtrlC->NLSFInterpCoef_Q2 == (1 << 2));
 	SKP_Silk_range_encoder(psRC, psEncCtrlC->NLSFInterpCoef_Q2,
 			       SKP_Silk_NLSF_interpolation_factor_CDF);

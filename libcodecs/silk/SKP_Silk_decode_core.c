@@ -47,7 +47,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 	int32_t vec_Q10[MAX_FRAME_LENGTH / NB_SUBFR], Atmp;
 	int32_t inv_gain_Q16, inv_gain_Q32, gain_adj_Q16,
 	    FiltState[MAX_LPC_ORDER];
-	SKP_assert(psDec->prev_inv_gain_Q16 != 0);
+	assert(psDec->prev_inv_gain_Q16 != 0);
 
 	offset_Q10 =
 	    SKP_Silk_Quantization_Offsets_Q10[psDecCtrl->sigtype][psDecCtrl->
@@ -181,7 +181,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 		}
 
 		/* Save inv_gain */
-		SKP_assert(inv_gain_Q16 != 0);
+		assert(inv_gain_Q16 != 0);
 		psDec->prev_inv_gain_Q16 = inv_gain_Q16;
 
 		/* Long-term prediction */
@@ -314,7 +314,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_LSHIFT(vec_Q10[i], 4);
 			}
 		} else {
-			SKP_assert(psDec->LPC_order == 10);
+			assert(psDec->LPC_order == 10);
 			for (i = 0; i < psDec->subfr_length; i++) {
 				/* unrolled */
 				Atmp = *((int32_t *) & A_Q12_tmp[0]);	/* read two coefficients at once */

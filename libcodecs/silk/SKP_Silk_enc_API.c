@@ -83,12 +83,12 @@ int SKP_Silk_SDK_InitEncoder(void *encState,	/* I/O: State                      
 
 	/* Reset Encoder */
 	if (ret += SKP_Silk_init_encoder_FIX(psEnc)) {
-		SKP_assert(0);
+		assert(0);
 	}
 
 	/* Read Control structure */
 	if (ret += SKP_Silk_SDK_QueryEncoder(encState, encStatus)) {
-		SKP_assert(0);
+		assert(0);
 	}
 
 	return ret;
@@ -113,7 +113,7 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 	SKP_Silk_encoder_state_FIX *psEnc =
 	    (SKP_Silk_encoder_state_FIX *) encState;
 
-	SKP_assert(encControl != NULL);
+	assert(encControl != NULL);
 
 	/* Check sampling frequency first, to avoid divide by zero later */
 	if ((encControl->sampleRate != 8000)
@@ -121,7 +121,7 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 	    && (encControl->sampleRate != 16000)
 	    && (encControl->sampleRate != 24000)) {
 		ret = SKP_SILK_ENC_FS_NOT_SUPPORTED;
-		SKP_assert(0);
+		assert(0);
 		return (ret);
 	}
 
@@ -138,14 +138,14 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 	input_ms = SKP_DIV32_16(nSamplesIn, API_fs_kHz);
 	if ((input_ms % 10) != 0 || nSamplesIn < 0) {
 		ret = SKP_SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
-		SKP_assert(0);
+		assert(0);
 		return (ret);
 	}
 
 	/* Make sure no more than one packet can be produced */
 	if (nSamplesIn > SKP_SMULBB(psEnc->sCmn.PacketSize_ms, API_fs_kHz)) {
 		ret = SKP_SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
-		SKP_assert(0);
+		assert(0);
 		return (ret);
 	}
 
@@ -154,7 +154,7 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 					  TargetRate_bps, PacketLoss_perc,
 					  UseInBandFec, UseDTX, input_ms,
 					  Complexity)) != 0) {
-		SKP_assert(0);
+		assert(0);
 		return (ret);
 	}
 
@@ -193,7 +193,7 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 				int16_t scratch[MAX_FRAME_LENGTH +
 						SigProc_Resample_2_3_coarse_NUM_FIR_COEFS
 						- 1];
-				SKP_assert(nSamplesFromInput <=
+				assert(nSamplesFromInput <=
 					   MAX_FRAME_LENGTH);
 				SKP_Silk_resample_2_3_coarse(&psEnc->sCmn.
 							     inputBuf[psEnc->
@@ -278,7 +278,7 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 				int16_t scratch[MAX_FRAME_LENGTH +
 						SigProc_Resample_2_3_coarse_NUM_FIR_COEFS
 						- 1];
-				SKP_assert(nSamplesFromInput <=
+				assert(nSamplesFromInput <=
 					   MAX_FRAME_LENGTH);
 				SKP_Silk_resample_2_3_coarse(&psEnc->sCmn.
 							     inputBuf[psEnc->
@@ -313,7 +313,7 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 							       psEnc->sCmn.
 							       inputBuf)) !=
 				    0) {
-					SKP_assert(0);
+					assert(0);
 				}
 			} else {
 				/* outData already contains a payload */
@@ -323,10 +323,10 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 							       psEnc->sCmn.
 							       inputBuf)) !=
 				    0) {
-					SKP_assert(0);
+					assert(0);
 				}
 				/* Check that no second payload was created */
-				SKP_assert(*nBytesOut == 0);
+				assert(*nBytesOut == 0);
 			}
 			psEnc->sCmn.inputBufIx = 0;
 		} else {

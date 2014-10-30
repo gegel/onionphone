@@ -109,15 +109,15 @@ void SKP_Silk_HP_variable_cutoff_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O 
 	/* compute cut-off frequency, in radians */
 	//Fc_num   = (SKP_float)( 0.45f * 2.0f * 3.14159265359 * psEncCtrl->pitch_freq_low_Hz );
 	//Fc_denom = (SKP_float)( 1e3f * psEnc->sCmn.fs_kHz );
-	SKP_assert(psEncCtrl->pitch_freq_low_Hz <=
+	assert(psEncCtrl->pitch_freq_low_Hz <=
 		   int32_t_MAX / SKP_RADIANS_CONSTANT_Q19);
 	Fc_Q19 = SKP_DIV32_16(SKP_SMULBB(SKP_RADIANS_CONSTANT_Q19, psEncCtrl->pitch_freq_low_Hz), psEnc->sCmn.fs_kHz);	// range: 3704 - 27787, 11-15 bits
-	SKP_assert(Fc_Q19 >= 3704);
-	SKP_assert(Fc_Q19 <= 27787);
+	assert(Fc_Q19 >= 3704);
+	assert(Fc_Q19 <= 27787);
 
 	r_Q28 = (1 << 28) - SKP_MUL(471, Fc_Q19);	// 471_Q9 = 0.92_Q0, range: 255347779 to 266690872, 27-28 bits
-	SKP_assert(r_Q28 >= 255347779);
-	SKP_assert(r_Q28 <= 266690872);
+	assert(r_Q28 >= 255347779);
+	assert(r_Q28 <= 266690872);
 
 	/* b = r * [ 1; -2; 1 ]; */
 	/* a = [ 1; -2 * r * ( 1 - 0.5 * Fc^2 ); r^2 ]; */

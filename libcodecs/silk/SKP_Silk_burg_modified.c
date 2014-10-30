@@ -71,8 +71,8 @@ void SKP_Silk_burg_modified(int32_t * res_nrg,	/* O    residual energy          
 	int32_t CAf[SigProc_MAX_ORDER_LPC + 1];
 	int32_t CAb[SigProc_MAX_ORDER_LPC + 1];
 
-	SKP_assert(subfr_length * nb_subfr <= MAX_FRAME_SIZE);
-	SKP_assert(nb_subfr <= MAX_NB_SUBFR);
+	assert(subfr_length * nb_subfr <= MAX_FRAME_SIZE);
+	assert(nb_subfr <= MAX_NB_SUBFR);
 
 	memzero(Af_QA, SigProc_MAX_ORDER_LPC * sizeof(int32_t));
 	memzero(CAf, (SigProc_MAX_ORDER_LPC + 1) * sizeof(int32_t));
@@ -81,7 +81,7 @@ void SKP_Silk_burg_modified(int32_t * res_nrg,	/* O    residual energy          
 	SKP_Silk_sum_sqr_shift(&C0, &rshifts, x, nb_subfr * subfr_length);
 	if (rshifts > MAX_RSHIFTS) {
 		C0 = SKP_LSHIFT32(C0, rshifts - MAX_RSHIFTS);
-		SKP_assert(C0 > 0);
+		assert(C0 > 0);
 		rshifts = MAX_RSHIFTS;
 	} else {
 		lz = SKP_Silk_CLZ32(C0) - 1;
@@ -203,7 +203,7 @@ void SKP_Silk_burg_modified(int32_t * res_nrg,	/* O    residual energy          
 		} else {
 			/* Negative energy or ratio too high; set remaining coefficients to zero and exit loop */
 			SKP_memset(&Af_QA[n], 0, (D - n) * sizeof(int32_t));
-			SKP_assert(0);
+			assert(0);
 			break;
 		}
 

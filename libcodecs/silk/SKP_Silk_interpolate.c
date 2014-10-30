@@ -39,8 +39,8 @@ void SKP_Silk_interpolate(int xi[MAX_LPC_ORDER],	/* O    interpolated vector    
 {
 	int i;
 
-	SKP_assert(ifact_Q2 >= 0);
-	SKP_assert(ifact_Q2 <= (1 << 2));
+	assert(ifact_Q2 >= 0);
+	assert(ifact_Q2 <= (1 << 2));
 
 	for (i = 0; i < d; i++) {
 		xi[i] =

@@ -83,15 +83,15 @@ void SKP_Silk_NLSF2A(int16_t * a,	/* o    monic whitening filter coefficients in
 	int32_t a_int32[SigProc_MAX_ORDER_LPC];
 	int32_t maxabs, absval, idx = 0, sc_Q16;
 
-	SKP_assert(LSF_COS_TAB_SZ_FIX == 128);
+	assert(LSF_COS_TAB_SZ_FIX == 128);
 
 	memzero(a_int32, SigProc_MAX_ORDER_LPC * sizeof(int32_t));
 	memzero(cos_LSF_Q20, SigProc_MAX_ORDER_LPC * sizeof(int32_t));
 
 	/* convert LSFs to 2*cos(LSF(i)), using piecewise linear curve from table */
 	for (k = 0; k < d; k++) {
-		SKP_assert(NLSF[k] >= 0);
-		SKP_assert(NLSF[k] <= 32767);
+		assert(NLSF[k] >= 0);
+		assert(NLSF[k] <= 32767);
 
 		/* f_int on a scale 0-127 (rounded down) */
 		f_int = SKP_RSHIFT(NLSF[k], 15 - 7);
@@ -99,8 +99,8 @@ void SKP_Silk_NLSF2A(int16_t * a,	/* o    monic whitening filter coefficients in
 		/* f_frac, range: 0..255 */
 		f_frac = NLSF[k] - SKP_LSHIFT(f_int, 15 - 7);
 
-		SKP_assert(f_int >= 0);
-		SKP_assert(f_int < LSF_COS_TAB_SZ_FIX);
+		assert(f_int >= 0);
+		assert(f_int < LSF_COS_TAB_SZ_FIX);
 
 		/* Read start and end value from table */
 		cos_val = SKP_Silk_LSFCosTab_FIX_Q12[f_int];	/* Q12 */
@@ -154,7 +154,7 @@ void SKP_Silk_NLSF2A(int16_t * a,	/* o    monic whitening filter coefficients in
 
 	/* Reached the last iteration */
 	if (i == 10) {
-		SKP_assert(0);
+		assert(0);
 		for (k = 0; k < d; k++) {
 			a_int32[k] = SKP_SAT16(a_int32[k]);
 		}

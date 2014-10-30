@@ -36,8 +36,8 @@ void SKP_Silk_scale_vector16_Q14(int16_t * data1, int gain_Q14,	/* Gain in Q14 *
 	int i;
 	int32_t data32, gain_Q16;
 
-	SKP_assert(gain_Q14 < 32768);
-	SKP_assert(gain_Q14 >= -32768);
+	assert(gain_Q14 < 32768);
+	assert(gain_Q14 >= -32768);
 
 	gain_Q16 = SKP_LSHIFT(gain_Q14, 2);
 
@@ -87,7 +87,7 @@ void SKP_Silk_scale_vector32_16_Q14(int32_t * data1,	/* (I/O): Q0/Q0         */
 			data1[i] = SKP_SMULWB(data1[i], gain_Q16);
 		}
 	} else {
-		SKP_assert(gain_Q14 >= int16_t_MIN);
+		assert(gain_Q14 >= int16_t_MIN);
 		for (i = 0; i < dataSize; i++) {
 			data1[i] =
 			    SKP_LSHIFT(SKP_SMULWB(data1[i], gain_Q14), 2);
@@ -103,8 +103,8 @@ void SKP_Silk_scale_vector32_Q16(int32_t * data1,	/* (I/O): Q0/Q0         */
 {
 	int i;
 
-	SKP_assert(gain_Q16 <= int16_t_MAX + 65536);
-	SKP_assert(gain_Q16 >= int16_t_MIN);
+	assert(gain_Q16 <= int16_t_MAX + 65536);
+	assert(gain_Q16 >= int16_t_MIN);
 
 	if (gain_Q16 > int16_t_MAX) {
 		gain_Q16 -= 65536;

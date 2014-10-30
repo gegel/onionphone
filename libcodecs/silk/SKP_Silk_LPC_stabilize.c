@@ -127,8 +127,8 @@ void SKP_Silk_LPC_fit(int16_t * a_QQ,	/* O    Stabilized LPC vector, Q(24-rshift
 	}
 
 	/* Convert to 16 bit Q(24-rshift) */
-	SKP_assert(rshift > 0);
-	SKP_assert(rshift < 31);
+	assert(rshift > 0);
+	assert(rshift < 31);
 	for (i = 0; i < L; i++) {
 		a_QQ[i] = (int16_t) SKP_RSHIFT_ROUND(a_Q24[i], rshift);
 	}

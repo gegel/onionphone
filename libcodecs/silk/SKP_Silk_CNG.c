@@ -49,8 +49,8 @@ SKP_INLINE void SKP_Silk_CNG_exc(int16_t residual[],	/* O    CNG residual signal
 	for (i = 0; i < length; i++) {
 		seed = SKP_RAND(seed);
 		idx = (int)(SKP_RSHIFT(seed, 24) & exc_mask);
-		SKP_assert(idx >= 0);
-		SKP_assert(idx <= CNG_BUF_MASK_MAX);
+		assert(idx >= 0);
+		assert(idx <= CNG_BUF_MASK_MAX);
 		residual[i] =
 		    (int16_t)
 		    SKP_SAT16(SKP_RSHIFT_ROUND

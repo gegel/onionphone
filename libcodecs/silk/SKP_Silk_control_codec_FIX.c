@@ -413,7 +413,7 @@ int SKP_Silk_control_encoder_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Poi
 							  resample24To16state));
 
 #if LOW_COMPLEXITY_ONLY
-					SKP_assert(sizeof(int16_t) *
+					assert(sizeof(int16_t) *
 						   (2 *
 						    (2 * MAX_FRAME_LENGTH +
 						     LA_SHAPE_MAX) +
@@ -807,7 +807,7 @@ int SKP_Silk_control_encoder_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Poi
 			}
 		} else {
 			// Internal sample frequency not supported!
-			SKP_assert(0);
+			assert(0);
 		}
 	}
 
@@ -899,7 +899,7 @@ int SKP_Silk_control_encoder_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Poi
 		psEnc->sCmn.fs_kHz_changed = 1;
 
 		/* Check that settings are valid */
-		SKP_assert((psEnc->sCmn.subfr_length * NB_SUBFR) ==
+		assert((psEnc->sCmn.subfr_length * NB_SUBFR) ==
 			   psEnc->sCmn.frame_length);
 	}
 
@@ -957,10 +957,10 @@ int SKP_Silk_control_encoder_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Poi
 	    SKP_min_int(psEnc->sCmn.pitchEstimationLPCOrder,
 			psEnc->sCmn.predictLPCOrder);
 
-	SKP_assert(psEnc->sCmn.pitchEstimationLPCOrder <=
+	assert(psEnc->sCmn.pitchEstimationLPCOrder <=
 		   FIND_PITCH_LPC_ORDER_MAX);
-	SKP_assert(psEnc->sCmn.shapingLPCOrder <= SHAPE_LPC_ORDER_MAX);
-	SKP_assert(psEnc->sCmn.nStatesDelayedDecision <= DEL_DEC_STATES_MAX);
+	assert(psEnc->sCmn.shapingLPCOrder <= SHAPE_LPC_ORDER_MAX);
+	assert(psEnc->sCmn.nStatesDelayedDecision <= DEL_DEC_STATES_MAX);
 
 	/* Set bitrate/coding quality */
 	TargetRate_bps = SKP_min(TargetRate_bps, 100000);

@@ -70,8 +70,8 @@ int SKP_Silk_LPC_inverse_pred_gain(	/* O:   Returns 1 if unstable, otherwise 0  
 
 		/* rc_mult1_Q30 range: [ 1 : 2^30-1 ] */
 		rc_mult1_Q30 = (int32_t_MAX >> 1) - SKP_SMMUL(rc_Q31, rc_Q31);
-		SKP_assert(rc_mult1_Q30 > (1 << 15));	/* reduce A_LIMIT if fails */
-		SKP_assert(rc_mult1_Q30 < (1 << 30));
+		assert(rc_mult1_Q30 > (1 << 15));	/* reduce A_LIMIT if fails */
+		assert(rc_mult1_Q30 < (1 << 30));
 
 		/* rc_mult2_Q16 range: [ 2^16 : int32_t_MAX ] */
 		rc_mult2_Q16 = SKP_INVERSE32_varQ(rc_mult1_Q30, 46);	/* 16 = 46 - 30 */
@@ -80,8 +80,8 @@ int SKP_Silk_LPC_inverse_pred_gain(	/* O:   Returns 1 if unstable, otherwise 0  
 		/* invGain_Q30 range: [ 0 : 2^30 ] */
 		*invGain_Q30 =
 		    SKP_LSHIFT(SKP_SMMUL(*invGain_Q30, rc_mult1_Q30), 2);
-		SKP_assert(*invGain_Q30 >= 0);
-		SKP_assert(*invGain_Q30 <= (1 << 30));
+		assert(*invGain_Q30 >= 0);
+		assert(*invGain_Q30 <= (1 << 30));
 
 		/* Swap pointers */
 		Aold_QA = Anew_QA;
@@ -115,8 +115,8 @@ int SKP_Silk_LPC_inverse_pred_gain(	/* O:   Returns 1 if unstable, otherwise 0  
 	/* Update inverse gain */
 	/* Range: [ 0 : 2^30 ] */
 	*invGain_Q30 = SKP_LSHIFT(SKP_SMMUL(*invGain_Q30, rc_mult1_Q30), 2);
-	SKP_assert(*invGain_Q30 >= 0);
-	SKP_assert(*invGain_Q30 <= 1 << 30);
+	assert(*invGain_Q30 >= 0);
+	assert(*invGain_Q30 <= 1 << 30);
 
 	return 0;
 }
@@ -151,8 +151,8 @@ int SKP_Silk_LPC_inverse_pred_gain_Q13(	/* O:   Returns 1 if unstable, otherwise
 
 		/* rc_mult1_Q30 range: [ 1 : 2^30-1 ] */
 		rc_mult1_Q30 = (int32_t_MAX >> 1) - SKP_SMMUL(rc_Q31, rc_Q31);
-		SKP_assert(rc_mult1_Q30 > (1 << 15));	/* reduce A_LIMIT if fails */
-		SKP_assert(rc_mult1_Q30 < (1 << 30));
+		assert(rc_mult1_Q30 > (1 << 15));	/* reduce A_LIMIT if fails */
+		assert(rc_mult1_Q30 < (1 << 30));
 
 		/* rc_mult2_Q16 range: [ 2^16 : int32_t_MAX ] */
 		rc_mult2_Q16 = SKP_INVERSE32_varQ(rc_mult1_Q30, 46);	/* 16 = 46 - 30 */
@@ -161,8 +161,8 @@ int SKP_Silk_LPC_inverse_pred_gain_Q13(	/* O:   Returns 1 if unstable, otherwise
 		/* invGain_Q30 range: [ 0 : 2^30 ] */
 		*invGain_Q30 =
 		    SKP_LSHIFT(SKP_SMMUL(*invGain_Q30, rc_mult1_Q30), 2);
-		SKP_assert(*invGain_Q30 >= 0);
-		SKP_assert(*invGain_Q30 <= 1 << 30);
+		assert(*invGain_Q30 >= 0);
+		assert(*invGain_Q30 <= 1 << 30);
 
 		/* Swap pointers */
 		Aold_QA = Anew_QA;
@@ -196,8 +196,8 @@ int SKP_Silk_LPC_inverse_pred_gain_Q13(	/* O:   Returns 1 if unstable, otherwise
 	/* Update inverse gain */
 	/* Range: [ 0 : 2^30 ] */
 	*invGain_Q30 = SKP_LSHIFT(SKP_SMMUL(*invGain_Q30, rc_mult1_Q30), 2);
-	SKP_assert(*invGain_Q30 >= 0);
-	SKP_assert(*invGain_Q30 <= 1 << 30);
+	assert(*invGain_Q30 >= 0);
+	assert(*invGain_Q30 <= 1 << 30);
 
 	return 0;
 }

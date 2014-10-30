@@ -45,10 +45,10 @@ void SKP_Silk_apply_sine_window(int16_t px_win[],	/* O    Pointer to windowed si
 	int32_t px32, f_Q16, c_Q20, S0_Q16, S1_Q16;
 
 	/* Length must be multiple of 4 */
-	SKP_assert((length & 3) == 0);
+	assert((length & 3) == 0);
 
 	/* Input pointer must be 4-byte aligned */
-	SKP_assert(((int64_t) px & 3) == 0);
+	assert(((int64_t) px & 3) == 0);
 
 	if (win_type == 0) {
 		f_Q16 = SKP_DIV32_16(411775, length + 1);	// 411775 = 2 * 65536 * pi
@@ -60,7 +60,7 @@ void SKP_Silk_apply_sine_window(int16_t px_win[],	/* O    Pointer to windowed si
 	c_Q20 = -SKP_RSHIFT(SKP_MUL(f_Q16, f_Q16), 12);
 
 	/* c_Q20 becomes too large if length is too small */
-	SKP_assert(c_Q20 >= -32768);
+	assert(c_Q20 >= -32768);
 
 	/* initialize state */
 	if (win_type < 2) {

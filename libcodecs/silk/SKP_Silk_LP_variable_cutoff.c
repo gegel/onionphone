@@ -97,7 +97,7 @@ SKP_INLINE void SKP_Silk_LP_interpolate_filter_taps(int32_t
 				}
 			} else {	/* ( ( 1 << 16 ) - fac_Q16 ) is in range of a 16-bit int */
 
-				SKP_assert(((1 << 16) - fac_Q16) ==
+				assert(((1 << 16) - fac_Q16) ==
 					   SKP_SAT16(((1 << 16) - fac_Q16)));
 				/* Piece-wise linear interpolation of B and A */
 				for (nb = 0; nb < TRANSITION_NB; nb++) {
@@ -152,8 +152,8 @@ void SKP_Silk_LP_variable_cutoff(SKP_Silk_LP_state * psLP,	/* I/O  LP filter sta
 	int32_t B_Q28[TRANSITION_NB], A_Q28[TRANSITION_NA];
 	int fac_Q16 = 0, ind = 0;
 
-	SKP_assert(psLP->transition_frame_no >= 0);
-	SKP_assert((((psLP->transition_frame_no <= TRANSITION_FRAMES_DOWN)
+	assert(psLP->transition_frame_no >= 0);
+	assert((((psLP->transition_frame_no <= TRANSITION_FRAMES_DOWN)
 		     && (psLP->mode == 0))
 		    || ((psLP->transition_frame_no <= TRANSITION_FRAMES_UP)
 			&& (psLP->mode == 1))));
@@ -177,8 +177,8 @@ void SKP_Silk_LP_variable_cutoff(SKP_Silk_LP_state * psLP,	/* I/O  LP filter sta
 				ind = SKP_RSHIFT(fac_Q16, 16);
 				fac_Q16 -= SKP_LSHIFT(ind, 16);
 
-				SKP_assert(ind >= 0);
-				SKP_assert(ind < TRANSITION_INT_NUM);
+				assert(ind >= 0);
+				assert(ind < TRANSITION_INT_NUM);
 
 				/* Interpolate filter coefficients */
 				SKP_Silk_LP_interpolate_filter_taps(B_Q28,
@@ -214,8 +214,8 @@ void SKP_Silk_LP_variable_cutoff(SKP_Silk_LP_state * psLP,	/* I/O  LP filter sta
 				ind = SKP_RSHIFT(fac_Q16, 16);
 				fac_Q16 -= SKP_LSHIFT(ind, 16);
 
-				SKP_assert(ind >= 0);
-				SKP_assert(ind < TRANSITION_INT_NUM);
+				assert(ind >= 0);
+				assert(ind < TRANSITION_INT_NUM);
 
 				/* Interpolate filter coefficients */
 				SKP_Silk_LP_interpolate_filter_taps(B_Q28,
@@ -237,7 +237,7 @@ void SKP_Silk_LP_variable_cutoff(SKP_Silk_LP_state * psLP,	/* I/O  LP filter sta
 
 	if (psLP->transition_frame_no > 0) {
 		/* ARMA low-pass filtering */
-		SKP_assert(TRANSITION_NB == 3 && TRANSITION_NA == 2);
+		assert(TRANSITION_NB == 3 && TRANSITION_NA == 2);
 		SKP_Silk_biquad_alt(in, B_Q28, A_Q28, psLP->In_LP_State, out,
 				    frame_length);
 	} else {

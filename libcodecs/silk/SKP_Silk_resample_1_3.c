@@ -57,7 +57,7 @@ void SKP_Silk_resample_1_3(int16_t * out,	/* O:   Fs_low signal  [inLen/3]      
 	const int16_t A32[2] = { 11786, 29304 };
 
 	/* Check that input is multiple of 3 */
-	SKP_assert(inLen % 3 == 0);
+	assert(inLen % 3 == 0);
 
 	outLen = SKP_DIV32_16(inLen, 3);
 	while (outLen > 0) {

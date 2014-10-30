@@ -55,7 +55,7 @@ void SKP_Silk_resample_3_4(int16_t * out,	/* O:   Fs_high signal  [inLen*3/4]   
 	int32_t scratch[(9 * IN_SUBFR_LEN_RESAMPLE_3_4) / 2];
 
 	/* Check that input is multiple of 4 */
-	SKP_assert(inLen % 4 == 0);
+	assert(inLen % 4 == 0);
 
 	while (inLen > 0) {
 		LSubFrameIn = SKP_min_int(IN_SUBFR_LEN_RESAMPLE_3_4, inLen);

@@ -64,7 +64,7 @@ void SKP_Silk_VQ_WMat_EC_FIX(int *ind,	/* O    index of best codebook vector    
 		/* Weighted rate */
 		sum1_Q14 = SKP_SMULBB(mu_Q8, cl_Q6[k]);
 
-		SKP_assert(sum1_Q14 >= 0);
+		assert(sum1_Q14 >= 0);
 
 		/* Add weighted quantization error, assuming W_Q18 is symmetric */
 		/* NOTE: the code below loads two int16 values as one int32, and multiplies each using the  */
@@ -105,7 +105,7 @@ void SKP_Silk_VQ_WMat_EC_FIX(int *ind,	/* O    index of best codebook vector    
 		sum2_Q16 = SKP_SMULWB(W_Q18[24], diff_Q14_4);
 		sum1_Q14 = SKP_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14_4);
 
-		SKP_assert(sum1_Q14 >= 0);
+		assert(sum1_Q14 >= 0);
 
 		/* find best */
 		if (sum1_Q14 < *rate_dist_Q14) {

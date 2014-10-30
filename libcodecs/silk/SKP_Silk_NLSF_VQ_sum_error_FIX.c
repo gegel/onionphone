@@ -46,8 +46,8 @@ void SKP_Silk_NLSF_VQ_sum_error_FIX(int32_t * err_Q20,	/* O    Weighted quantiza
 	int32_t Wcpy_Q6[MAX_LPC_ORDER / 2];
 	const int16_t *cb_vec_Q15;
 
-	SKP_assert(LPC_order <= 16);
-	SKP_assert((LPC_order & 1) == 0);
+	assert(LPC_order <= 16);
+	assert((LPC_order & 1) == 0);
 
 	memzero(Wcpy_Q6, (MAX_LPC_ORDER / 2) * sizeof(int32_t));
 
@@ -81,7 +81,7 @@ void SKP_Silk_NLSF_VQ_sum_error_FIX(int32_t * err_Q20,	/* O    Weighted quantiza
 					       SKP_SMULBB(diff_Q15, diff_Q15),
 					       Wtmp_Q6);
 			}
-			SKP_assert(sum_error >= 0);
+			assert(sum_error >= 0);
 			err_Q20[i] = sum_error;
 		}
 		err_Q20 += K;

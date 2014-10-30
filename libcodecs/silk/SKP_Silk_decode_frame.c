@@ -50,7 +50,7 @@ int SKP_Silk_decode_frame(SKP_Silk_decoder_state * psDec,	/* I/O  Pointer to Sil
 	sDecCtrl.LTP_scale_Q14 = 0;
 
 	/* Safety checks */
-	SKP_assert(L > 0 && L <= MAX_FRAME_LENGTH);
+	assert(L > 0 && L <= MAX_FRAME_LENGTH);
 
     /********************************************/
 	/* Decode Frame if packet is not lost  */
@@ -152,7 +152,7 @@ int SKP_Silk_decode_frame(SKP_Silk_decoder_state * psDec,	/* I/O  Pointer to Sil
     /********************************************/
 	/* HP filter output                            */
     /********************************************/
-	SKP_assert(((psDec->fs_kHz == 12) && (L % 3) == 0) ||
+	assert(((psDec->fs_kHz == 12) && (L % 3) == 0) ||
 		   ((psDec->fs_kHz != 12) && (L % 2) == 0));
 	SKP_Silk_biquad(pOut, psDec->HP_B, psDec->HP_A, psDec->HPState, pOut,
 			L);

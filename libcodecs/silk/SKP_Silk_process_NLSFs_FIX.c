@@ -46,11 +46,11 @@ void SKP_Silk_process_NLSFs_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Enco
 	int pNLSFW0_temp_Q6[MAX_LPC_ORDER];
 	int i;
 
-	SKP_assert(psEnc->speech_activity_Q8 >= 0);
-	SKP_assert(psEnc->speech_activity_Q8 <= 256);
-	SKP_assert(psEncCtrl->sparseness_Q8 >= 0);
-	SKP_assert(psEncCtrl->sparseness_Q8 <= 256);
-	SKP_assert(psEncCtrl->sCmn.sigtype == SIG_TYPE_VOICED
+	assert(psEnc->speech_activity_Q8 >= 0);
+	assert(psEnc->speech_activity_Q8 <= 256);
+	assert(psEncCtrl->sparseness_Q8 >= 0);
+	assert(psEncCtrl->sparseness_Q8 <= 256);
+	assert(psEncCtrl->sCmn.sigtype == SIG_TYPE_VOICED
 		   || psEncCtrl->sCmn.sigtype == SIG_TYPE_UNVOICED);
 
     /***********************/
@@ -72,10 +72,10 @@ void SKP_Silk_process_NLSFs_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Enco
 			       psEnc->speech_activity_Q8 +
 			       psEncCtrl->sparseness_Q8);
 	}
-	SKP_assert(NLSF_mu_Q15 >= 0);
-	SKP_assert(NLSF_mu_Q15 <= 164);
-	SKP_assert(NLSF_mu_fluc_red_Q16 >= 0);
-	SKP_assert(NLSF_mu_fluc_red_Q16 <= 13107);
+	assert(NLSF_mu_Q15 >= 0);
+	assert(NLSF_mu_Q15 <= 164);
+	assert(NLSF_mu_fluc_red_Q16 >= 0);
+	assert(NLSF_mu_fluc_red_Q16 <= 13107);
 
 	NLSF_mu_Q15 = SKP_max(NLSF_mu_Q15, 1);
 
@@ -113,8 +113,8 @@ void SKP_Silk_process_NLSFs_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Enco
 			pNLSFW_Q6[i] =
 			    SKP_SMLAWB(SKP_RSHIFT(pNLSFW_Q6[i], 1),
 				       pNLSFW0_temp_Q6[i], i_sqr_Q15);
-			SKP_assert(pNLSFW_Q6[i] <= int16_t_MAX);
-			SKP_assert(pNLSFW_Q6[i] >= 1);
+			assert(pNLSFW_Q6[i] <= int16_t_MAX);
+			assert(pNLSFW_Q6[i] >= 1);
 		}
 	}
 

@@ -53,15 +53,15 @@ void SKP_Silk_NLSF_VQ_rate_distortion_FIX(int32_t * pRD_Q20,	/* O    Rate-distor
 	for (n = 0; n < N; n++) {
 		/* Add rate cost to error for each codebook vector */
 		for (i = 0; i < psNLSF_CBS->nVectors; i++) {
-			SKP_assert(rate_acc_Q5[n] + psNLSF_CBS->Rates_Q5[i] >=
+			assert(rate_acc_Q5[n] + psNLSF_CBS->Rates_Q5[i] >=
 				   0);
-			SKP_assert(rate_acc_Q5[n] + psNLSF_CBS->Rates_Q5[i] <=
+			assert(rate_acc_Q5[n] + psNLSF_CBS->Rates_Q5[i] <=
 				   int16_t_MAX);
 			pRD_vec_Q20[i] =
 			    SKP_SMLABB(pRD_vec_Q20[i],
 				       rate_acc_Q5[n] + psNLSF_CBS->Rates_Q5[i],
 				       mu_Q15);
-			SKP_assert(pRD_vec_Q20[i] >= 0);
+			assert(pRD_vec_Q20[i] >= 0);
 		}
 		pRD_vec_Q20 += psNLSF_CBS->nVectors;
 	}

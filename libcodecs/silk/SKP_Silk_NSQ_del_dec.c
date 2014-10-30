@@ -138,7 +138,7 @@ void SKP_Silk_NSQ_del_dec(SKP_Silk_encoder_state * psEncC,	/* I/O  Encoder State
 	/* Set unvoiced lag to the previous one, overwrite later for voiced */
 	lag = NSQ->lagPrev;
 
-	SKP_assert(NSQ->prev_inv_gain_Q16 != 0);
+	assert(NSQ->prev_inv_gain_Q16 != 0);
 
 	/* Initialize delayed decision states */
 	SKP_memset(psDelDec, 0,
@@ -218,7 +218,7 @@ void SKP_Silk_NSQ_del_dec(SKP_Silk_encoder_state * psEncC,	/* I/O  Encoder State
 						if (i != Winner_ind) {
 							psDelDec[i].RD_Q10 +=
 							    (int32_t_MAX >> 4);
-							SKP_assert(psDelDec[i].
+							assert(psDelDec[i].
 								   RD_Q10 >= 0);
 						}
 					}
@@ -287,7 +287,7 @@ void SKP_Silk_NSQ_del_dec(SKP_Silk_encoder_state * psEncC,	/* I/O  Encoder State
 		}
 
 		/* Noise shape parameters */
-		SKP_assert(HarmShapeGain_Q14[k] >= 0);
+		assert(HarmShapeGain_Q14[k] >= 0);
 		HarmShapeFIRPacked_Q14 = SKP_RSHIFT(HarmShapeGain_Q14[k], 2);
 		HarmShapeFIRPacked_Q14 |=
 		    SKP_LSHIFT((int32_t) SKP_RSHIFT(HarmShapeGain_Q14[k], 1),
@@ -483,9 +483,9 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer_del_dec(SKP_Silk_nsq_state * NSQ,
 			/* Pointer used in short term prediction and shaping */
 			psLPC_Q14 = &psDD->sLPC_Q14[NSQ_LPC_BUF_LENGTH - 1 + i];
 			/* Short-term prediction */
-			SKP_assert((predictLPCOrder & 1) == 0);	/* check that order is even */
-			SKP_assert(((int64_t) a_Q12 & 3) == 0);	/* check that array starts at 4-byte aligned address */
-			SKP_assert(predictLPCOrder >= 10);	/* check that unrolling works */
+			assert((predictLPCOrder & 1) == 0);	/* check that order is even */
+			assert(((int64_t) a_Q12 & 3) == 0);	/* check that array starts at 4-byte aligned address */
+			assert(predictLPCOrder >= 10);	/* check that unrolling works */
 
 			/* Partially unrolled */
 			Atmp = a_Q12_tmp[0];	/* read two coefficients at once */
@@ -523,9 +523,9 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer_del_dec(SKP_Silk_nsq_state * NSQ,
 			}
 
 			/* Noise shape feedback */
-			SKP_assert((shapingLPCOrder & 1) == 0);	/* check that order is even */
-			SKP_assert(((int64_t) AR_shp_Q13 & 3) == 0);	/* check that array starts at 4-byte aligned address */
-			SKP_assert(shapingLPCOrder >= 12);	/* check that unrolling works */
+			assert((shapingLPCOrder & 1) == 0);	/* check that order is even */
+			assert(((int64_t) AR_shp_Q13 & 3) == 0);	/* check that array starts at 4-byte aligned address */
+			assert(shapingLPCOrder >= 12);	/* check that unrolling works */
 			/* NOTE: the code below loads two int16 values in an int32, and multiplies each using the   */
 			/* SMLAWB and SMLAWT instructions. On a big-endian CPU the two int16 variables would be     */
 			/* loaded in reverse order and the code will give the wrong result. In that case swapping   */
@@ -712,7 +712,7 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer_del_dec(SKP_Silk_nsq_state * NSQ,
 				psSampleState[k][1].RD_Q10 =
 				    SKP_ADD32(psSampleState[k][1].RD_Q10,
 					      (int32_t_MAX >> 4));
-				SKP_assert(psSampleState[k][0].RD_Q10 >= 0);
+				assert(psSampleState[k][0].RD_Q10 >= 0);
 			}
 		}
 
@@ -824,7 +824,7 @@ SKP_INLINE void SKP_Silk_nsq_del_dec_scale_states(SKP_Silk_nsq_state * NSQ,	/* I
 		}
 		for (i = NSQ->sLTP_buf_idx - lag - LTP_ORDER / 2;
 		     i < NSQ->sLTP_buf_idx; i++) {
-			SKP_assert(i < MAX_FRAME_LENGTH);
+			assert(i < MAX_FRAME_LENGTH);
 			sLTP_Q16[i] = SKP_SMULWB(inv_gain_Q32, sLTP[i]);
 		}
 	}
@@ -888,7 +888,7 @@ SKP_INLINE void SKP_Silk_nsq_del_dec_scale_states(SKP_Silk_nsq_state * NSQ,	/* I
 	}
 
 	/* save inv_gain */
-	SKP_assert(inv_gain_Q16 != 0);
+	assert(inv_gain_Q16 != 0);
 	NSQ->prev_inv_gain_Q16 = inv_gain_Q16;
 }
 
