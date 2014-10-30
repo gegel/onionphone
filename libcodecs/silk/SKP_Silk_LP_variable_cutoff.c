@@ -39,7 +39,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #if SWITCH_TRANSITION_FILTERING
 
 /* Helper function, that interpolates the filter taps */
-SKP_INLINE void SKP_Silk_LP_interpolate_filter_taps(int32_t
+static inline void SKP_Silk_LP_interpolate_filter_taps(int32_t
 						    B_Q28[TRANSITION_NB],
 						    int32_t
 						    A_Q28[TRANSITION_NA],

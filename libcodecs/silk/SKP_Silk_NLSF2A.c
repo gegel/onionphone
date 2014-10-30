@@ -38,7 +38,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* helper function for NLSF2A(..) */
-SKP_INLINE void SKP_Silk_NLSF2A_find_poly(int32_t * out,	/* o    intermediate polynomial, Q20            */
+static inline void SKP_Silk_NLSF2A_find_poly(int32_t * out,	/* o    intermediate polynomial, Q20            */
 					  const int32_t * cLSF,	/* i    vector of interleaved 2*cos(LSFs), Q20  */
 					  int dd	/* i    polynomial order (= 1/2 * filter order) */
     )

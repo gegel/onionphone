@@ -35,7 +35,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Encode quantization indices of excitation */
 /*********************************************/
 
-SKP_INLINE int combine_and_check(	/* return ok */
+static inline int combine_and_check(	/* return ok */
 					int *pulses_comb,	/* O */
 					const int *pulses_in,	/* I */
 					int max_pulses,	/* I    max value for sum of pulses */

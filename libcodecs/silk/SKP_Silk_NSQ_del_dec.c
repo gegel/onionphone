@@ -54,12 +54,12 @@ typedef struct {
 	int32_t LPC_exc_Q16;
 } NSQ_sample_struct;
 
-SKP_INLINE void SKP_Silk_copy_del_dec_state(NSQ_del_dec_struct * DD_dst,	/* I    Dst del dec state                   */
+static inline void SKP_Silk_copy_del_dec_state(NSQ_del_dec_struct * DD_dst,	/* I    Dst del dec state                   */
 					    NSQ_del_dec_struct * DD_src,	/* I    Src del dec state                   */
 					    int LPC_state_idx	/* I    Index to LPC buffer                 */
     );
 
-SKP_INLINE void SKP_Silk_nsq_del_dec_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                           */
+static inline void SKP_Silk_nsq_del_dec_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                           */
 						  NSQ_del_dec_struct psDelDec[],	/* I/O  Delayed decision states             */
 						  const int16_t x[],	/* I    Input in Q0                         */
 						  int32_t x_sc_Q10[],	/* O    Input scaled with 1/Gain in Q10     */
@@ -77,7 +77,7 @@ SKP_INLINE void SKP_Silk_nsq_del_dec_scale_states(SKP_Silk_nsq_state * NSQ,	/* I
 /******************************************/
 /* Noise shape quantizer for one subframe */
 /******************************************/
-SKP_INLINE void SKP_Silk_noise_shape_quantizer_del_dec(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                           */
+static inline void SKP_Silk_noise_shape_quantizer_del_dec(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                           */
 						       NSQ_del_dec_struct psDelDec[],	/* I/O  Delayed decision states             */
 						       int sigtype,	/* I    Signal type                         */
 						       const int32_t x_Q10[],	/* I                                        */
@@ -372,7 +372,7 @@ void SKP_Silk_NSQ_del_dec(SKP_Silk_encoder_state * psEncC,	/* I/O  Encoder State
 /******************************************/
 /* Noise shape quantizer for one subframe */
 /******************************************/
-SKP_INLINE void SKP_Silk_noise_shape_quantizer_del_dec(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                           */
+static inline void SKP_Silk_noise_shape_quantizer_del_dec(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                           */
 						       NSQ_del_dec_struct psDelDec[],	/* I/O  Delayed decision states             */
 						       int sigtype,	/* I    Signal type                         */
 						       const int32_t x_Q10[],	/* I                                        */
@@ -789,7 +789,7 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer_del_dec(SKP_Silk_nsq_state * NSQ,
 	}
 }
 
-SKP_INLINE void SKP_Silk_nsq_del_dec_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                           */
+static inline void SKP_Silk_nsq_del_dec_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                           */
 						  NSQ_del_dec_struct psDelDec[],	/* I/O  Delayed decision states             */
 						  const int16_t x[],	/* I    Input in Q0                         */
 						  int32_t x_sc_Q10[],	/* O    Input scaled with 1/Gain in Q10     */
@@ -892,7 +892,7 @@ SKP_INLINE void SKP_Silk_nsq_del_dec_scale_states(SKP_Silk_nsq_state * NSQ,	/* I
 	NSQ->prev_inv_gain_Q16 = inv_gain_Q16;
 }
 
-SKP_INLINE void SKP_Silk_copy_del_dec_state(NSQ_del_dec_struct * DD_dst,	/* I    Dst del dec state                   */
+static inline void SKP_Silk_copy_del_dec_state(NSQ_del_dec_struct * DD_dst,	/* I    Dst del dec state                   */
 					    NSQ_del_dec_struct * DD_src,	/* I    Src del dec state                   */
 					    int LPC_state_idx	/* I    Index to LPC buffer                 */
     )

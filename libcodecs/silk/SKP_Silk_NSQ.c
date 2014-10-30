@@ -29,7 +29,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_main.h"
 
-SKP_INLINE void SKP_Silk_nsq_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O NSQ state                        */
+static inline void SKP_Silk_nsq_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O NSQ state                        */
 					  const int16_t x[],	/* I input in Q0                        */
 					  int32_t x_sc_Q10[],	/* O input scaled with 1/Gain           */
 					  int length,	/* I length of input                    */
@@ -41,7 +41,7 @@ SKP_INLINE void SKP_Silk_nsq_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O NSQ s
 					  const int pitchL[NB_SUBFR]	/* I                                    */
     );
 
-SKP_INLINE void SKP_Silk_noise_shape_quantizer(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                       */
+static inline void SKP_Silk_noise_shape_quantizer(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                       */
 					       int sigtype,	/* I    Signal type                     */
 					       const int32_t x_sc_Q10[],	/* I                                    */
 					       int q[],	/* O                                    */
@@ -190,7 +190,7 @@ void SKP_Silk_NSQ(SKP_Silk_encoder_state * psEncC,	/* I/O  Encoder State        
 /***********************************/
 /* SKP_Silk_noise_shape_quantizer  */
 /***********************************/
-SKP_INLINE void SKP_Silk_noise_shape_quantizer(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                       */
+static inline void SKP_Silk_noise_shape_quantizer(SKP_Silk_nsq_state * NSQ,	/* I/O  NSQ state                       */
 					       int sigtype,	/* I    Signal type                     */
 					       const int32_t x_sc_Q10[],	/* I                                    */
 					       int q[],	/* O                                    */
@@ -430,7 +430,7 @@ SKP_INLINE void SKP_Silk_noise_shape_quantizer(SKP_Silk_nsq_state * NSQ,	/* I/O 
 		   MAX_LPC_ORDER * sizeof(int32_t));
 }
 
-SKP_INLINE void SKP_Silk_nsq_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O NSQ state                        */
+static inline void SKP_Silk_nsq_scale_states(SKP_Silk_nsq_state * NSQ,	/* I/O NSQ state                        */
 					  const int16_t x[],	/* I input in Q0                        */
 					  int32_t x_sc_Q10[],	/* O input scaled with 1/Gain           */
 					  int length,	/* I length of input                    */

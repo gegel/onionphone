@@ -41,7 +41,7 @@ extern "C" {
 #endif
 
 /* count leading zeros of int64_t */
-	SKP_INLINE int32_t SKP_Silk_CLZ64(int64_t in) {
+	static inline int32_t SKP_Silk_CLZ64(int64_t in) {
 		int32_t in_upper;
 
 		 in_upper = (int32_t) SKP_RSHIFT64(in, 32);
@@ -55,7 +55,7 @@ extern "C" {
 	}
 
 /* get number of leading zeros and fractional part (the bits right after the leading one */
-	SKP_INLINE void SKP_Silk_CLZ_FRAC(int32_t in,	/* I: input */
+	static inline void SKP_Silk_CLZ_FRAC(int32_t in,	/* I: input */
 					  int32_t * lz,	/* O: number of leading zeros */
 					  int32_t * frac_Q7) {	/* O: the 7 bits right after the leading one */
 		int32_t leadingZeros;
@@ -72,7 +72,7 @@ extern "C" {
 /* Approximation of square root                                          */
 /* Accuracy: < +/- 10% for output values > 15                            */
 /*             < +/- 2.5% for output values > 120                        */
-	SKP_INLINE int32_t SKP_Silk_SQRT_APPROX(int32_t x) {
+	static inline int32_t SKP_Silk_SQRT_APPROX(int32_t x) {
 		int32_t y, lz, frac_Q7;
 
 		if (x <= 0) {
@@ -97,7 +97,7 @@ extern "C" {
 	}
 
 /* returns the number of left shifts before overflow for a 16 bit number (ITU definition with norm(0)=0) */
-	SKP_INLINE int32_t SKP_Silk_norm16(int16_t a) {
+	static inline int32_t SKP_Silk_norm16(int16_t a) {
 
 		int32_t a32;
 
@@ -113,7 +113,7 @@ extern "C" {
 	}
 
 /* returns the number of left shifts before overflow for a 32 bit number (ITU definition with norm(0)=0) */
-	SKP_INLINE int32_t SKP_Silk_norm32(int32_t a) {
+	static inline int32_t SKP_Silk_norm32(int32_t a) {
 
 		/* if ((a == 0) || (a == int32_t_MIN)) return(0); */
 		if ((a << 1) == 0)
@@ -126,7 +126,7 @@ extern "C" {
 	}
 
 /* Divide two int32 values and return result as int32 in a given Q-domain */
-	SKP_INLINE int32_t SKP_DIV32_varQ(	/* O    returns a good approximation of "(a32 << Qres) / b32" */
+	static inline int32_t SKP_DIV32_varQ(	/* O    returns a good approximation of "(a32 << Qres) / b32" */
 						 const int32_t a32,	/* I    numerator (Q0)                  */
 						 const int32_t b32,	/* I    denominator (Q0)                */
 						 const int Qres	/* I    Q-domain of result (>= 0)       */
@@ -170,7 +170,7 @@ extern "C" {
 	}
 
 /* Invert int32 value and return result as int32 in a given Q-domain */
-	SKP_INLINE int32_t SKP_INVERSE32_varQ(	/* O    returns a good approximation of "(1 << Qres) / b32" */
+	static inline int32_t SKP_INVERSE32_varQ(	/* O    returns a good approximation of "(1 << Qres) / b32" */
 						     const int32_t b32,	/* I    denominator (Q0)                */
 						     const int Qres	/* I    Q-domain of result (> 0)        */
 	    ) {
@@ -218,7 +218,7 @@ extern "C" {
 /* Sine approximation; an input of 65536 corresponds to 2 * pi */
 /* Uses polynomial expansion of the input to the power 0, 2, 4 and 6 */
 /* The relative error is below 1e-5 */
-	SKP_INLINE int32_t SKP_Silk_SIN_APPROX_Q24(	/* O    returns approximately 2^24 * sin(x * 2 * pi / 65536) */
+	static inline int32_t SKP_Silk_SIN_APPROX_Q24(	/* O    returns approximately 2^24 * sin(x * 2 * pi / 65536) */
 							  int32_t x) {
 		int y_Q30;
 
@@ -271,7 +271,7 @@ extern "C" {
 
 /* Cosine approximation; an input of 65536 corresponds to 2 * pi */
 /* The relative error is below 1e-5 */
-	SKP_INLINE int32_t SKP_Silk_COS_APPROX_Q24(	/* O    returns approximately 2^24 * cos(x * 2 * pi / 65536) */
+	static inline int32_t SKP_Silk_COS_APPROX_Q24(	/* O    returns approximately 2^24 * cos(x * 2 * pi / 65536) */
 							  int32_t x) {
 		return SKP_Silk_SIN_APPROX_Q24(x + 16384);
 	}

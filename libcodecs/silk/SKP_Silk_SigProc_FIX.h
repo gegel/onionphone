@@ -664,29 +664,29 @@ extern "C" {
 #define SKP_FIX_CONST( C, Q )             ((int32_t)((C) * (1 << (Q)) + 0.5))
 
 /* SKP_min() versions with typecast in the function call */
-	SKP_INLINE int SKP_min_int(int a, int b) {
+	static inline int SKP_min_int(int a, int b) {
 		return (((a) < (b)) ? (a) : (b));
-	} SKP_INLINE int16_t SKP_min_16(int16_t a, int16_t b) {
-		return (((a) < (b)) ? (a) : (b));
-	}
-	SKP_INLINE int32_t SKP_min_32(int32_t a, int32_t b) {
+	} static inline int16_t SKP_min_16(int16_t a, int16_t b) {
 		return (((a) < (b)) ? (a) : (b));
 	}
-	SKP_INLINE int64_t SKP_min_64(int64_t a, int64_t b) {
+	static inline int32_t SKP_min_32(int32_t a, int32_t b) {
+		return (((a) < (b)) ? (a) : (b));
+	}
+	static inline int64_t SKP_min_64(int64_t a, int64_t b) {
 		return (((a) < (b)) ? (a) : (b));
 	}
 
 /* SKP_min() versions with typecast in the function call */
-	SKP_INLINE int SKP_max_int(int a, int b) {
+	static inline int SKP_max_int(int a, int b) {
 		return (((a) > (b)) ? (a) : (b));
 	}
-	SKP_INLINE int16_t SKP_max_16(int16_t a, int16_t b) {
+	static inline int16_t SKP_max_16(int16_t a, int16_t b) {
 		return (((a) > (b)) ? (a) : (b));
 	}
-	SKP_INLINE int32_t SKP_max_32(int32_t a, int32_t b) {
+	static inline int32_t SKP_max_32(int32_t a, int32_t b) {
 		return (((a) > (b)) ? (a) : (b));
 	}
-	SKP_INLINE int64_t SKP_max_64(int64_t a, int64_t b) {
+	static inline int64_t SKP_max_64(int64_t a, int64_t b) {
 		return (((a) > (b)) ? (a) : (b));
 	}
 

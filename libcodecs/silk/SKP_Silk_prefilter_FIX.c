@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_perceptual_parameters_FIX.h"
 
 /* SKP_Silk_prefilter. Prefilter for finding Quantizer input signal */
-SKP_INLINE void SKP_Silk_prefilt_FIX(SKP_Silk_prefilter_state_FIX * P,	/* I/O state                          */
+static inline void SKP_Silk_prefilt_FIX(SKP_Silk_prefilter_state_FIX * P,	/* I/O state                          */
 				     int32_t st_res_Q12[],	/* I short term residual signal       */
 				     int16_t xw[],	/* O prefiltered signal               */
 				     int32_t HarmShapeFIRPacked_Q12,	/* I Harmonic shaping coeficients     */
@@ -126,7 +126,7 @@ void SKP_Silk_prefilter_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Encoder 
 }
 
 /* SKP_Silk_prefilter. Prefilter for finding Quantizer input signal                           */
-SKP_INLINE void SKP_Silk_prefilt_FIX(SKP_Silk_prefilter_state_FIX * P,	/* I/O state                          */
+static inline void SKP_Silk_prefilt_FIX(SKP_Silk_prefilter_state_FIX * P,	/* I/O state                          */
 				     int32_t st_res_Q12[],	/* I short term residual signal       */
 				     int16_t xw[],	/* O prefiltered signal               */
 				     int32_t HarmShapeFIRPacked_Q12,	/* I Harmonic shaping coeficients     */

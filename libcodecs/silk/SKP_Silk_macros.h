@@ -74,7 +74,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 										(( (a) & ((b)^0x80000000) & 0x80000000) ? int32_t_MIN : (a)-(b)) :	\
 										((((a)^0x80000000) & (b)  & 0x80000000) ? int32_t_MAX : (a)-(b)) )
 
-SKP_INLINE int32_t SKP_Silk_CLZ16(int16_t in16)
+static inline int32_t SKP_Silk_CLZ16(int16_t in16)
 {
 	int32_t out32 = 0;
 	if (in16 == 0) {
@@ -110,7 +110,7 @@ SKP_INLINE int32_t SKP_Silk_CLZ16(int16_t in16)
 	}
 }
 
-SKP_INLINE int32_t SKP_Silk_CLZ32(int32_t in32)
+static inline int32_t SKP_Silk_CLZ32(int32_t in32)
 {
 	/* test highest 16 bits and convert to int16_t */
 	if (in32 & 0xFFFF0000) {

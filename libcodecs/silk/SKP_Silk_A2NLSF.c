@@ -45,7 +45,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* Helper function for A2NLSF(..)                    */
 /* Transforms polynomials from cos(n*f) to cos(f)^n  */
-SKP_INLINE void SKP_Silk_A2NLSF_trans_poly(int32_t * p,	/* I/O    Polynomial                                */
+static inline void SKP_Silk_A2NLSF_trans_poly(int32_t * p,	/* I/O    Polynomial                                */
 					   const int dd	/* I      Polynomial order (= filter order / 2 )    */
     )
 {
@@ -61,7 +61,7 @@ SKP_INLINE void SKP_Silk_A2NLSF_trans_poly(int32_t * p,	/* I/O    Polynomial    
 
 /* Helper function for A2NLSF(..)                    */
 /* Polynomial evaluation                             */
-SKP_INLINE int32_t SKP_Silk_A2NLSF_eval_poly(	/* return the polynomial evaluation, in QPoly */
+static inline int32_t SKP_Silk_A2NLSF_eval_poly(	/* return the polynomial evaluation, in QPoly */
 						    int32_t * p,	/* I    Polynomial, QPoly        */
 						    const int32_t x,	/* I    Evaluation point, Q12    */
 						    const int dd	/* I    Order                    */
@@ -78,7 +78,7 @@ SKP_INLINE int32_t SKP_Silk_A2NLSF_eval_poly(	/* return the polynomial evaluatio
 	return y32;
 }
 
-SKP_INLINE void SKP_Silk_A2NLSF_init(const int32_t * a_Q16,
+static inline void SKP_Silk_A2NLSF_init(const int32_t * a_Q16,
 				     int32_t * P, int32_t * Q, const int dd)
 {
 	int k;

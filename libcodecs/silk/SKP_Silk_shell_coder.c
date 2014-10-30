@@ -31,7 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 /* shell coder; pulse-subframe length is hardcoded */
 
-SKP_INLINE void combine_pulses(int *out,	/* O:   combined pulses vector [len] */
+static inline void combine_pulses(int *out,	/* O:   combined pulses vector [len] */
 			       const int *in,	/* I:   input vector       [2 * len] */
 			       const int len	/* I:   number of OUTPUT samples     */
     )
@@ -42,7 +42,7 @@ SKP_INLINE void combine_pulses(int *out,	/* O:   combined pulses vector [len] */
 	}
 }
 
-SKP_INLINE void encode_split(SKP_Silk_range_coder_state * sRC,	/* I/O: compressor data structure                   */
+static inline void encode_split(SKP_Silk_range_coder_state * sRC,	/* I/O: compressor data structure                   */
 			     const int p_child1,	/* I:   pulse amplitude of first child subframe     */
 			     const int p,	/* I:   pulse amplitude of current subframe         */
 			     const uint16_t * shell_table	/* I:   table of shell cdfs                         */
@@ -56,7 +56,7 @@ SKP_INLINE void encode_split(SKP_Silk_range_coder_state * sRC,	/* I/O: compresso
 	}
 }
 
-SKP_INLINE void decode_split(int *p_child1,	/* O:   pulse amplitude of first child subframe     */
+static inline void decode_split(int *p_child1,	/* O:   pulse amplitude of first child subframe     */
 			     int *p_child2,	/* O:   pulse amplitude of second child subframe    */
 			     SKP_Silk_range_coder_state * sRC,	/* I/O: compressor data structure                   */
 			     const int p,	/* I:   pulse amplitude of current subframe         */

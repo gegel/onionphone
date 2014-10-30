@@ -30,7 +30,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_main_FIX.h"
 
 /* Generates excitation for CNG LPC synthesis */
-SKP_INLINE void SKP_Silk_CNG_exc(int16_t residual[],	/* O    CNG residual signal Q0                      */
+static inline void SKP_Silk_CNG_exc(int16_t residual[],	/* O    CNG residual signal Q0                      */
 				 int32_t exc_buf_Q10[],	/* I    Random samples buffer Q10                   */
 				 int32_t Gain_Q16,	/* I    Gain to apply                               */
 				 int length,	/* I    Length                                      */
