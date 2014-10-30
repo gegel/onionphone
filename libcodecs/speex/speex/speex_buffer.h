@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2007 Jean-Marc Valin
       
    File: speex_buffer.h
@@ -40,29 +42,24 @@
 extern "C" {
 #endif
 
-struct SpeexBuffer_;
-typedef struct SpeexBuffer_ SpeexBuffer;
+	struct SpeexBuffer_;
+	typedef struct SpeexBuffer_ SpeexBuffer;
 
-SpeexBuffer *speex_buffer_init(int size);
+	SpeexBuffer *speex_buffer_init(int size);
 
-void speex_buffer_destroy(SpeexBuffer *st);
+	void speex_buffer_destroy(SpeexBuffer * st);
 
-int speex_buffer_write(SpeexBuffer *st, void *data, int len);
+	int speex_buffer_write(SpeexBuffer * st, void *data, int len);
 
-int speex_buffer_writezeros(SpeexBuffer *st, int len);
+	int speex_buffer_writezeros(SpeexBuffer * st, int len);
 
-int speex_buffer_read(SpeexBuffer *st, void *data, int len);
+	int speex_buffer_read(SpeexBuffer * st, void *data, int len);
 
-int speex_buffer_get_available(SpeexBuffer *st);
+	int speex_buffer_get_available(SpeexBuffer * st);
 
-int speex_buffer_resize(SpeexBuffer *st, int len);
+	int speex_buffer_resize(SpeexBuffer * st, int len);
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif
-
-
-
-

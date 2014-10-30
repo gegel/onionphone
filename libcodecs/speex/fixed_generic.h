@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2003 Jean-Marc Valin */
 /**
    @file fixed_generic.h
@@ -57,12 +59,10 @@
 #define PSHR(a,shift) (SHR((a)+((EXTEND32(1)<<((shift))>>1)),shift))
 #define SATURATE(x,a) (((x)>(a) ? (a) : (x)<-(a) ? -(a) : (x)))
 
-
 #define ADD16(a,b) ((spx_word16_t)((spx_word16_t)(a)+(spx_word16_t)(b)))
 #define SUB16(a,b) ((spx_word16_t)(a)-(spx_word16_t)(b))
 #define ADD32(a,b) ((spx_word32_t)(a)+(spx_word32_t)(b))
 #define SUB32(a,b) ((spx_word32_t)(a)-(spx_word32_t)(b))
-
 
 /* result fits in 16 bits */
 #define MULT16_16_16(a,b)     ((((spx_word16_t)(a))*((spx_word16_t)(b))))
@@ -81,7 +81,6 @@
 #define MULT16_32_P15(a,b) ADD32(MULT16_16((a),SHR((b),15)), PSHR(MULT16_16((a),((b)&0x00007fff)),15))
 #define MULT16_32_Q15(a,b) ADD32(MULT16_16((a),SHR((b),15)), SHR(MULT16_16((a),((b)&0x00007fff)),15))
 #define MAC16_32_Q15(c,a,b) ADD32(c,ADD32(MULT16_16((a),SHR((b),15)), SHR(MULT16_16((a),((b)&0x00007fff)),15)))
-
 
 #define MAC16_16_Q11(c,a,b)     (ADD32((c),SHR(MULT16_16((a),(b)),11)))
 #define MAC16_16_Q13(c,a,b)     (ADD32((c),SHR(MULT16_16((a),(b)),13)))

@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2003 Epic Games
    Written by Jean-Marc Valin */
 /**
@@ -48,13 +50,12 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-   
-/** State of the preprocessor (one per channel). Should never be accessed directly. */
-struct SpeexPreprocessState_;
 
 /** State of the preprocessor (one per channel). Should never be accessed directly. */
-typedef struct SpeexPreprocessState_ SpeexPreprocessState;
+	struct SpeexPreprocessState_;
 
+/** State of the preprocessor (one per channel). Should never be accessed directly. */
+	typedef struct SpeexPreprocessState_ SpeexPreprocessState;
 
 /** Creates a new preprocessing state. You MUST create one state per channel processed.
  * @param frame_size Number of samples to process at one time (should correspond to 10-20 ms). Must be
@@ -62,28 +63,31 @@ typedef struct SpeexPreprocessState_ SpeexPreprocessState;
  * @param sampling_rate Sampling rate used for the input.
  * @return Newly created preprocessor state
 */
-SpeexPreprocessState *speex_preprocess_state_init(int frame_size, int sampling_rate);
+	SpeexPreprocessState *speex_preprocess_state_init(int frame_size,
+							  int sampling_rate);
 
 /** Destroys a preprocessor state 
  * @param st Preprocessor state to destroy
 */
-void speex_preprocess_state_destroy(SpeexPreprocessState *st);
+	void speex_preprocess_state_destroy(SpeexPreprocessState * st);
 
 /** Preprocess a frame 
  * @param st Preprocessor state
  * @param x Audio sample vector (in and out). Must be same size as specified in speex_preprocess_state_init().
  * @return Bool value for voice activity (1 for speech, 0 for noise/silence), ONLY if VAD turned on.
 */
-int speex_preprocess_run(SpeexPreprocessState *st, spx_int16_t *x);
+	int speex_preprocess_run(SpeexPreprocessState * st, spx_int16_t * x);
 
 /** Preprocess a frame (deprecated, use speex_preprocess_run() instead)*/
-int speex_preprocess(SpeexPreprocessState *st, spx_int16_t *x, spx_int32_t *echo);
+	int speex_preprocess(SpeexPreprocessState * st, spx_int16_t * x,
+			     spx_int32_t * echo);
 
 /** Update preprocessor state, but do not compute the output
  * @param st Preprocessor state
  * @param x Audio sample vector (in only). Must be same size as specified in speex_preprocess_state_init().
 */
-void speex_preprocess_estimate_update(SpeexPreprocessState *st, spx_int16_t *x);
+	void speex_preprocess_estimate_update(SpeexPreprocessState * st,
+					      spx_int16_t * x);
 
 /** Used like the ioctl function to control the preprocessor parameters 
  * @param st Preprocessor state
@@ -91,9 +95,8 @@ void speex_preprocess_estimate_update(SpeexPreprocessState *st, spx_int16_t *x);
  * @param ptr Data exchanged to-from function
  * @return 0 if no error, -1 if request in unknown
 */
-int speex_preprocess_ctl(SpeexPreprocessState *st, int request, void *ptr);
-
-
+	int speex_preprocess_ctl(SpeexPreprocessState * st, int request,
+				 void *ptr);
 
 /** Set preprocessor denoiser state */
 #define SPEEX_PREPROCESS_SET_DENOISE 0
@@ -214,6 +217,5 @@ int speex_preprocess_ctl(SpeexPreprocessState *st, int request, void *ptr);
 #ifdef __cplusplus
 }
 #endif
-
 /** @}*/
 #endif

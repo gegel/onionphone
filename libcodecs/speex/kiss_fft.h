@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 #ifndef KISS_FFT_H
 #define KISS_FFT_H
 
@@ -23,30 +25,29 @@ extern "C" {
 */
 
 #ifdef USE_SIMD
-# include <xmmintrin.h>
-# define kiss_fft_scalar __m128
+#include <xmmintrin.h>
+#define kiss_fft_scalar __m128
 #define KISS_FFT_MALLOC(nbytes) memalign(16,nbytes)
-#else	
-#define KISS_FFT_MALLOC speex_alloc
-#endif	
-
-
-#ifdef FIXED_POINT
-#include "arch.h"	
-#  define kiss_fft_scalar spx_int16_t
 #else
-# ifndef kiss_fft_scalar
-/*  default is float */
-#   define kiss_fft_scalar float
-# endif
+#define KISS_FFT_MALLOC speex_alloc
 #endif
 
-typedef struct {
-    kiss_fft_scalar r;
-    kiss_fft_scalar i;
-}kiss_fft_cpx;
+#ifdef FIXED_POINT
+#include "arch.h"
+#define kiss_fft_scalar spx_int16_t
+#else
+#ifndef kiss_fft_scalar
+/*  default is float */
+#define kiss_fft_scalar float
+#endif
+#endif
 
-typedef struct kiss_fft_state* kiss_fft_cfg;
+	typedef struct {
+		kiss_fft_scalar r;
+		kiss_fft_scalar i;
+	} kiss_fft_cpx;
+
+	typedef struct kiss_fft_state *kiss_fft_cfg;
 
 /* 
  *  kiss_fft_alloc
@@ -79,11 +80,9 @@ typedef struct kiss_fft_state* kiss_fft_cfg;
  Cleans up some memory that gets managed internally. Not necessary to call, but it might clean up 
  your compiler output to call this before you exit.
 */
-void kiss_fft_cleanup(void);
-	
+	void kiss_fft_cleanup(void);
 
 #ifdef __cplusplus
-} 
+}
 #endif
-
 #endif
