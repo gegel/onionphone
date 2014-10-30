@@ -39,7 +39,7 @@
  *  This is the acoustic echo canceller module.
  *  @{
  */
-#include "speex_types.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -93,14 +93,14 @@ extern "C" {
  * @param out Returns near-end signal with echo removed
  */
 	void speex_echo_cancellation(SpeexEchoState * st,
-				     const spx_int16_t * rec,
-				     const spx_int16_t * play,
-				     spx_int16_t * out);
+				     const int16_t * rec,
+				     const int16_t * play,
+				     int16_t * out);
 
 /** Performs echo cancellation a frame (deprecated) */
-	void speex_echo_cancel(SpeexEchoState * st, const spx_int16_t * rec,
-			       const spx_int16_t * play, spx_int16_t * out,
-			       spx_int32_t * Yout);
+	void speex_echo_cancel(SpeexEchoState * st, const int16_t * rec,
+			       const int16_t * play, int16_t * out,
+			       int32_t * Yout);
 
 /** Perform echo cancellation using internal playback buffer, which is delayed by two frames
  * to account for the delay introduced by most soundcards (but it could be off!)
@@ -108,14 +108,14 @@ extern "C" {
  * @param rec Signal from the microphone (near end + far end echo)
  * @param out Returns near-end signal with echo removed
 */
-	void speex_echo_capture(SpeexEchoState * st, const spx_int16_t * rec,
-				spx_int16_t * out);
+	void speex_echo_capture(SpeexEchoState * st, const int16_t * rec,
+				int16_t * out);
 
 /** Let the echo canceller know that a frame was just queued to the soundcard
  * @param st Echo canceller state
  * @param play Signal played to the speaker (received from far end)
 */
-	void speex_echo_playback(SpeexEchoState * st, const spx_int16_t * play);
+	void speex_echo_playback(SpeexEchoState * st, const int16_t * play);
 
 /** Reset the echo canceller to its original state 
  * @param st Echo canceller state

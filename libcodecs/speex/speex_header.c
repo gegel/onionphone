@@ -47,10 +47,10 @@
 #endif
 
 /** Convert little endian */
-static inline spx_int32_t le_int(spx_int32_t i)
+static inline int32_t le_int(int32_t i)
 {
 #if !defined(__LITTLE_ENDIAN__) && ( defined(WORDS_BIGENDIAN) || defined(__BIG_ENDIAN__) )
-	spx_uint32_t ui, ret;
+	uint32_t ui, ret;
 	ui = i;
 	ret = ui >> 24;
 	ret |= (ui >> 8) & 0x0000ff00;

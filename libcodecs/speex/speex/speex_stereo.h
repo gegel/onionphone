@@ -41,7 +41,7 @@
  *  @{
  */
 
-#include "speex_types.h"
+#include <stdint.h>
 #include "speex_bits.h"
 
 #ifdef __cplusplus
@@ -80,7 +80,7 @@ extern "C" {
 	void speex_encode_stereo(float *data, int frame_size, SpeexBits * bits);
 
 /** Transforms a stereo frame into a mono frame and stores intensity stereo info in 'bits' */
-	void speex_encode_stereo_int(spx_int16_t * data, int frame_size,
+	void speex_encode_stereo_int(int16_t * data, int frame_size,
 				     SpeexBits * bits);
 
 /** Transforms a mono frame into a stereo frame using intensity stereo info */
@@ -88,7 +88,7 @@ extern "C" {
 				 SpeexStereoState * stereo);
 
 /** Transforms a mono frame into a stereo frame using intensity stereo info */
-	void speex_decode_stereo_int(spx_int16_t * data, int frame_size,
+	void speex_decode_stereo_int(int16_t * data, int frame_size,
 				     SpeexStereoState * stereo);
 
 /** Callback handler for intensity stereo info */

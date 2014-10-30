@@ -43,7 +43,7 @@
  *  @{
  */
 
-#include "speex_types.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -61,15 +61,15 @@ extern "C" {
 /** Definition of an incoming packet */
 	struct _JitterBufferPacket {
 		char *data; /**< Data bytes contained in the packet */
-		spx_uint32_t len;
+		uint32_t len;
 			    /**< Length of the packet in bytes */
-		spx_uint32_t timestamp;
+		uint32_t timestamp;
 			    /**< Timestamp for the packet */
-		spx_uint32_t span;
+		uint32_t span;
 			    /**< Time covered by the packet (same units as timestamp) */
-		spx_uint16_t sequence;
+		uint16_t sequence;
 			    /**< RTP Sequence number if available (0 otherwise) */
-		spx_uint32_t user_data;
+		uint32_t user_data;
 			    /**< Put whatever data you like here (it's ignored by the jitter buffer) */
 	};
 
@@ -157,8 +157,8 @@ extern "C" {
 */
 	int jitter_buffer_get(JitterBuffer * jitter,
 			      JitterBufferPacket * packet,
-			      spx_int32_t desired_span,
-			      spx_int32_t * start_offset);
+			      int32_t desired_span,
+			      int32_t * start_offset);
 
 /** Used right after jitter_buffer_get() to obtain another packet that would have the same timestamp.
  * This is mainly useful for media where a single "frame" can be split into several packets.
@@ -186,7 +186,7 @@ extern "C" {
  * @param rem Amount of data buffered by the application (timestamp units)
  */
 	void jitter_buffer_remaining_span(JitterBuffer * jitter,
-					  spx_uint32_t rem);
+					  uint32_t rem);
 
 /** Used like the ioctl function to control the jitter buffer parameters
  * 
@@ -199,7 +199,7 @@ extern "C" {
 
 	int jitter_buffer_update_delay(JitterBuffer * jitter,
 				       JitterBufferPacket * packet,
-				       spx_int32_t * start_offset);
+				       int32_t * start_offset);
 
 /* @} */
 

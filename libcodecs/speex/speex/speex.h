@@ -43,7 +43,7 @@
  */
 
 #include "speex_bits.h"
-#include "speex_types.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -317,7 +317,7 @@ extern "C" {
  @param bits Bit-stream where the data will be written
  @return 0 if frame needs not be transmitted (DTX only), 1 otherwise
  */
-	int speex_encode_int(void *state, spx_int16_t * in, SpeexBits * bits);
+	int speex_encode_int(void *state, int16_t * in, SpeexBits * bits);
 
 /** Used like the ioctl function to control the encoder parameters
  *
@@ -362,7 +362,7 @@ extern "C" {
  * @param out Where to write the decoded frame
  * @return return status (0 for no error, -1 for end of stream, -2 corrupt stream)
  */
-	int speex_decode_int(void *state, SpeexBits * bits, spx_int16_t * out);
+	int speex_decode_int(void *state, SpeexBits * bits, int16_t * out);
 
 /** Used like the ioctl function to control the encoder parameters
  *

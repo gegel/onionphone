@@ -538,7 +538,7 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
 				 int nsf,	/* number of samples in subframe */
 				 SpeexBits * bits,
-				 char *stack, spx_int32_t * seed)
+				 char *stack, int32_t * seed)
 {
 	(void)nsf;
 	(void)seed;
@@ -627,7 +627,7 @@ void noise_codebook_quant(spx_word16_t target[],	/* target vector */
 
 void noise_codebook_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
 			    int nsf,	/* number of samples in subframe */
-			    SpeexBits * bits, char *stack, spx_int32_t * seed)
+			    SpeexBits * bits, char *stack, int32_t * seed)
 {
 	(void)par;
 	(void)bits;

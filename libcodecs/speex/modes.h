@@ -92,7 +92,7 @@ typedef void (*innovation_quant_func) (spx_word16_t *, spx_coef_t *,
 
 /** Innovation unquantization function */
 typedef void (*innovation_unquant_func) (spx_sig_t *, const void *, int,
-					 SpeexBits *, char *, spx_int32_t *);
+					 SpeexBits *, char *, int32_t *);
 
 /** Description of a Speex sub-mode (wither narrowband or wideband */
 typedef struct SpeexSubmode {

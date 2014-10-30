@@ -45,7 +45,7 @@
  *  @{
  */
 
-#include "speex_types.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -76,18 +76,18 @@ extern "C" {
  * @param x Audio sample vector (in and out). Must be same size as specified in speex_preprocess_state_init().
  * @return Bool value for voice activity (1 for speech, 0 for noise/silence), ONLY if VAD turned on.
 */
-	int speex_preprocess_run(SpeexPreprocessState * st, spx_int16_t * x);
+	int speex_preprocess_run(SpeexPreprocessState * st, int16_t * x);
 
 /** Preprocess a frame (deprecated, use speex_preprocess_run() instead)*/
-	int speex_preprocess(SpeexPreprocessState * st, spx_int16_t * x,
-			     spx_int32_t * echo);
+	int speex_preprocess(SpeexPreprocessState * st, int16_t * x,
+			     int32_t * echo);
 
 /** Update preprocessor state, but do not compute the output
  * @param st Preprocessor state
  * @param x Audio sample vector (in only). Must be same size as specified in speex_preprocess_state_init().
 */
 	void speex_preprocess_estimate_update(SpeexPreprocessState * st,
-					      spx_int16_t * x);
+					      int16_t * x);
 
 /** Used like the ioctl function to control the preprocessor parameters 
  * @param st Preprocessor state

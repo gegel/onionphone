@@ -54,7 +54,7 @@ void kf_factor(int n, int *facbuf)
 				p += 2;
 				break;
 			}
-			if (p > 32000 || (spx_int32_t) p * (spx_int32_t) p > n)
+			if (p > 32000 || (int32_t) p * (int32_t) p > n)
 				p = n;	/* no more factors, skip to end */
 		}
 		n /= p;

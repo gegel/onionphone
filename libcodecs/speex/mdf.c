@@ -135,7 +135,7 @@ struct SpeexEchoState_ {
 	int adapted;
 	int saturated;
 	int screwed_up;
-	spx_int32_t sampling_rate;
+	int32_t sampling_rate;
 	spx_word16_t spec_average;
 	spx_word16_t beta0;
 	spx_word16_t beta_max;
@@ -181,12 +181,12 @@ struct SpeexEchoState_ {
 	spx_mem_t notch_mem[2];
 
 	/* NOTE: If you only use speex_echo_cancel() and want to save some memory, remove this */
-	spx_int16_t *play_buf;
+	int16_t *play_buf;
 	int play_buf_pos;
 	int play_buf_started;
 };
 
-static inline void filter_dc_notch16(const spx_int16_t * in,
+static inline void filter_dc_notch16(const int16_t * in,
 				     spx_word16_t radius, spx_word16_t * out,
 				     int len, spx_mem_t * mem)
 {
@@ -402,15 +402,15 @@ static inline void mdf_adjust_prop(const spx_word32_t * W, int N, int M,
 #include <stdio.h>
 static FILE *rFile = NULL, *pFile = NULL, *oFile = NULL;
 
-static void dump_audio(const spx_int16_t * rec, const spx_int16_t * play,
-		       const spx_int16_t * out, int len)
+static void dump_audio(const int16_t * rec, const int16_t * play,
+		       const int16_t * out, int len)
 {
 	if (!(rFile && pFile && oFile)) {
 		speex_fatal("Dump files not open");
 	}
-	fwrite(rec, sizeof(spx_int16_t), len, rFile);
-	fwrite(play, sizeof(spx_int16_t), len, pFile);
-	fwrite(out, sizeof(spx_int16_t), len, oFile);
+	fwrite(rec, sizeof(int16_t), len, rFile);
+	fwrite(play, sizeof(int16_t), len, pFile);
+	fwrite(out, sizeof(int16_t), len, oFile);
 }
 #endif
 
@@ -547,8 +547,8 @@ SpeexEchoState *speex_echo_state_init(int frame_size, int filter_length)
 #endif
 
 	st->play_buf =
-	    (spx_int16_t *) speex_alloc((PLAYBACK_DELAY + 1) * st->frame_size *
-					sizeof(spx_int16_t));
+	    (int16_t *) speex_alloc((PLAYBACK_DELAY + 1) * st->frame_size *
+					sizeof(int16_t));
 	st->play_buf_pos = PLAYBACK_DELAY * st->frame_size;
 	st->play_buf_started = 0;
 
@@ -645,8 +645,8 @@ void speex_echo_state_destroy(SpeexEchoState * st)
 #endif
 }
 
-void speex_echo_capture(SpeexEchoState * st, const spx_int16_t * rec,
-			spx_int16_t * out)
+void speex_echo_capture(SpeexEchoState * st, const int16_t * rec,
+			int16_t * out)
 {
 	int i;
 	/*speex_warning_int("capture with fill level ", st->play_buf_pos/st->frame_size); */
@@ -668,7 +668,7 @@ void speex_echo_capture(SpeexEchoState * st, const spx_int16_t * rec,
 	}
 }
 
-void speex_echo_playback(SpeexEchoState * st, const spx_int16_t * play)
+void speex_echo_playback(SpeexEchoState * st, const int16_t * play)
 {
 	/*speex_warning_int("playback with fill level ", st->play_buf_pos/st->frame_size); */
 	if (!st->play_buf_started) {
@@ -694,9 +694,9 @@ void speex_echo_playback(SpeexEchoState * st, const spx_int16_t * play)
 }
 
 /** Performs echo cancellation on a frame (deprecated, last arg now ignored) */
-void speex_echo_cancel(SpeexEchoState * st, const spx_int16_t * in,
-		       const spx_int16_t * far_end, spx_int16_t * out,
-		       spx_int32_t * Yout)
+void speex_echo_cancel(SpeexEchoState * st, const int16_t * in,
+		       const int16_t * far_end, int16_t * out,
+		       int32_t * Yout)
 {
 	(void)Yout;
 
@@ -704,8 +704,8 @@ void speex_echo_cancel(SpeexEchoState * st, const spx_int16_t * in,
 }
 
 /** Performs echo cancellation on a frame */
-void speex_echo_cancellation(SpeexEchoState * st, const spx_int16_t * in,
-			     const spx_int16_t * far_end, spx_int16_t * out)
+void speex_echo_cancellation(SpeexEchoState * st, const int16_t * in,
+			     const int16_t * far_end, int16_t * out)
 {
 	int i, j;
 	int N, M;
@@ -1265,7 +1265,7 @@ void speex_echo_get_residual(SpeexEchoState * st, spx_word32_t * residual_echo,
 	/* Estimate residual echo */
 	for (i = 0; i <= st->frame_size; i++)
 		residual_echo[i] =
-		    (spx_int32_t) MULT16_32_Q15(leak2, residual_echo[i]);
+		    (int32_t) MULT16_32_Q15(leak2, residual_echo[i]);
 
 }
 
@@ -1303,13 +1303,13 @@ int speex_echo_ctl(SpeexEchoState * st, int request, void *ptr)
 		(*(int *)ptr) = st->sampling_rate;
 		break;
 	case SPEEX_ECHO_GET_IMPULSE_RESPONSE_SIZE:
-		*((spx_int32_t *) ptr) = st->M * st->frame_size;
+		*((int32_t *) ptr) = st->M * st->frame_size;
 		break;
 	case SPEEX_ECHO_GET_IMPULSE_RESPONSE:
 		{
 			int M = st->M, N = st->window_size, n =
 			    st->frame_size, i, j;
-			spx_int32_t *filt = (spx_int32_t *) ptr;
+			int32_t *filt = (int32_t *) ptr;
 			for (j = 0; j < M; j++) {
 #ifdef FIXED_POINT
 				for (i = 0; i < N; i++)
