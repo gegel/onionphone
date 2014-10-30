@@ -49,8 +49,8 @@ typedef struct RealSpeexStereoState {
 			      /**< Smoothed left channel gain */
 	spx_word32_t smooth_right;
 			      /**< Smoothed right channel gain */
-	spx_uint32_t reserved1;/**< Reserved for future use */
-	spx_int32_t reserved2;/**< Reserved for future use */
+	uint32_t reserved1;/**< Reserved for future use */
+	int32_t reserved2;/**< Reserved for future use */
 } RealSpeexStereoState;
 
 /*float e_ratio_quant[4] = {1, 1.26, 1.587, 2};*/
@@ -148,7 +148,7 @@ void speex_encode_stereo(float *data, int frame_size, SpeexBits * bits)
 }
 #endif				/* #ifndef DISABLE_FLOAT_API */
 
-void speex_encode_stereo_int(spx_int16_t * data, int frame_size,
+void speex_encode_stereo_int(int16_t * data, int frame_size,
 			     SpeexBits * bits)
 {
 	int i, tmp;
@@ -264,7 +264,7 @@ void speex_decode_stereo(float *data, int frame_size,
 }
 #endif				/* #ifndef DISABLE_FLOAT_API */
 
-void speex_decode_stereo_int(spx_int16_t * data, int frame_size,
+void speex_decode_stereo_int(int16_t * data, int frame_size,
 			     SpeexStereoState * _stereo)
 {
 	int i;
@@ -285,7 +285,7 @@ void speex_decode_stereo_int(spx_int16_t * data, int frame_size,
 	e_left = SHR32(MULT16_16(spx_sqrt(balance), e_right), 8);
 
 	for (i = frame_size - 1; i >= 0; i--) {
-		spx_int16_t tmp = data[i];
+		int16_t tmp = data[i];
 		stereo->smooth_left =
 		    EXTRACT16(PSHR32
 			      (MAC16_16
@@ -299,9 +299,9 @@ void speex_decode_stereo_int(spx_int16_t * data, int frame_size,
 				(stereo->smooth_right, QCONST16(0.98, 15)),
 				e_right, QCONST16(0.02, 15)), 15));
 		data[2 * i] =
-		    (spx_int16_t) MULT16_16_P14(stereo->smooth_left, tmp);
+		    (int16_t) MULT16_16_P14(stereo->smooth_left, tmp);
 		data[2 * i + 1] =
-		    (spx_int16_t) MULT16_16_P14(stereo->smooth_right, tmp);
+		    (int16_t) MULT16_16_P14(stereo->smooth_right, tmp);
 	}
 }
 

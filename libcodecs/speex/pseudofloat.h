@@ -54,8 +54,8 @@
 #ifdef FIXED_POINT
 
 typedef struct {
-	spx_int16_t m;
-	spx_int16_t e;
+	int16_t m;
+	int16_t e;
 } spx_float_t;
 
 static const spx_float_t FLOAT_ZERO = { 0, 0 };
@@ -63,7 +63,7 @@ static const spx_float_t FLOAT_ONE = { 16384, -14 };
 static const spx_float_t FLOAT_HALF = { 16384, -15 };
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
-static inline spx_float_t PSEUDOFLOAT(spx_int32_t x)
+static inline spx_float_t PSEUDOFLOAT(int32_t x)
 {
 	int e = 0;
 	int sign = 0;
@@ -169,7 +169,7 @@ static inline int FLOAT_GT(spx_float_t a, spx_float_t b)
 static inline spx_float_t FLOAT_MULT(spx_float_t a, spx_float_t b)
 {
 	spx_float_t r;
-	r.m = (spx_int16_t) ((spx_int32_t) (a).m * (b).m >> 15);
+	r.m = (int16_t) ((int32_t) (a).m * (b).m >> 15);
 	r.e = (a).e + (b).e + 15;
 	if (r.m > 0) {
 		if (r.m < 16384) {
@@ -189,7 +189,7 @@ static inline spx_float_t FLOAT_MULT(spx_float_t a, spx_float_t b)
 static inline spx_float_t FLOAT_AMULT(spx_float_t a, spx_float_t b)
 {
 	spx_float_t r;
-	r.m = (spx_int16_t) ((spx_int32_t) (a).m * (b).m >> 15);
+	r.m = (int16_t) ((int32_t) (a).m * (b).m >> 15);
 	r.e = (a).e + (b).e + 15;
 	return r;
 }
@@ -202,7 +202,7 @@ static inline spx_float_t FLOAT_SHL(spx_float_t a, int b)
 	return r;
 }
 
-static inline spx_int16_t FLOAT_EXTRACT16(spx_float_t a)
+static inline int16_t FLOAT_EXTRACT16(spx_float_t a)
 {
 	if (a.e < 0)
 		return EXTRACT16((EXTEND32(a.m) + (EXTEND32(1) << (-a.e - 1)))
@@ -211,7 +211,7 @@ static inline spx_int16_t FLOAT_EXTRACT16(spx_float_t a)
 		return a.m << a.e;
 }
 
-static inline spx_int32_t FLOAT_EXTRACT32(spx_float_t a)
+static inline int32_t FLOAT_EXTRACT32(spx_float_t a)
 {
 	if (a.e < 0)
 		return (EXTEND32(a.m) + (EXTEND32(1) << (-a.e - 1))) >> -a.e;
@@ -219,7 +219,7 @@ static inline spx_int32_t FLOAT_EXTRACT32(spx_float_t a)
 		return EXTEND32(a.m) << a.e;
 }
 
-static inline spx_int32_t FLOAT_MUL32(spx_float_t a, spx_word32_t b)
+static inline int32_t FLOAT_MUL32(spx_float_t a, spx_word32_t b)
 {
 	return VSHR32(MULT16_32_Q15(a.m, b), -a.e - 15);
 }
@@ -288,7 +288,7 @@ static inline spx_float_t FLOAT_DIV32(spx_word32_t a, spx_word32_t b)
 static inline spx_float_t FLOAT_DIVU(spx_float_t a, spx_float_t b)
 {
 	int e = 0;
-	spx_int32_t num;
+	int32_t num;
 	spx_float_t r;
 	if (b.m <= 0) {
 		speex_warning_int("Attempted to divide by", b.m);
@@ -309,7 +309,7 @@ static inline spx_float_t FLOAT_DIVU(spx_float_t a, spx_float_t b)
 static inline spx_float_t FLOAT_SQRT(spx_float_t a)
 {
 	spx_float_t r;
-	spx_int32_t m;
+	int32_t m;
 	m = SHL32(EXTEND32(a.m), 14);
 	r.e = a.e - 14;
 	if (r.e & 1) {

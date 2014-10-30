@@ -42,7 +42,7 @@
  *  @{
  */
 
-#include "speex_types.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -62,25 +62,25 @@ extern "C" {
 						    /**< Identifies a Speex bit-stream, always set to "Speex   " */
 		char speex_version[SPEEX_HEADER_VERSION_LENGTH];
 						    /**< Speex version */
-		spx_int32_t speex_version_id;
+		int32_t speex_version_id;
 				       /**< Version for Speex (for checking compatibility) */
-		spx_int32_t header_size;
+		int32_t header_size;
 				       /**< Total size of the header ( sizeof(SpeexHeader) ) */
-		spx_int32_t rate;      /**< Sampling rate used */
-		spx_int32_t mode;      /**< Mode used (0 for narrowband, 1 for wideband) */
-		spx_int32_t mode_bitstream_version;
+		int32_t rate;      /**< Sampling rate used */
+		int32_t mode;      /**< Mode used (0 for narrowband, 1 for wideband) */
+		int32_t mode_bitstream_version;
 				       /**< Version ID of the bit-stream */
-		spx_int32_t nb_channels;
+		int32_t nb_channels;
 				       /**< Number of channels encoded */
-		spx_int32_t bitrate;   /**< Bit-rate used */
-		spx_int32_t frame_size;/**< Size of frames */
-		spx_int32_t vbr;       /**< 1 for a VBR encoding, 0 otherwise */
-		spx_int32_t frames_per_packet;
+		int32_t bitrate;   /**< Bit-rate used */
+		int32_t frame_size;/**< Size of frames */
+		int32_t vbr;       /**< 1 for a VBR encoding, 0 otherwise */
+		int32_t frames_per_packet;
 				       /**< Number of frames stored per Ogg packet */
-		spx_int32_t extra_headers;
+		int32_t extra_headers;
 				       /**< Number of additional headers after the comments */
-		spx_int32_t reserved1; /**< Reserved for future use, must be zero */
-		spx_int32_t reserved2; /**< Reserved for future use, must be zero */
+		int32_t reserved1; /**< Reserved for future use, must be zero */
+		int32_t reserved2; /**< Reserved for future use, must be zero */
 	} SpeexHeader;
 
 /** Initializes a SpeexHeader using basic information */

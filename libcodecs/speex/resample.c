@@ -117,36 +117,36 @@ static void speex_free(void *ptr)
 #define FIXED_STACK_ALLOC 1024
 #endif
 
-typedef int (*resampler_basic_func) (SpeexResamplerState *, spx_uint32_t,
-				     const spx_word16_t *, spx_uint32_t *,
-				     spx_word16_t *, spx_uint32_t *);
+typedef int (*resampler_basic_func) (SpeexResamplerState *, uint32_t,
+				     const spx_word16_t *, uint32_t *,
+				     spx_word16_t *, uint32_t *);
 
 struct SpeexResamplerState_ {
-	spx_uint32_t in_rate;
-	spx_uint32_t out_rate;
-	spx_uint32_t num_rate;
-	spx_uint32_t den_rate;
+	uint32_t in_rate;
+	uint32_t out_rate;
+	uint32_t num_rate;
+	uint32_t den_rate;
 
 	int quality;
-	spx_uint32_t nb_channels;
-	spx_uint32_t filt_len;
-	spx_uint32_t mem_alloc_size;
-	spx_uint32_t buffer_size;
+	uint32_t nb_channels;
+	uint32_t filt_len;
+	uint32_t mem_alloc_size;
+	uint32_t buffer_size;
 	int int_advance;
 	int frac_advance;
 	float cutoff;
-	spx_uint32_t oversample;
+	uint32_t oversample;
 	int initialised;
 	int started;
 
 	/* These are per-channel */
-	spx_int32_t *last_sample;
-	spx_uint32_t *samp_frac_num;
-	spx_uint32_t *magic_samples;
+	int32_t *last_sample;
+	uint32_t *samp_frac_num;
+	uint32_t *magic_samples;
 
 	spx_word16_t *mem;
 	spx_word16_t *sinc_table;
-	spx_uint32_t sinc_table_length;
+	uint32_t sinc_table_length;
 	resampler_basic_func resampler_ptr;
 
 	int in_stride;
@@ -364,29 +364,29 @@ static void cubic_coef(spx_word16_t frac, spx_word16_t interp[4])
 #endif
 
 static int resampler_basic_direct_single(SpeexResamplerState * st,
-					 spx_uint32_t channel_index,
+					 uint32_t channel_index,
 					 const spx_word16_t * in,
-					 spx_uint32_t * in_len,
+					 uint32_t * in_len,
 					 spx_word16_t * out,
-					 spx_uint32_t * out_len)
+					 uint32_t * out_len)
 {
 	const int N = st->filt_len;
 	int out_sample = 0;
 	int last_sample = st->last_sample[channel_index];
-	spx_uint32_t samp_frac_num = st->samp_frac_num[channel_index];
+	uint32_t samp_frac_num = st->samp_frac_num[channel_index];
 	const spx_word16_t *sinc_table = st->sinc_table;
 	const int out_stride = st->out_stride;
 	const int int_advance = st->int_advance;
 	const int frac_advance = st->frac_advance;
-	const spx_uint32_t den_rate = st->den_rate;
+	const uint32_t den_rate = st->den_rate;
 	spx_word32_t sum;
 #ifndef OVERRIDE_INNER_PRODUCT_SINGLE
 	int j;
 #endif
 
 	while (!
-	       (last_sample >= (spx_int32_t) * in_len
-		|| out_sample >= (spx_int32_t) * out_len)) {
+	       (last_sample >= (int32_t) * in_len
+		|| out_sample >= (int32_t) * out_len)) {
 		const spx_word16_t *sinc = &sinc_table[samp_frac_num * N];
 		const spx_word16_t *iptr = &in[last_sample];
 
@@ -422,29 +422,29 @@ static int resampler_basic_direct_single(SpeexResamplerState * st,
 #else
 /* This is the same as the previous function, except with a double-precision accumulator */
 static int resampler_basic_direct_double(SpeexResamplerState * st,
-					 spx_uint32_t channel_index,
+					 uint32_t channel_index,
 					 const spx_word16_t * in,
-					 spx_uint32_t * in_len,
+					 uint32_t * in_len,
 					 spx_word16_t * out,
-					 spx_uint32_t * out_len)
+					 uint32_t * out_len)
 {
 	const int N = st->filt_len;
 	int out_sample = 0;
 	int last_sample = st->last_sample[channel_index];
-	spx_uint32_t samp_frac_num = st->samp_frac_num[channel_index];
+	uint32_t samp_frac_num = st->samp_frac_num[channel_index];
 	const spx_word16_t *sinc_table = st->sinc_table;
 	const int out_stride = st->out_stride;
 	const int int_advance = st->int_advance;
 	const int frac_advance = st->frac_advance;
-	const spx_uint32_t den_rate = st->den_rate;
+	const uint32_t den_rate = st->den_rate;
 	double sum;
 #ifndef OVERRIDE_INNER_PRODUCT_DOUBLE
 	int j;
 #endif
 
 	while (!
-	       (last_sample >= (spx_int32_t) * in_len
-		|| out_sample >= (spx_int32_t) * out_len)) {
+	       (last_sample >= (int32_t) * in_len
+		|| out_sample >= (int32_t) * out_len)) {
 		const spx_word16_t *sinc = &sinc_table[samp_frac_num * N];
 		const spx_word16_t *iptr = &in[last_sample];
 
@@ -478,28 +478,28 @@ static int resampler_basic_direct_double(SpeexResamplerState * st,
 #endif
 
 static int resampler_basic_interpolate_single(SpeexResamplerState * st,
-					      spx_uint32_t channel_index,
+					      uint32_t channel_index,
 					      const spx_word16_t * in,
-					      spx_uint32_t * in_len,
+					      uint32_t * in_len,
 					      spx_word16_t * out,
-					      spx_uint32_t * out_len)
+					      uint32_t * out_len)
 {
 	const int N = st->filt_len;
 	int out_sample = 0;
 	int last_sample = st->last_sample[channel_index];
-	spx_uint32_t samp_frac_num = st->samp_frac_num[channel_index];
+	uint32_t samp_frac_num = st->samp_frac_num[channel_index];
 	const int out_stride = st->out_stride;
 	const int int_advance = st->int_advance;
 	const int frac_advance = st->frac_advance;
-	const spx_uint32_t den_rate = st->den_rate;
+	const uint32_t den_rate = st->den_rate;
 #ifndef OVERRIDE_INTERPOLATE_PRODUCT_SINGLE
 	int j;
 #endif
 	spx_word32_t sum;
 
 	while (!
-	       (last_sample >= (spx_int32_t) * in_len
-		|| out_sample >= (spx_int32_t) * out_len)) {
+	       (last_sample >= (int32_t) * in_len
+		|| out_sample >= (int32_t) * out_len)) {
 		const spx_word16_t *iptr = &in[last_sample];
 
 		const int offset =
@@ -578,28 +578,28 @@ static int resampler_basic_interpolate_single(SpeexResamplerState * st,
 #else
 /* This is the same as the previous function, except with a double-precision accumulator */
 static int resampler_basic_interpolate_double(SpeexResamplerState * st,
-					      spx_uint32_t channel_index,
+					      uint32_t channel_index,
 					      const spx_word16_t * in,
-					      spx_uint32_t * in_len,
+					      uint32_t * in_len,
 					      spx_word16_t * out,
-					      spx_uint32_t * out_len)
+					      uint32_t * out_len)
 {
 	const int N = st->filt_len;
 	int out_sample = 0;
 	int last_sample = st->last_sample[channel_index];
-	spx_uint32_t samp_frac_num = st->samp_frac_num[channel_index];
+	uint32_t samp_frac_num = st->samp_frac_num[channel_index];
 	const int out_stride = st->out_stride;
 	const int int_advance = st->int_advance;
 	const int frac_advance = st->frac_advance;
-	const spx_uint32_t den_rate = st->den_rate;
+	const uint32_t den_rate = st->den_rate;
 #ifndef OVERRIDE_INTERPOLATE_PRODUCT_DOUBLE
 	int j;
 #endif
 	spx_word32_t sum;
 
 	while (!
-	       (last_sample >= (spx_int32_t) * in_len
-		|| out_sample >= (spx_int32_t) * out_len)) {
+	       (last_sample >= (int32_t) * in_len
+		|| out_sample >= (int32_t) * out_len)) {
 		const spx_word16_t *iptr = &in[last_sample];
 
 		const int offset =
@@ -677,7 +677,7 @@ static int resampler_basic_interpolate_double(SpeexResamplerState * st,
 
 static void update_filter(SpeexResamplerState * st)
 {
-	spx_uint32_t old_length;
+	uint32_t old_length;
 
 	old_length = st->filt_len;
 	st->oversample = quality_map[st->quality].oversample;
@@ -709,7 +709,7 @@ static void update_filter(SpeexResamplerState * st)
 
 	/* Choose the resampling type that requires the least amount of memory */
 	if (st->den_rate <= st->oversample) {
-		spx_uint32_t i;
+		uint32_t i;
 		if (!st->sinc_table)
 			st->sinc_table =
 			    (spx_word16_t *) speex_alloc(st->filt_len *
@@ -725,11 +725,11 @@ static void update_filter(SpeexResamplerState * st)
 			st->sinc_table_length = st->filt_len * st->den_rate;
 		}
 		for (i = 0; i < st->den_rate; i++) {
-			spx_int32_t j;
+			int32_t j;
 			for (j = 0; j < st->filt_len; j++) {
 				st->sinc_table[i * st->filt_len + j] =
 				    sinc(st->cutoff,
-					 ((j - (spx_int32_t) st->filt_len / 2 +
+					 ((j - (int32_t) st->filt_len / 2 +
 					   1) - ((float)i) / st->den_rate),
 					 st->filt_len,
 					 quality_map[st->quality].window_func);
@@ -745,7 +745,7 @@ static void update_filter(SpeexResamplerState * st)
 #endif
 		/*fprintf (stderr, "resampler uses direct sinc table and normalised cutoff %f\n", cutoff); */
 	} else {
-		spx_int32_t i;
+		int32_t i;
 		if (!st->sinc_table)
 			st->sinc_table =
 			    (spx_word16_t *)
@@ -764,7 +764,7 @@ static void update_filter(SpeexResamplerState * st)
 			    st->filt_len * st->oversample + 8;
 		}
 		for (i = -4;
-		     i < (spx_int32_t) (st->oversample * st->filt_len + 4); i++)
+		     i < (int32_t) (st->oversample * st->filt_len + 4); i++)
 			st->sinc_table[i + 4] =
 			    sinc(st->cutoff,
 				 (i / (float)st->oversample - st->filt_len / 2),
@@ -787,7 +787,7 @@ static void update_filter(SpeexResamplerState * st)
 	   the change in filter length. It's probably the messiest part of the code
 	   due to handling of lots of corner cases. */
 	if (!st->mem) {
-		spx_uint32_t i;
+		uint32_t i;
 		st->mem_alloc_size = st->filt_len - 1 + st->buffer_size;
 		st->mem =
 		    (spx_word16_t *) speex_alloc(st->nb_channels *
@@ -797,7 +797,7 @@ static void update_filter(SpeexResamplerState * st)
 			st->mem[i] = 0;
 		/*speex_warning("init filter"); */
 	} else if (!st->started) {
-		spx_uint32_t i;
+		uint32_t i;
 		st->mem_alloc_size = st->filt_len - 1 + st->buffer_size;
 		st->mem =
 		    (spx_word16_t *) speex_realloc(st->mem,
@@ -808,7 +808,7 @@ static void update_filter(SpeexResamplerState * st)
 			st->mem[i] = 0;
 		/*speex_warning("reinit filter"); */
 	} else if (st->filt_len > old_length) {
-		spx_int32_t i;
+		int32_t i;
 		/* Increase the filter length */
 		/*speex_warning("increase filter size"); */
 		int old_alloc_size = st->mem_alloc_size;
@@ -822,8 +822,8 @@ static void update_filter(SpeexResamplerState * st)
 							   (spx_word16_t));
 		}
 		for (i = st->nb_channels - 1; i >= 0; i--) {
-			spx_int32_t j;
-			spx_uint32_t olen /* = old_length */ ;
+			int32_t j;
+			uint32_t olen /* = old_length */ ;
 			/*if (st->magic_samples[i]) */
 			{
 				/* Try and remove the magic samples as if nothing had happened */
@@ -867,12 +867,12 @@ static void update_filter(SpeexResamplerState * st)
 			}
 		}
 	} else if (st->filt_len < old_length) {
-		spx_uint32_t i;
+		uint32_t i;
 		/* Reduce filter length, this a bit tricky. We need to store some of the memory as "magic"
 		   samples so they can be used directly as input the next time(s) */
 		for (i = 0; i < st->nb_channels; i++) {
-			spx_uint32_t j;
-			spx_uint32_t old_magic = st->magic_samples[i];
+			uint32_t j;
+			uint32_t old_magic = st->magic_samples[i];
 			st->magic_samples[i] = (old_length - st->filt_len) / 2;
 			/* We must copy some of the memory that's no longer used */
 			/* Copy data going backward */
@@ -889,23 +889,23 @@ static void update_filter(SpeexResamplerState * st)
 
 }
 
-SpeexResamplerState *speex_resampler_init(spx_uint32_t nb_channels,
-					  spx_uint32_t in_rate,
-					  spx_uint32_t out_rate, int quality,
+SpeexResamplerState *speex_resampler_init(uint32_t nb_channels,
+					  uint32_t in_rate,
+					  uint32_t out_rate, int quality,
 					  int *err)
 {
 	return speex_resampler_init_frac(nb_channels, in_rate, out_rate,
 					 in_rate, out_rate, quality, err);
 }
 
-SpeexResamplerState *speex_resampler_init_frac(spx_uint32_t nb_channels,
-					       spx_uint32_t ratio_num,
-					       spx_uint32_t ratio_den,
-					       spx_uint32_t in_rate,
-					       spx_uint32_t out_rate,
+SpeexResamplerState *speex_resampler_init_frac(uint32_t nb_channels,
+					       uint32_t ratio_num,
+					       uint32_t ratio_den,
+					       uint32_t in_rate,
+					       uint32_t out_rate,
 					       int quality, int *err)
 {
-	spx_uint32_t i;
+	uint32_t i;
 	SpeexResamplerState *st;
 	if (quality > 10 || quality < 0) {
 		if (err)
@@ -939,11 +939,11 @@ SpeexResamplerState *speex_resampler_init_frac(spx_uint32_t nb_channels,
 
 	/* Per channel data */
 	st->last_sample =
-	    (spx_int32_t *) speex_alloc(nb_channels * sizeof(int));
+	    (int32_t *) speex_alloc(nb_channels * sizeof(int));
 	st->magic_samples =
-	    (spx_uint32_t *) speex_alloc(nb_channels * sizeof(int));
+	    (uint32_t *) speex_alloc(nb_channels * sizeof(int));
 	st->samp_frac_num =
-	    (spx_uint32_t *) speex_alloc(nb_channels * sizeof(int));
+	    (uint32_t *) speex_alloc(nb_channels * sizeof(int));
 	for (i = 0; i < nb_channels; i++) {
 		st->last_sample[i] = 0;
 		st->magic_samples[i] = 0;
@@ -974,16 +974,16 @@ void speex_resampler_destroy(SpeexResamplerState * st)
 }
 
 static int speex_resampler_process_native(SpeexResamplerState * st,
-					  spx_uint32_t channel_index,
-					  spx_uint32_t * in_len,
+					  uint32_t channel_index,
+					  uint32_t * in_len,
 					  spx_word16_t * out,
-					  spx_uint32_t * out_len)
+					  uint32_t * out_len)
 {
 	int j = 0;
 	const int N = st->filt_len;
 	int out_sample = 0;
 	spx_word16_t *mem = st->mem + channel_index * st->mem_alloc_size;
-	spx_uint32_t ilen;
+	uint32_t ilen;
 
 	st->started = 1;
 
@@ -991,7 +991,7 @@ static int speex_resampler_process_native(SpeexResamplerState * st,
 	out_sample =
 	    st->resampler_ptr(st, channel_index, mem, in_len, out, out_len);
 
-	if (st->last_sample[channel_index] < (spx_int32_t) * in_len)
+	if (st->last_sample[channel_index] < (int32_t) * in_len)
 		*in_len = st->last_sample[channel_index];
 	*out_len = out_sample;
 	st->last_sample[channel_index] -= *in_len;
@@ -1005,10 +1005,10 @@ static int speex_resampler_process_native(SpeexResamplerState * st,
 }
 
 static int speex_resampler_magic(SpeexResamplerState * st,
-				 spx_uint32_t channel_index,
-				 spx_word16_t ** out, spx_uint32_t out_len)
+				 uint32_t channel_index,
+				 spx_word16_t ** out, uint32_t out_len)
 {
-	spx_uint32_t tmp_in_len = st->magic_samples[channel_index];
+	uint32_t tmp_in_len = st->magic_samples[channel_index];
 	spx_word16_t *mem = st->mem + channel_index * st->mem_alloc_size;
 	const int N = st->filt_len;
 
@@ -1019,7 +1019,7 @@ static int speex_resampler_magic(SpeexResamplerState * st,
 
 	/* If we couldn't process all "magic" input samples, save the rest for next time */
 	if (st->magic_samples[channel_index]) {
-		spx_uint32_t i;
+		uint32_t i;
 		for (i = 0; i < st->magic_samples[channel_index]; i++)
 			mem[N - 1 + i] = mem[N - 1 + i + tmp_in_len];
 	}
@@ -1029,30 +1029,30 @@ static int speex_resampler_magic(SpeexResamplerState * st,
 
 #ifdef FIXED_POINT
 int speex_resampler_process_int(SpeexResamplerState * st,
-				spx_uint32_t channel_index,
-				const spx_int16_t * in, spx_uint32_t * in_len,
-				spx_int16_t * out, spx_uint32_t * out_len)
+				uint32_t channel_index,
+				const int16_t * in, uint32_t * in_len,
+				int16_t * out, uint32_t * out_len)
 #else
 int speex_resampler_process_float(SpeexResamplerState * st,
-				  spx_uint32_t channel_index, const float *in,
-				  spx_uint32_t * in_len, float *out,
-				  spx_uint32_t * out_len)
+				  uint32_t channel_index, const float *in,
+				  uint32_t * in_len, float *out,
+				  uint32_t * out_len)
 #endif
 {
 	int j;
-	spx_uint32_t ilen = *in_len;
-	spx_uint32_t olen = *out_len;
+	uint32_t ilen = *in_len;
+	uint32_t olen = *out_len;
 	spx_word16_t *x = st->mem + channel_index * st->mem_alloc_size;
 	const int filt_offs = st->filt_len - 1;
-	const spx_uint32_t xlen = st->mem_alloc_size - filt_offs;
+	const uint32_t xlen = st->mem_alloc_size - filt_offs;
 	const int istride = st->in_stride;
 
 	if (st->magic_samples[channel_index])
 		olen -= speex_resampler_magic(st, channel_index, &out, olen);
 	if (!st->magic_samples[channel_index]) {
 		while (ilen && olen) {
-			spx_uint32_t ichunk = (ilen > xlen) ? xlen : ilen;
-			spx_uint32_t ochunk = olen;
+			uint32_t ichunk = (ilen > xlen) ? xlen : ilen;
+			uint32_t ochunk = olen;
 
 			if (in) {
 				for (j = 0; j < ichunk; ++j)
@@ -1077,23 +1077,23 @@ int speex_resampler_process_float(SpeexResamplerState * st,
 
 #ifdef FIXED_POINT
 int speex_resampler_process_float(SpeexResamplerState * st,
-				  spx_uint32_t channel_index, const float *in,
-				  spx_uint32_t * in_len, float *out,
-				  spx_uint32_t * out_len)
+				  uint32_t channel_index, const float *in,
+				  uint32_t * in_len, float *out,
+				  uint32_t * out_len)
 #else
 int speex_resampler_process_int(SpeexResamplerState * st,
-				spx_uint32_t channel_index,
-				const spx_int16_t * in, spx_uint32_t * in_len,
-				spx_int16_t * out, spx_uint32_t * out_len)
+				uint32_t channel_index,
+				const int16_t * in, uint32_t * in_len,
+				int16_t * out, uint32_t * out_len)
 #endif
 {
 	int j;
 	const int istride_save = st->in_stride;
 	const int ostride_save = st->out_stride;
-	spx_uint32_t ilen = *in_len;
-	spx_uint32_t olen = *out_len;
+	uint32_t ilen = *in_len;
+	uint32_t olen = *out_len;
 	spx_word16_t *x = st->mem + channel_index * st->mem_alloc_size;
-	const spx_uint32_t xlen = st->mem_alloc_size - (st->filt_len - 1);
+	const uint32_t xlen = st->mem_alloc_size - (st->filt_len - 1);
 #ifdef VAR_ARRAYS
 	const unsigned int ylen =
 	    (olen < FIXED_STACK_ALLOC) ? olen : FIXED_STACK_ALLOC;
@@ -1108,9 +1108,9 @@ int speex_resampler_process_int(SpeexResamplerState * st,
 
 	while (ilen && olen) {
 		spx_word16_t *y = ystack;
-		spx_uint32_t ichunk = (ilen > xlen) ? xlen : ilen;
-		spx_uint32_t ochunk = (olen > ylen) ? ylen : olen;
-		spx_uint32_t omagic = 0;
+		uint32_t ichunk = (ilen > xlen) ? xlen : ilen;
+		uint32_t ochunk = (olen > ylen) ? ylen : olen;
+		uint32_t omagic = 0;
 
 		if (st->magic_samples[channel_index]) {
 			omagic =
@@ -1163,12 +1163,12 @@ int speex_resampler_process_int(SpeexResamplerState * st,
 
 int speex_resampler_process_interleaved_float(SpeexResamplerState * st,
 					      const float *in,
-					      spx_uint32_t * in_len, float *out,
-					      spx_uint32_t * out_len)
+					      uint32_t * in_len, float *out,
+					      uint32_t * out_len)
 {
-	spx_uint32_t i;
+	uint32_t i;
 	int istride_save, ostride_save;
-	spx_uint32_t bak_len = *out_len;
+	uint32_t bak_len = *out_len;
 	istride_save = st->in_stride;
 	ostride_save = st->out_stride;
 	st->in_stride = st->out_stride = st->nb_channels;
@@ -1187,14 +1187,14 @@ int speex_resampler_process_interleaved_float(SpeexResamplerState * st,
 }
 
 int speex_resampler_process_interleaved_int(SpeexResamplerState * st,
-					    const spx_int16_t * in,
-					    spx_uint32_t * in_len,
-					    spx_int16_t * out,
-					    spx_uint32_t * out_len)
+					    const int16_t * in,
+					    uint32_t * in_len,
+					    int16_t * out,
+					    uint32_t * out_len)
 {
-	spx_uint32_t i;
+	uint32_t i;
 	int istride_save, ostride_save;
-	spx_uint32_t bak_len = *out_len;
+	uint32_t bak_len = *out_len;
 	istride_save = st->in_stride;
 	ostride_save = st->out_stride;
 	st->in_stride = st->out_stride = st->nb_channels;
@@ -1212,28 +1212,28 @@ int speex_resampler_process_interleaved_int(SpeexResamplerState * st,
 	return RESAMPLER_ERR_SUCCESS;
 }
 
-int speex_resampler_set_rate(SpeexResamplerState * st, spx_uint32_t in_rate,
-			     spx_uint32_t out_rate)
+int speex_resampler_set_rate(SpeexResamplerState * st, uint32_t in_rate,
+			     uint32_t out_rate)
 {
 	return speex_resampler_set_rate_frac(st, in_rate, out_rate, in_rate,
 					     out_rate);
 }
 
-void speex_resampler_get_rate(SpeexResamplerState * st, spx_uint32_t * in_rate,
-			      spx_uint32_t * out_rate)
+void speex_resampler_get_rate(SpeexResamplerState * st, uint32_t * in_rate,
+			      uint32_t * out_rate)
 {
 	*in_rate = st->in_rate;
 	*out_rate = st->out_rate;
 }
 
 int speex_resampler_set_rate_frac(SpeexResamplerState * st,
-				  spx_uint32_t ratio_num,
-				  spx_uint32_t ratio_den, spx_uint32_t in_rate,
-				  spx_uint32_t out_rate)
+				  uint32_t ratio_num,
+				  uint32_t ratio_den, uint32_t in_rate,
+				  uint32_t out_rate)
 {
-	spx_uint32_t fact;
-	spx_uint32_t old_den;
-	spx_uint32_t i;
+	uint32_t fact;
+	uint32_t old_den;
+	uint32_t i;
 	if (st->in_rate == in_rate && st->out_rate == out_rate
 	    && st->num_rate == ratio_num && st->den_rate == ratio_den)
 		return RESAMPLER_ERR_SUCCESS;
@@ -1267,8 +1267,8 @@ int speex_resampler_set_rate_frac(SpeexResamplerState * st,
 }
 
 void speex_resampler_get_ratio(SpeexResamplerState * st,
-			       spx_uint32_t * ratio_num,
-			       spx_uint32_t * ratio_den)
+			       uint32_t * ratio_num,
+			       uint32_t * ratio_den)
 {
 	*ratio_num = st->num_rate;
 	*ratio_den = st->den_rate;
@@ -1292,25 +1292,25 @@ void speex_resampler_get_quality(SpeexResamplerState * st, int *quality)
 }
 
 void speex_resampler_set_input_stride(SpeexResamplerState * st,
-				      spx_uint32_t stride)
+				      uint32_t stride)
 {
 	st->in_stride = stride;
 }
 
 void speex_resampler_get_input_stride(SpeexResamplerState * st,
-				      spx_uint32_t * stride)
+				      uint32_t * stride)
 {
 	*stride = st->in_stride;
 }
 
 void speex_resampler_set_output_stride(SpeexResamplerState * st,
-				       spx_uint32_t stride)
+				       uint32_t stride)
 {
 	st->out_stride = stride;
 }
 
 void speex_resampler_get_output_stride(SpeexResamplerState * st,
-				       spx_uint32_t * stride)
+				       uint32_t * stride)
 {
 	*stride = st->out_stride;
 }
@@ -1328,7 +1328,7 @@ int speex_resampler_get_output_latency(SpeexResamplerState * st)
 
 int speex_resampler_skip_zeros(SpeexResamplerState * st)
 {
-	spx_uint32_t i;
+	uint32_t i;
 	for (i = 0; i < st->nb_channels; i++)
 		st->last_sample[i] = st->filt_len / 2;
 	return RESAMPLER_ERR_SUCCESS;
@@ -1336,7 +1336,7 @@ int speex_resampler_skip_zeros(SpeexResamplerState * st)
 
 int speex_resampler_reset_mem(SpeexResamplerState * st)
 {
-	spx_uint32_t i;
+	uint32_t i;
 	for (i = 0; i < st->nb_channels * (st->filt_len - 1); i++)
 		st->mem[i] = 0;
 	return RESAMPLER_ERR_SUCCESS;

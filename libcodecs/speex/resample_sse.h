@@ -64,7 +64,7 @@ static inline float inner_product_single(const float *a, const float *b,
 #define OVERRIDE_INTERPOLATE_PRODUCT_SINGLE
 static inline float interpolate_product_single(const float *a, const float *b,
 					       unsigned int len,
-					       const spx_uint32_t oversample,
+					       const uint32_t oversample,
 					       float *frac)
 {
 	int i;
@@ -120,7 +120,7 @@ static inline double inner_product_double(const float *a, const float *b,
 #define OVERRIDE_INTERPOLATE_PRODUCT_DOUBLE
 static inline double interpolate_product_double(const float *a, const float *b,
 						unsigned int len,
-						const spx_uint32_t oversample,
+						const uint32_t oversample,
 						float *frac)
 {
 	int i;

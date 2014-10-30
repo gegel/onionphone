@@ -67,12 +67,12 @@ TODO:
 
 #define SPEEX_JITTER_MAX_BUFFER_SIZE 200   /**< Maximum number of packets in jitter buffer */
 
-#define TSUB(a,b) ((spx_int32_t)((a)-(b)))
+#define TSUB(a,b) ((int32_t)((a)-(b)))
 
-#define GT32(a,b) (((spx_int32_t)((a)-(b)))>0)
-#define GE32(a,b) (((spx_int32_t)((a)-(b)))>=0)
-#define LT32(a,b) (((spx_int32_t)((a)-(b)))<0)
-#define LE32(a,b) (((spx_int32_t)((a)-(b)))<=0)
+#define GT32(a,b) (((int32_t)((a)-(b)))>0)
+#define GE32(a,b) (((int32_t)((a)-(b)))>=0)
+#define LT32(a,b) (((int32_t)((a)-(b)))<0)
+#define LE32(a,b) (((int32_t)((a)-(b)))<=0)
 
 #define ROUND_DOWN(x, step) ((x)<0 ? ((x)-(step)+1)/(step)*(step) : (x)/(step)*(step))
 
@@ -84,9 +84,9 @@ TODO:
 struct TimingBuffer {
 	int filled;		       /**< Number of entries occupied in "timing" and "counts"*/
 	int curr_count;		       /**< Number of packet timings we got (including those we discarded) */
-	spx_int32_t timing[MAX_TIMINGS];
+	int32_t timing[MAX_TIMINGS];
 				       /**< Sorted list of all timings ("latest" packets first) */
-	spx_int16_t counts[MAX_TIMINGS];
+	int16_t counts[MAX_TIMINGS];
 				       /**< Order the packets were put in (will be used for short-term estimate) */
 };
 
@@ -97,7 +97,7 @@ static void tb_init(struct TimingBuffer *tb)
 }
 
 /* Add the timing of a new packet to the TimingBuffer */
-static void tb_add(struct TimingBuffer *tb, spx_int16_t timing)
+static void tb_add(struct TimingBuffer *tb, int16_t timing)
 {
 	int pos;
 	/* Discard packet that won't make it into the list because they're too early */
@@ -134,20 +134,20 @@ static void tb_add(struct TimingBuffer *tb, spx_int16_t timing)
 
 /** Jitter buffer structure */
 struct JitterBuffer_ {
-	spx_uint32_t pointer_timestamp;			       /**< Timestamp of what we will *get* next */
-	spx_uint32_t last_returned_timestamp;		       /**< Useful for getting the next packet with the same timestamp (for fragmented media) */
-	spx_uint32_t next_stop;				       /**< Estimated time the next get() will be called */
+	uint32_t pointer_timestamp;			       /**< Timestamp of what we will *get* next */
+	uint32_t last_returned_timestamp;		       /**< Useful for getting the next packet with the same timestamp (for fragmented media) */
+	uint32_t next_stop;				       /**< Estimated time the next get() will be called */
 
-	spx_int32_t buffered;				       /**< Amount of data we think is still buffered by the application (timestamp units)*/
+	int32_t buffered;				       /**< Amount of data we think is still buffered by the application (timestamp units)*/
 
 	JitterBufferPacket packets[SPEEX_JITTER_MAX_BUFFER_SIZE];
 							       /**< Packets stored in the buffer */
-	spx_uint32_t arrival[SPEEX_JITTER_MAX_BUFFER_SIZE];    /**< Packet arrival time (0 means it was late, even though it's a valid timestamp) */
+	uint32_t arrival[SPEEX_JITTER_MAX_BUFFER_SIZE];    /**< Packet arrival time (0 means it was late, even though it's a valid timestamp) */
 
 	void (*destroy) (void *);			       /**< Callback for destroying a packet */
 
-	spx_int32_t delay_step;				       /**< Size of the steps when adjusting buffering (timestamp units) */
-	spx_int32_t concealment_size;			       /**< Size of the packet loss concealment "units" */
+	int32_t delay_step;				       /**< Size of the steps when adjusting buffering (timestamp units) */
+	int32_t concealment_size;			       /**< Size of the packet loss concealment "units" */
 	int reset_state;				       /**< True if state was just reset        */
 	int buffer_margin;				       /**< How many frames we want to keep in the buffer (lower bound) */
 	int late_cutoff;				       /**< How late must a packet be for it not to be considered at all */
@@ -171,11 +171,11 @@ struct JitterBuffer_ {
    @param tb Array of buffers
    @param late_factor Equivalent cost of a late frame (in timestamp units) 
  */
-static spx_int16_t compute_opt_delay(JitterBuffer * jitter)
+static int16_t compute_opt_delay(JitterBuffer * jitter)
 {
 	int i;
-	spx_int16_t opt = 0;
-	spx_int32_t best_cost = 0x7fffffff;
+	int16_t opt = 0;
+	int32_t best_cost = 0x7fffffff;
 	int late = 0;
 	int pos[MAX_BUFFERS];
 	int tot_count;
@@ -183,7 +183,7 @@ static spx_int16_t compute_opt_delay(JitterBuffer * jitter)
 	int penalty_taken = 0;
 	int best = 0;
 	int worst = 0;
-	spx_int32_t deltaT;
+	int32_t deltaT;
 	struct TimingBuffer *tb;
 
 	tb = jitter->_tb;
@@ -221,7 +221,7 @@ static spx_int16_t compute_opt_delay(JitterBuffer * jitter)
 			}
 		}
 		if (next != -1) {
-			spx_int32_t cost;
+			int32_t cost;
 
 			if (i == 0)
 				worst = latest;
@@ -269,7 +269,7 @@ JitterBuffer *jitter_buffer_init(int step_size)
 	    (JitterBuffer *) speex_alloc(sizeof(JitterBuffer));
 	if (jitter) {
 		int i;
-		spx_int32_t tmp;
+		int32_t tmp;
 		for (i = 0; i < SPEEX_JITTER_MAX_BUFFER_SIZE; i++)
 			jitter->packets[i].data = NULL;
 		jitter->delay_step = step_size;
@@ -324,7 +324,7 @@ void jitter_buffer_destroy(JitterBuffer * jitter)
 }
 
 /** Take the following timing into consideration for future calculations */
-static void update_timings(JitterBuffer * jitter, spx_int32_t timing)
+static void update_timings(JitterBuffer * jitter, int32_t timing)
 {
 	if (timing < -32767)
 		timing = -32767;
@@ -344,7 +344,7 @@ static void update_timings(JitterBuffer * jitter, spx_int32_t timing)
 }
 
 /** Compensate all timings when we do an adjustment of the buffering */
-static void shift_timings(JitterBuffer * jitter, spx_int16_t amount)
+static void shift_timings(JitterBuffer * jitter, int16_t amount)
 {
 	int i, j;
 	for (i = 0; i < MAX_BUFFERS; i++) {
@@ -383,8 +383,8 @@ void jitter_buffer_put(JitterBuffer * jitter, const JitterBufferPacket * packet)
 	/* Check if packet is late (could still be useful though) */
 	if (!jitter->reset_state && LT32(packet->timestamp, jitter->next_stop)) {
 		update_timings(jitter,
-			       ((spx_int32_t) packet->timestamp) -
-			       ((spx_int32_t) jitter->next_stop) -
+			       ((int32_t) packet->timestamp) -
+			       ((int32_t) jitter->next_stop) -
 			       jitter->buffer_margin);
 		late = 1;
 	} else {
@@ -452,11 +452,11 @@ void jitter_buffer_put(JitterBuffer * jitter, const JitterBufferPacket * packet)
 
 /** Get one packet from the jitter buffer */
 int jitter_buffer_get(JitterBuffer * jitter, JitterBufferPacket * packet,
-		      spx_int32_t desired_span, spx_int32_t * start_offset)
+		      int32_t desired_span, int32_t * start_offset)
 {
 	int i;
 	unsigned int j;
-	spx_int16_t opt;
+	int16_t opt;
 
 	if (start_offset != NULL)
 		*start_offset = 0;
@@ -465,7 +465,7 @@ int jitter_buffer_get(JitterBuffer * jitter, JitterBufferPacket * packet,
 	if (jitter->reset_state) {
 		int found = 0;
 		/* Find the oldest packet */
-		spx_uint32_t oldest = 0;
+		uint32_t oldest = 0;
 		for (i = 0; i < SPEEX_JITTER_MAX_BUFFER_SIZE; i++) {
 			if (jitter->packets[i].data
 			    && (!found
@@ -545,7 +545,7 @@ int jitter_buffer_get(JitterBuffer * jitter, JitterBufferPacket * packet,
 	/* If still no match, try for earliest packet possible */
 	if (i == SPEEX_JITTER_MAX_BUFFER_SIZE) {
 		int found = 0;
-		spx_uint32_t best_time = 0;
+		uint32_t best_time = 0;
 		int best_span = 0;
 		int besti = 0;
 		for (i = 0; i < SPEEX_JITTER_MAX_BUFFER_SIZE; i++) {
@@ -578,7 +578,7 @@ int jitter_buffer_get(JitterBuffer * jitter, JitterBufferPacket * packet,
 
 	/* If we find something */
 	if (i != SPEEX_JITTER_MAX_BUFFER_SIZE) {
-		spx_int32_t offset;
+		int32_t offset;
 
 		/* We (obviously) haven't lost this packet */
 		jitter->lost_count = 0;
@@ -586,9 +586,9 @@ int jitter_buffer_get(JitterBuffer * jitter, JitterBufferPacket * packet,
 		/* In this case, 0 isn't as a valid timestamp */
 		if (jitter->arrival[i] != 0) {
 			update_timings(jitter,
-				       ((spx_int32_t) jitter->packets[i].
+				       ((int32_t) jitter->packets[i].
 					timestamp) -
-				       ((spx_int32_t) jitter->arrival[i]) -
+				       ((int32_t) jitter->arrival[i]) -
 				       jitter->buffer_margin);
 		}
 
@@ -612,8 +612,8 @@ int jitter_buffer_get(JitterBuffer * jitter, JitterBufferPacket * packet,
 		jitter->packets[i].data = NULL;
 		/* Set timestamp and span (if requested) */
 		offset =
-		    (spx_int32_t) jitter->packets[i].timestamp -
-		    (spx_int32_t) jitter->pointer_timestamp;
+		    (int32_t) jitter->packets[i].timestamp -
+		    (int32_t) jitter->pointer_timestamp;
 		if (start_offset != NULL)
 			*start_offset = offset;
 		else if (offset != 0)
@@ -719,12 +719,12 @@ int jitter_buffer_get_another(JitterBuffer * jitter,
 /* Let the jitter buffer know it's the right time to adjust the buffering delay to the network conditions */
 static int _jitter_buffer_update_delay(JitterBuffer * jitter,
 				       JitterBufferPacket * packet,
-				       spx_int32_t * start_offset)
+				       int32_t * start_offset)
 {
 	(void)packet;
 	(void)start_offset;
 
-	spx_int16_t opt = compute_opt_delay(jitter);
+	int16_t opt = compute_opt_delay(jitter);
 	/*fprintf(stderr, "opt adjustment is %d ", opt); */
 
 	if (opt < 0) {
@@ -745,7 +745,7 @@ static int _jitter_buffer_update_delay(JitterBuffer * jitter,
 /* Let the jitter buffer know it's the right time to adjust the buffering delay to the network conditions */
 int jitter_buffer_update_delay(JitterBuffer * jitter,
 			       JitterBufferPacket * packet,
-			       spx_int32_t * start_offset)
+			       int32_t * start_offset)
 {
 	/* If the programmer calls jitter_buffer_update_delay() directly, 
 	   automatically disable auto-adjustment */
@@ -778,7 +778,7 @@ void jitter_buffer_tick(JitterBuffer * jitter)
 	jitter->buffered = 0;
 }
 
-void jitter_buffer_remaining_span(JitterBuffer * jitter, spx_uint32_t rem)
+void jitter_buffer_remaining_span(JitterBuffer * jitter, uint32_t rem)
 {
 	/* Automatically-adjust the buffering delay if requested */
 	if (jitter->auto_adjust)
@@ -797,10 +797,10 @@ int jitter_buffer_ctl(JitterBuffer * jitter, int request, void *ptr)
 	int count, i;
 	switch (request) {
 	case JITTER_BUFFER_SET_MARGIN:
-		jitter->buffer_margin = *(spx_int32_t *) ptr;
+		jitter->buffer_margin = *(int32_t *) ptr;
 		break;
 	case JITTER_BUFFER_GET_MARGIN:
-		*(spx_int32_t *) ptr = jitter->buffer_margin;
+		*(int32_t *) ptr = jitter->buffer_margin;
 		break;
 	case JITTER_BUFFER_GET_AVALIABLE_COUNT:
 		count = 0;
@@ -811,7 +811,7 @@ int jitter_buffer_ctl(JitterBuffer * jitter, int request, void *ptr)
 				count++;
 			}
 		}
-		*(spx_int32_t *) ptr = count;
+		*(int32_t *) ptr = count;
 		break;
 	case JITTER_BUFFER_SET_DESTROY_CALLBACK:
 		jitter->destroy = (void (*)(void *))ptr;
@@ -820,30 +820,30 @@ int jitter_buffer_ctl(JitterBuffer * jitter, int request, void *ptr)
 		*(void (**)(void *))ptr = jitter->destroy;
 		break;
 	case JITTER_BUFFER_SET_DELAY_STEP:
-		jitter->delay_step = *(spx_int32_t *) ptr;
+		jitter->delay_step = *(int32_t *) ptr;
 		break;
 	case JITTER_BUFFER_GET_DELAY_STEP:
-		*(spx_int32_t *) ptr = jitter->delay_step;
+		*(int32_t *) ptr = jitter->delay_step;
 		break;
 	case JITTER_BUFFER_SET_CONCEALMENT_SIZE:
-		jitter->concealment_size = *(spx_int32_t *) ptr;
+		jitter->concealment_size = *(int32_t *) ptr;
 		break;
 	case JITTER_BUFFER_GET_CONCEALMENT_SIZE:
-		*(spx_int32_t *) ptr = jitter->concealment_size;
+		*(int32_t *) ptr = jitter->concealment_size;
 		break;
 	case JITTER_BUFFER_SET_MAX_LATE_RATE:
-		jitter->max_late_rate = *(spx_int32_t *) ptr;
+		jitter->max_late_rate = *(int32_t *) ptr;
 		jitter->window_size = 100 * TOP_DELAY / jitter->max_late_rate;
 		jitter->subwindow_size = jitter->window_size / MAX_BUFFERS;
 		break;
 	case JITTER_BUFFER_GET_MAX_LATE_RATE:
-		*(spx_int32_t *) ptr = jitter->max_late_rate;
+		*(int32_t *) ptr = jitter->max_late_rate;
 		break;
 	case JITTER_BUFFER_SET_LATE_COST:
-		jitter->latency_tradeoff = *(spx_int32_t *) ptr;
+		jitter->latency_tradeoff = *(int32_t *) ptr;
 		break;
 	case JITTER_BUFFER_GET_LATE_COST:
-		*(spx_int32_t *) ptr = jitter->latency_tradeoff;
+		*(int32_t *) ptr = jitter->latency_tradeoff;
 		break;
 	default:
 		speex_warning_int("Unknown jitter_buffer_ctl request: ",

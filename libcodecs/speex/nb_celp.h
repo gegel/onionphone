@@ -101,19 +101,19 @@ typedef struct EncState {
 	VBRState *vbr;		 /**< State of the VBR data */
 	float vbr_quality;	 /**< Quality setting for VBR encoding */
 	float relative_quality;	 /**< Relative quality that will be needed by VBR */
-	spx_int32_t vbr_enabled; /**< 1 for enabling VBR, 0 otherwise */
-	spx_int32_t vbr_max;	 /**< Max bit-rate allowed in VBR mode */
+	int32_t vbr_enabled; /**< 1 for enabling VBR, 0 otherwise */
+	int32_t vbr_max;	 /**< Max bit-rate allowed in VBR mode */
 	int vad_enabled;	 /**< 1 for enabling VAD, 0 otherwise */
 	int dtx_enabled;	 /**< 1 for enabling DTX, 0 otherwise */
 	int dtx_count;		 /**< Number of consecutive DTX frames */
-	spx_int32_t abr_enabled; /**< ABR setting (in bps), 0 if off */
+	int32_t abr_enabled; /**< ABR setting (in bps), 0 if off */
 	float abr_drift;
 	float abr_drift2;
 	float abr_count;
 #endif				/* #ifndef DISABLE_VBR */
 
 	int complexity;		 /**< Complexity setting (0-10 from least complex to most complex) */
-	spx_int32_t sampling_rate;
+	int32_t sampling_rate;
 	int plc_tuning;
 	int encode_submode;
 	const SpeexSubmode *const *submodes;
@@ -135,7 +135,7 @@ typedef struct DecState {
 	int lpcSize;		/**< LPC order */
 	int min_pitch;		/**< Minimum pitch value allowed */
 	int max_pitch;		/**< Maximum pitch value allowed */
-	spx_int32_t sampling_rate;
+	int32_t sampling_rate;
 
 	spx_word16_t last_ol_gain;
 				/**< Open-loop gain for previous frame */
@@ -162,7 +162,7 @@ typedef struct DecState {
 	spx_word16_t pitch_gain_buf[3];
 				    /**< Pitch gain of last decoded frames */
 	int pitch_gain_buf_idx;	/**< Tail of the buffer */
-	spx_int32_t seed;	/** Seed used for random number generation */
+	int32_t seed;	/** Seed used for random number generation */
 
 	int encode_submode;
 	const SpeexSubmode *const *submodes;
