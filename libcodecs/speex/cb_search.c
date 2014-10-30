@@ -29,6 +29,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <ophtools.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -281,7 +283,7 @@ int   update_target
    const signed char *shape_cb;
    int shape_cb_size, subvect_size, nb_subvect;
    const split_cb_params *params;
-   int N=2;
+   int N;
    VARDECL(int *best_index);
    VARDECL(spx_word32_t *best_dist);
    VARDECL(int *best_nind);
@@ -323,6 +325,7 @@ int   update_target
    ALLOC(ind, nb_subvect, int);
 
    ALLOC(tmp, 2*N*nsf, spx_word16_t);
+   memzero(tmp, 2 * N * nsf * sizeof(spx_word16_t));
    for (i=0;i<N;i++)
    {
       ot2[i]=tmp+2*i*nsf;
@@ -338,6 +341,7 @@ int   update_target
    ALLOC(odist, N, spx_word32_t);
    
    ALLOC(itmp, 2*N*nb_subvect, int);
+   memzero(itmp, 2 * N * nb_subvect * sizeof(int));
    for (i=0;i<N;i++)
    {
       nind[i]=itmp+2*i*nb_subvect;

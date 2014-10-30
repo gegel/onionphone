@@ -334,7 +334,9 @@ static int resampler_basic_direct_single(SpeexResamplerState *st, spx_uint32_t c
    const int frac_advance = st->frac_advance;
    const spx_uint32_t den_rate = st->den_rate;
    spx_word32_t sum;
+#ifndef OVERRIDE_INNER_PRODUCT_SINGLE
    int j;
+#endif
 
    while (!(last_sample >= (spx_int32_t)*in_len || out_sample >= (spx_int32_t)*out_len))
    {
@@ -385,7 +387,9 @@ static int resampler_basic_direct_double(SpeexResamplerState *st, spx_uint32_t c
    const int frac_advance = st->frac_advance;
    const spx_uint32_t den_rate = st->den_rate;
    double sum;
+#ifndef OVERRIDE_INNER_PRODUCT_DOUBLE
    int j;
+#endif
 
    while (!(last_sample >= (spx_int32_t)*in_len || out_sample >= (spx_int32_t)*out_len))
    {
@@ -432,7 +436,9 @@ static int resampler_basic_interpolate_single(SpeexResamplerState *st, spx_uint3
    const int int_advance = st->int_advance;
    const int frac_advance = st->frac_advance;
    const spx_uint32_t den_rate = st->den_rate;
+#ifndef OVERRIDE_INTERPOLATE_PRODUCT_SINGLE
    int j;
+#endif
    spx_word32_t sum;
 
    while (!(last_sample >= (spx_int32_t)*in_len || out_sample >= (spx_int32_t)*out_len))
@@ -494,7 +500,9 @@ static int resampler_basic_interpolate_double(SpeexResamplerState *st, spx_uint3
    const int int_advance = st->int_advance;
    const int frac_advance = st->frac_advance;
    const spx_uint32_t den_rate = st->den_rate;
+#ifndef OVERRIDE_INTERPOLATE_PRODUCT_DOUBLE
    int j;
+#endif
    spx_word32_t sum;
 
    while (!(last_sample >= (spx_int32_t)*in_len || out_sample >= (spx_int32_t)*out_len))

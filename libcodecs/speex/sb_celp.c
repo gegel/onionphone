@@ -919,7 +919,6 @@ int sb_decode(void *state, SpeexBits *bits, void *vout)
       if (wideband)
       {
          /*Regular wideband frame, read the submode*/
-         wideband = speex_bits_unpack_unsigned(bits, 1);
          st->submodeID = speex_bits_unpack_unsigned(bits, SB_SUBMODE_BITS);
       } else
       {
