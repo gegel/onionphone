@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2003 Jean-Marc Valin */
 /**
    @file arch.h
@@ -36,11 +38,11 @@
 #define ARCH_H
 
 #ifndef SPEEX_VERSION
-#define SPEEX_MAJOR_VERSION 1         /**< Major Speex version. */
-#define SPEEX_MINOR_VERSION 1         /**< Minor Speex version. */
-#define SPEEX_MICRO_VERSION 15        /**< Micro Speex version. */
-#define SPEEX_EXTRA_VERSION ""        /**< Extra Speex version. */
-#define SPEEX_VERSION "speex-1.2beta3"  /**< Speex version string. */
+#define SPEEX_MAJOR_VERSION 1	      /**< Major Speex version. */
+#define SPEEX_MINOR_VERSION 1	      /**< Minor Speex version. */
+#define SPEEX_MICRO_VERSION 15	      /**< Micro Speex version. */
+#define SPEEX_EXTRA_VERSION ""	      /**< Extra Speex version. */
+#define SPEEX_VERSION "speex-1.2beta3"	/**< Speex version string. */
 #endif
 
 /* A couple test to catch stupid option combinations */
@@ -71,14 +73,13 @@
 #error "Don't you think enabling fixed-point is a good thing to do if you want to debug that?"
 #endif
 
-
 #endif
 
 #ifndef OUTSIDE_SPEEX
 #include "speex/speex_types.h"
 #endif
 
-#define ABS(x) ((x) < 0 ? (-(x)) : (x))      /**< Absolute integer value. */
+#define ABS(x) ((x) < 0 ? (-(x)) : (x))	     /**< Absolute integer value. */
 #define ABS16(x) ((x) < 0 ? (-(x)) : (x))    /**< Absolute 16-bit value.  */
 #define MIN16(a,b) ((a) < (b) ? (a) : (b))   /**< Maximum 16-bit value.   */
 #define MAX16(a,b) ((a) > (b) ? (a) : (b))   /**< Maximum 16-bit value.   */
@@ -89,7 +90,7 @@
 #ifdef FIXED_POINT
 
 typedef spx_int16_t spx_word16_t;
-typedef spx_int32_t   spx_word32_t;
+typedef spx_int32_t spx_word32_t;
 typedef spx_word32_t spx_mem_t;
 typedef spx_word16_t spx_coef_t;
 typedef spx_word16_t spx_lsp_t;
@@ -114,7 +115,6 @@ typedef spx_word32_t spx_sig_t;
 #define VERY_LARGE16 ((spx_word16_t)32767)
 #define Q15_ONE ((spx_word16_t)32767)
 
-
 #ifdef FIXED_DEBUG
 #include "fixed_debug.h"
 #else
@@ -130,7 +130,6 @@ typedef spx_word32_t spx_sig_t;
 #endif
 
 #endif
-
 
 #else
 
@@ -148,7 +147,6 @@ typedef float spx_word32_t;
 #define GAMMA_SCALING 1.f
 #define GAIN_SCALING 1.f
 #define GAIN_SCALING_1 1.f
-
 
 #define VERY_SMALL 1e-15f
 #define VERY_LARGE32 1e15f
@@ -210,18 +208,16 @@ typedef float spx_word32_t;
 #define DIV32(a,b)     (((spx_word32_t)(a))/(spx_word32_t)(b))
 #define PDIV32(a,b)     (((spx_word32_t)(a))/(spx_word32_t)(b))
 
-
 #endif
-
 
 #if defined (CONFIG_TI_C54X) || defined (CONFIG_TI_C55X)
 
 /* 2 on TI C5x DSP */
-#define BYTES_PER_CHAR 2 
+#define BYTES_PER_CHAR 2
 #define BITS_PER_CHAR 16
 #define LOG2_BITS_PER_CHAR 4
 
-#else 
+#else
 
 #define BYTES_PER_CHAR 1
 #define BITS_PER_CHAR 8
@@ -229,11 +225,8 @@ typedef float spx_word32_t;
 
 #endif
 
-
-
 #ifdef FIXED_DEBUG
 extern long long spx_mips;
 #endif
-
 
 #endif

@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2005 Jean-Marc Valin 
    File: fftwrap.h
 
@@ -44,10 +46,10 @@ void *spx_fft_init(int size);
 void spx_fft_destroy(void *table);
 
 /** Forward (real to half-complex) transform */
-void spx_fft(void *table, spx_word16_t *in, spx_word16_t *out);
+void spx_fft(void *table, spx_word16_t * in, spx_word16_t * out);
 
 /** Backward (half-complex to real) transform */
-void spx_ifft(void *table, spx_word16_t *in, spx_word16_t *out);
+void spx_ifft(void *table, spx_word16_t * in, spx_word16_t * out);
 
 /** Forward (real to half-complex) transform of float data */
 void spx_fft_float(void *table, float *in, float *out);

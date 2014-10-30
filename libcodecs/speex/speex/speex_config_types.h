@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 #ifndef __SPEEX_TYPES_H__
 #define __SPEEX_TYPES_H__
 
@@ -8,4 +10,3 @@ typedef int spx_int32_t;
 typedef unsigned int spx_uint32_t;
 
 #endif
-

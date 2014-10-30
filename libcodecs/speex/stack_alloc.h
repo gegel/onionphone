@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2002 Jean-Marc Valin */
 /**
    @file stack_alloc.h
@@ -36,15 +38,15 @@
 #define STACK_ALLOC_H
 
 #ifdef USE_ALLOCA
-# ifdef WIN32
-#  include <malloc.h>
-# else
-#  ifdef HAVE_ALLOCA_H
-#   include <alloca.h>
-#  else
-#   include <stdlib.h>
-#  endif
-# endif
+#ifdef WIN32
+#include <malloc.h>
+#else
+#ifdef HAVE_ALLOCA_H
+#include <alloca.h>
+#else
+#include <stdlib.h>
+#endif
+#endif
 #endif
 
 /**
@@ -101,7 +103,7 @@
 #endif
 
 #if defined(VAR_ARRAYS)
-#define VARDECL(var) 
+#define VARDECL(var)
 #define ALLOC(var, size, type) type var[size]
 #elif defined(USE_ALLOCA)
 #define VARDECL(var) var
@@ -110,6 +112,5 @@
 #define VARDECL(var) var
 #define ALLOC(var, size, type) var = PUSH(stack, size, type)
 #endif
-
 
 #endif

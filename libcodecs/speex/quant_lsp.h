@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2002 Jean-Marc Valin */
 /**
    @file quant_lsp.h
@@ -54,21 +56,24 @@ extern const signed char cdbk_nb_high1[];
 extern const signed char cdbk_nb_high2[];
 
 /* Quantizes narrowband LSPs with 30 bits */
-void lsp_quant_nb(spx_lsp_t *lsp, spx_lsp_t *qlsp, int order, SpeexBits *bits);
+void lsp_quant_nb(spx_lsp_t * lsp, spx_lsp_t * qlsp, int order,
+		  SpeexBits * bits);
 
 /* Decodes quantized narrowband LSPs */
-void lsp_unquant_nb(spx_lsp_t *lsp, int order, SpeexBits *bits);
+void lsp_unquant_nb(spx_lsp_t * lsp, int order, SpeexBits * bits);
 
 /* Quantizes low bit-rate narrowband LSPs with 18 bits */
-void lsp_quant_lbr(spx_lsp_t *lsp, spx_lsp_t *qlsp, int order, SpeexBits *bits);
+void lsp_quant_lbr(spx_lsp_t * lsp, spx_lsp_t * qlsp, int order,
+		   SpeexBits * bits);
 
 /* Decodes quantized low bit-rate narrowband LSPs */
-void lsp_unquant_lbr(spx_lsp_t *lsp, int order, SpeexBits *bits);
+void lsp_unquant_lbr(spx_lsp_t * lsp, int order, SpeexBits * bits);
 
 /* Quantizes high-band LSPs with 12 bits */
-void lsp_quant_high(spx_lsp_t *lsp, spx_lsp_t *qlsp, int order, SpeexBits *bits);
+void lsp_quant_high(spx_lsp_t * lsp, spx_lsp_t * qlsp, int order,
+		    SpeexBits * bits);
 
 /* Decodes high-band LSPs */
-void lsp_unquant_high(spx_lsp_t *lsp, int order, SpeexBits *bits);
+void lsp_unquant_high(spx_lsp_t * lsp, int order, SpeexBits * bits);
 
 #endif
