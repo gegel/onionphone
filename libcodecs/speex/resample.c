@@ -669,7 +669,7 @@ static void update_filter(SpeexResamplerState *st)
       for (i=st->nb_channels-1;i>=0;i--)
       {
          spx_int32_t j;
-         spx_uint32_t olen = old_length;
+         spx_uint32_t olen/* = old_length*/;
          /*if (st->magic_samples[i])*/
          {
             /* Try and remove the magic samples as if nothing had happened */

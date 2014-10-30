@@ -238,7 +238,7 @@ int lpc_to_lsp (spx_coef_t *a,int lpcrdr,spx_lsp_t *freq,int nb,spx_word16_t del
     spx_word16_t *pt;                	/* ptr used for cheb_poly_eval()
 				whether P' or Q' 			*/
     int roots=0;              	/* DR 8/2/94: number of roots found 	*/
-    flag = 1;                	/*  program is searching for a root when,
+    flag;                	/*  program is searching for a root when,
 				1 else has found one 			*/
     m = lpcrdr/2;            	/* order of P'(z) & Q'(z) polynomials 	*/
 
@@ -293,9 +293,6 @@ int lpc_to_lsp (spx_coef_t *a,int lpcrdr,spx_lsp_t *freq,int nb,spx_word16_t del
        qx++;
     }
 #endif
-
-    px = P;             	/* re-initialise ptrs 			*/
-    qx = Q;
 
     /* now that we have computed P and Q convert to 16 bits to
        speed up cheb_poly_eval */
@@ -353,7 +350,7 @@ int lpc_to_lsp (spx_coef_t *a,int lpcrdr,spx_lsp_t *freq,int nb,spx_word16_t del
             {
 		roots++;
 
-		psumm=psuml;
+		/* psumm=psuml; */
 		for(k=0;k<=nb;k++){
 #ifdef FIXED_POINT
 		    xm = ADD16(PSHR16(xl,1),PSHR16(xr,1));        	/* bisect the interval 	*/
@@ -367,7 +364,6 @@ int lpc_to_lsp (spx_coef_t *a,int lpcrdr,spx_lsp_t *freq,int nb,spx_word16_t del
 			psuml=psumm;
 			xl=xm;
 		    } else {
-			psumr=psumm;
 			xr=xm;
 		    }
 		}
