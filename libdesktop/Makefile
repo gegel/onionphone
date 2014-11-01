@@ -29,6 +29,14 @@ build: $(BLOB)
 $(BLOB): $(OBJ)
 	$(LD) -r $(OBJ) -o $(BLOB)
 
+audio.o: audio.c audio_wave.c audio_alsa.c
+
+audio.c: audio.h
+
+audio_wave.c: audio_wave.h
+
+audio_alsa.c: audio_alsa.h
+
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCADD) -c $<
 
