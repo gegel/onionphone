@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -36,106 +38,122 @@ POSSIBILITY OF SUCH DAMAGE.
 #define INV_SCALE_Q16           ( ( 65536 * ( ( ( MAX_QGAIN_DB - MIN_QGAIN_DB ) * 128 ) / 6 ) ) / ( N_LEVELS_QGAIN - 1 ) )
 
 /* Gain scalar quantization with hysteresis, uniform on log scale */
-void silk_gains_quant(
-    opus_int8                   ind[ MAX_NB_SUBFR ],            /* O    gain indices                                */
-    opus_int32                  gain_Q16[ MAX_NB_SUBFR ],       /* I/O  gains (quantized out)                       */
-    opus_int8                   *prev_ind,                      /* I/O  last index in previous frame                */
-    const opus_int              conditional,                    /* I    first gain is delta coded if 1              */
-    const opus_int              nb_subfr                        /* I    number of subframes                         */
-)
+void silk_gains_quant(int8_t ind[MAX_NB_SUBFR],	/* O    gain indices                                */
+		      int32_t gain_Q16[MAX_NB_SUBFR],	/* I/O  gains (quantized out)                       */
+		      int8_t * prev_ind,	/* I/O  last index in previous frame                */
+		      const int conditional,	/* I    first gain is delta coded if 1              */
+		      const int nb_subfr	/* I    number of subframes                         */
+    )
 {
-    opus_int k, double_step_size_threshold;
+	int k, double_step_size_threshold;
 
-    for( k = 0; k < nb_subfr; k++ ) {
-        /* Convert to log scale, scale, floor() */
-        ind[ k ] = silk_SMULWB( SCALE_Q16, silk_lin2log( gain_Q16[ k ] ) - OFFSET );
+	for (k = 0; k < nb_subfr; k++) {
+		/* Convert to log scale, scale, floor() */
+		ind[k] =
+		    silk_SMULWB(SCALE_Q16, silk_lin2log(gain_Q16[k]) - OFFSET);
 
-        /* Round towards previous quantized gain (hysteresis) */
-        if( ind[ k ] < *prev_ind ) {
-            ind[ k ]++;
-        }
-        ind[ k ] = silk_LIMIT_int( ind[ k ], 0, N_LEVELS_QGAIN - 1 );
+		/* Round towards previous quantized gain (hysteresis) */
+		if (ind[k] < *prev_ind) {
+			ind[k]++;
+		}
+		ind[k] = silk_LIMIT_int(ind[k], 0, N_LEVELS_QGAIN - 1);
 
-        /* Compute delta indices and limit */
-        if( k == 0 && conditional == 0 ) {
-            /* Full index */
-            ind[ k ] = silk_LIMIT_int( ind[ k ], *prev_ind + MIN_DELTA_GAIN_QUANT, N_LEVELS_QGAIN - 1 );
-            *prev_ind = ind[ k ];
-        } else {
-            /* Delta index */
-            ind[ k ] = ind[ k ] - *prev_ind;
+		/* Compute delta indices and limit */
+		if (k == 0 && conditional == 0) {
+			/* Full index */
+			ind[k] =
+			    silk_LIMIT_int(ind[k],
+					   *prev_ind + MIN_DELTA_GAIN_QUANT,
+					   N_LEVELS_QGAIN - 1);
+			*prev_ind = ind[k];
+		} else {
+			/* Delta index */
+			ind[k] = ind[k] - *prev_ind;
 
-            /* Double the quantization step size for large gain increases, so that the max gain level can be reached */
-            double_step_size_threshold = 2 * MAX_DELTA_GAIN_QUANT - N_LEVELS_QGAIN + *prev_ind;
-            if( ind[ k ] > double_step_size_threshold ) {
-                ind[ k ] = double_step_size_threshold + silk_RSHIFT( ind[ k ] - double_step_size_threshold + 1, 1 );
-            }
+			/* Double the quantization step size for large gain increases, so that the max gain level can be reached */
+			double_step_size_threshold =
+			    2 * MAX_DELTA_GAIN_QUANT - N_LEVELS_QGAIN +
+			    *prev_ind;
+			if (ind[k] > double_step_size_threshold) {
+				ind[k] =
+				    double_step_size_threshold +
+				    silk_RSHIFT(ind[k] -
+						double_step_size_threshold + 1,
+						1);
+			}
 
-            ind[ k ] = silk_LIMIT_int( ind[ k ], MIN_DELTA_GAIN_QUANT, MAX_DELTA_GAIN_QUANT );
+			ind[k] =
+			    silk_LIMIT_int(ind[k], MIN_DELTA_GAIN_QUANT,
+					   MAX_DELTA_GAIN_QUANT);
 
-            /* Accumulate deltas */
-            if( ind[ k ] > double_step_size_threshold ) {
-                *prev_ind += silk_LSHIFT( ind[ k ], 1 ) - double_step_size_threshold;
-            } else {
-                *prev_ind += ind[ k ];
-            }
+			/* Accumulate deltas */
+			if (ind[k] > double_step_size_threshold) {
+				*prev_ind +=
+				    silk_LSHIFT(ind[k],
+						1) - double_step_size_threshold;
+			} else {
+				*prev_ind += ind[k];
+			}
 
-            /* Shift to make non-negative */
-            ind[ k ] -= MIN_DELTA_GAIN_QUANT;
-        }
+			/* Shift to make non-negative */
+			ind[k] -= MIN_DELTA_GAIN_QUANT;
+		}
 
-        /* Scale and convert to linear scale */
-        gain_Q16[ k ] = silk_log2lin( silk_min_32( silk_SMULWB( INV_SCALE_Q16, *prev_ind ) + OFFSET, 3967 ) ); /* 3967 = 31 in Q7 */
-    }
+		/* Scale and convert to linear scale */
+		gain_Q16[k] = silk_log2lin(silk_min_32(silk_SMULWB(INV_SCALE_Q16, *prev_ind) + OFFSET, 3967));	/* 3967 = 31 in Q7 */
+	}
 }
 
 /* Gains scalar dequantization, uniform on log scale */
-void silk_gains_dequant(
-    opus_int32                  gain_Q16[ MAX_NB_SUBFR ],       /* O    quantized gains                             */
-    const opus_int8             ind[ MAX_NB_SUBFR ],            /* I    gain indices                                */
-    opus_int8                   *prev_ind,                      /* I/O  last index in previous frame                */
-    const opus_int              conditional,                    /* I    first gain is delta coded if 1              */
-    const opus_int              nb_subfr                        /* I    number of subframes                          */
-)
+void silk_gains_dequant(int32_t gain_Q16[MAX_NB_SUBFR],	/* O    quantized gains                             */
+			const int8_t ind[MAX_NB_SUBFR],	/* I    gain indices                                */
+			int8_t * prev_ind,	/* I/O  last index in previous frame                */
+			const int conditional,	/* I    first gain is delta coded if 1              */
+			const int nb_subfr	/* I    number of subframes                          */
+    )
 {
-    opus_int   k, ind_tmp, double_step_size_threshold;
+	int k, ind_tmp, double_step_size_threshold;
 
-    for( k = 0; k < nb_subfr; k++ ) {
-        if( k == 0 && conditional == 0 ) {
-            /* Gain index is not allowed to go down more than 16 steps (~21.8 dB) */
-            *prev_ind = silk_max_int( ind[ k ], *prev_ind - 16 );
-        } else {
-            /* Delta index */
-            ind_tmp = ind[ k ] + MIN_DELTA_GAIN_QUANT;
+	for (k = 0; k < nb_subfr; k++) {
+		if (k == 0 && conditional == 0) {
+			/* Gain index is not allowed to go down more than 16 steps (~21.8 dB) */
+			*prev_ind = silk_max_int(ind[k], *prev_ind - 16);
+		} else {
+			/* Delta index */
+			ind_tmp = ind[k] + MIN_DELTA_GAIN_QUANT;
 
-            /* Accumulate deltas */
-            double_step_size_threshold = 2 * MAX_DELTA_GAIN_QUANT - N_LEVELS_QGAIN + *prev_ind;
-            if( ind_tmp > double_step_size_threshold ) {
-                *prev_ind += silk_LSHIFT( ind_tmp, 1 ) - double_step_size_threshold;
-            } else {
-                *prev_ind += ind_tmp;
-            }
-        }
-        *prev_ind = silk_LIMIT_int( *prev_ind, 0, N_LEVELS_QGAIN - 1 );
+			/* Accumulate deltas */
+			double_step_size_threshold =
+			    2 * MAX_DELTA_GAIN_QUANT - N_LEVELS_QGAIN +
+			    *prev_ind;
+			if (ind_tmp > double_step_size_threshold) {
+				*prev_ind +=
+				    silk_LSHIFT(ind_tmp,
+						1) - double_step_size_threshold;
+			} else {
+				*prev_ind += ind_tmp;
+			}
+		}
+		*prev_ind = silk_LIMIT_int(*prev_ind, 0, N_LEVELS_QGAIN - 1);
 
-        /* Scale and convert to linear scale */
-        gain_Q16[ k ] = silk_log2lin( silk_min_32( silk_SMULWB( INV_SCALE_Q16, *prev_ind ) + OFFSET, 3967 ) ); /* 3967 = 31 in Q7 */
-    }
+		/* Scale and convert to linear scale */
+		gain_Q16[k] = silk_log2lin(silk_min_32(silk_SMULWB(INV_SCALE_Q16, *prev_ind) + OFFSET, 3967));	/* 3967 = 31 in Q7 */
+	}
 }
 
 /* Compute unique identifier of gain indices vector */
-opus_int32 silk_gains_ID(                                       /* O    returns unique identifier of gains          */
-    const opus_int8             ind[ MAX_NB_SUBFR ],            /* I    gain indices                                */
-    const opus_int              nb_subfr                        /* I    number of subframes                         */
-)
+int32_t silk_gains_ID(	/* O    returns unique identifier of gains          */
+				const int8_t ind[MAX_NB_SUBFR],	/* I    gain indices                                */
+				const int nb_subfr	/* I    number of subframes                         */
+    )
 {
-    opus_int   k;
-    opus_int32 gainsID;
+	int k;
+	int32_t gainsID;
 
-    gainsID = 0;
-    for( k = 0; k < nb_subfr; k++ ) {
-        gainsID = silk_ADD_LSHIFT32( ind[ k ], gainsID, 8 );
-    }
+	gainsID = 0;
+	for (k = 0; k < nb_subfr; k++) {
+		gainsID = silk_ADD_LSHIFT32(ind[k], gainsID, 8);
+	}
 
-    return gainsID;
+	return gainsID;
 }

@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2007-2009 Xiph.Org Foundation
    Copyright (C) 2003-2008 Jean-Marc Valin
    Copyright (C) 2007-2008 CSIRO */
@@ -34,7 +36,7 @@
 #define FIXED_GENERIC_H
 
 /** Multiply a 16-bit signed value by a 16-bit unsigned value. The result is a 32-bit signed value */
-#define MULT16_16SU(a,b) ((opus_val32)(opus_val16)(a)*(opus_val32)(opus_uint16)(b))
+#define MULT16_16SU(a,b) ((opus_val32)(opus_val16)(a)*(opus_val32)(uint16_t)(b))
 
 /** 16x32 multiplication, followed by a 16-bit shift right. Results fits in 32 bits */
 #define MULT16_32_Q16(a,b) ADD32(MULT16_16((a),SHR((b),16)), SHR(MULT16_16SU((a),((b)&0x0000ffff)),16))
@@ -67,11 +69,11 @@
 /** Arithmetic shift-right of a 16-bit value */
 #define SHR16(a,shift) ((a) >> (shift))
 /** Arithmetic shift-left of a 16-bit value */
-#define SHL16(a,shift) ((opus_int16)((opus_uint16)(a)<<(shift)))
+#define SHL16(a,shift) ((int16_t)((uint16_t)(a)<<(shift)))
 /** Arithmetic shift-right of a 32-bit value */
 #define SHR32(a,shift) ((a) >> (shift))
 /** Arithmetic shift-left of a 32-bit value */
-#define SHL32(a,shift) ((opus_int32)((opus_uint32)(a)<<(shift)))
+#define SHL32(a,shift) ((int32_t)((uint32_t)(a)<<(shift)))
 
 /** 32-bit arithmetic shift right with rounding-to-nearest instead of rounding down */
 #define PSHR32(a,shift) (SHR32((a)+((EXTEND32(1)<<((shift))>>1)),shift))

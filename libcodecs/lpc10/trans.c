@@ -18,6 +18,7 @@
 *  EOF	 - End of file flag
 */
 
+#include <ophtools.h>
 #include <stdio.h>
 #include "contrl.ch"
 #include "lpcdefs.h"
@@ -27,7 +28,8 @@ void trans(int voice[2], int *pitch, float *rms, float rc[ORDER])
 	int ipitv, irms, irc[MAXORD], ibits[MAXNB];
 
 /* Initialization */
-	memset(ibits, 0, MAXNB * sizeof(int));
+	memzero(irc, MAXORD * sizeof(int))
+	memzero(ibits, MAXNB * sizeof(int));
 
 /*     Quantize to 2400 bps, 600 bps, 800 bps or 1200 bps	*/
 

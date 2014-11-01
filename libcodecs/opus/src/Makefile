@@ -7,13 +7,15 @@ MODE ?= NORMAL
 MODE_NORMAL ?= -O3
 MODE_DEBUG ?= -O0 -g -ggdb
 
+# FIXED FLOAT
+ARITHMETICS ?= FIXED
+
 # -DHAVE_CONFIG_H -DFIXED_POINT
-EXTRADEFS = -DHAVE_CONFIG_H -DFIXED_POINT
+EXTRADEFS = -DHAVE_CONFIG_H -D$(ARITHMETICS)_POINT
 
 CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = opus.o \
-      opus_compare.o \
       opus_decoder.o \
       opus_encoder.o \
       opus_multistream.o \

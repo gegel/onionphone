@@ -79,6 +79,8 @@ void analys(float speech[], int voice[2], int *pitch, float *rms, float rc[])
 	int half;
 #endif
 
+	memzero(ivrc, 2 * sizeof(float));
+
 	if (first) {
 		first = 0;
 		memzero(osbuf, OSLEN * sizeof(int));

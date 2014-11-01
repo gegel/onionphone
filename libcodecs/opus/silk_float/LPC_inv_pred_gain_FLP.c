@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -37,40 +39,42 @@ POSSIBILITY OF SUCH DAMAGE.
 /* compute inverse of LPC prediction gain, and                          */
 /* test if LPC coefficients are stable (all poles within unit circle)   */
 /* this code is based on silk_a2k_FLP()                                 */
-silk_float silk_LPC_inverse_pred_gain_FLP(  /* O    return inverse prediction gain, energy domain               */
-    const silk_float    *A,                 /* I    prediction coefficients [order]                             */
-    opus_int32          order               /* I    prediction order                                            */
-)
+silk_float silk_LPC_inverse_pred_gain_FLP(	/* O    return inverse prediction gain, energy domain               */
+						 const silk_float * A,	/* I    prediction coefficients [order]                             */
+						 int32_t order	/* I    prediction order                                            */
+    )
 {
-    opus_int   k, n;
-    double     invGain, rc, rc_mult1, rc_mult2;
-    silk_float Atmp[ 2 ][ SILK_MAX_ORDER_LPC ];
-    silk_float *Aold, *Anew;
+	int k, n;
+	double invGain, rc, rc_mult1, rc_mult2;
+	silk_float Atmp[2][SILK_MAX_ORDER_LPC];
+	silk_float *Aold, *Anew;
 
-    Anew = Atmp[ order & 1 ];
-    silk_memcpy( Anew, A, order * sizeof(silk_float) );
+	Anew = Atmp[order & 1];
+	memcpy(Anew, A, order * sizeof(silk_float));
 
-    invGain = 1.0;
-    for( k = order - 1; k > 0; k-- ) {
-        rc = -Anew[ k ];
-        if( rc > RC_THRESHOLD || rc < -RC_THRESHOLD ) {
-            return 0.0f;
-        }
-        rc_mult1 = 1.0f - rc * rc;
-        rc_mult2 = 1.0f / rc_mult1;
-        invGain *= rc_mult1;
-        /* swap pointers */
-        Aold = Anew;
-        Anew = Atmp[ k & 1 ];
-        for( n = 0; n < k; n++ ) {
-            Anew[ n ] = (silk_float)( ( Aold[ n ] - Aold[ k - n - 1 ] * rc ) * rc_mult2 );
-        }
-    }
-    rc = -Anew[ 0 ];
-    if( rc > RC_THRESHOLD || rc < -RC_THRESHOLD ) {
-        return 0.0f;
-    }
-    rc_mult1 = 1.0f - rc * rc;
-    invGain *= rc_mult1;
-    return (silk_float)invGain;
+	invGain = 1.0;
+	for (k = order - 1; k > 0; k--) {
+		rc = -Anew[k];
+		if (rc > RC_THRESHOLD || rc < -RC_THRESHOLD) {
+			return 0.0f;
+		}
+		rc_mult1 = 1.0f - rc * rc;
+		rc_mult2 = 1.0f / rc_mult1;
+		invGain *= rc_mult1;
+		/* swap pointers */
+		Aold = Anew;
+		Anew = Atmp[k & 1];
+		for (n = 0; n < k; n++) {
+			Anew[n] =
+			    (silk_float) ((Aold[n] -
+					   Aold[k - n - 1] * rc) * rc_mult2);
+		}
+	}
+	rc = -Anew[0];
+	if (rc > RC_THRESHOLD || rc < -RC_THRESHOLD) {
+		return 0.0f;
+	}
+	rc_mult1 = 1.0f - rc * rc;
+	invGain *= rc_mult1;
+	return (silk_float) invGain;
 }

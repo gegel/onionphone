@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -29,8 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #define SILK_TUNING_PARAMETERS_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Decay time for bitreservoir */
@@ -167,5 +168,4 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* SILK_TUNING_PARAMETERS_H */
+#endif				/* SILK_TUNING_PARAMETERS_H */

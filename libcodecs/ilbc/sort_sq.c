@@ -38,7 +38,7 @@ void WebRtcIlbcfix_SortSq(int16_t * xq,	/* (o) the quantized value */
 		*xq = cb[0];
 	} else {
 		i = 0;
-		while ((x > cb[i]) && (i < (cb_size - 1))) {
+		while ((i < (cb_size - 1)) && (x > cb[i])) {
 			i++;
 		}
 

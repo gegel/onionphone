@@ -7,8 +7,11 @@ MODE ?= NORMAL
 MODE_NORMAL ?= -O3
 MODE_DEBUG ?= -O0 -g -ggdb
 
+# FIXED FLOAT
+ARITHMETICS ?= FIXED
+
 # -DHAVE_CONFIG_H -DFIXED_POINT
-EXTRADEFS = -DHAVE_CONFIG_H -DFIXED_POINT
+EXTRADEFS = -DHAVE_CONFIG_H -D$(ARITHMETICS)_POINT
 
 CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
 
@@ -89,7 +92,7 @@ OBJ = CNG.o \
       stereo_find_predictor.o \
       stereo_quant_pred.o
 
-INCADD ?= -I. -I../include -I../celt -I../silk_float -I../silk_fixed
+INCADD ?= -I. -I../include -I../celt -I../silk_float -I../silk_fixed -I../../../common/inc
 
 all: build
 

@@ -279,7 +279,7 @@ int16_t WebRtcIlbcfix_DecodePlc(iLBC_decinst_t * iLBCdec_inst,
 				      int16_t noOfLostFrames)
 {
 	int i;
-	uint16_t dummy;
+	uint16_t dummy = 0;
 
 	for (i = 0; i < noOfLostFrames; i++) {
 		/* call decoder */

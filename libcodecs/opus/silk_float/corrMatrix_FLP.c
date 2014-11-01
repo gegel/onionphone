@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -36,58 +38,57 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main_FLP.h"
 
 /* Calculates correlation vector X'*t */
-void silk_corrVector_FLP(
-    const silk_float                *x,                                 /* I    x vector [L+order-1] used to create X       */
-    const silk_float                *t,                                 /* I    Target vector [L]                           */
-    const opus_int                  L,                                  /* I    Length of vecors                            */
-    const opus_int                  Order,                              /* I    Max lag for correlation                     */
-    silk_float                      *Xt                                 /* O    X'*t correlation vector [order]             */
-)
+void silk_corrVector_FLP(const silk_float * x,	/* I    x vector [L+order-1] used to create X       */
+			 const silk_float * t,	/* I    Target vector [L]                           */
+			 const int L,	/* I    Length of vecors                            */
+			 const int Order,	/* I    Max lag for correlation                     */
+			 silk_float * Xt	/* O    X'*t correlation vector [order]             */
+    )
 {
-    opus_int lag;
-    const silk_float *ptr1;
+	int lag;
+	const silk_float *ptr1;
 
-    ptr1 = &x[ Order - 1 ];                     /* Points to first sample of column 0 of X: X[:,0] */
-    for( lag = 0; lag < Order; lag++ ) {
-        /* Calculate X[:,lag]'*t */
-        Xt[ lag ] = (silk_float)silk_inner_product_FLP( ptr1, t, L );
-        ptr1--;                                 /* Next column of X */
-    }
+	ptr1 = &x[Order - 1];	/* Points to first sample of column 0 of X: X[:,0] */
+	for (lag = 0; lag < Order; lag++) {
+		/* Calculate X[:,lag]'*t */
+		Xt[lag] = (silk_float) silk_inner_product_FLP(ptr1, t, L);
+		ptr1--;		/* Next column of X */
+	}
 }
 
 /* Calculates correlation matrix X'*X */
-void silk_corrMatrix_FLP(
-    const silk_float                *x,                                 /* I    x vector [ L+order-1 ] used to create X     */
-    const opus_int                  L,                                  /* I    Length of vectors                           */
-    const opus_int                  Order,                              /* I    Max lag for correlation                     */
-    silk_float                      *XX                                 /* O    X'*X correlation matrix [order x order]     */
-)
+void silk_corrMatrix_FLP(const silk_float * x,	/* I    x vector [ L+order-1 ] used to create X     */
+			 const int L,	/* I    Length of vectors                           */
+			 const int Order,	/* I    Max lag for correlation                     */
+			 silk_float * XX	/* O    X'*X correlation matrix [order x order]     */
+    )
 {
-    opus_int j, lag;
-    double  energy;
-    const silk_float *ptr1, *ptr2;
+	int j, lag;
+	double energy;
+	const silk_float *ptr1, *ptr2;
 
-    ptr1 = &x[ Order - 1 ];                     /* First sample of column 0 of X */
-    energy = silk_energy_FLP( ptr1, L );  /* X[:,0]'*X[:,0] */
-    matrix_ptr( XX, 0, 0, Order ) = ( silk_float )energy;
-    for( j = 1; j < Order; j++ ) {
-        /* Calculate X[:,j]'*X[:,j] */
-        energy += ptr1[ -j ] * ptr1[ -j ] - ptr1[ L - j ] * ptr1[ L - j ];
-        matrix_ptr( XX, j, j, Order ) = ( silk_float )energy;
-    }
+	ptr1 = &x[Order - 1];	/* First sample of column 0 of X */
+	energy = silk_energy_FLP(ptr1, L);	/* X[:,0]'*X[:,0] */
+	matrix_ptr(XX, 0, 0, Order) = (silk_float) energy;
+	for (j = 1; j < Order; j++) {
+		/* Calculate X[:,j]'*X[:,j] */
+		energy += ptr1[-j] * ptr1[-j] - ptr1[L - j] * ptr1[L - j];
+		matrix_ptr(XX, j, j, Order) = (silk_float) energy;
+	}
 
-    ptr2 = &x[ Order - 2 ];                     /* First sample of column 1 of X */
-    for( lag = 1; lag < Order; lag++ ) {
-        /* Calculate X[:,0]'*X[:,lag] */
-        energy = silk_inner_product_FLP( ptr1, ptr2, L );
-        matrix_ptr( XX, lag, 0, Order ) = ( silk_float )energy;
-        matrix_ptr( XX, 0, lag, Order ) = ( silk_float )energy;
-        /* Calculate X[:,j]'*X[:,j + lag] */
-        for( j = 1; j < ( Order - lag ); j++ ) {
-            energy += ptr1[ -j ] * ptr2[ -j ] - ptr1[ L - j ] * ptr2[ L - j ];
-            matrix_ptr( XX, lag + j, j, Order ) = ( silk_float )energy;
-            matrix_ptr( XX, j, lag + j, Order ) = ( silk_float )energy;
-        }
-        ptr2--;                                 /* Next column of X */
-    }
+	ptr2 = &x[Order - 2];	/* First sample of column 1 of X */
+	for (lag = 1; lag < Order; lag++) {
+		/* Calculate X[:,0]'*X[:,lag] */
+		energy = silk_inner_product_FLP(ptr1, ptr2, L);
+		matrix_ptr(XX, lag, 0, Order) = (silk_float) energy;
+		matrix_ptr(XX, 0, lag, Order) = (silk_float) energy;
+		/* Calculate X[:,j]'*X[:,j + lag] */
+		for (j = 1; j < (Order - lag); j++) {
+			energy +=
+			    ptr1[-j] * ptr2[-j] - ptr1[L - j] * ptr2[L - j];
+			matrix_ptr(XX, lag + j, j, Order) = (silk_float) energy;
+			matrix_ptr(XX, j, lag + j, Order) = (silk_float) energy;
+		}
+		ptr2--;		/* Next column of X */
+	}
 }

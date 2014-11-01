@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2007-2008 CSIRO
    Copyright (c) 2007-2009 Xiph.Org Foundation
    Copyright (c) 2008 Gregory Maxwell
@@ -30,7 +32,7 @@
 #ifndef MODES_H
 #define MODES_H
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "celt.h"
 #include "arch.h"
 #include "mdct.h"
@@ -48,36 +50,35 @@
 #endif
 
 typedef struct {
-   int size;
-   const opus_int16 *index;
-   const unsigned char *bits;
-   const unsigned char *caps;
+	int size;
+	const int16_t *index;
+	const unsigned char *bits;
+	const unsigned char *caps;
 } PulseCache;
 
 /** Mode definition (opaque)
  @brief Mode definition
  */
 struct OpusCustomMode {
-   opus_int32 Fs;
-   int          overlap;
+	int32_t Fs;
+	int overlap;
 
-   int          nbEBands;
-   int          effEBands;
-   opus_val16    preemph[4];
-   const opus_int16   *eBands;   /**< Definition for each "pseudo-critical band" */
+	int nbEBands;
+	int effEBands;
+	opus_val16 preemph[4];
+	const int16_t *eBands;/**< Definition for each "pseudo-critical band" */
 
-   int         maxLM;
-   int         nbShortMdcts;
-   int         shortMdctSize;
+	int maxLM;
+	int nbShortMdcts;
+	int shortMdctSize;
 
-   int          nbAllocVectors; /**< Number of lines in the matrix below */
-   const unsigned char   *allocVectors;   /**< Number of bits in each band for several rates */
-   const opus_int16 *logN;
+	int nbAllocVectors;	/**< Number of lines in the matrix below */
+	const unsigned char *allocVectors;/**< Number of bits in each band for several rates */
+	const int16_t *logN;
 
-   const opus_val16 *window;
-   mdct_lookup mdct;
-   PulseCache cache;
+	const opus_val16 *window;
+	mdct_lookup mdct;
+	PulseCache cache;
 };
-
 
 #endif
