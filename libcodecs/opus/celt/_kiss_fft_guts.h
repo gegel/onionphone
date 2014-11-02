@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /*Copyright (c) 2003-2004, Mark Borgerding
 
   All rights reserved.
@@ -47,36 +49,34 @@
 #ifdef FIXED_POINT
 #include "arch.h"
 
-
 #define SAMP_MAX 2147483647
 #define TWID_MAX 32767
 #define TRIG_UPSCALE 1
 
 #define SAMP_MIN -SAMP_MAX
 
+#define S_MUL(a,b) MULT16_32_Q15(b, a)
 
-#   define S_MUL(a,b) MULT16_32_Q15(b, a)
-
-#   define C_MUL(m,a,b) \
+#define C_MUL(m,a,b) \
       do{ (m).r = SUB32(S_MUL((a).r,(b).r) , S_MUL((a).i,(b).i)); \
           (m).i = ADD32(S_MUL((a).r,(b).i) , S_MUL((a).i,(b).r)); }while(0)
 
-#   define C_MULC(m,a,b) \
+#define C_MULC(m,a,b) \
       do{ (m).r = ADD32(S_MUL((a).r,(b).r) , S_MUL((a).i,(b).i)); \
           (m).i = SUB32(S_MUL((a).i,(b).r) , S_MUL((a).r,(b).i)); }while(0)
 
-#   define C_MUL4(m,a,b) \
+#define C_MUL4(m,a,b) \
       do{ (m).r = SHR32(SUB32(S_MUL((a).r,(b).r) , S_MUL((a).i,(b).i)),2); \
           (m).i = SHR32(ADD32(S_MUL((a).r,(b).i) , S_MUL((a).i,(b).r)),2); }while(0)
 
-#   define C_MULBYSCALAR( c, s ) \
+#define C_MULBYSCALAR( c, s ) \
       do{ (c).r =  S_MUL( (c).r , s ) ;\
           (c).i =  S_MUL( (c).i , s ) ; }while(0)
 
-#   define DIVSCALAR(x,k) \
+#define DIVSCALAR(x,k) \
         (x) = S_MUL(  x, (TWID_MAX-((k)>>1))/(k)+1 )
 
-#   define C_FIXDIV(c,div) \
+#define C_FIXDIV(c,div) \
         do {    DIVSCALAR( (c).r , div);  \
                 DIVSCALAR( (c).i  , div); }while (0)
 
@@ -102,9 +102,9 @@
 #include "arm/kiss_fft_armv5e.h"
 #endif
 
-#else  /* not FIXED_POINT*/
+#else				/* not FIXED_POINT */
 
-#   define S_MUL(a,b) ( (a)*(b) )
+#define S_MUL(a,b) ( (a)*(b) )
 #define C_MUL(m,a,b) \
     do{ (m).r = (a).r*(b).r - (a).i*(b).i;\
         (m).i = (a).r*(b).i + (a).i*(b).r; }while(0)
@@ -114,14 +114,14 @@
 
 #define C_MUL4(m,a,b) C_MUL(m,a,b)
 
-#   define C_FIXDIV(c,div) /* NOOP */
-#   define C_MULBYSCALAR( c, s ) \
+#define C_FIXDIV(c,div)		/* NOOP */
+#define C_MULBYSCALAR( c, s ) \
     do{ (c).r *= (s);\
         (c).i *= (s); }while(0)
 #endif
 
 #ifndef CHECK_OVERFLOW_OP
-#  define CHECK_OVERFLOW_OP(a,op,b) /* noop */
+#define CHECK_OVERFLOW_OP(a,op,b)	/* noop */
 #endif
 
 #ifndef C_ADD
@@ -150,22 +150,22 @@
             CHECK_OVERFLOW_OP((res).i,-,(a).i)\
             (res).r -= (a).r;  (res).i -= (a).i; \
     }while(0)
-#endif /* C_ADD defined */
+#endif				/* C_ADD defined */
 
 #ifdef FIXED_POINT
 /*#  define KISS_FFT_COS(phase)  TRIG_UPSCALE*floor(MIN(32767,MAX(-32767,.5+32768 * cos (phase))))
 #  define KISS_FFT_SIN(phase)  TRIG_UPSCALE*floor(MIN(32767,MAX(-32767,.5+32768 * sin (phase))))*/
-#  define KISS_FFT_COS(phase)  floor(.5+TWID_MAX*cos (phase))
-#  define KISS_FFT_SIN(phase)  floor(.5+TWID_MAX*sin (phase))
-#  define HALF_OF(x) ((x)>>1)
+#define KISS_FFT_COS(phase)  floor(.5+TWID_MAX*cos (phase))
+#define KISS_FFT_SIN(phase)  floor(.5+TWID_MAX*sin (phase))
+#define HALF_OF(x) ((x)>>1)
 #elif defined(USE_SIMD)
-#  define KISS_FFT_COS(phase) _mm_set1_ps( cos(phase) )
-#  define KISS_FFT_SIN(phase) _mm_set1_ps( sin(phase) )
-#  define HALF_OF(x) ((x)*_mm_set1_ps(.5f))
+#define KISS_FFT_COS(phase) _mm_set1_ps( cos(phase) )
+#define KISS_FFT_SIN(phase) _mm_set1_ps( sin(phase) )
+#define HALF_OF(x) ((x)*_mm_set1_ps(.5f))
 #else
-#  define KISS_FFT_COS(phase) (kiss_fft_scalar) cos(phase)
-#  define KISS_FFT_SIN(phase) (kiss_fft_scalar) sin(phase)
-#  define HALF_OF(x) ((x)*.5f)
+#define KISS_FFT_COS(phase) (kiss_fft_scalar) cos(phase)
+#define KISS_FFT_SIN(phase) (kiss_fft_scalar) sin(phase)
+#define HALF_OF(x) ((x)*.5f)
 #endif
 
 #define  kf_cexp(x,phase) \
@@ -180,4 +180,4 @@
       (x)->i = TRIG_UPSCALE*celt_cos_norm((phase)-32768);\
 }while(0)
 
-#endif /* KISS_FFT_GUTS_H */
+#endif				/* KISS_FFT_GUTS_H */

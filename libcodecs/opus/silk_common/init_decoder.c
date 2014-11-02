@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -30,27 +32,26 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
+#include <ophtools.h>
 
 /************************/
 /* Init Decoder State   */
 /************************/
-opus_int silk_init_decoder(
-    silk_decoder_state          *psDec                          /* I/O  Decoder state pointer                       */
-)
+int silk_init_decoder(silk_decoder_state * psDec	/* I/O  Decoder state pointer                       */
+    )
 {
-    /* Clear the entire encoder state, except anything copied */
-    silk_memset( psDec, 0, sizeof( silk_decoder_state ) );
+	/* Clear the entire encoder state, except anything copied */
+	memzero(psDec, sizeof(silk_decoder_state));
 
-    /* Used to deactivate LSF interpolation */
-    psDec->first_frame_after_reset = 1;
-    psDec->prev_gain_Q16 = 65536;
+	/* Used to deactivate LSF interpolation */
+	psDec->first_frame_after_reset = 1;
+	psDec->prev_gain_Q16 = 65536;
 
-    /* Reset CNG state */
-    silk_CNG_Reset( psDec );
+	/* Reset CNG state */
+	silk_CNG_Reset(psDec);
 
-    /* Reset PLC state */
-    silk_PLC_Reset( psDec );
+	/* Reset PLC state */
+	silk_PLC_Reset(psDec);
 
-    return(0);
+	return (0);
 }
-

@@ -22,6 +22,7 @@
 #include "constants.h"
 #include "refiner.h"
 #include "nearest_neighbor.h"
+#include <ophtools.h>
 
 /*----------------------------------------------------------------*
  * get the pitch-synchronous sample sequence
@@ -43,6 +44,8 @@ void WebRtcIlbcfix_GetSyncSeq(int16_t * idata,	/* (i) original data */
 	int16_t lagBlock[2 * ENH_HL + 1];
 	int16_t blockStartPos[2 * ENH_HL + 1];	/* Defines the position to search around (Q2) */
 	int16_t plocs2[ENH_PLOCSL];
+
+	memzero(lagBlock, (2 * ENH_HL + 1) * sizeof(int16_t));
 
 	centerEndPos = centerStartPos + ENH_BLOCKL - 1;
 

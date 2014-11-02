@@ -36,8 +36,8 @@
 #define DEFBUFSIZE 6400
 #define DEFPERIODS 4
 
-#define DEF_devAudioInput "plughw:0,0"
-#define DEF_devAudioOutput "plughw:0,0"
+#define DEF_devAudioInput "plug:default"
+#define DEF_devAudioOutput "plug:default"
 #define DEF_devAudioControl "default"
 #define DEF_capture_mixer_elem "Capture"
 #define DEF_playback_mixer_elem "PCM"

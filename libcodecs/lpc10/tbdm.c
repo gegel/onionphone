@@ -45,7 +45,7 @@ void tbdm(float speech[], int tau[], float amdf[],
 
 	ltau2 = 0;
 	ptr = *minptr - 2;
-	for (i = mmax(*mintau - 3, 41); i <= mmin(*mintau + 3, tau[LTAU]); i++) {
+	for (i = (mmax(*mintau - 3, 41)); i <= (mmin(*mintau + 3, tau[LTAU])); i++) {
 		while (tau[ptr] < i) {
 			ptr++;
 		}

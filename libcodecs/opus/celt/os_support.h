@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2007 Jean-Marc Valin
 
    File: os_support.h
@@ -32,10 +34,10 @@
 #define OS_SUPPORT_H
 
 #ifdef CUSTOM_SUPPORT
-#  include "custom_support.h"
+#include "custom_support.h"
 #endif
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "opus_defines.h"
 
 #include <string.h>
@@ -44,26 +46,26 @@
 
 /** Opus wrapper for malloc(). To do your own dynamic allocation, all you need to do is replace this function and opus_free */
 #ifndef OVERRIDE_OPUS_ALLOC
-static OPUS_INLINE void *opus_alloc (size_t size)
+static inline void *opus_alloc(size_t size)
 {
-   return malloc(size);
+	return malloc(size);
 }
 #endif
 
 /** Same as celt_alloc(), except that the area is only needed inside a CELT call (might cause problem with wideband though) */
 #ifndef OVERRIDE_OPUS_ALLOC_SCRATCH
-static OPUS_INLINE void *opus_alloc_scratch (size_t size)
+static inline void *opus_alloc_scratch(size_t size)
 {
-   /* Scratch space doesn't need to be cleared */
-   return opus_alloc(size);
+	/* Scratch space doesn't need to be cleared */
+	return opus_alloc(size);
 }
 #endif
 
 /** Opus wrapper for free(). To do your own dynamic allocation, all you need to do is replace this function and opus_alloc */
 #ifndef OVERRIDE_OPUS_FREE
-static OPUS_INLINE void opus_free (void *ptr)
+static inline void opus_free(void *ptr)
 {
-   free(ptr);
+	free(ptr);
 }
 #endif
 
@@ -88,5 +90,4 @@ static OPUS_INLINE void opus_free (void *ptr)
 #pragma GCC poison malloc free realloc calloc
 #endif*/
 
-#endif /* OS_SUPPORT_H */
-
+#endif				/* OS_SUPPORT_H */

@@ -58,7 +58,7 @@ void invert(float phi[MAXORD][MAXORD], float psi[], float rc[MAXORD][AF])
 		rc[j][AF - 1] = mmax(mmin(rc[j][AF - 1], .999f), -.999f);
 
 	}
-	if ((float)fabs((double)phi[j][j]) < eps) {
+	if (j < ORDER && (float)fabs((double)phi[j][j]) < eps) {
 
 /*  Zero out higher order RC's if algorithm terminated early    */
 

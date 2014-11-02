@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,42 +34,43 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main_FLP.h"
 
 /* Autocorrelations for a warped frequency axis */
-void silk_warped_autocorrelation_FLP(
-    silk_float                      *corr,                              /* O    Result [order + 1]                          */
-    const silk_float                *input,                             /* I    Input data to correlate                     */
-    const silk_float                warping,                            /* I    Warping coefficient                         */
-    const opus_int                  length,                             /* I    Length of input                             */
-    const opus_int                  order                               /* I    Correlation order (even)                    */
-)
+void silk_warped_autocorrelation_FLP(silk_float * corr,	/* O    Result [order + 1]                          */
+				     const silk_float * input,	/* I    Input data to correlate                     */
+				     const silk_float warping,	/* I    Warping coefficient                         */
+				     const int length,	/* I    Length of input                             */
+				     const int order	/* I    Correlation order (even)                    */
+    )
 {
-    opus_int    n, i;
-    double      tmp1, tmp2;
-    double      state[ MAX_SHAPE_LPC_ORDER + 1 ] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
-    double      C[     MAX_SHAPE_LPC_ORDER + 1 ] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+	int n, i;
+	double tmp1, tmp2;
+	double state[MAX_SHAPE_LPC_ORDER + 1] =
+	    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	double C[MAX_SHAPE_LPC_ORDER + 1] =
+	    { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
-    /* Order must be even */
-    silk_assert( ( order & 1 ) == 0 );
+	/* Order must be even */
+	assert((order & 1) == 0);
 
-    /* Loop over samples */
-    for( n = 0; n < length; n++ ) {
-        tmp1 = input[ n ];
-        /* Loop over allpass sections */
-        for( i = 0; i < order; i += 2 ) {
-            /* Output of allpass section */
-            tmp2 = state[ i ] + warping * ( state[ i + 1 ] - tmp1 );
-            state[ i ] = tmp1;
-            C[ i ] += state[ 0 ] * tmp1;
-            /* Output of allpass section */
-            tmp1 = state[ i + 1 ] + warping * ( state[ i + 2 ] - tmp2 );
-            state[ i + 1 ] = tmp2;
-            C[ i + 1 ] += state[ 0 ] * tmp2;
-        }
-        state[ order ] = tmp1;
-        C[ order ] += state[ 0 ] * tmp1;
-    }
+	/* Loop over samples */
+	for (n = 0; n < length; n++) {
+		tmp1 = input[n];
+		/* Loop over allpass sections */
+		for (i = 0; i < order; i += 2) {
+			/* Output of allpass section */
+			tmp2 = state[i] + warping * (state[i + 1] - tmp1);
+			state[i] = tmp1;
+			C[i] += state[0] * tmp1;
+			/* Output of allpass section */
+			tmp1 = state[i + 1] + warping * (state[i + 2] - tmp2);
+			state[i + 1] = tmp2;
+			C[i + 1] += state[0] * tmp2;
+		}
+		state[order] = tmp1;
+		C[order] += state[0] * tmp1;
+	}
 
-    /* Copy correlations in silk_float output format */
-    for( i = 0; i < order + 1; i++ ) {
-        corr[ i ] = ( silk_float )C[ i ];
-    }
+	/* Copy correlations in silk_float output format */
+	for (i = 0; i < order + 1; i++) {
+		corr[i] = (silk_float) C[i];
+	}
 }

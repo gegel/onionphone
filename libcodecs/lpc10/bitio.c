@@ -18,7 +18,7 @@ int which, n, ibits[];
 FILE *fd;
 {
 	char str[STRLEN];
-	int bitsrd, bitswr, return_value, i;
+	int bitsrd, return_value, i;
 
 	switch (which) {
 /************************************************************************
@@ -36,7 +36,7 @@ FILE *fd;
 *   Write a frame to bitstream file
 ************************************************************************/
 	case 2:
-		bitswr = puthx(str, ibits, n);
+		puthx(str, ibits, n);
 		for (i = 0; i < (n + 3) / 4; i++)
 			fprintf(fd, "%c", str[i]);
 		fprintf(fd, "\n");
@@ -59,11 +59,11 @@ int gethx(str, ibits, n)
 char *str;
 int ibits[], n;
 {
-	int gethx, puthx;
+	int gethx;
 	int ib, ic, i, ii, j, k, nc;
-	static int first = 1;
+	/*static int first = 1;
 
-	/*if(first)     {
+	if(first)     {
 	   first=0;
 	   strcpy(hex, "0123456789ABCDEFabcdef ");
 	   } */

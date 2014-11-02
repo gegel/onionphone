@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -31,8 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "typedef.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Decoder API flags */
@@ -43,100 +44,99 @@ extern "C"
 /***********************************************/
 /* Structure for controlling encoder operation */
 /***********************************************/
-typedef struct {
-    /* I:   Number of channels; 1/2                                                         */
-    opus_int32 nChannelsAPI;
+	typedef struct {
+		/* I:   Number of channels; 1/2                                                         */
+		int32_t nChannelsAPI;
 
-    /* I:   Number of channels; 1/2                                                         */
-    opus_int32 nChannelsInternal;
+		/* I:   Number of channels; 1/2                                                         */
+		int32_t nChannelsInternal;
 
-    /* I:   Input signal sampling rate in Hertz; 8000/12000/16000/24000/32000/44100/48000   */
-    opus_int32 API_sampleRate;
+		/* I:   Input signal sampling rate in Hertz; 8000/12000/16000/24000/32000/44100/48000   */
+		int32_t API_sampleRate;
 
-    /* I:   Maximum internal sampling rate in Hertz; 8000/12000/16000                       */
-    opus_int32 maxInternalSampleRate;
+		/* I:   Maximum internal sampling rate in Hertz; 8000/12000/16000                       */
+		int32_t maxInternalSampleRate;
 
-    /* I:   Minimum internal sampling rate in Hertz; 8000/12000/16000                       */
-    opus_int32 minInternalSampleRate;
+		/* I:   Minimum internal sampling rate in Hertz; 8000/12000/16000                       */
+		int32_t minInternalSampleRate;
 
-    /* I:   Soft request for internal sampling rate in Hertz; 8000/12000/16000              */
-    opus_int32 desiredInternalSampleRate;
+		/* I:   Soft request for internal sampling rate in Hertz; 8000/12000/16000              */
+		int32_t desiredInternalSampleRate;
 
-    /* I:   Number of samples per packet in milliseconds; 10/20/40/60                       */
-    opus_int payloadSize_ms;
+		/* I:   Number of samples per packet in milliseconds; 10/20/40/60                       */
+		int payloadSize_ms;
 
-    /* I:   Bitrate during active speech in bits/second; internally limited                 */
-    opus_int32 bitRate;
+		/* I:   Bitrate during active speech in bits/second; internally limited                 */
+		int32_t bitRate;
 
-    /* I:   Uplink packet loss in percent (0-100)                                           */
-    opus_int packetLossPercentage;
+		/* I:   Uplink packet loss in percent (0-100)                                           */
+		int packetLossPercentage;
 
-    /* I:   Complexity mode; 0 is lowest, 10 is highest complexity                          */
-    opus_int complexity;
+		/* I:   Complexity mode; 0 is lowest, 10 is highest complexity                          */
+		int complexity;
 
-    /* I:   Flag to enable in-band Forward Error Correction (FEC); 0/1                      */
-    opus_int useInBandFEC;
+		/* I:   Flag to enable in-band Forward Error Correction (FEC); 0/1                      */
+		int useInBandFEC;
 
-    /* I:   Flag to enable discontinuous transmission (DTX); 0/1                            */
-    opus_int useDTX;
+		/* I:   Flag to enable discontinuous transmission (DTX); 0/1                            */
+		int useDTX;
 
-    /* I:   Flag to use constant bitrate                                                    */
-    opus_int useCBR;
+		/* I:   Flag to use constant bitrate                                                    */
+		int useCBR;
 
-    /* I:   Maximum number of bits allowed for the frame                                    */
-    opus_int maxBits;
+		/* I:   Maximum number of bits allowed for the frame                                    */
+		int maxBits;
 
-    /* I:   Causes a smooth downmix to mono                                                 */
-    opus_int toMono;
+		/* I:   Causes a smooth downmix to mono                                                 */
+		int toMono;
 
-    /* I:   Opus encoder is allowing us to switch bandwidth                                 */
-    opus_int opusCanSwitch;
+		/* I:   Opus encoder is allowing us to switch bandwidth                                 */
+		int opusCanSwitch;
 
-    /* I: Make frames as independent as possible (but still use LPC)                        */
-    opus_int reducedDependency;
+		/* I: Make frames as independent as possible (but still use LPC)                        */
+		int reducedDependency;
 
-    /* O:   Internal sampling rate used, in Hertz; 8000/12000/16000                         */
-    opus_int32 internalSampleRate;
+		/* O:   Internal sampling rate used, in Hertz; 8000/12000/16000                         */
+		int32_t internalSampleRate;
 
-    /* O: Flag that bandwidth switching is allowed (because low voice activity)             */
-    opus_int allowBandwidthSwitch;
+		/* O: Flag that bandwidth switching is allowed (because low voice activity)             */
+		int allowBandwidthSwitch;
 
-    /* O:   Flag that SILK runs in WB mode without variable LP filter (use for switching between WB/SWB/FB) */
-    opus_int inWBmodeWithoutVariableLP;
+		/* O:   Flag that SILK runs in WB mode without variable LP filter (use for switching between WB/SWB/FB) */
+		int inWBmodeWithoutVariableLP;
 
-    /* O:   Stereo width */
-    opus_int stereoWidth_Q14;
+		/* O:   Stereo width */
+		int stereoWidth_Q14;
 
-    /* O:   Tells the Opus encoder we're ready to switch                                    */
-    opus_int switchReady;
+		/* O:   Tells the Opus encoder we're ready to switch                                    */
+		int switchReady;
 
-} silk_EncControlStruct;
+	} silk_EncControlStruct;
 
 /**************************************************************************/
 /* Structure for controlling decoder operation and reading decoder status */
 /**************************************************************************/
-typedef struct {
-    /* I:   Number of channels; 1/2                                                         */
-    opus_int32 nChannelsAPI;
+	typedef struct {
+		/* I:   Number of channels; 1/2                                                         */
+		int32_t nChannelsAPI;
 
-    /* I:   Number of channels; 1/2                                                         */
-    opus_int32 nChannelsInternal;
+		/* I:   Number of channels; 1/2                                                         */
+		int32_t nChannelsInternal;
 
-    /* I:   Output signal sampling rate in Hertz; 8000/12000/16000/24000/32000/44100/48000  */
-    opus_int32 API_sampleRate;
+		/* I:   Output signal sampling rate in Hertz; 8000/12000/16000/24000/32000/44100/48000  */
+		int32_t API_sampleRate;
 
-    /* I:   Internal sampling rate used, in Hertz; 8000/12000/16000                         */
-    opus_int32 internalSampleRate;
+		/* I:   Internal sampling rate used, in Hertz; 8000/12000/16000                         */
+		int32_t internalSampleRate;
 
-    /* I:   Number of samples per packet in milliseconds; 10/20/40/60                       */
-    opus_int payloadSize_ms;
+		/* I:   Number of samples per packet in milliseconds; 10/20/40/60                       */
+		int payloadSize_ms;
 
-    /* O:   Pitch lag of previous frame (0 if unvoiced), measured in samples at 48 kHz      */
-    opus_int prevPitchLag;
-} silk_DecControlStruct;
+		/* O:   Pitch lag of previous frame (0 if unvoiced), measured in samples at 48 kHz      */
+		int prevPitchLag;
+	} silk_DecControlStruct;
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif
