@@ -1,6 +1,6 @@
 #320*16
-plughw:0,0
-plughw:0,0
+plug:default
+plug:default
 default
 Capture
 PCM
