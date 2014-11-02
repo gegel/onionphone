@@ -38,7 +38,7 @@ OBJ = LTP_analysis_filter_FIX.o \
       schur64_FIX.o \
       schur_FIX.o
 
-INCADD ?= -I. -I../include -I../silk_common -I../celt
+INCADD ?= -I. -I../include -I../silk_common -I../celt -I../../../common/inc
 
 all: build
 

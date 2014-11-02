@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,8 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "typedef.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* Max number of encoder channels (1/2) */
@@ -54,8 +55,8 @@ extern "C"
 #define LBRR_WB_MIN_RATE_BPS                    16000
 
 /* DTX settings */
-#define NB_SPEECH_FRAMES_BEFORE_DTX             10      /* eq 200 ms */
-#define MAX_CONSECUTIVE_DTX                     20      /* eq 400 ms */
+#define NB_SPEECH_FRAMES_BEFORE_DTX             10	/* eq 200 ms */
+#define MAX_CONSECUTIVE_DTX                     20	/* eq 400 ms */
 
 /* Maximum sampling frequency */
 #define MAX_FS_KHZ                              16
@@ -74,12 +75,12 @@ extern "C"
 /* Settings for stereo processing */
 #define STEREO_QUANT_TAB_SIZE                   16
 #define STEREO_QUANT_SUB_STEPS                  5
-#define STEREO_INTERP_LEN_MS                    8       /* must be even */
-#define STEREO_RATIO_SMOOTH_COEF                0.01    /* smoothing coef for signal norms and stereo width */
+#define STEREO_INTERP_LEN_MS                    8	/* must be even */
+#define STEREO_RATIO_SMOOTH_COEF                0.01	/* smoothing coef for signal norms and stereo width */
 
 /* Range of pitch lag estimates */
-#define PITCH_EST_MIN_LAG_MS                    2       /* 2 ms -> 500 Hz */
-#define PITCH_EST_MAX_LAG_MS                    18      /* 18 ms -> 56 Hz */
+#define PITCH_EST_MIN_LAG_MS                    2	/* 2 ms -> 500 Hz */
+#define PITCH_EST_MAX_LAG_MS                    18	/* 18 ms -> 56 Hz */
 
 /* Maximum number of subframes */
 #define MAX_NB_SUBFR                            4
@@ -171,12 +172,12 @@ extern "C"
 /* Maximum sum of pulses per shell coding frame */
 #define MAX_PULSES                              16
 
-#define MAX_MATRIX_SIZE                         MAX_LPC_ORDER /* Max of LPC Order and LTP order */
+#define MAX_MATRIX_SIZE                         MAX_LPC_ORDER	/* Max of LPC Order and LTP order */
 
 #if( MAX_LPC_ORDER > DECISION_DELAY )
-# define NSQ_LPC_BUF_LENGTH                     MAX_LPC_ORDER
+#define NSQ_LPC_BUF_LENGTH                     MAX_LPC_ORDER
 #else
-# define NSQ_LPC_BUF_LENGTH                     DECISION_DELAY
+#define NSQ_LPC_BUF_LENGTH                     DECISION_DELAY
 #endif
 
 /***************************/
@@ -187,11 +188,11 @@ extern "C"
 #define VAD_INTERNAL_SUBFRAMES_LOG2             2
 #define VAD_INTERNAL_SUBFRAMES                  ( 1 << VAD_INTERNAL_SUBFRAMES_LOG2 )
 
-#define VAD_NOISE_LEVEL_SMOOTH_COEF_Q16         1024    /* Must be <  4096 */
+#define VAD_NOISE_LEVEL_SMOOTH_COEF_Q16         1024	/* Must be <  4096 */
 #define VAD_NOISE_LEVELS_BIAS                   50
 
 /* Sigmoid settings */
-#define VAD_NEGATIVE_OFFSET_Q5                  128     /* sigmoid is 0 at -128 */
+#define VAD_NEGATIVE_OFFSET_Q5                  128	/* sigmoid is 0 at -128 */
 #define VAD_SNR_FACTOR_Q16                      45000
 
 /* smoothing for SNR measurement */
@@ -213,10 +214,10 @@ extern "C"
 #define NLSF_QUANT_DEL_DEC_STATES               ( 1 << NLSF_QUANT_DEL_DEC_STATES_LOG2 )
 
 /* Transition filtering for mode switching */
-#define TRANSITION_TIME_MS                      5120    /* 5120 = 64 * FRAME_LENGTH_MS * ( TRANSITION_INT_NUM - 1 ) = 64*(20*4)*/
-#define TRANSITION_NB                           3       /* Hardcoded in tables */
-#define TRANSITION_NA                           2       /* Hardcoded in tables */
-#define TRANSITION_INT_NUM                      5       /* Hardcoded in tables */
+#define TRANSITION_TIME_MS                      5120	/* 5120 = 64 * FRAME_LENGTH_MS * ( TRANSITION_INT_NUM - 1 ) = 64*(20*4) */
+#define TRANSITION_NB                           3	/* Hardcoded in tables */
+#define TRANSITION_NA                           2	/* Hardcoded in tables */
+#define TRANSITION_INT_NUM                      5	/* Hardcoded in tables */
 #define TRANSITION_FRAMES                       ( TRANSITION_TIME_MS / MAX_FRAME_LENGTH_MS )
 #define TRANSITION_INT_STEPS                    ( TRANSITION_FRAMES  / ( TRANSITION_INT_NUM - 1 ) )
 
@@ -224,12 +225,11 @@ extern "C"
 #define BWE_AFTER_LOSS_Q16                      63570
 
 /* Defines for CN generation */
-#define CNG_BUF_MASK_MAX                        255     /* 2^floor(log2(MAX_FRAME_LENGTH))-1    */
-#define CNG_GAIN_SMTH_Q16                       4634    /* 0.25^(1/4)                           */
-#define CNG_NLSF_SMTH_Q16                       16348   /* 0.25                                 */
+#define CNG_BUF_MASK_MAX                        255	/* 2^floor(log2(MAX_FRAME_LENGTH))-1    */
+#define CNG_GAIN_SMTH_Q16                       4634	/* 0.25^(1/4)                           */
+#define CNG_NLSF_SMTH_Q16                       16348	/* 0.25                                 */
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

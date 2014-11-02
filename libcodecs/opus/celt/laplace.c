@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2007 CSIRO
    Copyright (c) 2007-2009 Xiph.Org Foundation
    Written by Jean-Marc Valin */
@@ -26,6 +28,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include <assert.h>
+
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
@@ -43,92 +47,86 @@
 /* When called, decay is positive and at most 11456. */
 static unsigned ec_laplace_get_freq1(unsigned fs0, int decay)
 {
-   unsigned ft;
-   ft = 32768 - LAPLACE_MINP*(2*LAPLACE_NMIN) - fs0;
-   return ft*(opus_int32)(16384-decay)>>15;
+	unsigned ft;
+	ft = 32768 - LAPLACE_MINP * (2 * LAPLACE_NMIN) - fs0;
+	return ft * (int32_t) (16384 - decay) >> 15;
 }
 
-void ec_laplace_encode(ec_enc *enc, int *value, unsigned fs, int decay)
+void ec_laplace_encode(ec_enc * enc, int *value, unsigned fs, int decay)
 {
-   unsigned fl;
-   int val = *value;
-   fl = 0;
-   if (val)
-   {
-      int s;
-      int i;
-      s = -(val<0);
-      val = (val+s)^s;
-      fl = fs;
-      fs = ec_laplace_get_freq1(fs, decay);
-      /* Search the decaying part of the PDF.*/
-      for (i=1; fs > 0 && i < val; i++)
-      {
-         fs *= 2;
-         fl += fs+2*LAPLACE_MINP;
-         fs = (fs*(opus_int32)decay)>>15;
-      }
-      /* Everything beyond that has probability LAPLACE_MINP. */
-      if (!fs)
-      {
-         int di;
-         int ndi_max;
-         ndi_max = (32768-fl+LAPLACE_MINP-1)>>LAPLACE_LOG_MINP;
-         ndi_max = (ndi_max-s)>>1;
-         di = IMIN(val - i, ndi_max - 1);
-         fl += (2*di+1+s)*LAPLACE_MINP;
-         fs = IMIN(LAPLACE_MINP, 32768-fl);
-         *value = (i+di+s)^s;
-      }
-      else
-      {
-         fs += LAPLACE_MINP;
-         fl += fs&~s;
-      }
-      celt_assert(fl+fs<=32768);
-      celt_assert(fs>0);
-   }
-   ec_encode_bin(enc, fl, fl+fs, 15);
+	unsigned fl;
+	int val = *value;
+	fl = 0;
+	if (val) {
+		int s;
+		int i;
+		s = -(val < 0);
+		val = (val + s) ^ s;
+		fl = fs;
+		fs = ec_laplace_get_freq1(fs, decay);
+		/* Search the decaying part of the PDF. */
+		for (i = 1; fs > 0 && i < val; i++) {
+			fs *= 2;
+			fl += fs + 2 * LAPLACE_MINP;
+			fs = (fs * (int32_t) decay) >> 15;
+		}
+		/* Everything beyond that has probability LAPLACE_MINP. */
+		if (!fs) {
+			int di;
+			int ndi_max;
+			ndi_max =
+			    (32768 - fl + LAPLACE_MINP - 1) >> LAPLACE_LOG_MINP;
+			ndi_max = (ndi_max - s) >> 1;
+			di = IMIN(val - i, ndi_max - 1);
+			fl += (2 * di + 1 + s) * LAPLACE_MINP;
+			fs = IMIN(LAPLACE_MINP, 32768 - fl);
+			*value = (i + di + s) ^ s;
+		} else {
+			fs += LAPLACE_MINP;
+			fl += fs & ~s;
+		}
+		assert(fl + fs <= 32768);
+		assert(fs > 0);
+	}
+	ec_encode_bin(enc, fl, fl + fs, 15);
 }
 
-int ec_laplace_decode(ec_dec *dec, unsigned fs, int decay)
+int ec_laplace_decode(ec_dec * dec, unsigned fs, int decay)
 {
-   int val=0;
-   unsigned fl;
-   unsigned fm;
-   fm = ec_decode_bin(dec, 15);
-   fl = 0;
-   if (fm >= fs)
-   {
-      val++;
-      fl = fs;
-      fs = ec_laplace_get_freq1(fs, decay)+LAPLACE_MINP;
-      /* Search the decaying part of the PDF.*/
-      while(fs > LAPLACE_MINP && fm >= fl+2*fs)
-      {
-         fs *= 2;
-         fl += fs;
-         fs = ((fs-2*LAPLACE_MINP)*(opus_int32)decay)>>15;
-         fs += LAPLACE_MINP;
-         val++;
-      }
-      /* Everything beyond that has probability LAPLACE_MINP. */
-      if (fs <= LAPLACE_MINP)
-      {
-         int di;
-         di = (fm-fl)>>(LAPLACE_LOG_MINP+1);
-         val += di;
-         fl += 2*di*LAPLACE_MINP;
-      }
-      if (fm < fl+fs)
-         val = -val;
-      else
-         fl += fs;
-   }
-   celt_assert(fl<32768);
-   celt_assert(fs>0);
-   celt_assert(fl<=fm);
-   celt_assert(fm<IMIN(fl+fs,32768));
-   ec_dec_update(dec, fl, IMIN(fl+fs,32768), 32768);
-   return val;
+	int val = 0;
+	unsigned fl;
+	unsigned fm;
+	fm = ec_decode_bin(dec, 15);
+	fl = 0;
+	if (fm >= fs) {
+		val++;
+		fl = fs;
+		fs = ec_laplace_get_freq1(fs, decay) + LAPLACE_MINP;
+		/* Search the decaying part of the PDF. */
+		while (fs > LAPLACE_MINP && fm >= fl + 2 * fs) {
+			fs *= 2;
+			fl += fs;
+			fs = ((fs -
+			       2 * LAPLACE_MINP) * (int32_t) decay) >> 15;
+			fs += LAPLACE_MINP;
+			val++;
+		}
+		/* Everything beyond that has probability LAPLACE_MINP. */
+		if (fs <= LAPLACE_MINP) {
+			int di;
+			di = (fm - fl) >> (LAPLACE_LOG_MINP + 1);
+			val += di;
+			fl += 2 * di * LAPLACE_MINP;
+		}
+		if (fm < fl + fs)
+			val = -val;
+		else
+			fl += fs;
+	}
+	assert(fl < 32768);
+	assert(fs > 0);
+	assert(fl <= fm);
+	assert(fm < IMIN(fl + fs, 32768));
+	ec_dec_update(dec, fl, IMIN(fl + fs, 32768), 32768);
+	return val;
 }

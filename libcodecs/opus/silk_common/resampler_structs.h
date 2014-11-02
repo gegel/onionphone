@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -35,26 +37,25 @@ extern "C" {
 #define SILK_RESAMPLER_MAX_FIR_ORDER                 36
 #define SILK_RESAMPLER_MAX_IIR_ORDER                 6
 
-typedef struct _silk_resampler_state_struct{
-    opus_int32       sIIR[ SILK_RESAMPLER_MAX_IIR_ORDER ]; /* this must be the first element of this struct */
-    union{
-        opus_int32   i32[ SILK_RESAMPLER_MAX_FIR_ORDER ];
-        opus_int16   i16[ SILK_RESAMPLER_MAX_FIR_ORDER ];
-    }                sFIR;
-    opus_int16       delayBuf[ 48 ];
-    opus_int         resampler_function;
-    opus_int         batchSize;
-    opus_int32       invRatio_Q16;
-    opus_int         FIR_Order;
-    opus_int         FIR_Fracs;
-    opus_int         Fs_in_kHz;
-    opus_int         Fs_out_kHz;
-    opus_int         inputDelay;
-    const opus_int16 *Coefs;
-} silk_resampler_state_struct;
+	typedef struct _silk_resampler_state_struct {
+		int32_t sIIR[SILK_RESAMPLER_MAX_IIR_ORDER];	/* this must be the first element of this struct */
+		union {
+			int32_t i32[SILK_RESAMPLER_MAX_FIR_ORDER];
+			int16_t i16[SILK_RESAMPLER_MAX_FIR_ORDER];
+		} sFIR;
+		int16_t delayBuf[48];
+		int resampler_function;
+		int batchSize;
+		int32_t invRatio_Q16;
+		int FIR_Order;
+		int FIR_Fracs;
+		int Fs_in_kHz;
+		int Fs_out_kHz;
+		int inputDelay;
+		const int16_t *Coefs;
+	} silk_resampler_state_struct;
 
 #ifdef __cplusplus
 }
 #endif
-#endif /* SILK_RESAMPLER_STRUCTS_H */
-
+#endif				/* SILK_RESAMPLER_STRUCTS_H */

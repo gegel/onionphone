@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,16 +34,16 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "config.h"
 #endif
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "opus_defines.h"
 
-/* This is an OPUS_INLINE header file for general platform. */
+/* This is an inline header file for general platform. */
 
-/* (a32 * (opus_int32)((opus_int16)(b32))) >> 16 output have to be 32bit int */
-#define silk_SMULWB(a32, b32)            ((((a32) >> 16) * (opus_int32)((opus_int16)(b32))) + ((((a32) & 0x0000FFFF) * (opus_int32)((opus_int16)(b32))) >> 16))
+/* (a32 * (int32_t)((int16_t)(b32))) >> 16 output have to be 32bit int */
+#define silk_SMULWB(a32, b32)            ((((a32) >> 16) * (int32_t)((int16_t)(b32))) + ((((a32) & 0x0000FFFF) * (int32_t)((int16_t)(b32))) >> 16))
 
-/* a32 + (b32 * (opus_int32)((opus_int16)(c32))) >> 16 output have to be 32bit int */
-#define silk_SMLAWB(a32, b32, c32)       ((a32) + ((((b32) >> 16) * (opus_int32)((opus_int16)(c32))) + ((((b32) & 0x0000FFFF) * (opus_int32)((opus_int16)(c32))) >> 16)))
+/* a32 + (b32 * (int32_t)((int16_t)(c32))) >> 16 output have to be 32bit int */
+#define silk_SMLAWB(a32, b32, c32)       ((a32) + ((((b32) >> 16) * (int32_t)((int16_t)(c32))) + ((((b32) & 0x0000FFFF) * (int32_t)((int16_t)(c32))) >> 16)))
 
 /* (a32 * (b32 >> 16)) >> 16 */
 #define silk_SMULWT(a32, b32)            (((a32) >> 16) * ((b32) >> 16) + ((((a32) & 0x0000FFFF) * ((b32) >> 16)) >> 16))
@@ -49,20 +51,20 @@ POSSIBILITY OF SUCH DAMAGE.
 /* a32 + (b32 * (c32 >> 16)) >> 16 */
 #define silk_SMLAWT(a32, b32, c32)       ((a32) + (((b32) >> 16) * ((c32) >> 16)) + ((((b32) & 0x0000FFFF) * ((c32) >> 16)) >> 16))
 
-/* (opus_int32)((opus_int16)(a3))) * (opus_int32)((opus_int16)(b32)) output have to be 32bit int */
-#define silk_SMULBB(a32, b32)            ((opus_int32)((opus_int16)(a32)) * (opus_int32)((opus_int16)(b32)))
+/* (int32_t)((int16_t)(a3))) * (int32_t)((int16_t)(b32)) output have to be 32bit int */
+#define silk_SMULBB(a32, b32)            ((int32_t)((int16_t)(a32)) * (int32_t)((int16_t)(b32)))
 
-/* a32 + (opus_int32)((opus_int16)(b32)) * (opus_int32)((opus_int16)(c32)) output have to be 32bit int */
-#define silk_SMLABB(a32, b32, c32)       ((a32) + ((opus_int32)((opus_int16)(b32))) * (opus_int32)((opus_int16)(c32)))
+/* a32 + (int32_t)((int16_t)(b32)) * (int32_t)((int16_t)(c32)) output have to be 32bit int */
+#define silk_SMLABB(a32, b32, c32)       ((a32) + ((int32_t)((int16_t)(b32))) * (int32_t)((int16_t)(c32)))
 
-/* (opus_int32)((opus_int16)(a32)) * (b32 >> 16) */
-#define silk_SMULBT(a32, b32)            ((opus_int32)((opus_int16)(a32)) * ((b32) >> 16))
+/* (int32_t)((int16_t)(a32)) * (b32 >> 16) */
+#define silk_SMULBT(a32, b32)            ((int32_t)((int16_t)(a32)) * ((b32) >> 16))
 
-/* a32 + (opus_int32)((opus_int16)(b32)) * (c32 >> 16) */
-#define silk_SMLABT(a32, b32, c32)       ((a32) + ((opus_int32)((opus_int16)(b32))) * ((c32) >> 16))
+/* a32 + (int32_t)((int16_t)(b32)) * (c32 >> 16) */
+#define silk_SMLABT(a32, b32, c32)       ((a32) + ((int32_t)((int16_t)(b32))) * ((c32) >> 16))
 
 /* a64 + (b32 * c32) */
-#define silk_SMLAL(a64, b32, c32)        (silk_ADD64((a64), ((opus_int64)(b32) * (opus_int64)(c32))))
+#define silk_SMLAL(a64, b32, c32)        (silk_ADD64((a64), ((int64_t)(b32) * (int64_t)(c32))))
 
 /* (a32 * b32) >> 16 */
 #define silk_SMULWW(a32, b32)            silk_MLA(silk_SMULWB((a32), (b32)), (a32), silk_RSHIFT_ROUND((b32), 16))
@@ -71,24 +73,24 @@ POSSIBILITY OF SUCH DAMAGE.
 #define silk_SMLAWW(a32, b32, c32)       silk_MLA(silk_SMLAWB((a32), (b32), (c32)), (b32), silk_RSHIFT_ROUND((c32), 16))
 
 /* add/subtract with output saturated */
-#define silk_ADD_SAT32(a, b)             ((((opus_uint32)(a) + (opus_uint32)(b)) & 0x80000000) == 0 ?                              \
+#define silk_ADD_SAT32(a, b)             ((((uint32_t)(a) + (uint32_t)(b)) & 0x80000000) == 0 ?                              \
                                         ((((a) & (b)) & 0x80000000) != 0 ? silk_int32_MIN : (a)+(b)) :   \
                                         ((((a) | (b)) & 0x80000000) == 0 ? silk_int32_MAX : (a)+(b)) )
 
-#define silk_SUB_SAT32(a, b)             ((((opus_uint32)(a)-(opus_uint32)(b)) & 0x80000000) == 0 ?                                        \
+#define silk_SUB_SAT32(a, b)             ((((uint32_t)(a)-(uint32_t)(b)) & 0x80000000) == 0 ?                                        \
                                         (( (a) & ((b)^0x80000000) & 0x80000000) ? silk_int32_MIN : (a)-(b)) :    \
                                         ((((a)^0x80000000) & (b)  & 0x80000000) ? silk_int32_MAX : (a)-(b)) )
 
 #include "ecintrin.h"
 
-static OPUS_INLINE opus_int32 silk_CLZ16(opus_int16 in16)
+static inline int32_t silk_CLZ16(int16_t in16)
 {
-    return 32 - EC_ILOG(in16<<16|0x8000);
+	return 32 - EC_ILOG(in16 << 16 | 0x8000);
 }
 
-static OPUS_INLINE opus_int32 silk_CLZ32(opus_int32 in32)
+static inline int32_t silk_CLZ32(int32_t in32)
 {
-    return in32 ? 32 - EC_ILOG(in32) : 32;
+	return in32 ? 32 - EC_ILOG(in32) : 32;
 }
 
 /* Row based */
@@ -99,7 +101,7 @@ static OPUS_INLINE opus_int32 silk_CLZ32(opus_int32 in32)
 
 /* Column based */
 #ifndef matrix_c_ptr
-#   define matrix_c_ptr(Matrix_base_adr, row, column, M) \
+#define matrix_c_ptr(Matrix_base_adr, row, column, M) \
     (*((Matrix_base_adr) + ((row)+(M)*(column))))
 #endif
 
@@ -111,5 +113,4 @@ static OPUS_INLINE opus_int32 silk_CLZ32(opus_int32 in32)
 #include "arm/macros_armv5e.h"
 #endif
 
-#endif /* SILK_MACROS_H */
-
+#endif				/* SILK_MACROS_H */

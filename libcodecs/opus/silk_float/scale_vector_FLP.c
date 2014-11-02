@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,25 +34,22 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FLP.h"
 
 /* multiply a vector by a constant */
-void silk_scale_vector_FLP(
-    silk_float          *data1,
-    silk_float          gain,
-    opus_int            dataSize
-)
+void silk_scale_vector_FLP(silk_float * data1,
+			   silk_float gain, int dataSize)
 {
-    opus_int  i, dataSize4;
+	int i, dataSize4;
 
-    /* 4x unrolled loop */
-    dataSize4 = dataSize & 0xFFFC;
-    for( i = 0; i < dataSize4; i += 4 ) {
-        data1[ i + 0 ] *= gain;
-        data1[ i + 1 ] *= gain;
-        data1[ i + 2 ] *= gain;
-        data1[ i + 3 ] *= gain;
-    }
+	/* 4x unrolled loop */
+	dataSize4 = dataSize & 0xFFFC;
+	for (i = 0; i < dataSize4; i += 4) {
+		data1[i + 0] *= gain;
+		data1[i + 1] *= gain;
+		data1[i + 2] *= gain;
+		data1[i + 3] *= gain;
+	}
 
-    /* any remaining elements */
-    for( ; i < dataSize; i++ ) {
-        data1[ i ] *= gain;
-    }
+	/* any remaining elements */
+	for (; i < dataSize; i++) {
+		data1[i] *= gain;
+	}
 }

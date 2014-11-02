@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,29 +34,26 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FLP.h"
 
 /* sum of squares of a silk_float array, with result as double */
-double silk_energy_FLP(
-    const silk_float    *data,
-    opus_int            dataSize
-)
+double silk_energy_FLP(const silk_float * data, int dataSize)
 {
-    opus_int  i, dataSize4;
-    double   result;
+	int i, dataSize4;
+	double result;
 
-    /* 4x unrolled loop */
-    result = 0.0;
-    dataSize4 = dataSize & 0xFFFC;
-    for( i = 0; i < dataSize4; i += 4 ) {
-        result += data[ i + 0 ] * (double)data[ i + 0 ] +
-                  data[ i + 1 ] * (double)data[ i + 1 ] +
-                  data[ i + 2 ] * (double)data[ i + 2 ] +
-                  data[ i + 3 ] * (double)data[ i + 3 ];
-    }
+	/* 4x unrolled loop */
+	result = 0.0;
+	dataSize4 = dataSize & 0xFFFC;
+	for (i = 0; i < dataSize4; i += 4) {
+		result += data[i + 0] * (double)data[i + 0] +
+		    data[i + 1] * (double)data[i + 1] +
+		    data[i + 2] * (double)data[i + 2] +
+		    data[i + 3] * (double)data[i + 3];
+	}
 
-    /* add any remaining products */
-    for( ; i < dataSize; i++ ) {
-        result += data[ i ] * (double)data[ i ];
-    }
+	/* add any remaining products */
+	for (; i < dataSize; i++) {
+		result += data[i] * (double)data[i];
+	}
 
-    silk_assert( result >= 0.0 );
-    return result;
+	assert(result >= 0.0);
+	return result;
 }

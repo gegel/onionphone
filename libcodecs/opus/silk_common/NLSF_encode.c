@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -30,107 +32,123 @@ POSSIBILITY OF SUCH DAMAGE.
 #endif
 
 #include "main.h"
-#include "stack_alloc.h"
 
 /***********************/
 /* NLSF vector encoder */
 /***********************/
-opus_int32 silk_NLSF_encode(                                    /* O    Returns RD value in Q25                     */
-          opus_int8             *NLSFIndices,                   /* I    Codebook path vector [ LPC_ORDER + 1 ]      */
-          opus_int16            *pNLSF_Q15,                     /* I/O  Quantized NLSF vector [ LPC_ORDER ]         */
-    const silk_NLSF_CB_struct   *psNLSF_CB,                     /* I    Codebook object                             */
-    const opus_int16            *pW_QW,                         /* I    NLSF weight vector [ LPC_ORDER ]            */
-    const opus_int              NLSF_mu_Q20,                    /* I    Rate weight for the RD optimization         */
-    const opus_int              nSurvivors,                     /* I    Max survivors after first stage             */
-    const opus_int              signalType                      /* I    Signal type: 0/1/2                          */
-)
+int32_t silk_NLSF_encode(	/* O    Returns RD value in Q25                     */
+				   int8_t * NLSFIndices,	/* I    Codebook path vector [ LPC_ORDER + 1 ]      */
+				   int16_t * pNLSF_Q15,	/* I/O  Quantized NLSF vector [ LPC_ORDER ]         */
+				   const silk_NLSF_CB_struct * psNLSF_CB,	/* I    Codebook object                             */
+				   const int16_t * pW_QW,	/* I    NLSF weight vector [ LPC_ORDER ]            */
+				   const int NLSF_mu_Q20,	/* I    Rate weight for the RD optimization         */
+				   const int nSurvivors,	/* I    Max survivors after first stage             */
+				   const int signalType	/* I    Signal type: 0/1/2                          */
+    )
 {
-    opus_int         i, s, ind1, bestIndex, prob_Q8, bits_q7;
-    opus_int32       W_tmp_Q9;
-    VARDECL( opus_int32, err_Q26 );
-    VARDECL( opus_int32, RD_Q25 );
-    VARDECL( opus_int, tempIndices1 );
-    VARDECL( opus_int8, tempIndices2 );
-    opus_int16       res_Q15[      MAX_LPC_ORDER ];
-    opus_int16       res_Q10[      MAX_LPC_ORDER ];
-    opus_int16       NLSF_tmp_Q15[ MAX_LPC_ORDER ];
-    opus_int16       W_tmp_QW[     MAX_LPC_ORDER ];
-    opus_int16       W_adj_Q5[     MAX_LPC_ORDER ];
-    opus_uint8       pred_Q8[      MAX_LPC_ORDER ];
-    opus_int16       ec_ix[        MAX_LPC_ORDER ];
-    const opus_uint8 *pCB_element, *iCDF_ptr;
-    SAVE_STACK;
+	int i, s, ind1, bestIndex, prob_Q8, bits_q7;
+	int32_t W_tmp_Q9;
 
-    silk_assert( nSurvivors <= NLSF_VQ_MAX_SURVIVORS );
-    silk_assert( signalType >= 0 && signalType <= 2 );
-    silk_assert( NLSF_mu_Q20 <= 32767 && NLSF_mu_Q20 >= 0 );
+	int16_t res_Q15[MAX_LPC_ORDER];
+	int16_t res_Q10[MAX_LPC_ORDER];
+	int16_t NLSF_tmp_Q15[MAX_LPC_ORDER];
+	int16_t W_tmp_QW[MAX_LPC_ORDER];
+	int16_t W_adj_Q5[MAX_LPC_ORDER];
+	uint8_t pred_Q8[MAX_LPC_ORDER];
+	int16_t ec_ix[MAX_LPC_ORDER];
+	const uint8_t *pCB_element, *iCDF_ptr;
 
-    /* NLSF stabilization */
-    silk_NLSF_stabilize( pNLSF_Q15, psNLSF_CB->deltaMin_Q15, psNLSF_CB->order );
+	assert(nSurvivors <= NLSF_VQ_MAX_SURVIVORS);
+	assert(signalType >= 0 && signalType <= 2);
+	assert(NLSF_mu_Q20 <= 32767 && NLSF_mu_Q20 >= 0);
 
-    /* First stage: VQ */
-    ALLOC( err_Q26, psNLSF_CB->nVectors, opus_int32 );
-    silk_NLSF_VQ( err_Q26, pNLSF_Q15, psNLSF_CB->CB1_NLSF_Q8, psNLSF_CB->nVectors, psNLSF_CB->order );
+	/* NLSF stabilization */
+	silk_NLSF_stabilize(pNLSF_Q15, psNLSF_CB->deltaMin_Q15,
+			    psNLSF_CB->order);
 
-    /* Sort the quantization errors */
-    ALLOC( tempIndices1, nSurvivors, opus_int );
-    silk_insertion_sort_increasing( err_Q26, tempIndices1, psNLSF_CB->nVectors, nSurvivors );
+	/* First stage: VQ */
+	int32_t err_Q26[psNLSF_CB->nVectors];
+	silk_NLSF_VQ(err_Q26, pNLSF_Q15, psNLSF_CB->CB1_NLSF_Q8,
+		     psNLSF_CB->nVectors, psNLSF_CB->order);
 
-    ALLOC( RD_Q25, nSurvivors, opus_int32 );
-    ALLOC( tempIndices2, nSurvivors * MAX_LPC_ORDER, opus_int8 );
+	/* Sort the quantization errors */
+	int tempIndices1[nSurvivors];
+	silk_insertion_sort_increasing(err_Q26, tempIndices1,
+				       psNLSF_CB->nVectors, nSurvivors);
 
-    /* Loop over survivors */
-    for( s = 0; s < nSurvivors; s++ ) {
-        ind1 = tempIndices1[ s ];
+	int32_t RD_Q25[nSurvivors];
+	int8_t tempIndices2[nSurvivors * MAX_LPC_ORDER];
 
-        /* Residual after first stage */
-        pCB_element = &psNLSF_CB->CB1_NLSF_Q8[ ind1 * psNLSF_CB->order ];
-        for( i = 0; i < psNLSF_CB->order; i++ ) {
-            NLSF_tmp_Q15[ i ] = silk_LSHIFT16( (opus_int16)pCB_element[ i ], 7 );
-            res_Q15[ i ] = pNLSF_Q15[ i ] - NLSF_tmp_Q15[ i ];
-        }
+	/* Loop over survivors */
+	for (s = 0; s < nSurvivors; s++) {
+		ind1 = tempIndices1[s];
 
-        /* Weights from codebook vector */
-        silk_NLSF_VQ_weights_laroia( W_tmp_QW, NLSF_tmp_Q15, psNLSF_CB->order );
+		/* Residual after first stage */
+		pCB_element = &psNLSF_CB->CB1_NLSF_Q8[ind1 * psNLSF_CB->order];
+		for (i = 0; i < psNLSF_CB->order; i++) {
+			NLSF_tmp_Q15[i] =
+			    silk_LSHIFT16((int16_t) pCB_element[i], 7);
+			res_Q15[i] = pNLSF_Q15[i] - NLSF_tmp_Q15[i];
+		}
 
-        /* Apply square-rooted weights */
-        for( i = 0; i < psNLSF_CB->order; i++ ) {
-            W_tmp_Q9 = silk_SQRT_APPROX( silk_LSHIFT( (opus_int32)W_tmp_QW[ i ], 18 - NLSF_W_Q ) );
-            res_Q10[ i ] = (opus_int16)silk_RSHIFT( silk_SMULBB( res_Q15[ i ], W_tmp_Q9 ), 14 );
-        }
+		/* Weights from codebook vector */
+		silk_NLSF_VQ_weights_laroia(W_tmp_QW, NLSF_tmp_Q15,
+					    psNLSF_CB->order);
 
-        /* Modify input weights accordingly */
-        for( i = 0; i < psNLSF_CB->order; i++ ) {
-            W_adj_Q5[ i ] = silk_DIV32_16( silk_LSHIFT( (opus_int32)pW_QW[ i ], 5 ), W_tmp_QW[ i ] );
-        }
+		/* Apply square-rooted weights */
+		for (i = 0; i < psNLSF_CB->order; i++) {
+			W_tmp_Q9 =
+			    silk_SQRT_APPROX(silk_LSHIFT
+					     ((int32_t) W_tmp_QW[i],
+					      18 - NLSF_W_Q));
+			res_Q10[i] =
+			    (int16_t)
+			    silk_RSHIFT(silk_SMULBB(res_Q15[i], W_tmp_Q9), 14);
+		}
 
-        /* Unpack entropy table indices and predictor for current CB1 index */
-        silk_NLSF_unpack( ec_ix, pred_Q8, psNLSF_CB, ind1 );
+		/* Modify input weights accordingly */
+		for (i = 0; i < psNLSF_CB->order; i++) {
+			W_adj_Q5[i] =
+			    silk_DIV32_16(silk_LSHIFT((int32_t) pW_QW[i], 5),
+					  W_tmp_QW[i]);
+		}
 
-        /* Trellis quantizer */
-        RD_Q25[ s ] = silk_NLSF_del_dec_quant( &tempIndices2[ s * MAX_LPC_ORDER ], res_Q10, W_adj_Q5, pred_Q8, ec_ix,
-            psNLSF_CB->ec_Rates_Q5, psNLSF_CB->quantStepSize_Q16, psNLSF_CB->invQuantStepSize_Q6, NLSF_mu_Q20, psNLSF_CB->order );
+		/* Unpack entropy table indices and predictor for current CB1 index */
+		silk_NLSF_unpack(ec_ix, pred_Q8, psNLSF_CB, ind1);
 
-        /* Add rate for first stage */
-        iCDF_ptr = &psNLSF_CB->CB1_iCDF[ ( signalType >> 1 ) * psNLSF_CB->nVectors ];
-        if( ind1 == 0 ) {
-            prob_Q8 = 256 - iCDF_ptr[ ind1 ];
-        } else {
-            prob_Q8 = iCDF_ptr[ ind1 - 1 ] - iCDF_ptr[ ind1 ];
-        }
-        bits_q7 = ( 8 << 7 ) - silk_lin2log( prob_Q8 );
-        RD_Q25[ s ] = silk_SMLABB( RD_Q25[ s ], bits_q7, silk_RSHIFT( NLSF_mu_Q20, 2 ) );
-    }
+		/* Trellis quantizer */
+		RD_Q25[s] =
+		    silk_NLSF_del_dec_quant(&tempIndices2[s * MAX_LPC_ORDER],
+					    res_Q10, W_adj_Q5, pred_Q8, ec_ix,
+					    psNLSF_CB->ec_Rates_Q5,
+					    psNLSF_CB->quantStepSize_Q16,
+					    psNLSF_CB->invQuantStepSize_Q6,
+					    NLSF_mu_Q20, psNLSF_CB->order);
 
-    /* Find the lowest rate-distortion error */
-    silk_insertion_sort_increasing( RD_Q25, &bestIndex, nSurvivors, 1 );
+		/* Add rate for first stage */
+		iCDF_ptr =
+		    &psNLSF_CB->CB1_iCDF[(signalType >> 1) *
+					 psNLSF_CB->nVectors];
+		if (ind1 == 0) {
+			prob_Q8 = 256 - iCDF_ptr[ind1];
+		} else {
+			prob_Q8 = iCDF_ptr[ind1 - 1] - iCDF_ptr[ind1];
+		}
+		bits_q7 = (8 << 7) - silk_lin2log(prob_Q8);
+		RD_Q25[s] =
+		    silk_SMLABB(RD_Q25[s], bits_q7,
+				silk_RSHIFT(NLSF_mu_Q20, 2));
+	}
 
-    NLSFIndices[ 0 ] = (opus_int8)tempIndices1[ bestIndex ];
-    silk_memcpy( &NLSFIndices[ 1 ], &tempIndices2[ bestIndex * MAX_LPC_ORDER ], psNLSF_CB->order * sizeof( opus_int8 ) );
+	/* Find the lowest rate-distortion error */
+	silk_insertion_sort_increasing(RD_Q25, &bestIndex, nSurvivors, 1);
 
-    /* Decode */
-    silk_NLSF_decode( pNLSF_Q15, NLSFIndices, psNLSF_CB );
+	NLSFIndices[0] = (int8_t) tempIndices1[bestIndex];
+	memcpy(&NLSFIndices[1], &tempIndices2[bestIndex * MAX_LPC_ORDER],
+		    psNLSF_CB->order * sizeof(int8_t));
 
-    RESTORE_STACK;
-    return RD_Q25[ 0 ];
+	/* Decode */
+	silk_NLSF_decode(pNLSF_Q15, NLSFIndices, psNLSF_CB);
+
+	return RD_Q25[0];
 }

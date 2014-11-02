@@ -54,8 +54,8 @@ int rmst[64] = { 1024, 936, 856, 784, 718, 656, 600, 550,
 	7, 6, 5, 4, 3, 2, 1, 0
 };
 
-void encode(int voice[2], int *pitch, float *rms, float rc[ORDER],
-	    int *ipitch, int *irms, int irc[ORDER])
+void encode(int voice[3], int *pitch, float *rms, float rc[ORDER + 1],
+	    int *ipitch, int *irms, int irc[ORDER + 1])
 {
 	int i, j, i2, i3, mrk, nbit, idel;
 	float ftemp;

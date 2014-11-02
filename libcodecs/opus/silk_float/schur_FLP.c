@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -31,40 +33,40 @@ POSSIBILITY OF SUCH DAMAGE.
 
 #include "SigProc_FLP.h"
 
-silk_float silk_schur_FLP(                  /* O    returns residual energy                                     */
-    silk_float          refl_coef[],        /* O    reflection coefficients (length order)                      */
-    const silk_float    auto_corr[],        /* I    autocorrelation sequence (length order+1)                   */
-    opus_int            order               /* I    order                                                       */
-)
+silk_float silk_schur_FLP(	/* O    returns residual energy                                     */
+				 silk_float refl_coef[],	/* O    reflection coefficients (length order)                      */
+				 const silk_float auto_corr[],	/* I    autocorrelation sequence (length order+1)                   */
+				 int order	/* I    order                                                       */
+    )
 {
-    opus_int   k, n;
-    silk_float C[ SILK_MAX_ORDER_LPC + 1 ][ 2 ];
-    silk_float Ctmp1, Ctmp2, rc_tmp;
+	int k, n;
+	silk_float C[SILK_MAX_ORDER_LPC + 1][2];
+	silk_float Ctmp1, Ctmp2, rc_tmp;
 
-    silk_assert( order==6||order==8||order==10||order==12||order==14||order==16 );
+	assert(order == 6 || order == 8 || order == 10 || order == 12
+		    || order == 14 || order == 16);
 
-    /* Copy correlations */
-    for( k = 0; k < order+1; k++ ) {
-        C[ k ][ 0 ] = C[ k ][ 1 ] = auto_corr[ k ];
-    }
+	/* Copy correlations */
+	for (k = 0; k < order + 1; k++) {
+		C[k][0] = C[k][1] = auto_corr[k];
+	}
 
-    for( k = 0; k < order; k++ ) {
-        /* Get reflection coefficient */
-        rc_tmp = -C[ k + 1 ][ 0 ] / silk_max_float( C[ 0 ][ 1 ], 1e-9f );
+	for (k = 0; k < order; k++) {
+		/* Get reflection coefficient */
+		rc_tmp = -C[k + 1][0] / silk_max_float(C[0][1], 1e-9f);
 
-        /* Save the output */
-        refl_coef[ k ] = rc_tmp;
+		/* Save the output */
+		refl_coef[k] = rc_tmp;
 
-        /* Update correlations */
-        for( n = 0; n < order - k; n++ ) {
-            Ctmp1 = C[ n + k + 1 ][ 0 ];
-            Ctmp2 = C[ n ][ 1 ];
-            C[ n + k + 1 ][ 0 ] = Ctmp1 + Ctmp2 * rc_tmp;
-            C[ n ][ 1 ]         = Ctmp2 + Ctmp1 * rc_tmp;
-        }
-    }
+		/* Update correlations */
+		for (n = 0; n < order - k; n++) {
+			Ctmp1 = C[n + k + 1][0];
+			Ctmp2 = C[n][1];
+			C[n + k + 1][0] = Ctmp1 + Ctmp2 * rc_tmp;
+			C[n][1] = Ctmp2 + Ctmp1 * rc_tmp;
+		}
+	}
 
-    /* Return residual energy */
-    return C[ 0 ][ 1 ];
+	/* Return residual energy */
+	return C[0][1];
 }
-

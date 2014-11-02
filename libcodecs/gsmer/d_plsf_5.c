@@ -142,13 +142,13 @@ void w_D_plsf_5(int16_t * indice,	/* input : quantization indices of 5 w_submatr
 		lsf1_r[0] = *p_dico++;
 		lsf1_r[1] = *p_dico++;
 		lsf2_r[0] = *p_dico++;
-		lsf2_r[1] = *p_dico++;
+		lsf2_r[1] = *p_dico;
 
 		p_dico = &w_dico2_lsf[w_shl(indice[1], 2)];
 		lsf1_r[2] = *p_dico++;
 		lsf1_r[3] = *p_dico++;
 		lsf2_r[2] = *p_dico++;
-		lsf2_r[3] = *p_dico++;
+		lsf2_r[3] = *p_dico;
 
 		sign = indice[2] & 1;
 		i = w_shr(indice[2], 1);
@@ -170,7 +170,7 @@ void w_D_plsf_5(int16_t * indice,	/* input : quantization indices of 5 w_submatr
 		lsf1_r[6] = *p_dico++;
 		lsf1_r[7] = *p_dico++;
 		lsf2_r[6] = *p_dico++;
-		lsf2_r[7] = *p_dico++;
+		lsf2_r[7] = *p_dico;
 
 		p_dico = &w_dico5_lsf[w_shl(indice[4], 2)];
 		lsf1_r[8] = *p_dico++;

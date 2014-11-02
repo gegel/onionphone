@@ -598,6 +598,11 @@ void aflatNewBarRecursionL(Shortword pswQntRc[], int iSegment,
  |                              Executable Code                            |
  |_________________________________________________________________________|
 */
+	memzero(pL_VOldSpace, (2 * NP - 1) * sizeof(Longword));
+	memzero(pL_VNewSpace, (2 * NP - 1) * sizeof(Longword));
+	memzero(pL_POldSpace, NP * sizeof(Longword));
+	memzero(pL_PNewSpace, NP * sizeof(Longword));
+
 	/* Copy the addresses of the input PBar and VBar arrays into  */
 	/* pL_POld and pL_VOld respectively.                          */
   /*------------------------------------------------------------*/
