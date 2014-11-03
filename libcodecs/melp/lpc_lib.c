@@ -322,7 +322,7 @@ static int lsp_roots(float *w, float **c, int p2);
 
 int mf_lpc_pred2lsp(float *a, float *w, int p)
 {
-	int i, p2;
+	int i, p2, u__i;
 	float **c;
 
 	p2 = p / 2;
@@ -331,7 +331,7 @@ int mf_lpc_pred2lsp(float *a, float *w, int p)
 	if (!c)
 		program_abort(__FILE__, "calloc", 0, __LINE__);
 	else {
-		for (int u__i = 0; u__i < 2; u__i++) {
+		for (u__i = 0; u__i < 2; u__i++) {
 			c[u__i] = calloc(1, (p2 + 1) * sizeof(float));
 			if (!c[u__i])
 				program_abort(__FILE__, "calloc", 0, __LINE__);
@@ -420,7 +420,7 @@ int mf_lpc_pred2refl(float *a, float *k, int p)
 
 int mf_lpc_lsp2pred(float *w, float *a, int p)
 {
-	int i, j, k, p2;
+	int i, j, k, p2, u__i;
 	float **f, c[2];
 
 	/* ensure minimum separation and sort */
@@ -431,7 +431,7 @@ int mf_lpc_lsp2pred(float *w, float *a, int p)
 	if (!f)
 		program_abort(__FILE__, "calloc", 0, __LINE__);
 	else {
-		for (int u__i = 0; u__i < 2; u__i++) {
+		for (u__i = 0; u__i < 2; u__i++) {
 			f[u__i] = calloc(1, (p2 + 1) * sizeof(float));
 			if (!f[u__i])
 				program_abort(__FILE__, "calloc", 0, __LINE__);
