@@ -41,7 +41,7 @@
 //*/
 #include "../libcodecs/lpc/lpc.h"
 ///*
-#include "../libcodecs/opus/include/opus_types.h"
+//#include "../libcodecs/opus/include/opus_types.h"
 #include "../libcodecs/opus/include/opus_defines.h"
 #include "../libcodecs/opus/include/opus.h"
 #include "../libcodecs/gsmhr/gsmhr.h"
