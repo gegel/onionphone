@@ -117,7 +117,7 @@ Secretariat fax: +33 493 65 47 16.
  *
  *************************************************************************/
 
-static __inline Shortword saturate(Longword L_var1)
+static inline Shortword saturate(Longword L_var1)
 {
 	Shortword swOut;
 
@@ -172,7 +172,7 @@ static __inline Shortword saturate(Longword L_var1)
  *
  *************************************************************************/
 
-static __inline Shortword divide_s(Shortword var1, Shortword var2)
+static inline Shortword divide_s(Shortword var1, Shortword var2)
 {
 	Longword L_div;
 	Shortword swOut;
@@ -220,7 +220,7 @@ static __inline Shortword divide_s(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Longword L_deposit_l(Shortword var1)
+static inline Longword L_deposit_l(Shortword var1)
 {
 	Longword L_Out;
 
@@ -259,7 +259,7 @@ static __inline Longword L_deposit_l(Shortword var1)
  *
  *************************************************************************/
 
-static __inline Longword L_deposit_h(Shortword var1)
+static inline Longword L_deposit_h(Shortword var1)
 {
 	Longword L_var2;
 
@@ -300,7 +300,7 @@ static __inline Longword L_deposit_h(Shortword var1)
  *
  *************************************************************************/
 
-static __inline Shortword extract_l(Longword L_var1)
+static inline Shortword extract_l(Longword L_var1)
 {
 	Shortword var2;
 
@@ -342,7 +342,7 @@ static __inline Shortword extract_l(Longword L_var1)
  *
  *************************************************************************/
 
-static __inline Shortword extract_h(Longword L_var1)
+static inline Shortword extract_h(Longword L_var1)
 {
 	Shortword var2;
 
@@ -390,7 +390,7 @@ static __inline Shortword extract_h(Longword L_var1)
  *
  *************************************************************************/
 
-static __inline Shortword r_ound(Longword L_var1)
+static inline Shortword r_ound(Longword L_var1)
 {
 	Longword L_Prod;
 	Shortword var2;
@@ -429,7 +429,7 @@ static __inline Shortword r_ound(Longword L_var1)
  *
  *************************************************************************/
 
-static __inline Shortword negate(Shortword var1)
+static inline Shortword negate(Shortword var1)
 {
 	Shortword swOut;
 
@@ -472,7 +472,7 @@ static __inline Shortword negate(Shortword var1)
  *
  *************************************************************************/
 
-static __inline Longword L_negate(Longword L_var1)
+static inline Longword L_negate(Longword L_var1)
 {
 	Longword L_Out;
 
@@ -528,7 +528,7 @@ static __inline Longword L_negate(Longword L_var1)
  *
  *************************************************************************/
 
-static __inline Shortword add(Shortword var1, Shortword var2)
+static inline Shortword add(Shortword var1, Shortword var2)
 {
 	Longword L_sum;
 	Shortword swOut;
@@ -583,7 +583,7 @@ static __inline Shortword add(Shortword var1, Shortword var2)
  *	 KEYWORDS: add, addition
  *
  *************************************************************************/
-static __inline Longword L_add(Longword L_var1, Longword L_var2)
+static inline Longword L_add(Longword L_var1, Longword L_var2)
 {
 	Longword L_Sum, L_SumLow, L_SumHigh;
 
@@ -660,7 +660,7 @@ static __inline Longword L_add(Longword L_var1, Longword L_var2)
  *	 KEYWORDS: sub, subtraction
  *
  *************************************************************************/
-static __inline Shortword sub(Shortword var1, Shortword var2)
+static inline Shortword sub(Shortword var1, Shortword var2)
 {
 	Longword L_diff;
 	Shortword swOut;
@@ -716,7 +716,7 @@ static __inline Shortword sub(Shortword var1, Shortword var2)
  *	 KEYWORDS: sub, subtraction
  *
  *************************************************************************/
-static __inline Longword L_sub(Longword L_var1, Longword L_var2)
+static inline Longword L_sub(Longword L_var1, Longword L_var2)
 {
 	Longword L_Sum;
 
@@ -778,7 +778,7 @@ static __inline Longword L_sub(Longword L_var1, Longword L_var2)
  *
  *************************************************************************/
 
-static __inline Shortword shr(Shortword var1, Shortword var2)
+static inline Shortword shr(Shortword var1, Shortword var2)
 {
 	Shortword swMask, swOut;
 
@@ -857,7 +857,7 @@ static __inline Shortword shr(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Shortword shl(Shortword var1, Shortword var2)
+static inline Shortword shl(Shortword var1, Shortword var2)
 {
 	Shortword swOut;
 	Longword L_Out;
@@ -939,7 +939,7 @@ static __inline Shortword shl(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Longword L_shr(Longword L_var1, Shortword var2)
+static inline Longword L_shr(Longword L_var1, Shortword var2)
 {
 	Longword L_Mask, L_Out;
 
@@ -1013,7 +1013,7 @@ static __inline Longword L_shr(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Longword L_shl(Longword L_var1, Shortword var2)
+static inline Longword L_shl(Longword L_var1, Shortword var2)
 {
 	Longword L_Mask, L_Out = 0;
 	int i, iOverflow = 0;
@@ -1105,7 +1105,7 @@ static __inline Longword L_shl(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Shortword shift_r(Shortword var1, Shortword var2)
+static inline Shortword shift_r(Shortword var1, Shortword var2)
 {
 	Shortword swOut, swRnd;
 
@@ -1180,7 +1180,7 @@ static __inline Shortword shift_r(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Longword L_shift_r(Longword L_var1, Shortword var2)
+static inline Longword L_shift_r(Longword L_var1, Shortword var2)
 {
 	Longword L_Out, L_rnd;
 
@@ -1253,7 +1253,7 @@ static __inline Longword L_shift_r(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Shortword norm_l(Longword L_var1)
+static inline Shortword norm_l(Longword L_var1)
 {
 	Shortword swShiftCnt;
 
@@ -1333,7 +1333,7 @@ static __inline Shortword norm_l(Longword L_var1)
  *
  *************************************************************************/
 
-static __inline Shortword norm_s(Shortword var1)
+static inline Shortword norm_s(Shortword var1)
 {
 	short swShiftCnt;
 	Longword L_var1;
@@ -1384,7 +1384,7 @@ static __inline Shortword norm_s(Shortword var1)
  *
  *************************************************************************/
 
-static __inline Longword L_mult(Shortword var1, Shortword var2)
+static inline Longword L_mult(Shortword var1, Shortword var2)
 {
 	Longword L_product;
 
@@ -1438,7 +1438,7 @@ static __inline Longword L_mult(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Shortword mult(Shortword var1, Shortword var2)
+static inline Shortword mult(Shortword var1, Shortword var2)
 {
 	Longword L_product;
 	Shortword swOut;
@@ -1501,7 +1501,7 @@ static __inline Shortword mult(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
+static inline Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
 {
 	Longword L_Out;
 
@@ -1562,7 +1562,7 @@ static __inline Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
+static inline Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
 {
 	Longword L_Out;
 
@@ -1628,7 +1628,7 @@ static __inline Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
+static inline Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
 {
 	Shortword swOut;
 
@@ -1671,7 +1671,7 @@ static __inline Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static __inline Shortword abs_s(Shortword var1)
+static inline Shortword abs_s(Shortword var1)
 {
 	Shortword swOut;
 
@@ -1718,7 +1718,7 @@ static __inline Shortword abs_s(Shortword var1)
  *	 KEYWORDS: absolute value, abs
  *
  *************************************************************************/
-static __inline Longword L_abs(Longword L_var1)
+static inline Longword L_abs(Longword L_var1)
 {
 	Longword L_Out;
 
@@ -1760,7 +1760,7 @@ static __inline Longword L_abs(Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static __inline Word40 L40_add(Word40 acc, Longword L_var1)
+static inline Word40 L40_add(Word40 acc, Longword L_var1)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1807,7 +1807,7 @@ static __inline Word40 L40_add(Word40 acc, Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static __inline Word40 L40_sub(Word40 acc, Longword L_var1)
+static inline Word40 L40_sub(Word40 acc, Longword L_var1)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1857,7 +1857,7 @@ static __inline Word40 L40_sub(Word40 acc, Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static __inline Word40 L40_mac(Word40 acc, Shortword var1, Shortword var2)
+static inline Word40 L40_mac(Word40 acc, Shortword var1, Shortword var2)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1908,7 +1908,7 @@ static __inline Word40 L40_mac(Word40 acc, Shortword var1, Shortword var2)
  |___________________________________________________________________________|
 */
 
-static __inline Word40 L40_msu(Word40 acc, Shortword var1, Shortword var2)
+static inline Word40 L40_msu(Word40 acc, Shortword var1, Shortword var2)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1956,7 +1956,7 @@ static __inline Word40 L40_msu(Word40 acc, Shortword var1, Shortword var2)
  |___________________________________________________________________________|
 */
 
-static __inline Word40 L40_shl(Word40 acc, Shortword var1)
+static inline Word40 L40_shl(Word40 acc, Shortword var1)
 {
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
@@ -2009,7 +2009,7 @@ static __inline Word40 L40_shl(Word40 acc, Shortword var1)
  |___________________________________________________________________________|
 */
 
-static __inline Word40 L40_shr(Word40 acc, Shortword var1)
+static inline Word40 L40_shr(Word40 acc, Shortword var1)
 {
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
@@ -2052,7 +2052,7 @@ static __inline Word40 L40_shr(Word40 acc, Shortword var1)
  |___________________________________________________________________________|
 */
 
-static __inline Word40 L40_negate(Word40 acc)
+static inline Word40 L40_negate(Word40 acc)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -2094,7 +2094,7 @@ static __inline Word40 L40_negate(Word40 acc)
  |___________________________________________________________________________|
 */
 
-static __inline Shortword norm32(Word40 acc)
+static inline Shortword norm32(Word40 acc)
 {
 	Shortword var1;
 
@@ -2150,7 +2150,7 @@ static __inline Shortword norm32(Word40 acc)
  |___________________________________________________________________________|
 */
 
-static __inline Longword L_sat32(Word40 acc)
+static inline Longword L_sat32(Word40 acc)
 {
 	Longword L_var_out;
 
@@ -2171,12 +2171,12 @@ static __inline Longword L_sat32(Word40 acc)
 
 /*
 #if OVERFLOW_CHECK
-static __inline void inc_saturation()
+static inline void inc_saturation()
 {
 	saturation++;
 }
 #else
-static __inline void inc_saturation()
+static inline void inc_saturation()
 {
 }
 #endif
