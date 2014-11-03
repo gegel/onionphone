@@ -70,60 +70,60 @@ static void realIDFT(Shortword mag[], Shortword phase[], Shortword signal[],
 	Shortword idftc[PITCHMAX];
 
 	/*      length2 = (length/2) + 1; */
-	length2 = add(shr(length, 1), 1);
+	length2 = melpe_add(melpe_shr(length, 1), 1);
 	/*      w = TWOPI / length; */
-	w = divide_s(TWO_Q3, length);	/* w = 2/length in Q18 */
+	w = melpe_divide_s(TWO_Q3, length);	/* w = 2/length in Q18 */
 
 	/* The following for loop builds up the lookup table for cosines with     */
 	/* radians from 0 to 1.                                                   */
 	for (i = 0; i < length; i++) {
-		L_temp = L_mult(w, i);	/* L_temp in Q19 */
+		L_temp = melpe_L_mult(w, i);	/* L_temp in Q19 */
 
 		/* make sure argument for cos function is less than 1 */
 		if (L_temp > (Longword) ONE_Q19) {
 			/*      cos(pi+x) = cos(pi-x) */
-			L_temp = L_sub((Longword) TWO_Q19, L_temp);
+			L_temp = melpe_L_sub((Longword) TWO_Q19, L_temp);
 		} else if (L_temp == (Longword) ONE_Q19)
-			L_temp = L_sub(L_temp, 1);
+			L_temp = melpe_L_sub(L_temp, 1);
 
-		L_temp = L_shr(L_temp, 4);	/* L_temp in Q15 */
-		temp = extract_l(L_temp);
+		L_temp = melpe_L_shr(L_temp, 4);	/* L_temp in Q15 */
+		temp = melpe_extract_l(L_temp);
 		idftc[i] = cos_fxp(temp);	/* idftc in Q15 */
 	}
 
-	w = shr(w, 1);		/* w = 2/length in Q17 */
-	w2 = shr(w, 1);		/* w2 = 1/length in Q17 */
-	mag[0] = mult(mag[0], w2);	/* mag[] in Q15 */
-	temp = sub(length2, 1);
+	w = melpe_shr(w, 1);		/* w = 2/length in Q17 */
+	w2 = melpe_shr(w, 1);		/* w2 = 1/length in Q17 */
+	mag[0] = melpe_mult(mag[0], w2);	/* mag[] in Q15 */
+	temp = melpe_sub(length2, 1);
 	for (i = 1; i < temp; i++) {
 		/*      mag[i] *= (2.0/length); */
-		mag[i] = mult(mag[i], w);	/* mag[] is now Q15 */
+		mag[i] = melpe_mult(mag[i], w);	/* mag[] is now Q15 */
 	}
 
-	temp = shl(i, 1);
+	temp = melpe_shl(i, 1);
 	if (temp == length)	/* length is even, mag[i] *= (1.0/length); */
-		mag[i] = mult(mag[i], w2);
+		mag[i] = melpe_mult(mag[i], w2);
 	else			/* length is odd, mag[i] *= (2.0/length); */
-		mag[i] = mult(mag[i], w);
+		mag[i] = melpe_mult(mag[i], w);
 
 	for (i = 0; i < length; i++) {
-		L_temp = L_deposit_h(mag[0]);	/* L_temp in Q15 */
+		L_temp = melpe_L_deposit_h(mag[0]);	/* L_temp in Q15 */
 		k = i;
 		for (j = 1; j < length2; j++) {
-			k = add(k, phase[j]);
+			k = melpe_add(k, phase[j]);
 			while (k < 0)
-				k = add(k, length);
+				k = melpe_add(k, length);
 			while (k >= length)
-				k = sub(k, length);
-			L_temp = L_mac(L_temp, mag[j], idftc[k]);
-			k = sub(k, phase[j]);
-			k = add(k, i);
+				k = melpe_sub(k, length);
+			L_temp = melpe_L_mac(L_temp, mag[j], idftc[k]);
+			k = melpe_sub(k, phase[j]);
+			k = melpe_add(k, i);
 		}
 
 		/* It might take some proofs, but mag[] is already weighted by w      */
 		/* (which is inversely proportional to length) and L_temp here never  */
 		/* overflows a Shortword.                                             */
-		signal[i] = r_ound(L_temp);
+		signal[i] = melpe_r_ound(L_temp);
 	}
 }
 
@@ -208,77 +208,77 @@ void harm_syn_pitch(Shortword amp[], Shortword signal[], Shortword fc,
 	/* the actual phases divided by (2*PI)/length.                            */
 
 	for (i = 0; i < length / 2 + 1; i++)
-		rndphase[i] = mult(length, rand_minstdgen());
+		rndphase[i] = melpe_mult(length, rand_minstdgen());
 
 	/* ====== Harmonic Synthesis ====== */
 	/* The fc1 and fc2 computed in the if block below are Q2 */
 
 	if (fc <= X500_Q3) {
-		fc1 = mult(X085_Q14, fc);
-		fc2 = mult(X105_Q14, fc);
+		fc1 = melpe_mult(X085_Q14, fc);
+		fc2 = melpe_mult(X105_Q14, fc);
 		factor = ONE_Q15;
 	} else if (fc <= X1000_Q3) {
-		fc1 = mult(X095_Q14, fc);
-		fc2 = mult(X105_Q14, fc);
+		fc1 = melpe_mult(X095_Q14, fc);
+		fc2 = melpe_mult(X105_Q14, fc);
 		factor = X09_Q15;
 	} else if (fc <= X2000_Q3) {
-		fc1 = mult(X098_Q14, fc);
-		fc2 = mult(X102_Q14, fc);
+		fc1 = melpe_mult(X098_Q14, fc);
+		fc2 = melpe_mult(X102_Q14, fc);
 		factor = X08_Q15;
 	} else if (fc <= X3000_Q3) {
-		fc1 = mult(X095_Q14, fc);
-		fc2 = mult(X105_Q14, fc);
+		fc1 = melpe_mult(X095_Q14, fc);
+		fc2 = melpe_mult(X105_Q14, fc);
 		factor = X075_Q15;
 	} else {
-		fc1 = mult(X092_Q14, fc);
-		fc2 = shift_r(fc, -1);	/* We map fc (Q3) to fc2 (Q2) with r_ounding. */
+		fc1 = melpe_mult(X092_Q14, fc);
+		fc2 = melpe_shift_r(fc, -1);	/* We map fc (Q3) to fc2 (Q2) with r_ounding. */
 		factor = X07_Q15;
 	}
 
 	/* fc1 and fc2 are now Q2. */
 
-	temp1 = divide_s(fc1, shl(FSAMP, 2));
-	temp2 = divide_s(fc2, shl(FSAMP, 2));	/* Now temp1 and temp2 are Q15. */
-	voicedCnt = mult(temp1, length);
-	mixedCnt = mult(temp2, length);
+	temp1 = melpe_divide_s(fc1, melpe_shl(FSAMP, 2));
+	temp2 = melpe_divide_s(fc2, melpe_shl(FSAMP, 2));	/* Now temp1 and temp2 are Q15. */
+	voicedCnt = melpe_mult(temp1, length);
+	mixedCnt = melpe_mult(temp2, length);
 	totalCnt = (Shortword) ((length / 2) + 1);
 
 	/* ====== set values to mag and phase ====== */
-	v_equ(mag, amp, add(voicedCnt, 1));	/* Q13 */
+	v_equ(mag, amp, melpe_add(voicedCnt, 1));	/* Q13 */
 
 	/* Now we compute phase[] in multiples of w = (2*PI)/length.  Therefore   */
 	/* phase[] -> (i*FIXED_PHASE)*length/(2*PI).                              */
 	temp1 = 0;		/* temp1 = i * temp2 in the following for loop. */
-	temp2 = extract_l(L_mult(FIXED_PHASE, length));
-	temp2 = shr(temp2, 1);	/* temp2 = FIXED_PHASE * length */
+	temp2 = melpe_extract_l(melpe_L_mult(FIXED_PHASE, length));
+	temp2 = melpe_shr(temp2, 1);	/* temp2 = FIXED_PHASE * length */
 	while (temp2 >= 2 * length)
-		temp2 = sub(temp2, (Shortword) (2 * length));
+		temp2 = melpe_sub(temp2, (Shortword) (2 * length));
 	for (i = 0; i < mixedCnt + 1; i++) {
-		phase[i] = shr(temp1, 1);
-		temp1 = add(temp1, temp2);
+		phase[i] = melpe_shr(temp1, 1);
+		temp1 = melpe_add(temp1, temp2);
 		if (temp1 >= 2 * length)
-			temp1 = sub(temp1, (Shortword) (2 * length));
+			temp1 = melpe_sub(temp1, (Shortword) (2 * length));
 	}
 	index = 0;
-	for (i = add(voicedCnt, 1); i < add(mixedCnt, 1); i++, index++) {
-		temp1 = sub(i, voicedCnt);
-		temp2 = sub(mixedCnt, voicedCnt);
-		fn = divide_s(temp1, temp2);	/* Q15 */
-		temp1 = mult(factor, fn);
-		temp2 = sub(ONE_Q15, fn);
-		temp1 = add(temp1, temp2);
-		mag[i] = mult(amp[i], temp1);	/* Q13 */
-		temp1 = mult(fn, rndphase[index]);	/* Q0 */
-		temp2 = sub(phase[i], temp1);
+	for (i = melpe_add(voicedCnt, 1); i < melpe_add(mixedCnt, 1); i++, index++) {
+		temp1 = melpe_sub(i, voicedCnt);
+		temp2 = melpe_sub(mixedCnt, voicedCnt);
+		fn = melpe_divide_s(temp1, temp2);	/* Q15 */
+		temp1 = melpe_mult(factor, fn);
+		temp2 = melpe_sub(ONE_Q15, fn);
+		temp1 = melpe_add(temp1, temp2);
+		mag[i] = melpe_mult(amp[i], temp1);	/* Q13 */
+		temp1 = melpe_mult(fn, rndphase[index]);	/* Q0 */
+		temp2 = melpe_sub(phase[i], temp1);
 		if (temp2 < 0)
-			temp2 = add(temp2, length);
+			temp2 = melpe_add(temp2, length);
 		phase[i] = temp2;
 	}
-	for (i = add(mixedCnt, 1); i < totalCnt; i++, index++) {
-		mag[i] = mult(amp[i], factor);	/* Q13 */
-		temp2 = negate(rndphase[index]);	/* Q0 */
+	for (i = melpe_add(mixedCnt, 1); i < totalCnt; i++, index++) {
+		mag[i] = melpe_mult(amp[i], factor);	/* Q13 */
+		temp2 = melpe_negate(rndphase[index]);	/* Q0 */
 		if (temp2 < 0)
-			temp2 = add(temp2, length);
+			temp2 = melpe_add(temp2, length);
 		phase[i] = temp2;	/* This moves phase[i] from */
 		/* negative to positive. */
 	}
