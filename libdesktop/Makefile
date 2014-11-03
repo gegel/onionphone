@@ -10,7 +10,8 @@ MODE_DEBUG ?= -O0 -g -ggdb
 # -DLINUX_ALSA -DM_LITTLE_ENDIAN -D_GNU_SOURCE
 EXTRADEFS = -DLINUX_ALSA -DM_LITTLE_ENDIAN -D_GNU_SOURCE
 
-CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
+GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = audio.o \
       cntrls.o \

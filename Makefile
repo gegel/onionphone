@@ -1,3 +1,5 @@
+export GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+
 COMMONAPPS = common/crp
 
 ADDKEYAPPS = libaddkey
