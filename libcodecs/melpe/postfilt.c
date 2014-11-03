@@ -95,7 +95,7 @@ void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
 		temp = 0;	/* Q15 */
 		for (i = 0; i < SMOOTH_LEN; i++) {
 			window[i] = temp;
-			temp = add(temp, 1638);	/* 1638 is 1/SMOOTH_LEN in Q15 */
+			temp = melpe_add(temp, 1638);	/* 1638 is 1/SMOOTH_LEN in Q15 */
 		}
 		postfilt_firsttime = FALSE;
 	}
@@ -105,43 +105,43 @@ void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
 
 	sp = 0;
 	for (i = 0; i < FRAME; i++) {
-		temp = abs_s(speech[i]);
+		temp = melpe_abs_s(speech[i]);
 		if (sp < temp)
 			sp = temp;
 	}
-	temp_shift = norm_s(sp);
+	temp_shift = melpe_norm_s(sp);
 	L_sum = 0;
 	for (i = 0; i < FRAME; i++) {
-		temp = shl(speech[i], temp_shift);	/* Q15 */
-		L_temp = L_mult(temp, temp);	/* Q31 */
-		L_temp = L_shr(L_temp, 8);	/* Q23 */
-		L_sum = L_add(L_sum, L_temp);	/* Q23 */
+		temp = melpe_shl(speech[i], temp_shift);	/* Q15 */
+		L_temp = melpe_L_mult(temp, temp);	/* Q31 */
+		L_temp = melpe_L_shr(L_temp, 8);	/* Q23 */
+		L_sum = melpe_L_add(L_sum, L_temp);	/* Q23 */
 	}
-	temp_shift = shl(temp_shift, 1);	/* Squaring of speech[] */
-	sp_shift = sub(8, temp_shift);	/* Aligning Q23 with Q31 */
-	temp_shift = norm_l(L_sum);
-	sp_shift = sub(sp_shift, temp_shift);
-	sp = extract_h(L_shl(L_sum, temp_shift));	/* Q15 */
+	temp_shift = melpe_shl(temp_shift, 1);	/* Squaring of speech[] */
+	sp_shift = melpe_sub(8, temp_shift);	/* Aligning Q23 with Q31 */
+	temp_shift = melpe_norm_l(L_sum);
+	sp_shift = melpe_sub(sp_shift, temp_shift);
+	sp = melpe_extract_h(melpe_L_shl(L_sum, temp_shift));	/* Q15 */
 
 	/* ======== Compute filter coefficients ======== */
 	for (i = 0; i < SYN_SUBNUM; i++) {
 		for (j = 0; j < LPC_ORD; j++) {
-			temp = sub(ONE_Q15, syn_inp[i]);	/* Q15 */
-			temp1 = mult(prev_lsf[j], temp);	/* Q15 */
-			temp2 = mult(cur_lsf[j], syn_inp[i]);	/* Q15 */
-			inplsf[j] = add(temp1, temp2);	/* Q15 */
+			temp = melpe_sub(ONE_Q15, syn_inp[i]);	/* Q15 */
+			temp1 = melpe_mult(prev_lsf[j], temp);	/* Q15 */
+			temp2 = melpe_mult(cur_lsf[j], syn_inp[i]);	/* Q15 */
+			inplsf[j] = melpe_add(temp1, temp2);	/* Q15 */
 		}
 		lpc_lsp2pred(inplsf, synLPC, LPC_ORD);
 
 		/* ======== Filter main loop ======== */
 
 		/* ------ Tilt compesation ------ */
-		temp = mult(X015_Q15, synLPC[1]);	/* Q12 */
+		temp = melpe_mult(X015_Q15, synLPC[1]);	/* Q12 */
 		if (temp > X05_Q12)
 			temp = X05_Q12;
 		if (temp < 0)
 			temp = 0;
-		emph = shl(temp, 3);	/* Q15 */
+		emph = melpe_shl(temp, 3);	/* Q15 */
 
 		/* It is unlikely for synhp[] to saturate -- emph is confined between */
 		/* 0 and 0.5.  To saturate synhp[] the input speech[] should be of a  */
@@ -149,9 +149,9 @@ void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
 		/* which should not be frequent.                                      */
 
 		for (j = 0; j < SYN_SUBFRAME; j++) {
-			temp = mult(emph, hpm);	/* Q0 */
+			temp = melpe_mult(emph, hpm);	/* Q0 */
 			hpm = speech[i * SYN_SUBFRAME + j];
-			synhp[j] = sub(hpm, temp);	/* Q0 */
+			synhp[j] = melpe_sub(hpm, temp);	/* Q0 */
 		}
 
 		/* ------ Short-term postfilter ------ */
@@ -167,66 +167,66 @@ void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
 			for (j = 0; j < SMOOTH_LEN; j++) {
 				L_sum = 0;
 				for (k = 0; k < LPC_ORD; k++) {
-					L_temp = L_mult(mem1old[k], alphaipFIR[k]);	/* Q13 */
-					L_sum = L_add(L_sum, L_temp);	/* Q13 */
+					L_temp = melpe_L_mult(mem1old[k], alphaipFIR[k]);	/* Q13 */
+					L_sum = melpe_L_add(L_sum, L_temp);	/* Q13 */
 				}
 				for (k = LPC_ORD - 1; k > 0; k--)
 					mem1old[k] = mem1old[k - 1];
 				mem1old[0] = synhp[j];
-				L_temp = L_shl(L_deposit_l(synhp[j]), 13);	/* Q13 */
-				L_sum = L_add(L_sum, L_temp);
+				L_temp = melpe_L_shl(melpe_L_deposit_l(synhp[j]), 13);	/* Q13 */
+				L_sum = melpe_L_add(L_sum, L_temp);
 
 				for (k = 0; k < LPC_ORD; k++) {
-					L_temp = L_mult(mem2old[k], alphaipIIR[k]);	/* Q13 */
-					L_sum = L_sub(L_sum, L_temp);
+					L_temp = melpe_L_mult(mem2old[k], alphaipIIR[k]);	/* Q13 */
+					L_sum = melpe_L_sub(L_sum, L_temp);
 				}
 				for (k = LPC_ORD - 1; k > 0; k--)
 					mem2old[k] = mem2old[k - 1];
-				temp1 = extract_l(L_shr(L_sum, 13));	/* Q0 */
+				temp1 = melpe_extract_l(melpe_L_shr(L_sum, 13));	/* Q0 */
 				mem2old[0] = temp1;	/* Q0 */
-				temp = sub(ONE_Q15, window[j]);
+				temp = melpe_sub(ONE_Q15, window[j]);
 
 				/* Experiments based on the 16 speech data used for testing   */
 				/* show that nokori[] is within the range -15000 to 12000 or  */
 				/* so.  Therefore using Q0 for nokori[] should be             */
 				/* appropriate.                                               */
 
-				temp1 = mult(temp, temp1);	/* Q0 */
-				L_temp = L_mult(gain, temp1);	/* Q15 */
-				nokori[j] = extract_l(L_shr(L_temp, 15));	/* Q0 */
+				temp1 = melpe_mult(temp, temp1);	/* Q0 */
+				L_temp = melpe_L_mult(gain, temp1);	/* Q15 */
+				nokori[j] = melpe_extract_l(melpe_L_shr(L_temp, 15));	/* Q0 */
 			}
 		}
 
 		temp1 = ALPH;	/* Q15 */
 		temp2 = BETA;
 		for (j = 0; j < LPC_ORD; j++) {
-			alphaipFIR[j] = mult(synLPC[j], temp1);	/* Q12 */
-			alphaipIIR[j] = mult(synLPC[j], temp2);
-			temp1 = mult(ALPH, temp1);
-			temp2 = mult(BETA, temp2);
+			alphaipFIR[j] = melpe_mult(synLPC[j], temp1);	/* Q12 */
+			alphaipIIR[j] = melpe_mult(synLPC[j], temp2);
+			temp1 = melpe_mult(ALPH, temp1);
+			temp2 = melpe_mult(BETA, temp2);
 		}
 
 		for (j = 0; j < SYN_SUBFRAME; j++) {
 			L_sum = 0;
 			for (k = 0; k < LPC_ORD; k++) {
-				L_temp = L_mult(mem1[k], alphaipFIR[k]);	/* Q13 */
-				L_sum = L_add(L_sum, L_temp);	/* Q13 */
+				L_temp = melpe_L_mult(mem1[k], alphaipFIR[k]);	/* Q13 */
+				L_sum = melpe_L_add(L_sum, L_temp);	/* Q13 */
 			}
 			for (k = LPC_ORD - 1; k > 0; k--)
 				mem1[k] = mem1[k - 1];
 			mem1[0] = synhp[j];
-			L_temp = L_shl(L_deposit_l(synhp[j]), 13);	/* Q13 */
-			L_sum = L_add(L_sum, L_temp);
+			L_temp = melpe_L_shl(melpe_L_deposit_l(synhp[j]), 13);	/* Q13 */
+			L_sum = melpe_L_add(L_sum, L_temp);
 
 			for (k = 0; k < LPC_ORD; k++) {
-				L_temp = L_mult(mem2[k], alphaipIIR[k]);	/* Q13 */
-				L_sum = L_sub(L_sum, L_temp);	/* Q13 */
+				L_temp = melpe_L_mult(mem2[k], alphaipIIR[k]);	/* Q13 */
+				L_sum = melpe_L_sub(L_sum, L_temp);	/* Q13 */
 			}
 			for (k = LPC_ORD - 1; k > 0; k--)
 				mem2[k] = mem2[k - 1];
-			L_sum = L_shr(L_sum, 13);	/* Q0 */
-			mem2[0] = extract_l(L_sum);	/* Q0 */
-			speech[i * SYN_SUBFRAME + j] = extract_l(L_sum);	/* Q0 */
+			L_sum = melpe_L_shr(L_sum, 13);	/* Q0 */
+			mem2[0] = melpe_extract_l(L_sum);	/* Q0 */
+			speech[i * SYN_SUBFRAME + j] = melpe_extract_l(L_sum);	/* Q0 */
 		}
 	}
 
@@ -235,23 +235,23 @@ void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
 
 	op = 0;
 	for (i = 0; i < FRAME; i++) {
-		temp = abs_s(speech[i]);
+		temp = melpe_abs_s(speech[i]);
 		if (op < temp)
 			op = temp;
 	}
-	temp_shift = norm_s(op);
+	temp_shift = melpe_norm_s(op);
 	L_sum = 0;
 	for (i = 0; i < FRAME; i++) {
-		temp = shl(speech[i], temp_shift);	/* Q15 */
-		L_temp = L_mult(temp, temp);	/* Q31 */
-		L_temp = L_shr(L_temp, 8);	/* Q23 */
-		L_sum = L_add(L_sum, L_temp);	/* Q23 */
+		temp = melpe_shl(speech[i], temp_shift);	/* Q15 */
+		L_temp = melpe_L_mult(temp, temp);	/* Q31 */
+		L_temp = melpe_L_shr(L_temp, 8);	/* Q23 */
+		L_sum = melpe_L_add(L_sum, L_temp);	/* Q23 */
 	}
-	temp_shift = shl(temp_shift, 1);	/* Squaring of speech[] */
-	op_shift = sub(8, temp_shift);	/* Aligning Q23 with Q31 */
-	temp_shift = norm_l(L_sum);
-	op_shift = sub(op_shift, temp_shift);
-	op = extract_h(L_shl(L_sum, temp_shift));	/* Q15 */
+	temp_shift = melpe_shl(temp_shift, 1);	/* Squaring of speech[] */
+	op_shift = melpe_sub(8, temp_shift);	/* Aligning Q23 with Q31 */
+	temp_shift = melpe_norm_l(L_sum);
+	op_shift = melpe_sub(op_shift, temp_shift);
+	op = melpe_extract_h(melpe_L_shl(L_sum, temp_shift));	/* Q15 */
 
 	/* According to the statistics collected from the 16 noisy speech files,  */
 	/* gain ranges between 0.41 and 1.10.  It is difficult to estimate the    */
@@ -271,17 +271,17 @@ void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
 	if (op_shift >= -22) {
 
 		/* gain = sqrt(sp/op); */
-		sp = shr(sp, 1);
-		sp_shift = add(sp_shift, 1);
-		temp_shift = sub(sp_shift, op_shift);
+		sp = melpe_shr(sp, 1);
+		sp_shift = melpe_add(sp_shift, 1);
+		temp_shift = melpe_sub(sp_shift, op_shift);
 		if (temp_shift & 0x0001) {	/* temp_shift is odd */
-			sp = shr(sp, 1);
-			temp_shift = add(temp_shift, 1);
+			sp = melpe_shr(sp, 1);
+			temp_shift = melpe_add(temp_shift, 1);
 		}
-		temp = divide_s(sp, op);	/* Q15 */
-		temp_shift = shr(temp_shift, 1);
+		temp = melpe_divide_s(sp, op);	/* Q15 */
+		temp_shift = melpe_shr(temp_shift, 1);
 		temp = sqrt_Q15(temp);	/* Q15 */
-		temp_shift = sub(temp_shift, 1);
+		temp_shift = melpe_sub(temp_shift, 1);
 
 		/* There is no vigorous proof that the following left shift will      */
 		/* never overflow.  However, experiences say that this is unlikely    */
@@ -289,13 +289,13 @@ void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
 		/* larger energy than the processed one.  If we want to make the code */
 		/* "bullet-proof", we can saturate gain computed below.               */
 
-		gain = shl(temp, temp_shift);	/* Q14 */
+		gain = melpe_shl(temp, temp_shift);	/* Q14 */
 	} else
 		gain = 0;
 
 	for (i = 0; i < FRAME; i++) {
-		L_temp = L_mult(gain, speech[i]);	/* Q15 */
-		speech[i] = extract_l(L_shr(L_temp, 15));	/* Q0 */
+		L_temp = melpe_L_mult(gain, speech[i]);	/* Q15 */
+		speech[i] = melpe_extract_l(melpe_L_shr(L_temp, 15));	/* Q0 */
 	}
 
 	/* The add() used for pos[i] below should not result in saturations.      */
@@ -304,8 +304,8 @@ void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
 	/* output does not seem to saturate.                                      */
 
 	for (i = 0; i < SMOOTH_LEN; i++) {
-		temp = mult(speech[i], window[i]);	/* Q0 */
-		speech[i] = add(temp, nokori[i]);	/* Q0 */
+		temp = melpe_mult(speech[i], window[i]);	/* Q0 */
+		speech[i] = melpe_add(temp, nokori[i]);	/* Q0 */
 	}
 
 	/* 0.88770 = 0.9672 * 0.9178, where 0.9672 and 0.9178 come from the two   */

@@ -117,23 +117,23 @@ Shortword L_divider2(Longword numer, Longword denom, Shortword numer_shift,
 	if (denom < 0)
 		sign = (Shortword) (!sign);
 
-	L_temp = L_shl(denom, denom_shift);
-	denom = L_abs(L_temp);
-	L_temp = L_shr(numer, numer_shift);
-	numer = L_abs(L_temp);
+	L_temp = melpe_L_shl(denom, denom_shift);
+	denom = melpe_L_abs(L_temp);
+	L_temp = melpe_L_shr(numer, numer_shift);
+	numer = melpe_L_abs(L_temp);
 
 	while (denom > (Longword) SW_MAX) {
-		denom = L_shr(denom, 1);
-		short_shift = add(short_shift, 1);
+		denom = melpe_L_shr(denom, 1);
+		short_shift = melpe_add(short_shift, 1);
 	}
-	numer = L_shr(numer, short_shift);
+	numer = melpe_L_shr(numer, short_shift);
 
 	assert(numer <= denom);
 
-	result = divide_s(extract_l(numer), extract_l(denom));
+	result = melpe_divide_s(melpe_extract_l(numer), melpe_extract_l(denom));
 
 	if (sign) {
-		result = negate(result);
+		result = melpe_negate(result);
 	}
 
 	return (result);
@@ -177,7 +177,7 @@ Shortword log10_fxp(Shortword x, Shortword Q)
 	/* Treat x as if it is a fixed-point number with Q7.  Use "shift" to      */
 	/* record the exponent required for adjustment.                           */
 
-	shift = sub(7, Q);
+	shift = melpe_sub(7, Q);
 
 	/* If x is 0, stop and return minus infinity. */
 	if (!x)
@@ -186,28 +186,28 @@ Shortword log10_fxp(Shortword x, Shortword Q)
 	/* Keep multiplying x by 2 until x is larger than 1 in Q7.  x in Q7 will  */
 	/* now lie between the two integers index1 and index2.                    */
 
-	index2 = shr(x, 7);
+	index2 = melpe_shr(x, 7);
 	while ((!index2) && x) {
-		x = shl(x, 1);
-		shift = sub(shift, 1);
-		index2 = shr(x, 7);
+		x = melpe_shl(x, 1);
+		shift = melpe_sub(shift, 1);
+		index2 = melpe_shr(x, 7);
 	}
-	index1 = sub(index2, 1);
+	index1 = melpe_sub(index2, 1);
 
 	/* interpolation */
 
-	interp_factor = shl((Shortword) (x & 127), 8);
-	temp1 = sub(log_table[index2], log_table[index1]);
-	interp_component = mult(temp1, interp_factor);
+	interp_factor = melpe_shl((Shortword) (x & 127), 8);
+	temp1 = melpe_sub(log_table[index2], log_table[index1]);
+	interp_component = melpe_mult(temp1, interp_factor);
 
 	/* return a Q12 */
 
-	L_temp = L_mult(log_table[1], shift);
-	L_temp = L_shr(L_temp, 2);
-	temp1 = shr(log_table[index1], 1);
-	temp1 = add(temp1, extract_l(L_temp));
-	temp2 = shr(interp_component, 1);
-	y = add(temp1, temp2);
+	L_temp = melpe_L_mult(log_table[1], shift);
+	L_temp = melpe_L_shr(L_temp, 2);
+	temp1 = melpe_shr(log_table[index1], 1);
+	temp1 = melpe_add(temp1, melpe_extract_l(L_temp));
+	temp2 = melpe_shr(interp_component, 1);
+	y = melpe_add(temp1, temp2);
 
 	return (y);
 }
@@ -248,32 +248,32 @@ Shortword L_log10_fxp(Longword x, Shortword Q)
 	Shortword temp1, temp2;
 	Longword L_temp;
 
-	shift = sub(23, Q);
+	shift = melpe_sub(23, Q);
 	if (!x)
 		return ((Shortword) - SW_MAX);
 
-	index2 = extract_l(L_shr(x, 23));
+	index2 = melpe_extract_l(melpe_L_shr(x, 23));
 	while ((!index2) && x) {
-		x = L_shl(x, 1);
-		shift = sub(shift, 1);
-		index2 = extract_l(L_shr(x, 23));
+		x = melpe_L_shl(x, 1);
+		shift = melpe_sub(shift, 1);
+		index2 = melpe_extract_l(melpe_L_shr(x, 23));
 	}
-	index1 = sub(index2, 1);
+	index1 = melpe_sub(index2, 1);
 
 	/* interpolation */
 
-	interp_factor = L_shl(x & (Longword) 0x7fffff, 8);
-	temp1 = sub(log_table[index2], log_table[index1]);
-	interp_component = extract_h(L_mpy_ls(interp_factor, temp1));
+	interp_factor = melpe_L_shl(x & (Longword) 0x7fffff, 8);
+	temp1 = melpe_sub(log_table[index2], log_table[index1]);
+	interp_component = melpe_extract_h(L_mpy_ls(interp_factor, temp1));
 
 	/* return a Q11 */
 
-	L_temp = L_mult(log_table[1], shift);	/* log10(2^shift) */
-	L_temp = L_shr(L_temp, 3);
-	temp1 = shr(log_table[index1], 2);
-	temp1 = add(temp1, extract_l(L_temp));
-	temp2 = shr(interp_component, 2);
-	y = add(temp1, temp2);
+	L_temp = melpe_L_mult(log_table[1], shift);	/* log10(2^shift) */
+	L_temp = melpe_L_shr(L_temp, 3);
+	temp1 = melpe_shr(log_table[index1], 2);
+	temp1 = melpe_add(temp1, melpe_extract_l(L_temp));
+	temp2 = melpe_shr(interp_component, 2);
+	y = melpe_add(temp1, temp2);
 
 	return (y);
 }
@@ -358,7 +358,7 @@ Shortword pow10_fxp(Shortword x, Shortword Q)
 	Longword L_y;
 	Shortword temp1, temp2;
 
-	ten_multiple = shr(x, 12);	/* ten_multiple is the integral part of x */
+	ten_multiple = melpe_shr(x, 12);	/* ten_multiple is the integral part of x */
 	if (ten_multiple < -4)
 		return ((Shortword) 0);
 	else if (ten_multiple > 4) {
@@ -366,37 +366,37 @@ Shortword pow10_fxp(Shortword x, Shortword Q)
 		return ((Shortword) SW_MAX);
 	}
 
-	index1 = shr((Shortword) (x & (Shortword) 0x0ff0), 4);
+	index1 = melpe_shr((Shortword) (x & (Shortword) 0x0ff0), 4);
 	/* index1 is the most significant 8 bits of the */
 	/* fractional part of x, Q8 */
-	index2 = add(index1, 1);
+	index2 = melpe_add(index1, 1);
 
 	/* interpolation */
 	/* shift by 11 to make it a number between 0 & 1 in Q15 */
 
-	interp_factor = shl((Shortword) (x & (Shortword) 0x000f), 11);
+	interp_factor = melpe_shl((Shortword) (x & (Shortword) 0x000f), 11);
 	/* interp_factor is the least significant 4 bits of the */
 	/* fractional part of x, Q15 */
-	temp1 = sub(table[index2], table[index1]);	/* Q0, at most 8 digits */
-	interp_component = mult(temp1, interp_factor);	/* Q0 */
+	temp1 = melpe_sub(table[index2], table[index1]);	/* Q0, at most 8 digits */
+	interp_component = melpe_mult(temp1, interp_factor);	/* Q0 */
 
 	/* L_y in Q12 if x >= 0 and in Q_table[temp2] + 12 if x < 0 */
-	temp1 = add(table[index1], interp_component);	/* Q0 */
-	temp2 = add(ten_multiple, 4);
-	L_y = L_mult(tens_table[temp2], temp1);
+	temp1 = melpe_add(table[index1], interp_component);	/* Q0 */
+	temp2 = melpe_add(ten_multiple, 4);
+	L_y = melpe_L_mult(tens_table[temp2], temp1);
 
 	if (ten_multiple >= 0) {
-		temp1 = sub(12, Q);
-		L_y = L_shr(L_y, temp1);
-		y = extract_l(L_y);
-		if (extract_h(L_y)) {
+		temp1 = melpe_sub(12, Q);
+		L_y = melpe_L_shr(L_y, temp1);
+		y = melpe_extract_l(L_y);
+		if (melpe_extract_h(L_y)) {
 			y = SW_MAX;
 			inc_saturation();
 		}
 	} else {
-		temp1 = add(Q_table[temp2], 12);
-		temp1 = sub(temp1, Q);
-		y = extract_l(L_shr(L_y, temp1));
+		temp1 = melpe_add(Q_table[temp2], 12);
+		temp1 = melpe_sub(temp1, Q);
+		y = melpe_extract_l(melpe_L_shr(L_y, temp1));
 	}
 
 	return (y);
@@ -436,7 +436,7 @@ Shortword sqrt_fxp(Shortword x, Shortword Q)
 	if (!x)
 		return ((Shortword) 0);
 
-	temp = shr(log10_fxp(x, Q), 1);	/* temp is now Q12 */
+	temp = melpe_shr(log10_fxp(x, Q), 1);	/* temp is now Q12 */
 	temp = pow10_fxp(temp, Q);
 	return (temp);
 }
@@ -523,7 +523,7 @@ Shortword L_pow_fxp(Longword x, Shortword power, Shortword Q_in,
 		return ((Shortword) 0);
 
 	temp = L_log10_fxp(x, Q_in);	/* temp in Q11 */
-	temp = mult(power, shl(temp, 1));	/* temp in Q12 */
+	temp = melpe_mult(power, melpe_shl(temp, 1));	/* temp in Q12 */
 	temp = pow10_fxp(temp, Q_out);
 	return (temp);
 }
@@ -580,7 +580,7 @@ Shortword sin_fxp(Shortword x)
 
 	sign = 0;
 	if (x < 0) {
-		tx = negate(x);
+		tx = melpe_negate(x);
 		sign = -1;
 	} else {
 		tx = x;
@@ -588,30 +588,30 @@ Shortword sin_fxp(Shortword x)
 
 	/* if angle > pi/2, sin(angle) = sin(pi-angle) */
 	if (tx > X05_Q15) {
-		tx = sub(ONE_Q15, tx);
+		tx = melpe_sub(ONE_Q15, tx);
 	}
 	/* convert input to be within range 0-128 */
-	index1 = shr(tx, 7);
-	index2 = add(index1, 1);
+	index1 = melpe_shr(tx, 7);
+	index2 = melpe_add(index1, 1);
 
 	if (index1 == 128) {
 		if (sign != 0)
-			return (negate(table[index1]));
+			return (melpe_negate(table[index1]));
 		else
 			return (table[index1]);
 	}
 
-	m = sub(tx, shl(index1, 7));
+	m = melpe_sub(tx, melpe_shl(index1, 7));
 	/* convert decimal part to Q15 */
-	m = shl(m, 8);
+	m = melpe_shl(m, 8);
 
 	/* interpolate */
-	temp = sub(table[index2], table[index1]);
-	temp = mult(m, temp);
-	ty = add(table[index1], temp);
+	temp = melpe_sub(table[index2], table[index1]);
+	temp = melpe_mult(m, temp);
+	ty = melpe_add(table[index1], temp);
 
 	if (sign != 0)
-		return (negate(ty));
+		return (melpe_negate(ty));
 	else
 		return (ty);
 }
@@ -667,33 +667,33 @@ Shortword cos_fxp(Shortword x)
 
 	sign = 0;
 	if (x < 0) {
-		tx = negate(x);
+		tx = melpe_negate(x);
 	} else {
 		tx = x;
 	}
 
 	/* if angle > pi/2, cos(angle) = -cos(pi-angle) */
 	if (tx > X05_Q15) {
-		tx = sub(ONE_Q15, tx);
+		tx = melpe_sub(ONE_Q15, tx);
 		sign = -1;
 	}
 	/* convert input to be within range 0-128 */
-	index1 = shr(tx, 7);
-	index2 = add(index1, 1);
+	index1 = melpe_shr(tx, 7);
+	index2 = melpe_add(index1, 1);
 
 	if (index1 == 128)
 		return ((Shortword) 0);
 
-	m = sub(tx, shl(index1, 7));
+	m = melpe_sub(tx, melpe_shl(index1, 7));
 	/* convert decimal part to Q15 */
-	m = shl(m, 8);
+	m = melpe_shl(m, 8);
 
-	temp = sub(table[index2], table[index1]);
-	temp = mult(m, temp);
-	ty = add(table[index1], temp);
+	temp = melpe_sub(table[index2], table[index1]);
+	temp = melpe_mult(m, temp);
+	ty = melpe_add(table[index1], temp);
 
 	if (sign != 0)
-		return (negate(ty));
+		return (melpe_negate(ty));
 	else
 		return (ty);
 }
@@ -739,42 +739,42 @@ Shortword sqrt_Q15(Shortword x)
 
 	if (x == 0)
 		return 0;	/* return zero */
-	L_A = L_deposit_h(x);
-	shift = norm_l(L_A);
-	L_A = L_shl(L_A, shift);	/* Normalize */
+	L_A = melpe_L_deposit_h(x);
+	shift = melpe_norm_l(L_A);
+	L_A = melpe_L_shl(L_A, shift);	/* Normalize */
 	odd = 0;
 	if (shift & 0x1)
 		odd = 1;	/* Odd exponent */
-	shift = shl(shift, -1);
-	shift = negate(shift);
-	L_A = L_shl(L_A, -1);
-	L_A = L_sub(L_A, L_deposit_h(0x4000));
-	temp = extract_h(L_A);
+	shift = melpe_shl(shift, -1);
+	shift = melpe_negate(shift);
+	L_A = melpe_L_shl(L_A, -1);
+	L_A = melpe_L_sub(L_A, melpe_L_deposit_h(0x4000));
+	temp = melpe_extract_h(L_A);
 	x_2 = temp;
-	L_A = L_add(L_A, L_deposit_h(0x4000));
-	L_A = L_add(L_A, L_deposit_h(0x4000));
-	L_temp = L_mult(temp, temp);
+	L_A = melpe_L_add(L_A, melpe_L_deposit_h(0x4000));
+	L_A = melpe_L_add(L_A, melpe_L_deposit_h(0x4000));
+	L_temp = melpe_L_mult(temp, temp);
 	L_temp = -L_temp;
-	L_temp2 = L_shl(L_temp, -1);
-	L_A = L_add(L_A, L_temp2);
+	L_temp2 = melpe_L_shl(L_temp, -1);
+	L_A = melpe_L_add(L_A, L_temp2);
 	L_temp =
-	    L_mult((Shortword) L_shl(L_temp, -16),
-		   (Shortword) L_shl(L_temp, -16));
-	x_24 = extract_h(L_temp);
-	L_temp = L_mult(x_24, 0x5000);
-	L_A = L_sub(L_A, L_temp);
-	temp = mult(x_24, x_2);
-	L_A = L_add(L_A, L_mult(0x7000, temp));
-	temp = mult(x_2, x_2);
-	L_temp2 = L_mult(temp, x_2);
-	L_A = L_add(L_A, L_shl(L_temp2, -1));
-	L_A = L_add(L_A, L_shl(0x80, 8));
+	    melpe_L_mult((Shortword) melpe_L_shl(L_temp, -16),
+		   (Shortword) melpe_L_shl(L_temp, -16));
+	x_24 = melpe_extract_h(L_temp);
+	L_temp = melpe_L_mult(x_24, 0x5000);
+	L_A = melpe_L_sub(L_A, L_temp);
+	temp = melpe_mult(x_24, x_2);
+	L_A = melpe_L_add(L_A, melpe_L_mult(0x7000, temp));
+	temp = melpe_mult(x_2, x_2);
+	L_temp2 = melpe_L_mult(temp, x_2);
+	L_A = melpe_L_add(L_A, melpe_L_shl(L_temp2, -1));
+	L_A = melpe_L_add(L_A, melpe_L_shl(0x80, 8));
 	if (odd) {		/* Adjust, if odd exponent! */
-		L_A = L_mult((Shortword) L_shl(L_A, -16), 0x5A82);	/* L_A*=1/sqrt(2) */
-		L_A = L_add(L_A, L_shl(0x80, 8));	/* r_ound */
+		L_A = melpe_L_mult((Shortword) melpe_L_shl(L_A, -16), 0x5A82);	/* L_A*=1/sqrt(2) */
+		L_A = melpe_L_add(L_A, melpe_L_shl(0x80, 8));	/* r_ound */
 	}
-	L_A = L_shl(L_A, shift);
-	temp = extract_h(L_A);
+	L_A = melpe_L_shl(L_A, shift);
+	temp = melpe_extract_h(L_A);
 	return temp;
 }
 
@@ -783,9 +783,9 @@ Shortword add_shr(Shortword Var1, Shortword Var2)
 	Shortword temp;
 	Longword L_1, L_2;
 
-	L_1 = L_deposit_l(Var1);
-	L_2 = L_deposit_l(Var2);
-	temp = (Shortword) L_shr(L_add(L_1, L_2), 1);
+	L_1 = melpe_L_deposit_l(Var1);
+	L_2 = melpe_L_deposit_l(Var2);
+	temp = (Shortword) melpe_L_shr(melpe_L_add(L_1, L_2), 1);
 	return temp;
 }
 
@@ -794,8 +794,8 @@ Shortword sub_shr(Shortword Var1, Shortword Var2)
 	Shortword temp;
 	Longword L_1, L_2;
 
-	L_1 = L_deposit_l(Var1);
-	L_2 = L_deposit_l(Var2);
-	temp = (Shortword) L_shr(L_sub(L_1, L_2), 1);
+	L_1 = melpe_L_deposit_l(Var1);
+	L_2 = melpe_L_deposit_l(Var2);
+	temp = (Shortword) melpe_L_shr(melpe_L_sub(L_1, L_2), 1);
 	return temp;
 }

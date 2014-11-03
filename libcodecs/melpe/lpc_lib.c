@@ -110,44 +110,44 @@ void lpc_acor(Shortword input[], const Shortword win_cof[],
 
 	inputw = v_get(npts);
 	for (i = 0; i < npts; i++) {
-		inputw[i] = mult(win_cof[i], shr(input[i], 4));
+		inputw[i] = melpe_mult(win_cof[i], melpe_shr(input[i], 4));
 	}
 
 	/* Find scaling factor */
 	L_temp = L_v_magsq(inputw, npts, 0, 1);
 	if (L_temp) {
-		norm_var = norm_l(L_temp);
-		norm_var = sub(4, shr(norm_var, 1));
+		norm_var = melpe_norm_l(L_temp);
+		norm_var = melpe_sub(4, melpe_shr(norm_var, 1));
 		if (norm_var < 0)
 			norm_var = 0;
 	} else
 		norm_var = 0;
 
 	for (i = 0; i < npts; i++) {
-		inputw[i] = shr(mult(win_cof[i], input[i]), norm_var);
+		inputw[i] = melpe_shr(melpe_mult(win_cof[i], input[i]), norm_var);
 	}
 
 	/* Compute r[0] */
 	L_temp = L_v_magsq(inputw, npts, 0, 1);
 	if (L_temp > 0) {
 		/* normalize with 1 bit of headroom */
-		norm_var = norm_l(L_temp);
-		norm_var = sub(norm_var, 1);
-		L_temp = L_shl(L_temp, norm_var);
+		norm_var = melpe_norm_l(L_temp);
+		norm_var = melpe_sub(norm_var, 1);
+		L_temp = melpe_L_shl(L_temp, norm_var);
 
 		/* High frequency correction */
-		L_temp = L_add(L_temp, L_mpy_ls(L_temp, hf_correction));
+		L_temp = melpe_L_add(L_temp, L_mpy_ls(L_temp, hf_correction));
 
 		/* normalize result */
-		temp = norm_s(extract_h(L_temp));
-		L_temp = L_shl(L_temp, temp);
-		norm_var = add(norm_var, temp);
-		autocorr[0] = r_ound(L_temp);
+		temp = melpe_norm_s(melpe_extract_h(L_temp));
+		L_temp = melpe_L_shl(L_temp, temp);
+		norm_var = melpe_add(norm_var, temp);
+		autocorr[0] = melpe_r_ound(L_temp);
 
 		/* Multiply by 1/autocorr[0] for full normalization */
-		scale_fact = divide_s(ALMOST_ONE_Q14, autocorr[0]);
-		L_temp = L_shl(L_mpy_ls(L_temp, scale_fact), 1);
-		autocorr[0] = r_ound(L_temp);
+		scale_fact = melpe_divide_s(ALMOST_ONE_Q14, autocorr[0]);
+		L_temp = melpe_L_shl(L_mpy_ls(L_temp, scale_fact), 1);
+		autocorr[0] = melpe_r_ound(L_temp);
 
 	} else {
 		norm_var = 0;
@@ -159,16 +159,16 @@ void lpc_acor(Shortword input[], const Shortword win_cof[],
 	for (j = 1; j <= order; j++) {
 		L_temp = 0;
 		for (i = j; i < npts; i++)
-			L_temp = L_mac(L_temp, inputw[i], inputw[i - j]);
-		L_temp = L_shl(L_temp, norm_var);
+			L_temp = melpe_L_mac(L_temp, inputw[i], inputw[i - j]);
+		L_temp = melpe_L_shl(L_temp, norm_var);
 
 		/* Scaling */
-		L_temp = L_shl(L_mpy_ls(L_temp, scale_fact), 1);
+		L_temp = melpe_L_shl(L_mpy_ls(L_temp, scale_fact), 1);
 
 		/* Lag windowing */
 		L_temp = L_mpy_ls(L_temp, lagw_cof[j - 1]);
 
-		autocorr[j] = r_ound(L_temp);
+		autocorr[j] = melpe_r_ound(L_temp);
 	}
 	v_free(inputw);
 }
@@ -211,32 +211,32 @@ Longword lpc_aejw(Shortword lpc[], Shortword omega, Shortword order)
 	/*                              ...[a(p-1) + e(-jw)a(p)]]]]                               */
 
 	cs = cos_fxp(omega);	/* Q15 */
-	sn = negate(sin_fxp(omega));	/* Q15 */
+	sn = melpe_negate(sin_fxp(omega));	/* Q15 */
 
 	temp1 = lpc[order - 1];
-	c_re = shr(mult(cs, temp1), 3);	/* -> Q9 */
-	c_im = shr(mult(sn, temp1), 3);	/* -> Q9 */
+	c_re = melpe_shr(melpe_mult(cs, temp1), 3);	/* -> Q9 */
+	c_im = melpe_shr(melpe_mult(sn, temp1), 3);	/* -> Q9 */
 
-	for (i = sub(order, 2); i >= 0; i--) {
+	for (i = melpe_sub(order, 2); i >= 0; i--) {
 		/* add a[i] */
-		temp = shr(lpc[i], 3);
-		c_re = add(c_re, temp);
+		temp = melpe_shr(lpc[i], 3);
+		c_re = melpe_add(c_re, temp);
 
 		/* multiply by exp(-jw) */
 		temp = c_im;
-		temp1 = mult(cs, temp);	/* temp1 in Q9 */
-		temp2 = mult(sn, c_re);	/* temp2 in Q9 */
-		c_im = add(temp1, temp2);
-		temp1 = mult(cs, c_re);	/* temp1 in Q9 */
-		temp2 = mult(sn, temp);	/* temp2 in Q9 */
-		c_re = sub(temp1, temp2);
+		temp1 = melpe_mult(cs, temp);	/* temp1 in Q9 */
+		temp2 = melpe_mult(sn, c_re);	/* temp2 in Q9 */
+		c_im = melpe_add(temp1, temp2);
+		temp1 = melpe_mult(cs, c_re);	/* temp1 in Q9 */
+		temp2 = melpe_mult(sn, temp);	/* temp2 in Q9 */
+		c_re = melpe_sub(temp1, temp2);
 	}
 
 	/* add one */
-	c_re = add(c_re, ONE_Q9);
+	c_re = melpe_add(c_re, ONE_Q9);
 
 	/* L_temp in Q19 */
-	L_temp = L_add(L_mult(c_re, c_re), L_mult(c_im, c_im));
+	L_temp = melpe_L_add(melpe_L_mult(c_re, c_re), melpe_L_mult(c_im, c_im));
 	if (L_temp < LOW_LIMIT)
 		L_temp = (Longword) LOW_LIMIT;
 
@@ -277,8 +277,8 @@ Shortword lpc_bwex(Shortword lpc[], Shortword aw[], Shortword gamma,
 	gk = gamma;
 
 	for (i = 0; i < order; i++) {
-		aw[i] = mult(lpc[i], gk);
-		gk = mult(gk, gamma);
+		aw[i] = melpe_mult(lpc[i], gk);
+		gk = melpe_mult(gk, gamma);
 	}
 	return (0);
 }
@@ -330,27 +330,27 @@ Shortword lpc_clmp(Shortword lsp[], Shortword delta, Shortword order)
 	if (!unsorted) {
 		for (j = 0; j < MAX_LOOPS; j++) {
 			for (i = 0; i < order - 1; i++) {
-				d = sub(lsp[i + 1], lsp[i]);
+				d = melpe_sub(lsp[i + 1], lsp[i]);
 				if (d < delta) {
-					step1 = step2 = shr(sub(delta, d), 1);
+					step1 = step2 = melpe_shr(melpe_sub(delta, d), 1);
 
 /* --> */ if (i == 0
 						      && (lsp[i] < delta)) {
-						step1 = shr(lsp[i], 1);
+						step1 = melpe_shr(lsp[i], 1);
 					} else {
 /* --> */ if (i > 0) {
 							temp =
-							    sub(lsp[i],
+							    melpe_sub(lsp[i],
 								lsp[i - 1]);
 							if (temp < delta) {
 								step1 = 0;
 							} else {
 								if (temp <
-								    shl(delta,
+								    melpe_shl(delta,
 									1))
 									step1 =
-									    shr
-									    (sub
+									    melpe_shr
+									    (melpe_sub
 									     (temp,
 									      delta),
 									     1);
@@ -365,36 +365,36 @@ Shortword lpc_clmp(Shortword lsp[], Shortword delta, Shortword order)
 																	+
 																	1]
 											       >
-											       sub
+											       melpe_sub
 											       (ONE_Q15,
 																	delta)))
 					{
 						step2 =
-						    shr(sub
+						    melpe_shr(melpe_sub
 							(ONE_Q15, lsp[i + 1]),
 							1);
 					} else {
 /* --> */ if (i < (order - 2)) {
 							temp =
-							    sub(lsp[i + 2],
+							    melpe_sub(lsp[i + 2],
 								lsp[i + 1]);
 							if (temp < delta) {
 								step2 = 0;
 							} else {
 								if (temp <
-								    shl(delta,
+								    melpe_shl(delta,
 									1))
 									step2 =
-									    shr
-									    (sub
+									    melpe_shr
+									    (melpe_sub
 									     (temp,
 									      delta),
 									     1);
 							}
 						}
 					}
-					lsp[i] = sub(lsp[i], step1);
-					lsp[i + 1] = add(lsp[i + 1], step2);
+					lsp[i] = melpe_sub(lsp[i], step1);
+					lsp[i + 1] = melpe_add(lsp[i + 1], step2);
 				}
 			}
 		}
@@ -453,28 +453,28 @@ Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order)
 	y2 = L_v_get((Shortword) (order + 1));
 	refc = v_get(order);
 
-	temp2 = abs_s(autocorr[1]);
-	temp1 = abs_s(autocorr[0]);
+	temp2 = melpe_abs_s(autocorr[1]);
+	temp1 = melpe_abs_s(autocorr[0]);
 
-	refc[0] = divide_s(temp2, temp1);
+	refc[0] = melpe_divide_s(temp2, temp1);
 
 	/* if (((autocorr[1] < 0) && (autocorr[0] < 0)) ||
 	   ((autocorr[1] > 0) && (autocorr[0] > 0))) */
 	if ((autocorr[1] ^ autocorr[0]) >= 0) {
-		refc[0] = negate(refc[0]);
+		refc[0] = melpe_negate(refc[0]);
 	}
-	mult(autocorr[0], sub(ONE_Q15, mult(refc[0], refc[0])));
+	melpe_mult(autocorr[0], melpe_sub(ONE_Q15, melpe_mult(refc[0], refc[0])));
 
-	y2[0] = L_deposit_h(autocorr[1]);
-	y2[1] = L_add(L_deposit_h(autocorr[0]), L_mult(refc[0], autocorr[1]));
+	y2[0] = melpe_L_deposit_h(autocorr[1]);
+	y2[1] = melpe_L_add(melpe_L_deposit_h(autocorr[0]), melpe_L_mult(refc[0], autocorr[1]));
 
 	for (i = 1; i < order; i++) {
-		y1[0] = L_deposit_h(autocorr[i + 1]);
-		L_temp = L_deposit_h(autocorr[i + 1]);
+		y1[0] = melpe_L_deposit_h(autocorr[i + 1]);
+		L_temp = melpe_L_deposit_h(autocorr[i + 1]);
 
 		for (j = 0; j < i; j++) {
-			y1[j + 1] = L_add(y2[j], L_mpy_ls(L_temp, refc[j]));
-			L_temp = L_add(L_temp, L_mpy_ls(y2[j], refc[j]));
+			y1[j + 1] = melpe_L_add(y2[j], L_mpy_ls(L_temp, refc[j]));
+			L_temp = melpe_L_add(L_temp, L_mpy_ls(y2[j], refc[j]));
 		}
 
 		/*      refc[i] = -temp/y2[i]; */
@@ -486,17 +486,17 @@ Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order)
 			break;
 		}
 
-		shift = norm_l(y2[i]);
-		temp1 = abs_s(extract_h(L_shl(L_temp, shift)));
-		temp2 = abs_s(extract_h(L_shl(y2[i], shift)));
+		shift = melpe_norm_l(y2[i]);
+		temp1 = melpe_abs_s(melpe_extract_h(melpe_L_shl(L_temp, shift)));
+		temp2 = melpe_abs_s(melpe_extract_h(melpe_L_shl(y2[i], shift)));
 
-		refc[i] = divide_s(temp1, temp2);
+		refc[i] = melpe_divide_s(temp1, temp2);
 
 		if ((L_temp ^ y2[i]) >= 0) {
-			refc[i] = negate(refc[i]);
+			refc[i] = melpe_negate(refc[i]);
 		}
 
-		y2[i + 1] = L_add(y2[i], L_mpy_ls(L_temp, refc[i]));
+		y2[i + 1] = melpe_L_add(y2[i], L_mpy_ls(L_temp, refc[i]));
 		L_v_equ(y2, y1, (Shortword) (i + 1));
 	}
 
@@ -504,7 +504,7 @@ Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order)
 
 	alphap = autocorr[0];
 	for (i = 0; i < order; i++) {
-		alphap = mult(alphap, sub(ONE_Q15, mult(refc[i], refc[i])));
+		alphap = melpe_mult(alphap, melpe_sub(ONE_Q15, melpe_mult(refc[i], refc[i])));
 	}
 
 	v_free(refc);
@@ -538,10 +538,10 @@ static Shortword lpc_refl2pred(Shortword refc[], Shortword lpc[],
 
 	for (i = 0; i < order; i++) {
 		/* refl to a recursion */
-		lpc[i] = shift_r(refc[i], -3);	/* lpc in Q12 */
+		lpc[i] = melpe_shift_r(refc[i], -3);	/* lpc in Q12 */
 		v_equ(a1, lpc, i);
 		for (j = 0; j < i; j++) {
-			lpc[j] = add(a1[j], mult(refc[i], a1[i - j - 1]));
+			lpc[j] = melpe_add(a1[j], melpe_mult(refc[i], a1[i - j - 1]));
 		}
 	}
 
@@ -572,7 +572,7 @@ Shortword lpc_pred2lsp(Shortword lpc[], Shortword lsf[], Shortword order)
 	Longword L_ai, L_api, L_temp;
 	Shortword p2;
 
-	p2 = shr(order, 1);
+	p2 = melpe_shr(order, 1);
 
 	/* Generate P' and Q' polynomials.  We only compute for indices from 0 to */
 	/* p2 = order/2 because lsp_to_freq() only uses p_cof[] and q_cof[] for   */
@@ -583,13 +583,13 @@ Shortword lpc_pred2lsp(Shortword lpc[], Shortword lsf[], Shortword order)
 	L_q_cof[0] = (Longword) ONE_Q26;
 	for (i = 1; i <= p2; i++) {
 		/*      temp = sub(lpc[i - 1], lpc[order - i]); *//* temp in Q12 */
-		L_ai = L_shr(L_deposit_h(lpc[i - 1]), 2);
-		L_api = L_shr(L_deposit_h(lpc[order - i]), 2);
-		L_temp = L_sub(L_ai, L_api);	/* L_temp in Q26 */
-		L_p_cof[i] = L_add(L_temp, L_p_cof[i - 1]);	/* L_p_cof in Q26 */
+		L_ai = melpe_L_shr(melpe_L_deposit_h(lpc[i - 1]), 2);
+		L_api = melpe_L_shr(melpe_L_deposit_h(lpc[order - i]), 2);
+		L_temp = melpe_L_sub(L_ai, L_api);	/* L_temp in Q26 */
+		L_p_cof[i] = melpe_L_add(L_temp, L_p_cof[i - 1]);	/* L_p_cof in Q26 */
 		/*      temp = add(lpc[i - 1], lpc[order - i]); */
-		L_temp = L_add(L_ai, L_api);
-		L_q_cof[i] = L_sub(L_temp, L_q_cof[i - 1]);	/* L_q_cof in Q26 */
+		L_temp = melpe_L_add(L_ai, L_api);
+		L_q_cof[i] = melpe_L_sub(L_temp, L_q_cof[i - 1]);	/* L_q_cof in Q26 */
 	}
 
 	/* Convert p_cof and q_cof to short.  We only compute for indices from 0  */
@@ -597,8 +597,8 @@ Shortword lpc_pred2lsp(Shortword lpc[], Shortword lsf[], Shortword order)
 	/* for these indices.                                                     */
 
 	for (i = 0; i <= p2; i++) {
-		p_cof[i] = r_ound(L_p_cof[i]);	/* p_cof in Q10 */
-		q_cof[i] = r_ound(L_q_cof[i]);	/* q_cof in Q10 */
+		p_cof[i] = melpe_r_ound(L_p_cof[i]);	/* p_cof in Q10 */
+		q_cof[i] = melpe_r_ound(L_q_cof[i]);	/* q_cof in Q10 */
 	}
 
 	/* Find root frequencies of LSP polynomials */
@@ -648,23 +648,23 @@ static void lsp_to_freq(Shortword lsp[], Shortword freq[], Shortword order)
 		temp1 = 0;
 		for (i = 0; i <= DFTLENGTH_D4; i++) {
 			lsp_cos[i] = cos_fxp(temp1);
-			lsp_cos[i + DFTLENGTH_D2] = negate(lsp_cos[i]);
-			temp1 = add(temp1, DFTLENGTH_D4);
+			lsp_cos[i + DFTLENGTH_D2] = melpe_negate(lsp_cos[i]);
+			temp1 = melpe_add(temp1, DFTLENGTH_D4);
 		}
 		temp1 = DFTLENGTH_D4;
 		temp2 = DFTLENGTH_D4;
 		for (i = 0; i < DFTLENGTH_D4; i++) {
-			lsp_cos[temp1] = negate(lsp_cos[temp2]);
+			lsp_cos[temp1] = melpe_negate(lsp_cos[temp2]);
 			lsp_cos[temp1 + DFTLENGTH_D2] = lsp_cos[temp2];
-			temp1 = add(temp1, 1);
-			temp2 = sub(temp2, 1);
+			temp1 = melpe_add(temp1, 1);
+			temp2 = melpe_sub(temp2, 1);
 		}
 
 		/* compute default values for freq[] */
 		/* (1./p2) in Q15 */
-		default_w = divide_s(ONE_Q11, shl(order, 10));
+		default_w = melpe_divide_s(ONE_Q11, melpe_shl(order, 10));
 		/* freq[0] = (0.5/p2) in Q15 */
-		default_w0 = shr(default_w, 1);
+		default_w0 = melpe_shr(default_w, 1);
 
 		firstTime = FALSE;
 	}
@@ -674,23 +674,23 @@ static void lsp_to_freq(Shortword lsp[], Shortword freq[], Shortword order)
 	fill(s_mag, 0x7fff, 2);
 
 	/*      p2 = p/2; */
-	p2 = shr(order, 1);
+	p2 = melpe_shr(order, 1);
 	count = 0;
 
 	/*      Search all frequencies for minima of Pc(w) */
 	for (i = 0; i <= DFTLENGTH_D2; i++) {
 		p_cos = i;
 		/* mag2 = 0.5 * lsp[p2]; */
-		L_temp2 = L_mult(lsp[p2], X05_Q14);	/* mag[2] in Q25 */
-		for (j = sub(p2, 1); j >= 0; j--) {
-			L_temp1 = L_shr(L_mult(lsp[j], lsp_cos[p_cos]), 1);
-			L_temp2 = L_add(L_temp2, L_temp1);
-			p_cos = add(p_cos, i);
+		L_temp2 = melpe_L_mult(lsp[p2], X05_Q14);	/* mag[2] in Q25 */
+		for (j = melpe_sub(p2, 1); j >= 0; j--) {
+			L_temp1 = melpe_L_shr(melpe_L_mult(lsp[j], lsp_cos[p_cos]), 1);
+			L_temp2 = melpe_L_add(L_temp2, L_temp1);
+			p_cos = melpe_add(p_cos, i);
 			if (p_cos > DFTLENGTH - 1)
 				p_cos -= DFTLENGTH;
 		}
-		s_mag[2] = extract_h(L_temp2);
-		mag[2] = L_abs(L_temp2);
+		s_mag[2] = melpe_extract_h(L_temp2);
+		mag[2] = melpe_L_abs(L_temp2);
 
 		if (mag[2] < mag[1]) {
 			prev_less = TRUE;
@@ -702,19 +702,19 @@ static void lsp_to_freq(Shortword lsp[], Shortword freq[], Shortword order)
 					   (mag[0] - mag[2]) / (mag[0] + mag[2] - 2*mag[1]));
 					   freq[count] *= (2. / DFTLENGTH) ; */
 					L_temp1 =
-					    L_shr(L_sub(mag[0], mag[2]), 1);
+					    melpe_L_shr(melpe_L_sub(mag[0], mag[2]), 1);
 					L_temp2 =
-					    L_sub(mag[0], L_shl(mag[1], 1));
-					L_temp2 = L_add(L_temp2, mag[2]);
+					    melpe_L_sub(mag[0], melpe_L_shl(mag[1], 1));
+					L_temp2 = melpe_L_add(L_temp2, mag[2]);
 					temp1 =
 					    L_divider2(L_temp1, L_temp2, 0, 0);
 					/* temp1 in Q15 */
-					temp1 = shr(temp1, 9);	/* Q6 */
-					temp2 = sub(i, 1);
-					temp1 = add(shl(temp2, 6), temp1);
+					temp1 = melpe_shr(temp1, 9);	/* Q6 */
+					temp2 = melpe_sub(i, 1);
+					temp1 = melpe_add(melpe_shl(temp2, 6), temp1);
 					freq[count] =
-					    divide_s(temp1, shl(DFTLENGTH, 5));
-					count = add(count, 1);
+					    melpe_divide_s(temp1, melpe_shl(DFTLENGTH, 5));
+					count = melpe_add(count, 1);
 				}
 			}
 			prev_less = FALSE;
@@ -730,7 +730,7 @@ static void lsp_to_freq(Shortword lsp[], Shortword freq[], Shortword order)
 		/* use default values */
 		freq[0] = default_w0;
 		for (i = 1; i < p2; i++)
-			freq[i] = add(freq[i - 1], default_w);
+			freq[i] = melpe_add(freq[i - 1], default_w);
 	}
 }
 
@@ -764,48 +764,48 @@ Shortword lpc_pred2refl(Shortword lpc[], Shortword * refc, Shortword order)
 	v_equ(b, lpc, order);
 
 	/* compute reflection coefficients */
-	for (i = sub(order, 1); i >= 0; i--) {
+	for (i = melpe_sub(order, 1); i >= 0; i--) {
 
 		if (b[i] >= 4096)
 			b[i] = 4095;
 		if (b[i] <= -4096)
 			b[i] = -4095;
 
-		acc = L_mult(b[i], b[i]);
-		acc = L_sub(ONE_Q25, acc);
-		acc = L_shl(acc, 6);	/* Q31 */
-		energy = mult(energy, extract_h(acc));
+		acc = melpe_L_mult(b[i], b[i]);
+		acc = melpe_L_sub(ONE_Q25, acc);
+		acc = melpe_L_shl(acc, 6);	/* Q31 */
+		energy = melpe_mult(energy, melpe_extract_h(acc));
 
-		shift = norm_l(acc);
-		e = extract_h(L_shl(acc, shift));
+		shift = melpe_norm_l(acc);
+		e = melpe_extract_h(melpe_L_shl(acc, shift));
 
 		v_equ(b1, b, i);
 
 		for (j = 0; j < i; j++) {
 			/*      b[j] = (b1[j] - local_refc*b1[i - j])/e; */
-			acc = L_mult(b[i], b1[i - j - 1]);	/* Q25 */
-			acc = L_sub(L_shl(L_deposit_l(b1[j]), 13), acc);	/* Q25 */
+			acc = melpe_L_mult(b[i], b1[i - j - 1]);	/* Q25 */
+			acc = melpe_L_sub(melpe_L_shl(melpe_L_deposit_l(b1[j]), 13), acc);	/* Q25 */
 
 			/* check signs of temp and e before division */
-			sign = extract_h(acc);
-			acc = L_abs(acc);
-			shift1 = norm_l(acc);
-			temp = extract_h(L_shl(acc, shift1));
+			sign = melpe_extract_h(acc);
+			acc = melpe_L_abs(acc);
+			shift1 = melpe_norm_l(acc);
+			temp = melpe_extract_h(melpe_L_shl(acc, shift1));
 			if (temp > e) {
-				temp = shr(temp, 1);
-				shift1 = sub(shift1, 1);
+				temp = melpe_shr(temp, 1);
+				shift1 = melpe_sub(shift1, 1);
 			}
-			b[j] = divide_s(temp, e);
-			shift1 = sub(shift1, 3);
-			shift1 = sub(shift1, shift);
-			b[j] = shr(b[j], shift1);	/* b[j] in Q12 */
+			b[j] = melpe_divide_s(temp, e);
+			shift1 = melpe_sub(shift1, 3);
+			shift1 = melpe_sub(shift1, shift);
+			b[j] = melpe_shr(b[j], shift1);	/* b[j] in Q12 */
 
 			if (sign < 0)
-				b[j] = negate(b[j]);
+				b[j] = melpe_negate(b[j]);
 		}
 	}
 
-	*refc = shl(b[0], 3);
+	*refc = melpe_shl(b[0], 3);
 	v_free(b1);
 	v_free(b);
 	return (energy);
@@ -836,7 +836,7 @@ Shortword lpc_lsp2pred(Shortword lsf[], Shortword lpc[], Shortword order)
 	lpc_clmp(lsf, 0, order);
 
 	/* p2 = p/2 */
-	p2 = shr(order, 1);
+	p2 = melpe_shr(order, 1);
 
 	f0 = L_v_get((Shortword) (p2 + 1));
 	f1 = L_v_get((Shortword) (p2 + 1));
@@ -845,17 +845,17 @@ Shortword lpc_lsp2pred(Shortword lsf[], Shortword lpc[], Shortword order)
 	f0[0] = f1[0] = (Longword) ONE_Q25;
 
 	/* -2.0*cos((double) lsf[0]*M_PI) */
-	f0[1] = L_shr(L_deposit_h(negate(cos_fxp(lsf[0]))), 5);
-	f1[1] = L_shr(L_deposit_h(negate(cos_fxp(lsf[1]))), 5);
+	f0[1] = melpe_L_shr(melpe_L_deposit_h(melpe_negate(cos_fxp(lsf[0]))), 5);
+	f1[1] = melpe_L_shr(melpe_L_deposit_h(melpe_negate(cos_fxp(lsf[1]))), 5);
 
 	k = 2;
 
 	for (i = 2; i <= p2; i++) {
 		/* c is Q14 */
 		/* multiply by 2 is considered as Q15->Q14 */
-		c0 = negate(cos_fxp(lsf[k]));
+		c0 = melpe_negate(cos_fxp(lsf[k]));
 		k++;
-		c1 = negate(cos_fxp(lsf[k]));
+		c1 = melpe_negate(cos_fxp(lsf[k]));
 		k++;
 
 		f0[i] = f0[i - 2];
@@ -864,31 +864,31 @@ Shortword lpc_lsp2pred(Shortword lsf[], Shortword lpc[], Shortword order)
 		for (j = i; j >= 2; j--) {
 			/* f0[j] += c0*f0[j - 1] + f0[j - 2] */
 			L_temp = L_mpy_ls(f0[j - 1], c0);
-			L_temp = L_add(L_shl(L_temp, 1), f0[j - 2]);
-			f0[j] = L_add(f0[j], L_temp);
+			L_temp = melpe_L_add(melpe_L_shl(L_temp, 1), f0[j - 2]);
+			f0[j] = melpe_L_add(f0[j], L_temp);
 
 			/* f1[j] += c1*f1[j - 1] + f1[j - 2] */
 			L_temp = L_mpy_ls(f1[j - 1], c1);
-			L_temp = L_add(L_shl(L_temp, 1), f1[j - 2]);
-			f1[j] = L_add(f1[j], L_temp);
+			L_temp = melpe_L_add(melpe_L_shl(L_temp, 1), f1[j - 2]);
+			f1[j] = melpe_L_add(f1[j], L_temp);
 		}
 
-		f0[1] = L_add(f0[1], L_shl(L_mpy_ls(f0[0], c0), 1));
-		f1[1] = L_add(f1[1], L_shl(L_mpy_ls(f1[0], c1), 1));
+		f0[1] = melpe_L_add(f0[1], melpe_L_shl(L_mpy_ls(f0[0], c0), 1));
+		f1[1] = melpe_L_add(f1[1], melpe_L_shl(L_mpy_ls(f1[0], c1), 1));
 	}
 
-	for (i = sub(p2, 1); i >= 0; i--) {
+	for (i = melpe_sub(p2, 1); i >= 0; i--) {
 		/* short f (f is a Q14) */
-		f0[i + 1] = L_add(f0[i + 1], f0[i]);
-		f1[i + 1] = L_sub(f1[i + 1], f1[i]);
+		f0[i + 1] = melpe_L_add(f0[i + 1], f0[i]);
+		f1[i + 1] = melpe_L_sub(f1[i + 1], f1[i]);
 
 		/* lpc[] is Q12 */
 		/* lpc[i] = 0.50*(f0[i] + f1[i]) */
 		/* lpc[p + 1 - i] = 0.50*(f0[i] - f1[i]) */
 		/* Q25 -> Q27 -> Q12 */
-		lpc[i] = extract_h(L_shl(L_add(f0[i + 1], f1[i + 1]), 2));
+		lpc[i] = melpe_extract_h(melpe_L_shl(melpe_L_add(f0[i + 1], f1[i + 1]), 2));
 		lpc[order - 1 - i] =
-		    extract_h(L_shl(L_sub(f0[i + 1], f1[i + 1]), 2));
+		    melpe_extract_h(melpe_L_shl(melpe_L_sub(f0[i + 1], f1[i + 1]), 2));
 	}
 
 	v_free(f0);
@@ -928,12 +928,12 @@ Shortword lpc_syn(Shortword x[], Shortword y[], Shortword a[], Shortword order,
 /* Tung-chiang believes a[] is Q12, x[] and y[] are Q0. */
 
 	for (j = 0; j < length; j++) {
-		accum = L_shr(L_deposit_h(x[j]), 3);
+		accum = melpe_L_shr(melpe_L_deposit_h(x[j]), 3);
 		for (i = order; i > 0; i--)
-			accum = L_msu(accum, y[j - i], a[i - 1]);
+			accum = melpe_L_msu(accum, y[j - i], a[i - 1]);
 		/* r_ound off output */
-		accum = L_shl(accum, 3);
-		y[j] = r_ound(accum);
+		accum = melpe_L_shl(accum, 3);
+		y[j] = melpe_r_ound(accum);
 	}
 	return (0);
 }
