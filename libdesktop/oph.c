@@ -33,7 +33,7 @@ extern char sound_loop; //flag of sound selftest (from cntrls.c)
 int main(int argc, char **argv)
 {
  unsigned char bbuf[540]; //work buffer
- int i,j,k;
+ int i,j,k, job=0;
  char c, old_k=0;
 
  randInit(0, 0); //SPRNG initialization
@@ -52,9 +52,11 @@ int main(int argc, char **argv)
  //main cicle
  while(1)
  {
+  //process sound output
+  job=go_snd(0);
   //process sound input
   i=do_snd((char*)bbuf); //check for sount packet ready
-  if(i) //if sound packet encoded
+  if(i>1) //if sound packet encoded
   {
    if(sound_loop) go_snd(bbuf); //sound self-test: decode and play packet
    else if(crp_state>2) //or send sound to remote
@@ -63,17 +65,20 @@ int main(int argc, char **argv)
     if(i>0) do_send(bbuf, i, c); //send packet
    }
   }
-
+  if(i) job=1; //set flag for audio job
   //process network input
   i=do_read(bbuf); //read pkt from network, returns <0 if no pkt or pkt len
-  if(i>=0) i=go_data(bbuf, i); //decrypt pkt, specifies length for udp, returns data len
+  if(i) job+=2;
+  if(i>0) i=go_data(bbuf, i); //decrypt pkt, specifies length for udp, returns data len
   if(i>0) i=go_pkt(bbuf, i); //process pkt, return data len of answer
   if(i>0) i=do_data(bbuf, &c); //encrypt answer, returns pkt len
   if(i>0) do_send(bbuf, i, c); //send answer
 
   //process console input
   i=do_char(); //process char or command
-  if(i) break; //break command
+  if(i) job+=4;
+  if(i==1) break; //break command
+  if(!job) psleep(1);
  }
  
  printf("Bye!!!\r\n");

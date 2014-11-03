@@ -119,7 +119,7 @@ void push_ptt(void);
 void go_vad(void);
 void playring();
 
-void go_snd(unsigned char* pkt);
+int go_snd(unsigned char* pkt);
 int do_snd(unsigned char *pkt);
 
 void setaudio(void);

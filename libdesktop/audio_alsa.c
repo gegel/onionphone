@@ -32,12 +32,13 @@
 #include <alsa/asoundlib.h>
 #include <sys/time.h>
 #include "audio_alsa.h"
+#include "cntrls.h"
 #define SAMPLE_RATE 	8000
 #define DEFBUFSIZE 6400
 #define DEFPERIODS 4
 
-#define DEF_devAudioInput "plug:default"
-#define DEF_devAudioOutput "plug:default"
+#define DEF_devAudioInput "plughw:0,0"
+#define DEF_devAudioOutput "plughw:0,0"
 #define DEF_devAudioControl "default"
 #define DEF_capture_mixer_elem "Capture"
 #define DEF_playback_mixer_elem "PCM"
@@ -89,11 +90,13 @@ static snd_output_t *log;
 //VAD
 int Vad_c=0;
 
+int IsGo=0;     //flag: input runs
+
 //read specified alsa buffer parameters from config file
 static int rdcfg(void)
 {
  FILE *fpp;
- char buf[32];
+ char buf[256];
  char* p=NULL;
  int l=0;
  
@@ -106,61 +109,47 @@ static int rdcfg(void)
  strcpy(capture_mixer_elem,DEF_capture_mixer_elem);
  strcpy(playback_mixer_elem,DEF_playback_mixer_elem);
 
- //open config file
- fpp = fopen("audiocfg", "rt");
- if (fpp == NULL) 
- {
-  perror("Cannot open audio config file");
-  return -1;
- } 
- 
+ //read from config file:
+
  //chunk size and cunks in buffer
- if(fgets(buf, sizeof(buf), fpp))
- {
-  if(buf[0]=='#') showparam=1;
-  else
-  { 
+ strcpy(buf, "AudioChunks");
+ if(0>=parseconf(buf)) strcpy(buf, "#");
+ p=strchr(buf, '*');
+ if((buf[0]=='#')||(!p)) showparam=1;
+ else
+ { 
    showparam=0;
    periods=0;
-   p=strchr(buf, '*');
-   if(p)
-   {
-    p[0]=0;
-    periods=atoi(++p);
-   }
+   p[0]=0;
+   periods=atoi(++p);
+   printf("PPPeriods=%d\r\n", periods);
    if(!periods) periods=DEFPERIODS;
    bufsize=periods*atoi(buf);
+   printf("BBBufsize=%d\r\n", bufsize);
    if(!bufsize) bufsize=DEFBUFSIZE; 
-  }
  }
  
 //device names
- if(fgets(buf, sizeof(buf), fpp))
- {
-  if(buf[0]!='#') strcpy(devAudioInput,buf);
- }
+ strcpy(buf, "AudioInput");
+ if(0>=parseconf(buf)) strcpy(buf, "#");
+ if(buf[0]!='#') strcpy(devAudioInput,buf);
  
- if(fgets(buf, sizeof(buf), fpp))
- {
-  if(buf[0]!='#') strcpy(devAudioOutput,buf);
- }
+ strcpy(buf, "AudioOutput");
+ if(0>=parseconf(buf)) strcpy(buf, "#");
+ if(buf[0]!='#') strcpy(devAudioOutput,buf);
  
- if(fgets(buf, sizeof(buf), fpp))
- {
-  if(buf[0]!='#') strcpy(devAudioControl,buf);
- }
+ strcpy(buf, "AudioControl");
+ if(0>=parseconf(buf)) strcpy(buf, "#");
+ if(buf[0]!='#') strcpy(devAudioControl,buf);
  
- if(fgets(buf, sizeof(buf), fpp))
- {
-  if(buf[0]!='#') strcpy(capture_mixer_elem,buf);
- }
+ strcpy(buf, "CaptureMixer");
+ if(0>=parseconf(buf)) strcpy(buf, "#");
+ if(buf[0]!='#') strcpy(capture_mixer_elem, buf);
+
+ strcpy(buf, "PlaybackMixer");
+ if(0>=parseconf(buf)) strcpy(buf, "#");
+ if(buf[0]!='#') strcpy(playback_mixer_elem, buf);
  
- if(fgets(buf, sizeof(buf), fpp))
- {
-  if(buf[0]!='#') strcpy(playback_mixer_elem,buf);
- }
- 
- close(fpp);
  return 0; 
 }
 
@@ -700,26 +689,27 @@ void sounddest(int where)
 /* Record some audio non-blocking (as much as accessable and fits into the given buffer) */
 int soundgrab(char *buf, int len)
 {
-	ssize_t r;
-	size_t result = 0;
-	size_t count = len;
-    snd_pcm_t *pcm_handle=pcm_handle_in;
+    size_t result = 0;
+    if(IsGo) {
+        ssize_t r;
+        size_t count = len;
+        snd_pcm_t *pcm_handle=pcm_handle_in;
    
 
 /*  I don't care about the chunk size.  We just read as much as we need here.
  *  Seems to work.
-	if (sleep_min == 0 && count != chunk_size) {
-		fprintf(stderr, "Chunk size should be %lu, not %d\n\r",
-			chunk_size, count);
+        if (sleep_min == 0 && count != chunk_size) {
+            fprintf(stderr, "Chunk size should be %lu, not %d\n\r",
+                chunk_size, count);
 		count = chunk_size;
-	}
+        }
 */
 
 	// Seems not to be required.
-	//int rc = snd_pcm_state(pcm_handle_in);
+        //int rc = snd_pcm_state(pcm_handle_in);
 
-	//if (rc == SND_PCM_STATE_PREPARED)
-	//	snd_pcm_start(pcm_handle);
+        //if (rc == SND_PCM_STATE_PREPARED)
+        //snd_pcm_start(pcm_handle);
         
 
        // do {
@@ -727,7 +717,7 @@ int soundgrab(char *buf, int len)
 	//    } while (r == -EAGAIN);
 	
 
-	if(r == -EAGAIN) return 0;
+        if(r == -EAGAIN) return 0;
 	    if(r>0) result=r;
 	    
         if (r == -EPIPE) {
@@ -745,8 +735,8 @@ int soundgrab(char *buf, int len)
 			fprintf(stderr, "read error: %s (%d); state=%d\n\r",
 				snd_strerror(r), r, snd_pcm_state(pcm_handle));
 		}
-		
-		return result;	
+    }
+    return result;
 }
 
 
@@ -769,4 +759,8 @@ void soundflush1(void)
 }
 
 
-
+int soundrec(int on)
+{   
+ IsGo=on;
+ return IsGo;
+}
