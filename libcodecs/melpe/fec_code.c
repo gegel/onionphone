@@ -1133,11 +1133,11 @@ static void vgetbits(Shortword dest[], Shortword source, Shortword bit_pos,
 	register Shortword i;
 	const Shortword lsb_mask = 0x1;	/* least significant bit mask */
 
-	if ((n >= 0) && (bit_pos >= sub(n, 1))) {
-		source = shr(source, (Shortword) (bit_pos - n + 1));
-		for (i = sub(n, 1); i >= 0; i--) {
+	if ((n >= 0) && (bit_pos >= melpe_sub(n, 1))) {
+		source = melpe_shr(source, (Shortword) (bit_pos - n + 1));
+		for (i = melpe_sub(n, 1); i >= 0; i--) {
 			dest[i] = (Shortword) (source & lsb_mask);
-			source = shr(source, 1);
+			source = melpe_shr(source, 1);
 		}
 	}
 }
@@ -1203,7 +1203,7 @@ static Shortword sbc_syn(Shortword x[], Shortword n, Shortword k,
 	Shortword retval = 0;
 
 	for (i = k, j = (Shortword) (n - k - 1); i < n; i++, j--, pmat += k)
-		retval = add(retval,
+		retval = melpe_add(retval,
 			     (Shortword) ((x[i] ^ binprod_int(x, pmat, k)) <<
 					  j));
 	return (retval);
@@ -1214,7 +1214,7 @@ static void crc4_enc(Shortword bit[], Shortword num_bits)
 	register Shortword i;
 	Shortword delay[4], x, ll;
 
-	ll = add(num_bits, 4);
+	ll = melpe_add(num_bits, 4);
 	v_zap(delay, 4);
 
 	for (i = 1; i <= num_bits; i++) {

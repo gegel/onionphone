@@ -96,26 +96,26 @@ static Shortword double_chk(Shortword sig_in[], Shortword * pcorr,
 
 	/* compute threshold Q14*Q7>>8 */
 	/* extra right shift to compensate left shift of L_mult */
-	L_temp = L_mult(*pcorr, pdouble);
-	L_temp = L_shr(L_temp, 8);
-	thresh = extract_l(L_temp);	/* Q14 */
+	L_temp = melpe_L_mult(*pcorr, pdouble);
+	L_temp = melpe_L_shr(L_temp, 8);
+	thresh = melpe_extract_l(L_temp);	/* Q14 */
 
 	/* Check pitch submultiples from shortest to longest */
 	for (mult = NUM_MULT; mult >= 2; mult--) {
 
 		/* temp_pit = pitch / mult */
 		temp1 = 0;
-		temp2 = shl(mult, 11);	/* Q11 */
+		temp2 = melpe_shl(mult, 11);	/* Q11 */
 		temp_pit = pitch;
 		while (temp_pit > temp2) {
-			temp_pit = shr(temp_pit, 1);
-			temp1 = add(temp1, 1);
+			temp_pit = melpe_shr(temp_pit, 1);
+			temp1 = melpe_add(temp1, 1);
 		}
 		/* Q7*Q15/Q11 -> Q11 */
-		temp2 = divide_s(temp_pit, temp2);
-		temp1 = sub(4, temp1);
+		temp2 = melpe_divide_s(temp_pit, temp2);
+		temp1 = melpe_sub(4, temp1);
 		/* temp_pit=pitch/mult in Q7 */
-		temp_pit = shr(temp2, temp1);
+		temp_pit = melpe_shr(temp2, temp1);
 
 		if (temp_pit >= pmin_q7) {
 			temp_pit =
@@ -157,12 +157,12 @@ static void double_ver(Shortword sig_in[], Shortword * pcorr,
 
 	/* Verify pitch multiples for short pitches */
 	multiple = 1;
-	while (extract_l(L_shr(L_mult(pitch, multiple), 1)) < SHORT_PITCH) {
-		multiple = add(multiple, 1);
+	while (melpe_extract_l(melpe_L_shr(melpe_L_mult(pitch, multiple), 1)) < SHORT_PITCH) {
+		multiple = melpe_add(multiple, 1);
 	}
 
 	if (multiple > 1) {
-		temp_pit = extract_l(L_shr(L_mult(pitch, multiple), 1));
+		temp_pit = melpe_extract_l(melpe_L_shr(melpe_L_mult(pitch, multiple), 1));
 		frac_pch(sig_in, &corr, temp_pit, 0, pmin, pmax,
 			 pmin_q7, pmax_q7, lmin);
 
@@ -192,10 +192,10 @@ Shortword f_pitch_scale(Shortword sig_out[], Shortword sig_in[],
 	L_margin = LW_MAX;
 	temp_buf = sig_in;
 	for (i = 0; i < length; i++) {
-		L_temp = L_mult(*temp_buf, *temp_buf);
+		L_temp = melpe_L_mult(*temp_buf, *temp_buf);
 		if (L_temp <= L_margin) {
-			L_sum = L_add(L_sum, L_temp);
-			L_margin = L_sub(L_margin, L_temp);
+			L_sum = melpe_L_add(L_sum, L_temp);
+			L_margin = melpe_L_sub(L_margin, L_temp);
 		} else {
 			L_margin = LW_MIN;
 			break;
@@ -220,7 +220,7 @@ Shortword f_pitch_scale(Shortword sig_out[], Shortword sig_in[],
 		v_free(temp_buf);
 	}
 
-	scale = sub(scale, shr(norm_l(corr), 1));
+	scale = melpe_sub(scale, melpe_shr(melpe_norm_l(corr), 1));
 
 	/* Scale signal buffer */
 	v_equ_shr(sig_out, sig_in, scale, length);
@@ -252,7 +252,7 @@ Shortword find_pitch(Shortword sig_in[], Shortword * pcorr, Shortword lower,
 	max_denom = 1;
 	even_flag = 1;
 	/* cbegin = -((length+upper)/2) */
-	cbegin = negate(shr(add(length, upper), 1));
+	cbegin = melpe_negate(melpe_shr(melpe_add(length, upper), 1));
 
 	c0_0 = L_v_magsq(&sig_in[cbegin], length, 0, 1);
 	cT_T = L_v_magsq(&sig_in[cbegin + upper], length, 0, 1);
@@ -265,26 +265,26 @@ Shortword find_pitch(Shortword sig_in[], Shortword * pcorr, Shortword lower,
 			      0, 1);
 
 		/* calculate normalization for numerator and denominator */
-		shift1a = norm_s(extract_h(c0_0));
-		shift1b = norm_s(extract_h(cT_T));
-		shift = add(shift1a, shift1b);
-		shift2 = shr(shift, 1);	/* shift2 = half of total shift */
-		if (shl(shift2, 1) != shift)
-			shift1a = sub(shift1a, 1);
+		shift1a = melpe_norm_s(melpe_extract_h(c0_0));
+		shift1b = melpe_norm_s(melpe_extract_h(cT_T));
+		shift = melpe_add(shift1a, shift1b);
+		shift2 = melpe_shr(shift, 1);	/* shift2 = half of total shift */
+		if (melpe_shl(shift2, 1) != shift)
+			shift1a = melpe_sub(shift1a, 1);
 
 		/* check if current maximum value */
 		if (corr > 0) {
-			s_corr = extract_h(L_shl(corr, shift2));
-			num = extract_h(L_mult(s_corr, s_corr));
+			s_corr = melpe_extract_h(melpe_L_shl(corr, shift2));
+			num = melpe_extract_h(melpe_L_mult(s_corr, s_corr));
 		} else
 			num = 0;
-		denom = extract_h(L_mult(extract_h(L_shl(c0_0, shift1a)),
-					 extract_h(L_shl(cT_T, shift1b))));
+		denom = melpe_extract_h(melpe_L_mult(melpe_extract_h(melpe_L_shl(c0_0, shift1a)),
+					 melpe_extract_h(melpe_L_shl(cT_T, shift1b))));
 		if (denom < 1)
 			denom = 1;
 
-		if (L_mult(extract_l(num), extract_l(max_denom)) >
-		    L_mult(extract_l(max_num), extract_l(denom))) {
+		if (melpe_L_mult(melpe_extract_l(num), melpe_extract_l(max_denom)) >
+		    melpe_L_mult(melpe_extract_l(max_num), melpe_extract_l(denom))) {
 			max_denom = denom;
 			max_num = num;
 			ipitch = i;
@@ -293,16 +293,16 @@ Shortword find_pitch(Shortword sig_in[], Shortword * pcorr, Shortword lower,
 		/* update for next iteration */
 		if (even_flag) {
 			even_flag = 0;
-			c0_0 = L_msu(c0_0, sig_in[cbegin], sig_in[cbegin]);
-			c0_0 = L_mac(c0_0, sig_in[cbegin + length],
+			c0_0 = melpe_L_msu(c0_0, sig_in[cbegin], sig_in[cbegin]);
+			c0_0 = melpe_L_mac(c0_0, sig_in[cbegin + length],
 				     sig_in[cbegin + length]);
-			cbegin = add(cbegin, 1);
+			cbegin = melpe_add(cbegin, 1);
 		} else {
 			even_flag = 1;
-			cT_T = L_msu(cT_T, sig_in[cbegin + i - 1 + length],
+			cT_T = melpe_L_msu(cT_T, sig_in[cbegin + i - 1 + length],
 				     sig_in[cbegin + i - 1 + length]);
 			cT_T =
-			    L_mac(cT_T, sig_in[cbegin + i - 1],
+			    melpe_L_mac(cT_T, sig_in[cbegin + i - 1],
 				  sig_in[cbegin + i - 1]);
 		}
 
@@ -310,8 +310,8 @@ Shortword find_pitch(Shortword sig_in[], Shortword * pcorr, Shortword lower,
 
 	/* Return pitch value and correlation */
 	*pcorr =
-	    shr(sqrt_fxp
-		(divide_s(extract_l(max_num), extract_l(max_denom)), 15), 1);
+	    melpe_shr(sqrt_fxp
+		(melpe_divide_s(melpe_extract_l(max_num), melpe_extract_l(max_denom)), 15), 1);
 
 	return (ipitch);
 }
@@ -352,62 +352,62 @@ Shortword frac_pch(Shortword sig_in[], Shortword * pcorr, Shortword fpitch,
 
 	/* Perform local integer pitch search for better fpitch estimate */
 	if (range > 0) {
-		ipitch = shift_r(fpitch, -7);
-		lower = sub(ipitch, range);
-		upper = add(ipitch, range);
+		ipitch = melpe_shift_r(fpitch, -7);
+		lower = melpe_sub(ipitch, range);
+		upper = melpe_add(ipitch, range);
 		if (upper > pmax) {
 			upper = pmax;
 		}
 		if (lower < pmin) {
 			lower = pmin;
 		}
-		if (lower < add(shr(ipitch, 1), shr(ipitch, 2))) {
-			lower = add(shr(ipitch, 1), shr(ipitch, 2));
+		if (lower < melpe_add(melpe_shr(ipitch, 1), melpe_shr(ipitch, 2))) {
+			lower = melpe_add(melpe_shr(ipitch, 1), melpe_shr(ipitch, 2));
 		}
 		length = ipitch;
 		if (length < lmin) {
 			length = lmin;
 		}
 		fpitch =
-		    shl(find_pitch(sig_in, &corr, lower, upper, length), 7);
+		    melpe_shl(find_pitch(sig_in, &corr, lower, upper, length), 7);
 	}
 
 	/* Estimate needed crosscorrelations */
-	ipitch = shift_r(fpitch, -7);
+	ipitch = melpe_shift_r(fpitch, -7);
 	if (ipitch >= pmax) {
-		ipitch = sub(pmax, 1);
+		ipitch = melpe_sub(pmax, 1);
 	}
 	length = ipitch;
 	if (length < lmin) {
 		length = lmin;
 	}
-	cbegin = negate(shr(add(length, ipitch), 1));
+	cbegin = melpe_negate(melpe_shr(melpe_add(length, ipitch), 1));
 
 	/* Calculate normalization for numerator and denominator */
 	mag_sq = L_v_magsq(&sig_in[cbegin], length, 0, 1);
-	shift1a = norm_s(extract_h(mag_sq));
-	shift1b = norm_s(extract_h(L_v_magsq(&sig_in[cbegin + ipitch - 1],
+	shift1a = melpe_norm_s(melpe_extract_h(mag_sq));
+	shift1b = melpe_norm_s(melpe_extract_h(L_v_magsq(&sig_in[cbegin + ipitch - 1],
 					     (Shortword) (length + 2), 0, 1)));
-	shift = add(shift1a, shift1b);
-	shift2 = shr(shift, 1);	/* shift2 = half of total shift */
-	if (shl(shift2, 1) != shift)
-		shift1a = sub(shift1a, 1);
+	shift = melpe_add(shift1a, shift1b);
+	shift2 = melpe_shr(shift, 1);	/* shift2 = half of total shift */
+	if (melpe_shl(shift2, 1) != shift)
+		shift1a = melpe_sub(shift1a, 1);
 
 	/* Calculate correlations with appropriate normalization */
-	c0_0 = extract_h(L_shl(mag_sq, shift1a));
+	c0_0 = melpe_extract_h(melpe_L_shl(mag_sq, shift1a));
 
 	c0_T =
-	    extract_h(L_shl
+	    melpe_extract_h(melpe_L_shl
 		      (L_v_inner
 		       (&sig_in[cbegin], &sig_in[cbegin + ipitch], length, 0, 0,
 			1), shift2));
 	c0_T1 =
-	    extract_h(L_shl
+	    melpe_extract_h(melpe_L_shl
 		      (L_v_inner
 		       (&sig_in[cbegin], &sig_in[cbegin + ipitch + 1], length,
 			0, 0, 1), shift2));
 	c0_Tm1 =
-	    extract_h(L_shl
+	    melpe_extract_h(melpe_L_shl
 		      (L_v_inner
 		       (&sig_in[cbegin], &sig_in[cbegin + ipitch - 1], length,
 			0, 0, 1), shift2));
@@ -416,28 +416,28 @@ Shortword frac_pch(Shortword sig_in[], Shortword * pcorr, Shortword fpitch,
 		/* fractional component should be less than 1, so decrement pitch */
 		c0_T1 = c0_T;
 		c0_T = c0_Tm1;
-		ipitch = sub(ipitch, 1);
+		ipitch = melpe_sub(ipitch, 1);
 	}
-	cT_T1 = extract_h(L_shl(L_v_inner(&sig_in[cbegin + ipitch],
+	cT_T1 = melpe_extract_h(melpe_L_shl(L_v_inner(&sig_in[cbegin + ipitch],
 					  &sig_in[cbegin + ipitch + 1], length,
 					  0, 0, 1), shift1b));
-	cT_T = extract_h(L_shl(L_v_inner(&sig_in[cbegin + ipitch],
+	cT_T = melpe_extract_h(melpe_L_shl(L_v_inner(&sig_in[cbegin + ipitch],
 					 &sig_in[cbegin + ipitch], length,
 					 0, 0, 1), shift1b));
-	cT1_T1 = extract_h(L_shl(L_v_inner(&sig_in[cbegin + ipitch + 1],
+	cT1_T1 = melpe_extract_h(melpe_L_shl(L_v_inner(&sig_in[cbegin + ipitch + 1],
 					   &sig_in[cbegin + ipitch + 1], length,
 					   0, 0, 1), shift1b));
 
 	/* Find fractional component of pitch within integer range */
 	/* frac = Q13 */
-	denom = L_add(L_mult(c0_T1, sub(shr(cT_T, 1), shr(cT_T1, 1))),
-		      L_mult(c0_T, sub(shr(cT1_T1, 1), shr(cT_T1, 1))));
-	numer = L_sub(L_shr(L_mult(c0_T1, cT_T), 1),
-		      L_shr(L_mult(c0_T, cT_T1), 1));
+	denom = melpe_L_add(melpe_L_mult(c0_T1, melpe_sub(melpe_shr(cT_T, 1), melpe_shr(cT_T1, 1))),
+		      melpe_L_mult(c0_T, melpe_sub(melpe_shr(cT1_T1, 1), melpe_shr(cT_T1, 1))));
+	numer = melpe_L_sub(melpe_L_shr(melpe_L_mult(c0_T1, cT_T), 1),
+		      melpe_L_shr(melpe_L_mult(c0_T, cT_T1), 1));
 
-	L_temp1 = L_abs(denom);
+	L_temp1 = melpe_L_abs(denom);
 	if (L_temp1 > 0) {
-		if (L_abs(L_shr(numer, 2)) > L_temp1) {
+		if (melpe_L_abs(melpe_L_shr(numer, 2)) > L_temp1) {
 			if (((numer > 0) && (denom < 0))
 			    || ((numer < 0) && (denom > 0)))
 				frac = MINFRAC;
@@ -456,33 +456,33 @@ Shortword frac_pch(Shortword sig_in[], Shortword * pcorr, Shortword fpitch,
 	}
 
 	/* Make sure pitch is still within range */
-	fpitch = add(shl(ipitch, 7), shr(frac, 6));
+	fpitch = melpe_add(melpe_shl(ipitch, 7), melpe_shr(frac, 6));
 	if (fpitch > pmax_q7) {
 		fpitch = pmax_q7;
-		frac = shl(sub(fpitch, shl(ipitch, 7)), 6);
+		frac = melpe_shl(melpe_sub(fpitch, melpe_shl(ipitch, 7)), 6);
 	}
 	if (fpitch < pmin_q7) {
 		fpitch = pmin_q7;
-		frac = shl(sub(fpitch, shl(ipitch, 7)), 6);
+		frac = melpe_shl(melpe_sub(fpitch, melpe_shl(ipitch, 7)), 6);
 	}
 
 	/* Calculate interpolated correlation strength */
-	frac1 = sub(ONE_Q13, frac);
+	frac1 = melpe_sub(ONE_Q13, frac);
 
 	/* Calculate denominator */
-	denom1 = L_shr(L_mpy_ls(L_mult(cT_T, frac1), frac1), 1);	/* Q(X+11) */
-	denom2 = L_mpy_ls(L_mult(cT_T1, frac1), frac);
-	denom3 = L_shr(L_mpy_ls(L_mult(cT1_T1, frac), frac), 1);	/* Q(X+11) */
-	denom = L_mpy_ls(L_add(L_add(denom1, denom2), denom3), c0_0);	/* Q(2X-4) */
+	denom1 = melpe_L_shr(L_mpy_ls(melpe_L_mult(cT_T, frac1), frac1), 1);	/* Q(X+11) */
+	denom2 = L_mpy_ls(melpe_L_mult(cT_T1, frac1), frac);
+	denom3 = melpe_L_shr(L_mpy_ls(melpe_L_mult(cT1_T1, frac), frac), 1);	/* Q(X+11) */
+	denom = L_mpy_ls(melpe_L_add(melpe_L_add(denom1, denom2), denom3), c0_0);	/* Q(2X-4) */
 	temp = L_sqrt_fxp(denom, 0);	/* temp in Q(X-2) */
 
 	/* Calculate numerator */
-	L_temp1 = L_mult(c0_T, frac1);	/* Q(X+14) */
-	L_temp1 = L_mac(L_temp1, c0_T1, frac);
+	L_temp1 = melpe_L_mult(c0_T, frac1);	/* Q(X+14) */
+	L_temp1 = melpe_L_mac(L_temp1, c0_T1, frac);
 	if (L_temp1 <= 0) {
 		corr = 0;
 	} else {
-		corr = extract_h(L_temp1);
+		corr = melpe_extract_h(L_temp1);
 	}
 
 	/* Q value of *pcorr =           Q(L_temp1)                             X+14
@@ -491,7 +491,7 @@ Shortword frac_pch(Shortword sig_in[], Shortword * pcorr, Shortword fpitch,
 	   - Q(temp)                              -(X-2)
 	   =   15   */
 	if (corr < temp) {
-		*pcorr = shr(divide_s(corr, temp), 1);
+		*pcorr = melpe_shr(melpe_divide_s(corr, temp), 1);
 	} else if (temp <= 0) {
 		*pcorr = 0;
 	} else {
@@ -535,8 +535,8 @@ Shortword p_avg_update(Shortword pitch, Shortword pcorr, Shortword pthresh)
 		for (i = 0; i < NF; i++) {
 			/*      good_pitch[i] =
 			   (PDECAY*good_pitch[i]) +((1.0-PDECAY)*DEFAULT_PITCH); */
-			temp = mult(PDECAY_Q15, good_pitch[i]);
-			good_pitch[i] = add(temp, PDECAY_PITCH_Q7);
+			temp = melpe_mult(PDECAY_Q15, good_pitch[i]);
+			good_pitch[i] = melpe_add(temp, PDECAY_PITCH_Q7);
 		}
 	}
 

@@ -89,7 +89,7 @@ Shortword *v_add(Shortword vec1[], const Shortword vec2[], Shortword n)
 	register Shortword i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = add(*vec1, *vec2);
+		*vec1 = melpe_add(*vec1, *vec2);
 		vec1++;
 		vec2++;
 	}
@@ -147,7 +147,7 @@ Longword *L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n)
 	register Shortword i;
 
 	for (i = 0; i < n; i++) {
-		*L_vec1 = L_add(*L_vec1, *L_vec2);
+		*L_vec1 = melpe_L_add(*L_vec1, *L_vec2);
 		L_vec1++;
 		L_vec2++;
 	}
@@ -247,7 +247,7 @@ Shortword *v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
 	register Shortword i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = shr(*vec2, scale);
+		*vec1 = melpe_shr(*vec2, scale);
 		vec1++;
 		vec2++;
 	}
@@ -357,7 +357,7 @@ Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
 
 	L_temp = 0;
 	for (i = 0; i < n; i++) {
-		L_temp = L_mac(L_temp, *vec1, *vec2);
+		L_temp = melpe_L_mac(L_temp, *vec1, *vec2);
 		vec1++;
 		vec2++;
 	}
@@ -367,7 +367,7 @@ Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
 	/* (qout - (qvec1 + qvec2 + 1)).  To return only a Shortword, use         */
 	/* extract_h() after L_shl() by 16.                                       */
 
-	innerprod = extract_h(L_shl(L_temp,
+	innerprod = melpe_extract_h(melpe_L_shl(L_temp,
 				    (Shortword) (qout - ((qvec1 + qvec2 + 1) -
 							 16))));
 	return (innerprod);
@@ -426,14 +426,14 @@ Longword L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
 
 	L_temp = 0;
 	for (i = 0; i < n; i++) {
-		L_temp = L_mac(L_temp, *vec1, *vec2);
+		L_temp = melpe_L_mac(L_temp, *vec1, *vec2);
 		vec1++;
 		vec2++;
 	}
 
 	/* L_temp is now (qvec1 + qvec2 + 1) */
-	shift = sub(qout, add(add(qvec1, qvec2), 1));
-	L_innerprod = L_shl(L_temp, shift);
+	shift = melpe_sub(qout, melpe_add(melpe_add(qvec1, qvec2), 1));
+	L_innerprod = melpe_L_shl(L_temp, shift);
 	return (L_innerprod);
 }
 
@@ -486,12 +486,12 @@ Shortword v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
 
 	L_temp = 0;
 	for (i = 0; i < n; i++) {
-		L_temp = L_mac(L_temp, *vec1, *vec1);
+		L_temp = melpe_L_mac(L_temp, *vec1, *vec1);
 		vec1++;
 	}
 	/* qout - ((2*qvec1 + 1) - 16) */
-	shift = sub(qout, sub(add(shl(qvec1, 1), 1), 16));
-	magsq = extract_h(L_shl(L_temp, shift));
+	shift = melpe_sub(qout, melpe_sub(melpe_add(melpe_shl(qvec1, 1), 1), 16));
+	magsq = melpe_extract_h(melpe_L_shl(L_temp, shift));
 	return (magsq);
 }
 
@@ -543,12 +543,12 @@ Longword L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
 
 	L_temp = 0;
 	for (i = 0; i < n; i++) {
-		L_temp = L_mac(L_temp, *vec1, *vec1);
+		L_temp = melpe_L_mac(L_temp, *vec1, *vec1);
 		vec1++;
 	}
 	/* ((qout-16)-((2*qvec1+1)-16)) */
-	shift = sub(sub(qout, shl(qvec1, 1)), 1);
-	L_magsq = L_shl(L_temp, shift);
+	shift = melpe_sub(melpe_sub(qout, melpe_shl(qvec1, 1)), 1);
+	L_magsq = melpe_L_shl(L_temp, shift);
 	return (L_magsq);
 }
 
@@ -596,7 +596,7 @@ Shortword *v_scale(Shortword vec1[], Shortword scale, Shortword n)
 	register Shortword i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = mult(*vec1, scale);
+		*vec1 = melpe_mult(*vec1, scale);
 		vec1++;
 	}
 	return (vec1 - n);
@@ -650,7 +650,7 @@ Shortword *v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
 	register Shortword i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = extract_h(L_shl(L_mult(*vec1, scale), shift));
+		*vec1 = melpe_extract_h(melpe_L_shl(melpe_L_mult(*vec1, scale), shift));
 		vec1++;
 	}
 	return (vec1 - n);
@@ -707,7 +707,7 @@ Shortword *v_sub(Shortword vec1[], const Shortword vec2[], Shortword n)
 	register Shortword i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = sub(*vec1, *vec2);
+		*vec1 = melpe_sub(*vec1, *vec2);
 		vec1++;
 		vec2++;
 	}

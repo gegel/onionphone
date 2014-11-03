@@ -172,7 +172,7 @@ static inline Shortword saturate(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword divide_s(Shortword var1, Shortword var2)
+static inline Shortword melpe_divide_s(Shortword var1, Shortword var2)
 {
 	Longword L_div;
 	Shortword swOut;
@@ -220,7 +220,7 @@ static inline Shortword divide_s(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword L_deposit_l(Shortword var1)
+static inline Longword melpe_L_deposit_l(Shortword var1)
 {
 	Longword L_Out;
 
@@ -259,7 +259,7 @@ static inline Longword L_deposit_l(Shortword var1)
  *
  *************************************************************************/
 
-static inline Longword L_deposit_h(Shortword var1)
+static inline Longword melpe_L_deposit_h(Shortword var1)
 {
 	Longword L_var2;
 
@@ -300,7 +300,7 @@ static inline Longword L_deposit_h(Shortword var1)
  *
  *************************************************************************/
 
-static inline Shortword extract_l(Longword L_var1)
+static inline Shortword melpe_extract_l(Longword L_var1)
 {
 	Shortword var2;
 
@@ -342,7 +342,7 @@ static inline Shortword extract_l(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword extract_h(Longword L_var1)
+static inline Shortword melpe_extract_h(Longword L_var1)
 {
 	Shortword var2;
 
@@ -390,13 +390,13 @@ static inline Shortword extract_h(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword r_ound(Longword L_var1)
+static inline Shortword melpe_r_ound(Longword L_var1)
 {
 	Longword L_Prod;
 	Shortword var2;
 
-	L_Prod = L_add(L_var1, 0x00008000L);	/* r_ound MSP */
-	var2 = extract_h(L_Prod);
+    L_Prod = melpe_L_add(L_var1, 0x00008000L);	/* r_ound MSP */
+    var2 = melpe_extract_h(L_Prod);
 	return (var2);
 }
 
@@ -429,7 +429,7 @@ static inline Shortword r_ound(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword negate(Shortword var1)
+static inline Shortword melpe_negate(Shortword var1)
 {
 	Shortword swOut;
 
@@ -472,7 +472,7 @@ static inline Shortword negate(Shortword var1)
  *
  *************************************************************************/
 
-static inline Longword L_negate(Longword L_var1)
+static inline Longword melpe_L_negate(Longword L_var1)
 {
 	Longword L_Out;
 
@@ -528,7 +528,7 @@ static inline Longword L_negate(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword add(Shortword var1, Shortword var2)
+static inline Shortword melpe_add(Shortword var1, Shortword var2)
 {
 	Longword L_sum;
 	Shortword swOut;
@@ -583,7 +583,7 @@ static inline Shortword add(Shortword var1, Shortword var2)
  *	 KEYWORDS: add, addition
  *
  *************************************************************************/
-static inline Longword L_add(Longword L_var1, Longword L_var2)
+static inline Longword melpe_L_add(Longword L_var1, Longword L_var2)
 {
 	Longword L_Sum, L_SumLow, L_SumHigh;
 
@@ -660,7 +660,7 @@ static inline Longword L_add(Longword L_var1, Longword L_var2)
  *	 KEYWORDS: sub, subtraction
  *
  *************************************************************************/
-static inline Shortword sub(Shortword var1, Shortword var2)
+static inline Shortword melpe_sub(Shortword var1, Shortword var2)
 {
 	Longword L_diff;
 	Shortword swOut;
@@ -716,17 +716,17 @@ static inline Shortword sub(Shortword var1, Shortword var2)
  *	 KEYWORDS: sub, subtraction
  *
  *************************************************************************/
-static inline Longword L_sub(Longword L_var1, Longword L_var2)
+static inline Longword melpe_L_sub(Longword L_var1, Longword L_var2)
 {
 	Longword L_Sum;
 
 	/* check for overflow */
 	if ((L_var1 > 0 && L_var2 < 0) || (L_var1 < 0 && L_var2 > 0)) {
 		if (L_var2 == LW_MIN) {
-			L_Sum = L_add(L_var1, LW_MAX);
-			L_Sum = L_add(L_Sum, 1);
+            L_Sum = melpe_L_add(L_var1, LW_MAX);
+            L_Sum = melpe_L_add(L_Sum, 1);
 		} else
-			L_Sum = L_add(L_var1, -L_var2);
+            L_Sum = melpe_L_add(L_var1, -L_var2);
 	} else			/* no overflow possible */
 		L_Sum = L_var1 - L_var2;
 	return (L_Sum);
@@ -778,7 +778,7 @@ static inline Longword L_sub(Longword L_var1, Longword L_var2)
  *
  *************************************************************************/
 
-static inline Shortword shr(Shortword var1, Shortword var2)
+static inline Shortword melpe_shr(Shortword var1, Shortword var2)
 {
 	Shortword swMask, swOut;
 
@@ -790,7 +790,7 @@ static inline Shortword shr(Shortword var1, Shortword var2)
 			/* saturate */
 			inc_saturation();
 		} else
-			swOut = shl(var1, (Shortword) - var2);
+            swOut = melpe_shl(var1, (Shortword) - var2);
 	} else {		/* positive shift count */
 		if (var2 >= 15)
 			swOut = (Shortword) ((var1 < 0) ? -1 : 0);
@@ -857,7 +857,7 @@ static inline Shortword shr(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword shl(Shortword var1, Shortword var2)
+static inline Shortword melpe_shl(Shortword var1, Shortword var2)
 {
 	Shortword swOut;
 	Longword L_Out;
@@ -868,7 +868,7 @@ static inline Shortword shl(Shortword var1, Shortword var2)
 		if (var2 <= -15)
 			swOut = (Shortword) ((var1 < 0) ? -1 : 0);
 		else
-			swOut = shr(var1, negate(var2));
+            swOut = melpe_shr(var1, melpe_negate(var2));
 
 	} else {		/* var2 > 0 */
 		if (var2 >= 15) {
@@ -939,7 +939,7 @@ static inline Shortword shl(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword L_shr(Longword L_var1, Shortword var2)
+static inline Longword melpe_L_shr(Longword L_var1, Shortword var2)
 {
 	Longword L_Mask, L_Out;
 
@@ -950,7 +950,7 @@ static inline Longword L_shr(Longword L_var1, Shortword var2)
 			L_Out = (L_var1 > 0) ? LW_MAX : LW_MIN;	/* saturate */
 			inc_saturation();
 		} else
-			L_Out = L_shl(L_var1, (Shortword) - var2);
+            L_Out = melpe_L_shl(L_var1, (Shortword) - var2);
 	} else {
 		if (var2 >= 31)
 			L_Out = (L_var1 > 0) ? 0 : 0xffffffffL;
@@ -1013,7 +1013,7 @@ static inline Longword L_shr(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword L_shl(Longword L_var1, Shortword var2)
+static inline Longword melpe_L_shl(Longword L_var1, Shortword var2)
 {
 	Longword L_Mask, L_Out = 0;
 	int i, iOverflow = 0;
@@ -1024,7 +1024,7 @@ static inline Longword L_shl(Longword L_var1, Shortword var2)
 		if (var2 <= -31)
 			L_Out = (L_var1 > 0) ? 0 : 0xffffffffL;
 		else
-			L_Out = L_shr(L_var1, (Shortword) - var2);
+            L_Out = melpe_L_shr(L_var1, (Shortword) - var2);
 	} else {
 		if (var2 >= 31)
 			iOverflow = 1;
@@ -1105,19 +1105,19 @@ static inline Longword L_shl(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword shift_r(Shortword var1, Shortword var2)
+static inline Shortword melpe_shift_r(Shortword var1, Shortword var2)
 {
 	Shortword swOut, swRnd;
 
 	if (var2 >= 0)
-		swOut = shl(var1, var2);
+        swOut = melpe_shl(var1, var2);
 	else {			/* right shift */
 		if (var2 < -15)
 			swOut = 0;
 		else {
-			swRnd = (Shortword) (shl(var1, (Shortword) (var2 + 1)) &
+            swRnd = (Shortword) (melpe_shl(var1, (Shortword) (var2 + 1)) &
 					     (Shortword) 0x1);
-			swOut = add(shl(var1, var2), swRnd);
+            swOut = melpe_add(melpe_shl(var1, var2), swRnd);
 		}
 	}
 	return (swOut);
@@ -1180,17 +1180,17 @@ static inline Shortword shift_r(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword L_shift_r(Longword L_var1, Shortword var2)
+static inline Longword melpe_L_shift_r(Longword L_var1, Shortword var2)
 {
 	Longword L_Out, L_rnd;
 
 	if (var2 < -31)
 		L_Out = 0;
 	else if (var2 < 0) {	/* right shift */
-		L_rnd = L_shl(L_var1, (Shortword) (var2 + 1)) & (Longword) 0x1;
-		L_Out = L_add(L_shl(L_var1, var2), L_rnd);
+        L_rnd = melpe_L_shl(L_var1, (Shortword) (var2 + 1)) & (Longword) 0x1;
+        L_Out = melpe_L_add(melpe_L_shl(L_var1, var2), L_rnd);
 	} else
-		L_Out = L_shl(L_var1, var2);
+        L_Out = melpe_L_shl(L_var1, var2);
 
 	return (L_Out);
 }
@@ -1253,7 +1253,7 @@ static inline Longword L_shift_r(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword norm_l(Longword L_var1)
+static inline Shortword melpe_norm_l(Longword L_var1)
 {
 	Shortword swShiftCnt;
 
@@ -1333,13 +1333,13 @@ static inline Shortword norm_l(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword norm_s(Shortword var1)
+static inline Shortword melpe_norm_s(Shortword var1)
 {
 	short swShiftCnt;
 	Longword L_var1;
 
-	L_var1 = L_deposit_h(var1);
-	swShiftCnt = norm_l(L_var1);
+    L_var1 = melpe_L_deposit_h(var1);
+    swShiftCnt = melpe_norm_l(L_var1);
 	return (swShiftCnt);
 }
 
@@ -1384,7 +1384,7 @@ static inline Shortword norm_s(Shortword var1)
  *
  *************************************************************************/
 
-static inline Longword L_mult(Shortword var1, Shortword var2)
+static inline Longword melpe_L_mult(Shortword var1, Shortword var2)
 {
 	Longword L_product;
 
@@ -1438,13 +1438,13 @@ static inline Longword L_mult(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword mult(Shortword var1, Shortword var2)
+static inline Shortword melpe_mult(Shortword var1, Shortword var2)
 {
 	Longword L_product;
 	Shortword swOut;
 
-	L_product = L_mult(var1, var2);
-	swOut = extract_h(L_product);
+    L_product = melpe_L_mult(var1, var2);
+    swOut = melpe_extract_h(L_product);
 	return (swOut);
 }
 
@@ -1501,11 +1501,11 @@ static inline Shortword mult(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
+static inline Longword melpe_L_mac(Longword L_var3, Shortword var1, Shortword var2)
 {
 	Longword L_Out;
 
-	L_Out = L_add(L_var3, L_mult(var1, var2));
+    L_Out = melpe_L_add(L_var3, melpe_L_mult(var1, var2));
 	return (L_Out);
 }
 
@@ -1562,11 +1562,11 @@ static inline Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
+static inline Longword melpe_L_msu(Longword L_var3, Shortword var1, Shortword var2)
 {
 	Longword L_Out;
 
-	L_Out = L_sub(L_var3, L_mult(var1, var2));
+    L_Out = melpe_L_sub(L_var3, melpe_L_mult(var1, var2));
 	return (L_Out);
 }
 
@@ -1628,11 +1628,11 @@ static inline Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
+static inline Shortword melpe_msu_r(Longword L_var3, Shortword var1, Shortword var2)
 {
 	Shortword swOut;
 
-	swOut = r_ound(L_sub(L_var3, L_mult(var1, var2)));
+    swOut = melpe_r_ound(melpe_L_sub(L_var3, melpe_L_mult(var1, var2)));
 	return (swOut);
 }
 
@@ -1671,7 +1671,7 @@ static inline Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword abs_s(Shortword var1)
+static inline Shortword melpe_abs_s(Shortword var1)
 {
 	Shortword swOut;
 
@@ -1679,7 +1679,7 @@ static inline Shortword abs_s(Shortword var1)
 		swOut = SW_MAX;
 	else {
 		if (var1 < 0)
-			swOut = negate(var1);
+            swOut = melpe_negate(var1);
 		else
 			swOut = var1;
 	}
@@ -1718,7 +1718,7 @@ static inline Shortword abs_s(Shortword var1)
  *	 KEYWORDS: absolute value, abs
  *
  *************************************************************************/
-static inline Longword L_abs(Longword L_var1)
+static inline Longword melpe_L_abs(Longword L_var1)
 {
 	Longword L_Out;
 
@@ -1760,7 +1760,7 @@ static inline Longword L_abs(Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static inline Word40 L40_add(Word40 acc, Longword L_var1)
+static inline Word40 melpe_L40_add(Word40 acc, Longword L_var1)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1807,7 +1807,7 @@ static inline Word40 L40_add(Word40 acc, Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static inline Word40 L40_sub(Word40 acc, Longword L_var1)
+static inline Word40 melpe_L40_sub(Word40 acc, Longword L_var1)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1857,7 +1857,7 @@ static inline Word40 L40_sub(Word40 acc, Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static inline Word40 L40_mac(Word40 acc, Shortword var1, Shortword var2)
+static inline Word40 melpe_L40_mac(Word40 acc, Shortword var1, Shortword var2)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1908,7 +1908,7 @@ static inline Word40 L40_mac(Word40 acc, Shortword var1, Shortword var2)
  |___________________________________________________________________________|
 */
 
-static inline Word40 L40_msu(Word40 acc, Shortword var1, Shortword var2)
+static inline Word40 melpe_L40_msu(Word40 acc, Shortword var1, Shortword var2)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1956,7 +1956,7 @@ static inline Word40 L40_msu(Word40 acc, Shortword var1, Shortword var2)
  |___________________________________________________________________________|
 */
 
-static inline Word40 L40_shl(Word40 acc, Shortword var1)
+static inline Word40 melpe_L40_shl(Word40 acc, Shortword var1)
 {
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
@@ -1965,7 +1965,7 @@ static inline Word40 L40_shl(Word40 acc, Shortword var1)
 	}
 
 	if (var1 < 0) {
-		acc = L40_shr(acc, (Shortword) (-var1));
+        acc = melpe_L40_shr(acc, (Shortword) (-var1));
 	} else {
 		for (; var1 > 0; var1--) {
 			acc = acc * 2;
@@ -2009,7 +2009,7 @@ static inline Word40 L40_shl(Word40 acc, Shortword var1)
  |___________________________________________________________________________|
 */
 
-static inline Word40 L40_shr(Word40 acc, Shortword var1)
+static inline Word40 melpe_L40_shr(Word40 acc, Shortword var1)
 {
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
@@ -2018,7 +2018,7 @@ static inline Word40 L40_shr(Word40 acc, Shortword var1)
 	}
 
 	if (var1 < 0) {
-		acc = L40_shl(acc, (Shortword) - var1);
+        acc = melpe_L40_shl(acc, (Shortword) - var1);
 	} else {
 		for (; var1 > 0; var1--) {
 			acc = floor(acc * 0.5);
@@ -2052,7 +2052,7 @@ static inline Word40 L40_shr(Word40 acc, Shortword var1)
  |___________________________________________________________________________|
 */
 
-static inline Word40 L40_negate(Word40 acc)
+static inline Word40 melpe_L40_negate(Word40 acc)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -2094,7 +2094,7 @@ static inline Word40 L40_negate(Word40 acc)
  |___________________________________________________________________________|
 */
 
-static inline Shortword norm32(Word40 acc)
+static inline Shortword melpe_norm32(Word40 acc)
 {
 	Shortword var1;
 
@@ -2150,7 +2150,7 @@ static inline Shortword norm32(Word40 acc)
  |___________________________________________________________________________|
 */
 
-static inline Longword L_sat32(Word40 acc)
+static inline Longword melpe_L_sat32(Word40 acc)
 {
 	Longword L_var_out;
 

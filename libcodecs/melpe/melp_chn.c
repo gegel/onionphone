@@ -122,7 +122,7 @@ void melp_chn_write(struct quant_param *qpar, unsigned char chbuf[])
 	pack_code(qpar->gain_index[1], &bit_ptr, &bit_cntr, 5, 1);
 
 	/* Toggle and write sync bit */
-	sync_bit = sub(1, sync_bit);
+	sync_bit = melpe_sub(1, sync_bit);
 	pack_code(sync_bit, &bit_ptr, &bit_cntr, 1, 1);
 
 	pack_code(qpar->gain_index[0], &bit_ptr, &bit_cntr, 3, 1);
@@ -276,7 +276,7 @@ void low_rate_chn_write(struct quant_param *qpar)
 	bit_cntr = 0;
 
 	/* ====== Toggle and write sync bit ====== */
-	sync_bit = sub(1, sync_bit);
+	sync_bit = melpe_sub(1, sync_bit);
 	pack_code(sync_bit, &bit_ptr, &bit_cntr, 1, 1);
 
 	/* ===== Count the number of voiced frame ===== */
@@ -320,7 +320,7 @@ void low_rate_chn_write(struct quant_param *qpar)
 		}
 	} else if (cnt == 3) {	/* VVV */
 		uv_index = (Shortword) (qpar->pitch_index / PITCH_VQ_SIZE);
-		qpar->pitch_index = sub(qpar->pitch_index,
+		qpar->pitch_index = melpe_sub(qpar->pitch_index,
 					(Shortword) (uv_index * PITCH_VQ_SIZE));
 		uv_index = vvv_index_map[uv_index];
 	}
@@ -489,12 +489,12 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 	/* tions are made to remove this to and fro inversions.                   */
 
 	if (firstTime) {	/* Initialization */
-		temp2 = shl(LPC_ORD, 10);	/* Q10 */
+		temp2 = melpe_shl(LPC_ORD, 10);	/* Q10 */
 		temp1 = X08_Q10;	/* Q10 */
 		for (i = 0; i < LPC_ORD; i++) {
 			/*      qplsp[i] = (i + 1)*0.8/LPC_ORD; */
-			qplsp[i] = divide_s(temp1, temp2);
-			temp1 = add(temp1, X08_Q10);
+			qplsp[i] = melpe_divide_s(temp1, temp2);
+			temp1 = melpe_add(temp1, X08_Q10);
 		}
 
 		fill(prev_gain, 2560, 2 * NF * NUM_GAINFR);
@@ -1060,17 +1060,17 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				/*      ilsp1[j] = inpCoef[i][j] * qplsp[j] +
 				   (1.0 - inpCoef[i][j]) * par[2].lsf[j]; */
 				intfact = inpCoef[i][j];	/* Q14 */
-				L_acc = L_mult(intfact, qplsp[j]);	/* Q14 */
-				intfact = sub(ONE_Q14, intfact);
-				L_acc = L_mac(L_acc, intfact, par[2].lsf[j]);
-				ilsp1[j] = extract_h(L_shl(L_acc, 1));	/* Q15 */
+				L_acc = melpe_L_mult(intfact, qplsp[j]);	/* Q14 */
+				intfact = melpe_sub(ONE_Q14, intfact);
+				L_acc = melpe_L_mac(L_acc, intfact, par[2].lsf[j]);
+				ilsp1[j] = melpe_extract_h(melpe_L_shl(L_acc, 1));	/* Q15 */
 				/*      ilsp2[j] = inpCoef[i][j+10] * qplsp[j] +
 				   (1.0 - inpCoef[i][j + LPC_ORD]) * par[2].lsf[j]; */
 				intfact = inpCoef[i][j + LPC_ORD];	/* Q14 */
-				L_acc = L_mult(intfact, qplsp[j]);	/* Q14 */
-				intfact = sub(ONE_Q14, intfact);
-				L_acc = L_mac(L_acc, intfact, par[2].lsf[j]);
-				ilsp2[j] = extract_h(L_shl(L_acc, 1));	/* Q15 */
+				L_acc = melpe_L_mult(intfact, qplsp[j]);	/* Q14 */
+				intfact = melpe_sub(ONE_Q14, intfact);
+				L_acc = melpe_L_mac(L_acc, intfact, par[2].lsf[j]);
+				ilsp2[j] = melpe_extract_h(melpe_L_shl(L_acc, 1));	/* Q15 */
 			}
 
 			if ((uv1 != 1) && (uv2 != 1) && (cuv == 1))
@@ -1083,11 +1083,11 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			/* ---- reconstruct lsp ---- */
 			for (i = 0; i < LPC_ORD; i++) {
 				/*      par[0].lsf[i] = (res[i] + ilsp1[i]); */
-				temp1 = shr(res[i], 2);
-				par[0].lsf[i] = add(temp1, ilsp1[i]);	/* Q15 */
+				temp1 = melpe_shr(res[i], 2);
+				par[0].lsf[i] = melpe_add(temp1, ilsp1[i]);	/* Q15 */
 				/*      par[1].lsf[i] = (res[i + LPC_ORD] + ilsp2[i]); */
-				temp2 = shr(res[i + LPC_ORD], 2);
-				par[1].lsf[i] = add(temp2, ilsp2[i]);	/* Q15 */
+				temp2 = melpe_shr(res[i + LPC_ORD], 2);
+				par[1].lsf[i] = melpe_add(temp2, ilsp2[i]);	/* Q15 */
 			}
 		}
 
@@ -1104,20 +1104,20 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				   lsp_check[2] == 0) {
 				for (i = 0; i < LPC_ORD; i++) {
 					par[0].lsf[i] =
-					    add(mult
+					    melpe_add(melpe_mult
 						(prev_par->lsf[i], X0667_Q15),
-						mult(par[2].lsf[i], X0333_Q15));
+						melpe_mult(par[2].lsf[i], X0333_Q15));
 					par[1].lsf[i] =
-					    add(mult
+					    melpe_add(melpe_mult
 						(prev_par->lsf[i], X0333_Q15),
-						mult(par[2].lsf[i], X0667_Q15));
+						melpe_mult(par[2].lsf[i], X0667_Q15));
 				}
 			} else if (lsp_check[0] == 1 && lsp_check[1] == 0 &&
 				   lsp_check[2] == 1) {
 				for (i = 0; i < LPC_ORD; i++) {
 					par[0].lsf[i] =
-					    add(shr(prev_par->lsf[i], 1),
-						shr(par[1].lsf[i], 1));
+					    melpe_add(melpe_shr(prev_par->lsf[i], 1),
+						melpe_shr(par[1].lsf[i], 1));
 					par[2].lsf[i] = par[1].lsf[i];
 				}
 			} else if (lsp_check[0] == 0 && lsp_check[1] == 1 &&
@@ -1130,14 +1130,14 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				   lsp_check[2] == 0) {
 				for (i = 0; i < LPC_ORD; i++)
 					par[0].lsf[i] =
-					    add(shr(prev_par->lsf[i], 1),
-						shr(par[1].lsf[i], 1));
+					    melpe_add(melpe_shr(prev_par->lsf[i], 1),
+						melpe_shr(par[1].lsf[i], 1));
 			} else if (lsp_check[0] == 0 && lsp_check[1] == 1
 				   && lsp_check[2] == 0) {
 				for (i = 0; i < LPC_ORD; i++)
 					par[1].lsf[i] =
-					    add(shr(par[0].lsf[i], 1),
-						shr(par[2].lsf[i], 1));
+					    melpe_add(melpe_shr(par[0].lsf[i], 1),
+						melpe_shr(par[2].lsf[i], 1));
 			} else if (lsp_check[0] == 0 && lsp_check[1] == 0
 				   && lsp_check[2] == 1) {
 				for (i = 0; i < LPC_ORD; i++) {
@@ -1201,9 +1201,9 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				for (i = 0; i < NUM_HARM; i++) {
 					/*      par[0].fs_mag[i] = 0.5*(weighted_fsmag[i] +
 					   prev_fsmag[i]); */
-					temp1 = shr(weighted_fsmag[i], 1);	/* Q13 */
-					temp2 = shr(prev_fsmag[i], 1);	/* Q13 */
-					par[0].fs_mag[i] = add(temp1, temp2);	/* Q13 */
+					temp1 = melpe_shr(weighted_fsmag[i], 1);	/* Q13 */
+					temp2 = melpe_shr(prev_fsmag[i], 1);	/* Q13 */
+					par[0].fs_mag[i] = melpe_add(temp1, temp2);	/* Q13 */
 				}
 			} else {	/* V VVV */
 				for (i = 0; i < NUM_HARM; i++) {
@@ -1211,13 +1211,13 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 					q_value = weighted_fsmag[i];
 
 					/*      par[0].fs_mag[i] = (p + p + q)/3.0; */
-					temp1 = mult(p_value, X0667_Q15);
-					temp2 = mult(q_value, X0333_Q15);
-					par[0].fs_mag[i] = add(temp1, temp2);	/* Q13 */
+					temp1 = melpe_mult(p_value, X0667_Q15);
+					temp2 = melpe_mult(q_value, X0333_Q15);
+					par[0].fs_mag[i] = melpe_add(temp1, temp2);	/* Q13 */
 					/*      par[1].fs_mag[i] = (p + q + q)/3.0; */
-					temp1 = mult(p_value, X0333_Q15);
-					temp2 = mult(q_value, X0667_Q15);
-					par[1].fs_mag[i] = add(temp1, temp2);	/* Q13 */
+					temp1 = melpe_mult(p_value, X0333_Q15);
+					temp2 = melpe_mult(q_value, X0667_Q15);
+					par[1].fs_mag[i] = melpe_add(temp1, temp2);	/* Q13 */
 				}
 			}
 		}
@@ -1264,16 +1264,16 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			if (par[i].uv_flag)
 				par[i].pitch = UV_PITCH_Q7;
 			else
-				par[i].pitch = add(mult(SMOOTH, p_value),
-						   mult(sub(32767, SMOOTH),
+				par[i].pitch = melpe_add(melpe_mult(SMOOTH, p_value),
+						   melpe_mult(melpe_sub(32767, SMOOTH),
 							par[i].pitch));
 			p_value = par[i].pitch;
 		}
 		p_value = prev_par->gain[1];
 		for (i = 0; i < NF; i++) {
 			for (j = 0; j < NUM_GAINFR; j++) {
-				par[i].gain[j] = add(mult(SMOOTH, p_value),
-						     mult(sub(32767, SMOOTH),
+				par[i].gain[j] = melpe_add(melpe_mult(SMOOTH, p_value),
+						     melpe_mult(melpe_sub(32767, SMOOTH),
 							  par[i].gain[j]));
 				p_value = par[i].gain[j];
 			}
@@ -1281,8 +1281,8 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 		for (j = 0; j < LPC_ORD; j++) {
 			p_value = prev_par->lsf[j];
 			for (i = 0; i < NF; i++) {
-				par[i].lsf[j] = add(mult(SMOOTH, p_value),
-						    mult(sub(32767, SMOOTH),
+				par[i].lsf[j] = melpe_add(melpe_mult(SMOOTH, p_value),
+						    melpe_mult(melpe_sub(32767, SMOOTH),
 							 par[i].lsf[j]));
 				p_value = par[i].lsf[j];
 			}
@@ -1293,26 +1293,26 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 
 		L_sum1 = 0;
 		for (i = 0; i < 2 * NF * NUM_GAINFR; i++)
-			L_sum1 = L_add(L_sum1, L_deposit_l(prev_gain[i]));
-		L_sum1 = L_shr(L_sum1, 1);
+			L_sum1 = melpe_L_add(L_sum1, melpe_L_deposit_l(prev_gain[i]));
+		L_sum1 = melpe_L_shr(L_sum1, 1);
 
 		L_sum2 = 0;
 		for (i = 0; i < NF; i++) {
 			for (j = 0; j < NUM_GAINFR; j++)
 				L_sum2 =
-				    L_add(L_sum2, L_deposit_l(par[i].gain[j]));
+				    melpe_L_add(L_sum2, melpe_L_deposit_l(par[i].gain[j]));
 		}
 
-		if (L_sum2 > L_add(L_sum1, 92160L)
-		    || L_sum2 < L_sub(L_sum1, 92160L)) {
-			L_sum1 = L_shr(L_sum1, 1);
+		if (L_sum2 > melpe_L_add(L_sum1, 92160L)
+		    || L_sum2 < melpe_L_sub(L_sum1, 92160L)) {
+			L_sum1 = melpe_L_shr(L_sum1, 1);
 			L_sum1 = L_mpy_ls(L_sum1, 10923);
-			temp1 = extract_l(L_sum1);
+			temp1 = melpe_extract_l(L_sum1);
 			for (i = 0; i < NF; i++) {
 				for (j = 0; j < NUM_GAINFR; j++) {
 					par[i].gain[j] =
-					    add(mult(SMOOTH, temp1),
-						mult(sub(32767, SMOOTH),
+					    melpe_add(melpe_mult(SMOOTH, temp1),
+						melpe_mult(melpe_sub(32767, SMOOTH),
 						     par[i].gain[j]));
 					temp1 = par[i].gain[j];
 				}

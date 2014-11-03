@@ -80,8 +80,8 @@ Shortword *vq_lspw(Shortword weight[], Shortword lsp[], Shortword lpc[],
 
 	/* Modifying weight[8] and weight[9]. */
 
-	weight[8] = mult(weight[8], X064_Q15);
-	weight[9] = mult(weight[9], X016_Q15);
+	weight[8] = melpe_mult(weight[8], X064_Q15);
+	weight[9] = melpe_mult(weight[9], X016_Q15);
 	return (weight);
 }
 
@@ -146,7 +146,7 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 		}
 	}
 	for (i = 0; i < order; i++) {
-		weights[i] = shr(weights[i], j);
+		weights[i] = melpe_shr(weights[i], j);
 	}
 
 	/* allocate memory for the current node and parent node (thus, the        */
@@ -185,17 +185,17 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 
 	/* change u_tmp from Q15 to Q17 */
 	for (j = 0; j < order; j++)
-		u_tmp[j] = shl(u_tmp[j], 2);
+		u_tmp[j] = melpe_shl(u_tmp[j], 2);
 
 	/* L_temp is Q31 */
 	L_temp = 0;
 	for (j = 0; j < order; j++) {
-		temp = mult(u_tmp[j], weights[j]);	/* temp = Q13 */
-		L_temp = L_mac(L_temp, temp, u_tmp[j]);
+		temp = melpe_mult(u_tmp[j], weights[j]);	/* temp = Q13 */
+		L_temp = melpe_L_mac(L_temp, temp, u_tmp[j]);
 	}
 
 	/* tmp in Q15 */
-	tmp = extract_h(L_temp);
+	tmp = melpe_extract_h(L_temp);
 
 	/* set up inital error vectors (i.e. error vectors = u_tmp) */
 	for (c = 0; c < ma; c++) {
@@ -230,7 +230,7 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 
 		/* store errors in Q15 in tmp_p_e */
 		for (i = 0; i < m * order; i++) {
-			tmp_p_e[i] = shr(p_errors[i], 2);
+			tmp_p_e[i] = melpe_shr(p_errors[i], 2);
 		}
 
 		/* set the distortions to a large value */
@@ -243,18 +243,18 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 			L_temp = 0;
 			for (i = 0; i < order; i++, cbp++) {
 				/* Q17*Q11 << 1 = Q29 */
-				L_temp1 = L_mult(*cbp, weights[i]);
+				L_temp1 = melpe_L_mult(*cbp, weights[i]);
 
 				/* uhatw[i] = -2*tmp */
 				/* uhatw is Q15 (shift 3 to take care of *2) */
-				uhatw[i] = negate(extract_h(L_shl(L_temp1, 3)));
+				uhatw[i] = melpe_negate(melpe_extract_h(melpe_L_shl(L_temp1, 3)));
 
 				/* tmp is now Q13 */
-				tmp = extract_h(L_temp1);
-				L_temp = L_mac(L_temp, *cbp, tmp);
+				tmp = melpe_extract_h(L_temp1);
+				L_temp = melpe_L_mac(L_temp, *cbp, tmp);
 			}
 			/* uhatw_sq is Q15 */
-			uhatw_sq = extract_h(L_temp);
+			uhatw_sq = melpe_extract_h(L_temp);
 
 			/* p_e points to the error vectors and p_distortion points to the */
 			/* node distortions.  Note: the error vectors are contiguous in   */
@@ -269,13 +269,13 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 			for (c = 0; c < m; c++) {
 				/* L_temp is Q31, p_distortion is same Q as n_d, p_e is Q15 */
 				L_temp =
-				    L_deposit_h(add(*p_distortion++, uhatw_sq));
+				    melpe_L_deposit_h(melpe_add(*p_distortion++, uhatw_sq));
 				for (i = 0; i < order; i++)
 					L_temp =
-					    L_mac(L_temp, *p_e++, uhatw[i]);
+					    melpe_L_mac(L_temp, *p_e++, uhatw[i]);
 
 				/* d_cj is Q15 */
-				d_cj = extract_h(L_temp);
+				d_cj = melpe_extract_h(L_temp);
 
 				/* determine if d is less than the maximum candidate          */
 				/* distortion.  i.e., is the distortion found better than the */
@@ -285,9 +285,9 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 					/* n_d is now a Q16 */
 					n_d[p_max] = d_cj;
 
-					i = add(shr
-						(extract_l
-						 (L_mult(p_max, stages)), 1),
+					i = melpe_add(melpe_shr
+						(melpe_extract_l
+						 (melpe_L_mult(p_max, stages)), 1),
 						s);
 					n_indices[i] = j;
 					n_parents[p_max] = c;
@@ -296,7 +296,7 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 					/* entered (to reduce the *maximum* complexity) */
 					if (inner_counter < max_inner) {
 						inner_counter =
-						    add(inner_counter, 1);
+						    melpe_add(inner_counter, 1);
 						if (inner_counter < max_inner) {
 							p_max = 0;
 							/* find the new maximum */
@@ -368,7 +368,7 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 			cb_table =
 			    &cb_currentstage[n_indices[c * stages + s] * order];
 			for (i = 0; i < order; i++)
-				u_hat[i] = add(u_hat[i], shr(cb_table[i], 2));
+				u_hat[i] = melpe_add(u_hat[i], melpe_shr(cb_table[i], 2));
 			cb_currentstage += levels[s] * order;
 		}
 	}
@@ -429,7 +429,7 @@ void vq_msd2(const Shortword * cb, Shortword * u_hat, const Shortword * u_est,
 
 	/* put u_hat to a long buffer */
 	for (i = 0; i < p; i++)
-		L_u_hat[i] = L_shl(L_deposit_l(u_hat[i]), diff_Q);
+		L_u_hat[i] = melpe_L_shl(melpe_L_deposit_l(u_hat[i]), diff_Q);
 
 	/* add the contribution of each stage */
 	cb_currentstage = cb;
@@ -437,15 +437,15 @@ void vq_msd2(const Shortword * cb, Shortword * u_hat, const Shortword * u_est,
 		/*      (void) v_add(u_hat, &cb_currentstage[indices[i]*p], p);           */
 		cb_table = &cb_currentstage[indices[i] * p];
 		for (j = 0; j < p; j++) {
-			L_temp = L_deposit_l(cb_table[j]);
-			L_u_hat[j] = L_add(L_u_hat[j], L_temp);
+			L_temp = melpe_L_deposit_l(cb_table[j]);
+			L_u_hat[j] = melpe_L_add(L_u_hat[j], L_temp);
 		}
 		cb_currentstage += levels[i] * p;
 	}
 
 	/* convert long buffer back to u_hat */
 	for (i = 0; i < p; i++)
-		u_hat[i] = extract_l(L_shr(L_u_hat[i], diff_Q));
+		u_hat[i] = melpe_extract_l(melpe_L_shr(L_u_hat[i], diff_Q));
 
 	v_free(L_u_hat);
 }
@@ -487,8 +487,8 @@ Longword vq_enc(const Shortword codebook[], Shortword u[], Shortword levels,
 	for (i = 0; i < levels; i++) {
 		d = 0;
 		for (j = 0; j < order; j++) {
-			temp = sub(u[j], *p_cb);
-			d = L_mac(d, temp, temp);
+			temp = melpe_sub(u[j], *p_cb);
+			d = melpe_L_mac(d, temp, temp);
 			p_cb++;
 		}
 		if (d < dmin) {
@@ -520,25 +520,25 @@ void vq_fsw(Shortword w_fs[], Shortword num_harm, Shortword pitch)
 	/* w0 = TWOPI/pitch */
 	/* tempw0 = w0/(0.25*PI) = 8/pitch */
 
-	tempw0 = divide_s(EIGHT_Q11, pitch);	/* tempw0 in Q17 */
+	tempw0 = melpe_divide_s(EIGHT_Q11, pitch);	/* tempw0 in Q17 */
 	for (i = 0; i < num_harm; i++) {
 
 		/* Bark-scale weighting */
 		/* w_fs[i] = 117.0/(25.0 + 75.0* pow(1.0 + */
 		/*           1.4*SQR(w0*(i+1)/(0.25*PI)),0.69)) */
 
-		temp = add(i, 1);
-		temp = shl(temp, 11);	/* (i+1), Q11 */
-		L_temp = L_mult(tempw0, temp);	/* Q29 */
-		L_temp = L_shl(L_temp, 1);	/* Q30 */
-		temp = extract_h(L_temp);	/* w0*(i+1)/0.25*PI, Q14 */
-		temp = mult(temp, temp);	/* SQR(*), Q13 */
+		temp = melpe_add(i, 1);
+		temp = melpe_shl(temp, 11);	/* (i+1), Q11 */
+		L_temp = melpe_L_mult(tempw0, temp);	/* Q29 */
+		L_temp = melpe_L_shl(L_temp, 1);	/* Q30 */
+		temp = melpe_extract_h(L_temp);	/* w0*(i+1)/0.25*PI, Q14 */
+		temp = melpe_mult(temp, temp);	/* SQR(*), Q13 */
 		/* Q28 for L_temp = 1.0 + 1.4*SQR(*) */
-		L_temp = L_mult(X14_Q14, temp);	/* Q28 */
-		L_temp = L_add(ONE_Q28, L_temp);	/* Q28 */
+		L_temp = melpe_L_mult(X14_Q14, temp);	/* Q28 */
+		L_temp = melpe_L_add(ONE_Q28, L_temp);	/* Q28 */
 		temp = L_pow_fxp(L_temp, X069_Q15, 28, 13);	/* Q13 */
-		temp = mult(X75_Q8, temp);	/* Q6 */
-		denom = add(X25_Q6, temp);	/* Q6 */
-		w_fs[i] = divide_s(X117_Q5, denom);	/* Q14 */
+		temp = melpe_mult(X75_Q8, temp);	/* Q6 */
+		denom = melpe_add(X25_Q6, temp);	/* Q6 */
+		w_fs[i] = melpe_divide_s(X117_Q5, denom);	/* Q14 */
 	}
 }

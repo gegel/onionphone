@@ -66,16 +66,16 @@ void envelope(Shortword input[], Shortword prev_in, Shortword output[],
 	Shortword curr_abs, prev_abs;
 	Longword L_temp;
 
-	prev_abs = abs_s(prev_in);
+	prev_abs = melpe_abs_s(prev_in);
 	for (i = 0; i < npts; i++) {
-		curr_abs = abs_s(input[i]);
+		curr_abs = melpe_abs_s(input[i]);
 
 		/* output[i] = curr_abs - prev_abs + C2*output[i-2] + C1*output[i-1] */
-		L_temp = L_shr(L_deposit_h(sub(curr_abs, prev_abs)), 5);
-		L_temp = L_mac(L_temp, C1_Q14, output[i - 1]);
-		L_temp = L_mac(L_temp, C2_Q14, output[i - 2]);
-		L_temp = L_shl(L_temp, 1);
-		output[i] = r_ound(L_temp);
+		L_temp = melpe_L_shr(melpe_L_deposit_h(melpe_sub(curr_abs, prev_abs)), 5);
+		L_temp = melpe_L_mac(L_temp, C1_Q14, output[i - 1]);
+		L_temp = melpe_L_mac(L_temp, C2_Q14, output[i - 2]);
+		L_temp = melpe_L_shl(L_temp, 1);
+		output[i] = melpe_r_ound(L_temp);
 
 		prev_abs = curr_abs;
 	}
@@ -122,11 +122,11 @@ void interp_array(Shortword prev[], Shortword curr[], Shortword out[],
 	else if (ifact == ONE_Q15)
 		v_equ(out, curr, size);
 	else {
-		ifact2 = sub(ONE_Q15, ifact);
+		ifact2 = melpe_sub(ONE_Q15, ifact);
 		for (i = 0; i < size; i++) {
-			temp1 = mult(ifact, curr[i]);
-			temp2 = mult(ifact2, prev[i]);
-			out[i] = add(temp1, temp2);
+			temp1 = melpe_mult(ifact, curr[i]);
+			temp2 = melpe_mult(ifact2, prev[i]);
+			out[i] = melpe_add(temp1, temp2);
 		}
 	}
 }
@@ -174,16 +174,16 @@ void pack_code(Shortword code, unsigned char **ptr_ch_begin,
 		if (ch_bit == 0)
 			*ch_word = (unsigned char)temp;
 		else
-			*ch_word |= (unsigned char)(shl(temp, ch_bit));
+			*ch_word |= (unsigned char)(melpe_shl(temp, ch_bit));
 
 		/* Check for full channel word */
-		ch_bit = add(ch_bit, 1);
+		ch_bit = melpe_add(ch_bit, 1);
 		if (ch_bit >= wsize) {
 			ch_bit = 0;
 			(*ptr_ch_begin)++;
 			ch_word++;
 		}
-		code = shr(code, 1);
+		code = melpe_shr(code, 1);
 	}
 
 	/* Save updated bit counter */
@@ -209,8 +209,8 @@ Shortword peakiness(Shortword input[], Shortword npts)
 	L_temp = L_v_magsq(temp_buf, npts, 0, 1);
 
 	if (L_temp) {
-		temp1 = norm_l(L_temp);
-		scale = sub(scale, shr(temp1, 1));
+		temp1 = melpe_norm_l(L_temp);
+		scale = melpe_sub(scale, melpe_shr(temp1, 1));
 		if (scale < 0)
 			scale = 0;
 	} else
@@ -218,8 +218,8 @@ Shortword peakiness(Shortword input[], Shortword npts)
 
 	sum_abs = 0;
 	for (i = 0; i < npts; i++) {
-		L_temp = L_deposit_l(abs_s(input[i]));
-		sum_abs = L_add(sum_abs, L_temp);
+		L_temp = melpe_L_deposit_l(melpe_abs_s(input[i]));
+		sum_abs = melpe_L_add(sum_abs, L_temp);
 	}
 
 	/* Right shift input signal and put in temp buffer.                       */
@@ -233,18 +233,18 @@ Shortword peakiness(Shortword input[], Shortword npts)
 			L_temp = L_v_magsq(temp_buf, npts, 0, 0);
 		else
 			L_temp = L_v_magsq(input, npts, 0, 0);
-		L_temp = L_deposit_l(L_sqrt_fxp(L_temp, 0));	/* L_temp in Q0 */
+		L_temp = melpe_L_deposit_l(L_sqrt_fxp(L_temp, 0));	/* L_temp in Q0 */
 		peak_fact = L_divider2(L_temp, sum_abs, 0, 0);
 
 		if (peak_fact > LIMIT_PEAKI) {
 			peak_fact = SW_MAX;
 		} else {	/* shl 7 is mult , other shift is Q7->Q12 */
-			temp1 = add(scale, 5);
-			temp2 = shl(npts, 7);
+			temp1 = melpe_add(scale, 5);
+			temp2 = melpe_shl(npts, 7);
 			temp2 = sqrt_fxp(temp2, 7);
-			L_temp = L_mult(peak_fact, temp2);
-			L_temp = L_shl(L_temp, temp1);
-			peak_fact = extract_h(L_temp);
+			L_temp = melpe_L_mult(peak_fact, temp2);
+			L_temp = melpe_L_shl(L_temp, temp1);
+			peak_fact = melpe_extract_h(L_temp);
 		}
 	} else
 		peak_fact = 0;
@@ -270,46 +270,46 @@ void quant_u(Shortword * p_data, Shortword * p_index, Shortword qmin,
 
 	/*  Define symmetrical quantizer stepsize       */
 	/* step = (qmax - qmin) / (nlev - 1); */
-	temp = sub(qmax, qmin);
-	step = divide_s(temp, nlev_q);
+	temp = melpe_sub(qmax, qmin);
+	step = melpe_divide_s(temp, nlev_q);
 
 	if (double_flag) {
 		/* double precision specified */
 		/*      Search quantizer boundaries                                     */
 		/*qbnd = qmin + (0.5 * step); */
-		L_step = L_deposit_l(step);
-		L_half_step = L_shr(L_step, 1);
-		L_qmin = L_shl(L_deposit_l(qmin), scale);
-		L_qbnd = L_add(L_qmin, L_half_step);
+		L_step = melpe_L_deposit_l(step);
+		L_half_step = melpe_L_shr(L_step, 1);
+		L_qmin = melpe_L_shl(melpe_L_deposit_l(qmin), scale);
+		L_qbnd = melpe_L_add(L_qmin, L_half_step);
 
-		L_p_in = L_shl(L_deposit_l(*p_in), scale);
+		L_p_in = melpe_L_shl(melpe_L_deposit_l(*p_in), scale);
 		for (i = 0; i < nlev; i++) {
 			if (L_p_in < L_qbnd)
 				break;
 			else
-				L_qbnd = L_add(L_qbnd, L_step);
+				L_qbnd = melpe_L_add(L_qbnd, L_step);
 		}
 		/* Quantize input to correct level */
 		/* *p_in = qmin + (i * step); */
-		L_temp = L_sub(L_qbnd, L_half_step);
-		*p_in = extract_l(L_shr(L_temp, scale));
+		L_temp = melpe_L_sub(L_qbnd, L_half_step);
+		*p_in = melpe_extract_l(melpe_L_shr(L_temp, scale));
 		*p_index = i;
 	} else {
 		/* Search quantizer boundaries */
 		/* qbnd = qmin + (0.5 * step); */
-		step = shr(step, scale);
-		half_step = shr(step, 1);
-		qbnd = add(qmin, half_step);
+		step = melpe_shr(step, scale);
+		half_step = melpe_shr(step, 1);
+		qbnd = melpe_add(qmin, half_step);
 
 		for (i = 0; i < nlev; i++) {
 			if (*p_in < qbnd)
 				break;
 			else
-				qbnd = add(qbnd, step);
+				qbnd = melpe_add(qbnd, step);
 		}
 		/*      Quantize input to correct level */
 		/* *p_in = qmin + (i * step); */
-		*p_in = sub(qbnd, half_step);
+		*p_in = melpe_sub(qbnd, half_step);
 		*p_index = i;
 	}
 }
@@ -325,16 +325,16 @@ void quant_u_dec(Shortword index, Shortword * p_data, Shortword qmin,
 	/* calling function.                                                      */
 
 	/*      step = (qmax - qmin) / (nlev - 1); */
-	temp = sub(qmax, qmin);
-	step = divide_s(temp, nlev_q);
+	temp = melpe_sub(qmax, qmin);
+	step = melpe_divide_s(temp, nlev_q);
 
 	/* Decode quantized level */
 	/* double precision specified */
 
-	L_temp = L_shr(L_mult(step, index), 1);
-	L_qmin = L_shl(L_deposit_l(qmin), scale);
-	L_temp = L_add(L_qmin, L_temp);
-	*p_data = extract_l(L_shr(L_temp, scale));
+	L_temp = melpe_L_shr(melpe_L_mult(step, index), 1);
+	L_qmin = melpe_L_shl(melpe_L_deposit_l(qmin), scale);
+	L_temp = melpe_L_add(L_qmin, L_temp);
+	*p_data = melpe_extract_l(melpe_L_shr(L_temp, scale));
 }
 
 /* Subroutine rand_num: generate random numbers to fill array using "minimal  */
@@ -349,8 +349,8 @@ void rand_num(Shortword output[], Shortword amplitude, Shortword npts)
 
 		/* rand_minstdgen returns 0 <= x < 1 */
 		/* -0.5 <= temp < 0.5 */
-		temp = sub(rand_minstdgen(), X05_Q15);
-		output[i] = mult(amplitude, shl(temp, 1));
+		temp = melpe_sub(rand_minstdgen(), X05_Q15);
+		output[i] = melpe_mult(amplitude, melpe_shl(temp, 1));
 	}
 }
 
@@ -368,8 +368,8 @@ Shortword rand_minstdgen()
 {
 	static ULongword next = 1;	/* seed; must not be zero!!! */
 	Longword old_saturation;
-	UShortword x0 = extract_l(next);	/* 16 LSBs OF SEED */
-	UShortword x1 = extract_h(next);	/* 16 MSBs OF SEED */
+	UShortword x0 = melpe_extract_l(next);	/* 16 LSBs OF SEED */
+	UShortword x1 = melpe_extract_h(next);	/* 16 MSBs OF SEED */
 	ULongword p, q;		/* MSW, LSW OF PRODUCT */
 	ULongword L_temp1, L_temp2, L_temp3;
 
@@ -394,19 +394,19 @@ Shortword rand_minstdgen()
 	/* q = q << 1 >> 1; *//* CLEAR CARRY */
 	L_temp1 = L_mpyu(A, x1);
 	/* store bit 15 to bit 31 in p */
-	p = L_shr(L_temp1, 15);
+	p = melpe_L_shr(L_temp1, 15);
 	/* mask bit 15 to bit 31 */
-	L_temp1 = L_shl((L_temp1 & (Longword) 0x00007fff), 16);
+	L_temp1 = melpe_L_shl((L_temp1 & (Longword) 0x00007fff), 16);
 	L_temp2 = L_mpyu(A, x0);
-	L_temp3 = L_sub(LW_MAX, L_temp1);
+	L_temp3 = melpe_L_sub(LW_MAX, L_temp1);
 	if (L_temp2 > L_temp3) {
 		/* subtract 0x80000000 from sum */
-		L_temp1 = L_sub(L_temp1, (Longword) 0x7fffffff);
-		L_temp1 = L_sub(L_temp1, 1);
-		q = L_add(L_temp1, L_temp2);
-		p = L_add(p, 1);
+		L_temp1 = melpe_L_sub(L_temp1, (Longword) 0x7fffffff);
+		L_temp1 = melpe_L_sub(L_temp1, 1);
+		q = melpe_L_add(L_temp1, L_temp2);
+		p = melpe_L_add(p, 1);
 	} else
-		q = L_add(L_temp1, L_temp2);
+		q = melpe_L_add(L_temp1, L_temp2);
 
 	/*---------------------------------------------------------------------*/
 	/* IF (p + q) < 2^31, RESULT IS (p + q).  OTHERWISE, RESULT IS         */
@@ -415,19 +415,19 @@ Shortword rand_minstdgen()
 	/* p += q; next = ((p + (p >> 31)) << 1) >> 1; */
 	/* ADD CARRY, THEN CLEAR IT */
 
-	L_temp3 = L_sub(LW_MAX, p);
+	L_temp3 = melpe_L_sub(LW_MAX, p);
 	if (q > L_temp3) {
 		/* subtract 0x7fffffff from sum */
-		L_temp1 = L_sub(p, (Longword) 0x7fffffff);
-		L_temp1 = L_add(L_temp1, q);
+		L_temp1 = melpe_L_sub(p, (Longword) 0x7fffffff);
+		L_temp1 = melpe_L_add(L_temp1, q);
 	} else
-		L_temp1 = L_add(p, q);
+		L_temp1 = melpe_L_add(p, q);
 	next = L_temp1;
 
 	/* restore saturation count */
 	saturation = old_saturation;
 
-	x1 = extract_h(next);
+	x1 = melpe_extract_h(next);
 	return (x1);
 }
 
@@ -514,12 +514,12 @@ BOOLEAN unpack_code(unsigned char **ptr_ch_begin, Shortword * ptr_ch_bit,
 	for (i = 0; i < numbits; i++) {
 		/* Mask in bit from channel word to code */
 		*code |=
-		    shl(shr
-			((Shortword) ((Shortword) * ch_word & shl(1, ch_bit)),
+		    melpe_shl(melpe_shr
+			((Shortword) ((Shortword) * ch_word & melpe_shl(1, ch_bit)),
 			 ch_bit), i);
 
 		/* Check for end of channel word */
-		ch_bit = add(ch_bit, 1);
+		ch_bit = melpe_add(ch_bit, 1);
 		if (ch_bit >= wsize) {
 			ch_bit = 0;
 			(*ptr_ch_begin)++;
@@ -550,7 +550,7 @@ void window(Shortword input[], const Shortword win_coeff[], Shortword output[],
 	register Shortword i;
 
 	for (i = 0; i < npts; i++) {
-		output[i] = mult(win_coeff[i], input[i]);
+		output[i] = melpe_mult(win_coeff[i], input[i]);
 	}
 }
 
@@ -568,10 +568,10 @@ void window_Q(Shortword input[], Shortword win_coeff[], Shortword output[],
 	Shortword shift;
 
 	/* After computing "shift", win_coeff[]*2^(-shift) is considered Q15.     */
-	shift = sub(15, Qin);
+	shift = melpe_sub(15, Qin);
 	for (i = 0; i < npts; i++) {
 		output[i] =
-		    extract_h(L_shl(L_mult(win_coeff[i], input[i]), shift));
+		    melpe_extract_h(melpe_L_shl(melpe_L_mult(win_coeff[i], input[i]), shift));
 	}
 }
 
@@ -597,12 +597,12 @@ void polflt(Shortword input[], Shortword coeff[], Shortword output[],
 	Longword accum;		/* Q12 */
 
 	for (i = 0; i < npts; i++) {
-		accum = L_shl(L_deposit_l(input[i]), 12);
+		accum = melpe_L_shl(melpe_L_deposit_l(input[i]), 12);
 		for (j = 1; j <= order; j++)
-			accum = L_msu(accum, output[i - j], coeff[j]);
+			accum = melpe_L_msu(accum, output[i - j], coeff[j]);
 		/* r_ound off output */
-		accum = L_shl(accum, 3);
-		output[i] = r_ound(accum);
+		accum = melpe_L_shl(accum, 3);
+		output[i] = melpe_r_ound(accum);
 	}
 }
 
@@ -618,13 +618,13 @@ void zerflt(Shortword input[], const Shortword coeff[], Shortword output[],
 	register Shortword i, j;
 	Longword accum;
 
-	for (i = sub(npts, 1); i >= 0; i--) {
+	for (i = melpe_sub(npts, 1); i >= 0; i--) {
 		accum = 0;
 		for (j = 0; j <= order; j++)
-			accum = L_mac(accum, input[i - j], coeff[j]);
+			accum = melpe_L_mac(accum, input[i - j], coeff[j]);
 		/* r_ound off output */
-		accum = L_shl(accum, 3);
-		output[i] = r_ound(accum);
+		accum = melpe_L_shl(accum, 3);
+		output[i] = melpe_r_ound(accum);
 	}
 }
 
@@ -641,14 +641,14 @@ void zerflt_Q(Shortword input[], const Shortword coeff[], Shortword output[],
 	Shortword scale;
 	Longword accum;
 
-	scale = sub(15, Q_coeff);
-	for (i = sub(npts, 1); i >= 0; i--) {
+	scale = melpe_sub(15, Q_coeff);
+	for (i = melpe_sub(npts, 1); i >= 0; i--) {
 		accum = 0;
 		for (j = 0; j <= order; j++)
-			accum = L_mac(accum, input[i - j], coeff[j]);
+			accum = melpe_L_mac(accum, input[i - j], coeff[j]);
 		/* r_ound off output */
-		accum = L_shl(accum, scale);
-		output[i] = r_ound(accum);
+		accum = melpe_L_shl(accum, scale);
+		output[i] = melpe_r_ound(accum);
 	}
 }
 
@@ -667,33 +667,33 @@ void iir_2nd_d(Shortword input[], const Shortword den[], const Shortword num[],
 	Longword accum;
 
 	for (i = 0; i < npts; i++) {
-		accum = L_mult(delout_lo[0], den[1]);
-		accum = L_mac(accum, delout_lo[1], den[2]);
-		accum = L_shr(accum, 14);
-		accum = L_mac(accum, delout_hi[0], den[1]);
-		accum = L_mac(accum, delout_hi[1], den[2]);
+		accum = melpe_L_mult(delout_lo[0], den[1]);
+		accum = melpe_L_mac(accum, delout_lo[1], den[2]);
+		accum = melpe_L_shr(accum, 14);
+		accum = melpe_L_mac(accum, delout_hi[0], den[1]);
+		accum = melpe_L_mac(accum, delout_hi[1], den[2]);
 
-		accum = L_mac(accum, shr(input[i], 1), num[0]);
-		accum = L_mac(accum, delin[0], num[1]);
-		accum = L_mac(accum, delin[1], num[2]);
+		accum = melpe_L_mac(accum, melpe_shr(input[i], 1), num[0]);
+		accum = melpe_L_mac(accum, delin[0], num[1]);
+		accum = melpe_L_mac(accum, delin[1], num[2]);
 
 		/* shift result to correct Q value */
-		accum = L_shl(accum, 2);	/* assume coefficients in Q13 */
+		accum = melpe_L_shl(accum, 2);	/* assume coefficients in Q13 */
 
 		/* update input delay buffer */
 		delin[1] = delin[0];
-		delin[0] = shr(input[i], 1);
+		delin[0] = melpe_shr(input[i], 1);
 
 		/* update output delay buffer */
 		delout_hi[1] = delout_hi[0];
 		delout_lo[1] = delout_lo[0];
-		delout_hi[0] = extract_h(accum);
-		temp = shr(extract_l(accum), 2);
+		delout_hi[0] = melpe_extract_h(accum);
+		temp = melpe_shr(melpe_extract_l(accum), 2);
 		delout_lo[0] = (Shortword) (temp & (Shortword) 0x3FFF);
 
 		/* r_ound off result */
-		accum = L_shl(accum, 1);
-		output[i] = r_ound(accum);
+		accum = melpe_L_shl(accum, 1);
+		output[i] = melpe_r_ound(accum);
 	}
 }
 
@@ -711,22 +711,22 @@ void iir_2nd_s(Shortword input[], const Shortword den[], const Shortword num[],
 	Longword accum;
 
 	for (i = 0; i < npts; i++) {
-		accum = L_mult(input[i], num[0]);
-		accum = L_mac(accum, delin[0], num[1]);
-		accum = L_mac(accum, delin[1], num[2]);
+		accum = melpe_L_mult(input[i], num[0]);
+		accum = melpe_L_mac(accum, delin[0], num[1]);
+		accum = melpe_L_mac(accum, delin[1], num[2]);
 
-		accum = L_mac(accum, delout[0], den[1]);
-		accum = L_mac(accum, delout[1], den[2]);
+		accum = melpe_L_mac(accum, delout[0], den[1]);
+		accum = melpe_L_mac(accum, delout[1], den[2]);
 
 		/* shift result to correct Q value */
-		accum = L_shl(accum, 2);	/* assume coefficients in Q13 */
+		accum = melpe_L_shl(accum, 2);	/* assume coefficients in Q13 */
 
 		/* update input delay buffer */
 		delin[1] = delin[0];
 		delin[0] = input[i];
 
 		/* r_ound off result */
-		output[i] = r_ound(accum);
+		output[i] = melpe_r_ound(accum);
 
 		/* update output delay buffer */
 		delout[1] = delout[0];
