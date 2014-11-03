@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -25,143 +27,143 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
-
 #include "SKP_Silk_main.h"
 #include "SKP_Silk_PLC.h"
 
 /****************/
 /* Decode frame */
 /****************/
-SKP_int SKP_Silk_decode_frame(
-    SKP_Silk_decoder_state          *psDec,             /* I/O  Pointer to Silk decoder state               */
-    SKP_int16                       pOut[],             /* O    Pointer to output speech frame              */
-    SKP_int16                       *pN,                /* O    Pointer to size of output frame             */
-    const SKP_uint8                 pCode[],            /* I    Pointer to payload                          */
-    const SKP_int                   nBytes,             /* I    Payload length                              */
-    SKP_int                         action,             /* I    Action from Jitter Buffer                   */
-    SKP_int                         *decBytes           /* O    Used bytes to decode this frame             */
-)
+int SKP_Silk_decode_frame(SKP_Silk_decoder_state * psDec,	/* I/O  Pointer to Silk decoder state               */
+			  int16_t pOut[],	/* O    Pointer to output speech frame              */
+			  int16_t * pN,	/* O    Pointer to size of output frame             */
+			  const uint8_t pCode[],	/* I    Pointer to payload                          */
+			  const int nBytes,	/* I    Payload length                              */
+			  int action,	/* I    Action from Jitter Buffer                   */
+			  int *decBytes	/* O    Used bytes to decode this frame             */
+    )
 {
-    SKP_Silk_decoder_control sDecCtrl;
-    SKP_int         L, fs_Khz_old, LPC_order_old, ret = 0;
-    SKP_int         Pulses[ MAX_FRAME_LENGTH ];
+	SKP_Silk_decoder_control sDecCtrl;
+	int L, fs_Khz_old, LPC_order_old, ret = 0;
+	int Pulses[MAX_FRAME_LENGTH];
 
+	L = psDec->frame_length;
+	sDecCtrl.LTP_scale_Q14 = 0;
 
-    L = psDec->frame_length;
-    sDecCtrl.LTP_scale_Q14 = 0;
-    
-    /* Safety checks */
-    SKP_assert( L > 0 && L <= MAX_FRAME_LENGTH );
+	/* Safety checks */
+	assert(L > 0 && L <= MAX_FRAME_LENGTH);
 
     /********************************************/
-    /* Decode Frame if packet is not lost  */
+	/* Decode Frame if packet is not lost  */
     /********************************************/
-    *decBytes = 0;
-    if( action == 0 ) {
-        /********************************************/
-        /* Initialize arithmetic coder              */
-        /********************************************/
-        fs_Khz_old    = psDec->fs_kHz;
-        LPC_order_old = psDec->LPC_order;
-        if( psDec->nFramesDecoded == 0 ) {
-            /* Initialize range decoder state */
-            SKP_Silk_range_dec_init( &psDec->sRC, pCode, nBytes );
-        
-            if( psDec->bitstream_v == BIT_STREAM_V4 ) {
-                SKP_Silk_decode_indices_v4( psDec );
-            }
-        }
+	*decBytes = 0;
+	if (action == 0) {
+	/********************************************/
+		/* Initialize arithmetic coder              */
+	/********************************************/
+		fs_Khz_old = psDec->fs_kHz;
+		LPC_order_old = psDec->LPC_order;
+		if (psDec->nFramesDecoded == 0) {
+			/* Initialize range decoder state */
+			SKP_Silk_range_dec_init(&psDec->sRC, pCode, nBytes);
 
-        /********************************************/
-        /* Decode parameters and pulse signal       */
-        /********************************************/
-        if( psDec->bitstream_v == BIT_STREAM_V4 ) {
-            SKP_Silk_decode_parameters_v4( psDec, &sDecCtrl, Pulses, 1 );
-        } else {
-            SKP_Silk_decode_parameters( psDec, &sDecCtrl, Pulses, 1 );
-        }
+			if (psDec->bitstream_v == BIT_STREAM_V4) {
+				SKP_Silk_decode_indices_v4(psDec);
+			}
+		}
 
+	/********************************************/
+		/* Decode parameters and pulse signal       */
+	/********************************************/
+		if (psDec->bitstream_v == BIT_STREAM_V4) {
+			SKP_Silk_decode_parameters_v4(psDec, &sDecCtrl, Pulses,
+						      1);
+		} else {
+			SKP_Silk_decode_parameters(psDec, &sDecCtrl, Pulses, 1);
+		}
 
-        if( psDec->sRC.error ) {
-            psDec->nBytesLeft = 0;
+		if (psDec->sRC.error) {
+			psDec->nBytesLeft = 0;
 
-            action              = 1; /* PLC operation */
-            psDec->fs_kHz       = fs_Khz_old;    /* revert fs if changed in decode_parameters */
-            psDec->LPC_order    = LPC_order_old; /* revert lpc_order if changed in decode_parameters */
-            psDec->frame_length = fs_Khz_old * FRAME_LENGTH_MS;
-            psDec->subfr_length = fs_Khz_old * FRAME_LENGTH_MS / NB_SUBFR;
+			action = 1;	/* PLC operation */
+			psDec->fs_kHz = fs_Khz_old;	/* revert fs if changed in decode_parameters */
+			psDec->LPC_order = LPC_order_old;	/* revert lpc_order if changed in decode_parameters */
+			psDec->frame_length = fs_Khz_old * FRAME_LENGTH_MS;
+			psDec->subfr_length =
+			    fs_Khz_old * FRAME_LENGTH_MS / NB_SUBFR;
 
-            /* Avoid crashing */
-            *decBytes = psDec->sRC.bufferLength;
+			/* Avoid crashing */
+			*decBytes = psDec->sRC.bufferLength;
 
-            if( psDec->sRC.error == RANGE_CODER_DEC_PAYLOAD_TOO_LONG ) {
-                ret = SKP_SILK_DEC_PAYLOAD_TOO_LARGE;
-            } else {
-                ret = SKP_SILK_DEC_PAYLOAD_ERROR;
-            }
-        } else {
-            *decBytes = psDec->sRC.bufferLength - psDec->nBytesLeft;
-            psDec->nFramesDecoded++;
-        
-            /* Update lengths. Sampling frequency could have changed */
-            L = psDec->frame_length;
+			if (psDec->sRC.error ==
+			    RANGE_CODER_DEC_PAYLOAD_TOO_LONG) {
+				ret = SKP_SILK_DEC_PAYLOAD_TOO_LARGE;
+			} else {
+				ret = SKP_SILK_DEC_PAYLOAD_ERROR;
+			}
+		} else {
+			*decBytes = psDec->sRC.bufferLength - psDec->nBytesLeft;
+			psDec->nFramesDecoded++;
 
-            /********************************************************/
-            /* Run inverse NSQ                                      */
-            /********************************************************/
-            SKP_Silk_decode_core( psDec, &sDecCtrl, pOut, Pulses );
+			/* Update lengths. Sampling frequency could have changed */
+			L = psDec->frame_length;
 
-            /********************************************************/
-            /* Update PLC state                                     */
-            /********************************************************/
-            SKP_Silk_PLC( psDec, &sDecCtrl, pOut, L, action );
+	    /********************************************************/
+			/* Run inverse NSQ                                      */
+	    /********************************************************/
+			SKP_Silk_decode_core(psDec, &sDecCtrl, pOut, Pulses);
 
-            psDec->lossCnt = 0;
-            psDec->prev_sigtype = sDecCtrl.sigtype;
+	    /********************************************************/
+			/* Update PLC state                                     */
+	    /********************************************************/
+			SKP_Silk_PLC(psDec, &sDecCtrl, pOut, L, action);
 
-            /* A frame has been decoded without errors */
-            psDec->first_frame_after_reset = 0;
-        }
-    }
+			psDec->lossCnt = 0;
+			psDec->prev_sigtype = sDecCtrl.sigtype;
+
+			/* A frame has been decoded without errors */
+			psDec->first_frame_after_reset = 0;
+		}
+	}
     /*************************************************************/
-    /* Generate Concealment Frame if packet is lost, or corrupt  */
+	/* Generate Concealment Frame if packet is lost, or corrupt  */
     /*************************************************************/
-    if( action == 1 ) {
-        /* Handle packet loss by extrapolation */
-        SKP_Silk_PLC( psDec, &sDecCtrl, pOut, L, action );
-        psDec->lossCnt++;
-    
-    }
+	if (action == 1) {
+		/* Handle packet loss by extrapolation */
+		SKP_Silk_PLC(psDec, &sDecCtrl, pOut, L, action);
+		psDec->lossCnt++;
+
+	}
 
     /*************************/
-    /* Update output buffer. */
+	/* Update output buffer. */
     /*************************/
-    SKP_memcpy( psDec->outBuf, pOut, L * sizeof( SKP_int16 ) );
+	SKP_memcpy(psDec->outBuf, pOut, L * sizeof(int16_t));
 
     /****************************************************************/
-    /* Ensure smooth connection of extrapolated and good frames     */
+	/* Ensure smooth connection of extrapolated and good frames     */
     /****************************************************************/
-    SKP_Silk_PLC_glue_frames( psDec, &sDecCtrl, pOut, L );
+	SKP_Silk_PLC_glue_frames(psDec, &sDecCtrl, pOut, L);
 
     /************************************************/
-    /* Comfort noise generation / estimation        */
+	/* Comfort noise generation / estimation        */
     /************************************************/
-    SKP_Silk_CNG( psDec, &sDecCtrl, pOut , L );
+	SKP_Silk_CNG(psDec, &sDecCtrl, pOut, L);
 
     /********************************************/
-    /* HP filter output                            */
+	/* HP filter output                            */
     /********************************************/
-    SKP_assert( ( ( psDec->fs_kHz == 12 ) && ( L % 3 ) == 0 ) || 
-                ( ( psDec->fs_kHz != 12 ) && ( L % 2 ) == 0 ) );
-    SKP_Silk_biquad( pOut, psDec->HP_B, psDec->HP_A, psDec->HPState, pOut, L );
+	assert(((psDec->fs_kHz == 12) && (L % 3) == 0) ||
+		   ((psDec->fs_kHz != 12) && (L % 2) == 0));
+	SKP_Silk_biquad(pOut, psDec->HP_B, psDec->HP_A, psDec->HPState, pOut,
+			L);
 
     /********************************************/
-    /* set output frame length                    */
+	/* set output frame length                    */
     /********************************************/
-    *pN = ( SKP_int16 )L;
+	*pN = (int16_t) L;
 
-    /* Update some decoder state variables */
-    psDec->lagPrev = sDecCtrl.pitchL[ NB_SUBFR - 1 ];
+	/* Update some decoder state variables */
+	psDec->lagPrev = sDecCtrl.pitchL[NB_SUBFR - 1];
 
-    return ret;
+	return ret;
 }

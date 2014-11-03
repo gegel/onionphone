@@ -163,9 +163,9 @@ void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
 
 		/* Calculate envelope of bandpass filtered input speech */
 		/* update delay buffers without scaling */
-		temp = shr(envdel2[i], scale);
+		temp = melpe_shr(envdel2[i], scale);
 		envdel2[i] =
-		    shr(sigbuf[BPF_ORD + FRAME - 1], (Shortword) (-scale));
+		    melpe_shr(sigbuf[BPF_ORD + FRAME - 1], (Shortword) (-scale));
 		v_equ_shr(&sigbuf[BPF_ORD - ENV_ORD], envdel[i], scale,
 			  ENV_ORD);
 		envelope(&sigbuf[BPF_ORD], temp, &sigbuf[BPF_ORD], PITCH_FR);
@@ -181,7 +181,7 @@ void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
 			 MINLENGTH);
 
 		/* reduce envelope correlation */
-		pcorr = sub(pcorr, X01_Q14);
+		pcorr = melpe_sub(pcorr, X01_Q14);
 
 		if (pcorr > bpvc[i])
 			bpvc[i] = pcorr;
@@ -269,26 +269,26 @@ void remove_dc(Shortword sigin[], Shortword sigout[], Shortword len)
 	/* Find up_shift and two_power_down.  Note that two_power_down can be     */
 	/* equal to len.                                                          */
 
-	temp = norm_s(len);
-	up_shift = sub(15, temp);
-	temp = sub(up_shift, 1);
-	two_power_down = shl(1, temp);
+	temp = melpe_norm_s(len);
+	up_shift = melpe_sub(15, temp);
+	temp = melpe_sub(up_shift, 1);
+	two_power_down = melpe_shl(1, temp);
 
 	sum = 0;
 	for (i = 0; i < len; i++)
-		sum = L_add(sum, L_deposit_l(sigin[i]));
-	sum = L_shr(sum, up_shift);
+		sum = melpe_L_add(sum, melpe_L_deposit_l(sigin[i]));
+	sum = melpe_L_shr(sum, up_shift);
 
 	/* if (len > two_power_down) */
 	/* if condition has been removed 'cos it is always true */
 	{
-		temp = divide_s(two_power_down, len);	/* Q15 */
-		offset = mult(extract_l(sum), temp);
+		temp = melpe_divide_s(two_power_down, len);	/* Q15 */
+		offset = melpe_mult(melpe_extract_l(sum), temp);
 	}
-	offset = shl(offset, 1);
+	offset = melpe_shl(offset, 1);
 
 	for (i = 0; i < len; i++)
-		sigout[i] = sub(sigin[i], offset);
+		sigout[i] = melpe_sub(sigin[i], offset);
 }
 
 /* Name: gain_ana.c                                                           */
@@ -323,22 +323,22 @@ Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
 	Longword L_temp;
 
 	/* initialize scaled pitch and minlength */
-	pitch_Q6 = shr(pitch, 1);	/* Q7->Q6 */
+	pitch_Q6 = melpe_shr(pitch, 1);	/* Q7->Q6 */
 
-	tmp_minlength = shl(minlength, 6);
+	tmp_minlength = melpe_shl(minlength, 6);
 
 	/* Find shortest pitch multiple window length (floating point) */
 	flength = pitch_Q6;
 	while (flength < tmp_minlength) {
-		flength = add(flength, pitch_Q6);
+		flength = melpe_add(flength, pitch_Q6);
 	}
 
 	/* Convert window length to integer and check against maximum */
-	length = shr(add(flength, X05_Q6), 6);
+	length = melpe_shr(melpe_add(flength, X05_Q6), 6);
 
 	if (length > maxlength) {
 		/* divide by 2 */
-		length = shr(length, 1);
+		length = melpe_shr(length, 1);
 	}
 
 	/* Calculate RMS gain in dB */
@@ -348,7 +348,7 @@ Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
 	/* use this adaptive scaling if more precision needed at low levels.      */
 	/* Seemed like it wasn't worth the mips */
 
-	sigbegin = negate(shr(length, 1));
+	sigbegin = melpe_negate(melpe_shr(length, 1));
 
 	/* Right shift input signal and put in temp buffer */
 	temp_buf = v_get(length);
@@ -359,8 +359,8 @@ Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
 	L_temp = L_v_magsq(temp_buf, length, 0, 1);
 
 	if (L_temp) {
-		S_temp1 = norm_l(L_temp);
-		scale = sub(scale, shr(S_temp1, 1));
+		S_temp1 = melpe_norm_l(L_temp);
+		scale = melpe_sub(scale, melpe_shr(S_temp1, 1));
 		if (scale < 0)
 			scale = 0;
 	} else
@@ -376,13 +376,13 @@ Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
 	if (scale) {
 		L_temp = L_v_magsq(&tmp_sig[sigbegin], length, 0, 0);
 		S_temp1 = L_log10_fxp(L_temp, 0);
-		S_temp2 = L_log10_fxp(L_deposit_l(length), 0);
-		S_temp1 = sub(S_temp1, S_temp2);
+		S_temp2 = L_log10_fxp(melpe_L_deposit_l(length), 0);
+		S_temp1 = melpe_sub(S_temp1, S_temp2);
 		/* shift right to counter-act for the shift in L_mult */
-		S_temp2 = extract_l(L_shr(L_mult(scale, LOG10OF2X2), 1));
-		S_temp1 = add(S_temp1, S_temp2);
-		S_temp1 = mult(TEN_Q11, S_temp1);
-		gain = shl(S_temp1, 1);
+		S_temp2 = melpe_extract_l(melpe_L_shr(melpe_L_mult(scale, LOG10OF2X2), 1));
+		S_temp1 = melpe_add(S_temp1, S_temp2);
+		S_temp1 = melpe_mult(TEN_Q11, S_temp1);
+		gain = melpe_shl(S_temp1, 1);
 	} else {
 		L_temp = L_v_magsq(&tmp_sig[sigbegin], length, 0, 0);
 		/* Add one to avoid log of a zero value */
@@ -390,10 +390,10 @@ Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
 			S_temp1 = N2_Q11;
 		else
 			S_temp1 = L_log10_fxp(L_temp, 0);
-		S_temp2 = L_log10_fxp(L_deposit_l(length), 0);
-		S_temp1 = sub(S_temp1, S_temp2);
-		S_temp1 = mult(TEN_Q11, S_temp1);
-		gain = shl(S_temp1, 1);
+		S_temp2 = L_log10_fxp(melpe_L_deposit_l(length), 0);
+		S_temp1 = melpe_sub(S_temp1, S_temp2);
+		S_temp1 = melpe_mult(TEN_Q11, S_temp1);
+		gain = melpe_shl(S_temp1, 1);
 	}
 
 	if (gain < MINGAIN) {
@@ -432,13 +432,13 @@ Shortword lin_int_bnd(Shortword x, Shortword xmin, Shortword xmax,
 		y = ymax;
 	else {
 		/* y = ymin + (x-xmin)*(ymax-ymin)/(xmax-xmin); */
-		temp1 = sub(x, xmin);
-		temp2 = sub(ymax, ymin);
-		temp1 = mult(temp1, temp2);	/* temp1 in Q8 */
-		temp2 = sub(xmax, xmin);
+		temp1 = melpe_sub(x, xmin);
+		temp2 = melpe_sub(ymax, ymin);
+		temp1 = melpe_mult(temp1, temp2);	/* temp1 in Q8 */
+		temp2 = melpe_sub(xmax, xmin);
 		/* temp1 always smaller than temp2 */
-		temp1 = divide_s(temp1, temp2);	/* temp1 in Q15 */
-		y = add(ymin, temp1);
+		temp1 = melpe_divide_s(temp1, temp2);	/* temp1 in Q15 */
+		y = melpe_add(ymin, temp1);
 	}
 
 	return (y);
@@ -471,13 +471,13 @@ void noise_est(Shortword gain, Shortword * noise_gain, Shortword up,
 	/* Update noise_gain */
 	/*      temp1 = add(*noise_gain, up); */
 	/*      temp2 = add(*noise_gain, down); */
-	L_noise_gain = L_deposit_h(*noise_gain);	/* L_noise_gain in Q24 */
-	L_temp = L_shl(L_deposit_l(up), 5);
-	L_temp = L_add(L_noise_gain, L_temp);
-	temp1 = r_ound(L_temp);
-	L_temp = L_shl(L_deposit_l(down), 7);
-	L_temp = L_add(L_noise_gain, L_temp);
-	temp2 = r_ound(L_temp);
+	L_noise_gain = melpe_L_deposit_h(*noise_gain);	/* L_noise_gain in Q24 */
+	L_temp = melpe_L_shl(melpe_L_deposit_l(up), 5);
+	L_temp = melpe_L_add(L_noise_gain, L_temp);
+	temp1 = melpe_r_ound(L_temp);
+	L_temp = melpe_L_shl(melpe_L_deposit_l(down), 7);
+	L_temp = melpe_L_add(L_noise_gain, L_temp);
+	temp2 = melpe_r_ound(L_temp);
 
 	if (gain > temp1)
 		*noise_gain = temp1;
@@ -521,21 +521,21 @@ void noise_sup(Shortword * gain, Shortword noise_gain, Shortword max_noise,
 		noise_gain = max_noise;
 
 	/* Calculate suppression factor */
-	gain_lev = sub(*gain, add(noise_gain, nfact));
+	gain_lev = melpe_sub(*gain, melpe_add(noise_gain, nfact));
 	if (gain_lev > X0001_Q8) {
 		/*      suppress = -10.0*log10(1.0 - pow(10.0,-0.1*gain_lev));            */
-		L_temp = L_mult(M01_Q15, gain_lev);	/* L_temp in Q24 */
-		temp = extract_h(L_shl(L_temp, 4));	/* temp in Q12 */
+		L_temp = melpe_L_mult(M01_Q15, gain_lev);	/* L_temp in Q24 */
+		temp = melpe_extract_h(melpe_L_shl(L_temp, 4));	/* temp in Q12 */
 		temp = pow10_fxp(temp, 14);
-		temp = sub(ONE_Q14, temp);
-		suppress = mult(M10_Q11, log10_fxp(temp, 14));	/* log returns Q12 */
+		temp = melpe_sub(ONE_Q14, temp);
+		suppress = melpe_mult(M10_Q11, log10_fxp(temp, 14));	/* log returns Q12 */
 		if (suppress > max_atten)
 			suppress = max_atten;
 	} else
 		suppress = max_atten;
 
 	/* Apply suppression to input gain */
-	*gain = sub(*gain, suppress);
+	*gain = melpe_sub(*gain, suppress);
 }
 
 /* Name: q_bpvc.c, q_bpvc_dec.c                                               */
@@ -566,7 +566,7 @@ BOOLEAN q_bpvc(Shortword bpvc[], Shortword * bpvc_index, Shortword num_bands)
 		bpvc[0] = ONE_Q14;
 
 		for (i = 1; i < num_bands; i++) {
-			index = shl(index, 1);	/* left shift one bit */
+			index = melpe_shl(index, 1);	/* left shift one bit */
 			if (bpvc[i] > BPTHRESH_Q14) {
 				bpvc[i] = ONE_Q14;
 				index |= 1;
@@ -614,7 +614,7 @@ void q_bpvc_dec(Shortword bpvc[], Shortword bpvc_index, BOOLEAN uv_flag,
 			bpvc[i] = ONE_Q14;
 		else
 			bpvc[i] = 0;
-		bpvc_index = shr(bpvc_index, 1);
+		bpvc_index = melpe_shr(bpvc_index, 1);
 	}
 }
 
@@ -654,9 +654,9 @@ void q_gain(Shortword * gain, Shortword * gain_index, Shortword gn_qlo,
 
 	/* if (fabs(gain[1] - prev_gain) < GAIN_INT_DB &&
 	   fabs(gain[0] - 0.5*(gain[1]+prev_gain)) < 3.0) */
-	temp = add(shr(gain[1], 1), shr(prev_gain, 1));
-	if (abs_s(sub(gain[1], prev_gain)) < GAIN_INT_DB_Q8 &&
-	    abs_s(sub(gain[0], temp)) < THREE_Q8) {
+	temp = melpe_add(melpe_shr(gain[1], 1), melpe_shr(prev_gain, 1));
+	if (melpe_abs_s(melpe_sub(gain[1], prev_gain)) < GAIN_INT_DB_Q8 &&
+	    melpe_abs_s(melpe_sub(gain[0], temp)) < THREE_Q8) {
 
 		/* interpolate and set special code */
 		/* gain[0] = 0.5*(gain[1] + prev_gain); */
@@ -672,8 +672,8 @@ void q_gain(Shortword * gain, Shortword * gain_index, Shortword gn_qlo,
 			temp = gain[1];
 			temp2 = prev_gain;
 		}
-		temp = sub(temp, SIX_Q8);
-		temp2 = add(temp2, SIX_Q8);
+		temp = melpe_sub(temp, SIX_Q8);
+		temp2 = melpe_add(temp2, SIX_Q8);
 		if (temp < gn_qlo) {
 			temp = gn_qlo;
 		}
@@ -684,7 +684,7 @@ void q_gain(Shortword * gain, Shortword * gain_index, Shortword gn_qlo,
 			3);
 
 		/* Skip all-zero code */
-		gain_index[0] = add(gain_index[0], 1);
+		gain_index[0] = melpe_add(gain_index[0], 1);
 	}
 
 	/* Update previous gain for next time */
@@ -704,8 +704,8 @@ void q_gain_dec(Shortword * gain, Shortword * gain_index, Shortword gn_qlo,
 	if (gain_index[0] == 0) {
 
 		/* interpolation bit code for intermediate gain */
-		temp = sub(gain[1], prev_gain);
-		temp = abs_s(temp);
+		temp = melpe_sub(gain[1], prev_gain);
+		temp = melpe_abs_s(temp);
 		if (temp > GAIN_INT_DB_Q8) {
 			/* Invalid received data (bit error) */
 			if (!prev_gain_err) {
@@ -718,7 +718,7 @@ void q_gain_dec(Shortword * gain, Shortword * gain_index, Shortword gn_qlo,
 
 		/* Use interpolated gain value */
 		/* gain[0] = 0.5*(gain[1]+prev_gain); */
-		gain[0] = add(shr(gain[1], 1), shr(prev_gain, 1));
+		gain[0] = melpe_add(melpe_shr(gain[1], 1), melpe_shr(prev_gain, 1));
 	} else {
 		/* Decode 7-bit quantizer for first gain term */
 		prev_gain_err = FALSE;
@@ -729,8 +729,8 @@ void q_gain_dec(Shortword * gain, Shortword * gain_index, Shortword gn_qlo,
 			temp = gain[1];
 			temp2 = prev_gain;
 		}
-		temp = sub(temp, SIX_Q8);
-		temp2 = add(temp2, SIX_Q8);
+		temp = melpe_sub(temp, SIX_Q8);
+		temp2 = melpe_add(temp2, SIX_Q8);
 		if (temp < gn_qlo)
 			temp = gn_qlo;
 		if (temp2 > gn_qup)
@@ -739,7 +739,7 @@ void q_gain_dec(Shortword * gain, Shortword * gain_index, Shortword gn_qlo,
 		/* Previously we subtract 1 from gain_index[0] in this function. */
 		/* Now to incorporate the transcoder, we want to avoid changing  */
 		/* gain_index[0] in this function.                               */
-		quant_u_dec(sub(gain_index[0], 1), &gain[0], temp, temp2,
+		quant_u_dec(melpe_sub(gain_index[0], 1), &gain[0], temp, temp2,
 			    SIX_Q12, 3);
 	}
 
@@ -787,65 +787,65 @@ void scale_adj(Shortword * speech, Shortword gain, Shortword length,
 
 	if (L_magsq) {
 		/* normalize with 1 bit of headroom */
-		temp = norm_l(L_magsq);
-		temp = sub(temp, 1);
-		shift = sub(shift, shr(temp, 1));
+		temp = melpe_norm_l(L_magsq);
+		temp = melpe_sub(temp, 1);
+		shift = melpe_sub(shift, melpe_shr(temp, 1));
 	} else
 		shift = 0;
 
 	v_equ_shr(tempbuf, speech, shift, length);
 
 	/* exp = log(2^shift) */
-	shift = shl(shift, 1);	/* total compensation = shift*2 */
-	temp = shl(ONE_Q8, shift);
+	shift = melpe_shl(shift, 1);	/* total compensation = shift*2 */
+	temp = melpe_shl(ONE_Q8, shift);
 	shift = log10_fxp(temp, 8);	/* shift in Q12 */
 
 	L_magsq = L_v_magsq(tempbuf, length, 0, 0);
-	L_magsq = L_add(L_magsq, 1);	/* ensure L_magsq is not zero */
+	L_magsq = melpe_L_add(L_magsq, 1);	/* ensure L_magsq is not zero */
 	log_magsq = L_log10_fxp(L_magsq, 0);	/* log_magsq in Q11 */
 	/* L_magsq = log_magsq in Q12 */
-	L_magsq = L_deposit_l(log_magsq);
-	L_magsq = L_shl(L_magsq, 1);
+	L_magsq = melpe_L_deposit_l(log_magsq);
+	L_magsq = melpe_L_shl(L_magsq, 1);
 	/* compensate for normalization */
 	/* L_magsq = log magnitude/2 in Q13 */
-	L_temp = L_deposit_l(shift);
-	L_magsq = L_add(L_magsq, L_temp);
+	L_temp = melpe_L_deposit_l(shift);
+	L_magsq = melpe_L_add(L_magsq, L_temp);
 
-	temp = shl(length, 7);
+	temp = melpe_shl(length, 7);
 	log_length = log10_fxp(temp, 7);	/* log_length in Q12 */
 	/* L_length = log_length/2 in Q13 */
-	L_length = L_deposit_l(log_length);
+	L_length = melpe_L_deposit_l(log_length);
 
-	L_temp = L_deposit_l(gain);
-	L_temp = L_shl(L_temp, 1);	/* L_temp in Q13 */
-	L_temp = L_sub(L_temp, L_magsq);
-	L_temp = L_add(L_temp, L_length);
-	L_temp = L_shr(L_temp, 1);	/* Q13 -> Q12 */
-	temp = extract_l(L_temp);	/* temp in Q12 */
+	L_temp = melpe_L_deposit_l(gain);
+	L_temp = melpe_L_shl(L_temp, 1);	/* L_temp in Q13 */
+	L_temp = melpe_L_sub(L_temp, L_magsq);
+	L_temp = melpe_L_add(L_temp, L_length);
+	L_temp = melpe_L_shr(L_temp, 1);	/* Q13 -> Q12 */
+	temp = melpe_extract_l(L_temp);	/* temp in Q12 */
 	scale = pow10_fxp(temp, 13);
 
 	/* interpolate scale factors for first scale_over points */
 	for (i = 1; i < scale_over; i++) {
 		/* speech[i-1] *= ((scale*i + prev_scale*(scale_over - i))
 		 * (1.0/scale_over)); */
-		temp = sub(scale_over, i);
-		temp = shl(temp, 11);
-		L_temp = L_mult(temp, inv_scale_over);	/* L_temp in Q30 */
-		L_temp = L_shl(L_temp, 1);	/* L_temp in Q31 */
-		temp = extract_h(L_temp);	/* temp in Q15 */
-		interp1 = L_mult(prev_scale, temp);	/* interp1 in Q29 */
+		temp = melpe_sub(scale_over, i);
+		temp = melpe_shl(temp, 11);
+		L_temp = melpe_L_mult(temp, inv_scale_over);	/* L_temp in Q30 */
+		L_temp = melpe_L_shl(L_temp, 1);	/* L_temp in Q31 */
+		temp = melpe_extract_h(L_temp);	/* temp in Q15 */
+		interp1 = melpe_L_mult(prev_scale, temp);	/* interp1 in Q29 */
 
-		temp = shl(i, 11);
-		L_temp = L_mult(temp, inv_scale_over);	/* L_temp in Q30 */
-		L_temp = L_shl(L_temp, 1);	/* L_temp in Q31 */
-		temp = extract_h(L_temp);	/* temp in Q15 */
-		interp2 = L_mult(scale, temp);	/* interp2 in Q29 */
-		L_temp = L_add(interp1, interp2);
-		interp1 = extract_h(L_temp);	/* interp1 in Q13 */
+		temp = melpe_shl(i, 11);
+		L_temp = melpe_L_mult(temp, inv_scale_over);	/* L_temp in Q30 */
+		L_temp = melpe_L_shl(L_temp, 1);	/* L_temp in Q31 */
+		temp = melpe_extract_h(L_temp);	/* temp in Q15 */
+		interp2 = melpe_L_mult(scale, temp);	/* interp2 in Q29 */
+		L_temp = melpe_L_add(interp1, interp2);
+		interp1 = melpe_extract_h(L_temp);	/* interp1 in Q13 */
 
-		L_temp = L_mult(speech[i - 1], (Shortword) interp1);
-		L_temp = L_shl(L_temp, 2);
-		speech[i - 1] = extract_h(L_temp);
+		L_temp = melpe_L_mult(speech[i - 1], (Shortword) interp1);
+		L_temp = melpe_L_shl(L_temp, 2);
+		speech[i - 1] = melpe_extract_h(L_temp);
 	}
 
 	/* Scale rest of signal */

@@ -126,7 +126,7 @@ void transcode_up()
 		       GN_QUP_Q8, GN_QLEV_M1, GN_QLEV_M1_Q10, 0, 5);
 
 		/*      quant_u(&par->jitter, &par->jit_index, 0, MAX_JITTER_Q15, 2);     */
-		if (melp_par[frame].jitter < shr(MAX_JITTER_Q15, 1)) {
+		if (melp_par[frame].jitter < melpe_shr(MAX_JITTER_Q15, 1)) {
 			melp_par[frame].jitter = 0;
 			quant_par.jit_index[0] = 0;
 		} else {

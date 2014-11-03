@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -31,21 +33,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_define.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #define NLSF_MSVQ_CB0_10_STAGES       6
 #define NLSF_MSVQ_CB0_10_VECTORS      120
 
 /* NLSF codebook entropy coding tables */
-extern const SKP_uint16         SKP_Silk_NLSF_MSVQ_CB0_10_CDF[ NLSF_MSVQ_CB0_10_VECTORS + NLSF_MSVQ_CB0_10_STAGES ];
-extern const SKP_uint16 * const SKP_Silk_NLSF_MSVQ_CB0_10_CDF_start_ptr[                  NLSF_MSVQ_CB0_10_STAGES ];
-extern const SKP_int            SKP_Silk_NLSF_MSVQ_CB0_10_CDF_middle_idx[                 NLSF_MSVQ_CB0_10_STAGES ];
+	extern const uint16_t
+	    SKP_Silk_NLSF_MSVQ_CB0_10_CDF[NLSF_MSVQ_CB0_10_VECTORS +
+					  NLSF_MSVQ_CB0_10_STAGES];
+	extern const uint16_t *const
+	    SKP_Silk_NLSF_MSVQ_CB0_10_CDF_start_ptr[NLSF_MSVQ_CB0_10_STAGES];
+	extern const int
+	    SKP_Silk_NLSF_MSVQ_CB0_10_CDF_middle_idx[NLSF_MSVQ_CB0_10_STAGES];
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif
-

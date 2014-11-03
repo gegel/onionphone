@@ -73,11 +73,11 @@ Longword L_mpy_ls(Longword L_var2, Shortword var1)
 	Longword L_varOut;
 	Shortword swtemp;
 
-	swtemp = shr(extract_l(L_var2), 1);
+	swtemp = melpe_shr(melpe_extract_l(L_var2), 1);
 	swtemp = (Shortword) ((short)32767 & (short)swtemp);
 
-	L_varOut = L_mult(var1, swtemp);
-	L_varOut = L_shr(L_varOut, 15);
-	L_varOut = L_mac(L_varOut, var1, extract_h(L_var2));
+	L_varOut = melpe_L_mult(var1, swtemp);
+	L_varOut = melpe_L_shr(L_varOut, 15);
+	L_varOut = melpe_L_mac(L_varOut, var1, melpe_extract_h(L_var2));
 	return (L_varOut);
 }

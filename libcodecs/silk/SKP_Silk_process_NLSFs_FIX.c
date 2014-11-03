@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -27,101 +29,130 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_main_FIX.h"
 
-/* Limit, stabilize, convert and quantize NLSFs.    */ 
-void SKP_Silk_process_NLSFs_FIX(
-    SKP_Silk_encoder_state_FIX      *psEnc,             /* I/O  Encoder state FIX                           */
-    SKP_Silk_encoder_control_FIX    *psEncCtrl,         /* I/O  Encoder control FIX                         */
-    SKP_int                         *pNLSF_Q15          /* I/O  Normalized LSFs (quant out) (0 - (2^15-1))  */
-)
+/* Limit, stabilize, convert and quantize NLSFs.    */
+void SKP_Silk_process_NLSFs_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  Encoder state FIX                           */
+				SKP_Silk_encoder_control_FIX * psEncCtrl,	/* I/O  Encoder control FIX                         */
+				int *pNLSF_Q15	/* I/O  Normalized LSFs (quant out) (0 - (2^15-1))  */
+    )
 {
-    SKP_int     doInterpolate;
-    SKP_int     pNLSFW_Q6[ MAX_LPC_ORDER ];
-    SKP_int     NLSF_mu_Q15, NLSF_mu_fluc_red_Q16;
-    SKP_int32   i_sqr_Q15;
-    const SKP_Silk_NLSF_CB_struct *psNLSF_CB;
+	int doInterpolate;
+	int pNLSFW_Q6[MAX_LPC_ORDER];
+	int NLSF_mu_Q15, NLSF_mu_fluc_red_Q16;
+	int32_t i_sqr_Q15;
+	const SKP_Silk_NLSF_CB_struct *psNLSF_CB;
 
-    /* Used only for NLSF interpolation */
-    SKP_int     pNLSF0_temp_Q15[ MAX_LPC_ORDER ];
-    SKP_int     pNLSFW0_temp_Q6[ MAX_LPC_ORDER ];
-    SKP_int     i;
+	/* Used only for NLSF interpolation */
+	int pNLSF0_temp_Q15[MAX_LPC_ORDER];
+	int pNLSFW0_temp_Q6[MAX_LPC_ORDER];
+	int i;
 
-    SKP_assert( psEnc->speech_activity_Q8 >=   0 );
-    SKP_assert( psEnc->speech_activity_Q8 <= 256 );
-    SKP_assert( psEncCtrl->sparseness_Q8  >=   0 );
-    SKP_assert( psEncCtrl->sparseness_Q8  <= 256 );
-    SKP_assert( psEncCtrl->sCmn.sigtype == SIG_TYPE_VOICED || psEncCtrl->sCmn.sigtype == SIG_TYPE_UNVOICED );
+	assert(psEnc->speech_activity_Q8 >= 0);
+	assert(psEnc->speech_activity_Q8 <= 256);
+	assert(psEncCtrl->sparseness_Q8 >= 0);
+	assert(psEncCtrl->sparseness_Q8 <= 256);
+	assert(psEncCtrl->sCmn.sigtype == SIG_TYPE_VOICED
+		   || psEncCtrl->sCmn.sigtype == SIG_TYPE_UNVOICED);
 
     /***********************/
-    /* Calculate mu values */
+	/* Calculate mu values */
     /***********************/
-    if( psEncCtrl->sCmn.sigtype == SIG_TYPE_VOICED ) {
-        /* NLSF_mu           = 0.002f - 0.001f * psEnc->speech_activity; */
-        /* NLSF_mu_fluc_red  = 0.1f   - 0.05f  * psEnc->speech_activity; */
-        NLSF_mu_Q15          = SKP_SMLAWB(   66,   -8388, psEnc->speech_activity_Q8 );
-        NLSF_mu_fluc_red_Q16 = SKP_SMLAWB( 6554, -838848, psEnc->speech_activity_Q8 );
-    } else { 
-        /* NLSF_mu           = 0.005f - 0.004f * psEnc->speech_activity; */
-        /* NLSF_mu_fluc_red  = 0.2f   - 0.1f   * psEnc->speech_activity - 0.1f * psEncCtrl->sparseness; */
-        NLSF_mu_Q15          = SKP_SMLAWB(   164,   -33554, psEnc->speech_activity_Q8 );
-        NLSF_mu_fluc_red_Q16 = SKP_SMLAWB( 13107, -1677696, psEnc->speech_activity_Q8 + psEncCtrl->sparseness_Q8 ); 
-    }
-    SKP_assert( NLSF_mu_Q15          >= 0     );
-    SKP_assert( NLSF_mu_Q15          <= 164   );
-    SKP_assert( NLSF_mu_fluc_red_Q16 >= 0     );
-    SKP_assert( NLSF_mu_fluc_red_Q16 <= 13107 );
+	if (psEncCtrl->sCmn.sigtype == SIG_TYPE_VOICED) {
+		/* NLSF_mu           = 0.002f - 0.001f * psEnc->speech_activity; */
+		/* NLSF_mu_fluc_red  = 0.1f   - 0.05f  * psEnc->speech_activity; */
+		NLSF_mu_Q15 = SKP_SMLAWB(66, -8388, psEnc->speech_activity_Q8);
+		NLSF_mu_fluc_red_Q16 =
+		    SKP_SMLAWB(6554, -838848, psEnc->speech_activity_Q8);
+	} else {
+		/* NLSF_mu           = 0.005f - 0.004f * psEnc->speech_activity; */
+		/* NLSF_mu_fluc_red  = 0.2f   - 0.1f   * psEnc->speech_activity - 0.1f * psEncCtrl->sparseness; */
+		NLSF_mu_Q15 =
+		    SKP_SMLAWB(164, -33554, psEnc->speech_activity_Q8);
+		NLSF_mu_fluc_red_Q16 =
+		    SKP_SMLAWB(13107, -1677696,
+			       psEnc->speech_activity_Q8 +
+			       psEncCtrl->sparseness_Q8);
+	}
+	assert(NLSF_mu_Q15 >= 0);
+	assert(NLSF_mu_Q15 <= 164);
+	assert(NLSF_mu_fluc_red_Q16 >= 0);
+	assert(NLSF_mu_fluc_red_Q16 <= 13107);
 
-    NLSF_mu_Q15 = SKP_max( NLSF_mu_Q15, 1 );
+	NLSF_mu_Q15 = SKP_max(NLSF_mu_Q15, 1);
 
-    /* Calculate NLSF weights */
-    TIC(NLSF_weights_FIX)
-    SKP_Silk_NLSF_VQ_weights_laroia( pNLSFW_Q6, pNLSF_Q15, psEnc->sCmn.predictLPCOrder );
-    TOC(NLSF_weights_FIX)
+	/* Calculate NLSF weights */
+	TIC(NLSF_weights_FIX)
+	    SKP_Silk_NLSF_VQ_weights_laroia(pNLSFW_Q6, pNLSF_Q15,
+					    psEnc->sCmn.predictLPCOrder);
+	TOC(NLSF_weights_FIX)
 
-    /* Update NLSF weights for interpolated NLSFs */
-    doInterpolate = ( psEnc->sCmn.useInterpolatedNLSFs == 1 ) && ( psEncCtrl->sCmn.NLSFInterpCoef_Q2 < ( 1 << 2 ) );
-    if( doInterpolate ) {
+	    /* Update NLSF weights for interpolated NLSFs */
+	    doInterpolate = (psEnc->sCmn.useInterpolatedNLSFs == 1)
+	    && (psEncCtrl->sCmn.NLSFInterpCoef_Q2 < (1 << 2));
+	if (doInterpolate) {
 
-        /* Calculate the interpolated NLSF vector for the first half */
-        SKP_Silk_interpolate( pNLSF0_temp_Q15, psEnc->sPred.prev_NLSFq_Q15, pNLSF_Q15, 
-            psEncCtrl->sCmn.NLSFInterpCoef_Q2, psEnc->sCmn.predictLPCOrder );
+		/* Calculate the interpolated NLSF vector for the first half */
+		SKP_Silk_interpolate(pNLSF0_temp_Q15,
+				     psEnc->sPred.prev_NLSFq_Q15, pNLSF_Q15,
+				     psEncCtrl->sCmn.NLSFInterpCoef_Q2,
+				     psEnc->sCmn.predictLPCOrder);
 
-        /* Calculate first half NLSF weights for the interpolated NLSFs */
-        TIC(NLSF_weights_FIX)
-        SKP_Silk_NLSF_VQ_weights_laroia( pNLSFW0_temp_Q6, pNLSF0_temp_Q15, psEnc->sCmn.predictLPCOrder );
-        TOC(NLSF_weights_FIX)
+		/* Calculate first half NLSF weights for the interpolated NLSFs */
+		TIC(NLSF_weights_FIX)
+		    SKP_Silk_NLSF_VQ_weights_laroia(pNLSFW0_temp_Q6,
+						    pNLSF0_temp_Q15,
+						    psEnc->sCmn.
+						    predictLPCOrder);
+		TOC(NLSF_weights_FIX)
 
-        /* Update NLSF weights with contribution from first half */
-        i_sqr_Q15 = SKP_LSHIFT( SKP_SMULBB( psEncCtrl->sCmn.NLSFInterpCoef_Q2, psEncCtrl->sCmn.NLSFInterpCoef_Q2 ), 11 );
-        for( i = 0; i < psEnc->sCmn.predictLPCOrder; i++ ) {
-            pNLSFW_Q6[ i ] = SKP_SMLAWB( SKP_RSHIFT( pNLSFW_Q6[ i ], 1 ), pNLSFW0_temp_Q6[ i ], i_sqr_Q15 );
-            SKP_assert( pNLSFW_Q6[ i ] <= SKP_int16_MAX );
-            SKP_assert( pNLSFW_Q6[ i ] >= 1 );
-        }
-    }
+		    /* Update NLSF weights with contribution from first half */
+		    i_sqr_Q15 =
+		    SKP_LSHIFT(SKP_SMULBB
+			       (psEncCtrl->sCmn.NLSFInterpCoef_Q2,
+				psEncCtrl->sCmn.NLSFInterpCoef_Q2), 11);
+		for (i = 0; i < psEnc->sCmn.predictLPCOrder; i++) {
+			pNLSFW_Q6[i] =
+			    SKP_SMLAWB(SKP_RSHIFT(pNLSFW_Q6[i], 1),
+				       pNLSFW0_temp_Q6[i], i_sqr_Q15);
+			assert(pNLSFW_Q6[i] <= int16_t_MAX);
+			assert(pNLSFW_Q6[i] >= 1);
+		}
+	}
 
-    /* Set pointer to the NLSF codebook for the current signal type and LPC order */
-    psNLSF_CB = psEnc->sCmn.psNLSF_CB[ psEncCtrl->sCmn.sigtype ];
+	/* Set pointer to the NLSF codebook for the current signal type and LPC order */
+	psNLSF_CB = psEnc->sCmn.psNLSF_CB[psEncCtrl->sCmn.sigtype];
 
-    /* Quantize NLSF parameters given the trained NLSF codebooks */
-    TIC(MSVQ_encode_FIX)
-    SKP_Silk_NLSF_MSVQ_encode_FIX( psEncCtrl->sCmn.NLSFIndices, pNLSF_Q15, psNLSF_CB, 
-        psEnc->sPred.prev_NLSFq_Q15, pNLSFW_Q6, NLSF_mu_Q15, NLSF_mu_fluc_red_Q16, 
-        psEnc->sCmn.NLSF_MSVQ_Survivors, psEnc->sCmn.predictLPCOrder, psEnc->sCmn.first_frame_after_reset );
-    TOC(MSVQ_encode_FIX)
+	/* Quantize NLSF parameters given the trained NLSF codebooks */
+	TIC(MSVQ_encode_FIX)
+	    SKP_Silk_NLSF_MSVQ_encode_FIX(psEncCtrl->sCmn.NLSFIndices,
+					  pNLSF_Q15, psNLSF_CB,
+					  psEnc->sPred.prev_NLSFq_Q15,
+					  pNLSFW_Q6, NLSF_mu_Q15,
+					  NLSF_mu_fluc_red_Q16,
+					  psEnc->sCmn.NLSF_MSVQ_Survivors,
+					  psEnc->sCmn.predictLPCOrder,
+					  psEnc->sCmn.first_frame_after_reset);
+	TOC(MSVQ_encode_FIX)
 
-    /* Convert quantized NLSFs back to LPC coefficients */
-    SKP_Silk_NLSF2A_stable( psEncCtrl->PredCoef_Q12[ 1 ], pNLSF_Q15, psEnc->sCmn.predictLPCOrder );
+	    /* Convert quantized NLSFs back to LPC coefficients */
+	    SKP_Silk_NLSF2A_stable(psEncCtrl->PredCoef_Q12[1], pNLSF_Q15,
+				   psEnc->sCmn.predictLPCOrder);
 
-    if( doInterpolate ) {
-        /* Calculate the interpolated, quantized LSF vector for the first half */
-        SKP_Silk_interpolate( pNLSF0_temp_Q15, psEnc->sPred.prev_NLSFq_Q15, pNLSF_Q15, 
-            psEncCtrl->sCmn.NLSFInterpCoef_Q2, psEnc->sCmn.predictLPCOrder );
+	if (doInterpolate) {
+		/* Calculate the interpolated, quantized LSF vector for the first half */
+		SKP_Silk_interpolate(pNLSF0_temp_Q15,
+				     psEnc->sPred.prev_NLSFq_Q15, pNLSF_Q15,
+				     psEncCtrl->sCmn.NLSFInterpCoef_Q2,
+				     psEnc->sCmn.predictLPCOrder);
 
-        /* Convert back to LPC coefficients */
-        SKP_Silk_NLSF2A_stable( psEncCtrl->PredCoef_Q12[ 0 ], pNLSF0_temp_Q15, psEnc->sCmn.predictLPCOrder );
+		/* Convert back to LPC coefficients */
+		SKP_Silk_NLSF2A_stable(psEncCtrl->PredCoef_Q12[0],
+				       pNLSF0_temp_Q15,
+				       psEnc->sCmn.predictLPCOrder);
 
-    } else {
-        /* Copy LPC coefficients for first half from second half */
-        SKP_memcpy( psEncCtrl->PredCoef_Q12[ 0 ], psEncCtrl->PredCoef_Q12[ 1 ], psEnc->sCmn.predictLPCOrder * sizeof( SKP_int16 ) );
-    }
+	} else {
+		/* Copy LPC coefficients for first half from second half */
+		SKP_memcpy(psEncCtrl->PredCoef_Q12[0],
+			   psEncCtrl->PredCoef_Q12[1],
+			   psEnc->sCmn.predictLPCOrder * sizeof(int16_t));
+	}
 }

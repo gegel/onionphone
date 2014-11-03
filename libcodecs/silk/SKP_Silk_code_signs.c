@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -34,54 +36,55 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SKP_dec_map(a)                  ( SKP_LSHIFT( (a),  1 ) - 1 )
 
 /* Encodes signs of excitation */
-void SKP_Silk_encode_signs(
-    SKP_Silk_range_coder_state      *sRC,               /* I/O  Range coder state                       */
-    const SKP_int                   q[],                /* I    Pulse signal                            */
-    const SKP_int                   length,             /* I    Length of input                         */
-    const SKP_int                   sigtype,            /* I    Signal type                             */
-    const SKP_int                   QuantOffsetType,    /* I    Quantization offset type                */
-    const SKP_int                   RateLevelIndex      /* I    Rate level index                        */
-)
+void SKP_Silk_encode_signs(SKP_Silk_range_coder_state * sRC,	/* I/O  Range coder state                       */
+			   const int q[],	/* I    Pulse signal                            */
+			   const int length,	/* I    Length of input                         */
+			   const int sigtype,	/* I    Signal type                             */
+			   const int QuantOffsetType,	/* I    Quantization offset type                */
+			   const int RateLevelIndex	/* I    Rate level index                        */
+    )
 {
-    SKP_int i;
-    SKP_int inData;
-    const SKP_uint16 *cdf;
+	int i;
+	int inData;
+	const uint16_t *cdf;
 
-    i = SKP_SMULBB( N_RATE_LEVELS - 1, SKP_LSHIFT( sigtype, 1 ) + QuantOffsetType ) + RateLevelIndex;
-    cdf = SKP_Silk_sign_CDF[ i ];
-    
-    for( i = 0; i < length; i++ ) {
-        if( q[ i ] != 0 ) {
-            inData = SKP_enc_map( q[ i ] ); /* - = 0, + = 1 */
-            SKP_Silk_range_encoder( sRC, inData, cdf );
-        }
-    }
+	i = SKP_SMULBB(N_RATE_LEVELS - 1,
+		       SKP_LSHIFT(sigtype,
+				  1) + QuantOffsetType) + RateLevelIndex;
+	cdf = SKP_Silk_sign_CDF[i];
+
+	for (i = 0; i < length; i++) {
+		if (q[i] != 0) {
+			inData = SKP_enc_map(q[i]);	/* - = 0, + = 1 */
+			SKP_Silk_range_encoder(sRC, inData, cdf);
+		}
+	}
 }
 
 /* Decodes signs of excitation */
-void SKP_Silk_decode_signs(
-    SKP_Silk_range_coder_state      *sRC,               /* I/O  Range coder state                           */
-    SKP_int                         q[],                /* I/O  pulse signal                                */
-    const SKP_int                   length,             /* I    length of output                            */
-    const SKP_int                   sigtype,            /* I    Signal type                                 */
-    const SKP_int                   QuantOffsetType,    /* I    Quantization offset type                    */
-    const SKP_int                   RateLevelIndex      /* I    Rate Level Index                            */
-)
+void SKP_Silk_decode_signs(SKP_Silk_range_coder_state * sRC,	/* I/O  Range coder state                           */
+			   int q[],	/* I/O  pulse signal                                */
+			   const int length,	/* I    length of output                            */
+			   const int sigtype,	/* I    Signal type                                 */
+			   const int QuantOffsetType,	/* I    Quantization offset type                    */
+			   const int RateLevelIndex	/* I    Rate Level Index                            */
+    )
 {
-    SKP_int i;
-    SKP_int data;
-    const SKP_uint16 *cdf;
+	int i;
+	int data;
+	const uint16_t *cdf;
 
-    i = SKP_SMULBB( N_RATE_LEVELS - 1, SKP_LSHIFT( sigtype, 1 ) + QuantOffsetType ) + RateLevelIndex;
-    cdf = SKP_Silk_sign_CDF[ i ];
-    
-    for( i = 0; i < length; i++ ) {
-        if( q[ i ] > 0 ) {
-            SKP_Silk_range_decoder( &data, sRC, cdf, 1 );
-            /* attach sign */
-            /* implementation with shift, subtraction, multiplication */
-            q[ i ] *= SKP_dec_map( data );
-        }
-    }
+	i = SKP_SMULBB(N_RATE_LEVELS - 1,
+		       SKP_LSHIFT(sigtype,
+				  1) + QuantOffsetType) + RateLevelIndex;
+	cdf = SKP_Silk_sign_CDF[i];
+
+	for (i = 0; i < length; i++) {
+		if (q[i] > 0) {
+			SKP_Silk_range_decoder(&data, sRC, cdf, 1);
+			/* attach sign */
+			/* implementation with shift, subtraction, multiplication */
+			q[i] *= SKP_dec_map(data);
+		}
+	}
 }
-

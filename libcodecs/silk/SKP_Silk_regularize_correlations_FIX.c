@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -28,16 +30,16 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_main_FIX.h"
 
 /* Add noise to matrix diagonal */
-void SKP_Silk_regularize_correlations_FIX(
-    SKP_int32                       *XX,                /* I/O  Correlation matrices                        */
-    SKP_int32                       *xx,                /* I/O  Correlation values                          */
-    SKP_int32                       noise,              /* I    Noise to add                                */
-    SKP_int                         D                   /* I    Dimension of XX                             */
-)
+void SKP_Silk_regularize_correlations_FIX(int32_t * XX,	/* I/O  Correlation matrices                        */
+					  int32_t * xx,	/* I/O  Correlation values                          */
+					  int32_t noise,	/* I    Noise to add                                */
+					  int D	/* I    Dimension of XX                             */
+    )
 {
-    SKP_int i;
-    for( i = 0; i < D; i++ ) {
-        matrix_ptr( &XX[ 0 ], i, i, D ) = SKP_ADD32( matrix_ptr( &XX[ 0 ], i, i, D ), noise );
-    }
-    xx[ 0 ] += noise;
+	int i;
+	for (i = 0; i < D; i++) {
+		matrix_ptr(&XX[0], i, i, D) =
+		    SKP_ADD32(matrix_ptr(&XX[0], i, i, D), noise);
+	}
+	xx[0] += noise;
 }

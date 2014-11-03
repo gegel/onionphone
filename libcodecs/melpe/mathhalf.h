@@ -34,99 +34,99 @@ Secretariat fax: +33 493 65 47 16.
 
 /* addition */
 
-static __inline Shortword add(Shortword var1, Shortword var2);	/* 1 ops */
+static inline Shortword melpe_add(Shortword var1, Shortword var2);	/* 1 ops */
 
-static __inline Shortword sub(Shortword var1, Shortword var2);	/* 1 ops */
+static inline Shortword melpe_sub(Shortword var1, Shortword var2);	/* 1 ops */
 
-static __inline Longword L_add(Longword L_var1, Longword L_var2);	/* 2 ops */
+static inline Longword melpe_L_add(Longword L_var1, Longword L_var2);	/* 2 ops */
 
-static __inline Longword L_sub(Longword L_var1, Longword L_var2);	/* 2 ops */
+static inline Longword melpe_L_sub(Longword L_var1, Longword L_var2);	/* 2 ops */
 
 /* multiplication */
 
-static __inline Shortword mult(Shortword var1, Shortword var2);	/* 1 ops */
+static inline Shortword melpe_mult(Shortword var1, Shortword var2);	/* 1 ops */
 
-static __inline Longword L_mult(Shortword var1, Shortword var2);	/* 1 ops */
+static inline Longword melpe_L_mult(Shortword var1, Shortword var2);	/* 1 ops */
 
 /* arithmetic shifts */
 
-static __inline Shortword shr(Shortword var1, Shortword var2);	/* 1 ops */
+static inline Shortword melpe_shr(Shortword var1, Shortword var2);	/* 1 ops */
 
-static __inline Shortword shl(Shortword var1, Shortword var2);	/* 1 ops */
+static inline Shortword melpe_shl(Shortword var1, Shortword var2);	/* 1 ops */
 
-static __inline Longword L_shr(Longword L_var1, Shortword var2);	/* 2 ops */
+static inline Longword melpe_L_shr(Longword L_var1, Shortword var2);	/* 2 ops */
 
-static __inline Longword L_shl(Longword L_var1, Shortword var2);	/* 2 ops */
+static inline Longword melpe_L_shl(Longword L_var1, Shortword var2);	/* 2 ops */
 
-static __inline Shortword shift_r(Shortword var, Shortword var2);	/* 2 ops */
+static inline Shortword melpe_shift_r(Shortword var, Shortword var2);	/* 2 ops */
 
-static __inline Longword L_shift_r(Longword L_var, Shortword var2);	/* 3 ops */
+static inline Longword melpe_L_shift_r(Longword L_var, Shortword var2);	/* 3 ops */
 
 /* absolute value  */
 
-static __inline Shortword abs_s(Shortword var1);	/* 1 ops */
+static inline Shortword melpe_abs_s(Shortword var1);	/* 1 ops */
 
-static __inline Longword L_abs(Longword var1);	/* 3 ops */
+static inline Longword melpe_L_abs(Longword var1);	/* 3 ops */
 
 /* multiply accumulate	*/
 
-static __inline Longword L_mac(Longword L_var3, Shortword var1, Shortword var2);	/* 1 op */
+static inline Longword melpe_L_mac(Longword L_var3, Shortword var1, Shortword var2);	/* 1 op */
 
-static __inline Longword L_msu(Longword L_var3, Shortword var1, Shortword var2);	/* 1 op */
+static inline Longword melpe_L_msu(Longword L_var3, Shortword var1, Shortword var2);	/* 1 op */
 
-static __inline Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2);	/* 2 op */
+static inline Shortword melpe_msu_r(Longword L_var3, Shortword var1, Shortword var2);	/* 2 op */
 
 /* negation  */
 
-static __inline Shortword negate(Shortword var1);	/* 1 ops */
+static inline Shortword melpe_negate(Shortword var1);	/* 1 ops */
 
-static __inline Longword L_negate(Longword L_var1);	/* 2 ops */
+static inline Longword melpe_L_negate(Longword L_var1);	/* 2 ops */
 
 /* Accumulator manipulation */
 
-static __inline Longword L_deposit_l(Shortword var1);	/* 1 ops */
+static inline Longword melpe_L_deposit_l(Shortword var1);	/* 1 ops */
 
-static __inline Longword L_deposit_h(Shortword var1);	/* 1 ops */
+static inline Longword melpe_L_deposit_h(Shortword var1);	/* 1 ops */
 
-static __inline Shortword extract_l(Longword L_var1);	/* 1 ops */
+static inline Shortword melpe_extract_l(Longword L_var1);	/* 1 ops */
 
-static __inline Shortword extract_h(Longword L_var1);	/* 1 ops */
+static inline Shortword melpe_extract_h(Longword L_var1);	/* 1 ops */
 
 /* r_ound */
 
-static __inline Shortword r_ound(Longword L_var1);	/* 1 ops */
+static inline Shortword melpe_r_ound(Longword L_var1);	/* 1 ops */
 
 /* Normalization */
 
-static __inline Shortword norm_l(Longword L_var1);	/* 30 ops */
+static inline Shortword melpe_norm_l(Longword L_var1);	/* 30 ops */
 
-static __inline Shortword norm_s(Shortword var1);	/* 15 ops */
+static inline Shortword melpe_norm_s(Shortword var1);	/* 15 ops */
 
 /* Division */
 
-static __inline Shortword divide_s(Shortword var1, Shortword var2);	/* 18 ops */
+static inline Shortword melpe_divide_s(Shortword var1, Shortword var2);	/* 18 ops */
 
 /* -------------------------------------------------------------------------- */
 /* 40-Bit Routines....added by Andre 11/23/99 */
 
 /* new 40 bits basic operators */
 
-static __inline Word40 L40_add(Word40 acc, Longword L_var1);
+static inline Word40 melpe_L40_add(Word40 acc, Longword L_var1);
 
-static __inline Word40 L40_sub(Word40 acc, Longword L_var1);
+static inline Word40 melpe_L40_sub(Word40 acc, Longword L_var1);
 
-static __inline Word40 L40_mac(Word40 acc, Shortword var1, Shortword var2);
+static inline Word40 melpe_L40_mac(Word40 acc, Shortword var1, Shortword var2);
 
-static __inline Word40 L40_msu(Word40 acc, Shortword var1, Shortword var2);
+static inline Word40 melpe_L40_msu(Word40 acc, Shortword var1, Shortword var2);
 
-static __inline Word40 L40_shl(Word40 acc, Shortword var1);
+static inline Word40 melpe_L40_shl(Word40 acc, Shortword var1);
 
-static __inline Word40 L40_shr(Word40 acc, Shortword var1);
+static inline Word40 melpe_L40_shr(Word40 acc, Shortword var1);
 
-static __inline Word40 L40_negate(Word40 acc);
+static inline Word40 melpe_L40_negate(Word40 acc);
 
-static __inline Shortword norm32(Word40 acc);
-static __inline Longword L_sat32(Word40 acc);
+static inline Shortword melpe_norm32(Word40 acc);
+static inline Longword melpe_L_sat32(Word40 acc);
 
 #include "mathhalf_i.h"
 

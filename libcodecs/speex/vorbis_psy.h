@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2005 Jean-Marc Valin, CSIRO, Christopher Montgomery
    File: vorbis_psy.h
 
@@ -35,12 +37,11 @@
 #ifdef VORBIS_PSYCHO
 
 #include "smallft.h"
-#define P_BANDS 17      /* 62Hz to 16kHz */
+#define P_BANDS 17		/* 62Hz to 16kHz */
 #define NOISE_COMPAND_LEVELS 40
 
-
 #define todB(x)   ((x)>1e-13?log((x)*(x))*4.34294480f:-30)
-#define fromdB(x) (exp((x)*.11512925f))  
+#define fromdB(x) (exp((x)*.11512925f))
 
 /* The bark scale equations are approximations, since the original
    table was somewhat hand rolled.  The below are chosen to have the
@@ -60,38 +61,35 @@
 #define toOC(n)     (log(n)*1.442695f-5.965784f)
 #define fromOC(o)   (exp(((o)+5.965784f)*.693147f))
 
-
 typedef struct {
 
-  float noisewindowlo;
-  float noisewindowhi;
-  int   noisewindowlomin;
-  int   noisewindowhimin;
-  int   noisewindowfixed;
-  float noiseoff[P_BANDS];
-  float noisecompand[NOISE_COMPAND_LEVELS];
+	float noisewindowlo;
+	float noisewindowhi;
+	int noisewindowlomin;
+	int noisewindowhimin;
+	int noisewindowfixed;
+	float noiseoff[P_BANDS];
+	float noisecompand[NOISE_COMPAND_LEVELS];
 
 } VorbisPsyInfo;
 
-
-
 typedef struct {
-  int n;
-  int rate;
-  struct drft_lookup lookup;
-  VorbisPsyInfo *vi;
+	int n;
+	int rate;
+	struct drft_lookup lookup;
+	VorbisPsyInfo *vi;
 
-  float *window;
-  float *noiseoffset;
-  long  *bark;
+	float *window;
+	float *noiseoffset;
+	long *bark;
 
 } VorbisPsy;
 
-
 VorbisPsy *vorbis_psy_init(int rate, int size);
-void vorbis_psy_destroy(VorbisPsy *psy);
-void compute_curve(VorbisPsy *psy, float *audio, float *curve);
-void curve_to_lpc(VorbisPsy *psy, float *curve, float *awk1, float *awk2, int ord);
+void vorbis_psy_destroy(VorbisPsy * psy);
+void compute_curve(VorbisPsy * psy, float *audio, float *curve);
+void curve_to_lpc(VorbisPsy * psy, float *curve, float *awk1, float *awk2,
+		  int ord);
 
 #endif
 #endif

@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -34,17 +36,17 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /* Definitions For Fix pitch estimator                      */
 /************************************************************/
 
-#define PITCH_EST_MAX_FS_KHZ                24 /* Maximum sampling frequency used */
+#define PITCH_EST_MAX_FS_KHZ                24	/* Maximum sampling frequency used */
 
-#define PITCH_EST_FRAME_LENGTH_MS           40 /* 40 ms */
+#define PITCH_EST_FRAME_LENGTH_MS           40	/* 40 ms */
 
 #define PITCH_EST_MAX_FRAME_LENGTH          (PITCH_EST_FRAME_LENGTH_MS * PITCH_EST_MAX_FS_KHZ)
 #define PITCH_EST_MAX_FRAME_LENGTH_ST_1     (PITCH_EST_MAX_FRAME_LENGTH >> 2)
 #define PITCH_EST_MAX_FRAME_LENGTH_ST_2     (PITCH_EST_MAX_FRAME_LENGTH >> 1)
 #define PITCH_EST_MAX_SF_FRAME_LENGTH       (PITCH_EST_SUB_FRAME * PITCH_EST_MAX_FS_KHZ)
 
-#define PITCH_EST_MAX_LAG_MS                18            /* 18 ms -> 56 Hz */
-#define PITCH_EST_MIN_LAG_MS                2            /* 2 ms -> 500 Hz */
+#define PITCH_EST_MAX_LAG_MS                18	/* 18 ms -> 56 Hz */
+#define PITCH_EST_MIN_LAG_MS                2	/* 2 ms -> 500 Hz */
 #define PITCH_EST_MAX_LAG                   (PITCH_EST_MAX_LAG_MS * PITCH_EST_MAX_FS_KHZ)
 #define PITCH_EST_MIN_LAG                   (PITCH_EST_MIN_LAG_MS * PITCH_EST_MAX_FS_KHZ)
 
@@ -66,11 +68,15 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define PITCH_EST_NB_CBKS_STAGE3_MID        24
 #define PITCH_EST_NB_CBKS_STAGE3_MIN        16
 
-extern const SKP_int16 SKP_Silk_CB_lags_stage2[PITCH_EST_NB_SUBFR][PITCH_EST_NB_CBKS_STAGE2_EXT];
-extern const SKP_int16 SKP_Silk_CB_lags_stage3[PITCH_EST_NB_SUBFR][PITCH_EST_NB_CBKS_STAGE3_MAX];
-extern const SKP_int16 SKP_Silk_Lag_range_stage3[ SigProc_PITCH_EST_MAX_COMPLEX + 1 ] [ PITCH_EST_NB_SUBFR ][ 2 ];
-extern const SKP_int16 SKP_Silk_cbk_sizes_stage3[ SigProc_PITCH_EST_MAX_COMPLEX + 1 ];
-extern const SKP_int16 SKP_Silk_cbk_offsets_stage3[ SigProc_PITCH_EST_MAX_COMPLEX + 1 ];
+extern const int16_t
+    SKP_Silk_CB_lags_stage2[PITCH_EST_NB_SUBFR][PITCH_EST_NB_CBKS_STAGE2_EXT];
+extern const int16_t
+    SKP_Silk_CB_lags_stage3[PITCH_EST_NB_SUBFR][PITCH_EST_NB_CBKS_STAGE3_MAX];
+extern const int16_t SKP_Silk_Lag_range_stage3[SigProc_PITCH_EST_MAX_COMPLEX +
+					       1][PITCH_EST_NB_SUBFR][2];
+extern const int16_t SKP_Silk_cbk_sizes_stage3[SigProc_PITCH_EST_MAX_COMPLEX +
+					       1];
+extern const int16_t SKP_Silk_cbk_offsets_stage3[SigProc_PITCH_EST_MAX_COMPLEX +
+						 1];
 
 #endif
-

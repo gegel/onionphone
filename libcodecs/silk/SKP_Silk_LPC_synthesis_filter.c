@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -34,65 +36,71 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* even order AR filter */
-void SKP_Silk_LPC_synthesis_filter(
-    const SKP_int16 *in,        /* I:   excitation signal */
-    const SKP_int16 *A_Q12,     /* I:   AR coefficients [Order], between -8_Q0 and 8_Q0 */
-    const SKP_int32 Gain_Q26,   /* I:   gain */
-    SKP_int32 *S,               /* I/O: state vector [Order] */
-    SKP_int16 *out,             /* O:   output signal */
-    const SKP_int32 len,        /* I:   signal length */
-    const SKP_int Order         /* I:   filter order, must be even */
-)
+void SKP_Silk_LPC_synthesis_filter(const int16_t * in,	/* I:   excitation signal */
+				   const int16_t * A_Q12,	/* I:   AR coefficients [Order], between -8_Q0 and 8_Q0 */
+				   const int32_t Gain_Q26,	/* I:   gain */
+				   int32_t * S,	/* I/O: state vector [Order] */
+				   int16_t * out,	/* O:   output signal */
+				   const int32_t len,	/* I:   signal length */
+				   const int Order	/* I:   filter order, must be even */
+    )
 {
-    SKP_int   k, j, idx, Order_half = SKP_RSHIFT( Order, 1 );
-    SKP_int32 SA, SB, Atmp, A_align_Q12[SigProc_MAX_ORDER_LPC >> 1], out32_Q10, out32;
+	int k, j, idx, Order_half = SKP_RSHIFT(Order, 1);
+	int32_t SA, SB, Atmp, A_align_Q12[SigProc_MAX_ORDER_LPC >> 1],
+	    out32_Q10, out32;
 
-    /* Order must be even */
-    SKP_assert( 2*Order_half == Order );
+	/* Order must be even */
+	assert(2 * Order_half == Order);
 
-    /* combine two A_Q12 values and ensure 32-bit alignment */
-    for( k = 0; k < Order_half; k++ ) {
-        idx = SKP_SMULBB( 2, k );
-        A_align_Q12[k] = (((SKP_int32)A_Q12[idx]) & 0x0000ffff) | SKP_LSHIFT( (SKP_int32)A_Q12[idx+1], 16 );
-    }
+	/* combine two A_Q12 values and ensure 32-bit alignment */
+	for (k = 0; k < Order_half; k++) {
+		idx = SKP_SMULBB(2, k);
+		A_align_Q12[k] =
+		    (((int32_t) A_Q12[idx]) & 0x0000ffff) | SKP_LSHIFT((int32_t)
+								       A_Q12[idx
+									     +
+									     1],
+								       16);
+	}
 
-    /* S[] values are in Q14 */
-    for( k = 0; k < len; k++ ) {
-        SA = S[Order-1];
-        out32_Q10 = 0;
-        for( j=0;j<(Order_half-1); j++ ) {
-            idx = SKP_SMULBB( 2, j ) + 1;
-            /* multiply-add two prediction coefficients for each loop */
-            /* NOTE: the code below loads two int16 values in an int32, and multiplies each using the   */
-            /* SMLAWB and SMLAWT instructions. On a big-endian CPU the two int16 variables would be     */
-            /* loaded in reverse order and the code will give the wrong result. In that case swapping   */
-            /* the SMLAWB and SMLAWT instructions should solve the problem.                             */
-            Atmp = A_align_Q12[j];
-            SB = S[Order - 1 - idx];
-            S[Order - 1 - idx] = SA;
-            out32_Q10 = SKP_SMLAWB( out32_Q10, SA, Atmp );
-            out32_Q10 = SKP_SMLAWT( out32_Q10, SB, Atmp );
-            SA = S[Order - 2 - idx];
-            S[Order - 2 - idx] = SB;
-        }
+	/* S[] values are in Q14 */
+	for (k = 0; k < len; k++) {
+		SA = S[Order - 1];
+		out32_Q10 = 0;
+		for (j = 0; j < (Order_half - 1); j++) {
+			idx = SKP_SMULBB(2, j) + 1;
+			/* multiply-add two prediction coefficients for each loop */
+			/* NOTE: the code below loads two int16 values in an int32, and multiplies each using the   */
+			/* SMLAWB and SMLAWT instructions. On a big-endian CPU the two int16 variables would be     */
+			/* loaded in reverse order and the code will give the wrong result. In that case swapping   */
+			/* the SMLAWB and SMLAWT instructions should solve the problem.                             */
+			Atmp = A_align_Q12[j];
+			SB = S[Order - 1 - idx];
+			S[Order - 1 - idx] = SA;
+			out32_Q10 = SKP_SMLAWB(out32_Q10, SA, Atmp);
+			out32_Q10 = SKP_SMLAWT(out32_Q10, SB, Atmp);
+			SA = S[Order - 2 - idx];
+			S[Order - 2 - idx] = SB;
+		}
 
-        /* unrolled loop: epilog */
-        Atmp = A_align_Q12[Order_half-1];
-        SB = S[0];
-        S[0] = SA;
-        out32_Q10 = SKP_SMLAWB( out32_Q10, SA, Atmp );
-        out32_Q10 = SKP_SMLAWT( out32_Q10, SB, Atmp );
+		/* unrolled loop: epilog */
+		Atmp = A_align_Q12[Order_half - 1];
+		SB = S[0];
+		S[0] = SA;
+		out32_Q10 = SKP_SMLAWB(out32_Q10, SA, Atmp);
+		out32_Q10 = SKP_SMLAWT(out32_Q10, SB, Atmp);
 
-        /* apply gain to excitation signal and add to prediction */
-        out32_Q10 = SKP_ADD_SAT32( out32_Q10, SKP_SMULWB( Gain_Q26, in[k] ) );
+		/* apply gain to excitation signal and add to prediction */
+		out32_Q10 =
+		    SKP_ADD_SAT32(out32_Q10, SKP_SMULWB(Gain_Q26, in[k]));
 
-        /* scale to Q0 */
-        out32 = SKP_RSHIFT_ROUND( out32_Q10, 10 );
+		/* scale to Q0 */
+		out32 = SKP_RSHIFT_ROUND(out32_Q10, 10);
 
-        /* saturate output */
-        out[k] = (SKP_int16)SKP_SAT16( out32 );
+		/* saturate output */
+		out[k] = (int16_t) SKP_SAT16(out32);
 
-        /* move result into delay line */
-        S[Order - 1] = SKP_LSHIFT_SAT32( out32_Q10, 4 );
-    }
+		/* move result into delay line */
+		S[Order - 1] = SKP_LSHIFT_SAT32(out32_Q10, 4);
+	}
 }

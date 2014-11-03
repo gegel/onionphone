@@ -109,7 +109,7 @@ void pitch_vq(struct melp_param *par)
 			deltp[i] = 0;
 			deltw[i] = 0;
 		} else {
-			deltp[i] = sub(target[i], prev_pitch);
+			deltp[i] = melpe_sub(target[i], prev_pitch);
 			deltw[i] = DELTA_PITCH_WEIGHT_Q0;
 		}
 		prev_pitch = target[i];
@@ -161,16 +161,16 @@ void pitch_vq(struct melp_param *par)
 		/* -- select index using static and delta pitch distortion -- */
 		temp1 = 0;
 		for (i = 0; i < PITCH_VQ_CAND; i++) {
-			L_temp = L_mult(indexlist[i], NF);
-			L_temp = L_shr(L_temp, 1);
-			temp2 = extract_l(L_temp);
+			L_temp = melpe_L_mult(indexlist[i], NF);
+			L_temp = melpe_L_shr(L_temp, 1);
+			temp2 = melpe_extract_l(L_temp);
 
 			/* Now temp1 is (i*NF) and temp2 is (indexlist[i]*NF).            */
 
-			dcb[temp1] = sub(codebook[temp2], prev_qpitch);	/* Q12 */
+			dcb[temp1] = melpe_sub(codebook[temp2], prev_qpitch);	/* Q12 */
 			v_equ(&dcb[temp1 + 1], &codebook[temp2 + 1], NF - 1);
 			v_sub(&dcb[temp1 + 1], &codebook[temp2], NF - 1);
-			temp1 = add(temp1, NF);
+			temp1 = melpe_add(temp1, NF);
 		}
 
 		pitch_index = wvq2(deltp, deltw, dcb, NF, indexlist, distlist,
@@ -250,10 +250,10 @@ static void wvq1(Shortword target[], Shortword weights[],
 		for (j = 0; j < dim; j++) {
 			if (weights[j] > 0) {	/* weights[] is either 1 or 0. */
 				/*      err += SQR(target[j] - codebook[j]); */
-				temp = sub(target[j], codebook[j]);	/* Q12 */
-				L_temp = L_mult(temp, temp);	/* Q25 */
-				L_temp = L_shr(L_temp, 2);	/* Q23 */
-				err = L_add(err, L_temp);
+				temp = melpe_sub(target[j], codebook[j]);	/* Q12 */
+				L_temp = melpe_L_mult(temp, temp);	/* Q25 */
+				L_temp = melpe_L_shr(L_temp, 2);	/* Q23 */
+				err = melpe_L_add(err, L_temp);
 				if (err >= maxdist)
 					break;
 			}
@@ -332,10 +332,10 @@ static Shortword wvq2(Shortword target[], Shortword weights[],
 
 				/*      err += weights[j] * SQR(target[j] - codebook[j]); */
 
-				temp = sub(target[j], codebook[j]);	/* Q12 */
-				L_temp = L_mult(temp, temp);	/* Q25 */
-				L_temp = L_shr(L_temp, 2);	/* Q23 */
-				err = L_add(err, L_temp);	/* Q23 */
+				temp = melpe_sub(target[j], codebook[j]);	/* Q12 */
+				L_temp = melpe_L_mult(temp, temp);	/* Q25 */
+				L_temp = melpe_L_shr(L_temp, 2);	/* Q23 */
+				err = melpe_L_add(err, L_temp);	/* Q23 */
 
 				/* Exit the loop if (err >= min). */
 				if (err >= min)
@@ -378,7 +378,7 @@ void gain_vq(struct melp_param *par)
 	temp = 0;
 	for (i = 0; i < NF; i++) {
 		v_equ(&(gain_target[temp]), par[i].gain, NUM_GAINFR);
-		temp = add(temp, NUM_GAINFR);
+		temp = melpe_add(temp, NUM_GAINFR);
 	}
 
 	minErr = LW_MAX;
@@ -391,10 +391,10 @@ void gain_vq(struct melp_param *par)
 		err = 0;
 
 		/* j = 0 for the following for loop. */
-		temp = sub(gain_target[0], gain_vq_cb[temp2]);	/* Q8 */
-		L_temp = L_mult(temp, temp);	/* Q17 */
-		L_temp = L_shr(L_temp, 3);	/* Q14 */
-		err = L_add(err, L_temp);	/* Q14 */
+		temp = melpe_sub(gain_target[0], gain_vq_cb[temp2]);	/* Q8 */
+		L_temp = melpe_L_mult(temp, temp);	/* Q17 */
+		L_temp = melpe_L_shr(L_temp, 3);	/* Q14 */
+		err = melpe_L_add(err, L_temp);	/* Q14 */
 
 		/* For the sum of 6 terms, if the first term already exceeds minErr,  */
 		/* there is no need to keep computing.                                */
@@ -403,28 +403,28 @@ void gain_vq(struct melp_param *par)
 			for (j = 1; j < NF_X_NUM_GAINFR; j++) {
 				/*      err += SQR(par[j].gain[k] -
 				   gain_vq_cb[i*NUM_GAINFR*NF + j*NUM_GAINFR + k]); */
-				temp = sub(gain_target[j], gain_vq_cb[temp2 + j]);	/* Q8 */
-				L_temp = L_mult(temp, temp);	/* Q17 */
-				L_temp = L_shr(L_temp, 3);	/* Q14 */
-				err = L_add(err, L_temp);	/* Q14 */
+				temp = melpe_sub(gain_target[j], gain_vq_cb[temp2 + j]);	/* Q8 */
+				L_temp = melpe_L_mult(temp, temp);	/* Q17 */
+				L_temp = melpe_L_shr(L_temp, 3);	/* Q14 */
+				err = melpe_L_add(err, L_temp);	/* Q14 */
 			}
 			if (err < minErr) {
 				minErr = err;
 				index = i;
 			}
 		}
-		temp2 = add(temp2, NF_X_NUM_GAINFR);
+		temp2 = melpe_add(temp2, NF_X_NUM_GAINFR);
 	}
 
 	/*      temp2 = index * NF * NUM_GAINFR; */
-	L_temp = L_mult(index, NF_X_NUM_GAINFR);
-	L_temp = L_shr(L_temp, 1);
-	temp2 = extract_l(L_temp);
+	L_temp = melpe_L_mult(index, NF_X_NUM_GAINFR);
+	L_temp = melpe_L_shr(L_temp, 1);
+	temp2 = melpe_extract_l(L_temp);
 	for (i = 0; i < NF; i++) {
 		/*      v_equ(par[i].gain, &(gain_vq_cb[index*NUM_GAINFR*NF +
 		   i*NUM_GAINFR]), NUM_GAINFR); */
 		v_equ(par[i].gain, &(gain_vq_cb[temp2]), NUM_GAINFR);
-		temp2 = add(temp2, NUM_GAINFR);
+		temp2 = melpe_add(temp2, NUM_GAINFR);
 	}
 
 	quant_par.gain_index[0] = index;
@@ -563,7 +563,7 @@ static void lspVQ(Shortword target[], Shortword weight[], Shortword qout[],
 						       entry, nextIndex[0],
 						       index[0]);
 				}
-				ptr_offset = add(ptr_offset, dim);
+				ptr_offset = melpe_add(ptr_offset, dim);
 			}
 		}
 
@@ -586,9 +586,9 @@ static void lspVQ(Shortword target[], Shortword weight[], Shortword qout[],
 			/* loops, and ncPrev = Min(ncPrev*cb_size[s1], LSP_INP_CAND) for  */
 			/* the last lap.  Explanations are available near the end of this *//* function.                                                      */
 
-			L_temp = L_mult(ncPrev, cb_size[s1]);
-			L_temp = L_shr(L_temp, 1);
-			temp1 = extract_l(L_temp);	/* temp1 = ncPrev * cb_size[s1] */
+			L_temp = melpe_L_mult(ncPrev, cb_size[s1]);
+			L_temp = melpe_L_shr(L_temp, 1);
+			temp1 = melpe_extract_l(L_temp);	/* temp1 = ncPrev * cb_size[s1] */
 			if (s1 == tos - 1)
 				temp2 = LSP_INP_CAND;
 			else
@@ -606,19 +606,19 @@ static void lspVQ(Shortword target[], Shortword weight[], Shortword qout[],
 		for (c1 = 0; c1 < ncPrev; c1++) {
 			v_zap(cand[c1], dim);
 			cdbk_ptr2 = codebook;
-			temp1 = add(s1, 1);
+			temp1 = melpe_add(s1, 1);
 			v_equ(index[c1], nextIndex[c1], temp1);
 			for (i = 0; i < temp1; i++) {
 				/*      v_add(cand[c1], cdbk_ptr2 + index[c1][i]*dim, dim); */
-				L_temp = L_mult(index[c1][i], dim);
-				L_temp = L_shr(L_temp, 1);
-				temp2 = extract_l(L_temp);
+				L_temp = melpe_L_mult(index[c1][i], dim);
+				L_temp = melpe_L_shr(L_temp, 1);
+				temp2 = melpe_extract_l(L_temp);
 				ptr1 = cdbk_ptr2 + temp2;
 				v_add(cand[c1], ptr1, dim);
 				/*      cdbk_ptr2 += cb_size[i]*dim; */
-				L_temp = L_mult(cb_size[i], dim);
-				L_temp = L_shr(L_temp, 1);
-				temp2 = extract_l(L_temp);
+				L_temp = melpe_L_mult(cb_size[i], dim);
+				L_temp = melpe_L_shr(L_temp, 1);
+				temp2 = melpe_extract_l(L_temp);
 				cdbk_ptr2 += temp2;
 			}
 		}
@@ -640,8 +640,8 @@ static void lspVQ(Shortword target[], Shortword weight[], Shortword qout[],
 	for (i = 0; i < ncPrev; i++) {
 		v_equ(&(cb_index[temp1]), index[i], tos);
 		v_equ(&qout[temp2], cand[i], dim);
-		temp1 = add(temp1, tos);
-		temp2 = add(temp2, dim);
+		temp1 = melpe_add(temp1, tos);
+		temp2 = melpe_add(temp2, dim);
 	}
 
 	v_free(cand_target);
@@ -682,28 +682,28 @@ static Shortword WeightedMSE(Shortword n, Shortword weight[],
 	/* seems to be fine according to some rough statistics collected.         */
 
 	distortion = 0;
-	half_n = shr(n, 1);
+	half_n = melpe_shr(n, 1);
 	for (i = 0; i < half_n; i++) {
 		save_saturation();
-		temp = sub(x[i], target[i]);	/* Q15 */
-		temp = mult(temp, temp);	/* Q15 */
+		temp = melpe_sub(x[i], target[i]);	/* Q15 */
+		temp = melpe_mult(temp, temp);	/* Q15 */
 		restore_saturation();
-		distortion = L_mac(distortion, weight[i], temp);	/* Q27 */
+		distortion = melpe_L_mac(distortion, weight[i], temp);	/* Q27 */
 	}
 
-	if (r_ound(distortion) >= max_dMin)	/* if this situation takes place, */
+	if (melpe_r_ound(distortion) >= max_dMin)	/* if this situation takes place, */
 		return (SW_MAX);	/* distortion will exceed max_dMin */
 	/* and we can leave. */
 
 	for (i = half_n; i < n; i++) {
 		save_saturation();
-		temp = sub(x[i], target[i]);	/* Q15 */
-		temp = mult(temp, temp);	/* Q15 */
+		temp = melpe_sub(x[i], target[i]);	/* Q15 */
+		temp = melpe_mult(temp, temp);	/* Q15 */
 		restore_saturation();
-		distortion = L_mac(distortion, weight[i], temp);	/* Q27 */
+		distortion = melpe_L_mac(distortion, weight[i], temp);	/* Q27 */
 	}
 
-	temp = r_ound(distortion);
+	temp = melpe_r_ound(distortion);
 	return (temp);
 }
 
@@ -753,13 +753,13 @@ static Shortword InsertCand(Shortword c1, Shortword s1, Shortword dMin[],
 	/* shift the distortions and indices down to make room for the new one */
 	/*      ptr_offset = (LSP_VQ_CAND - 1) * vq_stages; */
 
-	L_temp = L_mult((LSP_VQ_CAND - 1), LSP_VQ_STAGES);
-	L_temp = L_shr(L_temp, 1);
-	ptr_offset = extract_l(L_temp);
-	temp2 = add(s1, 1);
+	L_temp = melpe_L_mult((LSP_VQ_CAND - 1), LSP_VQ_STAGES);
+	L_temp = melpe_L_shr(L_temp, 1);
+	ptr_offset = melpe_extract_l(L_temp);
+	temp2 = melpe_add(s1, 1);
 	for (j = (LSP_VQ_CAND - 1); j > i; j--) {
 		dMin[j] = dMin[j - 1];
-		temp1 = sub(ptr_offset, LSP_VQ_STAGES);
+		temp1 = melpe_sub(ptr_offset, LSP_VQ_STAGES);
 		ptr1 = nextIndex + ptr_offset;	/* Pointer arithmetics. */
 		ptr2 = nextIndex + temp1;
 		/*      v_equ(nextIndex + j * vq_stages, nextIndex + (j - 1)*vq_stages,
@@ -771,12 +771,12 @@ static Shortword InsertCand(Shortword c1, Shortword s1, Shortword dMin[],
 	/* insert the index and distortion into the ith candidate */
 	dMin[i] = distortion;
 	/*      v_equ(nextIndex + i * vq_stages, index + c1 * vq_stages, s1); */
-	L_temp = L_mult(i, LSP_VQ_STAGES);	/* temp1 = i * vq_stages; */
-	L_temp = L_shr(L_temp, 1);
-	temp1 = extract_l(L_temp);
-	L_temp = L_mult(c1, LSP_VQ_STAGES);
-	L_temp = L_shr(L_temp, 1);
-	temp2 = extract_l(L_temp);
+	L_temp = melpe_L_mult(i, LSP_VQ_STAGES);	/* temp1 = i * vq_stages; */
+	L_temp = melpe_L_shr(L_temp, 1);
+	temp1 = melpe_extract_l(L_temp);
+	L_temp = melpe_L_mult(c1, LSP_VQ_STAGES);
+	L_temp = melpe_L_shr(L_temp, 1);
+	temp2 = melpe_extract_l(L_temp);
 	ptr1 = nextIndex + temp1;	/* Pointer arithmetics. */
 	ptr2 = index + temp2;
 	v_equ(ptr1, ptr2, s1);
@@ -816,7 +816,7 @@ BOOLEAN lspStable(Shortword lsp[], Shortword order)
 	if (lsp[0] < 52)	/* 52 == (6.37/4000.0 * (1 << 15)) */
 		lsp[0] = (Shortword) 52;
 	for (i = 0; i < order - 1; i++) {
-		temp = add(lsp[i], 205);
+		temp = melpe_add(lsp[i], 205);
 		if (lsp[i + 1] < temp)
 			lsp[i + 1] = temp;
 	}
@@ -921,12 +921,12 @@ void lsf_vq(struct melp_param *par)
 	Shortword cand, inp_index_cand, tos, intfact;
 
 	if (firstTime) {
-		temp2 = shl(LPC_ORD, 10);	/* Q10 */
+		temp2 = melpe_shl(LPC_ORD, 10);	/* Q10 */
 		temp1 = X08_Q10;	/* Q10 */
 		for (i = 0; i < LPC_ORD; i++) {
 			/*      qplsp[i] = (i+1)*0.8/LPC_ORD; */
-			qplsp[i] = divide_s(temp1, temp2);
-			temp1 = add(temp1, X08_Q10);
+			qplsp[i] = melpe_divide_s(temp1, temp2);
+			temp1 = melpe_add(temp1, X08_Q10);
 		}
 		firstTime = FALSE;
 	}
@@ -940,7 +940,7 @@ void lsf_vq(struct melp_param *par)
 
 	uv_config = 0;
 	for (i = 0; i < NF; i++) {
-		uv_config = shl(uv_config, 1);
+		uv_config = melpe_shl(uv_config, 1);
 		if (par[i].uv_flag) {
 			uv_config |= 0x0001;
 
@@ -1017,66 +1017,66 @@ void lsf_vq(struct melp_param *par)
 					/*      ilsp0[j] = (inpCoef[i][j] * qplsp[j] +
 					   (1.0 - inpCoef[i][j]) * lsp_cand[k][j]); */
 					intfact = inpCoef[i][j];	/* Q14 */
-					acc = L_mult(intfact, qplsp[j]);	/* Q30 */
-					intfact = sub(ONE_Q14, intfact);	/* Q14 */
-					acc = L_mac(acc, intfact, lsp_cand[k][j]);	/* Q30 */
-					ilsp0[j] = extract_h(L_shl(acc, 1));
+					acc = melpe_L_mult(intfact, qplsp[j]);	/* Q30 */
+					intfact = melpe_sub(ONE_Q14, intfact);	/* Q14 */
+					acc = melpe_L_mac(acc, intfact, lsp_cand[k][j]);	/* Q30 */
+					ilsp0[j] = melpe_extract_h(melpe_L_shl(acc, 1));
 					acc =
-					    L_sub(acc,
-						  L_shl(L_deposit_l(lsp[0][j]),
+					    melpe_L_sub(acc,
+						  melpe_L_shl(melpe_L_deposit_l(lsp[0][j]),
 							15));
 
 					/*      ilsp1[j] = inpCoef[i][j + LPC_ORD] * qplsp[j] +
 					   (1.0 - inpCoef[i][j + LPC_ORD]) * lsp_cand[k][j]; */
 					intfact = inpCoef[i][j + LPC_ORD];	/* Q14 */
-					bcc = L_mult(intfact, qplsp[j]);
-					intfact = sub(ONE_Q14, intfact);
-					bcc = L_mac(bcc, intfact, lsp_cand[k][j]);	/* Q30 */
-					ilsp1[j] = extract_h(L_shl(bcc, 1));
+					bcc = melpe_L_mult(intfact, qplsp[j]);
+					intfact = melpe_sub(ONE_Q14, intfact);
+					bcc = melpe_L_mac(bcc, intfact, lsp_cand[k][j]);	/* Q30 */
+					ilsp1[j] = melpe_extract_h(melpe_L_shl(bcc, 1));
 					bcc =
-					    L_sub(bcc,
-						  L_shl(L_deposit_l(lsp[1][j]),
+					    melpe_L_sub(bcc,
+						  melpe_L_shl(melpe_L_deposit_l(lsp[1][j]),
 							15));
 
 					/*      err += wgt0[j]*(lsp0[j] - ilsp0[j])*
 					   (lsp0[j] - ilsp0[j]); */
-					temp1 = norm_l(acc);
-					temp2 = extract_h(L_shl(acc, temp1));
+					temp1 = melpe_norm_l(acc);
+					temp2 = melpe_extract_h(melpe_L_shl(acc, temp1));
 					if (temp2 == MONE_Q15)
 						temp2 = -32767;
-					temp2 = mult(temp2, temp2);
-					acc = L_mult(temp2, wgt[0][j]);
-					temp1 = shl(sub(1, temp1), 1);
-					acc = L_shl(acc, sub(temp1, 3));	/* Q24 */
-					err = L_add(err, acc);
+					temp2 = melpe_mult(temp2, temp2);
+					acc = melpe_L_mult(temp2, wgt[0][j]);
+					temp1 = melpe_shl(melpe_sub(1, temp1), 1);
+					acc = melpe_L_shl(acc, melpe_sub(temp1, 3));	/* Q24 */
+					err = melpe_L_add(err, acc);
 
 					/*      err += wgt1[j]*(lsp1[j] - ilsp1[j])*
 					   (lsp1[j] - ilsp1[j]); */
-					temp1 = norm_l(bcc);
-					temp2 = extract_h(L_shl(bcc, temp1));
+					temp1 = melpe_norm_l(bcc);
+					temp2 = melpe_extract_h(melpe_L_shl(bcc, temp1));
 					if (temp2 == MONE_Q15)
 						temp2 = -32767;
-					temp2 = mult(temp2, temp2);
-					bcc = L_mult(temp2, wgt[1][j]);
-					temp1 = shl(sub(1, temp1), 1);
-					bcc = L_shl(bcc, sub(temp1, 3));	/* Q24 */
-					err = L_add(err, bcc);
+					temp2 = melpe_mult(temp2, temp2);
+					bcc = melpe_L_mult(temp2, wgt[1][j]);
+					temp1 = melpe_shl(melpe_sub(1, temp1), 1);
+					bcc = melpe_L_shl(bcc, melpe_sub(temp1, 3));	/* Q24 */
+					err = melpe_L_add(err, bcc);
 
 					/* computer the err for the last frame */
-					acc = L_shl(L_deposit_l(lsp[2][j]), 15);
+					acc = melpe_L_shl(melpe_L_deposit_l(lsp[2][j]), 15);
 					acc =
-					    L_sub(acc,
-						  L_shl(L_deposit_l
+					    melpe_L_sub(acc,
+						  melpe_L_shl(melpe_L_deposit_l
 							(lsp_cand[k][j]), 15));
-					temp1 = norm_l(acc);
-					temp2 = extract_h(L_shl(acc, temp1));
+					temp1 = melpe_norm_l(acc);
+					temp2 = melpe_extract_h(melpe_L_shl(acc, temp1));
 					if (temp2 == MONE_Q15)
 						temp2 = -32767;
-					temp2 = mult(temp2, temp2);
-					acc = L_mult(temp2, wgt[2][j]);
-					temp1 = shl(sub(1, temp1), 1);
-					acc = L_shl(acc, sub(temp1, 3));	/* Q24 */
-					err = L_add(err, acc);
+					temp2 = melpe_mult(temp2, temp2);
+					acc = melpe_L_mult(temp2, wgt[2][j]);
+					temp1 = melpe_shl(melpe_sub(1, temp1), 1);
+					acc = melpe_L_shl(acc, melpe_sub(temp1, 3));	/* Q24 */
+					err = melpe_L_add(err, acc);
 				}
 
 				if (err < minErr) {
@@ -1095,10 +1095,10 @@ void lsf_vq(struct melp_param *par)
 		quant_par.lsf_index[1][0] = inp_index_cand;
 
 		for (i = 0; i < LPC_ORD; i++) {
-			temp1 = sub(lsp[0][i], bestlsp0[i]);	/* Q15 */
-			temp2 = sub(lsp[1][i], bestlsp1[i]);	/* Q15 */
-			res[i] = shl(temp1, 2);	/* Q17 */
-			res[i + LPC_ORD] = shl(temp2, 2);	/* Q17 */
+			temp1 = melpe_sub(lsp[0][i], bestlsp0[i]);	/* Q15 */
+			temp2 = melpe_sub(lsp[1][i], bestlsp1[i]);	/* Q15 */
+			res[i] = melpe_shl(temp1, 2);	/* Q17 */
+			res[i + LPC_ORD] = melpe_shl(temp2, 2);	/* Q17 */
 		}
 		v_equ(mwgt, wgt[0], LPC_ORD);
 		v_equ(mwgt + LPC_ORD, wgt[1], LPC_ORD);
@@ -1116,10 +1116,10 @@ void lsf_vq(struct melp_param *par)
 
 		/* ---- reconstruct lsp for later stability check ---- */
 		for (i = 0; i < LPC_ORD; i++) {
-			temp1 = shr(res[i], 2);
-			lsp[0][i] = add(temp1, bestlsp0[i]);
-			temp2 = shr(res[i + LPC_ORD], 2);
-			lsp[1][i] = add(temp2, bestlsp1[i]);
+			temp1 = melpe_shr(res[i], 2);
+			lsp[0][i] = melpe_add(temp1, bestlsp0[i]);
+			temp2 = melpe_shr(res[i + LPC_ORD], 2);
+			lsp[1][i] = melpe_add(temp2, bestlsp1[i]);
 		}
 		break;
 	}
@@ -1170,14 +1170,14 @@ void deqnt_msvq(Shortword qout[], const Shortword codebook[], Shortword tos,
 	cdbk_ptr = codebook;
 	for (i = 0; i < tos; i++) {
 		/*      v_add(qout, cdbk_ptr + index[i]*dim, dim); */
-		L_temp = L_mult(index[i], dim);
-		L_temp = L_shr(L_temp, 1);
-		temp = extract_l(L_temp);
+		L_temp = melpe_L_mult(index[i], dim);
+		L_temp = melpe_L_shr(L_temp, 1);
+		temp = melpe_extract_l(L_temp);
 		v_add(qout, cdbk_ptr + temp, dim);
 		/*      cdbk_ptr += cb_size[i] * dim; */
-		L_temp = L_mult(cb_size[i], dim);
-		L_temp = L_shr(L_temp, 1);
-		temp = extract_l(L_temp);
+		L_temp = melpe_L_mult(cb_size[i], dim);
+		L_temp = melpe_L_shr(L_temp, 1);
+		temp = melpe_extract_l(L_temp);
 		cdbk_ptr += temp;
 	}
 }
@@ -1208,7 +1208,7 @@ void quant_jitter(struct melp_param *par)
 
 	uv_config = 0;
 	for (i = 0; i < NF; i++) {
-		uv_config = shl(uv_config, 1);
+		uv_config = melpe_shl(uv_config, 1);
 		uv_config |= par[i].uv_flag;
 		jitter[i] = par[i].jitter;
 	}
@@ -1320,9 +1320,9 @@ void quant_fsmag(struct melp_param *par)
 				v_equ(par[1].fs_mag, qmag, NUM_HARM);
 				for (i = 0; i < NUM_HARM; i++) {
 					/*      par[0].fs_mag[i] = 0.5*(qmag[i] + prev_fsmag[i]); */
-					temp1 = shr(qmag[i], 1);	/* 0.5*qmag[i], Q13 */
-					temp2 = shr(prev_fsmag[i], 1);	/* Q13 */
-					par[0].fs_mag[i] = add(temp1, temp2);	/* Q13 */
+					temp1 = melpe_shr(qmag[i], 1);	/* 0.5*qmag[i], Q13 */
+					temp2 = melpe_shr(prev_fsmag[i], 1);	/* Q13 */
+					par[0].fs_mag[i] = melpe_add(temp1, temp2);	/* Q13 */
 				}
 			} else {	/* V VVV */
 				v_equ(par[2].fs_mag, qmag, NUM_HARM);
@@ -1335,13 +1335,13 @@ void quant_fsmag(struct melp_param *par)
 					/* additions.                                             */
 
 					/*      par[0].fs_mag[i] = (p + p + q)/3.0; */
-					temp1 = mult(p_value, X0667_Q15);	/* Q13 */
-					temp2 = mult(q_value, X0333_Q15);	/* Q13 */
-					par[0].fs_mag[i] = add(temp1, temp2);
+					temp1 = melpe_mult(p_value, X0667_Q15);	/* Q13 */
+					temp2 = melpe_mult(q_value, X0333_Q15);	/* Q13 */
+					par[0].fs_mag[i] = melpe_add(temp1, temp2);
 					/*      par[1].fs_mag[i] = (p + q + q)/3.0; */
-					temp1 = mult(p_value, X0333_Q15);
-					temp2 = mult(q_value, X0667_Q15);
-					par[1].fs_mag[i] = add(temp1, temp2);
+					temp1 = melpe_mult(p_value, X0333_Q15);
+					temp2 = melpe_mult(q_value, X0667_Q15);
+					par[1].fs_mag[i] = melpe_add(temp1, temp2);
 				}
 			}
 		}

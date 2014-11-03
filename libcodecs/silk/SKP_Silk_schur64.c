@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -34,47 +36,56 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * Copyright 2008 (c), Skype Limited                                    *
  * Date: 080103                                                         *
  *                                                                      */
+
+#include <ophtools.h>
+
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Slower than schur(), but more accurate.                              */
-/* Uses SMULL(), available on armv4                                     */ 
-SKP_int32 SKP_Silk_schur64(                    /* O:    Returns residual energy                     */
-    SKP_int32            rc_Q16[],               /* O:    Reflection coefficients [order] Q16         */
-    const SKP_int32      c[],                    /* I:    Correlations [order+1]                      */
-    SKP_int32            order                   /* I:    Prediction order                            */
-)
+/* Uses SMULL(), available on armv4                                     */
+int32_t SKP_Silk_schur64(	/* O:    Returns residual energy                     */
+				int32_t rc_Q16[],	/* O:    Reflection coefficients [order] Q16         */
+				const int32_t c[],	/* I:    Correlations [order+1]                      */
+				int32_t order	/* I:    Prediction order                            */
+    )
 {
-    SKP_int   k, n;
-    SKP_int32 C[ SigProc_MAX_ORDER_LPC + 1 ][ 2 ];
-    SKP_int32 Ctmp1_Q30, Ctmp2_Q30, rc_tmp_Q31;
+	int k, n;
+	int32_t C[SigProc_MAX_ORDER_LPC + 1][2];
+	int32_t Ctmp1_Q30, Ctmp2_Q30, rc_tmp_Q31;
 
-    /* Check for invalid input */
-    if( c[ 0 ] <= 0 ) {
-        SKP_memset( rc_Q16, 0, order * sizeof( SKP_int32 ) );
-        return 0;
-    }
-    
-    for( k = 0; k < order + 1; k++ ) {
-        C[ k ][ 0 ] = C[ k ][ 1 ] = c[ k ];
-    }
+	memzero(C, 2 * (SigProc_MAX_ORDER_LPC + 1) * sizeof(int32_t));
 
-    for( k = 0; k < order; k++ ) {
-        /* Get reflection coefficient: divide two Q30 values and get result in Q31 */
-        rc_tmp_Q31 = SKP_DIV32_varQ( -C[ k + 1 ][ 0 ], C[ 0 ][ 1 ], 31 );
+	/* Check for invalid input */
+	if (c[0] <= 0) {
+		SKP_memset(rc_Q16, 0, order * sizeof(int32_t));
+		return 0;
+	}
 
-        /* Save the output */
-        rc_Q16[ k ] = SKP_RSHIFT_ROUND( rc_tmp_Q31, 15 );
+	for (k = 0; k < order + 1; k++) {
+		C[k][0] = C[k][1] = c[k];
+	}
 
-        /* Update correlations */
-        for( n = 0; n < order - k; n++ ) {
-            Ctmp1_Q30 = C[ n + k + 1 ][ 0 ];
-            Ctmp2_Q30 = C[ n ][ 1 ];
-            
-            /* Multiply and add the highest int32 */
-            C[ n + k + 1 ][ 0 ] = Ctmp1_Q30 + SKP_SMMUL( SKP_LSHIFT( Ctmp2_Q30, 1 ), rc_tmp_Q31 );
-            C[ n ][ 1 ]         = Ctmp2_Q30 + SKP_SMMUL( SKP_LSHIFT( Ctmp1_Q30, 1 ), rc_tmp_Q31 );
-        }
-    }
+	for (k = 0; k < order; k++) {
+		/* Get reflection coefficient: divide two Q30 values and get result in Q31 */
+		rc_tmp_Q31 = SKP_DIV32_varQ(-C[k + 1][0], C[0][1], 31);
 
-    return( C[ 0 ][ 1 ] );
+		/* Save the output */
+		rc_Q16[k] = SKP_RSHIFT_ROUND(rc_tmp_Q31, 15);
+
+		/* Update correlations */
+		for (n = 0; n < order - k; n++) {
+			Ctmp1_Q30 = C[n + k + 1][0];
+			Ctmp2_Q30 = C[n][1];
+
+			/* Multiply and add the highest int32 */
+			C[n + k + 1][0] =
+			    Ctmp1_Q30 + SKP_SMMUL(SKP_LSHIFT(Ctmp2_Q30, 1),
+						  rc_tmp_Q31);
+			C[n][1] =
+			    Ctmp2_Q30 + SKP_SMMUL(SKP_LSHIFT(Ctmp1_Q30, 1),
+						  rc_tmp_Q31);
+		}
+	}
+
+	return (C[0][1]);
 }

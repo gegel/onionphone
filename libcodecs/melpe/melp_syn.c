@@ -237,7 +237,7 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 	lpc_gain = lpc_pred2refl(&(lpc[1]), sig2, LPC_ORD);
 	lpc_gain = sqrt_fxp(lpc_gain, 15);	/* lpc_gain in Q15 */
 	if (sig2[0] < 0)
-		curr_tilt = shr(sig2[0], 1);	/* curr_tilt in Q15 */
+		curr_tilt = melpe_shr(sig2[0], 1);	/* curr_tilt in Q15 */
 	else
 		curr_tilt = 0;
 
@@ -246,8 +246,8 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 	/*      if (par->pitch < 0.5*prev_par.pitch &&
 	   par->gain[0] > 6.0 + prev_par.gain[NUM_GAINFR - 1]) */
 
-	temp1 = shr(prev_par.pitch, 1);
-	temp2 = add(SIX_Q8, prev_par.gain[NUM_GAINFR - 1]);
+	temp1 = melpe_shr(prev_par.pitch, 1);
+	temp2 = melpe_add(SIX_Q8, prev_par.gain[NUM_GAINFR - 1]);
 	if ((par->pitch < temp1) && (par->gain[0] > temp2)) {
 		/* copy current pitch into previous */
 		prev_par.pitch = par->pitch;
@@ -267,15 +267,15 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 	while (syn_begin < FRAME) {
 
 		/* interpolate previous and current parameters */
-		ifact = divide_s(syn_begin, FRAME);	/* ifact in Q15 */
+		ifact = melpe_divide_s(syn_begin, FRAME);	/* ifact in Q15 */
 
 		if (syn_begin >= GAINFR) {
 			gaincnt = 2;
-			temp1 = sub(syn_begin, GAINFR);
-			ifact_gain = divide_s(temp1, GAINFR);
+			temp1 = melpe_sub(syn_begin, GAINFR);
+			ifact_gain = melpe_divide_s(temp1, GAINFR);
 		} else {
 			gaincnt = 1;
-			ifact_gain = divide_s(syn_begin, GAINFR);
+			ifact_gain = melpe_divide_s(syn_begin, GAINFR);
 		}
 
 		/* interpolate gain.  It is assumed that par->gain[] are obtained     */
@@ -285,38 +285,38 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 		if (gaincnt > 1) {
 			/*      gain = ifact_gain * par->gain[gaincnt - 1] +
 			   (1.0 - ifact_gain) * par->gain[gaincnt - 2];               */
-			L_temp1 = L_mult(par->gain[gaincnt - 1], ifact_gain);
-			temp1 = sub(ONE_Q15, ifact_gain);
-			L_temp2 = L_mult(par->gain[gaincnt - 2], temp1);
-			gain = extract_h(L_add(L_temp1, L_temp2));	/* gain in Q8 */
+			L_temp1 = melpe_L_mult(par->gain[gaincnt - 1], ifact_gain);
+			temp1 = melpe_sub(ONE_Q15, ifact_gain);
+			L_temp2 = melpe_L_mult(par->gain[gaincnt - 2], temp1);
+			gain = melpe_extract_h(melpe_L_add(L_temp1, L_temp2));	/* gain in Q8 */
 		} else {
 			/*      gain = ifact_gain * par->gain[gaincnt - 1] +
 			   (1.0 - ifact_gain) * prev_par.gain[NUM_GAINFR - 1];        */
-			L_temp1 = L_mult(par->gain[gaincnt - 1], ifact_gain);
-			temp1 = sub(ONE_Q15, ifact_gain);
-			L_temp2 = L_mult(prev_par.gain[NUM_GAINFR - 1], temp1);
-			gain = extract_h(L_add(L_temp1, L_temp2));	/* gain in Q8 */
+			L_temp1 = melpe_L_mult(par->gain[gaincnt - 1], ifact_gain);
+			temp1 = melpe_sub(ONE_Q15, ifact_gain);
+			L_temp2 = melpe_L_mult(prev_par.gain[NUM_GAINFR - 1], temp1);
+			gain = melpe_extract_h(melpe_L_add(L_temp1, L_temp2));	/* gain in Q8 */
 		}
 
 /* Set overall interpolation path based on gain change */
 
 		temp1 =
-		    sub(par->gain[NUM_GAINFR - 1],
+		    melpe_sub(par->gain[NUM_GAINFR - 1],
 			prev_par.gain[NUM_GAINFR - 1]);
-		if (abs_s(temp1) > SIX_Q8) {
+		if (melpe_abs_s(temp1) > SIX_Q8) {
 			/* Power surge: use gain adjusted interpolation */
 			/*      intfact = (gain - prev_par.gain[NUM_GAINFR - 1])/temp; */
-			temp2 = sub(gain, prev_par.gain[NUM_GAINFR - 1]);
+			temp2 = melpe_sub(gain, prev_par.gain[NUM_GAINFR - 1]);
 			if (((temp2 > 0) && (temp1 < 0)) ||
 			    ((temp2 < 0) && (temp1 > 0)))
 				intfact = 0;
 			else {
-				temp1 = abs_s(temp1);
-				temp2 = abs_s(temp2);
+				temp1 = melpe_abs_s(temp1);
+				temp2 = melpe_abs_s(temp2);
 				if (temp2 >= temp1)
 					intfact = ONE_Q15;
 				else
-					intfact = divide_s(temp2, temp1);	/* intfact in Q15 */
+					intfact = melpe_divide_s(temp2, temp1);	/* intfact in Q15 */
 			}
 		} else		/* Otherwise, linear interpolation */
 			intfact = ifact;
@@ -326,44 +326,44 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 		lpc_lsp2pred(lsf, &(lpc[1]), LPC_ORD);
 
 		/* Check signal probability for adaptive spectral enhancement filter */
-		temp1 = add(noise_gain, X12_Q8);
-		temp2 = add(noise_gain, X30_Q8);
+		temp1 = melpe_add(noise_gain, X12_Q8);
+		temp2 = melpe_add(noise_gain, X30_Q8);
 		/* sig_prob in Q15 */
 		sig_prob = lin_int_bnd(gain, temp1, temp2, 0, ONE_Q15);
 
 		/* Calculate adaptive spectral enhancement filter coefficients */
 		ase_num[0] = ONE_Q12;	/* ase_num and ase_den in Q12 */
-		temp1 = mult(sig_prob, ASE_NUM_BW_Q15);
+		temp1 = melpe_mult(sig_prob, ASE_NUM_BW_Q15);
 		lpc_bw_expand(&(lpc[1]), &(ase_num[1]), temp1, LPC_ORD);
-		temp1 = mult(sig_prob, ASE_DEN_BW_Q15);
+		temp1 = melpe_mult(sig_prob, ASE_DEN_BW_Q15);
 		lpc_bw_expand(&(lpc[1]), ase_den, temp1, LPC_ORD);
 
 		/*      tilt_cof[1] = sig_prob * (intfact * curr_tilt +
 		   (1.0 - intfact) * prev_tilt);               */
-		temp1 = mult(curr_tilt, intfact);
-		intfact1 = sub(ONE_Q15, intfact);
-		temp2 = mult(prev_tilt, intfact1);
-		temp1 = add(temp1, temp2);
-		tilt_cof[1] = mult(sig_prob, temp1);	/* tilt_cof in Q15 */
+		temp1 = melpe_mult(curr_tilt, intfact);
+		intfact1 = melpe_sub(ONE_Q15, intfact);
+		temp2 = melpe_mult(prev_tilt, intfact1);
+		temp1 = melpe_add(temp1, temp2);
+		tilt_cof[1] = melpe_mult(sig_prob, temp1);	/* tilt_cof in Q15 */
 
 		/* interpolate pitch and pulse gain */
 		/*      syn_gain = SYN_GAIN * (intfact * lpc_gain +
 		   (1.0 - intfact) * prev_lpc_gain); */
-		temp1 = mult(lpc_gain, intfact);	/* lpc_gain in Q15 */
-		temp2 = mult(prev_lpc_gain, intfact1);
-		temp1 = add(temp1, temp2);	/* temp1 in Q15 */
-		syn_gain = mult(SYN_GAIN_Q4, temp1);
+		temp1 = melpe_mult(lpc_gain, intfact);	/* lpc_gain in Q15 */
+		temp2 = melpe_mult(prev_lpc_gain, intfact1);
+		temp1 = melpe_add(temp1, temp2);	/* temp1 in Q15 */
+		syn_gain = melpe_mult(SYN_GAIN_Q4, temp1);
 		/* syn_gain in Q4 */
 		/*      pitch = intfact * par->pitch + (1.0 - intfact) * prev_par.pitch;  */
-		temp1 = mult(par->pitch, intfact);
-		temp2 = mult(prev_par.pitch, intfact1);
-		pitch = add(temp1, temp2);	/* pitch in Q7 */
+		temp1 = melpe_mult(par->pitch, intfact);
+		temp2 = melpe_mult(prev_par.pitch, intfact1);
+		pitch = melpe_add(temp1, temp2);	/* pitch in Q7 */
 
 		/*      pulse_gain = syn_gain * sqrt(pitch); */
 		temp1 = sqrt_fxp(pitch, 7);
-		L_temp1 = L_mult(syn_gain, temp1);
-		L_temp1 = L_shl(L_temp1, 4);
-		pulse_gain = extract_h(L_temp1);	/* pulse_gain in Q0 */
+		L_temp1 = melpe_L_mult(syn_gain, temp1);
+		L_temp1 = melpe_L_shl(L_temp1, 4);
+		pulse_gain = melpe_extract_h(L_temp1);	/* pulse_gain in Q0 */
 
 		/* interpolate pulse and noise coefficients */
 		temp1 = sqrt_fxp(ifact, 15);
@@ -374,30 +374,30 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 
 		set_fc(prev_par.bpvc, &fc_prev);
 		set_fc(par->bpvc, &fc_curr);
-		temp2 = sub(ONE_Q15, temp1);
-		temp1 = mult(temp1, fc_curr);	/* temp1 is now Q3 */
-		temp2 = mult(temp2, fc_prev);	/* Q3 */
-		fc = add(temp1, temp2);	/* Q3 */
+		temp2 = melpe_sub(ONE_Q15, temp1);
+		temp1 = melpe_mult(temp1, fc_curr);	/* temp1 is now Q3 */
+		temp2 = melpe_mult(temp2, fc_prev);	/* Q3 */
+		fc = melpe_add(temp1, temp2);	/* Q3 */
 
 		/* interpolate jitter */
 		/*      jitter = ifact * par->jitter + (1.0 - ifact) * prev_par.jitter;   */
-		temp1 = mult(par->jitter, ifact);
-		temp2 = sub(ONE_Q15, ifact);	/* temp2 is Q15 */
-		temp2 = mult(prev_par.jitter, temp2);
-		jitter = add(temp1, temp2);	/* jitter is Q15 */
+		temp1 = melpe_mult(par->jitter, ifact);
+		temp2 = melpe_sub(ONE_Q15, ifact);	/* temp2 is Q15 */
+		temp2 = melpe_mult(prev_par.jitter, temp2);
+		jitter = melpe_add(temp1, temp2);	/* jitter is Q15 */
 
 		/* scale gain by 0.05 but keep gain in log. */
 		/*      gain = pow(10.0, 0.05 * gain); */
-		gain = mult(X005_Q19, gain);	/* gain in Q12 */
+		gain = melpe_mult(X005_Q19, gain);	/* gain in Q12 */
 
 		/* Set period length based on pitch and jitter */
 		rand_num(&temp1, ONE_Q15, 1);
 		/*      length = pitch * (1.0 - jitter * temp) + 0.5; */
-		temp1 = mult(jitter, temp1);
-		temp1 = shr(temp1, 1);	/* temp1 in Q14 */
-		temp1 = sub(ONE_Q14, temp1);
-		temp1 = mult(pitch, temp1);	/* length in Q6 */
-		length = shift_r(temp1, -6);	/* length in Q0 with r_ounding */
+		temp1 = melpe_mult(jitter, temp1);
+		temp1 = melpe_shr(temp1, 1);	/* temp1 in Q14 */
+		temp1 = melpe_sub(ONE_Q14, temp1);
+		temp1 = melpe_mult(pitch, temp1);	/* length in Q6 */
+		length = melpe_shift_r(temp1, -6);	/* length in Q0 with r_ounding */
 		if (length < PITCHMIN)
 			length = PITCHMIN;
 		if (length > PITCHMAX)
@@ -476,7 +476,7 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 			 length, 15);
 
 		/* Copy processed speech to output array (not past frame end) */
-		if (add(syn_begin, length) >= FRAME) {
+		if (melpe_add(syn_begin, length) >= FRAME) {
 			v_equ(&sp_out[syn_begin], &sigbuf[BEGIN],
 			      (Shortword) (FRAME - syn_begin));
 
@@ -491,7 +491,7 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 			v_equ(&sp_out[syn_begin], &sigbuf[BEGIN], length);
 
 		/* Update syn_begin for next period */
-		syn_begin = add(syn_begin, length);
+		syn_begin = melpe_add(syn_begin, length);
 	}
 
 	/* Save previous pulse and noise filters for next frame */
@@ -504,7 +504,7 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 	prev_lpc_gain = lpc_gain;
 
 	/* Update syn_begin for next frame */
-	syn_begin = sub(syn_begin, FRAME);
+	syn_begin = melpe_sub(syn_begin, FRAME);
 }
 
 /* =========================================================== */
@@ -520,7 +520,7 @@ void melp_syn_init()
 	prev_par.pitch = UV_PITCH_Q7;
 	temp = 0;
 	for (i = 0; i < LPC_ORD; i++) {
-		temp = add(temp, INV_LPC_ORD);
+		temp = melpe_add(temp, INV_LPC_ORD);
 		prev_par.lsf[i] = temp;
 	}
 	prev_par.jitter = 0;
@@ -535,7 +535,7 @@ void melp_syn_init()
 	if (!w_fs_init) {
 		vq_fsw(w_fs, NUM_HARM, X60_Q9);
 		for (i = 0; i < NUM_HARM; i++)
-			w_fs_inv[i] = divide_s(ONE_Q13, w_fs[i]);	/* w_fs_inv in Q14 */
+			w_fs_inv[i] = melpe_divide_s(ONE_Q13, w_fs[i]);	/* w_fs_inv in Q14 */
 		w_fs_init = TRUE;
 	}
 }

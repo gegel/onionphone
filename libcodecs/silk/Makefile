@@ -128,7 +128,7 @@ OBJ = SKP_Silk_A2NLSF.o \
       SKP_Silk_tables_type_offset.o \
       libsilk.o
 
-INCADD ?= -I.
+INCADD ?= -I. -I../../common/inc
 
 all: build
 

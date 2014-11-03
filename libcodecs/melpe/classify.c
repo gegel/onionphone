@@ -159,21 +159,21 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 		   sigbuf_len); */
 		v_equ(sigbuf_in, &(bpfdel[2 * i]), BPF_ORD / 3);
 		v_equ(sigbuf_out, &(bpfdel[2 * i + 2]), BPF_ORD / 3);
-		for (j = BPF_ORD / 3; j < add(sigbuf_len, BPF_ORD / 3); j++) {
-			L_temp = L_mult(sigbuf_in[j], ptr_bpf_num[0]);
+		for (j = BPF_ORD / 3; j < melpe_add(sigbuf_len, BPF_ORD / 3); j++) {
+			L_temp = melpe_L_mult(sigbuf_in[j], ptr_bpf_num[0]);
 			L_temp =
-			    L_mac(L_temp, sigbuf_in[j - 1], ptr_bpf_num[1]);
+			    melpe_L_mac(L_temp, sigbuf_in[j - 1], ptr_bpf_num[1]);
 			L_temp =
-			    L_mac(L_temp, sigbuf_in[j - 2], ptr_bpf_num[2]);
+			    melpe_L_mac(L_temp, sigbuf_in[j - 2], ptr_bpf_num[2]);
 
 			L_temp =
-			    L_mac(L_temp, sigbuf_out[j - 1], ptr_bpf_den[0]);
+			    melpe_L_mac(L_temp, sigbuf_out[j - 1], ptr_bpf_den[0]);
 			L_temp =
-			    L_mac(L_temp, sigbuf_out[j - 2], ptr_bpf_den[1]);
+			    melpe_L_mac(L_temp, sigbuf_out[j - 2], ptr_bpf_den[1]);
 
-			L_temp = L_shl(L_temp, 2);
+			L_temp = melpe_L_shl(L_temp, 2);
 
-			sigbuf_out[j] = r_ound(L_temp);
+			sigbuf_out[j] = melpe_r_ound(L_temp);
 		}
 		v_equ(&(bpfdel[2 * i]), &(sigbuf_in[sigbuf_len]), BPF_ORD / 3);
 
@@ -213,10 +213,10 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 	max = 0;
 	L_sum2 = 0;
 	for (i = 0; i < PIT_SUBFRAME; i++) {
-		temp1 = abs_s(inbuf[i]);
+		temp1 = melpe_abs_s(inbuf[i]);
 		if (max < temp1)
 			max = temp1;
-		L_sum2 = L_add(L_sum2, temp1);	/* L_sum2 is safe from overflow. */
+		L_sum2 = melpe_L_add(L_sum2, temp1);	/* L_sum2 is safe from overflow. */
 	}
 
 	if (max == 0) {		/* All zero signal */
@@ -232,8 +232,8 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 
 	/* Adjust L_sum1 so it does not overflow a Shortword. */
 	while (L_sum1 > SW_MAX) {
-		L_sum1 = L_shr(L_sum1, 2);
-		sum1_shift = add(sum1_shift, 2);
+		L_sum1 = melpe_L_shr(L_sum1, 2);
+		sum1_shift = melpe_add(sum1_shift, 2);
 	}
 
 	/* Note that classStat->subEnergy is only 1/10 of its floating point      */
@@ -243,11 +243,11 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 		classStat->subEnergy = M_TEN_Q11;
 	else {
 		/*      classStat->subEnergy = log10(L_sum1); */
-		temp1 = log10_fxp(extract_l(L_sum1), 0);	/* Q12 */
-		temp1 = shr(temp1, 1);	/* Q11 */
-		L_temp = L_mult(LOG2_Q11, sum1_shift);	/* Q12 */
-		temp2 = extract_l(L_shr(L_temp, 1));	/* Q11 */
-		classStat->subEnergy = add(temp1, temp2);	/* Q11 */
+		temp1 = log10_fxp(melpe_extract_l(L_sum1), 0);	/* Q12 */
+		temp1 = melpe_shr(temp1, 1);	/* Q11 */
+		L_temp = melpe_L_mult(LOG2_Q11, sum1_shift);	/* Q12 */
+		temp2 = melpe_extract_l(melpe_L_shr(L_temp, 1));	/* Q11 */
+		classStat->subEnergy = melpe_add(temp1, temp2);	/* Q11 */
 	}
 
 	/* ------ Compute zero crossing rate ------ */
@@ -270,13 +270,13 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 	else {
 		/*      classStat->peakiness =
 		   sqrt(L_sum1/PIT_SUBFRAME)/(L_sum2/PIT_SUBFRAME); */
-		sum1_shift = add(sum1_shift, 15);	/* L_sum1 Q0 -> Q15 */
+		sum1_shift = melpe_add(sum1_shift, 15);	/* L_sum1 Q0 -> Q15 */
 		if (sum1_shift & 0x0001) {	/* sum1_shift is odd */
-			temp1 = extract_l(L_shr(L_sum1, 1));	/* Q15 */
-			sum1_shift = add(sum1_shift, 1);
+			temp1 = melpe_extract_l(melpe_L_shr(L_sum1, 1));	/* Q15 */
+			sum1_shift = melpe_add(sum1_shift, 1);
 		} else		/* sum1_shift is even */
-			temp1 = extract_l(L_sum1);	/* Q15 */
-		sum1_shift = shr(sum1_shift, 1);
+			temp1 = melpe_extract_l(L_sum1);	/* Q15 */
+		sum1_shift = melpe_shr(sum1_shift, 1);
 		temp1 = sqrt_Q15(temp1);	/* Q15 */
 
 		/* (temp1 * 2^-15 * 2^sum1_shift) is || x ||_2 above, so              */
@@ -286,28 +286,28 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 		/* significant loss of precision.  We use Q8 for it and therefore we  */
 		/* adjust sum1_shift beforehand.                                      */
 
-		sum1_shift = sub(sum1_shift, 8);
-		temp2 = extract_l(L_shr(L_sum2, sum1_shift));	/* Q8 */
-		temp1 = shr(temp1, 7);	/* Q8 */
-		temp1 = divide_s(temp1, temp2);	/* Q15 */
+		sum1_shift = melpe_sub(sum1_shift, 8);
+		temp2 = melpe_extract_l(melpe_L_shr(L_sum2, sum1_shift));	/* Q8 */
+		temp1 = melpe_shr(temp1, 7);	/* Q8 */
+		temp1 = melpe_divide_s(temp1, temp2);	/* Q15 */
 
 		/* The computation for classStat->peakiness is not accurate when the  */
 		/* signal in the current frame is small.                              */
 
-		classStat->peakiness = mult(SQRT_PIT_SUBFRAME_Q11, temp1);	/* Q11 */
+		classStat->peakiness = melpe_mult(SQRT_PIT_SUBFRAME_Q11, temp1);	/* Q11 */
 	}
 
 	/* ------ Compute band energy ------ */
 	/* bandEn(autocorr, 0) is lowBandEn and bandEn(autocorr, 1) is highBandEn */
-	lowhighBandDiff = sub(bandEn(autocorr, 0), bandEn(autocorr, 1));	/* Q12 */
+	lowhighBandDiff = melpe_sub(bandEn(autocorr, 0), bandEn(autocorr, 1));	/* Q12 */
 
 	frac_cor(&(sigbuf_out[BPF_ORD / 3]), classStat->pitch, &lowBandCorx);
 
-	if (silenceEn > sub(voicedEn, X15_Q11))
-		silenceEn = sub(voicedEn, X15_Q11);
+	if (silenceEn > melpe_sub(voicedEn, X15_Q11))
+		silenceEn = melpe_sub(voicedEn, X15_Q11);
 	/* the noise level is way too high */
-	zeroCrosRateDiff = sub(classStat->zeroCrosRate, classStat[-1].zeroCrosRate);	/* Q15 */
-	subEnergyDiff = sub(classStat->subEnergy, classStat[-1].subEnergy);
+	zeroCrosRateDiff = melpe_sub(classStat->zeroCrosRate, classStat[-1].zeroCrosRate);	/* Q15 */
+	subEnergyDiff = melpe_sub(classStat->subEnergy, classStat[-1].subEnergy);
 	/* Q11 */
 
 	/* ========== Classifier ========== */
@@ -427,7 +427,7 @@ static Shortword zeroCrosCount(Shortword speech[])
 		prev_sign = current_sign;
 	}
 
-	return (divide_s(count, PIT_SUBFRAME));	/* Q15 */
+	return (melpe_divide_s(count, PIT_SUBFRAME));	/* Q15 */
 }
 
 /****************************************************************************
@@ -466,19 +466,19 @@ static Shortword bandEn(Shortword autocorr[], Shortword band)
 	energy = 0;
 	for (i = 1; i < EN_FILTER_ORDER; i++) {
 		/*      energy += 2.0*coef[i]*autocorr[i]; */
-		temp = mult(coef[i], autocorr[i]);	/* Q14 */
-		energy = L_add(energy, L_deposit_l(temp));
+		temp = melpe_mult(coef[i], autocorr[i]);	/* Q14 */
+		energy = melpe_L_add(energy, melpe_L_deposit_l(temp));
 	}
-	energy = L_shl(energy, 1);	/* multiplication by 2 */
-	temp = mult(coef[0], autocorr[0]);	/* Q14 */
-	energy = L_add(energy, L_deposit_l(temp));
+	energy = melpe_L_shl(energy, 1);	/* multiplication by 2 */
+	temp = melpe_mult(coef[0], autocorr[0]);	/* Q14 */
+	energy = melpe_L_add(energy, melpe_L_deposit_l(temp));
 
 	/* energy is Q14.  Note that energy could be negative. */
 
 	if (energy < ONE_Q14)
 		return (0);
 	else {
-		temp = extract_l(L_shr(energy, 4));	/* Q10 */
+		temp = melpe_extract_l(melpe_L_shr(energy, 4));	/* Q10 */
 		temp = log10_fxp(temp, 10);	/* Q12 */
 
 		/* Note that we return log10(energy) instead of 10.0*log10(energy).   */
@@ -514,8 +514,8 @@ static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor)
 	/* ------ Calculate the autocorrelation function ------- */
 	/* This is the new version of the autocorrelation function */
 	/* (Andre Ebner, 11/30/99) */
-	lowPitch = sub(pitch, PITCH_RANGE);
-	highPitch = add(pitch, PITCH_RANGE);
+	lowPitch = melpe_sub(pitch, PITCH_RANGE);
+	highPitch = melpe_add(pitch, PITCH_RANGE);
 	if (lowPitch < MINPITCH)
 		lowPitch = MINPITCH;
 	if (highPitch > MAXPITCH)
@@ -523,93 +523,93 @@ static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor)
 
 	ACC_r0 = 0;
 	for (i = 0; i < (PIT_COR_LEN - highPitch); i++) {
-		ACC_r0 = L40_mac(ACC_r0, inbuf[i], inbuf[i]);
+		ACC_r0 = melpe_L40_mac(ACC_r0, inbuf[i], inbuf[i]);
 	}
 	if (ACC_r0 == 0)
 		ACC_r0 = 1;
-	r0_shift = norm32(ACC_r0);
-	ACC_r0 = L40_shl(ACC_r0, r0_shift);
+	r0_shift = melpe_norm32(ACC_r0);
+	ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
 	L_r0 = (Longword) ACC_r0;
 
 	ACC_rk = 0;
 	for (i = highPitch; i < PIT_COR_LEN; i++) {
-		ACC_rk = L40_mac(ACC_rk, inbuf[i], inbuf[i]);	/* Q31 */
+		ACC_rk = melpe_L40_mac(ACC_rk, inbuf[i], inbuf[i]);	/* Q31 */
 	}
 	if (ACC_rk == 0)
 		ACC_rk = 1;
-	rk_shift = norm32(ACC_rk);
-	ACC_rk = L40_shl(ACC_rk, rk_shift);
+	rk_shift = melpe_norm32(ACC_rk);
+	ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
 	L_rk = (Longword) ACC_rk;
 
 	ACC_A = 0;
 	for (i = 0; i < PIT_COR_LEN - highPitch; i++) {
-		ACC_A = L40_mac(ACC_A, inbuf[i], inbuf[i + highPitch]);	/* Q31 */
+		ACC_A = melpe_L40_mac(ACC_A, inbuf[i], inbuf[i + highPitch]);	/* Q31 */
 	}
-	shift = add(r0_shift, rk_shift);
+	shift = melpe_add(r0_shift, rk_shift);
 	if (shift & 1) {
-		L_r0 = L_shr(L_r0, 1);
-		r0_shift = sub(r0_shift, 1);
-		shift = add(r0_shift, rk_shift);
+		L_r0 = melpe_L_shr(L_r0, 1);
+		r0_shift = melpe_sub(r0_shift, 1);
+		shift = melpe_add(r0_shift, rk_shift);
 	}
-	shift = shr(shift, 1);
-	ACC_A = L40_shl(ACC_A, shift);
-	temp = mult(extract_h(L_r0), extract_h(L_rk));
+	shift = melpe_shr(shift, 1);
+	ACC_A = melpe_L40_shl(ACC_A, shift);
+	temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 	root = sqrt_Q15(temp);
 	L_temp = (Longword) ACC_A;
-	temp = extract_h(L_temp);
+	temp = melpe_extract_h(L_temp);
 	if (temp < 0)
 		temp = 0;	/* Negative Autocorrelation doesn't make sense here */
-	maxgp = divide_s(temp, root);
+	maxgp = melpe_divide_s(temp, root);
 	lowStart = 0;
 	highStart = highPitch;
-	win = sub(PIT_COR_LEN, highPitch);
-	for (i = sub(highPitch, 1); i >= lowPitch; i--) {
+	win = melpe_sub(PIT_COR_LEN, highPitch);
+	for (i = melpe_sub(highPitch, 1); i >= lowPitch; i--) {
 		if (i % 2 == 0) {
 			ACC_r0 = L_r0;
-			ACC_r0 = L40_shr(ACC_r0, r0_shift);
+			ACC_r0 = melpe_L40_shr(ACC_r0, r0_shift);
 			ACC_r0 =
-			    L40_msu(ACC_r0, inbuf[lowStart], inbuf[lowStart]);
+			    melpe_L40_msu(ACC_r0, inbuf[lowStart], inbuf[lowStart]);
 			ACC_r0 =
-			    L40_mac(ACC_r0, inbuf[lowStart + win],
+			    melpe_L40_mac(ACC_r0, inbuf[lowStart + win],
 				    inbuf[lowStart + win]);
 			if (ACC_r0 == 0)
 				ACC_r0 = 1;
-			r0_shift = norm32(ACC_r0);
-			ACC_r0 = L40_shl(ACC_r0, r0_shift);
+			r0_shift = melpe_norm32(ACC_r0);
+			ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
 			L_r0 = (Longword) ACC_r0;
 			lowStart++;
 		} else {
 			highStart--;
 			ACC_rk = L_rk;
-			ACC_rk = L40_shr(ACC_rk, rk_shift);
+			ACC_rk = melpe_L40_shr(ACC_rk, rk_shift);
 			ACC_rk =
-			    L40_mac(ACC_rk, inbuf[highStart], inbuf[highStart]);
+			    melpe_L40_mac(ACC_rk, inbuf[highStart], inbuf[highStart]);
 			ACC_rk =
-			    L40_msu(ACC_rk, inbuf[highStart + win],
+			    melpe_L40_msu(ACC_rk, inbuf[highStart + win],
 				    inbuf[highStart + win]);
 			if (ACC_rk == 0)
 				ACC_rk = 1;
-			rk_shift = norm32(ACC_rk);
-			ACC_rk = L40_shl(ACC_rk, rk_shift);
+			rk_shift = melpe_norm32(ACC_rk);
+			ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
 			L_rk = (Longword) ACC_rk;
 		}
 		ACC_A = 0;
 		for (j = lowStart; j < lowStart + win; j++) {
-			ACC_A = L40_mac(ACC_A, inbuf[j], inbuf[j + i]);
+			ACC_A = melpe_L40_mac(ACC_A, inbuf[j], inbuf[j + i]);
 		}
-		shift = add(r0_shift, rk_shift);
+		shift = melpe_add(r0_shift, rk_shift);
 		if (shift & 1) {
-			L_r0 = L_shr(L_r0, 1);
-			r0_shift = sub(r0_shift, 1);
-			shift = add(r0_shift, rk_shift);
+			L_r0 = melpe_L_shr(L_r0, 1);
+			r0_shift = melpe_sub(r0_shift, 1);
+			shift = melpe_add(r0_shift, rk_shift);
 		}
-		shift = shr(shift, 1);
-		ACC_A = L40_shl(ACC_A, shift);
-		temp = mult(extract_h(L_r0), extract_h(L_rk));
+		shift = melpe_shr(shift, 1);
+		ACC_A = melpe_L40_shl(ACC_A, shift);
+		temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 		root = sqrt_Q15(temp);
 		L_temp = (Longword) ACC_A;
-		temp = extract_h(L_temp);
-		gp = divide_s(temp, root);
+		temp = melpe_extract_h(L_temp);
+		gp = melpe_divide_s(temp, root);
 		if (gp > maxgp)
 			maxgp = gp;
 	}

@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -38,13 +40,22 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_resample_rom.h"
 
-const SKP_int16 SigProc_Resample_2_3_coarse_INTERPOL[ SigProc_Resample_2_3_coarse_NUM_INTERPOLATORS ][ SigProc_Resample_2_3_coarse_NUM_FIR_COEFS ] = {
-    {    0,   -74,   109,     0,  -234,   329,     0,  -610,   813,     0, -1437,  1954,     0, -4358,  8953, 21845,  8953, -4358,     0,  1954, -1437,     0,   813,  -610,     0,   329,  -234,     0,   109,   -74,     0,    45 },
-    {   48,   -62,     0,   133,  -195,     0,   386,  -526,     0,   936, -1243,     0,  2311, -3417,     0, 18026, 18026,     0, -3417,  2311,     0, -1243,   936,     0,  -526,   386,     0,  -195,   133,     0,   -62,    48 },
+const int16_t
+    SigProc_Resample_2_3_coarse_INTERPOL
+    [SigProc_Resample_2_3_coarse_NUM_INTERPOLATORS]
+    [SigProc_Resample_2_3_coarse_NUM_FIR_COEFS] = {
+	{0, -74, 109, 0, -234, 329, 0, -610, 813, 0, -1437, 1954, 0, -4358,
+	 8953, 21845, 8953, -4358, 0, 1954, -1437, 0, 813, -610, 0, 329, -234,
+	 0, 109, -74, 0, 45},
+	{48, -62, 0, 133, -195, 0, 386, -526, 0, 936, -1243, 0, 2311, -3417, 0,
+	 18026, 18026, 0, -3417, 2311, 0, -1243, 936, 0, -526, 386, 0, -195,
+	 133, 0, -62, 48},
 };
 
-const SKP_int16 SigProc_Resample_2_3_coarsest_INTERPOL[ SigProc_Resample_2_3_coarsest_NUM_INTERPOLATORS ][ SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS ] = {
-    {  379,     0, -3081,  8239, 21845,  8239, -3081,     0,   379,  -145 },
-    {    0,   696, -1951,     0, 17659, 17659,     0, -1951,   696,     0 },
+const int16_t
+    SigProc_Resample_2_3_coarsest_INTERPOL
+    [SigProc_Resample_2_3_coarsest_NUM_INTERPOLATORS]
+    [SigProc_Resample_2_3_coarsest_NUM_FIR_COEFS] = {
+	{379, 0, -3081, 8239, 21845, 8239, -3081, 0, 379, -145},
+	{0, 696, -1951, 0, 17659, 17659, 0, -1951, 696, 0},
 };
-

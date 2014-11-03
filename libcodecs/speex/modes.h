@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2002-2006 Jean-Marc Valin */
 /**
    @file modes.h
@@ -63,97 +65,113 @@
 /** Used internally*/
 #define SPEEX_GET_STACK   106
 
-
 /** Quantizes LSPs */
-typedef void (*lsp_quant_func)(spx_lsp_t *, spx_lsp_t *, int, SpeexBits *);
+typedef void (*lsp_quant_func) (spx_lsp_t *, spx_lsp_t *, int, SpeexBits *);
 
 /** Decodes quantized LSPs */
-typedef void (*lsp_unquant_func)(spx_lsp_t *, int, SpeexBits *);
-
+typedef void (*lsp_unquant_func) (spx_lsp_t *, int, SpeexBits *);
 
 /** Long-term predictor quantization */
-typedef int (*ltp_quant_func)(spx_word16_t *, spx_word16_t *, spx_coef_t *, spx_coef_t *, 
-                              spx_coef_t *, spx_sig_t *, const void *, int, int, spx_word16_t, 
-                              int, int, SpeexBits*, char *, spx_word16_t *, spx_word16_t *, int, int, int, spx_word32_t *);
+typedef int (*ltp_quant_func) (spx_word16_t *, spx_word16_t *, spx_coef_t *,
+			       spx_coef_t *, spx_coef_t *, spx_sig_t *,
+			       const void *, int, int, spx_word16_t, int, int,
+			       SpeexBits *, char *, spx_word16_t *,
+			       spx_word16_t *, int, int, int, spx_word32_t *);
 
 /** Long-term un-quantize */
-typedef void (*ltp_unquant_func)(spx_word16_t *, spx_word32_t *, int, int, spx_word16_t, const void *, int, int *,
-                                 spx_word16_t *, SpeexBits*, char*, int, int, spx_word16_t, int);
-
+typedef void (*ltp_unquant_func) (spx_word16_t *, spx_word32_t *, int, int,
+				  spx_word16_t, const void *, int, int *,
+				  spx_word16_t *, SpeexBits *, char *, int, int,
+				  spx_word16_t, int);
 
 /** Innovation quantization function */
-typedef void (*innovation_quant_func)(spx_word16_t *, spx_coef_t *, spx_coef_t *, spx_coef_t *, const void *, int, int, 
-                                      spx_sig_t *, spx_word16_t *, SpeexBits *, char *, int, int);
+typedef void (*innovation_quant_func) (spx_word16_t *, spx_coef_t *,
+				       spx_coef_t *, spx_coef_t *, const void *,
+				       int, int, spx_sig_t *, spx_word16_t *,
+				       SpeexBits *, char *, int, int);
 
 /** Innovation unquantization function */
-typedef void (*innovation_unquant_func)(spx_sig_t *, const void *, int, SpeexBits*, char *, spx_int32_t *);
+typedef void (*innovation_unquant_func) (spx_sig_t *, const void *, int,
+					 SpeexBits *, char *, int32_t *);
 
 /** Description of a Speex sub-mode (wither narrowband or wideband */
 typedef struct SpeexSubmode {
-   int     lbr_pitch;          /**< Set to -1 for "normal" modes, otherwise encode pitch using a global pitch and allowing a +- lbr_pitch variation (for low not-rates)*/
-   int     forced_pitch_gain;  /**< Use the same (forced) pitch gain for all sub-frames */
-   int     have_subframe_gain; /**< Number of bits to use as sub-frame innovation gain */
-   int     double_codebook;    /**< Apply innovation quantization twice for higher quality (and higher bit-rate)*/
-   /*LSP functions*/
-   lsp_quant_func    lsp_quant; /**< LSP quantization function */
-   lsp_unquant_func  lsp_unquant; /**< LSP unquantization function */
+	int lbr_pitch;	       /**< Set to -1 for "normal" modes, otherwise encode pitch using a global pitch and allowing a +- lbr_pitch variation (for low not-rates)*/
+	int forced_pitch_gain; /**< Use the same (forced) pitch gain for all sub-frames */
+	int have_subframe_gain;/**< Number of bits to use as sub-frame innovation gain */
+	int double_codebook;   /**< Apply innovation quantization twice for higher quality (and higher bit-rate)*/
+	/*LSP functions */
+	lsp_quant_func lsp_quant;
+				/**< LSP quantization function */
+	lsp_unquant_func lsp_unquant;
+				  /**< LSP unquantization function */
 
-   /*Long-term predictor functions*/
-   ltp_quant_func    ltp_quant; /**< Long-term predictor (pitch) quantizer */
-   ltp_unquant_func  ltp_unquant; /**< Long-term predictor (pitch) un-quantizer */
-   const void       *ltp_params; /**< Pitch parameters (options) */
+	/*Long-term predictor functions */
+	ltp_quant_func ltp_quant;
+				/**< Long-term predictor (pitch) quantizer */
+	ltp_unquant_func ltp_unquant;
+				  /**< Long-term predictor (pitch) un-quantizer */
+	const void *ltp_params;	 /**< Pitch parameters (options) */
 
-   /*Quantization of innovation*/
-   innovation_quant_func innovation_quant; /**< Innovation quantization */
-   innovation_unquant_func innovation_unquant; /**< Innovation un-quantization */
-   const void             *innovation_params; /**< Innovation quantization parameters*/
+	/*Quantization of innovation */
+	innovation_quant_func innovation_quant;
+					   /**< Innovation quantization */
+	innovation_unquant_func innovation_unquant;
+					       /**< Innovation un-quantization */
+	const void *innovation_params;	      /**< Innovation quantization parameters*/
 
-   spx_word16_t      comb_gain;  /**< Gain of enhancer comb filter */
+	spx_word16_t comb_gain;	 /**< Gain of enhancer comb filter */
 
-   int               bits_per_frame; /**< Number of bits per frame after encoding*/
+	int bits_per_frame;	     /**< Number of bits per frame after encoding*/
 } SpeexSubmode;
 
 /** Struct defining the encoding/decoding mode*/
 typedef struct SpeexNBMode {
-   int     frameSize;      /**< Size of frames used for encoding */
-   int     subframeSize;   /**< Size of sub-frames used for encoding */
-   int     lpcSize;        /**< Order of LPC filter */
-   int     pitchStart;     /**< Smallest pitch value allowed */
-   int     pitchEnd;       /**< Largest pitch value allowed */
+	int frameSize;	   /**< Size of frames used for encoding */
+	int subframeSize;  /**< Size of sub-frames used for encoding */
+	int lpcSize;	   /**< Order of LPC filter */
+	int pitchStart;	   /**< Smallest pitch value allowed */
+	int pitchEnd;	   /**< Largest pitch value allowed */
 
-   spx_word16_t gamma1;    /**< Perceptual filter parameter #1 */
-   spx_word16_t gamma2;    /**< Perceptual filter parameter #2 */
-   spx_word16_t   lpc_floor;      /**< Noise floor for LPC analysis */
+	spx_word16_t gamma1;
+			   /**< Perceptual filter parameter #1 */
+	spx_word16_t gamma2;
+			   /**< Perceptual filter parameter #2 */
+	spx_word16_t lpc_floor;	  /**< Noise floor for LPC analysis */
 
-   const SpeexSubmode *submodes[NB_SUBMODES]; /**< Sub-mode data for the mode */
-   int     defaultSubmode; /**< Default sub-mode to use when encoding */
-   int     quality_map[11]; /**< Mode corresponding to each quality setting */
+	const SpeexSubmode *submodes[NB_SUBMODES];
+					      /**< Sub-mode data for the mode */
+	int defaultSubmode;/**< Default sub-mode to use when encoding */
+	int quality_map[11];/**< Mode corresponding to each quality setting */
 } SpeexNBMode;
-
 
 /** Struct defining the encoding/decoding mode for SB-CELP (wideband) */
 typedef struct SpeexSBMode {
-   const SpeexMode *nb_mode;    /**< Embedded narrowband mode */
-   int     frameSize;     /**< Size of frames used for encoding */
-   int     subframeSize;  /**< Size of sub-frames used for encoding */
-   int     lpcSize;       /**< Order of LPC filter */
-   spx_word16_t gamma1;   /**< Perceptual filter parameter #1 */
-   spx_word16_t gamma2;   /**< Perceptual filter parameter #1 */
-   spx_word16_t   lpc_floor;     /**< Noise floor for LPC analysis */
-   spx_word16_t   folding_gain;
+	const SpeexMode *nb_mode;
+				/**< Embedded narrowband mode */
+	int frameSize;	  /**< Size of frames used for encoding */
+	int subframeSize; /**< Size of sub-frames used for encoding */
+	int lpcSize;	  /**< Order of LPC filter */
+	spx_word16_t gamma1;
+			  /**< Perceptual filter parameter #1 */
+	spx_word16_t gamma2;
+			  /**< Perceptual filter parameter #1 */
+	spx_word16_t lpc_floor;	 /**< Noise floor for LPC analysis */
+	spx_word16_t folding_gain;
 
-   const SpeexSubmode *submodes[SB_SUBMODES]; /**< Sub-mode data for the mode */
-   int     defaultSubmode; /**< Default sub-mode to use when encoding */
-   int     low_quality_map[11]; /**< Mode corresponding to each quality setting */
-   int     quality_map[11]; /**< Mode corresponding to each quality setting */
+	const SpeexSubmode *submodes[SB_SUBMODES];
+					      /**< Sub-mode data for the mode */
+	int defaultSubmode;/**< Default sub-mode to use when encoding */
+	int low_quality_map[11];/**< Mode corresponding to each quality setting */
+	int quality_map[11];/**< Mode corresponding to each quality setting */
 #ifndef DISABLE_VBR
-   const float (*vbr_thresh)[11];
+	const float (*vbr_thresh)[11];
 #endif
-   int     nb_modes;
+	int nb_modes;
 } SpeexSBMode;
 
-int speex_encode_native(void *state, spx_word16_t *in, SpeexBits *bits);
-int speex_decode_native(void *state, SpeexBits *bits, spx_word16_t *out);
+int speex_encode_native(void *state, spx_word16_t * in, SpeexBits * bits);
+int speex_decode_native(void *state, SpeexBits * bits, spx_word16_t * out);
 
 int nb_mode_query(const void *mode, int request, void *ptr);
 int wb_mode_query(const void *mode, int request, void *ptr);

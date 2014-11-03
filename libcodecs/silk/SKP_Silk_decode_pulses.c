@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -30,76 +32,87 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 /*********************************************/
 /* Decode quantization indices of excitation */
 /*********************************************/
-void SKP_Silk_decode_pulses(
-    SKP_Silk_range_coder_state      *psRC,              /* I/O  Range coder state                           */
-    SKP_Silk_decoder_control        *psDecCtrl,         /* I/O  Decoder control                             */
-    SKP_int                         q[],                /* O    Excitation signal                           */
-    const SKP_int                   frame_length        /* I    Frame length (preliminary)                  */
-)
+void SKP_Silk_decode_pulses(SKP_Silk_range_coder_state * psRC,	/* I/O  Range coder state                           */
+			    SKP_Silk_decoder_control * psDecCtrl,	/* I/O  Decoder control                             */
+			    int q[],	/* O    Excitation signal                           */
+			    const int frame_length	/* I    Frame length (preliminary)                  */
+    )
 {
-    SKP_int   i, j, k, iter, abs_q, nLS, bit;
-    SKP_int   sum_pulses[ MAX_NB_SHELL_BLOCKS ], nLshifts[ MAX_NB_SHELL_BLOCKS ];
-    SKP_int   *pulses_ptr;
-    const SKP_uint16 *cdf_ptr;
-    
+	int i, j, k, iter, abs_q, nLS, bit;
+	int sum_pulses[MAX_NB_SHELL_BLOCKS], nLshifts[MAX_NB_SHELL_BLOCKS];
+	int *pulses_ptr;
+	const uint16_t *cdf_ptr;
+
     /*********************/
-    /* Decode rate level */
+	/* Decode rate level */
     /*********************/
-    SKP_Silk_range_decoder( &psDecCtrl->RateLevelIndex, psRC, 
-            SKP_Silk_rate_levels_CDF[ psDecCtrl->sigtype ], SKP_Silk_rate_levels_CDF_offset );
+	SKP_Silk_range_decoder(&psDecCtrl->RateLevelIndex, psRC,
+			       SKP_Silk_rate_levels_CDF[psDecCtrl->sigtype],
+			       SKP_Silk_rate_levels_CDF_offset);
 
-    /* Calculate number of shell blocks */
-    iter = frame_length / SHELL_CODEC_FRAME_LENGTH;
-    
-    /***************************************************/
-    /* Sum-Weighted-Pulses Decoding                    */
-    /***************************************************/
-    cdf_ptr = SKP_Silk_pulses_per_block_CDF[ psDecCtrl->RateLevelIndex ];
-    for( i = 0; i < iter; i++ ) {
-        nLshifts[ i ] = 0;
-        SKP_Silk_range_decoder( &sum_pulses[ i ], psRC, cdf_ptr, SKP_Silk_pulses_per_block_CDF_offset );
-
-        /* LSB indication */
-        while( sum_pulses[ i ] == ( MAX_PULSES + 1 ) ) {
-            nLshifts[ i ]++;
-            SKP_Silk_range_decoder( &sum_pulses[ i ], psRC, 
-                    SKP_Silk_pulses_per_block_CDF[ N_RATE_LEVELS - 1 ], SKP_Silk_pulses_per_block_CDF_offset );
-        }
-    }
-    
-    /***************************************************/
-    /* Shell decoding                                  */
-    /***************************************************/
-    for( i = 0; i < iter; i++ ) {
-        if( sum_pulses[ i ] > 0 ) {
-            SKP_Silk_shell_decoder( &q[ SKP_SMULBB( i, SHELL_CODEC_FRAME_LENGTH ) ], psRC, sum_pulses[ i ] );
-        } else {
-            SKP_memset( &q[ SKP_SMULBB( i, SHELL_CODEC_FRAME_LENGTH ) ], 0, SHELL_CODEC_FRAME_LENGTH * sizeof( SKP_int ) );
-        }
-    }
+	/* Calculate number of shell blocks */
+	iter = frame_length / SHELL_CODEC_FRAME_LENGTH;
 
     /***************************************************/
-    /* LSB Decoding                                    */
+	/* Sum-Weighted-Pulses Decoding                    */
     /***************************************************/
-    for( i = 0; i < iter; i++ ) {
-        if( nLshifts[ i ] > 0 ) {
-            nLS = nLshifts[ i ];
-            pulses_ptr = &q[ SKP_SMULBB( i, SHELL_CODEC_FRAME_LENGTH ) ];
-            for( k = 0; k < SHELL_CODEC_FRAME_LENGTH; k++ ) {
-                abs_q = pulses_ptr[ k ];
-                for( j = 0; j < nLS; j++ ) {
-                    abs_q = SKP_LSHIFT( abs_q, 1 ); 
-                    SKP_Silk_range_decoder( &bit, psRC, SKP_Silk_lsb_CDF, 1 );
-                    abs_q += bit;
-                }
-                pulses_ptr[ k ] = abs_q;
-            }
-        }
-    }
+	cdf_ptr = SKP_Silk_pulses_per_block_CDF[psDecCtrl->RateLevelIndex];
+	for (i = 0; i < iter; i++) {
+		nLshifts[i] = 0;
+		SKP_Silk_range_decoder(&sum_pulses[i], psRC, cdf_ptr,
+				       SKP_Silk_pulses_per_block_CDF_offset);
+
+		/* LSB indication */
+		while (sum_pulses[i] == (MAX_PULSES + 1)) {
+			nLshifts[i]++;
+			SKP_Silk_range_decoder(&sum_pulses[i], psRC,
+					       SKP_Silk_pulses_per_block_CDF
+					       [N_RATE_LEVELS - 1],
+					       SKP_Silk_pulses_per_block_CDF_offset);
+		}
+	}
+
+    /***************************************************/
+	/* Shell decoding                                  */
+    /***************************************************/
+	for (i = 0; i < iter; i++) {
+		if (sum_pulses[i] > 0) {
+			SKP_Silk_shell_decoder(&q
+					       [SKP_SMULBB
+						(i, SHELL_CODEC_FRAME_LENGTH)],
+					       psRC, sum_pulses[i]);
+		} else {
+			SKP_memset(&q[SKP_SMULBB(i, SHELL_CODEC_FRAME_LENGTH)],
+				   0, SHELL_CODEC_FRAME_LENGTH * sizeof(int));
+		}
+	}
+
+    /***************************************************/
+	/* LSB Decoding                                    */
+    /***************************************************/
+	for (i = 0; i < iter; i++) {
+		if (nLshifts[i] > 0) {
+			nLS = nLshifts[i];
+			pulses_ptr =
+			    &q[SKP_SMULBB(i, SHELL_CODEC_FRAME_LENGTH)];
+			for (k = 0; k < SHELL_CODEC_FRAME_LENGTH; k++) {
+				abs_q = pulses_ptr[k];
+				for (j = 0; j < nLS; j++) {
+					abs_q = SKP_LSHIFT(abs_q, 1);
+					SKP_Silk_range_decoder(&bit, psRC,
+							       SKP_Silk_lsb_CDF,
+							       1);
+					abs_q += bit;
+				}
+				pulses_ptr[k] = abs_q;
+			}
+		}
+	}
 
     /****************************************/
-    /* Decode and add signs to pulse signal */
+	/* Decode and add signs to pulse signal */
     /****************************************/
-    SKP_Silk_decode_signs( psRC, q, frame_length, psDecCtrl->sigtype, 
-        psDecCtrl->QuantOffsetType, psDecCtrl->RateLevelIndex);
+	SKP_Silk_decode_signs(psRC, q, frame_length, psDecCtrl->sigtype,
+			      psDecCtrl->QuantOffsetType,
+			      psDecCtrl->RateLevelIndex);
 }

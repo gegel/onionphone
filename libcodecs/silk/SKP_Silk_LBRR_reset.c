@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -28,13 +30,12 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_main.h"
 
 /* Resets LBRR buffer, used if packet size changes */
-void SKP_Silk_LBRR_reset( 
-    SKP_Silk_encoder_state      *psEncC             /* I/O  state                                       */
-)
+void SKP_Silk_LBRR_reset(SKP_Silk_encoder_state * psEncC	/* I/O  state                                       */
+    )
 {
-    SKP_int i;
+	int i;
 
-    for( i = 0; i < MAX_LBRR_DELAY; i++ ) {
-        psEncC->LBRR_buffer[ i ].usage = SKP_SILK_NO_LBRR;
-    }
+	for (i = 0; i < MAX_LBRR_DELAY; i++) {
+		psEncC->LBRR_buffer[i].usage = SKP_SILK_NO_LBRR;
+	}
 }

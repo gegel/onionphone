@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -31,58 +33,56 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_typedef.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /***********************************************/
 /* Structure for controlling encoder operation */
 /***********************************************/
-typedef struct {
-    /* I:   Sampling rate in Hertz; 8000/12000/16000/24000                                  */
-    SKP_int32 sampleRate;
+	typedef struct {
+		/* I:   Sampling rate in Hertz; 8000/12000/16000/24000                                  */
+		int32_t sampleRate;
 
-    /* I:   Number of samples per packet; must be equivalent of 20, 40, 60, 80 or 100 ms    */
-    SKP_int packetSize;
+		/* I:   Number of samples per packet; must be equivalent of 20, 40, 60, 80 or 100 ms    */
+		int packetSize;
 
-    /* I:   Bitrate during active speech in bits/second; internally limited                 */
-    SKP_int32 bitRate;                        
+		/* I:   Bitrate during active speech in bits/second; internally limited                 */
+		int32_t bitRate;
 
-    /* I:   Uplink Packet loss in pct (0...100)                                             */
-    SKP_int packetLossPercentage;
-    
-    /* I:   Complexity mode; 0 is lowest; 1 is medium and 2 is highest complexity           */
-    SKP_int complexity;
+		/* I:   Uplink Packet loss in pct (0...100)                                             */
+		int packetLossPercentage;
 
-    /* I:   Flag to enable in-band Forward Error Correction (FEC); 0/1                      */
-    SKP_int useInBandFEC;
+		/* I:   Complexity mode; 0 is lowest; 1 is medium and 2 is highest complexity           */
+		int complexity;
 
-    /* I:   Flag to enable Discontinous Transmission; 0/1                                   */
-    SKP_int useDTX;
-} SKP_SILK_SDK_EncControlStruct;
+		/* I:   Flag to enable in-band Forward Error Correction (FEC); 0/1                      */
+		int useInBandFEC;
+
+		/* I:   Flag to enable Discontinous Transmission; 0/1                                   */
+		int useDTX;
+	} SKP_SILK_SDK_EncControlStruct;
 
 /**************************************************************************/
 /* Structure for controlling decoder operation and reading decoder status */
 /**************************************************************************/
-typedef struct {
-    /* I:   Sampling rate in Hertz; 8000/12000/16000/24000                                  */
-    SKP_int32 sampleRate;
+	typedef struct {
+		/* I:   Sampling rate in Hertz; 8000/12000/16000/24000                                  */
+		int32_t sampleRate;
 
-    /* O:   Number of samples per frame                                                     */
-    SKP_int frameSize;
+		/* O:   Number of samples per frame                                                     */
+		int frameSize;
 
-    /* O:   Frames per packet 1, 2, 3, 4, 5                                                 */
-    SKP_int framesPerPacket;
+		/* O:   Frames per packet 1, 2, 3, 4, 5                                                 */
+		int framesPerPacket;
 
-    /* O:   Flag to indicate that the decoder has remaining payloads internally             */
-    SKP_int moreInternalDecoderFrames;
+		/* O:   Flag to indicate that the decoder has remaining payloads internally             */
+		int moreInternalDecoderFrames;
 
-    /* O:   Distance between main payload and redundant payload in packets                  */
-    SKP_int inBandFECOffset;
-} SKP_SILK_SDK_DecControlStruct;
+		/* O:   Distance between main payload and redundant payload in packets                  */
+		int inBandFECOffset;
+	} SKP_SILK_SDK_DecControlStruct;
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif
