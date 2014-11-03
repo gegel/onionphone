@@ -33,13 +33,15 @@
 #include <string.h>
 #include <math.h>
 #include <ophmconsts.h>
+
+#include "cntrls.h"
 #include "audio_wave.h"
 #define UNREF(x) (void)(x)
 
 #define SampleRate 8000  //Samle Rate
 #define BitsPerSample 16  //PCM16 mode
 #define Channels 1     // mono
-#define CHSIZE 640 //chunk size is 160 samples (20 mS)
+#define CHSIZE 320 //chunk size in bytes (2 * sample125us)
 #define CHNUMS 16  //number of chunks for buffer size 2400 samples (300 mS) can be buffered
 #define ROLLMASK (CHNUMS-1) //and-mask for roll buffers while pointers incremented
 
@@ -53,6 +55,7 @@ HANDLE WorkerThreadHandle=0;    // Wave thread
 DWORD WorkerThreadId=0;         // ID of wave thread
 
 int IsSound=0;   //flag: sound OK
+int IsGo=0;     //flag: input runs
 int DevInN=0;    //system input numer devicce specified in donfig file
 int DevOutN=0;   //system output numer devicce specified in donfig file
 int ChSize=CHSIZE; //chunk size
@@ -60,14 +63,14 @@ int ChNums=CHNUMS; //number of chunks
 
 //audio input
 WAVEHDR *Hdr_in[2]; //headers for 2 chunks
-unsigned char wave_in[CHNUMS][CHSIZE];  //output buffers for 16 frames 20 mS each
+unsigned char wave_in[CHNUMS][CHSIZE+40];  //output buffers for 16 frames 20 mS each
 volatile unsigned char p_in=0; //pointer to chunk will be returned by input device
 unsigned char g_in=0; //pointer to chunk will be readed by application
 int n_in=0; //number of bytes ready in this frame
 
 //audio output
 WAVEHDR *Hdr_out[CHNUMS]; //headers for each chunk
-unsigned char wave_out[CHNUMS][CHSIZE]; //output buffers for 16 frames 20 mS each
+unsigned char wave_out[CHNUMS][CHSIZE+40]; //output buffers for 16 frames 20 mS each
 unsigned char p_out=0;  //pointer to chunk will be passed to output device
 int n_out=0;  //number of bytes already exist in this frame
 volatile unsigned char g_out=0;  //pointer to chunk will be returned by output device
@@ -82,6 +85,44 @@ int rdcfg(void); //read config file and select devices from list
 void dlg_init(void); //ini audio
 int dlg_start(void); //create tread
 
+//Transcode cp866(ru) to latin
+void r2tru(char* in, char* out)
+{
+ static char tbl_win[64]={
+     -32, -31, -30, -29, -28, -27, -26, -25,
+     -24, -23, -22, -21, -20, -19, -18, -17,
+     -16, -15, -14, -13, -12, -11, -10, -9,
+     -8, -7, -4, -5, -6, -3, -2, -1,
+     -64, -63, -62, -61, -60, -59, -58, -57,
+     -56, -55, -54, -53, -52, -51, -50, -49,
+     -48, -47, -46, -45, -44, -43, -42, -41,
+     -40, -39, -36, -37, -38, -35, -34, -33
+ };
+ static char* tbl_trn="abvgdezzijklmnoprstufhccss'y'ejjABVGDEZZIIKLMNOPRSTUFHCCSS'I'EJJ";
+ int i,j;
+ char*p=out;
+
+ for(i=0;i<1+strlen(in); i++)
+ {
+  if(in[i]>=0) (*p++)=in[i];
+  else
+  {
+   for(j=0; j<64; j++)
+   {
+    if(in[i]==tbl_win[j])
+    {
+     (*p++)=tbl_trn[j];
+     if((j==6)||(j==23)||(j==24)||(j==38)||(j==55)||(j==56)) (*p++)='h'; //zh, ch, sh
+     if((j==25)||(j==57)) (*p++)='c'; //sc
+     if((j==30)||(j==62)) (*p++)='u'; //ju
+     if((j==31)||(j==63)) (*p++)='a'; //sc
+     break;
+    }
+    if(j==64) (*p++)='?';
+   }
+  }
+ }
+}
 
 
 //=============================Level 0==================
@@ -90,53 +131,49 @@ int dlg_start(void); //create tread
 int rdcfg(void)
 {
  double f;
- FILE *fpp;
- char buf[32];
+ //FILE *fpp;
+ char buf[256];
  char* p=0;
  //set default devices for use
  DevInN=0;
  DevOutN=0;
- //load config: I/O device numbers in stringth 2,3 after ':'
- fpp = fopen("audiocfg", "rt");  //try open config file
- if (fpp == NULL)
+ //Load buffer parameters
+ strcpy(buf, "AudioChunks");
+ if(0>=parseconf(buf)) strcpy(buf, "#");
+ if(buf[0]!='#') p=strchr(buf, '*');  //pointer to ascii chunk numbers
+ if(p)
  {
-  printf("Cannot open wave config file, using defaut in/out devices 0\r\n");
-  return -1;
- }
- else
- {
-  fgets(buf, sizeof(buf), fpp); //first string: chunk size*chunks number
-  if(buf[0]!='#') //check comments
-  {
    ChNums=0;  //number of chunks
    ChSize=0; //chunk size in bytes
-   p=strchr(buf, '*'); //pointer to ascii chunk numbers
-    if(p)
-    {
-     p[0]=0;
-     ChNums=atoi(++p); //to integer
-    }
-    if(ChNums<2) ChNums=2; //defaults
+   p[0]=0;
+   ChNums=atoi(++p); //to integer
+   if(ChNums<2) ChNums=2; //defaults
+   ChNums=ceil(log2(ChNums));
+   ChNums=ceil(exp2(ChNums));
+   ChSize=2*atoi(buf);
+   if(ChSize<80) ChSize=80; //defaults
+ }
 
-    ChNums=ceil(log2(ChNums));
-    ChNums=ceil(exp2(ChNums));
-    ChSize=2*atoi(buf);
-    if(ChSize<80) ChSize=80; //defaults
-  }
-  if(fgets(buf, sizeof(buf), fpp)) //string 2: input device number
-   {
-    p=strchr(buf, ':'); //search separator
-    if(p) DevInN=atoi(++p); //string to integer from next char after it
-   }
-   if(fgets(buf, sizeof(buf), fpp)) //string 3: output device number
-   {
-    p=strchr(buf, ':');  //search separator
-    if(p) DevOutN=atoi(++p); //string to integer from next char after it
-   }
-   printf("In/out wave devices %d/%d will be used\r\n", DevInN, DevOutN);
-   fclose(fpp);
-  }
-  return 0;
+ strcpy(buf, "NPP7");
+ parseconf(buf);
+ if(buf[0]=='1') ChSize=360;
+ if(ChSize>(CHSIZE+40)) ChSize=CHSIZE+40;
+ printf("Period size %d, Buffer size %d\r\n", ChSize/2, ChNums*ChSize/2);
+
+ strcpy(buf, "AudioInput"); //number of AudioIn in list
+ if(0<parseconf(buf))
+ {
+   p=strchr(buf, ':'); //search separator
+   if(p) DevInN=atoi(++p); //string to integer from next char after it
+ }
+ strcpy(buf, "AudioOutput"); //number of AudioOut in list
+ if(0<parseconf(buf))
+ {
+   p=strchr(buf, ':');  //search separator
+   if(p) DevOutN=atoi(++p); //string to integer from next char after it
+ }
+ printf("In/out wave devices %d/%d will be used\r\n", DevInN, DevOutN);
+ return 0;
 }
 
 
@@ -146,6 +183,7 @@ void dlg_init(void)
 {
  int NumWaveDevs;
  int i;
+ char str[256];
 
  //get number of wave input devices in system
  NumWaveDevs = waveInGetNumDevs ();
@@ -153,7 +191,9 @@ void dlg_init(void)
  {
   WAVEINCAPS DevCaps;
   waveInGetDevCaps (i - 1, &DevCaps, sizeof (DevCaps)); //get devices name
-  printf("WaveInDevice %d: %s\r\n", i, DevCaps.szPname); //print it
+  r2tru(DevCaps.szPname, str);
+  printf("WaveInDevice %d: %s\r\n", i, str);
+
  }
  //get number of wave output devices in system
  NumWaveDevs = waveOutGetNumDevs ();
@@ -161,10 +201,10 @@ void dlg_init(void)
  {
   WAVEOUTCAPS DevCaps;
   waveOutGetDevCaps (i - 1, &DevCaps, sizeof (DevCaps)); //get devices name
-  printf("WaveOutDevice %d: %s\r\n", i, DevCaps.szPname); //print it
+  r2tru(DevCaps.szPname, str);
+  printf("WaveOutDevice %d: %s\r\n", i, str); //print it
  }
 }
-
 
 //*****************************************************************************
 //Stor audio input/autput
@@ -248,7 +288,7 @@ int OpenDevices (void)
    if (Hdr)
    {
     Hdr->lpData = wave_out[i];
-    Hdr->dwBufferLength = CHSIZE;
+    Hdr->dwBufferLength = ChSize;
     Hdr->dwFlags = 0;
     Hdr->dwLoops = 0;
     Hdr->dwUser = 0;
@@ -273,7 +313,7 @@ int OpenDevices (void)
    if (Hdr)
    {
     Hdr->lpData = wave_in[i];
-    Hdr->dwBufferLength = CHSIZE;
+    Hdr->dwBufferLength = ChSize;
     Hdr->dwFlags = 0;
     Hdr->dwLoops = 0;
     Hdr->dwUser = 0;
@@ -334,7 +374,7 @@ int getdelay(void)
  if(i<0) i=CHNUMS+i; //correct roll
  i=i-2; //skip two work buffers
  if(i<0) i=0; //correct
- i=i*CHSIZE; //bytes in queue
+ i=i*ChSize; //bytes in queue
  i=i+n_out; //add tail in current buffer
  i=i/2; //samples in queue
  return i;
@@ -344,14 +384,14 @@ int getdelay(void)
 //get number of samples in chunk (frame)
 int getchunksize(void)
 {
- return CHSIZE/2;
+ return ChSize/2;
 }
 
 //*****************************************************************************
 //get total buffers size in samples
 int getbufsize(void)
 {
- return ((CHSIZE*(CHNUMS-1))/2);
+ return ((ChSize*(CHNUMS-1))/2);
 }
 
 //*****************************************************************************
@@ -383,27 +423,29 @@ int soundgrab(char *buf, int len)
  //g_in pointes to the most oldest unread frame
  //n_in is number of unreaded bytes in it (tail)
 
- if(!IsSound) return 0; //check for device opened
- cpp=cp+1;  //pointer to buffer passed to input device
- cpp&=ROLLMASK;
- l=len*2; //length in bytes (for 16 bit audio samples)
- while(l>0) //process up to length
- { //check for pointed buffer not uses by input device now
-  if((g_in==cp)||(g_in==cpp)) break; //2 chunks uses by input device at time
-  i=CHSIZE-n_in; //ready bytes in this frame
-  if(i>l) i=l;  //if we need less then exist
-  memcpy(buf, &wave_in[g_in][n_in], i); //copy to output
-  d+=i; //bytes outed
-  l-=i; //bytes remains
-  n_in+=i; //bytes processed in current frame
-  if(n_in>=CHSIZE) //if all bytes of current frame processed
-  {
-
-   g_in++;   //pointer to next frame
-   g_in=g_in&ROLLMASK; //roll mask (16 frames total)
-   n_in=0;  //no byte of this frame has not yet been read
+ if(IsSound && IsGo)//check for device opened
+ {
+  cpp=cp+1;  //pointer to buffer passed to input device
+  cpp&=ROLLMASK;
+  l=len*2; //length in bytes (for 16 bit audio samples)
+  while(l>0) //process up to length
+  { //check for pointed buffer not uses by input device now
+   if((g_in==cp)||(g_in==cpp)) break; //2 chunks uses by input device at time
+   i=ChSize-n_in; //ready bytes in this frame
+   if(i>l) i=l;  //if we need less then exist
+   memcpy(buf, &wave_in[g_in][n_in], i); //copy to output
+   d+=i; //bytes outed
+   l-=i; //bytes remains
+   n_in+=i; //bytes processed in current frame
+   if(n_in>=ChSize) //if all bytes of current frame processed
+   {
+    g_in++;   //pointer to next frame
+    g_in=g_in&ROLLMASK; //roll mask (16 frames total)
+    n_in=0;  //no byte of this frame has not yet been read
+   }
   }
  }
+ //if(!d) Sleep(20);
  return (d/2); //returns number of outputted frames
 }
 
@@ -429,7 +471,7 @@ int soundplay(int len, unsigned char *buf)
  {
   for(i=0;i<STARTDELAY;i++) //pass to device some silency frames
   {
-   memset(wave_out[i], 0, CHSIZE); //put silency to first frame
+   memset(wave_out[i], 0, ChSize); //put silency to first frame
    waveOutPrepareHeader (Out, Hdr_out[i], sizeof (WAVEHDR)); //prepare header
    waveOutWrite (Out, Hdr_out[i], sizeof (WAVEHDR));    //pass it to wave output device
   }
@@ -446,13 +488,13 @@ int soundplay(int len, unsigned char *buf)
   cp=p_out+1; //pointer to next frame
   cp=cp&ROLLMASK; //roll mask
   if(cp==cg) break; //if next frame not returned yet (buffer full)
-  i=CHSIZE-n_out; //number of empty bytes in this frame
+  i=ChSize-n_out; //number of empty bytes in this frame
   if(i>l) i=l; //if we have less bytes then empty
   memcpy(&wave_out[p_out][n_out], buf+d, i); //copy input data to frame
   l-=i; //remain data bytes
   d+=i; //processed bytes
   n_out+=i; //empty bytes remains in current frame
-  if(n_out>=CHSIZE) //if chunk full
+  if(n_out>=ChSize) //if chunk full
   {
    waveOutPrepareHeader (Out, Hdr_out[p_out], sizeof (WAVEHDR)); //prepare header
    waveOutWrite (Out, Hdr_out[p_out], sizeof (WAVEHDR));    //pass it to wave output device
@@ -534,7 +576,7 @@ int dlg_start(void)
             );
    //open wave devices
    Success = OpenDevices ();
-   if (Success)
+/*   if (Success)
    {  //start audio input
     if (waveInStart(In) != MMSYSERR_NOERROR)
     {  //if no inputs
@@ -542,7 +584,22 @@ int dlg_start(void)
      IsSound=0;
      printf("Starting audio input failed\r\n");
     }
-   }
+   } */
    return Success;
 }
 
+//start/stop audio input
+int soundrec(int on)
+{
+ if(on!=IsGo)
+ {
+  MMRESULT Res;
+
+  if(on) Res = waveInStart(In); //start audio input
+  else Res = waveInStop(In);   //stop audio input
+  if(Res != MMSYSERR_NOERROR) IsGo=0; //error
+  else IsGo=on;                       //set flag
+  //printf("Rec=%d\r\n", IsGo);
+ }
+ return IsGo;                        //return status
+}

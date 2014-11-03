@@ -8,8 +8,8 @@ Tor_interface=127.0.0.1:11109
 TCP_listen=1
 UDP_listen=1
 UDP_control=1
-TCP_interface=0.0.0.0:17447
-UDP_interface=0.0.0.0:17447
+TCP_interface=127.0.0.1:17447
+UDP_interface=127.0.0.1:17447
 WEB_interface=127.0.0.1:8000
 
 #Technical settings
@@ -25,7 +25,12 @@ VAD_tail=1
 VAD_signal=50
 SpeexResampler=1
 NPP7=0
-RawBufSize=160
+RawBufSize=default
+AudioChunks=default
+#AudioInput=plughw:0,0
+#AudioOutput=plughw:0,0
+AudioInput=plug:default
+AudioOutput=plug:default
 RingTimeout=30
 IddleTimeout=10
 UDPTimeout=5

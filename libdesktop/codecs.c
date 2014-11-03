@@ -41,6 +41,7 @@
 //*/
 #include "../libcodecs/lpc/lpc.h"
 ///*
+//#include "../libcodecs/opus/include/opus_types.h"
 #include "../libcodecs/opus/include/opus_defines.h"
 #include "../libcodecs/opus/include/opus.h"
 #include "../libcodecs/gsmhr/gsmhr.h"
@@ -182,8 +183,9 @@ char sound_test=0; //flag of continuous notification of buffering status
 //------------------external  values-----------------
 
 extern int cmdptr;  //actual number of chars in command strings buffer
-extern long rc_cnt; //!!!!!!!!!!!!!!TEST
-
+extern long rc_cnt; //onion counter (for test only) (from tcp.c)
+extern char sound_loop; //sound self-test mode flag (from ctrls.c)
+extern char crp_state; //crypto state (from crypto.c)
 //==========================Codec's states==============================
 //------------------------------SPEEX-------------------------------
 //encoder
@@ -986,9 +988,6 @@ int sp_decode(short* sp, unsigned char* bf)
      }
      speex_d(spp, bp+11, l-11); //process actual speech
 	}
-
-
-
   }  
   bp+=l; //add data length (pointer to next data frame)
   //if(speex_rs)
@@ -1009,6 +1008,7 @@ int sp_decode(short* sp, unsigned char* bf)
 int playjit(void)
 {
   int i=0;
+  int job=0;
  //periodically check for PTT deactivation after TAB_KEY released
    if(ptt_flag) //if key was pushed and release timestamp was fixed in ptt_flag
    {
@@ -1020,7 +1020,7 @@ int playjit(void)
    } 
   
  //get number of unplayed samples in alsa buffer
- sdelay=getdelay();
+ if(rx_flg1<50) sdelay=getdelay();
 
  //Sound Underrun
 
@@ -1037,6 +1037,7 @@ int playjit(void)
   }
   rx_flg=0; //clear rx_flag: no plagged incoming users now
   rx_flg1=0; //clear rx_flg1: no PTT off remote signal
+  job=0x80;
  }
 
  if(sdelay<chunk) rx_flg1++; //count underruns
@@ -1049,14 +1050,16 @@ int playjit(void)
     memset(jit_buf1, 0, 2*i); //put silency to alternative buffer
     i=soundplay(i, (char*)(jit_buf1)); //play and returns number of played samples
     if(i<chunk) soundplay(min_jitter, (char*)(jit_buf1)); //play again if underrun was occured
+    job+=0x100;
    }
-   rx_flg1=0; //clear rx_flag: no plagged incoming users now
+   rx_flg1=0; //clear rx_flag: no plagged incoming users now   
  }
 
  //play samples in jitter buffer
  if(l_jit_buf)
  {
   i=soundplay(l_jit_buf, (char*)(p_jit_buf)); //returns number of played samples
+  if(i) job+=0x200;
   if(i<=0) i=0; //must play againbif underrun (PTT mode etc.)
   l_jit_buf-=i; //number of unplayed samples
   p_jit_buf+=i; //pointer to unplayed samples
@@ -1064,9 +1067,9 @@ int playjit(void)
   {
    l_jit_buf=0; //correction
    p_jit_buf=jit_buf; //pointer to start of buffer 
-  }
+  }  
  }  
- return l_jit_buf; //number of unpleyed samples in jit_buffer
+ return job; //job flag
 }
 //*****************************************************************************
 //-----------------------Alternative VOX control---------------------------------
@@ -1290,12 +1293,14 @@ int amr_setup(char mode, char dtx, char fpp)
 //switch TX/mute by pressing ENTER
 void switch_tx(void)
 {
+  ptt_flag=0;
   vad_t=0; //deactivate vad
   if(etx_flag) etx_flag=0; else etx_flag=3; //switch estimated flag
 }
 //*****************************************************************************
 void off_tx(void)
 {
+ ptt_flag=0;
  vad_t=0; //deactivate vad
  etx_flag=0; //deactivate voice
  tx_flag=0;
@@ -1340,11 +1345,11 @@ void playring(void)
 //Process and play incoming packet:
 //The first try to play samples in samples buffer, then decode and
 //play packets from packets buffer, then decode and play pkt
-void go_snd(unsigned char* pkt)
+int go_snd(unsigned char* pkt)
 {
  int i, delay, delta, q2, j=0;
- 
- playjit(); //the first: play samples in jitter buffer
+ int job=0;
+ job=playjit(); //the first: play samples in jitter buffer
 
  //if jitter buffer is empty and there is undecoded packet in packets buffer
  while((l_pkt[n_pkt])&&(!l_jit_buf))
@@ -1357,11 +1362,13 @@ void go_snd(unsigned char* pkt)
   n_pkt++; //to next position in packet buffer
   n_pkt&=(MAX_PKT-1); //roll
   playjit();  //play decoded samples from jitter buffer
+  job=0x20;
  } 
 
 //if new packet received
  if(pkt)
  {
+  job+=0x40;
   //fixes user id of packets sender
   rx_flg=1;
   //find codec type in received packet
@@ -1517,6 +1524,7 @@ void go_snd(unsigned char* pkt)
     memcpy(pkt_buf[j], pkt, i); //copy packet to buffer's slot
   }
  }
+ return job;
 }
 
 
@@ -1528,14 +1536,15 @@ void go_snd(unsigned char* pkt)
 int do_snd(unsigned char *pkt)
 {
  int i;
-
+ //check state for activation of audio input
+ soundrec((crp_state>2)||(sound_loop));
  //grab sound input device up to RawBufSize samples
  l_raw+=soundgrab((char*)(raw_buf+l_raw), RawBufSize-l_raw); //l_raw = actually grabbed samples
  if(l_raw<RawBufSize) return 0; //grab for RawBufSize samples (one frame ready for preprocessing)
  //now we have exectly RawBufSize samples in raw buffer
  l_raw=0; //pass it to process
  //we use alsa input clock for periodically playing buffered samles
- go_snd(0); //periodically (every 20 mS) try to play buffered samples 
+ //go_snd(0); //periodically (every 20 mS) try to play buffered samples
  //now we have frame ready for preprocessing, check vad or randomize sprng if no TX 
  if(tx_flag||etx_flag||vad_t) //preprocess if actual or estimated tx flag or VAD active
  {
@@ -1570,7 +1579,7 @@ int do_snd(unsigned char *pkt)
  if(!tx_flag) //not transmitt this packet 
  {
   l_in=0; //clear length of data in input buffer (reject it)
-  if(!tx_note) return 0; //if remote notification required (this is a first skipped packet)
+  if(!tx_note) return -1; //if remote notification required (this is a first skipped packet)
   tx_note=0; //clear notify flag
   //prepare notify packet
   pkt[0]=1;
@@ -1585,7 +1594,7 @@ int do_snd(unsigned char *pkt)
  memcpy((char*)(in_buf+l_in), raw_buf, 2*RawBufSize); //copy preprocessing samples from raw to input buffer
  l_in+=RawBufSize; //total number of samples in input buffer now
  //check input buffer comleet for current encoder type
- if(l_in<snd_need) return 0; //more samles needed
+ if(l_in<snd_need) return -2; //more samles needed
  //input buffer ready to encode
  if(!etx_flag)  //check for tx mode was disabled by user and not enabled by vad
  { //only now we can disable transmission but current packet will be transmitted 
@@ -1604,6 +1613,7 @@ int do_snd(unsigned char *pkt)
  }
  else if(etx_flag==TX_VAD) etx_flag=0; //clear etx_flag for next VAD detection in VAD mode
  i=sp_encode(in_buf, pkt); //encode voice to packet
+ //if(i<2) i=-3; //edcoding error
  l_in-=snd_need;  //number residual (unencoded) samples in buffer(pass for next packet)
  if(l_in) memcpy(in_buf, (char*)(in_buf+snd_need), l_in<<1); //copy tail to start of buffer
  return i; //returns packet's length in bytes
@@ -1619,32 +1629,32 @@ void setaudio(void)
  int i;
 
  strcpy(str, "VoiceCodec");
- if(parseconf(str)>0) i=atoi(str);
+ if(parseconf(str)>0) i=atoi(str); else i=-1;
  if((i<=0)&&(i>18)) i=7;
  set_encoder(i);
 
  strcpy(str, "Vocoder");
- if(parseconf(str)>0) i=atoi(str);
+ if(parseconf(str)>0) i=atoi(str); else i=-1;
  if((i>0)&&(i<256)) sp_voc=i; else sp_voc=0;
 
  strcpy(str, "DeNoise");
- if(parseconf(str)>0) sp_npp=atoi(str);
+ if(parseconf(str)>0) sp_npp=atoi(str); else sp_npp=0;
 
  strcpy(str, "AutoGain");
- if(parseconf(str)>0) sp_agc=atoi(str);
+ if(parseconf(str)>0) sp_agc=atoi(str); else sp_agc=0;
 
  speex_p(sp_npp,sp_agc); //set denoise and agc
 
  strcpy(str, "Jitter");
- if(parseconf(str)>0) i=atoi(str);
+ if(parseconf(str)>0) i=atoi(str); else i=0;
  if(i<8000) sp_jit=i; else sp_jit=0;
 
  strcpy(str, "VAD_level");
- if(parseconf(str)>0) i=atoi(str);
+ if(parseconf(str)>0) i=atoi(str); else i=0;
  if((i>=0)&&(i<100)) vox_level=i; else vox_level=0;
 
  strcpy(str, "VAD_tail");
- if(parseconf(str)>0) i=atoi(str);
+ if(parseconf(str)>0) i=atoi(str); else i=0;
  if((i>0)&&(i<100)) vad_tail=i; else vad_tail=0;
 
  strcpy(str, "VAD_signal");
@@ -1655,14 +1665,14 @@ void setaudio(void)
  }
 
  strcpy(str, "RawBufSize");
- if(parseconf(str)>0) i=atoi(str);
+ if(parseconf(str)>0) i=atoi(str); else i=0;
  if((i>=80)&&(i<=240)) RawBufSize=i; else RawBufSize=160;
 
  strcpy(str, "SpeexResampler");
  if(parseconf(str)>0) speex_rs=atoi(str);
 
  strcpy(str, "NPP7");
- if(parseconf(str)>0) i=atoi(str);
+ if(parseconf(str)>0) i=atoi(str); else i=0;
  if(i)
  {
   RawBufSize=180;

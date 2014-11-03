@@ -1,7 +1,7 @@
 OnionPhone
 ==========
 
-VOIP tool for calling over Tor
+VOIP tool for calling over Tor v0.2a (not compatible with IKE in v0.1a, see docs)
 
 OnionPhone (OPH) is a VOIP tool for calling over Tor network which can be used as a VOIP plugin for TorChat. Call is targeted to the onion address of the recipient (its hidden service HS). The recipient can install a reverse onion connection to the originator’s HS and use a faster channel periodically resetting the slower channel to reduce overall latency. 
 Also provided is the ability to switch to a direct UDP connection (with NAT traversal) after the connection is established over Tor (Tor network opposed to a SIP server requiring registration and collecting metadata). And also OnionPhone can establish a direct UDP or TCP connection to the specified port on IP-address or host. 

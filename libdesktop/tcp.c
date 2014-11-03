@@ -99,6 +99,7 @@ char sock_buf[32768];   //WSA sockets buffer
 #include "cntrls.h"
 #include "codecs.h"
 #include "sha1.h"
+//#include "audio.h"
 
 int web_listener=INVALID_SOCKET; //web listening socket
 int web_sock=INVALID_SOCKET;   //web control socket
@@ -170,6 +171,7 @@ extern unsigned int in_ctr; //counter of incoming packets (crypto.c)
 extern char their_onion[32]; //remote onion adress (from connection command or from remote) (crypto.c)
 extern char our_onion[32];   //our onion adress (from connection command or conf file) (crypto.c)
 extern int bad_mac; //counter of bad autentificating packets (crypto.c)
+extern char sound_loop; //sound test mode flag
 
 //*****************************************************************************
 //returns error reading socket
@@ -575,6 +577,7 @@ int disconnect(void)
   tcp_outsock_flag=SOCK_IDDL; //set flag for iddle
  }
 
+ //if(!sound_loop) soundrec(0); //stop audio input
  reset_crp();  //reset encryption engine
  onion_flag=0; //reset onion flag
 
@@ -1197,7 +1200,6 @@ if(ll) //send busy notification and close
   //ling.l_linger = 0;
   //setsockopt(sTemp, SOL_SOCKET, SO_LINGER, (char*) &ling, sizeof(ling));
   close(sTemp);
-
   web_printf("! Reject incoming: busy\r\n");
   return 1;
  }
@@ -1214,6 +1216,7 @@ if(ll) //send busy notification and close
  tcp_insock=sTemp;
  tr_in=0;  //bytes to read
  pr_in=0;  //bytes readed
+ psleep(50);
  return 1;
 }
 
@@ -1962,7 +1965,7 @@ int do_read(unsigned char* pkt)
  }
  //---------------------------------------------------
  //ring signal
- if(crp_state==-2)
+ if(crp_state==2)
  {
   //with 1/4 silency, 1/2 signal and 1/4 silency
   playring();
@@ -2045,7 +2048,7 @@ int do_read(unsigned char* pkt)
  if(web_listener!=INVALID_SOCKET) webaccept();
  if(web_sock!=INVALID_SOCKET) readweb();
 
- return -1;
+ return 0;
 }
 
 
@@ -2406,6 +2409,7 @@ int webaccept(void)
  //set new control connection
  web_sock=sTemp;
  web_sock_flag=0; //clear ready flag: no protocol defined
+ psleep(1);
  return 1;
 }
 
