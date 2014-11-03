@@ -6,7 +6,7 @@ Our_secret_access=
 #IP settings
 Tor_interface=127.0.0.1:11109
 TCP_listen=1
-UDP_listen=1
+UDP_listen=0
 UDP_control=1
 TCP_interface=127.0.0.1:17447
 UDP_interface=127.0.0.1:17447
