@@ -29,11 +29,11 @@ CODECSTESTDIRS = $(CODECSAPPS:%=test-%)
 OPHTESTDIRS = $(OPHAPPS:%=test-%)
 
 all: $(COMMONBUILDDIRS) $(ADDKEYBUILDDIRS) $(CODECSBUILDDIRS) $(OPHBUILDDIRS)
-	$(CC) $(COMMONAPPS:%=%/builtin.o) $(ADDKEYAPPS:%=%/builtin.o) -o addkey$(EXEADD)
-	$(CC) $(COMMONAPPS:%=%/builtin.o) $(CODECSAPPS:%=%/builtin.o) $(OPHAPPS:%=%/builtin.o) $(LDADD) -o oph$(EXEADD)
+	$(CC) $(GENERIC_CFLAGS) $(COMMONAPPS:%=%/builtin.o) $(ADDKEYAPPS:%=%/builtin.o) -o addkey$(EXEADD)
+	$(CC) $(GENERIC_CFLAGS) $(COMMONAPPS:%=%/builtin.o) $(CODECSAPPS:%=%/builtin.o) $(OPHAPPS:%=%/builtin.o) $(LDADD) -o oph$(EXEADD)
 
 fast: $(OPHBUILDDIRS)
-	$(CC) $(COMMONAPPS:%=%/builtin.o) $(CODECSAPPS:%=%/builtin.o) $(OPHAPPS:%=%/builtin.o) $(LDADD) -o oph$(EXEADD)
+	$(CC) $(GENERIC_CFLAGS) $(COMMONAPPS:%=%/builtin.o) $(CODECSAPPS:%=%/builtin.o) $(OPHAPPS:%=%/builtin.o) $(LDADD) -o oph$(EXEADD)
 
 $(COMMONAPPS): $(COMMONBUILDDIRS)
 $(ADDKEYAPPS): $(ADDKEYBUILDDIRS)
