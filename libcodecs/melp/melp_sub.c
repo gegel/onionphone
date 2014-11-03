@@ -152,6 +152,7 @@ void mf_mf_bpvc_ana_init(int fr, int pmin, int pmax, int nbands, int num_p,
 {
 
 	/* Initialize constants */
+	int u__i;
 	mf_FRAME = fr;
 	mf_PITCHMIN = pmin;
 	mf_PITCHMAX = pmax;
@@ -169,7 +170,7 @@ void mf_mf_bpvc_ana_init(int fr, int pmin, int pmax, int nbands, int num_p,
 	if (!mf_bpfdel)
 		program_abort(__FILE__, "calloc", 0, __LINE__);
 	else {
-		for (int u__i = 0; u__i < mf_NUM_BANDS; u__i++) {
+		for (u__i = 0; u__i < mf_NUM_BANDS; u__i++) {
 			mf_bpfdel[u__i] = calloc(1, BPF_ORD * sizeof(float));
 			if (!mf_bpfdel[u__i])
 				program_abort(__FILE__, "calloc", 0, __LINE__);
@@ -181,7 +182,7 @@ void mf_mf_bpvc_ana_init(int fr, int pmin, int pmax, int nbands, int num_p,
 	if (!mf_envdel)
 		program_abort(__FILE__, "calloc", 0, __LINE__);
 	else {
-		for (int u__i = 0; u__i < mf_NUM_BANDS; u__i++) {
+		for (u__i = 0; u__i < mf_NUM_BANDS; u__i++) {
 			mf_envdel[u__i] = calloc(1, ENV_ORD * sizeof(float));
 			if (!mf_envdel[u__i])
 				program_abort(__FILE__, "calloc", 0, __LINE__);
