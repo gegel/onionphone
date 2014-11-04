@@ -15,7 +15,7 @@
 
 int gsm_decode P3((s, c, target), gsm s, gsm_byte * c, gsm_signal * target)
 {
-	word LARc[8], Nc[4], Mc[4], bc[4], xmaxc[4], xmc[13 * 4];
+	int16_t LARc[8], Nc[4], Mc[4], bc[4], xmaxc[4], xmc[13 * 4];
 
 	/* GSM_MAGIC  = (*c >> 4) & 0xF; */
 
