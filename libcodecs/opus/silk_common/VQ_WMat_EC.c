@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -32,89 +34,92 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "main.h"
 
 /* Entropy constrained matrix-weighted VQ, hard-coded to 5-element vectors, for a single input data vector */
-void silk_VQ_WMat_EC(
-    opus_int8                   *ind,                           /* O    index of best codebook vector               */
-    opus_int32                  *rate_dist_Q14,                 /* O    best weighted quant error + mu * rate       */
-    opus_int                    *gain_Q7,                       /* O    sum of absolute LTP coefficients            */
-    const opus_int16            *in_Q14,                        /* I    input vector to be quantized                */
-    const opus_int32            *W_Q18,                         /* I    weighting matrix                            */
-    const opus_int8             *cb_Q7,                         /* I    codebook                                    */
-    const opus_uint8            *cb_gain_Q7,                    /* I    codebook effective gain                     */
-    const opus_uint8            *cl_Q5,                         /* I    code length for each codebook vector        */
-    const opus_int              mu_Q9,                          /* I    tradeoff betw. weighted error and rate      */
-    const opus_int32            max_gain_Q7,                    /* I    maximum sum of absolute LTP coefficients    */
-    opus_int                    L                               /* I    number of vectors in codebook               */
-)
+void silk_VQ_WMat_EC(int8_t * ind,	/* O    index of best codebook vector               */
+		     int32_t * rate_dist_Q14,	/* O    best weighted quant error + mu * rate       */
+		     int * gain_Q7,	/* O    sum of absolute LTP coefficients            */
+		     const int16_t * in_Q14,	/* I    input vector to be quantized                */
+		     const int32_t * W_Q18,	/* I    weighting matrix                            */
+		     const int8_t * cb_Q7,	/* I    codebook                                    */
+		     const uint8_t * cb_gain_Q7,	/* I    codebook effective gain                     */
+		     const uint8_t * cl_Q5,	/* I    code length for each codebook vector        */
+		     const int mu_Q9,	/* I    tradeoff betw. weighted error and rate      */
+		     const int32_t max_gain_Q7,	/* I    maximum sum of absolute LTP coefficients    */
+		     int L	/* I    number of vectors in codebook               */
+    )
 {
-    opus_int   k, gain_tmp_Q7;
-    const opus_int8 *cb_row_Q7;
-    opus_int16 diff_Q14[ 5 ];
-    opus_int32 sum1_Q14, sum2_Q16;
+	int k, gain_tmp_Q7;
+	const int8_t *cb_row_Q7;
+	int16_t diff_Q14[5];
+	int32_t sum1_Q14, sum2_Q16;
 
-    /* Loop over codebook */
-    *rate_dist_Q14 = silk_int32_MAX;
-    cb_row_Q7 = cb_Q7;
-    for( k = 0; k < L; k++ ) {
-	    gain_tmp_Q7 = cb_gain_Q7[k];
+	/* Loop over codebook */
+	*rate_dist_Q14 = silk_int32_MAX;
+	cb_row_Q7 = cb_Q7;
+	for (k = 0; k < L; k++) {
+		gain_tmp_Q7 = cb_gain_Q7[k];
 
-        diff_Q14[ 0 ] = in_Q14[ 0 ] - silk_LSHIFT( cb_row_Q7[ 0 ], 7 );
-        diff_Q14[ 1 ] = in_Q14[ 1 ] - silk_LSHIFT( cb_row_Q7[ 1 ], 7 );
-        diff_Q14[ 2 ] = in_Q14[ 2 ] - silk_LSHIFT( cb_row_Q7[ 2 ], 7 );
-        diff_Q14[ 3 ] = in_Q14[ 3 ] - silk_LSHIFT( cb_row_Q7[ 3 ], 7 );
-        diff_Q14[ 4 ] = in_Q14[ 4 ] - silk_LSHIFT( cb_row_Q7[ 4 ], 7 );
+		diff_Q14[0] = in_Q14[0] - silk_LSHIFT(cb_row_Q7[0], 7);
+		diff_Q14[1] = in_Q14[1] - silk_LSHIFT(cb_row_Q7[1], 7);
+		diff_Q14[2] = in_Q14[2] - silk_LSHIFT(cb_row_Q7[2], 7);
+		diff_Q14[3] = in_Q14[3] - silk_LSHIFT(cb_row_Q7[3], 7);
+		diff_Q14[4] = in_Q14[4] - silk_LSHIFT(cb_row_Q7[4], 7);
 
-        /* Weighted rate */
-        sum1_Q14 = silk_SMULBB( mu_Q9, cl_Q5[ k ] );
+		/* Weighted rate */
+		sum1_Q14 = silk_SMULBB(mu_Q9, cl_Q5[k]);
 
 		/* Penalty for too large gain */
-		sum1_Q14 = silk_ADD_LSHIFT32( sum1_Q14, silk_max( silk_SUB32( gain_tmp_Q7, max_gain_Q7 ), 0 ), 10 );
+		sum1_Q14 =
+		    silk_ADD_LSHIFT32(sum1_Q14,
+				      silk_max(silk_SUB32
+					       (gain_tmp_Q7, max_gain_Q7), 0),
+				      10);
 
-        silk_assert( sum1_Q14 >= 0 );
+		assert(sum1_Q14 >= 0);
 
-        /* first row of W_Q18 */
-        sum2_Q16 = silk_SMULWB(           W_Q18[  1 ], diff_Q14[ 1 ] );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[  2 ], diff_Q14[ 2 ] );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[  3 ], diff_Q14[ 3 ] );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[  4 ], diff_Q14[ 4 ] );
-        sum2_Q16 = silk_LSHIFT( sum2_Q16, 1 );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[  0 ], diff_Q14[ 0 ] );
-        sum1_Q14 = silk_SMLAWB( sum1_Q14, sum2_Q16,    diff_Q14[ 0 ] );
+		/* first row of W_Q18 */
+		sum2_Q16 = silk_SMULWB(W_Q18[1], diff_Q14[1]);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[2], diff_Q14[2]);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[3], diff_Q14[3]);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[4], diff_Q14[4]);
+		sum2_Q16 = silk_LSHIFT(sum2_Q16, 1);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[0], diff_Q14[0]);
+		sum1_Q14 = silk_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14[0]);
 
-        /* second row of W_Q18 */
-        sum2_Q16 = silk_SMULWB(           W_Q18[  7 ], diff_Q14[ 2 ] );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[  8 ], diff_Q14[ 3 ] );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[  9 ], diff_Q14[ 4 ] );
-        sum2_Q16 = silk_LSHIFT( sum2_Q16, 1 );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[  6 ], diff_Q14[ 1 ] );
-        sum1_Q14 = silk_SMLAWB( sum1_Q14, sum2_Q16,    diff_Q14[ 1 ] );
+		/* second row of W_Q18 */
+		sum2_Q16 = silk_SMULWB(W_Q18[7], diff_Q14[2]);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[8], diff_Q14[3]);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[9], diff_Q14[4]);
+		sum2_Q16 = silk_LSHIFT(sum2_Q16, 1);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[6], diff_Q14[1]);
+		sum1_Q14 = silk_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14[1]);
 
-        /* third row of W_Q18 */
-        sum2_Q16 = silk_SMULWB(           W_Q18[ 13 ], diff_Q14[ 3 ] );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[ 14 ], diff_Q14[ 4 ] );
-        sum2_Q16 = silk_LSHIFT( sum2_Q16, 1 );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[ 12 ], diff_Q14[ 2 ] );
-        sum1_Q14 = silk_SMLAWB( sum1_Q14, sum2_Q16,    diff_Q14[ 2 ] );
+		/* third row of W_Q18 */
+		sum2_Q16 = silk_SMULWB(W_Q18[13], diff_Q14[3]);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[14], diff_Q14[4]);
+		sum2_Q16 = silk_LSHIFT(sum2_Q16, 1);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[12], diff_Q14[2]);
+		sum1_Q14 = silk_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14[2]);
 
-        /* fourth row of W_Q18 */
-        sum2_Q16 = silk_SMULWB(           W_Q18[ 19 ], diff_Q14[ 4 ] );
-        sum2_Q16 = silk_LSHIFT( sum2_Q16, 1 );
-        sum2_Q16 = silk_SMLAWB( sum2_Q16, W_Q18[ 18 ], diff_Q14[ 3 ] );
-        sum1_Q14 = silk_SMLAWB( sum1_Q14, sum2_Q16,    diff_Q14[ 3 ] );
+		/* fourth row of W_Q18 */
+		sum2_Q16 = silk_SMULWB(W_Q18[19], diff_Q14[4]);
+		sum2_Q16 = silk_LSHIFT(sum2_Q16, 1);
+		sum2_Q16 = silk_SMLAWB(sum2_Q16, W_Q18[18], diff_Q14[3]);
+		sum1_Q14 = silk_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14[3]);
 
-        /* last row of W_Q18 */
-        sum2_Q16 = silk_SMULWB(           W_Q18[ 24 ], diff_Q14[ 4 ] );
-        sum1_Q14 = silk_SMLAWB( sum1_Q14, sum2_Q16,    diff_Q14[ 4 ] );
+		/* last row of W_Q18 */
+		sum2_Q16 = silk_SMULWB(W_Q18[24], diff_Q14[4]);
+		sum1_Q14 = silk_SMLAWB(sum1_Q14, sum2_Q16, diff_Q14[4]);
 
-        silk_assert( sum1_Q14 >= 0 );
+		assert(sum1_Q14 >= 0);
 
-        /* find best */
-        if( sum1_Q14 < *rate_dist_Q14 ) {
-            *rate_dist_Q14 = sum1_Q14;
-            *ind = (opus_int8)k;
+		/* find best */
+		if (sum1_Q14 < *rate_dist_Q14) {
+			*rate_dist_Q14 = sum1_Q14;
+			*ind = (int8_t) k;
 			*gain_Q7 = gain_tmp_Q7;
-        }
+		}
 
-        /* Go to next cbk vector */
-        cb_row_Q7 += LTP_ORDER;
-    }
+		/* Go to next cbk vector */
+		cb_row_Q7 += LTP_ORDER;
+	}
 }

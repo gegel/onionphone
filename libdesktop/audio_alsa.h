@@ -32,4 +32,5 @@ void soundrecgain(int value);
 void sounddest(int where);
 int soundgrab(char *buf, int len);
 void soundflush(void);
+int soundrec(int on);
 

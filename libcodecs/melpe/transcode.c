@@ -43,12 +43,12 @@
 
 // Variables
 static struct melp_param prev_par;
-Shortword top_lpc[LPC_ORD];
+int16_t top_lpc[LPC_ORD];
 
 void transcode_down()
 {
-	register Shortword i;
-	Shortword num_frames;
+	register int16_t i;
+	int16_t num_frames;
 
 	num_frames = NF;
 
@@ -87,8 +87,8 @@ void transcode_down()
 
 void transcode_up()
 {
-	register Shortword frame;
-	Shortword lpc[LPC_ORD + 1], weights[LPC_ORD];
+	register int16_t frame;
+	int16_t lpc[LPC_ORD + 1], weights[LPC_ORD];
 
 	/* Read and decode channel input buffer. */
 	low_rate_chn_read(&quant_par, &melp_par[0], &prev_par);
@@ -126,7 +126,7 @@ void transcode_up()
 		       GN_QUP_Q8, GN_QLEV_M1, GN_QLEV_M1_Q10, 0, 5);
 
 		/*      quant_u(&par->jitter, &par->jit_index, 0, MAX_JITTER_Q15, 2);     */
-		if (melp_par[frame].jitter < shr(MAX_JITTER_Q15, 1)) {
+		if (melp_par[frame].jitter < melpe_shr(MAX_JITTER_Q15, 1)) {
 			melp_par[frame].jitter = 0;
 			quant_par.jit_index[0] = 0;
 		} else {

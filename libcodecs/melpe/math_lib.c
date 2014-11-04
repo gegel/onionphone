@@ -40,7 +40,7 @@ Secretariat fax: +33 493 65 47 16.
 #include "macro.h"
 
 /* log_table[] is Q13, and log_table[i] = log(i+1) * 2^11. */
-static const Shortword log_table[256] = {
+static const int16_t log_table[256] = {
 	0, 2466, 3908, 4932, 5725, 6374, 6923, 7398, 7817, 8192,
 	8531, 8840, 9125, 9389, 9634, 9864, 10079, 10283, 10475, 10658,
 	10831, 10997, 11155, 11306, 11451, 11591, 11725, 11855, 11979, 12100,
@@ -82,14 +82,14 @@ static const Shortword log_table[256] = {
  *	 INPUTS:
  *
  *	   numer
- *					   32 bit long signed integer (Longword).
+ *					   32 bit long signed integer (int32_t).
  *	   denom
- *					   32 bit long signed integer (Longword).
+ *					   32 bit long signed integer (int32_t).
  *	   numer_shift
- *					   16 bit short signed integer (Shortword) represents
+ *					   16 bit short signed integer (int16_t) represents
  *					   number of right shifts for numer.
  *	   denom_shift
- *					   16 bit short signed integer (Shortword) represents
+ *					   16 bit short signed integer (int16_t) represents
  *					   number of left shifts for denom.
  *
  *	 OUTPUTS:
@@ -99,41 +99,41 @@ static const Shortword log_table[256] = {
  *	 RETURN VALUE:
  *
  *	   result
- *					   16 bit short signed integer (Shortword).
+ *					   16 bit short signed integer (int16_t).
  *
  *************************************************************************/
-Shortword L_divider2(Longword numer, Longword denom, Shortword numer_shift,
-		     Shortword denom_shift)
+int16_t L_divider2(int32_t numer, int32_t denom, int16_t numer_shift,
+		     int16_t denom_shift)
 {
-	Shortword result;
-	Shortword sign = 0;
-	Shortword short_shift = 0;
-	Longword L_temp;
+	int16_t result;
+	int16_t sign = 0;
+	int16_t short_shift = 0;
+	int32_t L_temp;
 
 	assert(denom != 0);
 
 	if (numer < 0)
-		sign = (Shortword) (!sign);
+		sign = (int16_t) (!sign);
 	if (denom < 0)
-		sign = (Shortword) (!sign);
+		sign = (int16_t) (!sign);
 
-	L_temp = L_shl(denom, denom_shift);
-	denom = L_abs(L_temp);
-	L_temp = L_shr(numer, numer_shift);
-	numer = L_abs(L_temp);
+	L_temp = melpe_L_shl(denom, denom_shift);
+	denom = melpe_L_abs(L_temp);
+	L_temp = melpe_L_shr(numer, numer_shift);
+	numer = melpe_L_abs(L_temp);
 
-	while (denom > (Longword) SW_MAX) {
-		denom = L_shr(denom, 1);
-		short_shift = add(short_shift, 1);
+	while (denom > (int32_t) SW_MAX) {
+		denom = melpe_L_shr(denom, 1);
+		short_shift = melpe_add(short_shift, 1);
 	}
-	numer = L_shr(numer, short_shift);
+	numer = melpe_L_shr(numer, short_shift);
 
 	assert(numer <= denom);
 
-	result = divide_s(extract_l(numer), extract_l(denom));
+	result = melpe_divide_s(melpe_extract_l(numer), melpe_extract_l(denom));
 
 	if (sign) {
-		result = negate(result);
+		result = melpe_negate(result);
 	}
 
 	return (result);
@@ -151,9 +151,9 @@ Shortword L_divider2(Longword numer, Longword denom, Shortword numer_shift,
  *	 INPUTS:
  *
  *	   x
- *					   16 bit short signed integer (Shortword).
+ *					   16 bit short signed integer (int16_t).
  *	   Q
- *					   16 bit short signed integer (Shortword) represents
+ *					   16 bit short signed integer (int16_t) represents
  *					   Q value of x.
  *
  *	 OUTPUTS:
@@ -163,21 +163,21 @@ Shortword L_divider2(Longword numer, Longword denom, Shortword numer_shift,
  *	 RETURN VALUE:
  *
  *	   y
- *					   16 bit short signed integer (Shortword) in Q12.
+ *					   16 bit short signed integer (int16_t) in Q12.
  *
  *************************************************************************/
-Shortword log10_fxp(Shortword x, Shortword Q)
+int16_t log10_fxp(int16_t x, int16_t Q)
 {
-	Shortword y, interp_factor, interp_component;
-	Shortword index1, index2;
-	Shortword shift;
-	Shortword temp1, temp2;
-	Longword L_temp;
+	int16_t y, interp_factor, interp_component;
+	int16_t index1, index2;
+	int16_t shift;
+	int16_t temp1, temp2;
+	int32_t L_temp;
 
 	/* Treat x as if it is a fixed-point number with Q7.  Use "shift" to      */
 	/* record the exponent required for adjustment.                           */
 
-	shift = sub(7, Q);
+	shift = melpe_sub(7, Q);
 
 	/* If x is 0, stop and return minus infinity. */
 	if (!x)
@@ -186,28 +186,28 @@ Shortword log10_fxp(Shortword x, Shortword Q)
 	/* Keep multiplying x by 2 until x is larger than 1 in Q7.  x in Q7 will  */
 	/* now lie between the two integers index1 and index2.                    */
 
-	index2 = shr(x, 7);
+	index2 = melpe_shr(x, 7);
 	while ((!index2) && x) {
-		x = shl(x, 1);
-		shift = sub(shift, 1);
-		index2 = shr(x, 7);
+		x = melpe_shl(x, 1);
+		shift = melpe_sub(shift, 1);
+		index2 = melpe_shr(x, 7);
 	}
-	index1 = sub(index2, 1);
+	index1 = melpe_sub(index2, 1);
 
 	/* interpolation */
 
-	interp_factor = shl((Shortword) (x & 127), 8);
-	temp1 = sub(log_table[index2], log_table[index1]);
-	interp_component = mult(temp1, interp_factor);
+	interp_factor = melpe_shl((int16_t) (x & 127), 8);
+	temp1 = melpe_sub(log_table[index2], log_table[index1]);
+	interp_component = melpe_mult(temp1, interp_factor);
 
 	/* return a Q12 */
 
-	L_temp = L_mult(log_table[1], shift);
-	L_temp = L_shr(L_temp, 2);
-	temp1 = shr(log_table[index1], 1);
-	temp1 = add(temp1, extract_l(L_temp));
-	temp2 = shr(interp_component, 1);
-	y = add(temp1, temp2);
+	L_temp = melpe_L_mult(log_table[1], shift);
+	L_temp = melpe_L_shr(L_temp, 2);
+	temp1 = melpe_shr(log_table[index1], 1);
+	temp1 = melpe_add(temp1, melpe_extract_l(L_temp));
+	temp2 = melpe_shr(interp_component, 1);
+	y = melpe_add(temp1, temp2);
 
 	return (y);
 }
@@ -224,9 +224,9 @@ Shortword log10_fxp(Shortword x, Shortword Q)
  *	 INPUTS:
  *
  *	   x
- *					   32 bit long signed integer (Longword).
+ *					   32 bit long signed integer (int32_t).
  *	   Q
- *					   16 bit short signed integer (Shortword) represents
+ *					   16 bit short signed integer (int16_t) represents
  *					   Q value of x.
  *
  *	 OUTPUTS:
@@ -236,44 +236,44 @@ Shortword log10_fxp(Shortword x, Shortword Q)
  *	 RETURN VALUE:
  *
  *	   y
- *					   16 bit short signed integer (Shortword) in Q11.
+ *					   16 bit short signed integer (int16_t) in Q11.
  *
  *************************************************************************/
-Shortword L_log10_fxp(Longword x, Shortword Q)
+int16_t L_log10_fxp(int32_t x, int16_t Q)
 {
-	Shortword y, interp_component;
-	Longword interp_factor;
-	Shortword index1, index2;
-	Shortword shift;
-	Shortword temp1, temp2;
-	Longword L_temp;
+	int16_t y, interp_component;
+	int32_t interp_factor;
+	int16_t index1, index2;
+	int16_t shift;
+	int16_t temp1, temp2;
+	int32_t L_temp;
 
-	shift = sub(23, Q);
+	shift = melpe_sub(23, Q);
 	if (!x)
-		return ((Shortword) - SW_MAX);
+		return ((int16_t) - SW_MAX);
 
-	index2 = extract_l(L_shr(x, 23));
+	index2 = melpe_extract_l(melpe_L_shr(x, 23));
 	while ((!index2) && x) {
-		x = L_shl(x, 1);
-		shift = sub(shift, 1);
-		index2 = extract_l(L_shr(x, 23));
+		x = melpe_L_shl(x, 1);
+		shift = melpe_sub(shift, 1);
+		index2 = melpe_extract_l(melpe_L_shr(x, 23));
 	}
-	index1 = sub(index2, 1);
+	index1 = melpe_sub(index2, 1);
 
 	/* interpolation */
 
-	interp_factor = L_shl(x & (Longword) 0x7fffff, 8);
-	temp1 = sub(log_table[index2], log_table[index1]);
-	interp_component = extract_h(L_mpy_ls(interp_factor, temp1));
+	interp_factor = melpe_L_shl(x & (int32_t) 0x7fffff, 8);
+	temp1 = melpe_sub(log_table[index2], log_table[index1]);
+	interp_component = melpe_extract_h(L_mpy_ls(interp_factor, temp1));
 
 	/* return a Q11 */
 
-	L_temp = L_mult(log_table[1], shift);	/* log10(2^shift) */
-	L_temp = L_shr(L_temp, 3);
-	temp1 = shr(log_table[index1], 2);
-	temp1 = add(temp1, extract_l(L_temp));
-	temp2 = shr(interp_component, 2);
-	y = add(temp1, temp2);
+	L_temp = melpe_L_mult(log_table[1], shift);	/* log10(2^shift) */
+	L_temp = melpe_L_shr(L_temp, 3);
+	temp1 = melpe_shr(log_table[index1], 2);
+	temp1 = melpe_add(temp1, melpe_extract_l(L_temp));
+	temp2 = melpe_shr(interp_component, 2);
+	y = melpe_add(temp1, temp2);
 
 	return (y);
 }
@@ -290,9 +290,9 @@ Shortword L_log10_fxp(Longword x, Shortword Q)
  *	 INPUTS:
  *
  *	   x
- *					   16 bit short signed integer (Shortword) in Q12.
+ *					   16 bit short signed integer (int16_t) in Q12.
  *	   Q
- *					   16 bit short signed integer (Shortword) represents
+ *					   16 bit short signed integer (int16_t) represents
  *					   required Q value of returned result.
  *
  *	 OUTPUTS:
@@ -302,13 +302,13 @@ Shortword L_log10_fxp(Longword x, Shortword Q)
  *	 RETURN VALUE:
  *
  *	   y
- *					   16 bit short signed integer (Shortword).
+ *					   16 bit short signed integer (int16_t).
  *
  *************************************************************************/
-Shortword pow10_fxp(Shortword x, Shortword Q)
+int16_t pow10_fxp(int16_t x, int16_t Q)
 {
 	/* table in Q11 */
-	static const Shortword table[257] = {
+	static const int16_t table[257] = {
 		2048, 2066, 2085, 2104, 2123, 2142, 2161, 2181, 2200, 2220,
 		2240, 2260, 2281, 2302, 2322, 2343, 2364, 2386, 2407, 2429,
 		2451, 2473, 2496, 2518, 2541, 2564, 2587, 2610, 2634, 2658,
@@ -344,59 +344,59 @@ Shortword pow10_fxp(Shortword x, Shortword Q)
 		19404, 19579, 19756, 19934, 20114, 20296, 20480
 	};
 
-	static const Shortword tens_table[9] = {
+	static const int16_t tens_table[9] = {
 		26844, 16777, 20972, 26214, 1, 10, 100, 1000, 10000
 	};
 
-	static const Shortword Q_table[4] = {
+	static const int16_t Q_table[4] = {
 		28, 24, 21, 18
 	};
 
-	Shortword y, interp_factor, interp_component;
-	Shortword index1, index2;
-	Shortword ten_multiple;
-	Longword L_y;
-	Shortword temp1, temp2;
+	int16_t y, interp_factor, interp_component;
+	int16_t index1, index2;
+	int16_t ten_multiple;
+	int32_t L_y;
+	int16_t temp1, temp2;
 
-	ten_multiple = shr(x, 12);	/* ten_multiple is the integral part of x */
+	ten_multiple = melpe_shr(x, 12);	/* ten_multiple is the integral part of x */
 	if (ten_multiple < -4)
-		return ((Shortword) 0);
+		return ((int16_t) 0);
 	else if (ten_multiple > 4) {
 		inc_saturation();
-		return ((Shortword) SW_MAX);
+		return ((int16_t) SW_MAX);
 	}
 
-	index1 = shr((Shortword) (x & (Shortword) 0x0ff0), 4);
+	index1 = melpe_shr((int16_t) (x & (int16_t) 0x0ff0), 4);
 	/* index1 is the most significant 8 bits of the */
 	/* fractional part of x, Q8 */
-	index2 = add(index1, 1);
+	index2 = melpe_add(index1, 1);
 
 	/* interpolation */
 	/* shift by 11 to make it a number between 0 & 1 in Q15 */
 
-	interp_factor = shl((Shortword) (x & (Shortword) 0x000f), 11);
+	interp_factor = melpe_shl((int16_t) (x & (int16_t) 0x000f), 11);
 	/* interp_factor is the least significant 4 bits of the */
 	/* fractional part of x, Q15 */
-	temp1 = sub(table[index2], table[index1]);	/* Q0, at most 8 digits */
-	interp_component = mult(temp1, interp_factor);	/* Q0 */
+	temp1 = melpe_sub(table[index2], table[index1]);	/* Q0, at most 8 digits */
+	interp_component = melpe_mult(temp1, interp_factor);	/* Q0 */
 
 	/* L_y in Q12 if x >= 0 and in Q_table[temp2] + 12 if x < 0 */
-	temp1 = add(table[index1], interp_component);	/* Q0 */
-	temp2 = add(ten_multiple, 4);
-	L_y = L_mult(tens_table[temp2], temp1);
+	temp1 = melpe_add(table[index1], interp_component);	/* Q0 */
+	temp2 = melpe_add(ten_multiple, 4);
+	L_y = melpe_L_mult(tens_table[temp2], temp1);
 
 	if (ten_multiple >= 0) {
-		temp1 = sub(12, Q);
-		L_y = L_shr(L_y, temp1);
-		y = extract_l(L_y);
-		if (extract_h(L_y)) {
+		temp1 = melpe_sub(12, Q);
+		L_y = melpe_L_shr(L_y, temp1);
+		y = melpe_extract_l(L_y);
+		if (melpe_extract_h(L_y)) {
 			y = SW_MAX;
 			inc_saturation();
 		}
 	} else {
-		temp1 = add(Q_table[temp2], 12);
-		temp1 = sub(temp1, Q);
-		y = extract_l(L_shr(L_y, temp1));
+		temp1 = melpe_add(Q_table[temp2], 12);
+		temp1 = melpe_sub(temp1, Q);
+		y = melpe_extract_l(melpe_L_shr(L_y, temp1));
 	}
 
 	return (y);
@@ -414,9 +414,9 @@ Shortword pow10_fxp(Shortword x, Shortword Q)
  *	 INPUTS:
  *
  *	   x
- *					   16 bit short signed integer (Shortword).
+ *					   16 bit short signed integer (int16_t).
  *	   Q
- *					   16 bit short signed integer (Shortword) represents
+ *					   16 bit short signed integer (int16_t) represents
  *					   Q value of x.
  *
  *	 OUTPUTS:
@@ -426,17 +426,17 @@ Shortword pow10_fxp(Shortword x, Shortword Q)
  *	 RETURN VALUE:
  *
  *	   temp
- *					   16 bit short signed integer (Shortword) in same Q.
+ *					   16 bit short signed integer (int16_t) in same Q.
  *
  *************************************************************************/
-Shortword sqrt_fxp(Shortword x, Shortword Q)
+int16_t sqrt_fxp(int16_t x, int16_t Q)
 {
-	Shortword temp;
+	int16_t temp;
 
 	if (!x)
-		return ((Shortword) 0);
+		return ((int16_t) 0);
 
-	temp = shr(log10_fxp(x, Q), 1);	/* temp is now Q12 */
+	temp = melpe_shr(log10_fxp(x, Q), 1);	/* temp is now Q12 */
 	temp = pow10_fxp(temp, Q);
 	return (temp);
 }
@@ -453,9 +453,9 @@ Shortword sqrt_fxp(Shortword x, Shortword Q)
  *	 INPUTS:
  *
  *	   x
- *					   32 bit long signed integer (Longword).
+ *					   32 bit long signed integer (int32_t).
  *	   Q
- *					   16 bit short signed integer (Shortword) represents
+ *					   16 bit short signed integer (int16_t) represents
  *					   Q value of x.
  *
  *	 OUTPUTS:
@@ -465,15 +465,15 @@ Shortword sqrt_fxp(Shortword x, Shortword Q)
  *	 RETURN VALUE:
  *
  *	   temp
- *					   16 bit short signed integer (Shortword) in same Q.
+ *					   16 bit short signed integer (int16_t) in same Q.
  *
  *************************************************************************/
-Shortword L_sqrt_fxp(Longword x, Shortword Q)
+int16_t L_sqrt_fxp(int32_t x, int16_t Q)
 {
-	Shortword temp;
+	int16_t temp;
 
 	if (!x)
-		return ((Shortword) 0);
+		return ((int16_t) 0);
 
 	temp = L_log10_fxp(x, Q);
 	/* temp in Q11, pow10 treat it as Q12, => no need to shr by 1. */
@@ -494,14 +494,14 @@ Shortword L_sqrt_fxp(Longword x, Shortword Q)
  *	 INPUTS:
  *
  *	   x
- *					   32 bit long signed integer (Longword).
+ *					   32 bit long signed integer (int32_t).
  *	   power
- *					   16 bit short signed integer (Shortword) in Q15.
+ *					   16 bit short signed integer (int16_t) in Q15.
  *	   Q_in
- *					   16 bit short signed integer (Shortword) represents
+ *					   16 bit short signed integer (int16_t) represents
  *					   Q value of x.
  *	   Q_out
- *					   16 bit short signed integer (Shortword) represents
+ *					   16 bit short signed integer (int16_t) represents
  *					   required Q value of returned result.
  *
  *	 OUTPUTS:
@@ -511,19 +511,19 @@ Shortword L_sqrt_fxp(Longword x, Shortword Q)
  *	 RETURN VALUE:
  *
  *	   temp
- *					   16 bit short signed integer (Shortword).
+ *					   16 bit short signed integer (int16_t).
  *
  *************************************************************************/
-Shortword L_pow_fxp(Longword x, Shortword power, Shortword Q_in,
-		    Shortword Q_out)
+int16_t L_pow_fxp(int32_t x, int16_t power, int16_t Q_in,
+		    int16_t Q_out)
 {
-	Shortword temp;
+	int16_t temp;
 
 	if (!x)
-		return ((Shortword) 0);
+		return ((int16_t) 0);
 
 	temp = L_log10_fxp(x, Q_in);	/* temp in Q11 */
-	temp = mult(power, shl(temp, 1));	/* temp in Q12 */
+	temp = melpe_mult(power, melpe_shl(temp, 1));	/* temp in Q12 */
 	temp = pow10_fxp(temp, Q_out);
 	return (temp);
 }
@@ -540,7 +540,7 @@ Shortword L_pow_fxp(Longword x, Shortword power, Shortword Q_in,
  *	 INPUTS:
  *
  *	   x
- *					   16 bit short signed integer (Shortword) in Q15.
+ *					   16 bit short signed integer (int16_t) in Q15.
  *
  *	 OUTPUTS:
  *
@@ -549,13 +549,13 @@ Shortword L_pow_fxp(Longword x, Shortword power, Shortword Q_in,
  *	 RETURN VALUE:
  *
  *	   ty
- *					   16 bit short signed integer (Shortword) in Q15.
+ *					   16 bit short signed integer (int16_t) in Q15.
  *
  *************************************************************************/
 
-Shortword sin_fxp(Shortword x)
+int16_t sin_fxp(int16_t x)
 {
-	static const Shortword table[129] = {
+	static const int16_t table[129] = {
 		0, 402, 804, 1206, 1608, 2009, 2411, 2811, 3212,
 		3612, 4011, 4410, 4808, 5205, 5602, 5998, 6393, 6787,
 		7180, 7571, 7962, 8351, 8740, 9127, 9512, 9896, 10279,
@@ -572,15 +572,15 @@ Shortword sin_fxp(Shortword x)
 		32470, 32522, 32568, 32610, 32647, 32679, 32706, 32729, 32746,
 		32758, 32766, 32767
 	};
-	Shortword tx, ty;
-	Shortword sign;
-	Shortword index1, index2;
-	Shortword m;
-	Shortword temp;
+	int16_t tx, ty;
+	int16_t sign;
+	int16_t index1, index2;
+	int16_t m;
+	int16_t temp;
 
 	sign = 0;
 	if (x < 0) {
-		tx = negate(x);
+		tx = melpe_negate(x);
 		sign = -1;
 	} else {
 		tx = x;
@@ -588,30 +588,30 @@ Shortword sin_fxp(Shortword x)
 
 	/* if angle > pi/2, sin(angle) = sin(pi-angle) */
 	if (tx > X05_Q15) {
-		tx = sub(ONE_Q15, tx);
+		tx = melpe_sub(ONE_Q15, tx);
 	}
 	/* convert input to be within range 0-128 */
-	index1 = shr(tx, 7);
-	index2 = add(index1, 1);
+	index1 = melpe_shr(tx, 7);
+	index2 = melpe_add(index1, 1);
 
 	if (index1 == 128) {
 		if (sign != 0)
-			return (negate(table[index1]));
+			return (melpe_negate(table[index1]));
 		else
 			return (table[index1]);
 	}
 
-	m = sub(tx, shl(index1, 7));
+	m = melpe_sub(tx, melpe_shl(index1, 7));
 	/* convert decimal part to Q15 */
-	m = shl(m, 8);
+	m = melpe_shl(m, 8);
 
 	/* interpolate */
-	temp = sub(table[index2], table[index1]);
-	temp = mult(m, temp);
-	ty = add(table[index1], temp);
+	temp = melpe_sub(table[index2], table[index1]);
+	temp = melpe_mult(m, temp);
+	ty = melpe_add(table[index1], temp);
 
 	if (sign != 0)
-		return (negate(ty));
+		return (melpe_negate(ty));
 	else
 		return (ty);
 }
@@ -628,7 +628,7 @@ Shortword sin_fxp(Shortword x)
  *	 INPUTS:
  *
  *	   x
- *					   16 bit short signed integer (Shortword) in Q15.
+ *					   16 bit short signed integer (int16_t) in Q15.
  *
  *	 OUTPUTS:
  *
@@ -637,12 +637,12 @@ Shortword sin_fxp(Shortword x)
  *	 RETURN VALUE:
  *
  *	   ty
- *					   16 bit short signed integer (Shortword) in Q15.
+ *					   16 bit short signed integer (int16_t) in Q15.
  *
  *************************************************************************/
-Shortword cos_fxp(Shortword x)
+int16_t cos_fxp(int16_t x)
 {
-	static const Shortword table[129] = {
+	static const int16_t table[129] = {
 		32767, 32766, 32758, 32746, 32729, 32706, 32679, 32647, 32610,
 		32568, 32522, 32470, 32413, 32352, 32286, 32214, 32138, 32058,
 		31972, 31881, 31786, 31686, 31581, 31471, 31357, 31238, 31114,
@@ -659,41 +659,41 @@ Shortword cos_fxp(Shortword x)
 		4410, 4011, 3612, 3212, 2811, 2411, 2009, 1608, 1206,
 		804, 402, 0
 	};
-	Shortword tx, ty;
-	Shortword sign;
-	Shortword index1, index2;
-	Shortword m;
-	Shortword temp;
+	int16_t tx, ty;
+	int16_t sign;
+	int16_t index1, index2;
+	int16_t m;
+	int16_t temp;
 
 	sign = 0;
 	if (x < 0) {
-		tx = negate(x);
+		tx = melpe_negate(x);
 	} else {
 		tx = x;
 	}
 
 	/* if angle > pi/2, cos(angle) = -cos(pi-angle) */
 	if (tx > X05_Q15) {
-		tx = sub(ONE_Q15, tx);
+		tx = melpe_sub(ONE_Q15, tx);
 		sign = -1;
 	}
 	/* convert input to be within range 0-128 */
-	index1 = shr(tx, 7);
-	index2 = add(index1, 1);
+	index1 = melpe_shr(tx, 7);
+	index2 = melpe_add(index1, 1);
 
 	if (index1 == 128)
-		return ((Shortword) 0);
+		return ((int16_t) 0);
 
-	m = sub(tx, shl(index1, 7));
+	m = melpe_sub(tx, melpe_shl(index1, 7));
 	/* convert decimal part to Q15 */
-	m = shl(m, 8);
+	m = melpe_shl(m, 8);
 
-	temp = sub(table[index2], table[index1]);
-	temp = mult(m, temp);
-	ty = add(table[index1], temp);
+	temp = melpe_sub(table[index2], table[index1]);
+	temp = melpe_mult(m, temp);
+	ty = melpe_add(table[index1], temp);
 
 	if (sign != 0)
-		return (negate(ty));
+		return (melpe_negate(ty));
 	else
 		return (ty);
 }
@@ -710,7 +710,7 @@ Shortword cos_fxp(Shortword x)
  *	 INPUTS:
  *
  *	   x
- *					   16 bit short signed integer (Shortword) in Q15.
+ *					   16 bit short signed integer (int16_t) in Q15.
  *
  *	 OUTPUTS:
  *
@@ -719,7 +719,7 @@ Shortword cos_fxp(Shortword x)
  *	 RETURN VALUE:
  *
  *	   A
- *					   16 bit short signed integer (Shortword) in Q15.
+ *					   16 bit short signed integer (int16_t) in Q15.
  *
  *************************************************************************/
 
@@ -730,72 +730,72 @@ Shortword cos_fxp(Shortword x)
 /*  before this operation, y is normalized to [0.5; 1[                   */
 /*************************************************************************/
 
-Shortword sqrt_Q15(Shortword x)
+int16_t sqrt_Q15(int16_t x)
 {
-	Shortword shift, odd;
-	Shortword temp, x_2, x_24;
-	Longword L_temp, L_temp2;
-	Longword L_A;
+	int16_t shift, odd;
+	int16_t temp, x_2, x_24;
+	int32_t L_temp, L_temp2;
+	int32_t L_A;
 
 	if (x == 0)
 		return 0;	/* return zero */
-	L_A = L_deposit_h(x);
-	shift = norm_l(L_A);
-	L_A = L_shl(L_A, shift);	/* Normalize */
+	L_A = melpe_L_deposit_h(x);
+	shift = melpe_norm_l(L_A);
+	L_A = melpe_L_shl(L_A, shift);	/* Normalize */
 	odd = 0;
 	if (shift & 0x1)
 		odd = 1;	/* Odd exponent */
-	shift = shl(shift, -1);
-	shift = negate(shift);
-	L_A = L_shl(L_A, -1);
-	L_A = L_sub(L_A, L_deposit_h(0x4000));
-	temp = extract_h(L_A);
+	shift = melpe_shl(shift, -1);
+	shift = melpe_negate(shift);
+	L_A = melpe_L_shl(L_A, -1);
+	L_A = melpe_L_sub(L_A, melpe_L_deposit_h(0x4000));
+	temp = melpe_extract_h(L_A);
 	x_2 = temp;
-	L_A = L_add(L_A, L_deposit_h(0x4000));
-	L_A = L_add(L_A, L_deposit_h(0x4000));
-	L_temp = L_mult(temp, temp);
+	L_A = melpe_L_add(L_A, melpe_L_deposit_h(0x4000));
+	L_A = melpe_L_add(L_A, melpe_L_deposit_h(0x4000));
+	L_temp = melpe_L_mult(temp, temp);
 	L_temp = -L_temp;
-	L_temp2 = L_shl(L_temp, -1);
-	L_A = L_add(L_A, L_temp2);
+	L_temp2 = melpe_L_shl(L_temp, -1);
+	L_A = melpe_L_add(L_A, L_temp2);
 	L_temp =
-	    L_mult((Shortword) L_shl(L_temp, -16),
-		   (Shortword) L_shl(L_temp, -16));
-	x_24 = extract_h(L_temp);
-	L_temp = L_mult(x_24, 0x5000);
-	L_A = L_sub(L_A, L_temp);
-	temp = mult(x_24, x_2);
-	L_A = L_add(L_A, L_mult(0x7000, temp));
-	temp = mult(x_2, x_2);
-	L_temp2 = L_mult(temp, x_2);
-	L_A = L_add(L_A, L_shl(L_temp2, -1));
-	L_A = L_add(L_A, L_shl(0x80, 8));
+	    melpe_L_mult((int16_t) melpe_L_shl(L_temp, -16),
+		   (int16_t) melpe_L_shl(L_temp, -16));
+	x_24 = melpe_extract_h(L_temp);
+	L_temp = melpe_L_mult(x_24, 0x5000);
+	L_A = melpe_L_sub(L_A, L_temp);
+	temp = melpe_mult(x_24, x_2);
+	L_A = melpe_L_add(L_A, melpe_L_mult(0x7000, temp));
+	temp = melpe_mult(x_2, x_2);
+	L_temp2 = melpe_L_mult(temp, x_2);
+	L_A = melpe_L_add(L_A, melpe_L_shl(L_temp2, -1));
+	L_A = melpe_L_add(L_A, melpe_L_shl(0x80, 8));
 	if (odd) {		/* Adjust, if odd exponent! */
-		L_A = L_mult((Shortword) L_shl(L_A, -16), 0x5A82);	/* L_A*=1/sqrt(2) */
-		L_A = L_add(L_A, L_shl(0x80, 8));	/* r_ound */
+		L_A = melpe_L_mult((int16_t) melpe_L_shl(L_A, -16), 0x5A82);	/* L_A*=1/sqrt(2) */
+		L_A = melpe_L_add(L_A, melpe_L_shl(0x80, 8));	/* r_ound */
 	}
-	L_A = L_shl(L_A, shift);
-	temp = extract_h(L_A);
+	L_A = melpe_L_shl(L_A, shift);
+	temp = melpe_extract_h(L_A);
 	return temp;
 }
 
-Shortword add_shr(Shortword Var1, Shortword Var2)
+int16_t add_shr(int16_t Var1, int16_t Var2)
 {
-	Shortword temp;
-	Longword L_1, L_2;
+	int16_t temp;
+	int32_t L_1, L_2;
 
-	L_1 = L_deposit_l(Var1);
-	L_2 = L_deposit_l(Var2);
-	temp = (Shortword) L_shr(L_add(L_1, L_2), 1);
+	L_1 = melpe_L_deposit_l(Var1);
+	L_2 = melpe_L_deposit_l(Var2);
+	temp = (int16_t) melpe_L_shr(melpe_L_add(L_1, L_2), 1);
 	return temp;
 }
 
-Shortword sub_shr(Shortword Var1, Shortword Var2)
+int16_t sub_shr(int16_t Var1, int16_t Var2)
 {
-	Shortword temp;
-	Longword L_1, L_2;
+	int16_t temp;
+	int32_t L_1, L_2;
 
-	L_1 = L_deposit_l(Var1);
-	L_2 = L_deposit_l(Var2);
-	temp = (Shortword) L_shr(L_sub(L_1, L_2), 1);
+	L_1 = melpe_L_deposit_l(Var1);
+	L_2 = melpe_L_deposit_l(Var2);
+	temp = (int16_t) melpe_L_shr(melpe_L_sub(L_1, L_2), 1);
 	return temp;
 }

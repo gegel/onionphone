@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -37,45 +39,59 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Compute autocorrelation */
-void SKP_Silk_autocorr( 
-    SKP_int32        *results,                   /* O    Result (length correlationCount)            */
-    SKP_int32        *scale,                     /* O    Scaling of the correlation vector           */
-    const SKP_int16  *inputData,                 /* I    Input data to correlate                     */
-    const SKP_int    inputDataSize,              /* I    Length of input                             */
-    const SKP_int    correlationCount            /* I    Number of correlation taps to compute       */
-)
+void SKP_Silk_autocorr(int32_t * results,	/* O    Result (length correlationCount)            */
+		       int32_t * scale,	/* O    Scaling of the correlation vector           */
+		       const int16_t * inputData,	/* I    Input data to correlate                     */
+		       const int inputDataSize,	/* I    Length of input                             */
+		       const int correlationCount	/* I    Number of correlation taps to compute       */
+    )
 {
-    SKP_int   i, lz, nRightShifts, corrCount;
-    SKP_int64 corr64;
+	int i, lz, nRightShifts, corrCount;
+	int64_t corr64;
 
-    corrCount = SKP_min_int( inputDataSize, correlationCount );
+	corrCount = SKP_min_int(inputDataSize, correlationCount);
 
-    /* compute energy (zero-lag correlation) */
-    corr64 = SKP_Silk_inner_prod16_aligned_64( inputData, inputData, inputDataSize );
+	/* compute energy (zero-lag correlation) */
+	corr64 =
+	    SKP_Silk_inner_prod16_aligned_64(inputData, inputData,
+					     inputDataSize);
 
-    /* deal with all-zero input data */
-    corr64 += 1;
+	/* deal with all-zero input data */
+	corr64 += 1;
 
-    /* number of leading zeros */
-    lz = SKP_Silk_CLZ64( corr64 );
+	/* number of leading zeros */
+	lz = SKP_Silk_CLZ64(corr64);
 
-    /* scaling: number of right shifts applied to correlations */
-    nRightShifts = 35 - lz;
-    *scale = nRightShifts;
+	/* scaling: number of right shifts applied to correlations */
+	nRightShifts = 35 - lz;
+	*scale = nRightShifts;
 
-    if( nRightShifts <= 0 ) {
-        results[ 0 ] = SKP_LSHIFT( (SKP_int32)SKP_CHECK_FIT32( corr64 ), -nRightShifts );
+	if (nRightShifts <= 0) {
+		results[0] =
+		    SKP_LSHIFT((int32_t) SKP_CHECK_FIT32(corr64),
+			       -nRightShifts);
 
-        /* compute remaining correlations based on int32 inner product */
-          for( i = 1; i < corrCount; i++ ) {
-            results[ i ] = SKP_LSHIFT( SKP_Silk_inner_prod_aligned( inputData, inputData + i, inputDataSize - i ), -nRightShifts );
-        }
-    } else {
-        results[ 0 ] = (SKP_int32)SKP_CHECK_FIT32( SKP_RSHIFT64( corr64, nRightShifts ) );
+		/* compute remaining correlations based on int32 inner product */
+		for (i = 1; i < corrCount; i++) {
+			results[i] =
+			    SKP_LSHIFT(SKP_Silk_inner_prod_aligned
+				       (inputData, inputData + i,
+					inputDataSize - i), -nRightShifts);
+		}
+	} else {
+		results[0] =
+		    (int32_t)
+		    SKP_CHECK_FIT32(SKP_RSHIFT64(corr64, nRightShifts));
 
-        /* compute remaining correlations based on int64 inner product */
-          for( i = 1; i < corrCount; i++ ) {
-            results[ i ] =  (SKP_int32)SKP_CHECK_FIT32( SKP_RSHIFT64( SKP_Silk_inner_prod16_aligned_64( inputData, inputData + i, inputDataSize - i ), nRightShifts ) );
-        }
-    }
+		/* compute remaining correlations based on int64 inner product */
+		for (i = 1; i < corrCount; i++) {
+			results[i] =
+			    (int32_t)
+			    SKP_CHECK_FIT32(SKP_RSHIFT64
+					    (SKP_Silk_inner_prod16_aligned_64
+					     (inputData, inputData + i,
+					      inputDataSize - i),
+					     nRightShifts));
+		}
+	}
 }

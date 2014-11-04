@@ -4,13 +4,14 @@ LD ?= ld
 
 # NORMAL DEBUG
 MODE ?= NORMAL
-MODE_NORMAL ?= -O3
+MODE_NORMAL ?= -O3 -ffast-math -funroll-loops
 MODE_DEBUG ?= -O0 -g -ggdb
 
 #
 EXTRADEFS =
 
-CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
+GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = classify.o \
       coeff.o \

@@ -17,7 +17,7 @@
 // * You have to cite the author (and copyright owner): Van Gegel
 // * You have to provide a link to the author’s Homepage: <http://torfone.org>
 //
-///////////////////////////////////////////////
+////////////////////////////////////////////////
 
 
 #ifdef _WIN32 

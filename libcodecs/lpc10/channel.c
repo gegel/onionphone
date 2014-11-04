@@ -55,7 +55,7 @@ int iblist[53] = {
 	9, 8, 7, 5, 6
 };
 
-void channel(int which, int *ipitv, int *irms, int irc[ORDER], int ibits[54])
+void channel(int which, int *ipitv, int *irms, int irc[ORDER + 1], int ibits[55])
 {
 	int i;
 	static int isync;

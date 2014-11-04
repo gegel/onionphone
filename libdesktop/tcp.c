@@ -23,6 +23,7 @@
 #define UDPTIMEOUT 30   //timeout in UDP established state
 #define TCPTIMEOUT 10  //timeout in UDP established state
 #define TORTIMEOUT 30  //timeout in UDP established state
+#define DBLTIMEOUT 2 //timeout for send REQ duble
 
 #define DEFSTUNPORT 3478 //port of STUN server for NAT traversal
 #define NATTRIES 30;      //number of NAT traversal packets
@@ -99,6 +100,7 @@ char sock_buf[32768];   //WSA sockets buffer
 #include "cntrls.h"
 #include "codecs.h"
 #include "sha1.h"
+//#include "audio.h"
 
 int web_listener=INVALID_SOCKET; //web listening socket
 int web_sock=INVALID_SOCKET;   //web control socket
@@ -120,6 +122,7 @@ long rc_cnt=0;   //counter for change slowest onion connection
 long rc_in=0;  //counter of incoming packets over tcp_in
 long rc_out=0; //counter of incoming packets over tcp_out
 long u_cnt=0; //counter of tries of NAT traversal
+char d_flg=0; //flag of REQ dubles for sending
 long bytes_sended=0; //traffic during current session (includes tcp/udp headers)
 long bytes_received=0;
 long pkt_counter=0; //packets for bitrate calculation
@@ -170,6 +173,7 @@ extern unsigned int in_ctr; //counter of incoming packets (crypto.c)
 extern char their_onion[32]; //remote onion adress (from connection command or from remote) (crypto.c)
 extern char our_onion[32];   //our onion adress (from connection command or conf file) (crypto.c)
 extern int bad_mac; //counter of bad autentificating packets (crypto.c)
+extern char sound_loop; //sound test mode flag
 
 //*****************************************************************************
 //returns error reading socket
@@ -317,8 +321,8 @@ tryudp:
 
  //look for udp listener enabled
   strcpy(msgbuf, "UDP_listen");
-  if(parseconf(msgbuf)<=0) return ret; //searc in conf-file
-  if(msgbuf[0]!='1') return ret;  //UDP listener not enabled
+  if(parseconf(msgbuf)<=0) goto trynext; //searc in conf-file
+  if(msgbuf[0]!='1') goto trynext;  //UDP listener not enabled
 
  //look config for tcp-listener
   strcpy(msgbuf, "UDP_interface");
@@ -365,7 +369,8 @@ tryudp:
        }
       }
   }
-  
+
+trynext:
   disconnect(); //reset all connections state
 
      //look interface for ctrl-listener
@@ -575,6 +580,7 @@ int disconnect(void)
   tcp_outsock_flag=SOCK_IDDL; //set flag for iddle
  }
 
+ //if(!sound_loop) soundrec(0); //stop audio input
  reset_crp();  //reset encryption engine
  onion_flag=0; //reset onion flag
 
@@ -604,6 +610,8 @@ int disconnect(void)
   rc_cnt=0;
   rc_in=0;
   rc_out=0;
+  u_cnt=0;
+  d_flg=0;
  }
 
  //reload our onion adress specified in config file
@@ -1033,7 +1041,7 @@ int connecttor(char* toraddr)
  //set socket status wor waiting connection to tor interface
  tcp_outsock_flag=SOCK_WAIT_TOR;
  if(!onion_flag) onion_flag=1;
- settimeout(TORTIMEOUT);
+ settimeout(DBLTIMEOUT);
  if(toraddr)
  {  //for initial connection, not for doubling reconections
   strcpy(msgbuf, toraddr); //store command for do request after connection
@@ -1197,7 +1205,6 @@ if(ll) //send busy notification and close
   //ling.l_linger = 0;
   //setsockopt(sTemp, SOL_SOCKET, SO_LINGER, (char*) &ling, sizeof(ling));
   close(sTemp);
-
   web_printf("! Reject incoming: busy\r\n");
   return 1;
  }
@@ -1214,6 +1221,7 @@ if(ll) //send busy notification and close
  tcp_insock=sTemp;
  tr_in=0;  //bytes to read
  pr_in=0;  //bytes readed
+ psleep(50);
  return 1;
 }
 
@@ -1532,7 +1540,16 @@ int readtcpout(unsigned char* pkt)
     pr_out=0; //init bytes pointer
     //send initial connection crypto request to remote
     i=do_req(msgbuf); //make and send request
-    if(i>0) send(tcp_outsock, msgbuf, i+5, 0);
+    if(i>0)
+    {
+     i=send(tcp_outsock, msgbuf, i+5, 0);
+     if(i<=0)
+     {
+      d_flg=SOCK_WAIT_HOST;
+      settimeout(DBLTIMEOUT);
+     }
+     else d_flg=0;
+    }
     else disconnect(); //if sender not in adress book
    }
    //Established connection with Tor: change status and send Hello
@@ -1540,7 +1557,9 @@ int readtcpout(unsigned char* pkt)
    {
     tcp_outsock_flag=SOCK_WAIT_HELLO; //wait hello from Tor
     //send socks5 hello
-    send(tcp_outsock, torbuf, 3, 0);
+    i=send(tcp_outsock, torbuf, 3, 0);
+    if(i<=0) d_flg=SOCK_WAIT_TOR;
+    else d_flg=0;
    }
    return 0;  //no data for now, read again
   }
@@ -1552,7 +1571,8 @@ int readtcpout(unsigned char* pkt)
    //check for socks5 Hello pattern
    if( (i<2) || (i>9) || (br_out[0]!=5) || br_out[1] ) return 0;
    tcp_outsock_flag=SOCK_WAIT_HS; //wait connection to specified Hidden Service
-   send(tcp_outsock, torbuf, torbuflen, 0); //send sock5 HS-request to Tor
+   i=send(tcp_outsock, torbuf, torbuflen, 0); //send sock5 HS-request to Tor
+   if(i>0) settimeout(TORTIMEOUT);
    return 0;
   }
 
@@ -1875,8 +1895,25 @@ int do_read(unsigned char* pkt)
   gettimeofday(&time1, NULL); //get time now
   if(time1.tv_sec>con_time) //compare with moment of connection started
   {
-   disconnect();
-   con_time=CONTIMEOUT+time1.tv_sec; //set global next disconnection timestamp
+      if(d_flg==SOCK_WAIT_HOST) //duble REQ for TCP direct connection
+      {
+       d_flg=0;
+       i=send(tcp_outsock, msgbuf, i+5, 0);
+       if(i>5) settimeout(TCPTIMEOUT);
+       return 0;
+      }
+      else if(d_flg==SOCK_WAIT_TOR) //Duble HELLO for connection to Tor SOCKS5
+      {
+       d_flg=0;
+       i=send(tcp_outsock, torbuf, 3, 0);
+       if(i==3) settimeout(DBLTIMEOUT);
+       return 0;
+      }
+      else //Timeout: terminate all connections
+      {
+       disconnect();
+       con_time=CONTIMEOUT+time1.tv_sec; //set global next disconnection timestamp
+      }
   }
  }
  //--------------------------------------------------
@@ -1962,7 +1999,7 @@ int do_read(unsigned char* pkt)
  }
  //---------------------------------------------------
  //ring signal
- if(crp_state==-2)
+ if(crp_state==2)
  {
   //with 1/4 silency, 1/2 signal and 1/4 silency
   playring();
@@ -2045,7 +2082,7 @@ int do_read(unsigned char* pkt)
  if(web_listener!=INVALID_SOCKET) webaccept();
  if(web_sock!=INVALID_SOCKET) readweb();
 
- return -1;
+ return 0;
 }
 
 
@@ -2406,6 +2443,7 @@ int webaccept(void)
  //set new control connection
  web_sock=sTemp;
  web_sock_flag=0; //clear ready flag: no protocol defined
+ psleep(1);
  return 1;
 }
 

@@ -19,31 +19,18 @@
 #define BOOK "contacts.txt" //default addressbook filename
 #define NONAME "guest" //default key
 #define MYNAME "myself"   //default name of own key
-#define MACLEN 4
+#define MACLEN 4   //length of MAC field in bytes (32 bits)
 
-void test_crypto_sha(void);
-void test_crypto_curve25519_donna(void);
-void test_crypto_serpent(void);
-void test_crypto_pkdf(void);
-void ed25519_test(void);
-void homqv_test(void);
-void ooake_test(void);
-void voake_test(void);
-void odoake_test(void);
-void fhmqv_test(void);
-void TDH_test(void);
-
-
-//Codecs set
+//Packets types set
 typedef enum{
-        TYPE_UNKNOWN=0,  //not defined
-        TYPE_MELPE, //speech data cbr
+        TYPE_UNKNOWN=0, //not defined
+        TYPE_MELPE,     //speech data cbr
         TYPE_CODEC21,
         TYPE_LPC10,
         TYPE_MELP,
         TYPE_CODEC22,
         TYPE_CELP,
-        TYPE_AMR,  //dtx
+        TYPE_AMR,       //dtx
         TYPE_LPC,
         TYPE_GSMHR,
         TYPE_G723,
@@ -52,30 +39,32 @@ typedef enum{
         TYPE_GSMFR,
         TYPE_ILBC,
         TYPE_BV16,
-        TYPE_OPUS,    //vbr
-        TYPE_SILK,    //vbr
-        TYPE_SPEEX,   //vbr+robbust
-                       //encrypted  packets
-        TYPE_KEY,     //key publication  500
-        TYPE_KEYLAST,  //last key packet 504
-        TYPE_CHAT,    //text packet for chat and invites 256
-                     //not encrypted
-        TYPE_INV,    //22: invite autent packet 12
-        TYPE_AGR,     //agree compleet 20
-        TYPE_SYN,     //ctr synchro packet 8
-        TYPE_REQ,     //connection reauest (DH key agreement) 84
-        TYPE_ANS,     //connection answer (DH key agreement)  80
+        TYPE_OPUS,      //vbr
+        TYPE_SILK,      //vbr
+        TYPE_SPEEX,     //vbr+robbust
+        //encrypted  packets
+        TYPE_KEY,       //key publication  500
+        TYPE_KEYLAST,   //last key packet 504
+        TYPE_CHAT,      //text packet for chat and invites 256
+        TYPE_DAT,       //additional data (video, files) 506
+                        
+        TYPE_INV,       //invite autent packet 12
+        TYPE_SYN,       //ctr synchro packet 8
+        TYPE_REQ,       //step 1 of IKE 48
+        TYPE_ANS,       //step 2 of IKE  80
 
-        TYPE_ACK,     //deniable autentification  48
-        TYPE_AUREQ,   //passphrase autentification  16
-        TYPE_AUANS,   //passphrase autentification  22
-        TYPE_AUACK,   //under pressing notofocation 6
+        TYPE_ACK,       //step 3 of IKE  16
+        TYPE_AUREQ,     //passphrase autenthication  18
+        TYPE_AUANS,     //passphrase autenthication  24
+        TYPE_AUACK,     //under pressing notifocation 6
 
-        TYPE_VBR      //31:general for speach vbr codecs
+        TYPE_VBR        //31: general for speach vbr codecs
         }TypeSet;
 
+ //time tools
  unsigned long getmsec(void);
  long getsec(void);
+ void psleep(int paus);
  //convert packet type and length
  short lenbytype(unsigned char type); //get length of packet by type
  unsigned char typebylen(short len);  //get type of packet by length
@@ -97,7 +86,7 @@ typedef enum{
  //autentificated key agreement lake SKEME protocol
  void reset_crp(void); //reset encryption
  int do_req(unsigned char* pkt); //send request
- void do_ans(void);
+ void do_ans(int ok); //manual acception of incoming call
  int go_req(unsigned char* pkt); //process request and send answer
  int go_ans(unsigned char* pkt); //process answer and send ACK
  int go_ack(unsigned char* pkt); //process ACK
@@ -115,16 +104,15 @@ typedef enum{
  //ping
  int do_png(unsigned char* pkt); //sends ping request with full conter
  int go_png(unsigned char* pkt); //process incoming ping packet (corrects counter) and send answer for request
-
- int do_inv(unsigned char* pkt);
- int go_inv(unsigned char* pkt);
- int go_pkt(unsigned char* pkt, int len);
-
+ //onion doubling
+ int do_inv(unsigned char* pkt); //send onion diubling invite
+ int go_inv(unsigned char* pkt); //process onion doubling invite
  //counter resynchronization
  int do_syn(unsigned char* pkt); //send synchro packet
  int go_syn(unsigned char* pkt); //process incoming synchro packet
-
-
+ //packets wrapper
+ int go_pkt(unsigned char* pkt, int len);
+ //timestamp
  #ifdef _WIN32
  int gettimeofday(struct timeval *tv, struct timezone *tz);
  #endif

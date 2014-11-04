@@ -14,6 +14,9 @@
 // * You have to provide a link to the author's Homepage: <http://torfone.org/>
 //
 ///////////////////////////////////////////////
+//This file contains hight-level cryprographic routines:
+//Initial key exchange V02.a
+//adds wPFS for origiantor's Id protection (26.10.14)
 
 #ifdef _WIN32 
  #include <stddef.h>
@@ -57,27 +60,12 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
     tv->tv_sec = (long)(tmpres_h);
     tv->tv_usec = (long)(tmpres % 1000000UL);
   }
-/*
-  if (NULL != tz)
-  {
-    if (!tzflag)
-    {
-      _tzset();
-      tzflag++;
-    }
-    tz->tz_minuteswest = _timezone / 60;
-    tz->tz_dsttime = _daylight;
-  }
-*/
   return 0;
 }
 #else //Linux
-
  #include <time.h>
  #include <sys/time.h>
-
 #endif
-
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -90,9 +78,22 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 #include "sha1.h"
 #include "crypto.h"
 
-
-
 #define RINGTIME 30  //time in sec for wait user's answer
+#define REQTIME 5  //time in sec for wait originator's ID
+
+//Definition of IKE packets fields
+
+//REQ packet (48 bytes total):
+#define PUBP buf      //0: autentification DH-key(32 bytes)
+#define COMT buf+32   //32: commitment (16 bytes)
+
+//ANS packet (80 bytes total):
+#define PREF buf      //0: hidden id (16 bytes)
+#define PUBX buf+16   //16: encryption DH-key(32 bytes)
+#define NONCE buf+48  //48: nonce (32 bytes)
+
+//ACK packet (16 bytes total):
+#define MMAC buf      //0: authenticator (16 bytes)
 
 //====================GLOBAL VARIABLES====================
 
@@ -106,11 +107,11 @@ short pktlen[32]={
 //      LPC     GSMHR   G723    G729    GSMEFR  GSMFR   ILBC    BV16
         126,    112,    96,     110,    124,    99,     100,    80,
 
-//      OPUS    SILK    SPEEX   KEY     KLAST   CHAT    INV     AGR
-        -1,     -1,     -1,     500,    504,    256,    12-4,   20-4,
+//      OPUS    SILK    SPEEX   KEY     KLAST   CHAT    DAT     INV
+        -1,     -1,     -1,     500,    504,    256,    506-4,  12-4,
 
 //      SYN     REQ     ANS     ACK     AUREQ   AUANS   AUACK   VBR
-        8-4,    64-4,   113-4,  80-4,   16-4,   22-4,   6-4,    -1
+        8-4,    48-4,   80-4,  16-4,   18-4,   24-4,   6-4,    -1
 
 };
 
@@ -121,22 +122,30 @@ short pktlen[32]={
  char our_id[32]={0}; //Our Id
  unsigned char their_stamp[16]; //Key Stamp of remote party
  unsigned char our_stamp[16]; //Our Key Stamp
+ unsigned char their_key[32]; //Long-term public key of remote party
  char book_name[32]={0}; //Name of our address book file
 
  unsigned char answer[128]; //storage for answer packet waiting answer confirmation
  unsigned char key_access[16]; //secret for access to current secret key
  unsigned char session_key[40]; //autentification + encryption symmetric key
  unsigned char au_data[32]; //protocols data, invites for onion address verification
- unsigned char their_pkeys[64]; //received session public keys
- unsigned char our_pkeys[64];   //our session public keys
- unsigned char nonce[64];       //session nonce
+ unsigned char their_p[64]; //received session authentication key
+ unsigned char their_x[64]; //received session encryption key
+ unsigned char our_p[64];  //generated session authentication key
+ unsigned char our_x[64];  //generated session encryption key
+ unsigned char their_nonce[32];   //their received nonce
+ unsigned char our_nonce[32];     //our generated nonce
  unsigned char aux_key[16];     //session auxillary key for signs session DH parameters
+ unsigned char crp_temp[32];    //temporary storage for crypto computations
 
  char password[32]={0}; //common passphrase
  char their_onion[32]={0}; //their onion extracted from received invite or connection
  char our_onion[32]={0}; //our onion from config
  char local_ip[32]={0};  //our IP interface autodetected on start
- char crp_state=0; //protocol state
+ //protocol state (during IKE):
+ //0 -> -1 -> 1 -> -3 -> 3 for originator
+ //0 -> -2 -> 2 -> -4 -> 4 for acceptor
+ char crp_state=0;
  char invite_tcp=0; //received invite with remote onion address
  unsigned long in_ctr=0; //counter of incoming packets
  unsigned long out_ctr=0; //counter of outgoing packets
@@ -179,14 +188,25 @@ long getsec(void)
 }
 //*****************************************************************************
 
+//suspend excuting of the thread  for paus msec
+void psleep(int paus)
+{
+ #ifdef _WIN32
+    Sleep(paus);
+ #else
+    usleep(paus*10);
+ #endif
+}
+
+//*****************************************************************************
+
  //get packet data length for specified packets type
  short lenbytype(unsigned char type)
  {
   return pktlen[type&0x1F];
  }
-
-
  //*****************************************************************************
+
  //find packet type for actual data length
  unsigned char typebylen(short len)
  {
@@ -196,7 +216,6 @@ long getsec(void)
   return i;
  }
  //*****************************************************************************
-
 
  //outputs to screen our name and onion address
  void get_names(void)
@@ -210,7 +229,6 @@ long getsec(void)
   }
  }
 //*****************************************************************************
-
 
  //parse LAST option (-Nname etc.) from string
  //input: option[0] is option's char
@@ -245,7 +263,6 @@ long getsec(void)
  }
 //*****************************************************************************
 
-
  //parse last [name] in str, outputs name
  //returns outputs length or -1 if not found
  int get_keyname(const char* str, char* keyname)
@@ -278,7 +295,6 @@ long getsec(void)
   else return(strlen(keyname));  //output length
  }
 //*****************************************************************************
-
 
  //parse last #nick in str, outputs nick
  //returns outputs length or -1 if not found
@@ -313,7 +329,6 @@ long getsec(void)
  }
 //*****************************************************************************
 
-
  //parse {b64_stamp} in str, outputs 16 bytes of stamp
  //returns outputs length or -1 if not found
  int get_keystamp(const char* str, unsigned char* stamp)
@@ -321,6 +336,7 @@ long getsec(void)
    if(16==b64dstr(str, stamp, 16)) return 16;  //contacts keystamp IDn
    else return 0;
  }
+ //*****************************************************************************
 
  //load ECDH-key {b64_key} from specified key file in key directory
  //outputs binary key 32 bytes
@@ -351,7 +367,6 @@ long getsec(void)
   return 0;   //returns key length or 0 if block not found
  }
 //*****************************************************************************
-
 
  //load info-string "#info..." from specified key file in key directory
  //returns length if OK, 0 if info string not found and -1 if file not found
@@ -387,7 +402,6 @@ long getsec(void)
   return strlen(str);  //returns info length or 0 if block not found
  }
 //*****************************************************************************
-
 
  //load LAST specified contacts string from specified address-book file
  //returns length or 0 if string not found or -1 if bookfile not found
@@ -454,6 +468,7 @@ long getsec(void)
   }
  }
  //*****************************************************************************
+
  //check access to specified secret key
  int check_access(void)
  {
@@ -470,9 +485,7 @@ long getsec(void)
   else web_printf("! Our name for secret key not specified!\r\n");
   return 0;
  }
-
  //*****************************************************************************
-
 
  //load specified secret key from file 'keyname.sec' to seckey[32]
  //returns number of bytes loaded (must be 32)
@@ -557,41 +570,41 @@ long getsec(void)
  }
 //*****************************************************************************
 
-
  //load first matched contacts string from specified address-book
  //returns length or 0 if string not found or -1 if bookfile not found
- //there is REQ packet in buf: PREF,P,C
+ //their Da in crp_temp, their P in their_p, our q in our_p
+ //Acceptor (B) checks for each contact from addressbook:
+ // Dn =? H(IDn | P^b | P^q)
  int search_bookstr(const char* book, char* ourname, const unsigned char* buf, char* res)
  {
-   //input
-  #define PREF buf      //0: hidden id (16 bytes)
-  #define PUBP buf+16   //16: autentification DH-key(32 bytes)
-  #define COMT buf+48   //48: commitment (16 bytes)
-
    int i;
    FILE* fl=0;
    unsigned char our_secret[32];
    unsigned char guess_secret[32];
+   unsigned char efemeral_secret[32];
    unsigned char iskeys=0;
    unsigned char work[32];
    char key_id[32];
    unsigned char key_stamp[16];
 
+   //computes efemeral secret
+   curve25519_donna(efemeral_secret, our_p, their_p); //P^q
+
    //load our secret key to work
-   if(ourname[0]) i=get_seckey(ourname, work);
+   if(ourname[0]) i=get_seckey(ourname, work); //b
    else i=0;
    if(i==32) //if secret loaded
    {
     iskeys|=1; //set out secret flag
-    curve25519_donna(our_secret, work, PUBP); //P^a
+    curve25519_donna(our_secret, work, their_p); //P^b
    }
 
    //load guest secret key
-   i=get_seckey(NONAME, work);
+   i=get_seckey(NONAME, work);  //g
    if(i==32) //if secret loaded
    {
     iskeys|=2; //set guest secret flag
-    curve25519_donna(guess_secret, work, PUBP); //P^g
+    curve25519_donna(guess_secret, work, their_p); //P^g
    }
    if(!iskeys) return -2;  //no secrets: returns error code -2
 
@@ -616,12 +629,13 @@ long getsec(void)
     if(i!=16) continue;
 
     if(iskeys&1) //if our secret was be loaded
-    {    //computes Prf=H(IDn | P^a)
+    {    //computes Dn=H(IDn | P^b | P^q)
      Sponge_init(&spng, 0, 0, 0, 0);
-     Sponge_data(&spng, key_stamp, 16, 0, SP_NORMAL); //ID is key stamp insteed user name
-     Sponge_data(&spng, our_secret, 32, 0, SP_NORMAL);
-     Sponge_finalize(&spng, work+16, 16);
-     if(!memcmp(work+16, buf, 16)) //check for computes Prf equals Prf from packet
+     Sponge_data(&spng, key_stamp, 16, 0, SP_NORMAL); //IDn is key stamp insteed user name
+     Sponge_data(&spng, our_secret, 32, 0, SP_NORMAL); //P^b
+     Sponge_data(&spng, efemeral_secret, 32, 0, SP_NORMAL); //P^q
+     Sponge_finalize(&spng, work, 16);
+     if(!memcmp(work, crp_temp, 16)) //check for computes Prf equals Prf from packet
      {
       iskeys|=4;  //set flag OK
       break;
@@ -631,10 +645,11 @@ long getsec(void)
     if(iskeys&2)
     {
      Sponge_init(&spng, 0, 0, 0, 0);
-     Sponge_data(&spng, key_stamp, 16, 0, SP_NORMAL);
-     Sponge_data(&spng, guess_secret, 32, 0, SP_NORMAL);
-     Sponge_finalize(&spng, work+16, 16);
-     if(!memcmp(work+16, buf, 16))
+     Sponge_data(&spng, key_stamp, 16, 0, SP_NORMAL); //IDn from book
+     Sponge_data(&spng, guess_secret, 32, 0, SP_NORMAL); //P^g
+     Sponge_data(&spng, efemeral_secret, 32, 0, SP_NORMAL); //P^q
+     Sponge_finalize(&spng, work, 16);
+     if(!memcmp(work, crp_temp, 16))
      {
       strcpy(ourname, NONAME);
       iskeys|=4;
@@ -679,11 +694,15 @@ long getsec(void)
   xmemset(session_key, 0, sizeof(session_key)); //clear session keys
   xmemset(au_data, 0, 32);   //clear autentification data
   xmemset(aux_key, 0, 16); //clear aux_key
-  xmemset(nonce, 0, 64); //clear nonce
-  xmemset(our_pkeys, 0, 64);
-  xmemset(their_pkeys, 0, 64); //clear session public keys
+  xmemset(their_nonce, 0, 32); //clear nonce
+  xmemset(our_nonce, 0, 32);
+  xmemset(our_p, 0, 64);
+  xmemset(our_x, 0, 64);
+  xmemset(their_p, 0, 64);
+  xmemset(their_x, 0, 64); //clear session public keys
   xmemset(&spng, 0, sizeof(spng));
   xmemset(&TM, 0, sizeof(TM));
+  xmemset(crp_temp, 0, 32);   //clear temporary storage
   crp_state=0;          //set initial state
   in_ctr=0;            //clear counter of incoming packets
   out_ctr=0;           //clear counter of outgoing packets
@@ -695,23 +714,17 @@ long getsec(void)
  }
 //*****************************************************************************
 
-
- //generate request packet after connection is established
- //input: pkt - connection initial string
- //output: pkt - packet for sending
- //returns: packet length
-
- //input: -Ntheir_name -Iour_name
- //output: Da=H(IdA|B^p), P, H(X|Na)
+//Initial IKE procedure
+//originator only (crp_state=0):
+        //input: -Ntheir_name -Iour_name
+        //output: P, Ca=H(X|Na)
  int do_req(unsigned char* pkt)
  {
   //A is originator
-  //output
-  #define PREF buf      //0: hidden id (16 bytes)
-  #define PUBP buf+16   //16: autentification DH-key(32 bytes)
-  #define COMT buf+48   //48: commitment (16 bytes)
-  //temp
-  #define TMP nonce
+  
+  //REQ packet (48 bytes):
+  //PUBP=buf : autentification DH-key(32 bytes)
+  //COMT=buf+32 : commitment (16 bytes)
 
   int i;
   unsigned char* buf=pkt+1; //pointer to outputted data area (skip type byte)
@@ -819,12 +832,12 @@ long getsec(void)
 
   //load contact's ECDH public key
   sprintf(str, "%s", contact);
-  i=get_key(str, their_pkeys);
+  i=get_key(str, their_key);
   if( (i!=32) && their_id[0] ) //try to load from keyfile specified by produser
   {
    strcpy(contact, their_id);
    sprintf(str, "%s", contact);
-   i=get_key(str, their_pkeys); //B temporary store their pubKey (B)
+   i=get_key(str, their_key); //B: store their pubKey (B)
    if(i!=32)
    {
     web_printf("! Key '%s'(%s) not found!\r\n", contact, their_id);
@@ -864,43 +877,27 @@ long getsec(void)
   strcpy(their_name, contact);
 
   //****************************************************
-  //-----------------Protocol running-------------------
+  //-----------------Protocol running by originator (A)
   //****************************************************
 
   //generate authentication pair: p at random, computes P to output PUBP
-  randFetch(our_pkeys, 32); //p
-  get_pubkey(PUBP, our_pkeys); //P
-
-  //computes B^p and temporary stores in TMP
-  //curve25519_donna(s=B^p, p, B)
-  curve25519_donna(TMP, our_pkeys, their_pkeys); //B^p
-
-  //computes preffix (hidden Id)  Da=H(IdA|B^p) -> PREF
-  //in fact this is equal to  ElGamal encryption of our keystamp for remote party
-  Sponge_init(&spng, 0, 0, 0, 0); //init hash
-  //add our id to hash
-  Sponge_data(&spng, our_stamp, 16, 0, SP_NORMAL); //Our Stamp IdA
-  //add B^p to hash
-  Sponge_data(&spng, TMP, 32, 0, SP_NORMAL);
-  //computes hash to output PREF (16 bytes)
-  Sponge_finalize(&spng, PREF, 16); //hidden ID
-
-  //generate encryption pair: x at random , computes X to PUBK
-  randFetch(our_pkeys+32, 32); //x
-  get_pubkey(TMP+32, our_pkeys+32); //X
-
+  randFetch(our_p, 32); //p
+  get_pubkey(PUBP, our_p); //P
+  //generate authentication pair: x at random, computes X to output PUBP
+  randFetch(our_x, 32); //x
+  get_pubkey(crp_temp, our_x); //X
   //peek nonce at random
-  randFetch(nonce, 32);  //Na
+  randFetch(our_nonce, 32);  //Na
 
   //computes commitment for X and nonce -> COMT
   //C=H(X|Na)
   Sponge_init(&spng, 0, 0, 0, 0); //init hash
   //add X to hash
-  Sponge_data(&spng, TMP+32, 32, 0, SP_NORMAL); //X
+  Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL); //X
   //add nonce to hash
-  Sponge_data(&spng, nonce, 32, 0, SP_NORMAL); //Na
+  Sponge_data(&spng, our_nonce, 32, 0, SP_NORMAL); //Na
   //computes hash to output COMT (16 bytes)
-  Sponge_finalize(&spng, COMT, 16); //commitment C
+  Sponge_finalize(&spng, COMT, 16); //commitment Ca
 
   //notify call
   strcpy(their_name, contact);
@@ -914,40 +911,168 @@ long getsec(void)
    return 0;
   }
 
-  //set state -1: originator wait for ans
+  //set state -1: originator wait for KEY
   crp_state=-1;
   //get our time now as connection time
-  settimeout(RINGTIME);
+  settimeout(REQTIME);
 
   //set packet type and return fixed length
   pkt[0]=(TYPE_REQ | 0x80);
-  return (lenbytype(TYPE_REQ));
+  //memcpy(answer, pkt, 5+lenbytype(TYPE_REQ)); //for dubles of reuest
+  return (lenbytype(TYPE_REQ)); //48 bytes
 
-  //REQ:  PREF[16], PUBP[32], COMT[16]
-  //our_pkeys contains private keys p, x
+  //output=REQ:  PUBP[32], COMT[16]
+  //our_p, our_x contains private keys p, x
+  //our_nonce contain Na
+  //A -> B:  REQ
  }
 //*****************************************************************************
 
+ //for acceptor (crp_state==0):
+ //input=REQ: PUBP[32], COMT[16]
+ //output=REQ: PUBP[32], COMT[16]
+ //-----------------------------
+ //for originator (crp_state==-1)
+ //input=REQ: PUBP[32], COMT[16]
+ //output=ANS: PREF[16], PUBX[32], NONCE[32]
 
- //process req packet in buf
- //returns ans packet in buf and it's length or 0
  int go_req(unsigned char* pkt)
  {
   //B is acceptor
-  //input
-  #define PREF buf      //0: hidden id (16 bytes)
-  #define PUBP buf+16   //16: autentification DH-key(32 bytes)
-  #define COMT buf+48   //48: commitment (16 bytes)
-  //output
-  #define PUBX buf+48  //48: encryption DH-key(32 bytes)
-  #define NONCE buf+80   //80: nonce (32 bytes)
-  //temp
-  #define TMP nonce
+
+  //REQ packet (48 bytes):
+  //PUBP=buf : autentification DH-key(32 bytes)
+  //COMT=buf+32 : commitment (16 bytes)
+
+  //ANS packet (80 bytes):
+  //PREF=buf : hidden id (16 bytes)
+  //PUBX=buf+16 : encryption DH-key(32 bytes)
+  //NONCE=buf+48 : nonce (32 bytes)
 
   int i, l;
   unsigned char* buf=pkt+1; //pointer to outputted data area (skip type byte)
   char* p;
   char str[256];
+
+  //check for state
+  if(crp_state==0) //acceptor side (B)
+  {
+   //****************************************************
+  //-----------------Protocol running by acceptor (B)
+  //****************************************************
+   //B accepts REQ packet: PUBP[32], COMT[16] (48 bytes)
+   //and send REQ packet to answer (48 bytes)
+
+   //copy received data from A
+   memcpy(their_p, PUBP, 32); // their P
+   memcpy(their_x, COMT, 16); //their commitment Ca
+
+   //generate authentication pair: q at random, computes Q to output PUBP
+   randFetch(our_p, 32); //q
+   get_pubkey(PUBP, our_p); //Q
+   //generate authentication pair: y at random, computes Y to output PUBP
+   randFetch(our_x, 32); //y
+   get_pubkey(crp_temp, our_x); //Y
+   //peek nonce at random
+   randFetch(our_nonce, 32);  //Nb
+
+   //computes commitment for Y and nonce -> COMT
+   //C=H(Y|Nb)
+   Sponge_init(&spng, 0, 0, 0, 0); //init hash
+   //add Y to hash
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL); //Y
+   //add nonce to hash
+   Sponge_data(&spng, our_nonce, 32, 0, SP_NORMAL); //Nb
+   //computes hash to output COMT (16 bytes)
+   Sponge_finalize(&spng, COMT, 16); //commitment Cb
+
+   //notify initiation
+   web_printf("Incoming request processed\r\n");
+   //set state -2: acceptors wait for ID
+   crp_state=-2;
+   //get our time now as connection time
+   settimeout(REQTIME);
+
+  //set packet type and return fixed length
+  pkt[0]=(TYPE_REQ | 0x80);
+  return (lenbytype(TYPE_REQ)); //48 bytes
+
+  //output=REQ:  PUBP[32], COMT[16]  (48 bytes)
+  //our_p, our_x contains private keys q, y
+  //their_p, their_x contain public keys P and commitment Ca
+  //our_nonce contain Nb
+  //B -> A:  REQ
+  }
+  else if(crp_state==-1) //originator side (A)
+  {
+   //****************************************************
+   //-----------------Protocol processed by originator (A)
+  //****************************************************
+   //A accepts REQ packet: PUBP[32], COMT[16] (48 bytes)
+   //and send ANS packet to answer: PREF[16], PUBX[32], NONCE[32]  (80 bytes)
+
+   //copies received data from B
+   memcpy(their_p, PUBP, 32); // their Q
+   memcpy(their_x, COMT, 16); //their commitment Cb
+
+   //computes preffix (hidden Id)  Da=H(IdA|B^p|Q^p) -> PREF
+   //in fact this is equal to  ElGamal encryption of our keystamp for remote party
+   //efemeral secret Q^p adds wPFS to originator's ID protection
+   Sponge_init(&spng, 0, 0, 0, 0); //init hash
+   //add our id to hash
+   Sponge_data(&spng, our_stamp, 16, 0, SP_NORMAL); //Our Stamp IdA
+   //add B^p to hash
+   curve25519_donna(crp_temp, our_p, their_key); //B^p
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   //add Q^p to hash
+   curve25519_donna(crp_temp, our_p, their_p); //Q^p
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   //computes hash to output PREF (16 bytes)
+   Sponge_finalize(&spng, PREF, 16); //hidden ID
+
+   //computes our encryption public key
+   get_pubkey(PUBX, our_x); //X
+
+   //copies our nonce
+   memcpy(NONCE, our_nonce, 32);
+
+   //put to *buf  TYPE_ANS
+   pkt[0]=(TYPE_ANS | 0x80);
+   crp_state=1; //set state 1: originator wait for ID
+   settimeout(RINGTIME); //set reset timeout
+   i=lenbytype(TYPE_ANS);
+   return (lenbytype(TYPE_ANS));
+
+   //output=ANS:  PREF[16], PUBX[32], NONCE[32]  (80 bytes)
+   //our_p, our_x still contains private keys p, x
+   //their_p, their_x contain public keys Q and commitment Cb
+   //our_nonce contain Na
+   //A -> B: ANS
+  }
+  else return 0;
+ }
+ //*****************************************************************************
+
+ //for acceptor (crp_state==-2):
+ //input=ANS: PREF[16], PUBX[32], NONCE[32]
+ //output=ANS: PREF[16], PUBX[32], NONCE[32]
+ //-----------------------------
+ //for originator (crp_state==1)
+ //input=ANS: PREF[16], PUBX[32], NONCE[32]
+ //output=ACK: MMAC[16]
+ int go_ans(unsigned char* pkt)
+ {
+  //ANS packet (80 bytes):
+  //PREF=buf : hidden id (16 bytes)
+  //PUBX=buf+16 : encryption DH-key(32 bytes)
+  //NONCE=buf+48 : nonce (32 bytes)
+
+  //ACK packet (16 bytes):
+  //MMAC=buf : authenticator (16 bytes)
+
+  unsigned char* buf=pkt+1;
+  char str[256];
+  int i, reject=0;
 
   char bookfile[64]; //adressbook filename
   char bookstr[256]; //contacts string from adressbook
@@ -957,567 +1082,555 @@ long getsec(void)
   struct tm *ttime;
   time_t ltime;
 
-  //check for packet type
-  if(pkt[0]!=(TYPE_REQ|0x80))
-  {
-   web_printf("! Received packet is not a connection request type!\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //check for iddle state
-  if(crp_state)
-  {
-   web_printf("! Unexpected connection request received!\r\n");
-   disconnect();
-   return 0; //check for initial state only
-  }
-
-  //search sender name in adressbook for ourkey receiver
-  strcpy(ourname, our_name);
-  strcpy(bookfile, book_name);
-  //now we check each contact from adressbook matches for
-  //received hidden id (for our default key and guest key)
-  i=search_bookstr(bookfile, ourname, buf, bookstr);
-  if(i<1)
-  {
-   web_printf("! Incoming call from/to unknown, rejected\r\n");
-   disconnect();
-   return 0; //sender not finded: not in book!
-  }
-
-  //get keys owner
-  i=get_nickname(bookstr, str); //find #nickname from contacts key
-  if(i>0) strcpy(their_id, str); //originator'd id (for acceptor)
-  else
-  {
-   web_printf("! Nickname for their key not found in adressbook!\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //extract their key stamp IdA
-  i=get_keystamp(bookstr, their_stamp); //extract {b64_stamp} as bytes from  book string
-  if(i!=16)
-  {
-   web_printf("! Stamp of their key not found / not correct in adressbook!\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //get name of sender
-  i=get_keyname(bookstr, keyname);
-  if((i>0)&&(i<64)) strcpy(keyname, str);
-  else
-  {
-   web_printf("! Adressbook error!\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //notification
-  web_printf("Incoming call to '%s' from '%s' ( '%s' )", ourname, keyname, their_id);
-  //time notification
-#ifdef _WIN32
-  time(&ltime);
-#else
-  ltime=getsec(); //get mktime
-#endif
-  ttime=localtime(&ltime); // convert to localtime
-  if(ttime) web_printf(" at %02d:%02d", ttime->tm_hour, ttime->tm_min);
-
-  //check trust level option -L for this contact
-  str[0]='L'; //ignore option
-  i=get_opt(bookstr, str);
-  if(i<0) web_printf("\r\n");
-  else web_printf(", TrustLevel: ");
-  if(!i) web_printf("-\r\n");
-  else if(i>0) web_printf("%s\r\n", str);
-  web_printf("Press ENTER to answer\r");
-  fflush(stdout);
-  if((!str[1])&& (str[0]=='X'))
-  {
-   web_printf("! Rejected by trust level (ignored)\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //Look for password for this contact
-  str[0]='P';
-  i=get_opt(bookstr, str);
-  if((i>2)&&(i<32)) strcpy(password, str);
-  else password[0]=0;
-
-  //load their ECDH public key
-  i=get_key(keyname, their_pkeys+32); //A
-  if(i!=32)
-  {
-   web_printf("! Contact's keyfile '%s' not found!\r\n", keyname);
-   disconnect();
-   return 0;
-  }
-
-  //load our secret key
-  i=get_seckey(ourname, our_pkeys+32); //b
-  if(i!=32)
-  {
-   web_printf("! Secret keyfile '%s' not found or invalid!\r\n", ourname);
-   disconnect();
-   return 0;
-  }
-
-
-  //search string for our name in address book
-  i=get_bookstr(bookfile, ourname, bookstr);
-  if(i<=0)
-  {
-   web_printf("! Our key not found in adressbook!\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //get our nickname
-  i=get_nickname(bookstr, str); //find #nickname from our key
-  if(i>0) strcpy(our_id, str); //acceptors'd id (for acceptor)
-  else
-  {
-   web_printf("! Nickname for our key not found in adressbook!\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //extract our key stamp IdB
-  i=get_keystamp(bookstr, our_stamp); //extract {b64_stamp} as bytes from  book string
-  if(i!=16)
-  {
-   web_printf("! Stamp of our key not found / not correct in adressbook!\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //save actual our_name and their_name uses in current session
-  strcpy(their_name, keyname);
-  strcpy(our_name, ourname);
-
-  //****************************************************
-  //-----------------Protocol running-------------------
-  //****************************************************
-
-
-  //generate autentication DH key q
-  randFetch(our_pkeys, 32); //q
-
-  //computes aux_key K=H(A^q|P^b|P^q)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  //computes token A^q and add to hash
-  curve25519_donna(TMP, our_pkeys, their_pkeys+32); //A^q
-  Sponge_data(&spng, TMP, 32, 0, SP_NORMAL);
-  //computes token P^b and add to hash
-  curve25519_donna(TMP, our_pkeys+32, PUBP); //P^b
-  Sponge_data(&spng, TMP, 32, 0, SP_NORMAL);
-  //computes autentification secret P^q  add to hash
-  curve25519_donna(TMP, our_pkeys, PUBP); //P^q
-  Sponge_data(&spng, TMP, 32, 0, SP_NORMAL); //P^q
-  Sponge_finalize(&spng, aux_key, 16); //aux_key
-
-  //computes Preffix: D=H(OurIdB | P^q)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, our_stamp, 16, 0, SP_NORMAL); //our stamp IdB
-  Sponge_data(&spng, TMP, 32, 0, SP_NORMAL); //P^q
-  Sponge_finalize(&spng, PREF, 16); //PREF
-
-  //copies received data
-  memcpy(their_pkeys, PUBP, 32); //P
-  memcpy(nonce, COMT, 16); //commitment
-
-  //peek nonceB at random
-  randFetch(nonce+32, 32); //nonceB
-  memcpy(NONCE, nonce+32, 32); //Nb
-  randFetch(NONCE+32, 1); //extra byte at random
-
-  //computes our public key Q and deletes private key q
-  get_pubkey(PUBP, our_pkeys);  //Q
-  memcpy(our_pkeys, PUBP, 32); //replace private key q to correspondent public key Q
-
-  //generate encryption DH pair y Y
-  randFetch(our_pkeys+32, 32); //y
-  get_pubkey(PUBX, our_pkeys+32);  //Y
-
-  //put to *buf  TYPE_ANS
-  pkt[0]=(TYPE_ANS | 0x80);
-  crp_state=-2; //set state -2: acceptor wait for ack
-  settimeout(RINGTIME); //set reset timeout
-  i=lenbytype(TYPE_ANS);
-  memcpy(answer, pkt, i+5); //store answer ready for sending
-
-  //for auto answering
-  strcpy(str, "Auto_answer");
-  parseconf(str);
-  if(str[0]=='1') return (lenbytype(TYPE_ANS));
-  else  return 0; //wait for manual permission by pressing Enter
-  
-  //ANS: PREF[16], PUBP[32], PUBK[32], NONCE[32]
-  //our_pkeys contains public key Q, private key y
-  //their_pkey contain public key P
-  //nonce contain commitment
-  //aux_key contain autentication secret K
- }
-//*****************************************************************************
-
- //send answer packet after user manually accept incoming call
- void do_ans(void)
- {
-  char c;
-  int i;
-  if((crp_state!=-2)||(!answer[0]))
-  {
-   web_printf("! Unexpected answer command!\r\n");
-   return;
-  }
-  i=do_data(answer, &c); //encrypt answer, returns pkt len
-  if(i>0) do_send(answer, i, c); //send answer
-  answer[0]=0;
-  web_printf("Incoming connection accepted\r");
- }
-//*****************************************************************************
-
-
- //process ans pkt
- //input: pkt
- //output: ack length or 0
- int go_ans(unsigned char* pkt)
- {
-  //A (originator side):
-  //input
-  #define PREF buf      //0: hidden id (16 bytes)
-  #define PUBP buf+16   //16: autentification DH-key(32 bytes)
-  #define PUBX buf+48  //48: encryption DH-key(32 bytes)
-  #define NONCE buf+80   //80: nonce
-  //output
-  #define OUT_PUBX buf //0: our encryption public key(32)
-  #define OUT_NONCE buf+32//32: our nonce (32)
-  #define OUT_M buf+64 //64: our authentificator
-  //temp
-  #define TMP nonce
-  #define their_pub their_pkeys
-  #define our_sec their_pkeys+32
-
-  unsigned char* buf=pkt+1;
-  char bookfile[64];
-  char str[256];
-  int i;
-
-  //check for packet type
-  if(pkt[0]!=(TYPE_ANS|0x80))
-  {
-   web_printf("! Received packet is not a connection answer type!\r\n");
-   disconnect();
-   return 0;
-  }
-
   //check for state
-  if(crp_state!=-1)
+  if(crp_state==-2)
+  {
+   //****************************************************
+   //-----------------Protocol processed by acceptor (B)
+   //****************************************************
+   //B accepts ANS packet: PREF[16], PUBX[32], NONCE[32]  (80 bytes)
+   //and send ANS packet to answer
+
+   //check commitment is valid?
+   //C=H(X|Na)
+   Sponge_init(&spng, 0, 0, 0, 0); //init hash
+   //add X to hash
+   Sponge_data(&spng, PUBX, 32, 0, SP_NORMAL); //X
+   //add nonce to hash
+   Sponge_data(&spng, NONCE, 32, 0, SP_NORMAL); //Na
+   //computes hash (16 bytes)
+   Sponge_finalize(&spng, crp_temp, 16); //commitment Ca
+   if(memcmp(crp_temp, their_x, 16))
+   {
+    web_printf("! Commitment failure!\r\n");
+    disconnect();
+    return 0;
+   }
+   //copy incoming data
+   memcpy(their_x, PUBX, 32); //X
+   memcpy(their_nonce, NONCE, 32);   //Na
+   memcpy(crp_temp, PREF, 16);       //Da
+
+   //search sender name in adressbook for ourkey receiver
+   strcpy(ourname, our_name);
+   strcpy(bookfile, book_name);
+   //now we check each contact from adressbook matches for
+   //received hidden id (for our default key and guest key)
+   i=search_bookstr(bookfile, ourname, buf, bookstr);
+   if(i<1)
+   {  //sender not finded: not in book!
+    web_printf("! Incoming call from/to unknown, guest will be rejected\r\n");
+    //now we set flag and process incoming call like from guest
+    //for time alignment. Later we will use the fake aux_key and continue the protocol
+    //Thus, the originator can not distinguish the cause of the interrupt protocol in step 3.
+    reject=1; //set rejection flag
+    strcpy(ourname, NONAME); //our name is guest
+    i=get_bookstr(bookfile, ourname, bookstr); //their name is guest
+    if(i<1)
+    {
+     disconnect();
+     return 0;
+    }
+   }
+
+   //get keys owner
+   i=get_nickname(bookstr, str); //find #nickname from contacts key
+   if(i>0) strcpy(their_id, str); //originator'd id (for acceptor)
+   else
+   {
+    web_printf("! Nickname for their key not found in adressbook!\r\n");
+    disconnect();
+    return 0;
+   }
+
+   //extract their key stamp IdA
+   i=get_keystamp(bookstr, their_stamp); //extract {b64_stamp} as bytes from  book string
+   if(i!=16)
+   {
+    web_printf("! Stamp of their key not found / not correct in adressbook!\r\n");
+    disconnect();
+    return 0;
+   }
+
+   //get name of sender
+   i=get_keyname(bookstr, keyname);
+   if((i>0)&&(i<64)) strcpy(keyname, str);
+   else
+   {
+    web_printf("! Adressbook error!\r\n");
+    disconnect();
+    return 0;
+   }
+
+   //notification
+   if(!reject) web_printf("Incoming call to '%s' from '%s' ( '%s' )", ourname, keyname, their_id);
+   //time notification
+#ifdef _WIN32
+   time(&ltime);
+#else
+   ltime=getsec(); //get mktime
+#endif
+   ttime=localtime(&ltime); // convert to localtime
+   if(ttime) web_printf(" at %02d:%02d", ttime->tm_hour, ttime->tm_min);
+
+   //check trust level option -L for this contact
+   str[0]='L'; //ignore option
+   i=get_opt(bookstr, str);
+   if(i<0) sprintf(str, "?");
+   else if(!i) sprintf(str, "0");
+   web_printf(" TrustLevel: %s\r\n", str);
+   if((!str[1])&&(str[0]=='X'))
+   {
+    web_printf("! Rejected by trust level (ignored)\r\n");
+    reject=1;
+   }
+   if(!reject) web_printf("Press ENTER to answer\r");
+   else web_printf("Press ENTER to reject\r");
+   fflush(stdout);
+
+   //Look for password for this contact
+   str[0]='P';
+   i=get_opt(bookstr, str);
+   if((i>2)&&(i<32)) strcpy(password, str);
+   else password[0]=0;
+
+   //load their ECDH public key
+   i=get_key(keyname, their_key); //A
+   if(i!=32)
+   {
+    web_printf("! Contact's keyfile '%s' not found!\r\n", keyname);
+    disconnect();
+    return 0;
+   }
+
+   //search string for our name in address book
+   i=get_bookstr(bookfile, ourname, bookstr);
+   if(i<=0)
+   {
+    web_printf("! Our key not found in adressbook!\r\n");
+    disconnect();
+    return 0;
+   }
+
+   //get our nickname
+   i=get_nickname(bookstr, str); //find #nickname from our key
+   if(i>0) strcpy(our_id, str); //acceptors'd id (for acceptor)
+   else
+   {
+    web_printf("! Nickname for our key not found in adressbook!\r\n");
+    disconnect();
+    return 0;
+   }
+
+   //extract our key stamp IdB
+   i=get_keystamp(bookstr, our_stamp); //extract {b64_stamp} as bytes from  book string
+   if(i!=16)
+   {
+    web_printf("! Stamp of our key not found / not correct in adressbook!\r\n");
+    disconnect();
+    return 0;
+   }
+
+   //save actual our_name and their_name uses in current session
+   strcpy(their_name, keyname);
+   strcpy(our_name, ourname);
+
+   //load our secret key
+   i=get_seckey(our_name, session_key); //temporary store b
+   if(i!=32)
+   {
+    web_printf("! Secret keyfile '%s' not found or invalid!\r\n", ourname);
+    disconnect();
+    return 0;
+   }
+
+   //computes aux_key K=H(A^q|P^b|P^q)
+   Sponge_init(&spng, 0, 0, 0, 0);
+   //computes token A^q and add to hash
+   curve25519_donna(crp_temp, our_p, their_key); //A^q
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   //computes token P^b and add to hash
+   curve25519_donna(crp_temp, session_key, their_p); //P^b
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   //computes autentification secret P^q and add to hash
+   curve25519_donna(crp_temp, our_p, their_p); //P^q
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   Sponge_finalize(&spng, aux_key, 16); //aux_key
+
+   //computes session key s = H(X^y) xor nonceA xor nonceB
+   curve25519_donna(session_key, our_x, their_x); //X^y
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, session_key, 32, 0, SP_NORMAL);
+   Sponge_finalize(&spng, session_key, 32); //secret
+   for(i=0;i<32;i++) session_key[i]^=(our_nonce[i]^their_nonce[i]);
+
+   //computes preffix (hidden Id)  Db=H(IdB|A^q|P^q) -> PREF
+   //in fact this is equal to  ElGamal encryption of our keystamp for remote party
+   //efemeral secret Q^p adds wPFS to originator's ID protection
+   Sponge_init(&spng, 0, 0, 0, 0); //init hash
+   //add our id to hash
+   Sponge_data(&spng, our_stamp, 16, 0, SP_NORMAL); //Our Stamp IdB
+   //add A^q to hash
+   curve25519_donna(crp_temp, our_p, their_key); //A^q
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   //add P^q to hash
+   curve25519_donna(crp_temp, our_p, their_p); //P^q
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   //computes hash to output PREF (16 bytes)
+   Sponge_finalize(&spng, PREF, 16); //hidden ID
+
+   //copies our nonce
+   memcpy(NONCE, our_nonce, 32);
+   //computes our encryption public key
+   get_pubkey(PUBX, our_x); //Y
+   //replace private keys
+   memcpy(our_x, PUBX, 32);
+   get_pubkey(crp_temp, our_p); //Q
+   memcpy(our_p, crp_temp, 32);
+   //alters the key if rejection flag
+   if(reject)
+   {
+    randFetch(aux_key, 16);
+    randFetch(PREF, 16);
+    randFetch(session_key, 32);
+   }
+   else //time aligment
+   {
+    randFetch(answer, 16);
+    randFetch(answer+16, 16);
+    randFetch(answer+32, 32);
+   }
+   
+   //put to *buf  TYPE_ANS
+   pkt[0]=(TYPE_ANS | 0x80);
+   crp_state=2; //set state 2: acceptor wait MAC
+   settimeout(RINGTIME); //set reset timeout
+   i=lenbytype(TYPE_ANS);
+   memcpy(answer, pkt, i+5); //store answer ready for sending
+
+   //for auto answering
+   strcpy(str, "Auto_answer");
+   parseconf(str);
+   if(str[0]=='1') return (lenbytype(TYPE_ANS));
+   else  return 0; //wait for manual permission by pressing Enter
+   //output=ANS:  PREF[16], PUBX[32], NONCE[32]  (80 bytes)
+   //our_p, our_x contains our public keys Q and Y
+   //their_p, their_x contain their public keys P and X
+   //our_nonce contain Nb, their_nonce contain Na
+   //aux_key containe 128 bits verification key
+   //session_key contains 128+128 bits session keys
+   //au_data contains 128+128 bits onion identificators
+   //after manual incoming call acception B -> A: ANS
+  }
+  else if(crp_state==1)
+  {
+   //****************************************************
+   //-----------------Protocol processed by initiator (A)
+   //****************************************************
+   //A accepts ANS packet: PREF[16], PUBX[32], NONCE[32]  (80 bytes)
+   //and send ACK packet to answer: MMAC[16] (16 bytes)
+
+   //check commitment is valid?
+   //C=H(Y|Nb)
+   Sponge_init(&spng, 0, 0, 0, 0); //init hash
+   //add Y to hash
+   Sponge_data(&spng, PUBX, 32, 0, SP_NORMAL); //Y
+   //add nonce to hash
+   Sponge_data(&spng, NONCE, 32, 0, SP_NORMAL); //Nb
+   //computes hash (16 bytes)
+   Sponge_finalize(&spng, crp_temp, 16); //commitment Cb
+   if(memcmp(crp_temp, their_x, 16))
+   {
+    web_printf("! Commitment failure!\r\n");
+    disconnect();
+    return 0;
+   }
+
+   //copy incoming data
+   memcpy(their_x, PUBX, 32); //Y
+   memcpy(their_nonce, NONCE, 32);   //Nb
+
+   //load our secret key
+   i=get_seckey(our_name, session_key); //temporary store b
+   if(i!=32)
+   {
+    web_printf("! Secret keyfile '%s' not found or invalid!\r\n", ourname);
+    disconnect();
+    return 0;
+   }
+
+   //computes and checks prefix PREF =? H(IdB | Q^a | Q^p)
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, their_stamp, 16, 0, SP_NORMAL);
+   curve25519_donna(crp_temp, session_key, their_p); //Q^a
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   curve25519_donna(crp_temp, our_p, their_p); //Q^p
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   Sponge_finalize(&spng, crp_temp, 16); //Db
+   if(memcmp(PREF, crp_temp, 16))
+   {
+    web_printf("! Answer from unknown, terminating call\r\n");
+    disconnect();
+    return 0;
+   }
+
+   //computes aux_key K=H(Q^a|B^p|Q^p)
+   Sponge_init(&spng, 0, 0, 0, 0);
+   //computes token Q^a and add to hash
+   curve25519_donna(crp_temp, session_key, their_p); //Q^a
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   //computes token B^p and add to hash
+   curve25519_donna(crp_temp, our_p, their_key); //B^p
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   //computes autentification secret Q^p and add to hash
+   curve25519_donna(crp_temp, our_p, their_p); //Q^p
+   Sponge_data(&spng, crp_temp, 32, 0, SP_NORMAL);
+   Sponge_finalize(&spng, aux_key, 16); //aux_key
+
+   //computes session key s = H(Y^x) xor nonceA xor nonceB
+   curve25519_donna(session_key, our_x, their_x); //Y^x
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, session_key, 32, 0, SP_NORMAL);
+   Sponge_finalize(&spng, session_key, 32); //secret
+   for(i=0;i<32;i++) session_key[i]^=(our_nonce[i]^their_nonce[i]);
+
+   //computes our public keys and replace our private keys
+   get_pubkey(crp_temp, our_p); //P
+   memcpy(our_p, crp_temp, 32);
+   get_pubkey(crp_temp, our_x); //X
+   memcpy(our_x, crp_temp, 32);
+
+   //computes authentificator M=H(K|P|Q|X|Y|Na|Nb)
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, aux_key, 16, 0, SP_NORMAL); //K
+   Sponge_data(&spng, our_p, 32, 0, SP_NORMAL); //P
+   Sponge_data(&spng, their_p, 32, 0, SP_NORMAL); //Q
+   Sponge_data(&spng, our_x, 32, 0, SP_NORMAL); //X
+   Sponge_data(&spng, their_x, 32, 0, SP_NORMAL); //Y
+   Sponge_data(&spng, our_nonce, 32, 0, SP_NORMAL); //Na
+   Sponge_data(&spng, their_nonce, 32, 0, SP_NORMAL); //Nb
+   Sponge_finalize(&spng, MMAC, 16); //our authentificator
+
+   settimeout(REQTIME); //set timeout
+   pkt[0]=(TYPE_ACK | 0x80);
+   crp_state=-3; // set state -3: originator wait MAC
+   return (lenbytype(TYPE_ACK));
+   //output=ACK:  MMAC[16]  (16 bytes)
+   //our_p, our_x contains our public keys Q and Y
+   //their_p, their_x contain their public keys P and X
+   //our_nonce contain Nb, their_nonce contain Na
+   //aux_key containe 128 bits verification key
+   //session_key contains 128+128 bits session keys
+   //au_data contains 128+128 bits onion identificators
+   //A -> B: ACK
+  }
+  else
   {
    web_printf("! Unexpected connection answer received!\r\n");
    disconnect();
    return 0; //check for state sweetable for ans
   }
+ }
+//*****************************************************************************
 
-  //load our secret key
-  i=get_seckey(our_name, our_sec); //a
-  if(i!=32)
+ //accept incoming connection manually
+ //early prepared answer packet placed in answer[]
+ void do_ans(int ok)
+ {
+  char c;
+  int i;
+  if(crp_state!=2)
   {
-   web_printf("! Secret keyfile '%s' not found!", our_name);
-   disconnect();
-   return 0;
+   web_printf("! Unexpected answer command!\r\n");
+   return;
   }
-
-  //load their public key
-  i=get_key(their_name, their_pub); //B
-  if(i!=32)
+  if(!ok) //alters key for rejection
   {
-   web_printf("! Contact's keyfile '%s' not found!", their_name);
-   disconnect();
-   return 0;
+   randFetch(aux_key, 16);
+   randFetch(answer+1, 16); //PREF
+   randFetch(session_key, 32);
+   web_printf("Incoming connection rejected\r\n");
   }
-
-  //computes aux_key K=H(Q^a|B^p|Q^p)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  //computes token Q^a and add to hash
-  curve25519_donna(TMP+32, their_pkeys+32, PUBP); //Q^a
-  Sponge_data(&spng, TMP+32, 32, 0, SP_NORMAL);
-  //computes token B^p and add to hash
-  curve25519_donna(TMP+32, our_pkeys, their_pkeys); //B^p
-  Sponge_data(&spng, TMP+32, 32, 0, SP_NORMAL);
-  //computes autentification secret Q^p and add to hash
-  curve25519_donna(TMP+32, our_pkeys, PUBP); //Q^p
-  Sponge_data(&spng, TMP+32, 32, 0, SP_NORMAL);
-  Sponge_finalize(&spng, aux_key, 16); //aux_key
-
-  //computes and checks prefix PREF =? H(IdB | Q^p)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, their_stamp, 16, 0, SP_NORMAL);
-  Sponge_data(&spng, TMP+32, 32, 0, SP_NORMAL);
-  Sponge_finalize(&spng, TMP+32, 16); //aux_key
-  if(memcmp(PREF, TMP+32, 16))
-  {
-   web_printf("! Answer from unknown, terminating call\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //computes session key s = H(Y^x) xor nonceA xor nonceB
-  Sponge_init(&spng, 0, 0, 0, 0);
-  curve25519_donna(session_key, our_pkeys+32, PUBX); //Y^x
-  Sponge_data(&spng, session_key, 32, 0, SP_NORMAL);
-  Sponge_finalize(&spng, session_key, 32); //secret
-  for(i=0;i<32;i++) session_key[i]^=(nonce[i]^(NONCE)[i]);
-
-  //saves their public keys and nonce
-  memcpy(their_pkeys, PUBP, 32);
-  memcpy(their_pkeys+32, PUBX, 32);
-  memcpy(nonce+32, NONCE, 32);
-
-  //computes our public keys and replace our private keys
-  get_pubkey(OUT_PUBX, our_pkeys);
-  memcpy(our_pkeys, OUT_PUBX, 32);
-  get_pubkey(OUT_PUBX, our_pkeys+32);
-  memcpy(our_pkeys+32, OUT_PUBX, 32);
-  memcpy(OUT_NONCE, nonce, 32);
-
-  //computes authentificator M=H(K|P|Q|X|Y|N1|N2)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, aux_key, 16, 0, SP_NORMAL); //K
-  Sponge_data(&spng, our_pkeys, 32, 0, SP_NORMAL); //P
-  Sponge_data(&spng, their_pkeys, 32, 0, SP_NORMAL); //Q
-  Sponge_data(&spng, our_pkeys+32, 32, 0, SP_NORMAL); //X
-  Sponge_data(&spng, their_pkeys+32, 32, 0, SP_NORMAL); //Y
-  Sponge_data(&spng, nonce, 32, 0, SP_NORMAL); //Na
-  Sponge_data(&spng, nonce+32, 32, 0, SP_NORMAL); //Nb
-  Sponge_finalize(&spng, OUT_M, 16); //our authentificator
-
-  //Print wordlist (for anti-MitM biometric voice autentification)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //K
-  Sponge_finalize(&spng, au_data, 4);  //h
-  web_printf("Control words: ' %s - %s - %s - %s '\r\n",
-   (getword(au_data[0])), (getword(256+au_data[1])),
-   (getword(au_data[2])), (getword(256+au_data[3]))
-  );
-  fflush(stdout);
-  pkt[0]=(TYPE_ACK | 0x80);
-  crp_state=1; // set state 1: originator accepted
-
-  //prepare onion handshake prefixes
-  au_data[0]=0xFF; //flag
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, au_data, 1, 0, SP_NORMAL); //flag
-  Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //Ka
-  Sponge_finalize(&spng, au_data, 32);
-
-  return (lenbytype(TYPE_ACK));
-
-  //ACK: OUT_PUBX[32], OUT_NONCE[32], OUT_M[16]
-  //our_pkeys contains public keys P, X
-  //their_pkey contain public key Q, Y
-  //aux_key contain authentication secret K
+  else web_printf("Incoming connection accepted\r\n");
+  i=do_data(answer, &c); //encrypt answer, returns pkt len
+  if(i>0) do_send(answer, i, c); //send answer
+  answer[0]=0;
 
  }
 //*****************************************************************************
 
-
- //process ack packet
- //output: agr packet, au1 packet, onion invite
+ //for acceptor (crp_state==2):
+ //input=ACK: MMAC[16]
+ //output=ACK: MMAK[16]
+ //-----------------------------
+ //for originator (crp_state==-3)
+ //input=ACK: MMAC[16]
+ //optionally output=ACK: MMAK[16] with aux_key
+ //-----------------------------
+ //for acceptor (crp_state==4):
+ //input=ACK: MMAC[16] with aux_key
+ //no output
  int go_ack(unsigned char* pkt)
  {
   int i;
   char c;
   unsigned char* buf=pkt+1;
 
-  //B (acceptor side):
-   //input
-  #define IN_PUBX buf //0: our encryption public key(32)
-  #define IN_NONCE buf+32//32: our nonce (32)
-  #define IN_M buf+64 //64: our authentificator
-  //output M in buf
-  #define OUT_M buf
-  //temp
-  #define TMP their_pkeys+32
-
-  //check for packet type
-  if(pkt[0]!=(TYPE_ACK|0x80))
-  {
-   web_printf("! Received packet is not a connection ACK type!\r\n");
-   disconnect();
-   return 0;
-  }
+  //ACK packet (16 bytes):
+  //MMAC=buf  : authenticator (16 bytes)
 
   //check for state
-  if(crp_state!=-2)
+  if(crp_state==2)
   {
-   web_printf("! Unexpected connection ACK received!\r\n");
-   disconnect();
-   return 0; //check for state sweetable for ans
-  }
+   //****************************************************
+   //-----------------Protocol processed by acceptor (B)
+   //****************************************************
+   //B accepts ACK packet: MMAC[16]  (16 bytes)
+   //and check it and send ACK packet to answer
 
-  //check commitment COMT (stored in nonce) C ?= H(IN_PUBX | IN_NONCE)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, IN_PUBX, 32, 0, SP_NORMAL);
-  Sponge_data(&spng, IN_NONCE, 32, 0, SP_NORMAL);
-  Sponge_finalize(&spng, TMP, 16);  //C'
-  if(memcmp(nonce, TMP, 16))
-  {
-   web_printf("! Commitment failure!\r\n");
-   disconnect();
-   return 0;
-  }
-
-   //computes session key s = H(X^y) xor nonceA xor nonceB
-  Sponge_init(&spng, 0, 0, 0, 0);
-  curve25519_donna(session_key, our_pkeys+32, IN_PUBX); //Y^x
-  Sponge_data(&spng, session_key, 32, 0, SP_NORMAL);
-  Sponge_finalize(&spng, session_key, 32); //secret
-  for(i=0;i<32;i++) session_key[i]^=((nonce+32)[i]^(IN_NONCE)[i]);
-
-  //computes our encryption public key end replace private key
-  get_pubkey(TMP, our_pkeys+32);  //Y
-  memcpy(our_pkeys+32, TMP, 32);  //deletes y
-
-  //copy their key and nonce
-  memcpy(their_pkeys+32, IN_PUBX, 32); //X
-  memcpy(nonce, IN_NONCE, 32); //Na
-
-  //checks their authentificator IN_M =? H(K|P|Q|X|Y|Na|Nb)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, aux_key, 16, 0, SP_NORMAL); //K
-  Sponge_data(&spng, their_pkeys, 32, 0, SP_NORMAL); //P
-  Sponge_data(&spng, our_pkeys, 32, 0, SP_NORMAL); //Q
-  Sponge_data(&spng, their_pkeys+32, 32, 0, SP_NORMAL); //X
-  Sponge_data(&spng, our_pkeys+32, 32, 0, SP_NORMAL); //Y
-  Sponge_data(&spng, nonce, 32, 0, SP_NORMAL); //Na
-  Sponge_data(&spng, nonce+32, 32, 0, SP_NORMAL); //Nb
-  Sponge_finalize(&spng, OUT_M, 16); //their expected authentificator
-  if(memcmp(OUT_M, IN_M, 16))
-  {
-   web_printf("! Identification failure\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //computes our authentificator OUT_M = H(K|Q|P|Y|X|Nb|Na)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, aux_key, 16, 0, SP_NORMAL); //K
-  Sponge_data(&spng, our_pkeys, 32, 0, SP_NORMAL); //Q
-  Sponge_data(&spng, their_pkeys, 32, 0, SP_NORMAL); //P
-  Sponge_data(&spng, our_pkeys+32, 32, 0, SP_NORMAL); //Y
-  Sponge_data(&spng, their_pkeys+32, 32, 0, SP_NORMAL); //X
-  Sponge_data(&spng, nonce+32, 32, 0, SP_NORMAL); //Nb
-  Sponge_data(&spng, nonce, 32, 0, SP_NORMAL); //Na
-  Sponge_finalize(&spng, OUT_M, 20); //their expected authentificator
-
-  //Print wordlist (for anti-MitM biometric voice autentification)
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //Ka (second part of shared secret)
-  Sponge_finalize(&spng, au_data, 4);  //h
-  web_printf("Control words: ' %s - %s - %s - %s '\r\n",
-   (getword(au_data[0])), (getword(256+au_data[1])),
-   (getword(au_data[2])), (getword(256+au_data[3]))
-  );
-  fflush(stdout);
-
-  //set state 2 for obligate MAC revealing: acceptor ready
-  //or state 4 (comleet) for optional revealing
-  crp_state=4;
-
-  //prepare onion handshake prefixes
-  au_data[0]=0xFF; //flag
-  Sponge_init(&spng, 0, 0, 0, 0);
-  Sponge_data(&spng, au_data, 1, 0, SP_NORMAL); //flag
-  Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //Ka
-  Sponge_finalize(&spng, au_data, 32); 
-
-  //prepare and sent AGR packet: OUT_Mb
-  pkt[0]=TYPE_AGR|0x80;
-  i=do_data(pkt, &c); //process it
-  if(i>0) do_send(pkt, i, c); //send it
-
-  //init password identification (by common preshared passphrase)
-  pkt[0]=0;  //use passphrase from password[32]
-  i=do_au(pkt); //prepare au request if password specified
-  if(i>0) i=do_data(pkt, &c); //process it
-  if(i>0) do_send(pkt, i, c); //send it
-
-  //init onion verification
-  if ((!onion_flag) || (rc_level==-1)) return 0; //check conditions
-  xmemset(pkt, 0, 256); //clear buffer
-  pkt[0]=TYPE_CHAT|0x80;  //prepare chat packet type
-  pkt[1]='-';
-  pkt[2]='W'; //command for request remote onion address
-  return (lenbytype(TYPE_CHAT));  //will be sended
- }
-//*****************************************************************************
-
-
- //process agr packet
- //output: no for acceptor, aux_key K for originator (optionally)
- int go_agr(unsigned char* pkt)
- {
-  int i;
-  char str[256];
-  unsigned char* buf=pkt+1;
-  #define IN_M buf
-  #define TMP buf+16
-
-  //received: M
-  //check for packet type
-  if(pkt[0]!=(TYPE_AGR|0x80))
-  {
-   web_printf("! Received packet is not a connection AGR type!\r\n");
-   disconnect();
-   return 0;
-  }
-
-  //originator's side A:
-  if(crp_state==1)
-  {
-   //checks their  authentificator OUT_M = H(K|Q|P|Y|X|Nb|Na)
+   //check authentificator M=H(K|P|Q|X|Y|Na|Nb)
    Sponge_init(&spng, 0, 0, 0, 0);
    Sponge_data(&spng, aux_key, 16, 0, SP_NORMAL); //K
-   Sponge_data(&spng, their_pkeys, 32, 0, SP_NORMAL); //Q
-   Sponge_data(&spng, our_pkeys, 32, 0, SP_NORMAL); //P
-   Sponge_data(&spng, their_pkeys+32, 32, 0, SP_NORMAL); //Y
-   Sponge_data(&spng, our_pkeys+32, 32, 0, SP_NORMAL); //X
-   Sponge_data(&spng, nonce+32, 32, 0, SP_NORMAL); //Nb
-   Sponge_data(&spng, nonce, 32, 0, SP_NORMAL); //Na
-   Sponge_finalize(&spng, TMP, 16); //their expected authentificator
-   if(memcmp(IN_M, TMP, 16))
+   Sponge_data(&spng, their_p, 32, 0, SP_NORMAL); //P
+   Sponge_data(&spng, our_p, 32, 0, SP_NORMAL); //Q
+   Sponge_data(&spng, their_x, 32, 0, SP_NORMAL); //X
+   Sponge_data(&spng, our_x, 32, 0, SP_NORMAL); //Y
+   Sponge_data(&spng, their_nonce, 32, 0, SP_NORMAL); //Na
+   Sponge_data(&spng, our_nonce, 32, 0, SP_NORMAL); //Nb
+   Sponge_finalize(&spng, crp_temp, 16); //our authentificator
+   if(memcmp(MMAC, crp_temp, 16))
    {
     web_printf("! Identification failure\r\n");
     disconnect();
+    return 0;
    }
-   else
-   {
-    crp_state=3; //set compleet state
-    strcpy(str, "Key_reveal");
-    parseconf(str);
-    if(str[0]!='1') return 0;
-    memcpy(buf, aux_key, 16); //Reveal aux_key
-    randFetch(buf+16, 4); //extra bytes (total 20 bytes in agr packet data) 
-    xmemset(aux_key, 0, 16); //clear aux_key
-    pkt[0]=TYPE_AGR|0x80;
-    web_printf("MAC key revealed\r\n");
-    return (lenbytype(TYPE_AGR));
-   }
-  }
 
-  //acceptors side  B:
-  else if((crp_state==2)||(crp_state==4))
+   //computes authentificator M=H(K|Q|P|Y|X|Nb|Na)
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, aux_key, 16, 0, SP_NORMAL); //K
+   Sponge_data(&spng, our_p, 32, 0, SP_NORMAL); //Q
+   Sponge_data(&spng, their_p, 32, 0, SP_NORMAL); //P
+   Sponge_data(&spng, our_x, 32, 0, SP_NORMAL); //Y
+   Sponge_data(&spng, their_x, 32, 0, SP_NORMAL); //X
+   Sponge_data(&spng, our_nonce, 32, 0, SP_NORMAL); //Nb
+   Sponge_data(&spng, their_nonce, 32, 0, SP_NORMAL); //Na
+   Sponge_finalize(&spng, MMAC, 16); //our authentificator
+
+   //Print wordlist (for anti-MitM biometric voice autentification)
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //K
+   Sponge_finalize(&spng, au_data, 4);  //h
+   web_printf("Control words: ' %s - %s - %s - %s '\r\n",
+    (getword(au_data[0])), (getword(256+au_data[1])),
+    (getword(au_data[2])), (getword(256+au_data[3]))
+   );
+   fflush(stdout);
+
+   //prepare onion handshake prefixes
+   au_data[0]=0xFF; //flag
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, au_data, 1, 0, SP_NORMAL); //flag
+   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //Kb
+   Sponge_finalize(&spng, au_data, 32);
+
+   //set state -4 for obligate MAC revealing: acceptor ready
+   //or state 4 (comleet) for optional revealing
+   crp_state=4;  //acceptor compleet IKE
+   settimeout(REQTIME); //set timeout
+   if(crp_state==4)
+   {
+    web_printf("Incoming connection is ready\r\n");
+    xmemset(aux_key, 0, 16); //clear aux_key
+   }
+   pkt[0]=(TYPE_ACK | 0x80);
+   return (lenbytype(TYPE_ACK));
+   //output=ACK:  MMAC[16]  (16 bytes)
+  }
+  else if(crp_state==-3)
   {
+   //****************************************************
+   //-----------------Protocol processed by originator (A)
+   //****************************************************
+   //A accepts ACK packet: MMAC[16]  (16 bytes)
+   //check it and send:
+        //-optionally key revealing
+        //-password au request if password defined
+        //-onion au request as a chat packet
+
+   //check authentificator M=H(K|Q|P|Y|X|Nb|Na)
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, aux_key, 16, 0, SP_NORMAL); //K
+   Sponge_data(&spng, their_p, 32, 0, SP_NORMAL); //Q
+   Sponge_data(&spng, our_p, 32, 0, SP_NORMAL); //P
+   Sponge_data(&spng, their_x, 32, 0, SP_NORMAL); //Y
+   Sponge_data(&spng, our_x, 32, 0, SP_NORMAL); //X
+   Sponge_data(&spng, their_nonce, 32, 0, SP_NORMAL); //Nb
+   Sponge_data(&spng, our_nonce, 32, 0, SP_NORMAL); //Na
+   Sponge_finalize(&spng, crp_temp, 16); //our authentificator
+   if(memcmp(MMAC, crp_temp, 16))
+   {
+    web_printf("! Identification failure\r\n");
+    disconnect();
+    return 0;
+   }
+
+   //Print wordlist (for anti-MitM biometric voice autentification)
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //K
+   Sponge_finalize(&spng, au_data, 4);  //h
+   web_printf("Control words: ' %s - %s - %s - %s '\r\n",
+    (getword(au_data[0])), (getword(256+au_data[1])),
+    (getword(au_data[2])), (getword(256+au_data[3]))
+   );
+   fflush(stdout);
+
+   //prepare onion handshake prefixes
+   au_data[0]=0xFF; //flag
+   Sponge_init(&spng, 0, 0, 0, 0);
+   Sponge_data(&spng, au_data, 1, 0, SP_NORMAL); //flag
+   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL); //Kb
+   Sponge_finalize(&spng, au_data, 32);
+
+   crp_state=3; //originator copmpleet IKE
+   web_printf("Outgoing connection is ready\r\n");
+   //key revealing
+   strcpy(pkt, "Key_reveal");
+   parseconf(pkt);
+   if(pkt[0]=='1')
+   {
+    memcpy(buf, aux_key, 16); //Reveal aux_key
+    pkt[0]=(TYPE_ACK | 0x80);
+    i=do_data(pkt, &c); //process it
+    if(i>0) do_send(pkt, i, c); //send it
+    web_printf("MAC key revealed\r\n");
+   }
+   xmemset(aux_key, 0, 16); //clear aux_key
+
+   //init password identification (by common preshared passphrase)
+   pkt[0]=0;  //use passphrase from password[32]
+   i=do_au(pkt); //prepare au request if password specified
+   if(i>0) i=do_data(pkt, &c); //process it
+   if(i>0) do_send(pkt, i, c); //send it
+
+   //init onion verification
+   if ((!onion_flag) || (rc_level==-1)) return 0; //check conditions
+   xmemset(pkt, 0, 256); //clear buffer
+   pkt[0]=TYPE_CHAT|0x80;  //prepare chat packet type
+   sprintf((char*)(pkt+1), "-W%s", our_onion);
+   return (lenbytype(TYPE_CHAT));  //will be sended
+  }
+  else if(crp_state==4)
+  {
+   //****************************************************
+   //-----------------Protocol processed by acceptor (B)
+   //****************************************************
+   //B accepts ACK packet: MMAC[16]  (16 bytes) with revealed key
+   //and send check it
+
    //check aux_key revealing
-   if(memcmp(buf, aux_key, 16))
+   if(memcmp(MMAC, aux_key, 16))
    {
     web_printf("! Revealed MAC key does not match!\r\n");
-    fflush(stdout);
    }
    else
    {
@@ -1526,12 +1639,14 @@ long getsec(void)
     xmemset(aux_key, 0, 16); //clear aux_key
    }
   }
-  else web_printf("! Unexpected connection AGR received!\r\n");
-
-  return 0;
+  else
+  {
+   web_printf("! Unexpected connection ACK received!\r\n");
+   disconnect();
+   return 0; //check for state sweetable for ans
+  }
  }
 //*****************************************************************************
-
 
  //generate au packet
  //input: passphrase
@@ -1557,17 +1672,17 @@ long getsec(void)
   }
   else if(crp_state==3) org=(!org); //set originator flag
 
+  web_printf("Password authentication is initiated\r\n");
   //computes first autentificator AU1s=H(org|s|pass)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
   Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL);
-  Sponge_finalize(&spng, buf, 16);
+  Sponge_finalize(&spng, buf, 18);
   pkt[0]=(TYPE_AUREQ | 0x80);
   return (lenbytype(TYPE_AUREQ)); //16
  }
 //*****************************************************************************
-
 
  int go_aureq(unsigned char* pkt)
  {
@@ -1577,7 +1692,7 @@ long getsec(void)
   //received: AU1s (16 bytes)
   unsigned char org=1;  //call originator's flag
   unsigned char* buf=pkt+1;
-  unsigned char work[16];
+  unsigned char work[18];
 
   //check for packet type
   if(pkt[0]!=(TYPE_AUREQ|0x80))
@@ -1588,6 +1703,7 @@ long getsec(void)
   //check password minimum 3 chars
   if(strlen(password)<3)
   {
+   web_printf("Remote party suggests to execute password authentication\r\n");
    return 0;
   }
   //check for status and set originator flag
@@ -1603,8 +1719,8 @@ long getsec(void)
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
   Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
-  Sponge_finalize(&spng, work, 16);
-  if(memcmp(buf, work, 16))
+  Sponge_finalize(&spng, work, 18);
+  if(memcmp(buf, work, 18))
   {
    web_printf("! Authentication failure!\n");
    fflush(stdout);
@@ -1618,7 +1734,7 @@ long getsec(void)
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
   Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
-  Sponge_finalize(&spng, buf, 16);
+  Sponge_finalize(&spng, buf, 18);
 
   //computes second receiver's autentificator AU2r=H(org+16|s|pass|p)
   Sponge_init(&spng, 0, 0, 0, 0);
@@ -1626,22 +1742,21 @@ long getsec(void)
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
   Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL);   //without last two chars
   Sponge_data(&spng, password+strlen(password)-1, 1, 0, SP_NORMAL); //add last char
-  Sponge_finalize(&spng, buf+16, 6); //
+  Sponge_finalize(&spng, buf+18, 6); //
 
   pkt[0]=(TYPE_AUANS | 0x80);
-  return (lenbytype(TYPE_AUANS)); //22
+  return (lenbytype(TYPE_AUANS)); //24
  }
 //*****************************************************************************
-
 
  int go_auans(unsigned char* pkt)
  {
   //initiators side S:
 
-  //received AU1r, AU2r (16+4 bytes)
+  //received AU1r, AU2r (18+6 bytes)
   unsigned char org=1;
   unsigned char* buf=pkt+1;
-  unsigned char work[16];
+  unsigned char work[18];
 
   //check for packet type
   if(pkt[0]!=(TYPE_AUANS|0x80))
@@ -1666,8 +1781,8 @@ long getsec(void)
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
   Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
-  Sponge_finalize(&spng, work, 16);
-  if(memcmp(buf, work, 16))
+  Sponge_finalize(&spng, work, 18);
+  if(memcmp(buf, work, 18))
   {
    web_printf("! Authentication failure!\n");
    fflush(stdout);
@@ -1680,7 +1795,7 @@ long getsec(void)
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
   Sponge_data(&spng, password, strlen(password)-1, 0, SP_NORMAL); //without last char
   Sponge_finalize(&spng, work, 6);
-  if(memcmp(buf+16, work, 6)) web_printf("! Authentication UNDER PRESSING!\r\n");
+  if(memcmp(buf+18, work, 6)) web_printf("! Authentication UNDER PRESSING!\r\n");
   else web_printf("Authentication OK\r\n");
   fflush(stdout);
   org-=16;
@@ -1696,20 +1811,18 @@ long getsec(void)
   Sponge_finalize(&spng, buf, 6);
 
   pkt[0]=(TYPE_AUACK | 0x80);
-  return (lenbytype(TYPE_AUACK)); //4
+  return (lenbytype(TYPE_AUACK)); //6
  }
 //*****************************************************************************
-
-
 
  int go_auack(unsigned char* pkt)
  {
   //Receiver side R:
 
-  //received: AU2s (4 bytes)
+  //received: AU2s (6 bytes)
   unsigned char org=1;
   unsigned char* buf=pkt+1;
-  unsigned char work[16];
+  unsigned char work[6];
 
   //check for packet type
   if(pkt[0]!=(TYPE_AUACK|0x80))
@@ -1740,8 +1853,6 @@ long getsec(void)
   return 0;
  }
 //*****************************************************************************
-
-
 
  //process chat packet
  //input: pkt
@@ -1790,9 +1901,7 @@ long getsec(void)
   else web_printf(">%s\r\n", pkt+1); //text mesage
   return 0;
  }
-
 //*****************************************************************************
-
 
  //process data packet before sending
  //input: pkt - packet type in pkt[0] and data
@@ -1863,8 +1972,6 @@ long getsec(void)
   return len+MACLEN+1;
  }
 //*****************************************************************************
-
-
 
  //Process incoming data packet
  //input: udp or tcp pkt in buf,
@@ -1976,9 +2083,7 @@ long getsec(void)
  }
 //*****************************************************************************
 
-
-
-  //generate key packet for publication
+ //generate key packet for publication
  //input: buf - key name for init or empty for next
  //output: buf - packet to sending
  //returns: packet length (501 for reg, 505 for end)
@@ -2046,7 +2151,6 @@ long getsec(void)
   return len; //it's fixed length
  }
 //*****************************************************************************
-
 
  //process incoming key or keylast packet
  //input: decrypted packet in buf
@@ -2161,7 +2265,6 @@ long getsec(void)
  }
 //*****************************************************************************
 
-
  //generates ping request packet
  //returns data length
  int do_syn(unsigned char* pkt)
@@ -2198,7 +2301,6 @@ long getsec(void)
   return (lenbytype(TYPE_SYN)); //8
  }
 //*****************************************************************************
-
 
  //process ping packet
  //returns ping answer packet or 0
@@ -2263,8 +2365,6 @@ long getsec(void)
  }
 //*****************************************************************************
 
-
-
  //generates invite
  //pkt[0]=0 for 'busy' inv
  int do_inv(unsigned char* pkt)
@@ -2281,7 +2381,6 @@ long getsec(void)
  }
 //*****************************************************************************
 
-
  //process incoming invite
  int go_inv(unsigned char* pkt)
  {
@@ -2297,7 +2396,6 @@ long getsec(void)
   return (!i); //1 - invite OK
  }
 //*****************************************************************************
-
 
  //packets wrapper
  //input: decrypted packet, type int pkt[0]
@@ -2322,10 +2420,10 @@ long getsec(void)
   if(type==TYPE_AUREQ) return(go_aureq(pkt)); //autentification request
   if(type==TYPE_AUANS) return(go_auans(pkt)); //autentification answer
   if(type==TYPE_AUACK) return(go_auack(pkt)); //autentification accept
-  if(type==TYPE_REQ) return(go_req(pkt)); //key agreement request
-  if(type==TYPE_ANS) return(go_ans(pkt));  //key agreement answer
-  if(type==TYPE_ACK) return(go_ack(pkt));  //key agreement accept
-  if(type==TYPE_AGR) return(go_agr(pkt));  //key agreement finalize
+  if(type==TYPE_REQ) return(go_req(pkt)); //key agreement step 1
+  if(type==TYPE_ANS) return(go_ans(pkt));  //key agreement step 2
+  if(type==TYPE_ACK) return(go_ack(pkt));  //key agreement step 3
+  //if(type==TYPE_DAT) return(go_dat(pkt));  //data packet
   return 0; //not sweetable type
  }
 

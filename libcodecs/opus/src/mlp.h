@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2008-2011 Octasic Inc.
    Written by Jean-Marc Valin */
 /*
@@ -36,6 +38,6 @@ typedef struct {
 	const float *weights;
 } MLP;
 
-void mlp_process(const MLP *m, const float *in, float *out);
+void mlp_process(const MLP * m, const float *in, float *out);
 
-#endif /* _MLP_H_ */
+#endif				/* _MLP_H_ */

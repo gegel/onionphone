@@ -1,5 +1,15 @@
 BLOB = builtin.o
-APPS = celt silk_common silk_fixed silk_float src
+
+APPS = celt silk_common src
+
+# FIXED FLOAT
+export ARITHMETICS=FIXED
+
+ifeq ($(ARITHMETICS),FIXED)
+	APPS += silk_fixed
+else
+	APPS += silk_float
+endif
 
 LD ?= ld
 
@@ -8,7 +18,7 @@ CLEANDIRS = $(APPS:%=clean-%)
 TESTDIRS = $(APPS:%=test-%)
 
 all: $(BUILDDIRS)
-	$(LD) -r */builtin.o -o $(BLOB)
+	$(LD) -r $(APPS:%=%/builtin.o) -o $(BLOB)
 
 $(APPS): $(BUILDDIRS)
 $(BUILDDIRS):

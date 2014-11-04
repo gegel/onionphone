@@ -38,21 +38,21 @@ Secretariat fax: +33 493 65 47 16.
 /* are now removed because they mask off the interrelationships among the     */
 /* signals.                                                                   */
 
-Shortword *vq_lspw(Shortword weight[], Shortword lsp[], Shortword lpc[],
-		   Shortword order);
+int16_t *vq_lspw(int16_t weight[], int16_t lsp[], int16_t lpc[],
+		   int16_t order);
 
-Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
-		 const Shortword levels[], Shortword ma, Shortword stages,
-		 Shortword p, Shortword * w, Shortword * u_hat,
-		 Shortword * a_indices, Shortword max_inner);
+int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
+		 const int16_t levels[], int16_t ma, int16_t stages,
+		 int16_t p, int16_t * w, int16_t * u_hat,
+		 int16_t * a_indices, int16_t max_inner);
 
-Longword vq_enc(const Shortword codebook[], Shortword u[], Shortword levels,
-		Shortword order, Shortword u_hat[], Shortword * indices);
+int32_t vq_enc(const int16_t codebook[], int16_t u[], int16_t levels,
+		int16_t order, int16_t u_hat[], int16_t * indices);
 
-void vq_msd2(const Shortword * cb, Shortword * u_hat, const Shortword * u_est,
-	     Shortword * indices, const Shortword levels[], Shortword stages,
-	     Shortword p, Shortword diff_Q);
+void vq_msd2(const int16_t * cb, int16_t * u_hat, const int16_t * u_est,
+	     int16_t * indices, const int16_t levels[], int16_t stages,
+	     int16_t p, int16_t diff_Q);
 
-void vq_fsw(Shortword w_fs[], Shortword num_harm, Shortword pitch);
+void vq_fsw(int16_t w_fs[], int16_t num_harm, int16_t pitch);
 
 #endif

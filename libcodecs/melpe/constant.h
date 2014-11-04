@@ -74,20 +74,20 @@ Secretariat fax: +33 493 65 47 16.
 #define X60_Q9		30720	/* 60 * (1 << 9) */
 #define MONE_Q15	-32768	/* (-(1 << 15)) */
 
-#define LW_SIGN		((long) 0x80000000)	/* sign bit */
-#define LW_MIN		((long) 0x80000000)
-#define LW_MAX		((long) 0x7fffffff)
+#define LW_SIGN		((int32_t) 0x80000000)	/* sign bit */
+#define LW_MIN		((int32_t) 0x80000000)
+#define LW_MAX		((int32_t) 0x7fffffff)
 
-#define SW_MIN		((short) -32768)	/* smallest RAM, 0x8000 */
-#define SW_MAX		((short) 32767)	/* largest RAM, 0x7fff */
+#define SW_MIN		((int16_t) -32768)	/* smallest RAM, 0x8000 */
+#define SW_MAX		((int16_t) 32767)	/* largest RAM, 0x7fff */
 
-#define MAX_40		((double)549755813883.0)
-#define MIN_40		((double)-549755813884.0)
+#define MAX_40		((int64_t) 1ULL << 39)
+#define MIN_40		((int64_t) -(1ULL << 39))
 
-#define MAX_32		((Longword)0x7fffffffL)
-#define MIN_32		((Longword)0x80000000L)
+#define MAX_32		((int32_t)0x7fffffffL)
+#define MIN_32		((int32_t)0x80000000L)
 
-#define MAX_16		((Shortword)0x7fff)
-#define MIN_16		((Shortword)0x8000)
+#define MAX_16		((int16_t)0x7fff)
+#define MIN_16		((int16_t)0x8000)
 
 #endif

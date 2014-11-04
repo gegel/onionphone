@@ -34,99 +34,99 @@ Secretariat fax: +33 493 65 47 16.
 
 /* addition */
 
-static __inline Shortword add(Shortword var1, Shortword var2);	/* 1 ops */
+static inline int16_t melpe_add(int16_t var1, int16_t var2) __attribute__((always_inline));	/* 1 ops */
 
-static __inline Shortword sub(Shortword var1, Shortword var2);	/* 1 ops */
+static inline int16_t melpe_sub(int16_t var1, int16_t var2) __attribute__((always_inline));	/* 1 ops */
 
-static __inline Longword L_add(Longword L_var1, Longword L_var2);	/* 2 ops */
+static inline int32_t melpe_L_add(int32_t L_var1, int32_t L_var2) __attribute__((always_inline));	/* 2 ops */
 
-static __inline Longword L_sub(Longword L_var1, Longword L_var2);	/* 2 ops */
+static inline int32_t melpe_L_sub(int32_t L_var1, int32_t L_var2) __attribute__((always_inline));	/* 2 ops */
 
 /* multiplication */
 
-static __inline Shortword mult(Shortword var1, Shortword var2);	/* 1 ops */
+static inline int16_t melpe_mult(int16_t var1, int16_t var2) __attribute__((always_inline));	/* 1 ops */
 
-static __inline Longword L_mult(Shortword var1, Shortword var2);	/* 1 ops */
+static inline int32_t melpe_L_mult(int16_t var1, int16_t var2) __attribute__((always_inline));	/* 1 ops */
 
 /* arithmetic shifts */
 
-static __inline Shortword shr(Shortword var1, Shortword var2);	/* 1 ops */
+static inline int16_t melpe_shr(int16_t var1, int16_t var2);	/* 1 ops */
 
-static __inline Shortword shl(Shortword var1, Shortword var2);	/* 1 ops */
+static inline int16_t melpe_shl(int16_t var1, int16_t var2) __attribute__((always_inline));	/* 1 ops */
 
-static __inline Longword L_shr(Longword L_var1, Shortword var2);	/* 2 ops */
+static inline int32_t melpe_L_shr(int32_t L_var1, int16_t var2);	/* 2 ops */
 
-static __inline Longword L_shl(Longword L_var1, Shortword var2);	/* 2 ops */
+static inline int32_t melpe_L_shl(int32_t L_var1, int16_t var2) __attribute__((always_inline));	/* 2 ops */
 
-static __inline Shortword shift_r(Shortword var, Shortword var2);	/* 2 ops */
+static inline int16_t melpe_shift_r(int16_t var, int16_t var2) __attribute__((always_inline));	/* 2 ops */
 
-static __inline Longword L_shift_r(Longword L_var, Shortword var2);	/* 3 ops */
+static inline int32_t melpe_L_shift_r(int32_t L_var, int16_t var2) __attribute__((always_inline));	/* 3 ops */
 
 /* absolute value  */
 
-static __inline Shortword abs_s(Shortword var1);	/* 1 ops */
+static inline int16_t melpe_abs_s(int16_t var1) __attribute__((always_inline));	/* 1 ops */
 
-static __inline Longword L_abs(Longword var1);	/* 3 ops */
+static inline int32_t melpe_L_abs(int32_t var1) __attribute__((always_inline));	/* 3 ops */
 
 /* multiply accumulate	*/
 
-static __inline Longword L_mac(Longword L_var3, Shortword var1, Shortword var2);	/* 1 op */
+static inline int32_t melpe_L_mac(int32_t L_var3, int16_t var1, int16_t var2) __attribute__((always_inline));	/* 1 op */
 
-static __inline Longword L_msu(Longword L_var3, Shortword var1, Shortword var2);	/* 1 op */
+static inline int32_t melpe_L_msu(int32_t L_var3, int16_t var1, int16_t var2) __attribute__((always_inline));	/* 1 op */
 
-static __inline Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2);	/* 2 op */
+static inline int16_t melpe_msu_r(int32_t L_var3, int16_t var1, int16_t var2) __attribute__((always_inline));	/* 2 op */
 
 /* negation  */
 
-static __inline Shortword negate(Shortword var1);	/* 1 ops */
+static inline int16_t melpe_negate(int16_t var1) __attribute__((always_inline));	/* 1 ops */
 
-static __inline Longword L_negate(Longword L_var1);	/* 2 ops */
+static inline int32_t melpe_L_negate(int32_t L_var1) __attribute__((always_inline));	/* 2 ops */
 
 /* Accumulator manipulation */
 
-static __inline Longword L_deposit_l(Shortword var1);	/* 1 ops */
+static inline int32_t melpe_L_deposit_l(int16_t var1) __attribute__((always_inline));	/* 1 ops */
 
-static __inline Longword L_deposit_h(Shortword var1);	/* 1 ops */
+static inline int32_t melpe_L_deposit_h(int16_t var1) __attribute__((always_inline));	/* 1 ops */
 
-static __inline Shortword extract_l(Longword L_var1);	/* 1 ops */
+static inline int16_t melpe_extract_l(int32_t L_var1) __attribute__((always_inline));	/* 1 ops */
 
-static __inline Shortword extract_h(Longword L_var1);	/* 1 ops */
+static inline int16_t melpe_extract_h(int32_t L_var1) __attribute__((always_inline));	/* 1 ops */
 
 /* r_ound */
 
-static __inline Shortword r_ound(Longword L_var1);	/* 1 ops */
+static inline int16_t melpe_r_ound(int32_t L_var1) __attribute__((always_inline));	/* 1 ops */
 
 /* Normalization */
 
-static __inline Shortword norm_l(Longword L_var1);	/* 30 ops */
+static inline int16_t melpe_norm_l(int32_t L_var1) __attribute__((always_inline));	/* 30 ops */
 
-static __inline Shortword norm_s(Shortword var1);	/* 15 ops */
+static inline int16_t melpe_norm_s(int16_t var1) __attribute__((always_inline));	/* 15 ops */
 
 /* Division */
 
-static __inline Shortword divide_s(Shortword var1, Shortword var2);	/* 18 ops */
+static inline int16_t melpe_divide_s(int16_t var1, int16_t var2) __attribute__((always_inline));	/* 18 ops */
 
 /* -------------------------------------------------------------------------- */
 /* 40-Bit Routines....added by Andre 11/23/99 */
 
 /* new 40 bits basic operators */
 
-static __inline Word40 L40_add(Word40 acc, Longword L_var1);
+static inline int64_t melpe_L40_add(int64_t acc, int32_t L_var1) __attribute__((always_inline));
 
-static __inline Word40 L40_sub(Word40 acc, Longword L_var1);
+static inline int64_t melpe_L40_sub(int64_t acc, int32_t L_var1) __attribute__((always_inline));
 
-static __inline Word40 L40_mac(Word40 acc, Shortword var1, Shortword var2);
+static inline int64_t melpe_L40_mac(int64_t acc, int16_t var1, int16_t var2) __attribute__((always_inline));
 
-static __inline Word40 L40_msu(Word40 acc, Shortword var1, Shortword var2);
+static inline int64_t melpe_L40_msu(int64_t acc, int16_t var1, int16_t var2) __attribute__((always_inline));
 
-static __inline Word40 L40_shl(Word40 acc, Shortword var1);
+static inline int64_t melpe_L40_shl(int64_t acc, int16_t var1);
 
-static __inline Word40 L40_shr(Word40 acc, Shortword var1);
+static inline int64_t melpe_L40_shr(int64_t acc, int16_t var1) __attribute__((always_inline));
 
-static __inline Word40 L40_negate(Word40 acc);
+static inline int64_t melpe_L40_negate(int64_t acc) __attribute__((always_inline));
 
-static __inline Shortword norm32(Word40 acc);
-static __inline Longword L_sat32(Word40 acc);
+static inline int16_t melpe_norm32(int64_t acc) __attribute__((always_inline));
+static inline int32_t melpe_L_sat32(int64_t acc) __attribute__((always_inline));
 
 #include "mathhalf_i.h"
 

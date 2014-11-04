@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (c) 2010 Xiph.Org Foundation
  * Copyright (c) 2013 Parrot */
 /*
@@ -28,7 +30,7 @@
 #ifndef CPU_SUPPORT_H
 #define CPU_SUPPORT_H
 
-#include "opus_types.h"
+#include <stdint.h>
 #include "opus_defines.h"
 
 #if defined(OPUS_HAVE_RTCD) && defined(OPUS_ARM_ASM)
@@ -45,9 +47,9 @@
 #else
 #define OPUS_ARCHMASK 0
 
-static OPUS_INLINE int opus_select_arch(void)
+static inline int opus_select_arch(void)
 {
-  return 0;
+	return 0;
 }
 #endif
 

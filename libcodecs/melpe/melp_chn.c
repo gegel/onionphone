@@ -74,7 +74,7 @@ Secretariat fax: +33 493 65 47 16.
 
 #define ORIGINAL_BIT_ORDER	0	/* flag to use bit order of original version */
 #if (ORIGINAL_BIT_ORDER)	/* Original linear order */
-static Shortword bit_order[NUM_CH_BITS] = {
+static int16_t bit_order[NUM_CH_BITS] = {
 	0, 1, 2, 3, 4, 5,
 	6, 7, 8, 9, 10, 11,
 	12, 13, 14, 15, 16, 17,
@@ -86,7 +86,7 @@ static Shortword bit_order[NUM_CH_BITS] = {
 	48, 49, 50, 51, 52, 53
 };
 #else				/* Order based on priority of bits */
-static Shortword bit_order[NUM_CH_BITS] = {
+static int16_t bit_order[NUM_CH_BITS] = {
 	0, 17, 9, 28, 34, 3,
 	4, 39, 1, 2, 13, 38,
 	14, 10, 11, 40, 15, 21,
@@ -102,15 +102,15 @@ static Shortword bit_order[NUM_CH_BITS] = {
 /* Define bit buffer */
 static unsigned char bit_buffer[NUM_CH_BITS];
 
-static Shortword sync_bit = 0;	/* sync bit */
+static int16_t sync_bit = 0;	/* sync bit */
 
-Shortword parity(Shortword x, Shortword leng);
+int16_t parity(int16_t x, int16_t leng);
 
 void melp_chn_write(struct quant_param *qpar, unsigned char chbuf[])
 {
-	register Shortword i;
+	register int16_t i;
 	unsigned char *bit_ptr;
-	Shortword bit_cntr;
+	int16_t bit_cntr;
 
 	/* FEC: code additional information in redundant indeces */
 	fec_code(qpar);
@@ -122,7 +122,7 @@ void melp_chn_write(struct quant_param *qpar, unsigned char chbuf[])
 	pack_code(qpar->gain_index[1], &bit_ptr, &bit_cntr, 5, 1);
 
 	/* Toggle and write sync bit */
-	sync_bit = sub(1, sync_bit);
+	sync_bit = melpe_sub(1, sync_bit);
 	pack_code(sync_bit, &bit_ptr, &bit_cntr, 1, 1);
 
 	pack_code(qpar->gain_index[0], &bit_ptr, &bit_cntr, 3, 1);
@@ -143,17 +143,17 @@ void melp_chn_write(struct quant_param *qpar, unsigned char chbuf[])
 		pack_code(bit_buffer[bit_order[i]], &qpar->chptr, &qpar->chbit,
 			  1, chwordsize);
 		if (i == 0)	/* set beginning of frame bit */
-			*(qpar->chptr) |= (UShortword) 0x8000;
+			*(qpar->chptr) |= (uint16_t) 0x8000;
 	}
 }
 
 BOOLEAN melp_chn_read(struct quant_param *qpar, struct melp_param *par,
 		      struct melp_param *prev_par, unsigned char chbuf[])
 {
-	register Shortword i;
+	register int16_t i;
 	unsigned char *bit_ptr;
 	BOOLEAN erase = FALSE;
-	Shortword index, bit_cntr, dontcare;
+	int16_t index, bit_cntr, dontcare;
 
 	/* Read channel output buffer into bit buffer */
 	bit_ptr = bit_buffer;
@@ -210,7 +210,7 @@ BOOLEAN melp_chn_read(struct quant_param *qpar, struct melp_param *par,
 		if (qpar->uv_flag[0])
 			fill(par->fs_mag, ONE_Q13, NUM_HARM);
 		else		/* Decode Fourier magnitudes */
-			vq_msd2(fsvq_cb, par->fs_mag, (Shortword *) NULL,
+			vq_msd2(fsvq_cb, par->fs_mag, (int16_t *) NULL,
 				&(qpar->fsvq_index), &dontcare, 1, NUM_HARM, 0);
 
 		/* Decode gain terms with uniform log quantizer */
@@ -261,11 +261,11 @@ BOOLEAN melp_chn_read(struct quant_param *qpar, struct melp_param *par,
 *****************************************************************************/
 void low_rate_chn_write(struct quant_param *qpar)
 {
-	register Shortword i;
-	Shortword bit_cntr, cnt;
-	Shortword uv1, uv2, cuv;
-	Shortword uv_index = 0, bp_prot1 = 0, bp_prot2 = 0, lsp_prot = 0;
-	Shortword uv_parity;
+	register int16_t i;
+	int16_t bit_cntr, cnt;
+	int16_t uv1, uv2, cuv;
+	int16_t uv_index = 0, bp_prot1 = 0, bp_prot2 = 0, lsp_prot = 0;
+	int16_t uv_parity;
 	unsigned char *bit_ptr;
 
 	/* FEC: code additional information in redundant indices */
@@ -276,7 +276,7 @@ void low_rate_chn_write(struct quant_param *qpar)
 	bit_cntr = 0;
 
 	/* ====== Toggle and write sync bit ====== */
-	sync_bit = sub(1, sync_bit);
+	sync_bit = melpe_sub(1, sync_bit);
 	pack_code(sync_bit, &bit_ptr, &bit_cntr, 1, 1);
 
 	/* ===== Count the number of voiced frame ===== */
@@ -319,9 +319,9 @@ void low_rate_chn_write(struct quant_param *qpar)
 			lsp_prot = 7;
 		}
 	} else if (cnt == 3) {	/* VVV */
-		uv_index = (Shortword) (qpar->pitch_index / PITCH_VQ_SIZE);
-		qpar->pitch_index = sub(qpar->pitch_index,
-					(Shortword) (uv_index * PITCH_VQ_SIZE));
+		uv_index = (int16_t) (qpar->pitch_index / PITCH_VQ_SIZE);
+		qpar->pitch_index = melpe_sub(qpar->pitch_index,
+					(int16_t) (uv_index * PITCH_VQ_SIZE));
 		uv_index = vvv_index_map[uv_index];
 	}
 
@@ -453,32 +453,32 @@ void low_rate_chn_write(struct quant_param *qpar)
 ** Return value:	None
 **
 *****************************************************************************/
-Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
+int16_t low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			    struct melp_param *prev_par)
 {
-	register Shortword i, j, k;
-	static Shortword prev_uv = 1;
-	static Shortword prev_fsmag[NUM_HARM];
-	static Shortword qplsp[LPC_ORD], prev_gain[2 * NF * NUM_GAINFR];
-	static Shortword firstTime = TRUE;
-	const Shortword *codebook;
-	Shortword erase = 0, lsp_check[NF] = { 0, 0, 0 };
-	Shortword bit_cntr, bit_cntr1, cnt, last, index, dontcare;
-	Shortword prot_bp1, prot_bp2, prot_lsp;
-	Shortword uv1, uv2, cuv, uv_index, uv_parity;
+	register int16_t i, j, k;
+	static int16_t prev_uv = 1;
+	static int16_t prev_fsmag[NUM_HARM];
+	static int16_t qplsp[LPC_ORD], prev_gain[2 * NF * NUM_GAINFR];
+	static int16_t firstTime = TRUE;
+	const int16_t *codebook;
+	int16_t erase = 0, lsp_check[NF] = { 0, 0, 0 };
+	int16_t bit_cntr, bit_cntr1, cnt, last, index, dontcare;
+	int16_t prot_bp1, prot_bp2, prot_lsp;
+	int16_t uv1, uv2, cuv, uv_index, uv_parity;
 	unsigned char *bit_ptr, *bit_ptr1;
-	Shortword ilsp1[LPC_ORD], ilsp2[LPC_ORD], res[2 * LPC_ORD];
-	Shortword temp1, temp2, p_value, q_value;
-	Shortword intfact;
-	Shortword weighted_fsmag[NUM_HARM];	/* Q13 */
+	int16_t ilsp1[LPC_ORD], ilsp2[LPC_ORD], res[2 * LPC_ORD];
+	int16_t temp1, temp2, p_value, q_value;
+	int16_t intfact;
+	int16_t weighted_fsmag[NUM_HARM];	/* Q13 */
 
-	Shortword erase_uuu = 0, erase_vvv = 0;
-	Shortword flag_parity = 0, flag_dec_lsp = 1, flag_dec_pitch = 1;
+	int16_t erase_uuu = 0, erase_vvv = 0;
+	int16_t flag_parity = 0, flag_dec_lsp = 1, flag_dec_pitch = 1;
 
-	Shortword melp_v_cb_size[4] = { 256, 64, 32, 32 };
-	Shortword res_cb_size[4] = { 256, 64, 64, 64 };
-	Shortword melp_uv_cb_size[1] = { 512 };
-	Longword L_acc, L_sum1, L_sum2;
+	int16_t melp_v_cb_size[4] = { 256, 64, 32, 32 };
+	int16_t res_cb_size[4] = { 256, 64, 64, 64 };
+	int16_t melp_uv_cb_size[1] = { 512 };
+	int32_t L_acc, L_sum1, L_sum2;
 
 	/* In previous versions we use unweighted_fsmag[] and prev_fsmag[] to     */
 	/* keep track of a previous par[].fs_mag array.  They were obtained by    */
@@ -489,12 +489,12 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 	/* tions are made to remove this to and fro inversions.                   */
 
 	if (firstTime) {	/* Initialization */
-		temp2 = shl(LPC_ORD, 10);	/* Q10 */
+		temp2 = melpe_shl(LPC_ORD, 10);	/* Q10 */
 		temp1 = X08_Q10;	/* Q10 */
 		for (i = 0; i < LPC_ORD; i++) {
 			/*      qplsp[i] = (i + 1)*0.8/LPC_ORD; */
-			qplsp[i] = divide_s(temp1, temp2);
-			temp1 = add(temp1, X08_Q10);
+			qplsp[i] = melpe_divide_s(temp1, temp2);
+			temp1 = melpe_add(temp1, X08_Q10);
 		}
 
 		fill(prev_gain, 2560, 2 * NF * NUM_GAINFR);
@@ -768,7 +768,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			qpar->uv_flag[2] = par[2].uv_flag = 0;
 			if (uv_index == 5)
 				qpar->pitch_index =
-				    (Shortword) (qpar->pitch_index +
+				    (int16_t) (qpar->pitch_index +
 						 PITCH_VQ_SIZE);
 		} else {
 			if (prot_bp1 == 1 && prot_lsp == 7) {
@@ -779,7 +779,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				erase_vvv |= 1;
 				if (uv_index == 5)
 					qpar->pitch_index =
-					    (Shortword) (qpar->pitch_index +
+					    (int16_t) (qpar->pitch_index +
 							 PITCH_VQ_SIZE);
 			}
 		}
@@ -789,7 +789,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			qpar->uv_flag[1] = par[1].uv_flag = 0;
 			qpar->uv_flag[2] = par[2].uv_flag = 0;
 			qpar->pitch_index =
-			    (Shortword) (qpar->pitch_index + 2 * PITCH_VQ_SIZE);
+			    (int16_t) (qpar->pitch_index + 2 * PITCH_VQ_SIZE);
 		} else {
 			if (prot_bp1 == 2) {
 				qpar->uv_flag[0] = par[0].uv_flag = 0;
@@ -803,7 +803,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			} else {
 				erase_vvv |= 1;
 				qpar->pitch_index =
-				    (Shortword) (qpar->pitch_index +
+				    (int16_t) (qpar->pitch_index +
 						 2 * PITCH_VQ_SIZE);
 			}
 		}
@@ -813,11 +813,11 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			qpar->uv_flag[1] = par[1].uv_flag = 0;
 			qpar->uv_flag[2] = par[2].uv_flag = 0;
 			qpar->pitch_index =
-			    (Shortword) (qpar->pitch_index + 3 * PITCH_VQ_SIZE);
+			    (int16_t) (qpar->pitch_index + 3 * PITCH_VQ_SIZE);
 		} else {
 			erase_vvv |= 1;
 			qpar->pitch_index =
-			    (Shortword) (qpar->pitch_index + 3 * PITCH_VQ_SIZE);
+			    (int16_t) (qpar->pitch_index + 3 * PITCH_VQ_SIZE);
 		}
 	}
 
@@ -1060,17 +1060,17 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				/*      ilsp1[j] = inpCoef[i][j] * qplsp[j] +
 				   (1.0 - inpCoef[i][j]) * par[2].lsf[j]; */
 				intfact = inpCoef[i][j];	/* Q14 */
-				L_acc = L_mult(intfact, qplsp[j]);	/* Q14 */
-				intfact = sub(ONE_Q14, intfact);
-				L_acc = L_mac(L_acc, intfact, par[2].lsf[j]);
-				ilsp1[j] = extract_h(L_shl(L_acc, 1));	/* Q15 */
+				L_acc = melpe_L_mult(intfact, qplsp[j]);	/* Q14 */
+				intfact = melpe_sub(ONE_Q14, intfact);
+				L_acc = melpe_L_mac(L_acc, intfact, par[2].lsf[j]);
+				ilsp1[j] = melpe_extract_h(melpe_L_shl(L_acc, 1));	/* Q15 */
 				/*      ilsp2[j] = inpCoef[i][j+10] * qplsp[j] +
 				   (1.0 - inpCoef[i][j + LPC_ORD]) * par[2].lsf[j]; */
 				intfact = inpCoef[i][j + LPC_ORD];	/* Q14 */
-				L_acc = L_mult(intfact, qplsp[j]);	/* Q14 */
-				intfact = sub(ONE_Q14, intfact);
-				L_acc = L_mac(L_acc, intfact, par[2].lsf[j]);
-				ilsp2[j] = extract_h(L_shl(L_acc, 1));	/* Q15 */
+				L_acc = melpe_L_mult(intfact, qplsp[j]);	/* Q14 */
+				intfact = melpe_sub(ONE_Q14, intfact);
+				L_acc = melpe_L_mac(L_acc, intfact, par[2].lsf[j]);
+				ilsp2[j] = melpe_extract_h(melpe_L_shl(L_acc, 1));	/* Q15 */
 			}
 
 			if ((uv1 != 1) && (uv2 != 1) && (cuv == 1))
@@ -1083,11 +1083,11 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			/* ---- reconstruct lsp ---- */
 			for (i = 0; i < LPC_ORD; i++) {
 				/*      par[0].lsf[i] = (res[i] + ilsp1[i]); */
-				temp1 = shr(res[i], 2);
-				par[0].lsf[i] = add(temp1, ilsp1[i]);	/* Q15 */
+				temp1 = melpe_shr(res[i], 2);
+				par[0].lsf[i] = melpe_add(temp1, ilsp1[i]);	/* Q15 */
 				/*      par[1].lsf[i] = (res[i + LPC_ORD] + ilsp2[i]); */
-				temp2 = shr(res[i + LPC_ORD], 2);
-				par[1].lsf[i] = add(temp2, ilsp2[i]);	/* Q15 */
+				temp2 = melpe_shr(res[i + LPC_ORD], 2);
+				par[1].lsf[i] = melpe_add(temp2, ilsp2[i]);	/* Q15 */
 			}
 		}
 
@@ -1104,20 +1104,20 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				   lsp_check[2] == 0) {
 				for (i = 0; i < LPC_ORD; i++) {
 					par[0].lsf[i] =
-					    add(mult
+					    melpe_add(melpe_mult
 						(prev_par->lsf[i], X0667_Q15),
-						mult(par[2].lsf[i], X0333_Q15));
+						melpe_mult(par[2].lsf[i], X0333_Q15));
 					par[1].lsf[i] =
-					    add(mult
+					    melpe_add(melpe_mult
 						(prev_par->lsf[i], X0333_Q15),
-						mult(par[2].lsf[i], X0667_Q15));
+						melpe_mult(par[2].lsf[i], X0667_Q15));
 				}
 			} else if (lsp_check[0] == 1 && lsp_check[1] == 0 &&
 				   lsp_check[2] == 1) {
 				for (i = 0; i < LPC_ORD; i++) {
 					par[0].lsf[i] =
-					    add(shr(prev_par->lsf[i], 1),
-						shr(par[1].lsf[i], 1));
+					    melpe_add(melpe_shr(prev_par->lsf[i], 1),
+						melpe_shr(par[1].lsf[i], 1));
 					par[2].lsf[i] = par[1].lsf[i];
 				}
 			} else if (lsp_check[0] == 0 && lsp_check[1] == 1 &&
@@ -1130,14 +1130,14 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				   lsp_check[2] == 0) {
 				for (i = 0; i < LPC_ORD; i++)
 					par[0].lsf[i] =
-					    add(shr(prev_par->lsf[i], 1),
-						shr(par[1].lsf[i], 1));
+					    melpe_add(melpe_shr(prev_par->lsf[i], 1),
+						melpe_shr(par[1].lsf[i], 1));
 			} else if (lsp_check[0] == 0 && lsp_check[1] == 1
 				   && lsp_check[2] == 0) {
 				for (i = 0; i < LPC_ORD; i++)
 					par[1].lsf[i] =
-					    add(shr(par[0].lsf[i], 1),
-						shr(par[2].lsf[i], 1));
+					    melpe_add(melpe_shr(par[0].lsf[i], 1),
+						melpe_shr(par[2].lsf[i], 1));
 			} else if (lsp_check[0] == 0 && lsp_check[1] == 0
 				   && lsp_check[2] == 1) {
 				for (i = 0; i < LPC_ORD; i++) {
@@ -1201,9 +1201,9 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				for (i = 0; i < NUM_HARM; i++) {
 					/*      par[0].fs_mag[i] = 0.5*(weighted_fsmag[i] +
 					   prev_fsmag[i]); */
-					temp1 = shr(weighted_fsmag[i], 1);	/* Q13 */
-					temp2 = shr(prev_fsmag[i], 1);	/* Q13 */
-					par[0].fs_mag[i] = add(temp1, temp2);	/* Q13 */
+					temp1 = melpe_shr(weighted_fsmag[i], 1);	/* Q13 */
+					temp2 = melpe_shr(prev_fsmag[i], 1);	/* Q13 */
+					par[0].fs_mag[i] = melpe_add(temp1, temp2);	/* Q13 */
 				}
 			} else {	/* V VVV */
 				for (i = 0; i < NUM_HARM; i++) {
@@ -1211,13 +1211,13 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 					q_value = weighted_fsmag[i];
 
 					/*      par[0].fs_mag[i] = (p + p + q)/3.0; */
-					temp1 = mult(p_value, X0667_Q15);
-					temp2 = mult(q_value, X0333_Q15);
-					par[0].fs_mag[i] = add(temp1, temp2);	/* Q13 */
+					temp1 = melpe_mult(p_value, X0667_Q15);
+					temp2 = melpe_mult(q_value, X0333_Q15);
+					par[0].fs_mag[i] = melpe_add(temp1, temp2);	/* Q13 */
 					/*      par[1].fs_mag[i] = (p + q + q)/3.0; */
-					temp1 = mult(p_value, X0333_Q15);
-					temp2 = mult(q_value, X0667_Q15);
-					par[1].fs_mag[i] = add(temp1, temp2);	/* Q13 */
+					temp1 = melpe_mult(p_value, X0333_Q15);
+					temp2 = melpe_mult(q_value, X0667_Q15);
+					par[1].fs_mag[i] = melpe_add(temp1, temp2);	/* Q13 */
 				}
 			}
 		}
@@ -1264,16 +1264,16 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			if (par[i].uv_flag)
 				par[i].pitch = UV_PITCH_Q7;
 			else
-				par[i].pitch = add(mult(SMOOTH, p_value),
-						   mult(sub(32767, SMOOTH),
+				par[i].pitch = melpe_add(melpe_mult(SMOOTH, p_value),
+						   melpe_mult(melpe_sub(32767, SMOOTH),
 							par[i].pitch));
 			p_value = par[i].pitch;
 		}
 		p_value = prev_par->gain[1];
 		for (i = 0; i < NF; i++) {
 			for (j = 0; j < NUM_GAINFR; j++) {
-				par[i].gain[j] = add(mult(SMOOTH, p_value),
-						     mult(sub(32767, SMOOTH),
+				par[i].gain[j] = melpe_add(melpe_mult(SMOOTH, p_value),
+						     melpe_mult(melpe_sub(32767, SMOOTH),
 							  par[i].gain[j]));
 				p_value = par[i].gain[j];
 			}
@@ -1281,8 +1281,8 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 		for (j = 0; j < LPC_ORD; j++) {
 			p_value = prev_par->lsf[j];
 			for (i = 0; i < NF; i++) {
-				par[i].lsf[j] = add(mult(SMOOTH, p_value),
-						    mult(sub(32767, SMOOTH),
+				par[i].lsf[j] = melpe_add(melpe_mult(SMOOTH, p_value),
+						    melpe_mult(melpe_sub(32767, SMOOTH),
 							 par[i].lsf[j]));
 				p_value = par[i].lsf[j];
 			}
@@ -1293,26 +1293,26 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 
 		L_sum1 = 0;
 		for (i = 0; i < 2 * NF * NUM_GAINFR; i++)
-			L_sum1 = L_add(L_sum1, L_deposit_l(prev_gain[i]));
-		L_sum1 = L_shr(L_sum1, 1);
+			L_sum1 = melpe_L_add(L_sum1, melpe_L_deposit_l(prev_gain[i]));
+		L_sum1 = melpe_L_shr(L_sum1, 1);
 
 		L_sum2 = 0;
 		for (i = 0; i < NF; i++) {
 			for (j = 0; j < NUM_GAINFR; j++)
 				L_sum2 =
-				    L_add(L_sum2, L_deposit_l(par[i].gain[j]));
+				    melpe_L_add(L_sum2, melpe_L_deposit_l(par[i].gain[j]));
 		}
 
-		if (L_sum2 > L_add(L_sum1, 92160L)
-		    || L_sum2 < L_sub(L_sum1, 92160L)) {
-			L_sum1 = L_shr(L_sum1, 1);
+		if (L_sum2 > melpe_L_add(L_sum1, 92160L)
+		    || L_sum2 < melpe_L_sub(L_sum1, 92160L)) {
+			L_sum1 = melpe_L_shr(L_sum1, 1);
 			L_sum1 = L_mpy_ls(L_sum1, 10923);
-			temp1 = extract_l(L_sum1);
+			temp1 = melpe_extract_l(L_sum1);
 			for (i = 0; i < NF; i++) {
 				for (j = 0; j < NUM_GAINFR; j++) {
 					par[i].gain[j] =
-					    add(mult(SMOOTH, temp1),
-						mult(sub(32767, SMOOTH),
+					    melpe_add(melpe_mult(SMOOTH, temp1),
+						melpe_mult(melpe_sub(32767, SMOOTH),
 						     par[i].gain[j]));
 					temp1 = par[i].gain[j];
 				}
@@ -1364,10 +1364,10 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 	return (erase);
 }
 
-Shortword parity(Shortword x, Shortword leng)
+int16_t parity(int16_t x, int16_t leng)
 {
-	register Shortword i;
-	Shortword p = 0x0;
+	register int16_t i;
+	int16_t p = 0x0;
 
 	for (i = 0; i < leng; i++) {
 		p ^= x & 0x1;

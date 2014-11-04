@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2011, Skype Limited. All rights reserved.
 Redistribution and use in source and binary forms, with or without
@@ -39,40 +41,43 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "SigProc_FIX.h"
 
 /* Second order ARMA filter, alternative implementation */
-void silk_biquad_alt(
-    const opus_int16            *in,                /* I     input signal                                               */
-    const opus_int32            *B_Q28,             /* I     MA coefficients [3]                                        */
-    const opus_int32            *A_Q28,             /* I     AR coefficients [2]                                        */
-    opus_int32                  *S,                 /* I/O   State vector [2]                                           */
-    opus_int16                  *out,               /* O     output signal                                              */
-    const opus_int32            len,                /* I     signal length (must be even)                               */
-    opus_int                    stride              /* I     Operate on interleaved signal if > 1                       */
-)
+void silk_biquad_alt(const int16_t * in,	/* I     input signal                                               */
+		     const int32_t * B_Q28,	/* I     MA coefficients [3]                                        */
+		     const int32_t * A_Q28,	/* I     AR coefficients [2]                                        */
+		     int32_t * S,	/* I/O   State vector [2]                                           */
+		     int16_t * out,	/* O     output signal                                              */
+		     const int32_t len,	/* I     signal length (must be even)                               */
+		     int stride	/* I     Operate on interleaved signal if > 1                       */
+    )
 {
-    /* DIRECT FORM II TRANSPOSED (uses 2 element state vector) */
-    opus_int   k;
-    opus_int32 inval, A0_U_Q28, A0_L_Q28, A1_U_Q28, A1_L_Q28, out32_Q14;
+	/* DIRECT FORM II TRANSPOSED (uses 2 element state vector) */
+	int k;
+	int32_t inval, A0_U_Q28, A0_L_Q28, A1_U_Q28, A1_L_Q28, out32_Q14;
 
-    /* Negate A_Q28 values and split in two parts */
-    A0_L_Q28 = ( -A_Q28[ 0 ] ) & 0x00003FFF;        /* lower part */
-    A0_U_Q28 = silk_RSHIFT( -A_Q28[ 0 ], 14 );      /* upper part */
-    A1_L_Q28 = ( -A_Q28[ 1 ] ) & 0x00003FFF;        /* lower part */
-    A1_U_Q28 = silk_RSHIFT( -A_Q28[ 1 ], 14 );      /* upper part */
+	/* Negate A_Q28 values and split in two parts */
+	A0_L_Q28 = (-A_Q28[0]) & 0x00003FFF;	/* lower part */
+	A0_U_Q28 = silk_RSHIFT(-A_Q28[0], 14);	/* upper part */
+	A1_L_Q28 = (-A_Q28[1]) & 0x00003FFF;	/* lower part */
+	A1_U_Q28 = silk_RSHIFT(-A_Q28[1], 14);	/* upper part */
 
-    for( k = 0; k < len; k++ ) {
-        /* S[ 0 ], S[ 1 ]: Q12 */
-        inval = in[ k * stride ];
-        out32_Q14 = silk_LSHIFT( silk_SMLAWB( S[ 0 ], B_Q28[ 0 ], inval ), 2 );
+	for (k = 0; k < len; k++) {
+		/* S[ 0 ], S[ 1 ]: Q12 */
+		inval = in[k * stride];
+		out32_Q14 = silk_LSHIFT(silk_SMLAWB(S[0], B_Q28[0], inval), 2);
 
-        S[ 0 ] = S[1] + silk_RSHIFT_ROUND( silk_SMULWB( out32_Q14, A0_L_Q28 ), 14 );
-        S[ 0 ] = silk_SMLAWB( S[ 0 ], out32_Q14, A0_U_Q28 );
-        S[ 0 ] = silk_SMLAWB( S[ 0 ], B_Q28[ 1 ], inval);
+		S[0] =
+		    S[1] + silk_RSHIFT_ROUND(silk_SMULWB(out32_Q14, A0_L_Q28),
+					     14);
+		S[0] = silk_SMLAWB(S[0], out32_Q14, A0_U_Q28);
+		S[0] = silk_SMLAWB(S[0], B_Q28[1], inval);
 
-        S[ 1 ] = silk_RSHIFT_ROUND( silk_SMULWB( out32_Q14, A1_L_Q28 ), 14 );
-        S[ 1 ] = silk_SMLAWB( S[ 1 ], out32_Q14, A1_U_Q28 );
-        S[ 1 ] = silk_SMLAWB( S[ 1 ], B_Q28[ 2 ], inval );
+		S[1] = silk_RSHIFT_ROUND(silk_SMULWB(out32_Q14, A1_L_Q28), 14);
+		S[1] = silk_SMLAWB(S[1], out32_Q14, A1_U_Q28);
+		S[1] = silk_SMLAWB(S[1], B_Q28[2], inval);
 
-        /* Scale back to Q0 and saturate */
-        out[ k * stride ] = (opus_int16)silk_SAT16( silk_RSHIFT( out32_Q14 + (1<<14) - 1, 14 ) );
-    }
+		/* Scale back to Q0 and saturate */
+		out[k * stride] =
+		    (int16_t)
+		    silk_SAT16(silk_RSHIFT(out32_Q14 + (1 << 14) - 1, 14));
+	}
 }

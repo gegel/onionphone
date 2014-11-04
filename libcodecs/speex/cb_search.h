@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2002 Jean-Marc Valin & David Rowe */
 /**
    @file cb_search.h
@@ -40,64 +42,44 @@
 
 /** Split codebook parameters. */
 typedef struct split_cb_params {
-   int     subvect_size;
-   int     nb_subvect;
-   const signed char  *shape_cb;
-   int     shape_bits;
-   int     have_sign;
+	int subvect_size;
+	int nb_subvect;
+	const signed char *shape_cb;
+	int shape_bits;
+	int have_sign;
 } split_cb_params;
 
+void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
+				spx_coef_t ak[],	/* LPCs for this subframe */
+				spx_coef_t awk1[],	/* Weighted LPCs for this subframe */
+				spx_coef_t awk2[],	/* Weighted LPCs for this subframe */
+				const void *par,	/* Codebook/search parameters */
+				int p,	/* number of LPC coeffs */
+				int nsf,	/* number of samples in subframe */
+				spx_sig_t * exc,
+				spx_word16_t * r,
+				SpeexBits * bits,
+				char *stack, int complexity, int update_target);
 
-void split_cb_search_shape_sign(
-spx_word16_t target[],             /* target vector */
-spx_coef_t ak[],                /* LPCs for this subframe */
-spx_coef_t awk1[],              /* Weighted LPCs for this subframe */
-spx_coef_t awk2[],              /* Weighted LPCs for this subframe */
-const void *par,                /* Codebook/search parameters */
-int   p,                        /* number of LPC coeffs */
-int   nsf,                      /* number of samples in subframe */
-spx_sig_t *exc,
-spx_word16_t *r,
-SpeexBits *bits,
-char *stack,
-int   complexity,
-int   update_target
-);
+void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
+				 int nsf,	/* number of samples in subframe */
+				 SpeexBits * bits,
+				 char *stack, int32_t * seed);
 
-void split_cb_shape_sign_unquant(
-spx_sig_t *exc,
-const void *par,                /* non-overlapping codebook */
-int   nsf,                      /* number of samples in subframe */
-SpeexBits *bits,
-char *stack,
-spx_int32_t *seed
-);
+void noise_codebook_quant(spx_word16_t target[],	/* target vector */
+			  spx_coef_t ak[],	/* LPCs for this subframe */
+			  spx_coef_t awk1[],	/* Weighted LPCs for this subframe */
+			  spx_coef_t awk2[],	/* Weighted LPCs for this subframe */
+			  const void *par,	/* Codebook/search parameters */
+			  int p,	/* number of LPC coeffs */
+			  int nsf,	/* number of samples in subframe */
+			  spx_sig_t * exc,
+			  spx_word16_t * r,
+			  SpeexBits * bits,
+			  char *stack, int complexity, int update_target);
 
-
-void noise_codebook_quant(
-spx_word16_t target[],             /* target vector */
-spx_coef_t ak[],                /* LPCs for this subframe */
-spx_coef_t awk1[],              /* Weighted LPCs for this subframe */
-spx_coef_t awk2[],              /* Weighted LPCs for this subframe */
-const void *par,                /* Codebook/search parameters */
-int   p,                        /* number of LPC coeffs */
-int   nsf,                      /* number of samples in subframe */
-spx_sig_t *exc,
-spx_word16_t *r,
-SpeexBits *bits,
-char *stack,
-int   complexity,
-int   update_target
-);
-
-
-void noise_codebook_unquant(
-spx_sig_t *exc,
-const void *par,                /* non-overlapping codebook */
-int   nsf,                      /* number of samples in subframe */
-SpeexBits *bits,
-char *stack,
-spx_int32_t *seed
-);
+void noise_codebook_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
+			    int nsf,	/* number of samples in subframe */
+			    SpeexBits * bits, char *stack, int32_t * seed);
 
 #endif

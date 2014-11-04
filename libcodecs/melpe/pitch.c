@@ -39,12 +39,12 @@
 #define THREE_Q10		3072	/* 3 * (1 << 10) */
 
 /* ========== Prototypes ========== */
-static void lpfilt(Shortword inbuf[], Shortword lpbuf[], Shortword len);
-static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len);
-static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
+static void lpfilt(int16_t inbuf[], int16_t lpbuf[], int16_t len);
+static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len);
+static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 		    classParam * classStat);
 
-void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2);
+void minCostIndex(int16_t * costBuf, int16_t * index1, int16_t * index2);
 
 /****************************************************************************
 **
@@ -55,19 +55,19 @@ void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2);
 **
 ** Arguments:
 **
-**	Shortword inbuf[]		---- speech buffer (Q0)
+**	int16_t inbuf[]		---- speech buffer (Q0)
 **	pitTrackParam *pitTrack ---- pitch pitTrackParam structure
 **	classParam *classStat	---- classification parameters
 **
 ** Return value:	None
 **
 *****************************************************************************/
-void pitchAuto(Shortword inbuf[], pitTrackParam * pitTrack,
+void pitchAuto(int16_t inbuf[], pitTrackParam * pitTrack,
 	       classParam * classStat)
 {
 	static BOOLEAN firstTime = TRUE;
-	static Shortword lpbuf[PIT_COR_LEN];	/* low pass filter buffer, Q0 */
-	static Shortword ivbuf[PIT_COR_LEN];	/* inverse filter buffer, Q12 */
+	static int16_t lpbuf[PIT_COR_LEN];	/* low pass filter buffer, Q0 */
+	static int16_t ivbuf[PIT_COR_LEN];	/* inverse filter buffer, Q12 */
 
 	if (firstTime) {	/* initialize the buffers */
 		v_zap(lpbuf, PIT_COR_LEN);
@@ -99,16 +99,16 @@ void pitchAuto(Shortword inbuf[], pitTrackParam * pitTrack,
  * lpbuf	---- ouput	low pass filtered data				  *
  * len		---- update buffer length						  *
  *============================================================*/
-static void lpfilt(Shortword inbuf[], Shortword lpbuf[], Shortword len)
+static void lpfilt(int16_t inbuf[], int16_t lpbuf[], int16_t len)
 {
-	register Shortword i, j;
-	static const Shortword lpar[4] = {	/* Q15 */
+	register int16_t i, j;
+	static const int16_t lpar[4] = {	/* Q15 */
 		20113, -20113, 9437, -1720
 	};
-	Longword L_sum;
+	int32_t L_sum;
 
 	/* ====== Shift the lpbuf ====== */
-	v_equ(lpbuf, &(lpbuf[len]), (Shortword) (PIT_COR_LEN - len));
+	v_equ(lpbuf, &(lpbuf[len]), (int16_t) (PIT_COR_LEN - len));
 
 	/* ====== low pass filter ====== */
 
@@ -122,12 +122,12 @@ static void lpfilt(Shortword inbuf[], Shortword lpbuf[], Shortword len)
 	/*                0.052475 z^{-4}).                                       */
 
 	for (i = 0; i < len; i++) {
-		L_sum = L_shr(L_deposit_h(inbuf[i]), 3);
+		L_sum = melpe_L_shr(melpe_L_deposit_h(inbuf[i]), 3);
 		for (j = 0; j < 4; j++) {
 			/*      sum += lpbuf[PIT_COR_LEN - len + i - j - 1] * lpar[j]; */
-			L_sum = L_mac(L_sum, lpbuf[PIT_COR_LEN - len + i - j - 1], lpar[j]);	/* Q0 */
+			L_sum = melpe_L_mac(L_sum, lpbuf[PIT_COR_LEN - len + i - j - 1], lpar[j]);	/* Q0 */
 		}
-		lpbuf[PIT_COR_LEN - len + i] = r_ound(L_sum);	/* Q0 */
+		lpbuf[PIT_COR_LEN - len + i] = melpe_r_ound(L_sum);	/* Q0 */
 	}
 }
 
@@ -137,17 +137,17 @@ static void lpfilt(Shortword inbuf[], Shortword lpbuf[], Shortword len)
  * ivbuf ---- residaul values of lpbuf through inverse filer  *
  * len	 ---- update buffer length							  *
  *============================================================*/
-static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len)
+static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len)
 {
-	register Shortword i, j;
-	Word40 L40_sum;
-	Longword L_temp;
-	Shortword shift, rc1, temp1, temp2, temp3;
-	Shortword r_coeff[3];	/* Q15 */
-	Shortword pc1, pc2;	/* Q12 */
+	register int16_t i, j;
+	int64_t L40_sum;
+	int32_t L_temp;
+	int16_t shift, rc1, temp1, temp2, temp3;
+	int16_t r_coeff[3];	/* Q15 */
+	int16_t pc1, pc2;	/* Q12 */
 
 	/* ====== Shift the ivbuf ====== */
-	v_equ(ivbuf, &(ivbuf[len]), (Shortword) (PIT_COR_LEN - len));
+	v_equ(ivbuf, &(ivbuf[len]), (int16_t) (PIT_COR_LEN - len));
 
 	/* compute pc1 and pc2 in Q12 as                                          */
 	/*       r(0)*r(1)-r(1)*r(2)           r(0)*r(2)-r(1)**2                  */
@@ -156,16 +156,16 @@ static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len)
 
 	L40_sum = 0;
 	for (i = 0; i < PIT_COR_LEN; i++)
-		L40_sum = L40_mac(L40_sum, lpbuf[i], lpbuf[i]);
-	shift = norm32(L40_sum);
-	L_temp = (Longword) L40_shl(L40_sum, shift);
-	r_coeff[0] = r_ound(L_temp);	/* normalized r0 */
+		L40_sum = melpe_L40_mac(L40_sum, lpbuf[i], lpbuf[i]);
+	shift = melpe_norm32(L40_sum);
+	L_temp = (int32_t) melpe_L40_shl(L40_sum, shift);
+	r_coeff[0] = melpe_r_ound(L_temp);	/* normalized r0 */
 	for (i = 1; i < 3; i++) {
 		L40_sum = 0;
 		for (j = i; j < PIT_COR_LEN; j++)
-			L40_sum = L40_mac(L40_sum, lpbuf[j], lpbuf[j - i]);
-		L_temp = (Longword) L40_shl(L40_sum, shift);
-		r_coeff[i] = r_ound(L_temp);
+			L40_sum = melpe_L40_mac(L40_sum, lpbuf[j], lpbuf[j - i]);
+		L_temp = (int32_t) melpe_L40_shl(L40_sum, shift);
+		r_coeff[i] = melpe_r_ound(L_temp);
 	}
 
 	/* Now compute pc1 and pc2 */
@@ -177,35 +177,35 @@ static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len)
 		/* rc2 =(r[2] - rc1 * r[1]) / (r[0] - rc1 * r[1]);      */
 		/* pc1 = rc1 - rc1 * rc2;                                                       */
 		/* pc2 = rc2;                                                                           */
-		rc1 = divide_s(r_coeff[1], r_coeff[0]);	/* Q15 */
-		temp1 = mult(rc1, r_coeff[1]);	/* Q15 */
-		temp2 = sub(r_coeff[0], temp1);
-		temp3 = sub(r_coeff[2], temp1);
-		temp1 = abs_s(temp3);
+		rc1 = melpe_divide_s(r_coeff[1], r_coeff[0]);	/* Q15 */
+		temp1 = melpe_mult(rc1, r_coeff[1]);	/* Q15 */
+		temp2 = melpe_sub(r_coeff[0], temp1);
+		temp3 = melpe_sub(r_coeff[2], temp1);
+		temp1 = melpe_abs_s(temp3);
 		if (temp1 > temp2) {
-			pc2 = (Shortword) - 4096;	/* Q12 */
+			pc2 = (int16_t) - 4096;	/* Q12 */
 		} else {
-			pc2 = divide_s(temp1, temp2);
+			pc2 = melpe_divide_s(temp1, temp2);
 			if (temp3 < 0)
-				pc2 = negate(pc2);	/* Q15 */
-			pc2 = shr(pc2, 3);	/* Q12 */
+				pc2 = melpe_negate(pc2);	/* Q15 */
+			pc2 = melpe_shr(pc2, 3);	/* Q12 */
 		}
 
-		sub(0x1000, pc2);	/* 1.0 - pc2 */
-		pc1 = mult(rc1, pc2);	/* Q12 */
+		melpe_sub(0x1000, pc2);	/* 1.0 - pc2 */
+		pc1 = melpe_mult(rc1, pc2);	/* Q12 */
 	}
 
 	/* --- inverse filter ---- */
 	for (i = 0; i < len; i++) {
 		/*      ivbuf[i] = lpbuf[i] - pc1 * lpbuf[i - 1] - pc2 * lpbuf[i - 2]; */
-		L_temp = L_shl(L_deposit_l(lpbuf[PIT_COR_LEN - len + i]), 13);
+		L_temp = melpe_L_shl(melpe_L_deposit_l(lpbuf[PIT_COR_LEN - len + i]), 13);
 		L_temp =
-		    L_sub(L_temp,
-			  L_mult(pc1, lpbuf[PIT_COR_LEN - len + i - 1]));
+		    melpe_L_sub(L_temp,
+			  melpe_L_mult(pc1, lpbuf[PIT_COR_LEN - len + i - 1]));
 		L_temp =
-		    L_sub(L_temp,
-			  L_mult(pc2, lpbuf[PIT_COR_LEN - len + i - 2]));
-		ivbuf[PIT_COR_LEN - len + i] = r_ound(L_shl(L_temp, 3));
+		    melpe_L_sub(L_temp,
+			  melpe_L_mult(pc2, lpbuf[PIT_COR_LEN - len + i - 2]));
+		ivbuf[PIT_COR_LEN - len + i] = melpe_r_ound(melpe_L_shl(L_temp, 3));
 	}
 }
 
@@ -215,19 +215,19 @@ static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len)
  *	pitTrack	---- pitch pitTrackParam structure				*
  *	classStat	---- classification paramters					*
  *==============================================================*/
-static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
+static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 		    classParam * classStat)
 {
-	register Shortword i, j;
-	Shortword temp, temp1, temp2, shift;
-	Shortword proBuf[PIT_COR_LEN];	/* Q15 */
-	Longword L_temp;	/* Q0 */
-	Shortword index[MAXPITCH + 1];
-	Shortword lowStart, highStart;
-	Word40 ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
-	Longword L_r0, L_rk;
-	Shortword r0_shift, rk_shift, root;
-	Shortword gp[MAXPITCH + 1], peak[MAXPITCH + 1], corx[NODE];	/* Q15 */
+	register int16_t i, j;
+	int16_t temp, temp1, temp2, shift;
+	int16_t proBuf[PIT_COR_LEN];	/* Q15 */
+	int32_t L_temp;	/* Q0 */
+	int16_t index[MAXPITCH + 1];
+	int16_t lowStart, highStart;
+	int64_t ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
+	int32_t L_r0, L_rk;
+	int16_t r0_shift, rk_shift, root;
+	int16_t gp[MAXPITCH + 1], peak[MAXPITCH + 1], corx[NODE];	/* Q15 */
 
 	/* ------ Remove DC component. ------ */
 	remove_dc(inbuf, proBuf, PIT_COR_LEN);
@@ -235,43 +235,43 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 	/* ------ Caculate the autocorrelation function ------- */
 	ACC_r0 = 0;
 	for (i = 0; i < PIT_COR_LEN - MAXPITCH; i++) {
-		ACC_r0 = L40_mac(ACC_r0, proBuf[i], proBuf[i]);	/* Q31 */
+		ACC_r0 = melpe_L40_mac(ACC_r0, proBuf[i], proBuf[i]);	/* Q31 */
 	}
 	if (ACC_r0 == 0)
 		ACC_r0 = 1;
-	r0_shift = norm32(ACC_r0);
-	ACC_r0 = L40_shl(ACC_r0, r0_shift);
-	L_r0 = (Longword) ACC_r0;
+	r0_shift = melpe_norm32(ACC_r0);
+	ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
+	L_r0 = (int32_t) ACC_r0;
 
 	ACC_rk = 0;
 	for (i = MAXPITCH; i < PIT_COR_LEN; i++) {
-		ACC_rk = L40_mac(ACC_rk, proBuf[i], proBuf[i]);	/* Q31 */
+		ACC_rk = melpe_L40_mac(ACC_rk, proBuf[i], proBuf[i]);	/* Q31 */
 	}
 	if (ACC_rk == 0)
 		ACC_rk = 1;
-	rk_shift = norm32(ACC_rk);
-	ACC_rk = L40_shl(ACC_rk, rk_shift);
-	L_rk = (Longword) ACC_rk;
+	rk_shift = melpe_norm32(ACC_rk);
+	ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
+	L_rk = (int32_t) ACC_rk;
 
 	ACC_A = 0;
 	for (i = 0; i < PIT_COR_LEN - MAXPITCH; i++) {
-		ACC_A = L40_mac(ACC_A, proBuf[i], proBuf[i + MAXPITCH]);	/* Q31 */
+		ACC_A = melpe_L40_mac(ACC_A, proBuf[i], proBuf[i + MAXPITCH]);	/* Q31 */
 	}
-	shift = add(r0_shift, rk_shift);
+	shift = melpe_add(r0_shift, rk_shift);
 	if (shift & 1) {
-		L_r0 = L_shr(L_r0, 1);
-		r0_shift = sub(r0_shift, 1);
-		shift = add(r0_shift, rk_shift);
+		L_r0 = melpe_L_shr(L_r0, 1);
+		r0_shift = melpe_sub(r0_shift, 1);
+		shift = melpe_add(r0_shift, rk_shift);
 	}
-	shift = shr(shift, 1);
-	ACC_A = L40_shl(ACC_A, shift);
-	temp = mult(extract_h(L_r0), extract_h(L_rk));
+	shift = melpe_shr(shift, 1);
+	ACC_A = melpe_L40_shl(ACC_A, shift);
+	temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 	root = sqrt_Q15(temp);
-	L_temp = (Longword) ACC_A;
-	temp = extract_h(L_temp);
+	L_temp = (int32_t) ACC_A;
+	temp = melpe_extract_h(L_temp);
 	if (temp < 0)
 		temp = 0;	/* Negative Autocorrelation doesn't make sense here */
-	gp[MAXPITCH] = divide_s(temp, root);
+	gp[MAXPITCH] = melpe_divide_s(temp, root);
 
 	/* ==== Here comes the Main loop ==== */
 
@@ -280,53 +280,53 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 	for (i = MAXPITCH - 1; i >= MINPITCH; i--) {
 		if (i % 2 == 0) {
 			ACC_r0 = L_r0;
-			ACC_r0 = L40_shr(ACC_r0, r0_shift);
+			ACC_r0 = melpe_L40_shr(ACC_r0, r0_shift);
 			ACC_r0 =
-			    L40_msu(ACC_r0, proBuf[lowStart], proBuf[lowStart]);
+			    melpe_L40_msu(ACC_r0, proBuf[lowStart], proBuf[lowStart]);
 			ACC_r0 =
-			    L40_mac(ACC_r0, proBuf[lowStart + PIT_WIN],
+			    melpe_L40_mac(ACC_r0, proBuf[lowStart + PIT_WIN],
 				    proBuf[lowStart + PIT_WIN]);
 			if (ACC_r0 == 0)
 				ACC_r0 = 1;
-			r0_shift = norm32(ACC_r0);
-			ACC_r0 = L40_shl(ACC_r0, r0_shift);
-			L_r0 = (Longword) ACC_r0;
+			r0_shift = melpe_norm32(ACC_r0);
+			ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
+			L_r0 = (int32_t) ACC_r0;
 			lowStart++;
 		} else {
 			highStart--;
 			ACC_rk = L_rk;
-			ACC_rk = L40_shr(ACC_rk, rk_shift);
+			ACC_rk = melpe_L40_shr(ACC_rk, rk_shift);
 			ACC_rk =
-			    L40_mac(ACC_rk, proBuf[highStart],
+			    melpe_L40_mac(ACC_rk, proBuf[highStart],
 				    proBuf[highStart]);
 			ACC_rk =
-			    L40_msu(ACC_rk, proBuf[highStart + PIT_WIN],
+			    melpe_L40_msu(ACC_rk, proBuf[highStart + PIT_WIN],
 				    proBuf[highStart + PIT_WIN]);
 			if (ACC_rk == 0)
 				ACC_rk = 1;
-			rk_shift = norm32(ACC_rk);
-			ACC_rk = L40_shl(ACC_rk, rk_shift);
-			L_rk = (Longword) ACC_rk;
+			rk_shift = melpe_norm32(ACC_rk);
+			ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
+			L_rk = (int32_t) ACC_rk;
 		}
 		ACC_A = 0;
 		for (j = lowStart; j < lowStart + PIT_WIN; j++) {
-			ACC_A = L40_mac(ACC_A, proBuf[j], proBuf[j + i]);
+			ACC_A = melpe_L40_mac(ACC_A, proBuf[j], proBuf[j + i]);
 		}
-		shift = add(r0_shift, rk_shift);
+		shift = melpe_add(r0_shift, rk_shift);
 		if (shift & 1) {
-			L_r0 = L_shr(L_r0, 1);
-			r0_shift = sub(r0_shift, 1);
-			shift = add(r0_shift, rk_shift);
+			L_r0 = melpe_L_shr(L_r0, 1);
+			r0_shift = melpe_sub(r0_shift, 1);
+			shift = melpe_add(r0_shift, rk_shift);
 		}
-		shift = shr(shift, 1);
-		ACC_A = L40_shl(ACC_A, shift);
-		temp = mult(extract_h(L_r0), extract_h(L_rk));
+		shift = melpe_shr(shift, 1);
+		ACC_A = melpe_L40_shl(ACC_A, shift);
+		temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 		root = sqrt_Q15(temp);
-		L_temp = (Longword) ACC_A;
-		temp = extract_h(L_temp);
+		L_temp = (int32_t) ACC_A;
+		temp = melpe_extract_h(L_temp);
 		if (temp < 0)
 			temp = 0;	/* ignore negative autocorrelation */
-		gp[i] = divide_s(temp, root);
+		gp[i] = melpe_divide_s(temp, root);
 	}			/* Main loop ends */
 
 	/* ------ Find the local peak of gp function ------- */
@@ -356,7 +356,7 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 			if (peak[j] > peak[temp])
 				temp = j;
 		}
-		index[temp] = (Shortword) (i + 1);
+		index[temp] = (int16_t) (i + 1);
 		corx[i] = peak[temp];
 		peak[temp] = 0;
 		if (i == 0)
@@ -384,33 +384,33 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 
 	/* ---- Modify time domain correlation by muliple checking ---- */
 	for (i = 0; i < NODE - 1; i++) {
-		for (j = (Shortword) (i + 1); j < NODE; j++) {
+		for (j = (int16_t) (i + 1); j < NODE; j++) {
 			temp1 = pitTrack->pit[j];
 			temp2 = pitTrack->pit[i];
 			temp = temp2;
 			while (temp < temp1) {
-				temp = add(temp, temp2);
+				temp = melpe_add(temp, temp2);
 			}
-			temp2 = shr(temp2, 1);
-			temp2 = sub(temp, temp2);
+			temp2 = melpe_shr(temp2, 1);
+			temp2 = melpe_sub(temp, temp2);
 			if (temp2 >= temp1)
-				temp = sub(temp, pitTrack->pit[i]);
+				temp = melpe_sub(temp, pitTrack->pit[i]);
 
 			/* Now temp is the multiples of pitTrack->pit[i] which is the     */
 			/* closest to pitTrack->pit[j].                                   */
 
 			/*      rk_f = abs(pitTrack->pit[j] -
 			   temp*pitTrack->pit[i])/pitTrack->pit[j]; */
-			temp = sub(pitTrack->pit[j], temp);
-			temp = abs_s(temp);
-			temp2 = divide_s(temp, pitTrack->pit[j]);	/* Q15 */
+			temp = melpe_sub(pitTrack->pit[j], temp);
+			temp = melpe_abs_s(temp);
+			temp2 = melpe_divide_s(temp, pitTrack->pit[j]);	/* Q15 */
 
 			if (temp2 < X008_Q15) {
 				/*      pitTrack->weight[j] -= pitTrack->weight[i]/5.0; */
 				temp1 = pitTrack->weight[i];
-				temp1 = mult(temp1, X02_Q15);
+				temp1 = melpe_mult(temp1, X02_Q15);
 				temp2 = pitTrack->weight[j];
-				temp2 = sub(temp2, temp1);
+				temp2 = melpe_sub(temp2, temp1);
 				if (temp2 < 0)
 					temp2 = 0;
 				pitTrack->weight[j] = temp2;
@@ -426,15 +426,15 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 ** Description: multiple or sub-multiple pitch check
 **
 ** Input:
-**		Shortword f1	------	the pitch candidate 1 (Q7)
-**		Shortword f2	------	the pitch candidate 2 (Q7)
+**		int16_t f1	------	the pitch candidate 1 (Q7)
+**		int16_t f2	------	the pitch candidate 2 (Q7)
 **
-** Return: Shortword	----- ratio of f1, f2 with multiple (Q15)
+** Return: int16_t	----- ratio of f1, f2 with multiple (Q15)
 **
 ********************************************************************/
-Shortword multiCheck(Shortword f1, Shortword f2)
+int16_t multiCheck(int16_t f1, int16_t f2)
 {
-	Shortword temp, f2_multiple;	/* Q7 */
+	int16_t temp, f2_multiple;	/* Q7 */
 
 	if (f1 <= f2) {		/* Swap f1 and f2 so that f1 is larger than f2. */
 		temp = f1;
@@ -444,15 +444,15 @@ Shortword multiCheck(Shortword f1, Shortword f2)
 
 	f2_multiple = f2;
 	while (f2_multiple <= f1)
-		f2_multiple = add(f2_multiple, f2);
+		f2_multiple = melpe_add(f2_multiple, f2);
 
 	/* Now f2_multiple is larger than f1.  Check whether f2_multiple or       */
 	/* (f2_multiple - f2) is closer to f1 and use the better one.             */
 
-	temp = shr(f2, 1);
-	temp = sub(f2_multiple, temp);	/* Q7 */
+	temp = melpe_shr(f2, 1);
+	temp = melpe_sub(f2_multiple, temp);	/* Q7 */
 	if (temp > f1)
-		f2_multiple = sub(f2_multiple, f2);
+		f2_multiple = melpe_sub(f2_multiple, f2);
 
 	return (ratio(f1, f2_multiple));
 }
@@ -464,17 +464,17 @@ Shortword multiCheck(Shortword f1, Shortword f2)
 ** Description: find first two largest local maxs
 **
 ** Input:
-**		Shortword *costBuf	------	the cost buffer Q5
-**		Shortword *index1	------	the index of the largest peak
-**		Shortword *index2	------	the index of the second largest peak
+**		int16_t *costBuf	------	the cost buffer Q5
+**		int16_t *index1	------	the index of the largest peak
+**		int16_t *index2	------	the index of the second largest peak
 **
 ** Return: None
 **
 ********************************************************************/
-void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2)
+void minCostIndex(int16_t * costBuf, int16_t * index1, int16_t * index2)
 {
-	register Shortword i;
-	Shortword co;
+	register int16_t i;
+	int16_t co;
 
 	*index1 = 0;		/* largest weight */
 	co = costBuf[0];
@@ -490,7 +490,7 @@ void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2)
 	else
 		*index2 = 0;
 	co = costBuf[*index2];
-	for (i = (Shortword) (*index2 + 1); i < NODE; i++) {
+	for (i = (int16_t) (*index2 + 1); i < NODE; i++) {
 		if (*index1 == i)
 			continue;
 		if (costBuf[i] < co) {
@@ -507,18 +507,18 @@ void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2)
 ** Description: Find coresponding pitch index for pitch tracking
 **
 ** Input:
-**		Shortword pitch			------	the pitch candidate (Q7)
+**		int16_t pitch			------	the pitch candidate (Q7)
 **		pitTrackParam *pitTrack ------	The pitch tracker structure
 **
-** Return: Shortword ----- index of the time domain candidates
+** Return: int16_t ----- index of the time domain candidates
 **
 ********************************************************************/
-Shortword trackPitch(Shortword pitch, pitTrackParam * pitTrack)
+int16_t trackPitch(int16_t pitch, pitTrackParam * pitTrack)
 {
-	register Shortword i;
-	Shortword index;
-	Shortword best, temp;	/* Q7 */
-	Shortword co = MONE_Q15;	/* Minus infinity. */
+	register int16_t i;
+	int16_t index;
+	int16_t best, temp;	/* Q7 */
+	int16_t co = MONE_Q15;	/* Minus infinity. */
 
 	/* The following loop finds the index for pitTrack->pit[] so that it      */
 	/* maximizes pitTrack->weight[] among those indices with                  */
@@ -527,7 +527,7 @@ Shortword trackPitch(Shortword pitch, pitTrackParam * pitTrack)
 
 	index = -1;
 	for (i = 0; i < NODE; i++) {
-		temp = shl(pitTrack->pit[i], 7);	/* Q7 */
+		temp = melpe_shl(pitTrack->pit[i], 7);	/* Q7 */
 		if (ratio(temp, pitch) < X02_Q15) {
 			if (pitTrack->weight[i] > co) {
 				co = pitTrack->weight[i];
@@ -542,13 +542,13 @@ Shortword trackPitch(Shortword pitch, pitTrackParam * pitTrack)
 		/* Then we find the "index" which is the closest to "pitch".          */
 
 		index = 0;
-		temp = shl(pitTrack->pit[index], 7);
-		temp = sub(temp, pitch);
-		best = abs_s(temp);	/* Q7 */
+		temp = melpe_shl(pitTrack->pit[index], 7);
+		temp = melpe_sub(temp, pitch);
+		best = melpe_abs_s(temp);	/* Q7 */
 		for (i = 1; i < NODE; i++) {
-			temp = shl(pitTrack->pit[i], 7);
-			temp = sub(temp, pitch);
-			temp = abs_s(temp);	/* Q7 */
+			temp = melpe_shl(pitTrack->pit[i], 7);
+			temp = melpe_sub(temp, pitch);
+			temp = melpe_abs_s(temp);	/* Q7 */
 			if (temp < best) {
 				index = i;
 				best = temp;
@@ -567,61 +567,61 @@ Shortword trackPitch(Shortword pitch, pitTrackParam * pitTrack)
 **
 ** Input:
 **		pitTrackParam *pitTrack ------ The pitch tracker structure
-**		Shortword num			------ The number of available structures
+**		int16_t num			------ The number of available structures
 **
-** Return: Shortword ----- the smoothed pitch (Q7)
+** Return: int16_t ----- the smoothed pitch (Q7)
 **
 ********************************************************************/
-Shortword pitLookahead(pitTrackParam * pitTrack, Shortword num)
+int16_t pitLookahead(pitTrackParam * pitTrack, int16_t num)
 {
-	register Shortword i, j;
-	Shortword index;
-	Longword L_sum, L_cost;
+	register int16_t i, j;
+	int16_t index;
+	int32_t L_sum, L_cost;
 
 	/* compute the cost function of the last strucutre */
 	for (i = 0; i < NODE; i++) {
-		L_sum = L_sub(LW_MAX, L_deposit_h(pitTrack[num].weight[i]));
-		L_cost = L_mult(extract_h(L_sum), PIT_WEIGHT_Q5);
-		pitTrack[num].cost[i] = extract_h(L_cost);	/* Q5 */
+		L_sum = melpe_L_sub(LW_MAX, melpe_L_deposit_h(pitTrack[num].weight[i]));
+		L_cost = melpe_L_mult(melpe_extract_h(L_sum), PIT_WEIGHT_Q5);
+		pitTrack[num].cost[i] = melpe_extract_h(L_cost);	/* Q5 */
 	}
 
 	/* -------- forward tracker -------- */
-	for (i = sub(num, 1); i >= 0; i--) {
+	for (i = melpe_sub(num, 1); i >= 0; i--) {
 		for (j = 0; j < NODE; j++) {
 			index =
-			    trackPitch(shl(pitTrack[i].pit[j], 7),
+			    trackPitch(melpe_shl(pitTrack[i].pit[j], 7),
 				       &pitTrack[i + 1]);
 
 			/* pitTrack[i].cost[j] = PIT_WEIGHT*(1.0-pitTrack[i].weight[j]); */
 			L_sum =
-			    L_sub(LW_MAX, L_deposit_h(pitTrack[i].weight[j]));
-			L_cost = L_mult(extract_h(L_sum), PIT_WEIGHT_Q5);	/* Q5 */
+			    melpe_L_sub(LW_MAX, melpe_L_deposit_h(pitTrack[i].weight[j]));
+			L_cost = melpe_L_mult(melpe_extract_h(L_sum), PIT_WEIGHT_Q5);	/* Q5 */
 
 			/*      pitTrack[i].cost[j] +=
 			   abs(pitTrack[i].pit[j] - pitTrack[i + 1].pit[index]); */
-			L_sum = L_sub(L_deposit_h(pitTrack[i].pit[j]),
-				      L_deposit_h(pitTrack[i + 1].pit[index]));
-			L_cost = L_add(L_cost, L_shl(L_abs(L_sum), 5));	/* Q5 */
+			L_sum = melpe_L_sub(melpe_L_deposit_h(pitTrack[i].pit[j]),
+				      melpe_L_deposit_h(pitTrack[i + 1].pit[index]));
+			L_cost = melpe_L_add(L_cost, melpe_L_shl(melpe_L_abs(L_sum), 5));	/* Q5 */
 
 			/* pitTrack[i].cost[j] += pitTrack[i+1].cost[index]; */
 			L_cost =
-			    L_add(L_cost,
-				  L_deposit_h(pitTrack[i + 1].cost[index]));
-			pitTrack[i].cost[j] = extract_h(L_cost);	/* Q5 */
+			    melpe_L_add(L_cost,
+				  melpe_L_deposit_h(pitTrack[i + 1].cost[index]));
+			pitTrack[i].cost[j] = melpe_extract_h(L_cost);	/* Q5 */
 		}
 	}
 
 	/* find the best index to minimize the cost */
-	L_cost = L_deposit_h(pitTrack[0].cost[0]);
+	L_cost = melpe_L_deposit_h(pitTrack[0].cost[0]);
 	index = 0;
 	for (i = 1; i < NODE; i++) {
-		if (L_deposit_h(pitTrack[0].cost[i]) < L_cost) {
-			L_cost = L_deposit_h(pitTrack[0].cost[i]);
+		if (melpe_L_deposit_h(pitTrack[0].cost[i]) < L_cost) {
+			L_cost = melpe_L_deposit_h(pitTrack[0].cost[i]);
 			index = i;
 		}
 	}
 
-	return (shl(pitTrack[0].pit[index], 7));
+	return (melpe_shl(pitTrack[0].pit[index], 7));
 }
 
 /* ========================================================================== */
@@ -629,39 +629,39 @@ Shortword pitLookahead(pitTrackParam * pitTrack, Shortword num)
 /*                                                                            */
 /*    RATIO(x, y) = (fabs((float)(x)-(float)(y))/(float)((x)>(y)?(x):(y)))    */
 /*                                                                            */
-/* The Shortword Q7 arguments x and y are implied to be positive.  The        */
+/* The int16_t Q7 arguments x and y are implied to be positive.  The        */
 /* returned value is Q15.                                                     */
 /* ========================================================================== */
 
-Shortword ratio(Shortword x, Shortword y)
+int16_t ratio(int16_t x, int16_t y)
 {
-	Shortword diff, larger;
+	int16_t diff, larger;
 
-	diff = sub(x, y);
-	diff = abs_s(diff);
-	larger = (Shortword) ((x > y) ? x : y);
-	return (divide_s(diff, larger));
+	diff = melpe_sub(x, y);
+	diff = melpe_abs_s(diff);
+	larger = (int16_t) ((x > y) ? x : y);
+	return (melpe_divide_s(diff, larger));
 }
 
 /* ========================================================================== */
 /* This function should be functionally almost the same as ratio() except     */
-/* that the second argument is Longword.  It is used in sc_ana() of           */
+/* that the second argument is int32_t.  It is used in sc_ana() of           */
 /* "melp_ana.c" when we call ratio() in                                       */
 /*                                                                            */
 /*    ratio(par[1].pitch, (prev_pitch*3)) < X008_Q15                          */
 /*                                                                            */
-/* where a Q7 prev_pitch multiplied by 3 could overflow a Shortword.  Both    */
+/* where a Q7 prev_pitch multiplied by 3 could overflow a int16_t.  Both    */
 /* inputs are still Q7 and the returned value is still Q15.                   */
 /* ========================================================================== */
 
-Shortword L_ratio(Shortword x, Longword y)
+int16_t L_ratio(int16_t x, int32_t y)
 {
-	Longword L_x, diff, larger;
+	int32_t L_x, diff, larger;
 
-	L_x = L_deposit_l(x);
-	diff = L_sub(y, L_x);
+	L_x = melpe_L_deposit_l(x);
+	diff = melpe_L_sub(y, L_x);
 	if (diff < 0)
-		diff = L_negate(diff);
+		diff = melpe_L_negate(diff);
 	larger = (L_x > y) ? L_x : y;
 	return (L_divider2(diff, larger, 0, 0));
 }
@@ -675,10 +675,10 @@ Shortword L_ratio(Shortword x, Longword y)
 /* the fixed point implementation.  The implementation assumes "ifact" is     */
 /* always equal to 0.9.                                                       */
 /* ========================================================================== */
-Shortword updateEn(Shortword prev_en, Shortword ifact, Shortword curr_en)
+int16_t updateEn(int16_t prev_en, int16_t ifact, int16_t curr_en)
 {
-	Shortword temp1, temp2;
-	Shortword result;	/* Q11 */
+	int16_t temp1, temp2;
+	int16_t result;	/* Q11 */
 
 	/* Now we want to compute                                                 */
 	/* log10(ifact*pow(10.0, prev_en) + (1.0 - ifact)*pow(10.0, curr_en)).    */
@@ -689,29 +689,29 @@ Shortword updateEn(Shortword prev_en, Shortword ifact, Shortword curr_en)
 	/* ignore the pow() term, or ignore the "ifact" term inside log10() (so   */
 	/* the expression becomes curr_en + log10(1 - ifact)).  This manipulation */
 	/* is necessary because pow(10.0, prev_en) and pow(10.0, curr_en) can     */
-	/* easily overflow the dynamic range for Shortword.                       */
+	/* easily overflow the dynamic range for int16_t.                       */
 
-	temp1 = shr(curr_en, 1);	/* Q10 */
-	temp2 = shr(prev_en, 1);
-	temp1 = sub(temp1, temp2);	/* Q10 */
-	if (temp1 < negate(ONE_Q10)) {	/* Case (a) */
+	temp1 = melpe_shr(curr_en, 1);	/* Q10 */
+	temp2 = melpe_shr(prev_en, 1);
+	temp1 = melpe_sub(temp1, temp2);	/* Q10 */
+	if (temp1 < melpe_negate(ONE_Q10)) {	/* Case (a) */
 		/* Compute log10(ifact) + prev_en. */
 		temp1 = log10_fxp(ifact, 15);	/* Q12 */
-		temp1 = shr(temp1, 1);	/* Q11 */
-		result = add(temp1, prev_en);
+		temp1 = melpe_shr(temp1, 1);	/* Q11 */
+		result = melpe_add(temp1, prev_en);
 	} else if (temp1 > THREE_Q10) {	/* Case (b) */
-		temp1 = sub(ONE_Q15, ifact);	/* Q15 */
+		temp1 = melpe_sub(ONE_Q15, ifact);	/* Q15 */
 		temp1 = log10_fxp(temp1, 15);	/* Q12 */
-		temp1 = shr(temp1, 1);	/* Q11 */
-		result = add(temp1, curr_en);	/* Q11 */
+		temp1 = melpe_shr(temp1, 1);	/* Q11 */
+		result = melpe_add(temp1, curr_en);	/* Q11 */
 	} else {		/* Case (c) */
 		/* temp1 = (curr_en - prev_en) is between -1 and 3. */
-		temp1 = shl(temp1, 2);	/* Q12 */
+		temp1 = melpe_shl(temp1, 2);	/* Q12 */
 		temp1 = pow10_fxp(temp1, 5);	/* Q5 */
 		temp1 = interp_scalar(temp1, ONE_Q5, ifact);	/* Q5 */
 		temp1 = log10_fxp(temp1, 5);	/* Q12 */
-		temp1 = shr(temp1, 1);	/* Q11 */
-		result = add(prev_en, temp1);
+		temp1 = melpe_shr(temp1, 1);	/* Q11 */
+		result = melpe_add(prev_en, temp1);
 	}
 	return (result);
 }

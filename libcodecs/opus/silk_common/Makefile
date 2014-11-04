@@ -7,10 +7,14 @@ MODE ?= NORMAL
 MODE_NORMAL ?= -O3
 MODE_DEBUG ?= -O0 -g -ggdb
 
-# -DHAVE_CONFIG_H -DFIXED_POINT
-EXTRADEFS = -DHAVE_CONFIG_H -DFIXED_POINT
+# FIXED FLOAT
+ARITHMETICS ?= FIXED
 
-CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
+# -DHAVE_CONFIG_H -DFIXED_POINT
+EXTRADEFS = -DHAVE_CONFIG_H -D$(ARITHMETICS)_POINT
+
+GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = CNG.o \
       code_signs.o \
@@ -89,7 +93,7 @@ OBJ = CNG.o \
       stereo_find_predictor.o \
       stereo_quant_pred.o
 
-INCADD ?= -I. -I../include -I../celt -I../silk_float -I../silk_fixed
+INCADD ?= -I. -I../include -I../celt -I../silk_float -I../silk_fixed -I../../../common/inc
 
 all: build
 

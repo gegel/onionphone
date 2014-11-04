@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -36,42 +38,48 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Coefficients for 2-fold resampling */
-static SKP_int16 A20_Resample_1_2[ 3 ] = { 1254, 10102, 22898 };
-static SKP_int16 A21_Resample_1_2[ 3 ] = { 4810, 16371, 29374 };
-
+static int16_t A20_Resample_1_2[3] = { 1254, 10102, 22898 };
+static int16_t A21_Resample_1_2[3] = { 4810, 16371, 29374 };
 
 /* Downsample by a factor 2 */
-void SKP_Silk_resample_1_2(
-    const SKP_int16      *in,            /* I:   16 kHz signal [2*len]   */
-    SKP_int32            *S,             /* I/O: State vector [6]        */
-    SKP_int16            *out,           /* O:   8 kHz signal [len]      */
-    SKP_int32            *scratch,       /* I:   Scratch memory [4*len]  */
-    const SKP_int32      len             /* I:   Number of OUTPUT samples*/
-)
+void SKP_Silk_resample_1_2(const int16_t * in,	/* I:   16 kHz signal [2*len]   */
+			   int32_t * S,	/* I/O: State vector [6]        */
+			   int16_t * out,	/* O:   8 kHz signal [len]      */
+			   int32_t * scratch,	/* I:   Scratch memory [4*len]  */
+			   const int32_t len	/* I:   Number of OUTPUT samples */
+    )
 {
-    SKP_int32    k, idx;
+	int32_t k, idx;
 
-    /* De-interleave allpass inputs, and convert Q15 -> Q25 */
-    for( k = 0; k < len; k++ ) {
-        idx = SKP_LSHIFT( k, 1 );
-        scratch[ k ]       = SKP_LSHIFT( (SKP_int32)in[ idx     ], 10 );
-        scratch[ k + len ] = SKP_LSHIFT( (SKP_int32)in[ idx + 1 ], 10 );
-    }
+	/* De-interleave allpass inputs, and convert Q15 -> Q25 */
+	for (k = 0; k < len; k++) {
+		idx = SKP_LSHIFT(k, 1);
+		scratch[k] = SKP_LSHIFT((int32_t) in[idx], 10);
+		scratch[k + len] = SKP_LSHIFT((int32_t) in[idx + 1], 10);
+	}
 
-    idx = SKP_LSHIFT( len, 1 );
+	idx = SKP_LSHIFT(len, 1);
 
-    /* Allpass filters */
-    SKP_Silk_allpass_int( scratch,             S,     A21_Resample_1_2[ 0 ], scratch + idx,       len );
-    SKP_Silk_allpass_int( scratch + idx,       S + 1, A21_Resample_1_2[ 1 ], scratch + idx + len, len );
-    SKP_Silk_allpass_int( scratch + idx + len, S + 2, A21_Resample_1_2[ 2 ], scratch,             len );
+	/* Allpass filters */
+	SKP_Silk_allpass_int(scratch, S, A21_Resample_1_2[0], scratch + idx,
+			     len);
+	SKP_Silk_allpass_int(scratch + idx, S + 1, A21_Resample_1_2[1],
+			     scratch + idx + len, len);
+	SKP_Silk_allpass_int(scratch + idx + len, S + 2, A21_Resample_1_2[2],
+			     scratch, len);
 
-    SKP_Silk_allpass_int( scratch + len,       S + 3, A20_Resample_1_2[ 0 ], scratch + idx,       len );
-    SKP_Silk_allpass_int( scratch + idx,       S + 4, A20_Resample_1_2[ 1 ], scratch + idx + len, len );
-    SKP_Silk_allpass_int( scratch + idx + len, S + 5, A20_Resample_1_2[ 2 ], scratch + len,       len );
+	SKP_Silk_allpass_int(scratch + len, S + 3, A20_Resample_1_2[0],
+			     scratch + idx, len);
+	SKP_Silk_allpass_int(scratch + idx, S + 4, A20_Resample_1_2[1],
+			     scratch + idx + len, len);
+	SKP_Silk_allpass_int(scratch + idx + len, S + 5, A20_Resample_1_2[2],
+			     scratch + len, len);
 
-    /* Add two allpass outputs */
-    for( k = 0; k < len; k++ ) {
-        out[ k ] = (SKP_int16)SKP_SAT16( SKP_RSHIFT_ROUND( scratch[ k ] + scratch[ k + len ], 11 ) );
-    }
+	/* Add two allpass outputs */
+	for (k = 0; k < len; k++) {
+		out[k] =
+		    (int16_t)
+		    SKP_SAT16(SKP_RSHIFT_ROUND
+			      (scratch[k] + scratch[k + len], 11));
+	}
 }
-

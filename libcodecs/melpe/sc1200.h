@@ -21,22 +21,13 @@
 #ifndef  _SC1200_H_
 #define  _SC1200_H_
 
-/* =================== */
-/* Definition of Types */
-/* =================== */
+#include <stdint.h>
 
-typedef long int Longword;	/* 32 bit "accumulator" (L_*) */
-typedef short int Shortword;	/* 16 bit "register" (sw*) */
-typedef short int ShortwordRom;	/* 16 bit ROM data (sr*) */
-typedef long int LongwordRom;	/* 32 bit ROM data (L_r*) */
-typedef unsigned short UShortword;	/* 16 bit unsigned data */
-typedef unsigned long ULongword;	/* 32 bit unsigned data */
-typedef double Word40;		/* 40 bit "accumulator" */
 /* ================== */
 /* General Definition */
 /* ================== */
 
-#define BOOLEAN		Shortword
+#define BOOLEAN		int16_t
 #define TRUE		1
 #define FALSE		0
 #define ON			1
@@ -183,7 +174,7 @@ typedef double Word40;		/* 40 bit "accumulator" */
 /* ===================== */
 
 #define CHWORDSIZE		8	/* number of bits per channel word */
-#define ERASE_MASK		(UShortword) 0x4000	/* erasure flag mask */
+#define ERASE_MASK		(uint16_t) 0x4000	/* erasure flag mask */
 							  /* for channel word */
 #define GN_QLO_Q8		2560	/* 10.0 * (1 << 8) minimum gain in dB */
 #define GN_QUP_Q8		19712	/* 77.0 * (1 << 8) maximum gain in dB */
@@ -240,36 +231,36 @@ typedef double Word40;		/* 40 bit "accumulator" */
 /* ===================== */
 
 struct melp_param {		/* MELP parameters */
-	Shortword pitch;	/* Q7 */
-	Shortword lsf[LPC_ORD];	/* Q15 */
-	Shortword gain[NUM_GAINFR];	/* Q8 */
-	Shortword jitter;	/* Q15 */
-	Shortword bpvc[NUM_BANDS];	/* Q14 */
+	int16_t pitch;	/* Q7 */
+	int16_t lsf[LPC_ORD];	/* Q15 */
+	int16_t gain[NUM_GAINFR];	/* Q8 */
+	int16_t jitter;	/* Q15 */
+	int16_t bpvc[NUM_BANDS];	/* Q14 */
 	BOOLEAN uv_flag;
-	Shortword fs_mag[NUM_HARM];	/* Q13 */
+	int16_t fs_mag[NUM_HARM];	/* Q13 */
 };
 
 #define MSVQ_STAGES		4
 
 struct quant_param {
-	Shortword pitch_index;	/* quantized index of parameters */
-	Shortword lsf_index[NF][MAX_LSF_STAGE];
-	Shortword gain_index[NUM_GAINFR];
-	Shortword jit_index[NF];	/* Suspected that a scalar is good enough */
-	Shortword bpvc_index[NF];
-	Shortword fs_index;
+	int16_t pitch_index;	/* quantized index of parameters */
+	int16_t lsf_index[NF][MAX_LSF_STAGE];
+	int16_t gain_index[NUM_GAINFR];
+	int16_t jit_index[NF];	/* Suspected that a scalar is good enough */
+	int16_t bpvc_index[NF];
+	int16_t fs_index;
 	BOOLEAN uv_flag[NF];	/* global uv decision */
-	Shortword msvq_index[MSVQ_STAGES];
-	Shortword fsvq_index;
+	int16_t msvq_index[MSVQ_STAGES];
+	int16_t fsvq_index;
 	unsigned char *chptr;	/* channel related parameters */
-	Shortword chbit;	/* they are rate dependent */
+	int16_t chbit;	/* they are rate dependent */
 };
 
-void analysis(Shortword sp_in[], struct melp_param *par);
+void analysis(int16_t sp_in[], struct melp_param *par);
 
 void sc_ana(struct melp_param *par);
 
-void synthesis(struct melp_param *par, Shortword sp_out[]);
+void synthesis(struct melp_param *par, int16_t sp_out[]);
 
 void melp_ana_init();
 
@@ -287,6 +278,6 @@ BOOLEAN low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 
 void fec_code(struct quant_param *par);
 
-Shortword fec_decode(struct quant_param *par, Shortword erase);
+int16_t fec_decode(struct quant_param *par, int16_t erase);
 
 #endif

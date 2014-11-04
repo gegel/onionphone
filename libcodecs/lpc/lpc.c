@@ -167,9 +167,6 @@ float *per;
 
 	rm = r[rpos - 1];
 	rp = r[rpos + 1];
-#ifdef OLDWAY
-	rval = rmax / r[0];
-#endif
 
 	a = 0.5 * rm - rmax + 0.5 * rp;
 	b = -0.5 * rm * (2.0 * rpos + 1.0) +

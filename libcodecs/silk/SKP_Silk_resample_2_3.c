@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -41,34 +43,35 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define OUT_SUBFR_LEN        80
 
 /* Resamples by a factor 2/3 */
-void SKP_Silk_resample_2_3(
-    SKP_int16            *out,       /* O:   Fs_low signal    [inLen * 2/3]           */
-    SKP_int32            *S,         /* I/O: State vector     [7+4]                   */
-    const SKP_int16      *in,        /* I:   Fs_high signal   [inLen]                 */
-    const SKP_int        inLen       /* I:   Input length, must be a multiple of 3    */
-)
+void SKP_Silk_resample_2_3(int16_t * out,	/* O:   Fs_low signal    [inLen * 2/3]           */
+			   int32_t * S,	/* I/O: State vector     [7+4]                   */
+			   const int16_t * in,	/* I:   Fs_high signal   [inLen]                 */
+			   const int inLen	/* I:   Input length, must be a multiple of 3    */
+    )
 {
-    SKP_int      outLen, LSubFrameIn, LSubFrameOut;
-    SKP_int16    outH[      3 * OUT_SUBFR_LEN ];
-    SKP_int32    scratch[ ( 9 * OUT_SUBFR_LEN ) / 2 ];
+	int outLen, LSubFrameIn, LSubFrameOut;
+	int16_t outH[3 * OUT_SUBFR_LEN];
+	int32_t scratch[(9 * OUT_SUBFR_LEN) / 2];
 
-    /* Check that input length is multiple of 3 */
-    SKP_assert( inLen % 3 == 0 );
+	/* Check that input length is multiple of 3 */
+	assert(inLen % 3 == 0);
 
-    outLen = SKP_DIV32_16( SKP_LSHIFT( inLen, 1 ), 3 );
-    while( outLen > 0 ) {
-        LSubFrameOut = SKP_min_int( OUT_SUBFR_LEN, outLen );
-        LSubFrameIn  = SKP_SMULWB( 98304, LSubFrameOut ); /* 98304_Q16 = 3/2_Q0 */
-            
-        /* Upsample by a factor 2 */
-        /* Scratch size needs to be: 3 * LSubFrameIn * sizeof( SKP_int32 ) */
-        SKP_Silk_resample_2_1_coarse( in, &S[ 0 ], outH, scratch, LSubFrameIn );
+	outLen = SKP_DIV32_16(SKP_LSHIFT(inLen, 1), 3);
+	while (outLen > 0) {
+		LSubFrameOut = SKP_min_int(OUT_SUBFR_LEN, outLen);
+		LSubFrameIn = SKP_SMULWB(98304, LSubFrameOut);	/* 98304_Q16 = 3/2_Q0 */
 
-        /* Downsample by a factor 3 */
-        SKP_Silk_resample_1_3( out, &S[ 4 ], outH, SKP_LSHIFT( LSubFrameIn, 1 ) );
+		/* Upsample by a factor 2 */
+		/* Scratch size needs to be: 3 * LSubFrameIn * sizeof( int32_t ) */
+		SKP_Silk_resample_2_1_coarse(in, &S[0], outH, scratch,
+					     LSubFrameIn);
 
-        in     += LSubFrameIn;
-        out    += LSubFrameOut;
-        outLen -= LSubFrameOut;
-    }
+		/* Downsample by a factor 3 */
+		SKP_Silk_resample_1_3(out, &S[4], outH,
+				      SKP_LSHIFT(LSubFrameIn, 1));
+
+		in += LSubFrameIn;
+		out += LSubFrameOut;
+		outLen -= LSubFrameOut;
+	}
 }

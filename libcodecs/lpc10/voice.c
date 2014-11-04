@@ -91,7 +91,7 @@
 #include <math.h>
 
 void voicin(int vwin[2][AF], float *inbuf, float *lpbuf, int half, float minamd,
-	    float maxamd, int mintau, float ivrc[2], int *obound,
+	    float maxamd, int mintau, float ivrc[3], int *obound,
 	    int voibuf[2][AF + 1])
 {
 	int zc, lbe, fbe;

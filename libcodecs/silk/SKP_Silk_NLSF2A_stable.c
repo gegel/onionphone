@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -28,30 +30,30 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_main.h"
 
 /* Convert NLSF parameters to stable AR prediction filter coefficients */
-void SKP_Silk_NLSF2A_stable(
-    SKP_int16                       pAR_Q12[ MAX_LPC_ORDER ],   /* O    Stabilized AR coefs [LPC_order]     */ 
-    const SKP_int                   pNLSF[ MAX_LPC_ORDER ],     /* I    NLSF vector         [LPC_order]     */
-    const SKP_int                   LPC_order                   /* I    LPC/LSF order                       */
-)
+void SKP_Silk_NLSF2A_stable(int16_t pAR_Q12[MAX_LPC_ORDER],	/* O    Stabilized AR coefs [LPC_order]     */
+			    const int pNLSF[MAX_LPC_ORDER],	/* I    NLSF vector         [LPC_order]     */
+			    const int LPC_order	/* I    LPC/LSF order                       */
+    )
 {
-    SKP_int   i;
-    SKP_int32 invGain_Q30;
+	int i;
+	int32_t invGain_Q30;
 
-    SKP_Silk_NLSF2A( pAR_Q12, pNLSF, LPC_order );
+	SKP_Silk_NLSF2A(pAR_Q12, pNLSF, LPC_order);
 
-    /* Ensure stable LPCs */
-    for( i = 0; i < MAX_LPC_STABILIZE_ITERATIONS; i++ ) {
-        if( SKP_Silk_LPC_inverse_pred_gain( &invGain_Q30, pAR_Q12, LPC_order ) == 1 ) {
-            SKP_Silk_bwexpander( pAR_Q12, LPC_order, 65536 - SKP_SMULBB( 66, i ) ); /* 66_Q16 = 0.001 */
-        } else {
-            break;
-        }
-    }
+	/* Ensure stable LPCs */
+	for (i = 0; i < MAX_LPC_STABILIZE_ITERATIONS; i++) {
+		if (SKP_Silk_LPC_inverse_pred_gain
+		    (&invGain_Q30, pAR_Q12, LPC_order) == 1) {
+			SKP_Silk_bwexpander(pAR_Q12, LPC_order, 65536 - SKP_SMULBB(66, i));	/* 66_Q16 = 0.001 */
+		} else {
+			break;
+		}
+	}
 
-    /* Reached the last iteration */
-    if( i == MAX_LPC_STABILIZE_ITERATIONS ) {
-        for( i = 0; i < LPC_order; i++ ) {
-            pAR_Q12[ i ] = 0;
-        }
-    }
+	/* Reached the last iteration */
+	if (i == MAX_LPC_STABILIZE_ITERATIONS) {
+		for (i = 0; i < LPC_order; i++) {
+			pAR_Q12[i] = 0;
+		}
+	}
 }

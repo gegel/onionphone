@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -45,25 +47,23 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  *                                                                        */
 #include "SKP_Silk_SigProc_FIX.h"
 
-
 /* First-order allpass filter */
-void SKP_Silk_allpass_int(
-    const SKP_int32      *in,    /* I:    Q25 input signal [len]               */
-    SKP_int32            *S,     /* I/O: Q25 state [1]                         */
-    SKP_int              A,      /* I:    Q15 coefficient    (0 <= A < 32768)  */
-    SKP_int32            *out,   /* O:    Q25 output signal [len]              */
-    const SKP_int32      len     /* I:    Number of samples                    */
-)
+void SKP_Silk_allpass_int(const int32_t * in,	/* I:    Q25 input signal [len]               */
+			  int32_t * S,	/* I/O: Q25 state [1]                         */
+			  int A,	/* I:    Q15 coefficient    (0 <= A < 32768)  */
+			  int32_t * out,	/* O:    Q25 output signal [len]              */
+			  const int32_t len	/* I:    Number of samples                    */
+    )
 {
-    SKP_int32    Y2, X2, S0;
-    SKP_int        k;
+	int32_t Y2, X2, S0;
+	int k;
 
-    S0 = S[ 0 ];
-    for( k = len - 1; k >= 0; k-- ) {
-        Y2         = *in - S0;
-        X2         = ( Y2 >> 15 ) * A + ( ( ( Y2 & 0x00007FFF ) * A ) >> 15 );
-        ( *out++ ) = S0 + X2;
-        S0         = ( *in++ ) + X2;
-    }
-    S[ 0 ] = S0;
+	S0 = S[0];
+	for (k = len - 1; k >= 0; k--) {
+		Y2 = *in - S0;
+		X2 = (Y2 >> 15) * A + (((Y2 & 0x00007FFF) * A) >> 15);
+		(*out++) = S0 + X2;
+		S0 = (*in++) + X2;
+	}
+	S[0] = S0;
 }

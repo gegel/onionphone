@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2002-2006 Jean-Marc Valin*/
 /**
   @file speex.h
@@ -41,7 +43,7 @@
  */
 
 #include "speex_bits.h"
-#include "speex_types.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -159,15 +161,11 @@ extern "C" {
     how much damage we cause if we remove the frame */
 #define SPEEX_GET_ACTIVITY 47
 
-
 /* Preserving compatibility:*/
 /** Equivalent to SPEEX_SET_ENH */
 #define SPEEX_SET_PF 0
 /** Equivalent to SPEEX_GET_ENH */
 #define SPEEX_GET_PF 1
-
-
-
 
 /* Values allowed for mode queries */
 /** Query the frame size of a mode */
@@ -175,8 +173,6 @@ extern "C" {
 
 /** Query the size of an encoded frame for a particular sub-mode */
 #define SPEEX_SUBMODE_BITS_PER_FRAME 1
-
-
 
 /** Get major Speex version */
 #define SPEEX_LIB_GET_MAJOR_VERSION 1
@@ -212,82 +208,81 @@ extern "C" {
 /** modeID for the defined ultra-wideband mode */
 #define SPEEX_MODEID_UWB 2
 
-struct SpeexMode;
-
+	struct SpeexMode;
 
 /* Prototypes for mode function pointers */
 
 /** Encoder state initialization function */
-typedef void *(*encoder_init_func)(const struct SpeexMode *mode);
+	typedef void *(*encoder_init_func) (const struct SpeexMode * mode);
 
 /** Encoder state destruction function */
-typedef void (*encoder_destroy_func)(void *st);
+	typedef void (*encoder_destroy_func) (void *st);
 
 /** Main encoding function */
-typedef int (*encode_func)(void *state, void *in, SpeexBits *bits);
+	typedef int (*encode_func) (void *state, void *in, SpeexBits * bits);
 
 /** Function for controlling the encoder options */
-typedef int (*encoder_ctl_func)(void *state, int request, void *ptr);
+	typedef int (*encoder_ctl_func) (void *state, int request, void *ptr);
 
 /** Decoder state initialization function */
-typedef void *(*decoder_init_func)(const struct SpeexMode *mode);
+	typedef void *(*decoder_init_func) (const struct SpeexMode * mode);
 
 /** Decoder state destruction function */
-typedef void (*decoder_destroy_func)(void *st);
+	typedef void (*decoder_destroy_func) (void *st);
 
 /** Main decoding function */
-typedef int  (*decode_func)(void *state, SpeexBits *bits, void *out);
+	typedef int (*decode_func) (void *state, SpeexBits * bits, void *out);
 
 /** Function for controlling the decoder options */
-typedef int (*decoder_ctl_func)(void *state, int request, void *ptr);
-
+	typedef int (*decoder_ctl_func) (void *state, int request, void *ptr);
 
 /** Query function for a mode */
-typedef int (*mode_query_func)(const void *mode, int request, void *ptr);
+	typedef int (*mode_query_func) (const void *mode, int request,
+					void *ptr);
 
-/** Struct defining a Speex mode */ 
-typedef struct SpeexMode {
+/** Struct defining a Speex mode */
+	typedef struct SpeexMode {
    /** Pointer to the low-level mode data */
-   const void *mode;
+		const void *mode;
 
    /** Pointer to the mode query function */
-   mode_query_func query;
-   
+		mode_query_func query;
+
    /** The name of the mode (you should not rely on this to identify the mode)*/
-   const char *modeName;
+		const char *modeName;
 
    /**ID of the mode*/
-   int modeID;
+		int modeID;
 
    /**Version number of the bitstream (incremented every time we break
     bitstream compatibility*/
-   int bitstream_version;
+		int bitstream_version;
 
    /** Pointer to encoder initialization function */
-   encoder_init_func enc_init;
+		encoder_init_func enc_init;
 
    /** Pointer to encoder destruction function */
-   encoder_destroy_func enc_destroy;
+		encoder_destroy_func enc_destroy;
 
    /** Pointer to frame encoding function */
-   encode_func enc;
+		encode_func enc;
 
    /** Pointer to decoder initialization function */
-   decoder_init_func dec_init;
+		decoder_init_func dec_init;
 
    /** Pointer to decoder destruction function */
-   decoder_destroy_func dec_destroy;
+		decoder_destroy_func dec_destroy;
 
    /** Pointer to frame decoding function */
-   decode_func dec;
+		decode_func dec;
 
    /** ioctl-like requests for encoder */
-   encoder_ctl_func enc_ctl;
+		encoder_ctl_func enc_ctl;
 
    /** ioctl-like requests for decoder */
-   decoder_ctl_func dec_ctl;
+		decoder_ctl_func dec_ctl;
 
-} SpeexMode;
+	} SpeexMode;
 
 /**
  * Returns a handle to a newly created Speex encoder state structure. For now, 
@@ -298,11 +293,11 @@ typedef struct SpeexMode {
  * @param mode The mode to use (either speex_nb_mode or speex_wb.mode) 
  * @return A newly created encoder state or NULL if state allocation fails
  */
-void *speex_encoder_init(const SpeexMode *mode);
+	void *speex_encoder_init(const SpeexMode * mode);
 
 /** Frees all resources associated to an existing Speex encoder state. 
  * @param state Encoder state to be destroyed */
-void speex_encoder_destroy(void *state);
+	void speex_encoder_destroy(void *state);
 
 /** Uses an existing encoder state to encode one frame of speech pointed to by
     "in". The encoded bit-stream is saved in "bits".
@@ -313,7 +308,7 @@ void speex_encoder_destroy(void *state);
  @param bits Bit-stream where the data will be written
  @return 0 if frame needs not be transmitted (DTX only), 1 otherwise
  */
-int speex_encode(void *state, float *in, SpeexBits *bits);
+	int speex_encode(void *state, float *in, SpeexBits * bits);
 
 /** Uses an existing encoder state to encode one frame of speech pointed to by
     "in". The encoded bit-stream is saved in "bits".
@@ -322,7 +317,7 @@ int speex_encode(void *state, float *in, SpeexBits *bits);
  @param bits Bit-stream where the data will be written
  @return 0 if frame needs not be transmitted (DTX only), 1 otherwise
  */
-int speex_encode_int(void *state, spx_int16_t *in, SpeexBits *bits);
+	int speex_encode_int(void *state, int16_t * in, SpeexBits * bits);
 
 /** Used like the ioctl function to control the encoder parameters
  *
@@ -331,8 +326,7 @@ int speex_encode_int(void *state, spx_int16_t *in, SpeexBits *bits);
  * @param ptr Data exchanged to-from function
  * @return 0 if no error, -1 if request in unknown, -2 for invalid parameter
  */
-int speex_encoder_ctl(void *state, int request, void *ptr);
-
+	int speex_encoder_ctl(void *state, int request, void *ptr);
 
 /** Returns a handle to a newly created decoder state structure. For now, 
  * the mode argument can be &nb_mode or &wb_mode . In the future, more modes
@@ -341,14 +335,14 @@ int speex_encoder_ctl(void *state, int request, void *ptr);
  *
  * @param mode Speex mode (one of speex_nb_mode or speex_wb_mode)
  * @return A newly created decoder state or NULL if state allocation fails
- */ 
-void *speex_decoder_init(const SpeexMode *mode);
+ */
+	void *speex_decoder_init(const SpeexMode * mode);
 
 /** Frees all resources associated to an existing decoder state.
  *
  * @param state State to be destroyed
  */
-void speex_decoder_destroy(void *state);
+	void speex_decoder_destroy(void *state);
 
 /** Uses an existing decoder state to decode one frame of speech from
  * bit-stream bits. The output speech is saved written to out.
@@ -358,7 +352,7 @@ void speex_decoder_destroy(void *state);
  * @param out Where to write the decoded frame
  * @return return status (0 for no error, -1 for end of stream, -2 corrupt stream)
  */
-int speex_decode(void *state, SpeexBits *bits, float *out);
+	int speex_decode(void *state, SpeexBits * bits, float *out);
 
 /** Uses an existing decoder state to decode one frame of speech from
  * bit-stream bits. The output speech is saved written to out.
@@ -368,7 +362,7 @@ int speex_decode(void *state, SpeexBits *bits, float *out);
  * @param out Where to write the decoded frame
  * @return return status (0 for no error, -1 for end of stream, -2 corrupt stream)
  */
-int speex_decode_int(void *state, SpeexBits *bits, spx_int16_t *out);
+	int speex_decode_int(void *state, SpeexBits * bits, int16_t * out);
 
 /** Used like the ioctl function to control the encoder parameters
  *
@@ -377,8 +371,7 @@ int speex_decode_int(void *state, SpeexBits *bits, spx_int16_t *out);
  * @param ptr Data exchanged to-from function
  * @return 0 if no error, -1 if request in unknown, -2 for invalid parameter
  */
-int speex_decoder_ctl(void *state, int request, void *ptr);
-
+	int speex_decoder_ctl(void *state, int request, void *ptr);
 
 /** Query function for mode information
  *
@@ -387,29 +380,29 @@ int speex_decoder_ctl(void *state, int request, void *ptr);
  * @param ptr Data exchanged to-from function
  * @return 0 if no error, -1 if request in unknown, -2 for invalid parameter
  */
-int speex_mode_query(const SpeexMode *mode, int request, void *ptr);
+	int speex_mode_query(const SpeexMode * mode, int request, void *ptr);
 
 /** Functions for controlling the behavior of libspeex
  * @param request ioctl-type request (one of the SPEEX_LIB_* macros)
  * @param ptr Data exchanged to-from function
  * @return 0 if no error, -1 if request in unknown, -2 for invalid parameter
  */
-int speex_lib_ctl(int request, void *ptr);
+	int speex_lib_ctl(int request, void *ptr);
 
 /** Default narrowband mode */
-extern const SpeexMode speex_nb_mode;
+	extern const SpeexMode speex_nb_mode;
 
 /** Default wideband mode */
-extern const SpeexMode speex_wb_mode;
+	extern const SpeexMode speex_wb_mode;
 
 /** Default "ultra-wideband" mode */
-extern const SpeexMode speex_uwb_mode;
+	extern const SpeexMode speex_uwb_mode;
 
 /** List of all modes available */
-extern const SpeexMode * const speex_mode_list[SPEEX_NB_MODES];
+	extern const SpeexMode *const speex_mode_list[SPEEX_NB_MODES];
 
 /** Obtain one of the modes available */
-const SpeexMode * speex_lib_get_mode (int mode);
+	const SpeexMode *speex_lib_get_mode(int mode);
 
 #ifndef WIN32
 /* We actually override the function in the narrowband case so that we can avoid linking in the wideband stuff */
@@ -419,6 +412,5 @@ const SpeexMode * speex_lib_get_mode (int mode);
 #ifdef __cplusplus
 }
 #endif
-
 /** @}*/
 #endif

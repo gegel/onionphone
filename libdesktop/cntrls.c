@@ -23,6 +23,7 @@
 #include "cntrls.h"
 #include "codecs.h"
 #include "tcp.h"
+//#include "audio.h"
 
 #include <stdarg.h>
 
@@ -52,7 +53,6 @@ extern char book_name[32]; //filename of current addressbook
 extern char command_str[256]; //command for set encryption
 extern char password[32];  //preshared password
 
-int sp_enc=7; 		//voice codec
 char sound_loop=0;      //flag of sound testing
 int menu=0;             //menu pointer
 int menuitem=0;         //menu iteam pointer
@@ -384,11 +384,11 @@ void doptt(int c)
  if(c==KEY_TAB) push_ptt();//ptt key: enable tx
  else if(c==KEY_ENTER) // on/off tx
  {
-  if(crp_state==-2) //answer incoming call
+  if(crp_state==2) //answer incoming call
   {
    sound_loop=0;
    off_tx();
-   do_ans();
+   do_ans(1);
    return;
   }
   else switch_tx();
@@ -550,9 +550,9 @@ int goesc(int cc)
 
  if(cc==KEY_ESC)  //if esc char detected
  {
-  if(crp_state==-2) //reject incoming call
+  if(crp_state==2) //reject incoming call
   {
-   disconnect();
+   do_ans(0);
    return 0;
   }
   ii=getmsec(); //time now
@@ -694,6 +694,7 @@ int parsecmd(void)
   {
    if(sound_loop)
    {
+    //soundrec(0);
     sound_loop=0;
     sound_test=0;
     web_printf("Voice test canceled\r\n");
@@ -701,12 +702,13 @@ int parsecmd(void)
   }
   else if(cmdbuf[2]=='V') //voice test
   {
+   //soundrec(1);
    sound_loop=1;
    web_printf("Voice test running\r\n");
   }
   else if(cmdbuf[2]=='I')
   {
-   set_encoder(sp_enc);
+   set_encoder(0);
    get_decoder(0);
    if(vox_level) web_printf("VOX level is %d%\r\n", vox_level);
    else web_printf("VOX uses SPEEX VAD detector\r\n");
@@ -777,14 +779,19 @@ int parsecmd(void)
   }
   else if(cmdbuf[2]=='1') //on
   {
+   //soundrec(1); //run audio input
    off_tx(); //temporary off
-   switch_tx(); //continiosly on
+   switch_tx(); //continiosly on  
   }
  }
  else if(cmdbuf[1]=='V') showaddr(); //view addrressbook
  else if(cmdbuf[1]=='E') return (doaddr()); //convert nick to address using addressbook
  else if(cmdbuf[1]=='X') return -32767; //-C terminate call
- else if(cmdbuf[1]=='H') disconnect(); //-H: hung up
+ else if(cmdbuf[1]=='H')
+ {
+  if((crp_state!=2)||(cmdbuf[2]=='X')) disconnect(); //-H: hung up
+  else do_ans(0); //gracefully reject incoming call waiting for answer
+ }
  else if(cmdbuf[1]=='P') //-Ppass: apply passphrase (if ommited, clear passphrase)
  {
   if(strlen(cmdbuf+2)<32)
@@ -819,13 +826,13 @@ int parsecmd(void)
   if(cmdbuf[2])
   {
    i=atoi(cmdbuf+2);
-   if((i>0)&&(i<19))
-   {
-    sp_enc=i;
-    set_encoder(sp_enc);
-   }
+   if((i>0)&&(i<19)) set_encoder(i);
    else if(cmdbuf[2]=='I') get_decoder(0);
-   else web_printf("Current encoder: %d. Avaliable are 1-18\r\n", sp_enc);
+   else
+   {
+    i=set_encoder(0);
+    web_printf("Coder number is %d. Avaliable are 1-18\r\n", i);
+   }
   }
   else
   {
@@ -1151,7 +1158,7 @@ int do_char(void)
  }
  while((c==KEY_TAB)&&(old_char==KEY_TAB)); //flush TAB after holding
  old_char=c; //for flushing TAB
- if((j<=0)||(!c)) usleep(0);
+ //if((j<=0)||(!c)) usleep(0);
  c=goesc(c); //process esc-sequences as control characters
  if(next_char) //remote emulate char
  {
@@ -1164,8 +1171,9 @@ int do_char(void)
  {
   c=gochar(c); //process character
   fflush(stdout); //print notifications
+  if(c==KEY_BREAK) return 1; // break (ctrl+C)
+  else return -1;
  }
- if(c==KEY_BREAK) return -1; // break (ctrl+C)
  return 0;
 }
 
@@ -1181,12 +1189,12 @@ void setcmd(char* cmdstr)
   {
    cmdbuf[0]=0;
    cmdptr=0;
-   next_char=13;
+   next_char=KEY_ENTER;
   }
  }
  else  //websocket mode
  { //truncate to first non-printable symbol
-  for(i=0;i<strlen(cmdstr);i++) if(cmdstr[i]<32) cmdstr[i]=0;
+  for(i=0;i<strlen(cmdstr);i++) if((cmdstr[i]<32)&&(cmdstr[i]>0)) cmdstr[i]=0;
   strcpy(cmdbuf, cmdstr); //apply incoming string as a command
   cmdptr=strlen(cmdbuf);  //length
   if(cmdptr) next_char=KEY_ENTER; //emulate enter key to execute command

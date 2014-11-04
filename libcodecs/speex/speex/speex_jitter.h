@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /* Copyright (C) 2002 Jean-Marc Valin */
 /**
    @file speex_jitter.h
@@ -41,30 +43,35 @@
  *  @{
  */
 
-#include "speex_types.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 /** Generic adaptive jitter buffer state */
-struct JitterBuffer_;
+	struct JitterBuffer_;
 
 /** Generic adaptive jitter buffer state */
-typedef struct JitterBuffer_ JitterBuffer;
+	typedef struct JitterBuffer_ JitterBuffer;
 
 /** Definition of an incoming packet */
-typedef struct _JitterBufferPacket JitterBufferPacket;
+	typedef struct _JitterBufferPacket JitterBufferPacket;
 
 /** Definition of an incoming packet */
-struct _JitterBufferPacket {
-   char        *data;       /**< Data bytes contained in the packet */
-   spx_uint32_t len;        /**< Length of the packet in bytes */
-   spx_uint32_t timestamp;  /**< Timestamp for the packet */
-   spx_uint32_t span;       /**< Time covered by the packet (same units as timestamp) */
-   spx_uint16_t sequence;   /**< RTP Sequence number if available (0 otherwise) */
-   spx_uint32_t user_data;  /**< Put whatever data you like here (it's ignored by the jitter buffer) */
-};
+	struct _JitterBufferPacket {
+		char *data; /**< Data bytes contained in the packet */
+		uint32_t len;
+			    /**< Length of the packet in bytes */
+		uint32_t timestamp;
+			    /**< Timestamp for the packet */
+		uint32_t span;
+			    /**< Time covered by the packet (same units as timestamp) */
+		uint16_t sequence;
+			    /**< RTP Sequence number if available (0 otherwise) */
+		uint32_t user_data;
+			    /**< Put whatever data you like here (it's ignored by the jitter buffer) */
+	};
 
 /** Packet has been retrieved */
 #define JITTER_BUFFER_OK 0
@@ -76,7 +83,6 @@ struct _JitterBufferPacket {
 #define JITTER_BUFFER_INTERNAL_ERROR -1
 /** Invalid argument */
 #define JITTER_BUFFER_BAD_ARGUMENT -2
-
 
 /** Set minimum amount of extra buffering required (margin) */
 #define JITTER_BUFFER_SET_MARGIN 0
@@ -113,7 +119,6 @@ struct _JitterBufferPacket {
 #define JITTER_BUFFER_SET_LATE_COST 12
 #define JITTER_BUFFER_GET_LATE_COST 13
 
-
 /** Initialises jitter buffer 
  * 
  * @param step_size Starting value for the size of concleanment packets and delay 
@@ -121,26 +126,27 @@ struct _JitterBufferPacket {
        and JITTER_BUFFER_GET_CONCEALMENT_SIZE.
  * @return Newly created jitter buffer state
  */
-JitterBuffer *jitter_buffer_init(int step_size);
+	JitterBuffer *jitter_buffer_init(int step_size);
 
 /** Restores jitter buffer to its original state 
  * 
  * @param jitter Jitter buffer state
  */
-void jitter_buffer_reset(JitterBuffer *jitter);
+	void jitter_buffer_reset(JitterBuffer * jitter);
 
 /** Destroys jitter buffer 
  * 
  * @param jitter Jitter buffer state
  */
-void jitter_buffer_destroy(JitterBuffer *jitter);
+	void jitter_buffer_destroy(JitterBuffer * jitter);
 
 /** Put one packet into the jitter buffer
  * 
  * @param jitter Jitter buffer state
  * @param packet Incoming packet
 */
-void jitter_buffer_put(JitterBuffer *jitter, const JitterBufferPacket *packet);
+	void jitter_buffer_put(JitterBuffer * jitter,
+			       const JitterBufferPacket * packet);
 
 /** Get one packet from the jitter buffer
  * 
@@ -149,7 +155,10 @@ void jitter_buffer_put(JitterBuffer *jitter, const JitterBufferPacket *packet);
  * @param desired_span Number of samples (or units) we wish to get from the buffer (no guarantee)
  * @param current_timestamp Timestamp for the returned packet 
 */
-int jitter_buffer_get(JitterBuffer *jitter, JitterBufferPacket *packet, spx_int32_t desired_span, spx_int32_t *start_offset);
+	int jitter_buffer_get(JitterBuffer * jitter,
+			      JitterBufferPacket * packet,
+			      int32_t desired_span,
+			      int32_t * start_offset);
 
 /** Used right after jitter_buffer_get() to obtain another packet that would have the same timestamp.
  * This is mainly useful for media where a single "frame" can be split into several packets.
@@ -157,25 +166,27 @@ int jitter_buffer_get(JitterBuffer *jitter, JitterBufferPacket *packet, spx_int3
  * @param jitter Jitter buffer state
  * @param packet Returned packet
  */
-int jitter_buffer_get_another(JitterBuffer *jitter, JitterBufferPacket *packet);
+	int jitter_buffer_get_another(JitterBuffer * jitter,
+				      JitterBufferPacket * packet);
 
 /** Get pointer timestamp of jitter buffer
  * 
  * @param jitter Jitter buffer state
 */
-int jitter_buffer_get_pointer_timestamp(JitterBuffer *jitter);
+	int jitter_buffer_get_pointer_timestamp(JitterBuffer * jitter);
 
 /** Advance by one tick
  * 
  * @param jitter Jitter buffer state
 */
-void jitter_buffer_tick(JitterBuffer *jitter);
+	void jitter_buffer_tick(JitterBuffer * jitter);
 
 /** Telling the jitter buffer about the remaining data in the application buffer
  * @param jitter Jitter buffer state
  * @param rem Amount of data buffered by the application (timestamp units)
  */
-void jitter_buffer_remaining_span(JitterBuffer *jitter, spx_uint32_t rem);
+	void jitter_buffer_remaining_span(JitterBuffer * jitter,
+					  uint32_t rem);
 
 /** Used like the ioctl function to control the jitter buffer parameters
  * 
@@ -184,14 +195,15 @@ void jitter_buffer_remaining_span(JitterBuffer *jitter, spx_uint32_t rem);
  * @param ptr Data exchanged to-from function
  * @return 0 if no error, -1 if request in unknown
 */
-int jitter_buffer_ctl(JitterBuffer *jitter, int request, void *ptr);
+	int jitter_buffer_ctl(JitterBuffer * jitter, int request, void *ptr);
 
-int jitter_buffer_update_delay(JitterBuffer *jitter, JitterBufferPacket *packet, spx_int32_t *start_offset);
+	int jitter_buffer_update_delay(JitterBuffer * jitter,
+				       JitterBufferPacket * packet,
+				       int32_t * start_offset);
 
 /* @} */
 
 #ifdef __cplusplus
 }
 #endif
-
 #endif

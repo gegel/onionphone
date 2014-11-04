@@ -22,6 +22,6 @@
 #define _POSTFILT_H_
 
 /* ========== Prototypes ========== */
-void postfilt(Shortword syn[], Shortword prev_lsf[], Shortword cur_lsf[]);
+void postfilt(int16_t syn[], int16_t prev_lsf[], int16_t cur_lsf[]);
 
 #endif

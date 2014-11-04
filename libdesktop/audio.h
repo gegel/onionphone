@@ -28,3 +28,4 @@
    int getchunksize(void);
    int getbufsize(void);
    void soundflush(void);
+    int soundrec(int on);

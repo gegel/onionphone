@@ -137,7 +137,7 @@ static void vfeatures(float speech[], float lpspeech[], int length, int pitch,
 	static float Elow_v_hat;	/* estimate of average Elow when speech is present  */
 	static float avg_num[] = { 1.60283f - 4, 3.20566f - 4, 1.60283f - 4 };
 	static float avg_den[] = { 1.0f, -1.949359f, 0.95f };
-	static float Elow_buf[NFRAMES_ELOW];	/* the past NFRAMES_ELOW of Elow values */
+	static float Elow_buf[NFRAMES_ELOW + 1];	/* the past NFRAMES_ELOW of Elow values */
 	static int Elow_order[NFRAMES_ELOW];
 	static FILTER *uvnf, *vnf;
 	static float uvnf_state[] = { 468.053f, 468.053f };

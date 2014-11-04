@@ -49,11 +49,11 @@ Secretariat fax: +33 493 65 47 16.
  *
  *	 INPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
- *	   vec2 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec2 		   16 bit short signed integer (int16_t) vector whose
  *					   values falls in the range
  *					   0xffff 8000 <= vec2 <= 0x0000 7fff.
  *
@@ -65,7 +65,7 @@ Secretariat fax: +33 493 65 47 16.
  *
  *	 RETURN VALUE:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1[] <= 0x0000 7fff.
  *
@@ -84,12 +84,12 @@ Secretariat fax: +33 493 65 47 16.
  *
  *************************************************************************/
 
-Shortword *v_add(Shortword vec1[], const Shortword vec2[], Shortword n)
+int16_t *v_add(int16_t vec1[], const int16_t vec2[], int16_t n)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = add(*vec1, *vec2);
+		*vec1 = melpe_add(*vec1, *vec2);
 		vec1++;
 		vec2++;
 	}
@@ -107,11 +107,11 @@ Shortword *v_add(Shortword vec1[], const Shortword vec2[], Shortword n)
  *
  *	 INPUTS:
  *
- *	   L_vec1		   32 bit long signed integer (Longword) vector whose
+ *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
  *					   values fall in the range
  *					   0x8000 0000 <= L_vec1 <= 0x7fff ffff.
  *
- *	   L_vec2		   32 bit long signed integer (Longword) vector whose
+ *	   L_vec2		   32 bit long signed integer (int32_t) vector whose
  *					   values falls in the range
  *					   0x8000 0000 <= L_vec2 <= 0x7fff ffff.
  *
@@ -123,7 +123,7 @@ Shortword *v_add(Shortword vec1[], const Shortword vec2[], Shortword n)
  *
  *	 RETURN VALUE:
  *
- *	   L_vec1		   32 bit long signed integer (Longword) vector whose
+ *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
  *					   values fall in the range
  *					   0x8000 0000 <= L_vec1[] <= 0x7fff ffff.
  *
@@ -142,12 +142,12 @@ Shortword *v_add(Shortword vec1[], const Shortword vec2[], Shortword n)
  *
  *************************************************************************/
 
-Longword *L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n)
+int32_t *L_v_add(int32_t L_vec1[], int32_t L_vec2[], int16_t n)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
-		*L_vec1 = L_add(*L_vec1, *L_vec2);
+		*L_vec1 = melpe_L_add(*L_vec1, *L_vec2);
 		L_vec1++;
 		L_vec2++;
 	}
@@ -164,7 +164,7 @@ Longword *L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n)
  *
  *	 INPUTS:
  *
- *	   vec2 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec2 		   16 bit short signed integer (int16_t) vector whose
  *					   values falls in the range
  *					   0xffff 8000 <= vec2 <= 0x0000 7fff.
  *
@@ -172,13 +172,13 @@ Longword *L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n)
  *
  *	 OUTPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
  *	 RETURN VALUE:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1[] <= 0x0000 7fff.
  *
@@ -191,9 +191,9 @@ Longword *L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n)
  *	 KEYWORDS: equate, copy
  *
  *************************************************************************/
-Shortword *v_equ(Shortword vec1[], const Shortword vec2[], Shortword n)
+int16_t *v_equ(int16_t vec1[], const int16_t vec2[], int16_t n)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
 		*vec1 = *vec2;
@@ -213,7 +213,7 @@ Shortword *v_equ(Shortword vec1[], const Shortword vec2[], Shortword n)
  *
  *	 INPUTS:
  *
- *	   vec2 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec2 		   16 bit short signed integer (int16_t) vector whose
  *					   values falls in the range
  *					   0xffff 8000 <= vec2 <= 0x0000 7fff.
  *	   scale		   right shift factor
@@ -221,13 +221,13 @@ Shortword *v_equ(Shortword vec1[], const Shortword vec2[], Shortword n)
  *
  *	 OUTPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
  *	 RETURN VALUE:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1[] <= 0x0000 7fff.
  *
@@ -241,13 +241,13 @@ Shortword *v_equ(Shortword vec1[], const Shortword vec2[], Shortword n)
  *
  *************************************************************************/
 
-Shortword *v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
-		     Shortword n)
+int16_t *v_equ_shr(int16_t vec1[], int16_t vec2[], int16_t scale,
+		     int16_t n)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = shr(*vec2, scale);
+		*vec1 = melpe_shr(*vec2, scale);
 		vec1++;
 		vec2++;
 	}
@@ -264,7 +264,7 @@ Shortword *v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
  *
  *	 INPUTS:
  *
- *	   L_vec2		   32 bit long signed integer (Longword) vector whose
+ *	   L_vec2		   32 bit long signed integer (int32_t) vector whose
  *					   values falls in the range
  *					   0x8000 0000 <= L_vec2 <= 0x7fff ffff.
  *
@@ -272,13 +272,13 @@ Shortword *v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
  *
  *	 OUTPUTS:
  *
- *	   L_vec1		   32 bit long signed integer (Longword) vector whose
+ *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
  *					   values fall in the range
  *					   0x8000 0000 <= L_vec1 <= 0x7fff ffff.
  *
  *	 RETURN VALUE:
  *
- *	   L_vec1		   32 bit long signed integer (Longword) vector whose
+ *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
  *					   values fall in the range
  *					   0x8000 0000 <= L_vec1[] <= 0x7fff ffff.
  *
@@ -292,9 +292,9 @@ Shortword *v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
  *
  *************************************************************************/
 
-Longword *L_v_equ(Longword L_vec1[], Longword L_vec2[], Shortword n)
+int32_t *L_v_equ(int32_t L_vec1[], int32_t L_vec2[], int16_t n)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
 		*L_vec1 = *L_vec2;
@@ -315,10 +315,10 @@ Longword *L_v_equ(Longword L_vec1[], Longword L_vec2[], Shortword n)
  *
  *	 INPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) whose value
+ *	   vec1 		   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
- *	   vec2 		   16 bit short signed integer (Shortword) whose value
+ *	   vec2 		   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= vec2 <= 0x0000 7fff.
  *
  *	   n			   size of input vectors
@@ -335,7 +335,7 @@ Longword *L_v_equ(Longword L_vec1[], Longword L_vec2[], Shortword n)
  *
  *	 RETURN VALUE:
  *
- *	   innerprod	   16 bit short signed integer (Shortword) whose value
+ *	   innerprod	   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= innerprod <= 0x0000 7fff.
  *
@@ -348,27 +348,27 @@ Longword *L_v_equ(Longword L_vec1[], Longword L_vec2[], Shortword n)
  *
  *************************************************************************/
 
-Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
-		  Shortword qvec1, Shortword qvec2, Shortword qout)
+int16_t v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
+		  int16_t qvec1, int16_t qvec2, int16_t qout)
 {
-	register Shortword i;
-	Shortword innerprod;
-	Longword L_temp;
+	register int16_t i;
+	int16_t innerprod;
+	int32_t L_temp;
 
 	L_temp = 0;
 	for (i = 0; i < n; i++) {
-		L_temp = L_mac(L_temp, *vec1, *vec2);
+		L_temp = melpe_L_mac(L_temp, *vec1, *vec2);
 		vec1++;
 		vec2++;
 	}
 
 	/* (qvec1 + qvec2 + 1) is the Q value from L_mult(vec1[i], vec2[i]), and  */
 	/* also that for L_temp.  To make it Q qout, L_shl() it by                */
-	/* (qout - (qvec1 + qvec2 + 1)).  To return only a Shortword, use         */
+	/* (qout - (qvec1 + qvec2 + 1)).  To return only a int16_t, use         */
 	/* extract_h() after L_shl() by 16.                                       */
 
-	innerprod = extract_h(L_shl(L_temp,
-				    (Shortword) (qout - ((qvec1 + qvec2 + 1) -
+	innerprod = melpe_extract_h(melpe_L_shl(L_temp,
+				    (int16_t) (qout - ((qvec1 + qvec2 + 1) -
 							 16))));
 	return (innerprod);
 }
@@ -384,10 +384,10 @@ Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
  *
  *	 INPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) whose value
+ *	   vec1 		   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
- *	   vec2 		   16 bit short signed integer (Shortword) whose value
+ *	   vec2 		   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= vec2 <= 0x0000 7fff.
  *
  *	   n			   size of input vectors
@@ -404,7 +404,7 @@ Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
  *
  *	 RETURN VALUE:
  *
- *	   L_innerprod	   32 bit long signed integer (Longword) whose value
+ *	   L_innerprod	   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_innerprod <= 0x7fff ffff.
  *
@@ -417,23 +417,23 @@ Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
  *
  *************************************************************************/
 
-Longword L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
-		   Shortword qvec1, Shortword qvec2, Shortword qout)
+int32_t L_v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
+		   int16_t qvec1, int16_t qvec2, int16_t qout)
 {
-	register Shortword i;
-	Shortword shift;
-	Longword L_innerprod, L_temp;
+	register int16_t i;
+	int16_t shift;
+	int32_t L_innerprod, L_temp;
 
 	L_temp = 0;
 	for (i = 0; i < n; i++) {
-		L_temp = L_mac(L_temp, *vec1, *vec2);
+		L_temp = melpe_L_mac(L_temp, *vec1, *vec2);
 		vec1++;
 		vec2++;
 	}
 
 	/* L_temp is now (qvec1 + qvec2 + 1) */
-	shift = sub(qout, add(add(qvec1, qvec2), 1));
-	L_innerprod = L_shl(L_temp, shift);
+	shift = melpe_sub(qout, melpe_add(melpe_add(qvec1, qvec2), 1));
+	L_innerprod = melpe_L_shl(L_temp, shift);
 	return (L_innerprod);
 }
 
@@ -448,7 +448,7 @@ Longword L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
  *
  *	 INPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) whose value
+ *	   vec1 		   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
  *	   n			   size of input vectors
@@ -463,7 +463,7 @@ Longword L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
  *
  *	 RETURN VALUE:
  *
- *	   magsq		   16 bit short signed integer (Shortword) whose value
+ *	   magsq		   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= magsq <= 0x0000 7fff.
  *
@@ -476,22 +476,22 @@ Longword L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
  *
  *************************************************************************/
 
-Shortword v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
-		  Shortword qout)
+int16_t v_magsq(int16_t vec1[], int16_t n, int16_t qvec1,
+		  int16_t qout)
 {
-	register Shortword i;
-	Shortword shift;
-	Shortword magsq;
-	Longword L_temp;
+	register int16_t i;
+	int16_t shift;
+	int16_t magsq;
+	int32_t L_temp;
 
 	L_temp = 0;
 	for (i = 0; i < n; i++) {
-		L_temp = L_mac(L_temp, *vec1, *vec1);
+		L_temp = melpe_L_mac(L_temp, *vec1, *vec1);
 		vec1++;
 	}
 	/* qout - ((2*qvec1 + 1) - 16) */
-	shift = sub(qout, sub(add(shl(qvec1, 1), 1), 16));
-	magsq = extract_h(L_shl(L_temp, shift));
+	shift = melpe_sub(qout, melpe_sub(melpe_add(melpe_shl(qvec1, 1), 1), 16));
+	magsq = melpe_extract_h(melpe_L_shl(L_temp, shift));
 	return (magsq);
 }
 
@@ -506,7 +506,7 @@ Shortword v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
  *
  *	 INPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) whose value
+ *	   vec1 		   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
  *	   n			   size of input vectors
@@ -521,7 +521,7 @@ Shortword v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
  *
  *	 RETURN VALUE:
  *
- *	   L_magsq		   32 bit long signed integer (Longword) whose value
+ *	   L_magsq		   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_magsq <= 0x7fff ffff.
  *
@@ -534,21 +534,21 @@ Shortword v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
  *
  *************************************************************************/
 
-Longword L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
-		   Shortword qout)
+int32_t L_v_magsq(int16_t vec1[], int16_t n, int16_t qvec1,
+		   int16_t qout)
 {
-	register Shortword i;
-	Shortword shift;
-	Longword L_magsq, L_temp;
+	register int16_t i;
+	int16_t shift;
+	int32_t L_magsq, L_temp;
 
 	L_temp = 0;
 	for (i = 0; i < n; i++) {
-		L_temp = L_mac(L_temp, *vec1, *vec1);
+		L_temp = melpe_L_mac(L_temp, *vec1, *vec1);
 		vec1++;
 	}
 	/* ((qout-16)-((2*qvec1+1)-16)) */
-	shift = sub(sub(qout, shl(qvec1, 1)), 1);
-	L_magsq = L_shl(L_temp, shift);
+	shift = melpe_sub(melpe_sub(qout, melpe_shl(qvec1, 1)), 1);
+	L_magsq = melpe_L_shl(L_temp, shift);
 	return (L_magsq);
 }
 
@@ -563,11 +563,11 @@ Longword L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
  *
  *	 INPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1 <= 0x0000 7fff.
  *	   scale
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *	   n			   size of vec1
@@ -578,7 +578,7 @@ Longword L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
  *
  *	 RETURN VALUE:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1[] <= 0x0000 7fff.
  *
@@ -591,12 +591,12 @@ Longword L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
  *
  *************************************************************************/
 
-Shortword *v_scale(Shortword vec1[], Shortword scale, Shortword n)
+int16_t *v_scale(int16_t vec1[], int16_t scale, int16_t n)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = mult(*vec1, scale);
+		*vec1 = melpe_mult(*vec1, scale);
 		vec1++;
 	}
 	return (vec1 - n);
@@ -613,16 +613,16 @@ Shortword *v_scale(Shortword vec1[], Shortword scale, Shortword n)
  *
  *	 INPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
- *	   scale		   16 bit short signed integer (Shortword) whose value
+ *	   scale		   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *	   n			   size of vec1
  *
- *	   shift		   16 bit short signed integer (Shortword) whose value
+ *	   shift		   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0x0000 0000 <= var1 <= 0x0000 1f.
  *
  *	 OUTPUTS:
@@ -631,7 +631,7 @@ Shortword *v_scale(Shortword vec1[], Shortword scale, Shortword n)
  *
  *	 RETURN VALUE:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1[] <= 0x0000 7fff.
  *
@@ -644,13 +644,13 @@ Shortword *v_scale(Shortword vec1[], Shortword scale, Shortword n)
  *
  *************************************************************************/
 
-Shortword *v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
-		       Shortword shift)
+int16_t *v_scale_shl(int16_t vec1[], int16_t scale, int16_t n,
+		       int16_t shift)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = extract_h(L_shl(L_mult(*vec1, scale), shift));
+		*vec1 = melpe_extract_h(melpe_L_shl(melpe_L_mult(*vec1, scale), shift));
 		vec1++;
 	}
 	return (vec1 - n);
@@ -667,11 +667,11 @@ Shortword *v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
  *
  *	 INPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
- *	   vec2 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec2 		   16 bit short signed integer (int16_t) vector whose
  *					   values falls in the range
  *					   0xffff 8000 <= vec2 <= 0x0000 7fff.
  *
@@ -683,7 +683,7 @@ Shortword *v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
  *
  *	 RETURN VALUE:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1[] <= 0x0000 7fff.
  *
@@ -702,12 +702,12 @@ Shortword *v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
  *
  *************************************************************************/
 
-Shortword *v_sub(Shortword vec1[], const Shortword vec2[], Shortword n)
+int16_t *v_sub(int16_t vec1[], const int16_t vec2[], int16_t n)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
-		*vec1 = sub(*vec1, *vec2);
+		*vec1 = melpe_sub(*vec1, *vec2);
 		vec1++;
 		vec2++;
 	}
@@ -725,7 +725,7 @@ Shortword *v_sub(Shortword vec1[], const Shortword vec2[], Shortword n)
  *
  *	 INPUTS:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values fall in the range
  *					   0xffff 8000 <= vec1 <= 0x0000 7fff.
  *
@@ -737,7 +737,7 @@ Shortword *v_sub(Shortword vec1[], const Shortword vec2[], Shortword n)
  *
  *	 RETURN VALUE:
  *
- *	   vec1 		   16 bit short signed integer (Shortword) vector whose
+ *	   vec1 		   16 bit short signed integer (int16_t) vector whose
  *					   values are equal to 0x0000 0000.
  *
  *	 IMPLEMENTATION:
@@ -749,9 +749,9 @@ Shortword *v_sub(Shortword vec1[], const Shortword vec2[], Shortword n)
  *	 KEYWORDS: zap, clear, reset
  *
  *************************************************************************/
-Shortword *v_zap(Shortword vec1[], Shortword n)
+int16_t *v_zap(int16_t vec1[], int16_t n)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
 		*vec1 = 0;
@@ -770,7 +770,7 @@ Shortword *v_zap(Shortword vec1[], Shortword n)
  *
  *	 INPUTS:
  *
- *	   L_vec1		   32 bit long signed integer (Longword) vector whose
+ *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
  *					   values fall in the range
  *					   0x8000 0000 <= vec1 <= 0x7fff ffff.
  *
@@ -782,7 +782,7 @@ Shortword *v_zap(Shortword vec1[], Shortword n)
  *
  *	 RETURN VALUE:
  *
- *	   L_vec1		   32 bit long signed integer (Longword) vector whose
+ *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
  *					   values are equal to 0x0000 0000.
  *
  *	 IMPLEMENTATION:
@@ -795,9 +795,9 @@ Shortword *v_zap(Shortword vec1[], Shortword n)
  *
  *************************************************************************/
 
-Longword *L_v_zap(Longword L_vec1[], Shortword n)
+int32_t *L_v_zap(int32_t L_vec1[], int16_t n)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < n; i++) {
 		*L_vec1 = 0;
@@ -807,23 +807,23 @@ Longword *L_v_zap(Longword L_vec1[], Shortword n)
 	return (L_vec1 - n);
 }
 
-Shortword *v_get(Shortword n)
+int16_t *v_get(int16_t n)
 {
-	Shortword *ptr;
-	Longword size;
+	int16_t *ptr;
+	int32_t size;
 
-	size = sizeof(Shortword) * n;
+	size = sizeof(int16_t) * n;
 	ptr = malloc(size);
 	assert(ptr != NULL);
 	return (ptr);
 }
 
-Longword *L_v_get(Shortword n)
+int32_t *L_v_get(int16_t n)
 {
-	Longword *ptr;
-	Longword size;
+	int32_t *ptr;
+	int32_t size;
 
-	size = sizeof(Longword) * n;
+	size = sizeof(int32_t) * n;
 	ptr = malloc(size);
 	assert(ptr != NULL);
 	return (ptr);

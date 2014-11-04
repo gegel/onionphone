@@ -19,7 +19,7 @@
 
 
  \begin{document}
- \title{OnionPhone V0.1a:\\ VOIP add-on for TorChat}
+ \title{OnionPhone V0.2a:\\ VOIP add-on for TorChat}
 
  \author{Van Gegel$^{1}$}
  \footnotetext{$^1$\,\textsf{torfone@ukr.net}}
@@ -53,7 +53,7 @@ OnionPhone provides independent level of p2p encryption and authentication that 
 \item using previously shared password (with the possibility of hidden notification of coercion);
 \item using a long-term public keys signed by PGP.
 \end{itemize}
-Onion Phone provides \texttt{Perfect Forward Secrecy} (uses a fresh key for each call) and \linebreak \texttt{Full  Deniability} for using long-term public keys of participants (as a fact and a content of the conversation): like a deniable SKEME \cite{RGK06} protocol uses for initial key exchange.
+OnionPhone provides \texttt{Perfect Forward Secrecy} (uses a fresh key for each call) and \linebreak \texttt{Full  Deniability} for using long-term public keys of participants (as a fact and a content of the conversation): like a deniable SKEME \cite{RGK06} protocol uses for initial key exchange.
 
  OnionPhone can use a wide range of built-in voice codecs (C source included) from ultra low-bitrates up to high quality.  The full list is:
  MELPE-1200, MELP-2400, CODEC2-1300, CODEC2-3200, LPC10-2400, CELP4800, AMR-4750/12200+DTX,
@@ -222,6 +222,8 @@ Parameter $destination\_command$ specifies the type of transport (UDP, TCP, Onio
 \end{verbatim}
 Connection type \textbf{-U} initiates direct UDP-connection, \textbf{-T} for direct TCP-connection, \textbf{-O} for TCP-connection over Tor. Address can be specified as a string IP, domain name or Onion address  with or without the suffix $.onion$. The port can be specified after the address separated by a colon. If no port is specified the default port  17447 will be used.
 
+Also, these commands can be used independently to install unauthenticated connections $guest$  to $guest$.
+
 Subcommands  \textbf{-P[password]} (see above) and \textbf{-I[our\_name]} can follow, separated by spaces:
 $our\_name$ parameter specifies how the name of the originator should appear to the recipient. If this option is omitted $Our_name$ from the configuration file is sent instead. If \textbf{-I }option is used without a parameter the default name $guest$ will be used (see above). If the parameter is specified it will be used as a name for the current session. In this case the initiator should have files of both public and private keys for this name. In addition this public key must be added to the address book. Of course the recipient also must  have a public key for this name and this key must be added in their address book otherwise the connection will not be established.
 
@@ -233,7 +235,9 @@ If both parties connect for the first time, the only key they have in common is 
 This connection is still encrypted with the session key but its resistance to MitM depends fully on Tor. Also the parties can't be sure of the authenticity of each other (except for the possible verification Onion addresses similar to TorChat). Preinstalled untrusted connection can share PGP-signed long-term public keys using \textbf{-K} command (this is denied because keys are public and attacker can't be sure that customers really declare own key: user can also send multiple keys of other various users) . Received keys will be automatically added to the address books and marked as untrusted. After manually checking the PGP signatures users can set the desired level of trust by editing contacts entries in the address book file. Later user can re-initialize the connection to be fully trusted, for example:
 \begin{verbatim}
 -Nalice -Or4kxspnzpnsel4fu -Ibob
-\end{verbatim}
+\end{verbatim}\subsection{Others commands}
+\textbf{-RI} command runs voice self-test (audio loopback) and useful for checking the sound quality in your system. While sound test is running there are no sound transmission to remote side. \textbf{-R} command cancels sound test and enables sound transmission.
+\textbf{-RI }command shows the OnionPhone current status, \textbf{-RL} command provides measurement of the latency (connection must be active), \textbf{-RS} command discovers local and external UDP listening interfaces (if UDP listener was enabled in configuration settings).
 \section{Key management}
 OnionPhone uses public keys to authenticate the subscribers to each other using PGP. Also keys in this format will be used in other projects in the future (audio chat group, encryption radio and over-GSM-audio channels, etc.).   Console utility $addkey$ is useful for key management:
 
@@ -269,7 +273,7 @@ You can also pass the key in any other way (for example, by email). The recipien
 
 \newpage
 \section{Cryptography design}
-Normally OnionPhone establishes a connection over Tor network. Despite the use of  Tor as a secure transport OnionPhone provides own layes of a p2p encryption and multifactor authentication. This makes it possible to use OnionPhone for direct connections outside Tor.
+Normally OnionPhone establishes a connection over Tor network. Despite the use of  Tor as a secure transport OnionPhone provides own layer of a p2p encryption and multifactor authentication. This makes it possible to use the direct connection outside Tor.
 \subsection{Cryptograhic Primitives}
 \begin{itemize}
 \item Asymmetric cryptography is Diffie - Hellmann on EC25519  \cite{Bernstein06} used curve25519\_donna C-code\cite{Langley11} ;
@@ -322,7 +326,7 @@ OnionPhone's IKE provides key agreement (produces fresh session key for each run
 
 Proposed IKE is intuitively viewed as deniable in both Deng at all \cite{DLZ01} (full deniability) and Raimondo and Gennaro (forward deniability) \cite{RG09} scenario even with a cooperating judge: while the dishonest party cooperates with judge before protocol running (but not during IKE) it is still will not be possible to convince the judge after IKE will be completed that the other party had really participated in the protocol. The initiator's view of the protocol can be simulated by an simulator that does not know the secret key of the acceptor and vice versa. The value of the session key also can be part of the output of the simulation so all subsequent session messages can also be simulated. Furthermore provided is the ability to reveal the auxiliary MAC key after completing the IKE. This is a not a standard cryptographic way, thus this feature is optional.
 
-The IKE looks resistant to UKS and wPFS attacks. Note that full deniability property conflicts with KCI resistance. Therefore after the leak of  user's private key the attacker can impersonate anybody to him. In our case the attack can be mounted only when the victim had never been in contact with the impersonated party and does not have their real public key yet. Fortunately the IKE is sensitive only to the leak of ECDH private key but not to the leak of  PGP private key used to sign.
+The IKE looks resistant to UKS and wPFS attacks. Note that full deniability property conflicts with KCI resistance. Therefore after the leak of  user's private key the attacker can impersonate anybody to him. Note the IKE is sensitive only to the leak of ECDH private key but not to the leak of  PGP private key used to sign.
 
  \medskip
 \textbf{Protocol:} let $p$,$q$ be two large primes satisfying $q|(p-1)$, $G_1$ an additive group of order $q$ on an elliptic curve 25519.  Public key $T = g^t$, where $t$ $\in$ $Z_q$ is the private key and $g=9$ is the base point of $G_1$. $H$ is a one-way hash function with RO-PRF property (SHA3 Keccak Sponge).
@@ -330,62 +334,90 @@ The IKE looks resistant to UKS and wPFS attacks. Note that full deniability prop
 When Alice wants to exchange session key $s$ with Bob, they cooperatively perform the following
 steps. Here, Alice’s and Bob’s identities, public and private keys are $id_A$, $A$, $a$ and $id_B$, $B$, $b$ respectively. Both participants randomly pick nonces $N_A$ and $N_B$, two ephemeral secret keys $x$, $v$  and $y$, $w$ and compute public keys $X$, $V$ and $Y$, $W$  respectively.
 
-First Alice and then Bob computes and send each other their randomly-looking hidden identifiers $D_A=H(id_A | B^v )$  and $ D_B=H(id_B | V^w )$, session public keys and nonce. Note that Alice the first commits her $X$, $N_A$ values and opens them only after receiving $Y$, $N_B$ from Bob.
+Beginning participants anonymously exchanges their public keys $V$, $W$ and commitments of $X$, $N_A$ and $Y$, $N_B$.
 
-Then participants share the common auxiliary key $K=H(W^a | B^v | W^v)=H(A^w | V^b | V^w)$ and compute authenticators signing the public session parameters:  $M_A=H(K | V | W | X | Y | N_A | N_B)$ and $M_B=H(K | W | V | Y | X | N_B | N_A)$. After the exchange and checking of authenticators both participants can be assured of the identity of each other. Finally  participants share the session key $s=H(X^y) \oplus N_A \oplus N_B = H(Y^x) \oplus N_A \oplus N_B$ and optionally reveal $K$.
+At the next step participants computes theirs hidden IDs and exchanges them and public keys $X$, $Y$ and nonce $N_A$, $N_B$. As a result, agreed the session and auxiliary secrets $s$, $K$.
+
+Finally participants sign session parameters using an auxiliary secret $K$ and exchanges authenticators $M_A$, $M_B$ confirming ownership of their secret keys $a$ and $b$.
+
 
  \pagebreak
-Thus, to establish a session key parties $A$ and $B$ shall exchange the following messages:
-\begin{enumerate}
-\bigskip
-\item $A$ (originator):
+Thus, parties $A$ (originator) and $B$ (responder) shall exchange the following messages:
+\smallskip
 
- $ D_A=H(id_A | B^v ), V=g^v, X=g^x$, where $v$ $\in$ $Z_q$, $x$ $\in$ $Z_q$ at random
+\begin{tabbing}
 
-$C=H(X|N_A)$, where $N_A$ at random
+\rule{16cm}{1pt}
+\\
 
-$A \rightarrow B: $\hspace*{10mm}$ D_A,V, C$
-\bigskip
-\item $B$:
+$A$:\hspace*{10mm}\= $V = g^v, X = g^x$\=, where $v$ $\in$ $Z_q$, $x$ $\in$ $Z_q$ at random\\
 
-searches contact in $id$-list matching $D_A$
+\>$C_A = H(X | N_A)$, where $N_A$ at random\\
 
-$D_B=H(id_B | V^w), W=g^w, Y=g^y$, where $w$ $\in$ $Z_q$, $y$ $\in$ $Z_q$ at random
+\>\>$A \rightarrow B: $\hspace*{10mm}$ V, C_A$\\
 
-$N_B$ at random
+\rule{16cm}{0pt}
+\\
 
-$A \rightarrow B: $\hspace*{10mm}$D_B, W, Y, N_B$
-\bigskip
-\item $A$:
+$B$:\>$W = g^w, Y = g^y$, where $w$ $\in$ $Z_q$, $y$ $\in$ $Z_q$ at random\\
 
-checks $D_B$ valid?
+\>$C_B = H(Y | N_B)$, where $N_B$ at random\\
 
-$K=H(W^a | B^v | W^v)$
+\>\>$B \rightarrow A: $\hspace*{10mm}$ W, C_B$\\
 
-$M_A=H(K| V | W | X | Y | N_A | N_B)$
+ \rule{16cm}{1pt}
+ \\
+$A$:\>$ D_A = H(id_A | B^v | W^v )$\\
 
-$s=H(X^y) \oplus N_A \oplus N_B$
 
-$A \rightarrow B: $\hspace*{10mm}$X, N_A, M_A$
-\bigskip
-\item $B$:
 
-checks $C$ and $M_A$ valid?
+\>\>$A \rightarrow B: $\hspace*{10mm}$ D_A, X, N_A$\\
 
-$K=H(A^w | V^b | V^w)$
+ \rule{16cm}{0pt}
+\\
+ $B$:\>checks $C_A =? H(X | N_A)$\\
 
-$M_B=H(K | W | V | Y | X | N_B | N_A)$
+\>searches contact in $id$-list matching $D_A =? H(id_? |V^b | V^w)$\\
 
-$s=H(Y^x) \oplus N_A \oplus N_B$
+\>$D_B = H(id_B | A^w | V^w )$\\
 
-$B \rightarrow A: $\hspace*{10mm}$M_B$
+\>\>$B \rightarrow A: $\hspace*{10mm}$ D_B, Y, N_B$\\
 
-\end{enumerate}
-\bigskip
-$\hspace*{5mm}$A$: $\hspace*{10mm}checks $M_B$ valid?
+ \rule{16cm}{1pt}
+ \\
+
+$A$:\>checks $C_B =? H(Y , N_B)$\\
+
+\>checks $D_B =? H(id_B | W^a | W^v)$\\
+
+\>$K = H(W^a | B^v | W^v)$\\
+
+\>$M_A = H(K| V | W | X | Y | N_A | N_B)$\\
+
+\>$s = H(X^y) \oplus N_A \oplus N_B$\\
+
+\>\>$A \rightarrow B: $\hspace*{10mm}$M_A$\\
+
+ \rule{16cm}{0pt}
+\\
+
+$B$:\>$K = H(A^w | V^b | V^w)$\\
+
+\>check $M_A =? H(K| V | W | X | Y | N_A | N_B)$\\
+
+\>$M_B = H(K | W | V | Y | X | N_B | N_A)$\\
+
+\>$s = H(Y^x) \oplus N_A \oplus N_B$\\
+
+\>\>$B \rightarrow A: $\hspace*{10mm}$M_B$\\
+ \rule{16cm}{1pt}
+ \\
+$A$:\>checks $M_B =? H(K | W | V | Y | X | N_B | N_A)$
+
+\\
+\end{tabbing}
 
 \begin{center}
-\bigskip
 $A, B: $\hspace*{2mm}shares secret $s$
 
 $A \rightarrow B: $\hspace*{2mm}$K$ (optionally reveals auxiliary key)

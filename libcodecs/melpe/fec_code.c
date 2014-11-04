@@ -49,25 +49,25 @@ Secretariat fax: +33 493 65 47 16.
 #define BEP_CORR		-1	/* "Correct" bit error position */
 #define BEP_UNCORR		-2	/* "Uncorrectable" bit error position */
 
-static Shortword codewd74[7];
-static Shortword codewd84[8];
-static Shortword codewd_13x9[13];
+static int16_t codewd74[7];
+static int16_t codewd84[8];
+static int16_t codewd_13x9[13];
 
 /* (7,4) Hamming code tables.  Parity generator matrix. */
-static const Shortword pmat74[3][4] = {
+static const int16_t pmat74[3][4] = {
 	{1, 1, 0, 1}, {1, 0, 1, 1}, {0, 1, 1, 1}
 };
 
 /* Syndrome table. */
-static const Shortword syntab74[8] = { BEP_CORR, 6, 5, 2, 4, 1, 0, 3 };
+static const int16_t syntab74[8] = { BEP_CORR, 6, 5, 2, 4, 1, 0, 3 };
 
 /* (8,4) extended Hamming code tables.  Parity generator matrix. */
-static const Shortword pmat84[4][4] = {
+static const int16_t pmat84[4][4] = {
 	{1, 1, 0, 1}, {1, 0, 1, 1}, {0, 1, 1, 1}, {1, 1, 1, 0}
 };
 
 /* Syndrome->error position lookup table. */
-static const Shortword syntab84[16] = {
+static const int16_t syntab84[16] = {
 	BEP_CORR, 7, 6, BEP_UNCORR,
 	5, BEP_UNCORR, BEP_UNCORR, 2,
 	4, BEP_UNCORR, BEP_UNCORR, 1,
@@ -79,7 +79,7 @@ static const Shortword syntab84[16] = {
 /* single bit voiced pitch errors.  Assign voiced pitch codes to values       */
 /* having Hamming weight > 2.                                                 */
 
-static const Shortword pitch_enc[PIT_QLEV + 1] = {
+static const int16_t pitch_enc[PIT_QLEV + 1] = {
 	0x0,			/* UV_PIND */
 	0x7,			/* 1 (first pitch QL - note offset) */
 	0xB,			/* 2 */
@@ -182,7 +182,7 @@ static const Shortword pitch_enc[PIT_QLEV + 1] = {
 	0x7F			/* 99 */
 };
 
-const Shortword low_rate_pitch_enc[4][PIT_QLEV] = {
+const int16_t low_rate_pitch_enc[4][PIT_QLEV] = {
 	{0},			/* All zeros */
 	{			/* for UUV (6,7) */
 	 63, 95, 111, 119, 123, 125, 126, 159, 175, 183,
@@ -224,7 +224,7 @@ const Shortword low_rate_pitch_enc[4][PIT_QLEV] = {
 /* codes map to INVAL_PIND, protecting against 1-bit errors in voiced pitches */
 /* creating false unvoiced condition.                                         */
 
-static const Shortword pitch_dec[1 << PIT_BITS] = {
+static const int16_t pitch_dec[1 << PIT_BITS] = {
 	/* pitch index decoding table */
 	UV_PIND,		/* 0x0 */
 	UV_PIND,		/* 0x1 */
@@ -356,7 +356,7 @@ static const Shortword pitch_dec[1 << PIT_BITS] = {
 	100			/* 0x7F */
 };
 
-const Shortword low_rate_pitch_dec[PITCH_VQ_SIZE] = {
+const int16_t low_rate_pitch_dec[PITCH_VQ_SIZE] = {
 	UV_PIND,		/*   0 */
 	UV_PIND,		/*   1 */
 	UV_PIND,		/*   2 */
@@ -872,26 +872,26 @@ const Shortword low_rate_pitch_dec[PITCH_VQ_SIZE] = {
 };
 
 /* ----- Prototypes ----- */
-static Shortword binprod_int(Shortword x[], const Shortword y[], Shortword n);
+static int16_t binprod_int(int16_t x[], const int16_t y[], int16_t n);
 
-static void vgetbits(Shortword dest[], Shortword source, Shortword bit_pos,
-		     Shortword n);
+static void vgetbits(int16_t dest[], int16_t source, int16_t bit_pos,
+		     int16_t n);
 
-static void vsetbits(Shortword * dest, Shortword bit_pos, Shortword n,
-		     Shortword source[]);
+static void vsetbits(int16_t * dest, int16_t bit_pos, int16_t n,
+		     int16_t source[]);
 
-static void sbc_enc(Shortword x[], Shortword n, Shortword k,
-		    const Shortword pmat[]);
+static void sbc_enc(int16_t x[], int16_t n, int16_t k,
+		    const int16_t pmat[]);
 
-static Shortword sbc_dec(Shortword x[], Shortword n, Shortword k,
-			 const Shortword pmat[], const Shortword syntab[]);
+static int16_t sbc_dec(int16_t x[], int16_t n, int16_t k,
+			 const int16_t pmat[], const int16_t syntab[]);
 
-static Shortword sbc_syn(Shortword x[], Shortword n, Shortword k,
-			 const Shortword pmat[]);
+static int16_t sbc_syn(int16_t x[], int16_t n, int16_t k,
+			 const int16_t pmat[]);
 
-static void crc4_enc(Shortword bit[], Shortword num_bits);
+static void crc4_enc(int16_t bit[], int16_t num_bits);
 
-static Shortword crc4_dec(Shortword bit[], Shortword num_bits);
+static int16_t crc4_dec(int16_t bit[], int16_t num_bits);
 
 /*
     Name: fec_code.c, fec_decode.c
@@ -990,9 +990,9 @@ void low_rate_fec_code(struct quant_param *par)
 	}
 }
 
-Shortword fec_decode(struct quant_param *qpar, Shortword erase)
+int16_t fec_decode(struct quant_param *qpar, int16_t erase)
 {
-	Shortword berr_pos;
+	int16_t berr_pos;
 
 	/* Decode pitch index */
 	qpar->pitch_index = pitch_dec[qpar->pitch_index];
@@ -1059,10 +1059,10 @@ Shortword fec_decode(struct quant_param *qpar, Shortword erase)
 	return (erase);
 }
 
-Shortword low_rate_fec_decode(struct quant_param * qpar, Shortword erase,
-			      Shortword lsp_check[])
+int16_t low_rate_fec_decode(struct quant_param * qpar, int16_t erase,
+			      int16_t lsp_check[])
 {
-	Shortword berr_pos;
+	int16_t berr_pos;
 
 	if (qpar->uv_flag[0] && qpar->uv_flag[1] && qpar->uv_flag[2]) {
 		/* for 4 MSB of Gain */
@@ -1111,10 +1111,10 @@ Shortword low_rate_fec_decode(struct quant_param * qpar, Shortword erase,
 /* binprod returns a bitwise modulo-2 inner product between int arrays x[]    */
 /* and y[].                                                                   */
 
-static Shortword binprod_int(Shortword x[], const Shortword y[], Shortword n)
+static int16_t binprod_int(int16_t x[], const int16_t y[], int16_t n)
 {
-	register Shortword i;
-	Shortword val = 0;
+	register int16_t i;
+	int16_t val = 0;
 
 	for (i = 0; i < n; i++)
 		val ^= *x++ & *y++;
@@ -1127,26 +1127,26 @@ static Shortword binprod_int(Shortword x[], const Shortword y[], Shortword n)
 /* vsetbits() takes a length n bit vector and sets the bit pattern in an      */
 /* integer.                                                                   */
 
-static void vgetbits(Shortword dest[], Shortword source, Shortword bit_pos,
-		     Shortword n)
+static void vgetbits(int16_t dest[], int16_t source, int16_t bit_pos,
+		     int16_t n)
 {
-	register Shortword i;
-	const Shortword lsb_mask = 0x1;	/* least significant bit mask */
+	register int16_t i;
+	const int16_t lsb_mask = 0x1;	/* least significant bit mask */
 
-	if ((n >= 0) && (bit_pos >= sub(n, 1))) {
-		source = shr(source, (Shortword) (bit_pos - n + 1));
-		for (i = sub(n, 1); i >= 0; i--) {
-			dest[i] = (Shortword) (source & lsb_mask);
-			source = shr(source, 1);
+	if ((n >= 0) && (bit_pos >= melpe_sub(n, 1))) {
+		source = melpe_shr(source, (int16_t) (bit_pos - n + 1));
+		for (i = melpe_sub(n, 1); i >= 0; i--) {
+			dest[i] = (int16_t) (source & lsb_mask);
+			source = melpe_shr(source, 1);
 		}
 	}
 }
 
-static void vsetbits(Shortword * dest, Shortword bit_pos, Shortword n,
-		     Shortword source[])
+static void vsetbits(int16_t * dest, int16_t bit_pos, int16_t n,
+		     int16_t source[])
 {
-	register Shortword i, j;
-	const Shortword lsb_mask = 0x1;
+	register int16_t i, j;
+	const int16_t lsb_mask = 0x1;
 
 	if ((n >= 0) && (bit_pos >= n - 1)) {
 		for (i = 0, j = bit_pos; i < n; i++, j--) {
@@ -1176,19 +1176,19 @@ static void vsetbits(Shortword * dest, Shortword bit_pos, Shortword n,
 /*   sbc_syn() takes x (after processing by sbc_enc) and computes a syndrome  */
 /*   index used to look up a bit error position in the syndrome table.        */
 
-static void sbc_enc(Shortword x[], Shortword n, Shortword k,
-		    const Shortword pmat[])
+static void sbc_enc(int16_t x[], int16_t n, int16_t k,
+		    const int16_t pmat[])
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = k; i < n; i++, pmat += k)
 		x[i] = binprod_int(x, pmat, k);
 }
 
-static Shortword sbc_dec(Shortword x[], Shortword n, Shortword k,
-			 const Shortword pmat[], const Shortword syntab[])
+static int16_t sbc_dec(int16_t x[], int16_t n, int16_t k,
+			 const int16_t pmat[], const int16_t syntab[])
 {
-	Shortword bep;
+	int16_t bep;
 
 	bep = syntab[sbc_syn(x, n, k, pmat)];
 	if (bep > -1)
@@ -1196,43 +1196,43 @@ static Shortword sbc_dec(Shortword x[], Shortword n, Shortword k,
 	return (bep);
 }
 
-static Shortword sbc_syn(Shortword x[], Shortword n, Shortword k,
-			 const Shortword pmat[])
+static int16_t sbc_syn(int16_t x[], int16_t n, int16_t k,
+			 const int16_t pmat[])
 {
-	register Shortword i, j;
-	Shortword retval = 0;
+	register int16_t i, j;
+	int16_t retval = 0;
 
-	for (i = k, j = (Shortword) (n - k - 1); i < n; i++, j--, pmat += k)
-		retval = add(retval,
-			     (Shortword) ((x[i] ^ binprod_int(x, pmat, k)) <<
+	for (i = k, j = (int16_t) (n - k - 1); i < n; i++, j--, pmat += k)
+		retval = melpe_add(retval,
+			     (int16_t) ((x[i] ^ binprod_int(x, pmat, k)) <<
 					  j));
 	return (retval);
 }
 
-static void crc4_enc(Shortword bit[], Shortword num_bits)
+static void crc4_enc(int16_t bit[], int16_t num_bits)
 {
-	register Shortword i;
-	Shortword delay[4], x, ll;
+	register int16_t i;
+	int16_t delay[4], x, ll;
 
-	ll = add(num_bits, 4);
+	ll = melpe_add(num_bits, 4);
 	v_zap(delay, 4);
 
 	for (i = 1; i <= num_bits; i++) {
-		x = (Shortword) (delay[3] ^ bit[ll - i]);
+		x = (int16_t) (delay[3] ^ bit[ll - i]);
 
 		delay[3] = delay[2];
 		delay[2] = delay[1];
-		delay[1] = (Shortword) (x ^ delay[0]);
+		delay[1] = (int16_t) (x ^ delay[0]);
 		delay[0] = x;
 	}
 
 	v_equ(bit, delay, 4);
 }
 
-static Shortword crc4_dec(Shortword bit[], Shortword num_bits)
+static int16_t crc4_dec(int16_t bit[], int16_t num_bits)
 {
-	register Shortword i;
-	Shortword delay[4], x;
+	register int16_t i;
+	int16_t delay[4], x;
 
 	for (i = 1; i <= 4; i++)
 		delay[4 - i] = bit[num_bits - i];
@@ -1241,8 +1241,8 @@ static Shortword crc4_dec(Shortword bit[], Shortword num_bits)
 		x = delay[3];
 		delay[3] = delay[2];
 		delay[2] = delay[1];
-		delay[1] = (Shortword) (x ^ delay[0]);
-		delay[0] = (Shortword) (x ^ bit[num_bits - i]);
+		delay[1] = (int16_t) (x ^ delay[0]);
+		delay[0] = (int16_t) (x ^ bit[num_bits - i]);
 	}
 
 	x = 0x0;

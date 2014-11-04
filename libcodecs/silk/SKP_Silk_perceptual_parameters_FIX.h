@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -29,8 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SKP_SILK_PERCEPTUAL_PARAMETERS_FIX_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /* reduction in coding SNR during low speech activity */
@@ -43,56 +44,53 @@ extern "C"
 #define SPARSE_SNR_INCR_dB_Q7                           (2<<7)
 
 /* threshold for sparseness measure above which to use lower quantization offset during unvoiced */
-#define SPARSENESS_THRESHOLD_QNT_OFFSET_Q8              (3<<6) // 0.75
-
+#define SPARSENESS_THRESHOLD_QNT_OFFSET_Q8              (3<<6)	// 0.75
 
 /* noise shaping filter chirp factor */
-#define BANDWIDTH_EXPANSION_Q16                         61604 // 0.94
+#define BANDWIDTH_EXPANSION_Q16                         61604	// 0.94
 
 /* difference between chirp factors for analysis and synthesis noise shaping filters at low bitrates */
-#define LOW_RATE_BANDWIDTH_EXPANSION_DELTA_Q16          655 //0.01f
+#define LOW_RATE_BANDWIDTH_EXPANSION_DELTA_Q16          655	//0.01f
 
 /* factor to reduce all bandwidth expansion coefficients for super wideband, relative to wideband */
-#define SWB_BANDWIDTH_EXPANSION_REDUCTION_Q16           (1<<16) // 1.0f;
+#define SWB_BANDWIDTH_EXPANSION_REDUCTION_Q16           (1<<16)	// 1.0f;
 
 /* gain reduction for fricatives */
 #define DE_ESSER_COEF_SWB_dB_Q7                         (2 << 7)
 #define DE_ESSER_COEF_WB_dB_Q7                          (1 << 7)
 
-
 /* extra harmonic boosting (signal shaping) at low bitrates */
-#define LOW_RATE_HARMONIC_BOOST_Q16                     6554 // 0.1
+#define LOW_RATE_HARMONIC_BOOST_Q16                     6554	// 0.1
 
 /* extra harmonic boosting (signal shaping) for noisy input signals */
-#define LOW_INPUT_QUALITY_HARMONIC_BOOST_Q16            6554 // 0.1
+#define LOW_INPUT_QUALITY_HARMONIC_BOOST_Q16            6554	// 0.1
 
 /* harmonic noise shaping */
-#define HARMONIC_SHAPING_Q16                            19661 // 0.3
+#define HARMONIC_SHAPING_Q16                            19661	// 0.3
 
 /* extra harmonic noise shaping for high bitrates or noisy input */
-#define HIGH_RATE_OR_LOW_QUALITY_HARMONIC_SHAPING_Q16   13107 // 0.2
-
+#define HIGH_RATE_OR_LOW_QUALITY_HARMONIC_SHAPING_Q16   13107	// 0.2
 
 /* parameter for shaping noise towards higher frequencies */
-#define HP_NOISE_COEF_Q16                               19661 // 0.3
+#define HP_NOISE_COEF_Q16                               19661	// 0.3
 
 /* parameter for shaping noise extra towards higher frequencies during voiced speech */
-#define HARM_HP_NOISE_COEF_Q24                          7549747 // 0.45
+#define HARM_HP_NOISE_COEF_Q24                          7549747	// 0.45
 
 /* parameter for applying a high-pass tilt to the input signal */
-#define INPUT_TILT_Q26                                  2684355 // 0.04
+#define INPUT_TILT_Q26                                  2684355	// 0.04
 
 /* parameter for extra high-pass tilt to the input signal at high rates */
-#define HIGH_RATE_INPUT_TILT_Q12                        246 // 0.06
+#define HIGH_RATE_INPUT_TILT_Q12                        246	// 0.06
 
 /* parameter for reducing noise at the very low frequencies */
 #define LOW_FREQ_SHAPING_Q0                             3
 
 /* less reduction of noise at the very low frequencies for signals with low SNR at low frequencies */
-#define LOW_QUALITY_LOW_FREQ_SHAPING_DECR_Q1            1 // 0.5_Q0
+#define LOW_QUALITY_LOW_FREQ_SHAPING_DECR_Q1            1	// 0.5_Q0
 
 /* fraction added to first autocorrelation value */
-#define SHAPE_WHITE_NOISE_FRACTION_Q20                  50 // 50_Q20 = 4.7684e-5
+#define SHAPE_WHITE_NOISE_FRACTION_Q20                  50	// 50_Q20 = 4.7684e-5
 
 /* fraction of first autocorrelation value added to residual energy value; limits prediction gain */
 #define SHAPE_MIN_ENERGY_RATIO_Q24                      256
@@ -101,13 +99,13 @@ extern "C"
 #define NOISE_FLOOR_dB_Q7                               (4 << 7)
 
 /* noise floor relative to active speech gain level */
-#define RELATIVE_MIN_GAIN_dB_Q7                         -6400 // -50_Q0 = -6400_Q7
+#define RELATIVE_MIN_GAIN_dB_Q7                         -6400	// -50_Q0 = -6400_Q7
 
 /* subframe smoothing coefficient for determining active speech gain level (lower -> more smoothing) */
-#define GAIN_SMOOTHING_COEF_Q10                         1 // 1e-3_Q0 = 1.024_Q10
+#define GAIN_SMOOTHING_COEF_Q10                         1	// 1e-3_Q0 = 1.024_Q10
 
 /* subframe smoothing coefficient for HarmBoost, HarmShapeGain, Tilt (lower -> more smoothing) */
-#define SUBFR_SMTH_COEF_Q16                             26214 // 0.4
+#define SUBFR_SMTH_COEF_Q16                             26214	// 0.4
 
 #define NOISE_GAIN_VL_Q16                               7864
 #define NOISE_GAIN_VH_Q16                               7864
@@ -117,5 +115,4 @@ extern "C"
 #ifdef __cplusplus
 }
 #endif
-
-#endif //SKP_SILK_PERCEPTUAL_PARAMETERS_FIX_H
+#endif				//SKP_SILK_PERCEPTUAL_PARAMETERS_FIX_H

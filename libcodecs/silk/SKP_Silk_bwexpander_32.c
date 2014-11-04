@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -28,19 +30,18 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include "SKP_Silk_SigProc_FIX.h"
 
 /* Chirp (bandwidth expand) LP AR filter */
-void SKP_Silk_bwexpander_32( 
-    SKP_int32        *ar,      /* I/O    AR filter to be expanded (without leading 1)    */
-    const SKP_int    d,        /* I    Length of ar                                      */
-    SKP_int32        chirp_Q16 /* I    Chirp factor in Q16                               */
-)
+void SKP_Silk_bwexpander_32(int32_t * ar,	/* I/O    AR filter to be expanded (without leading 1)    */
+			    const int d,	/* I    Length of ar                                      */
+			    int32_t chirp_Q16	/* I    Chirp factor in Q16                               */
+    )
 {
-    SKP_int   i;
-    SKP_int32 tmp_chirp_Q16;
+	int i;
+	int32_t tmp_chirp_Q16;
 
-    tmp_chirp_Q16 = chirp_Q16;
-    for( i = 0; i < d - 1; i++ ) {
-        ar[ i ]       = SKP_SMULWW( ar[ i ],   tmp_chirp_Q16 );
-        tmp_chirp_Q16 = SKP_SMULWW( chirp_Q16, tmp_chirp_Q16 );
-    }
-    ar[ d - 1 ] = SKP_SMULWW( ar[ d - 1 ], tmp_chirp_Q16 );
+	tmp_chirp_Q16 = chirp_Q16;
+	for (i = 0; i < d - 1; i++) {
+		ar[i] = SKP_SMULWW(ar[i], tmp_chirp_Q16);
+		tmp_chirp_Q16 = SKP_SMULWW(chirp_Q16, tmp_chirp_Q16);
+	}
+	ar[d - 1] = SKP_SMULWW(ar[d - 1], tmp_chirp_Q16);
 }

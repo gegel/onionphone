@@ -1,3 +1,5 @@
+/* vim: set tabstop=4:softtabstop=4:shiftwidth=4:noexpandtab */
+
 /***********************************************************************
 Copyright (c) 2006-2010, Skype Limited. All rights reserved. 
 Redistribution and use in source and binary forms, with or without 
@@ -29,8 +31,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define SKP_SILK_ERRORS_H
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /******************/
@@ -85,9 +86,7 @@ extern "C"
 /* Payload has bit errors */
 #define SKP_SILK_DEC_PAYLOAD_ERROR                      -12
 
-
 #ifdef __cplusplus
 }
 #endif
-
 #endif
