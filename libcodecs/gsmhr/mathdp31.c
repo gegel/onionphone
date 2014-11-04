@@ -30,7 +30,7 @@
  *
  *     PURPOSE:
  *
- *        Check to see if the input Longword is at the
+ *        Check to see if the input int32_t is at the
  *        upper or lower limit of its range.  i.e.
  *        0x7fff ffff or -0x8000 0000
  *
@@ -42,7 +42,7 @@
  *
  *     INPUTS:
  *
- *       L_In               A Longword input variable
+ *       L_In               A int32_t input variable
  *
  *
  *     OUTPUTS:             none
@@ -54,10 +54,10 @@
  *
  ***************************************************************************/
 
-short isLwLimit(Longword L_In)
+short isLwLimit(int32_t L_In)
 {
 
-	Longword L_ls;
+	int32_t L_ls;
 	short siOut;
 
 	if (L_In != 0) {
@@ -78,7 +78,7 @@ short isLwLimit(Longword L_In)
  *
  *     PURPOSE:
  *
- *        Check to see if the input Shortword is at the
+ *        Check to see if the input int16_t is at the
  *        upper or lower limit of its range.  i.e.
  *        0x7fff or -0x8000
  *
@@ -90,7 +90,7 @@ short isLwLimit(Longword L_In)
  *
  *     INPUTS:
  *
- *       swIn               A Shortword input variable
+ *       swIn               A int16_t input variable
  *
  *
  *     OUTPUTS:             none
@@ -102,10 +102,10 @@ short isLwLimit(Longword L_In)
  *
  ***************************************************************************/
 
-short isSwLimit(Shortword swIn)
+short isSwLimit(int16_t swIn)
 {
 
-	Shortword swls;
+	int16_t swls;
 	short siOut;
 
 	if (swIn != 0) {
@@ -130,9 +130,9 @@ short isSwLimit(Shortword swIn)
  *
  *     INPUTS:
  *
- *       L_var1             A Longword input variable
+ *       L_var1             A int32_t input variable
  *
- *       L_var2             A Longword input variable
+ *       L_var2             A int32_t input variable
  *
  *     OUTPUTS:             none
  *
@@ -151,16 +151,16 @@ short isSwLimit(Shortword swIn)
  *        output = (y1*x1) + mid                (high * high)
  *
  *
- *     RETURN VALUE:        A Longword value
+ *     RETURN VALUE:        A int32_t value
  *
  *     KEYWORDS: mult,mpy,multiplication
  *
  ***************************************************************************/
 
-Longword hr_L_mpy_ll(Longword L_var1, Longword L_var2)
+int32_t hr_L_mpy_ll(int32_t L_var1, int32_t L_var2)
 {
-	Shortword swLow1, swLow2, swHigh1, swHigh2;
-	Longword L_varOut, L_low, L_mid1, L_mid2, L_mid;
+	int16_t swLow1, swLow2, swHigh1, swHigh2;
+	int32_t L_varOut, L_low, L_mid1, L_mid2, L_mid;
 
 	swLow1 = shr(extract_l(L_var1), 1);
 	swLow1 = SW_MAX & swLow1;
@@ -198,22 +198,22 @@ Longword hr_L_mpy_ll(Longword L_var1, Longword L_var2)
  *
  *     INPUTS:
  *
- *       L_var2             A Longword input variable
+ *       L_var2             A int32_t input variable
  *
- *       var1               A Shortword input variable
+ *       var1               A int16_t input variable
  *
  *     OUTPUTS:             none
  *
- *     RETURN VALUE:        A Longword value
+ *     RETURN VALUE:        A int32_t value
  *
  *     KEYWORDS: mult,mpy,multiplication
  *
  ***************************************************************************/
 
-Longword hr_L_mpy_ls(Longword L_var2, Shortword var1)
+int32_t hr_L_mpy_ls(int32_t L_var2, int16_t var1)
 {
-	Longword L_varOut;
-	Shortword swtemp;
+	int32_t L_varOut;
+	int16_t swtemp;
 
 	swtemp = shr(extract_l(L_var2), 1);
 	swtemp = (short)32767 & (short)swtemp;

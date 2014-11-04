@@ -57,21 +57,21 @@
  |_________________________________________________________________________|
 */
 
-Shortword swOldR0;
-Shortword swOldR0Index;
+int16_t swOldR0;
+int16_t swOldR0Index;
 
 struct NormSw psnsWSfrmEngSpace[2 * N_SUB];
 
-Shortword pswHPFXState[4];
-Shortword pswHPFYState[8];
-Shortword pswOldFrmKs[NP];
-Shortword pswOldFrmAs[NP];
-Shortword pswOldFrmSNWCoefs[NP];
-Shortword pswWgtSpeechSpace[F_LEN + LMAX + CG_INT_MACS / 2];
+int16_t pswHPFXState[4];
+int16_t pswHPFYState[8];
+int16_t pswOldFrmKs[NP];
+int16_t pswOldFrmAs[NP];
+int16_t pswOldFrmSNWCoefs[NP];
+int16_t pswWgtSpeechSpace[F_LEN + LMAX + CG_INT_MACS / 2];
 
-Shortword pswSpeech[INBUFFSZ];	/* input speech */
+int16_t pswSpeech[INBUFFSZ];	/* input speech */
 
-Shortword swPtch = 1;
+int16_t swPtch = 1;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -79,13 +79,13 @@ Shortword swPtch = 1;
  |_________________________________________________________________________|
 */
 
-Shortword swTxGsHistPtr = 0;
+int16_t swTxGsHistPtr = 0;
 
-Shortword pswCNVSCode1[N_SUB],
+int16_t pswCNVSCode1[N_SUB],
     pswCNVSCode2[N_SUB], pswCNGsp0Code[N_SUB], pswCNLpc[3], swCNR0;
 
-extern Longword pL_GsHist[];
-extern LongwordRom ppLr_gsTable[4][32];
+extern int32_t pL_GsHist[];
+extern int32_t ppLr_gsTable[4][32];
 
 /***************************************************************************
  *
@@ -118,7 +118,7 @@ extern LongwordRom ppLr_gsTable[4][32];
  *
  *************************************************************************/
 
-void speechEncoder(Shortword pswSpeechIn[], Shortword pswFrmCodes[])
+void speechEncoder(int16_t pswSpeechIn[], int16_t pswFrmCodes[])
 {
 
 /*_________________________________________________________________________
@@ -128,13 +128,13 @@ void speechEncoder(Shortword pswSpeechIn[], Shortword pswFrmCodes[])
 */
 
 	/* 1st point in analysis window */
-	static Shortword *pswLpcStart = &pswSpeech[LPCSTARTINDEX];
+	static int16_t *pswLpcStart = &pswSpeech[LPCSTARTINDEX];
 
 	/* 1st point of new frame other than 1st */
-	static Shortword *pswNewSpeech = &pswSpeech[NUMSTARTUPSMP];
+	static int16_t *pswNewSpeech = &pswSpeech[NUMSTARTUPSMP];
 
 	/* sample 0 of weighted speech */
-	static Shortword *pswWgtSpeech = &pswWgtSpeechSpace[LSMAX];
+	static int16_t *pswWgtSpeech = &pswWgtSpeechSpace[LSMAX];
 
 	static struct NormSw *psnsWSfrmEng = &psnsWSfrmEngSpace[N_SUB];
 
@@ -155,7 +155,7 @@ void speechEncoder(Shortword pswSpeechIn[], Shortword pswFrmCodes[])
 
 	short int siUVCode, siSi, i, j;
 
-	Shortword swR0,
+	int16_t swR0,
 	    pswLagCode[N_SUB],
 	    pswVSCode1[N_SUB],
 	    pswVSCode2[N_SUB],
@@ -170,7 +170,7 @@ void speechEncoder(Shortword pswSpeechIn[], Shortword pswFrmCodes[])
 	    pswHNWCoefBuf[N_SUB],
 	    ppswSNWCoefAs[N_SUB][NP], ppswSynthAs[N_SUB][NP];
 
-	Shortword swSP, pswVadLags[4],	/* VAD Parameters */
+	int16_t swSP, pswVadLags[4],	/* VAD Parameters */
 	 swVadFlag;		/* flag indicating voice activity
 				 * detector state.  1 = speech or
 				 * speech/signal present */
@@ -244,7 +244,7 @@ void speechEncoder(Shortword pswSpeechIn[], Shortword pswFrmCodes[])
 
 	openLoopLagSearch(&pswWgtSpeechSpace[LSMAX],
 			  swOldR0Index,
-			  (Shortword) iR0,
+			  (int16_t) iR0,
 			  &siUVCode,
 			  pswLagList,
 			  pswNumLagList,
@@ -328,7 +328,7 @@ void speechEncoder(Shortword pswSpeechIn[], Shortword pswFrmCodes[])
 		piGsp0Code[i] = pswGsp0Code[i];
 	}
 
-	swOldR0Index = (Shortword) iR0;
+	swOldR0Index = (int16_t) iR0;
 	swOldR0 = swR0;
 
 	for (i = 0; i < NP; i++) {

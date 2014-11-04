@@ -114,13 +114,13 @@
  *      pswSpeechPara
  **************************************************************************/
 
-int decoderHomingFrameTest(Shortword pswSpeechPara[], int iLastPara)
+int decoderHomingFrameTest(int16_t pswSpeechPara[], int iLastPara)
 {
 	/* the n[] array contains the number of bits in each speech parameter */
 	static int n[] =
 	    { 5, 11, 9, 8, 1, 2, 7, 7, 5, 7, 7, 5, 7, 7, 5, 7, 7, 5 };
 
-	static Shortword dhf_mask[] = {
+	static int16_t dhf_mask[] = {
 		0x0000,		/* R0      */
 		0x0371,		/* LPC1    */
 		0x015E,		/* LPC2    */
@@ -185,7 +185,7 @@ void decoderReset(void)
 	/* variables defined in sp_dec.c */
 	/* ----------------------------- */
 
-	extern Shortword gswPostFiltAgcGain,
+	extern int16_t gswPostFiltAgcGain,
 	    gpswPostFiltStateNum[NP],
 	    gpswPostFiltStateDenom[NP],
 	    swPostEmphasisState,
@@ -197,13 +197,13 @@ void decoderReset(void)
 	    swOldR0Dec,
 	    pswLtpStateBaseDec[LTP_LEN + S_LEN], pswPPreState[LTP_LEN + S_LEN];
 
-	extern Shortword swMuteFlagOld;	/* error concealment */
+	extern int16_t swMuteFlagOld;	/* error concealment */
 
 	/* variables defined in err_conc.c *//* error concealment */
 	/* ------------------------------- *//* error concealment */
 
-	extern Longword plSubfrEnergyMem[4];	/* error concealment */
-	extern Shortword swLevelMem[4], lastR0,	/* error concealment */
+	extern int32_t plSubfrEnergyMem[4];	/* error concealment */
+	extern int16_t swLevelMem[4], lastR0,	/* error concealment */
 	 pswLastGood[18],	/* error concealment */
 	 swState, swLastFlag;	/* error concealment */
 
@@ -287,10 +287,10 @@ void decoderReset(void)
  *      pswSpeech
  **************************************************************************/
 
-int encoderHomingFrameTest(Shortword pswSpeech[])
+int encoderHomingFrameTest(int16_t pswSpeech[])
 {
 	int i;
-	Shortword j;
+	int16_t j;
 
 	for (i = 0; i < F_LEN; i++) {
 		j = pswSpeech[i] ^ EHF_MASK;
@@ -334,35 +334,35 @@ void encoderReset(void)
 	/* variables defined in sp_enc.c */
 	/* ----------------------------- */
 
-	extern Shortword swOldR0;
-	extern Shortword swOldR0Index;
+	extern int16_t swOldR0;
+	extern int16_t swOldR0Index;
 
 	extern struct NormSw psnsWSfrmEngSpace[];
 
-	extern Shortword pswHPFXState[];
-	extern Shortword pswHPFYState[];
-	extern Shortword pswOldFrmKs[];
-	extern Shortword pswOldFrmAs[];
-	extern Shortword pswOldFrmSNWCoefs[];
-	extern Shortword pswWgtSpeechSpace[];
+	extern int16_t pswHPFXState[];
+	extern int16_t pswHPFYState[];
+	extern int16_t pswOldFrmKs[];
+	extern int16_t pswOldFrmAs[];
+	extern int16_t pswOldFrmSNWCoefs[];
+	extern int16_t pswWgtSpeechSpace[];
 
-	extern Shortword pswSpeech[];	/* input speech */
+	extern int16_t pswSpeech[];	/* input speech */
 
-	extern Shortword swPtch;
+	extern int16_t swPtch;
 
 	/* variables defined in sp_frm.c */
 	/* ----------------------------- */
 
-	extern Shortword pswAnalysisState[NP];
+	extern int16_t pswAnalysisState[NP];
 
-	extern Shortword pswWStateNum[NP], pswWStateDenom[NP];
+	extern int16_t pswWStateNum[NP], pswWStateDenom[NP];
 
 	/* variables defined in sp_sfrm.c */
 	/* ------------------------------ */
 
-	extern Shortword pswLtpStateBase[LTP_LEN + S_LEN];
-	extern Shortword pswHState[NP];
-	extern Shortword pswHNWState[HNW_BUFF_LEN];
+	extern int16_t pswLtpStateBase[LTP_LEN + S_LEN];
+	extern int16_t pswHState[NP];
+	extern int16_t pswHNWState[HNW_BUFF_LEN];
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -516,15 +516,15 @@ void dtxResetTx(void)
 	/* variables defined in sp_enc.c */
 	/* ----------------------------- */
 
-	extern Shortword swTxGsHistPtr;
+	extern int16_t swTxGsHistPtr;
 
 	/* variables defined in dtx.c */
 	/* -------------------------- */
 
-	extern Shortword swVadFrmCnt;	/* Indicates the number of sequential
+	extern int16_t swVadFrmCnt;	/* Indicates the number of sequential
 					 * frames where VAD == 0 */
 	extern short int siUpdPointer;
-	extern Shortword swNElapsed;
+	extern int16_t swNElapsed;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -584,15 +584,15 @@ void dtxResetRx(void)
 	/* variables defined in sp_dec.c */
 	/* ----------------------------- */
 
-	extern Shortword swRxDTXState;
-	extern Shortword swDecoMode;
-	extern Shortword swDtxMuting;
-	extern Shortword swDtxBfiCnt;
+	extern int16_t swRxDTXState;
+	extern int16_t swDecoMode;
+	extern int16_t swDtxMuting;
+	extern int16_t swDtxBfiCnt;
 
-	extern Shortword swOldR0IndexDec;
+	extern int16_t swOldR0IndexDec;
 
-	extern Shortword swRxGsHistPtr;
-	extern Longword pL_RxGsHist[(OVERHANG - 1) * N_SUB];
+	extern int16_t swRxGsHistPtr;
+	extern int32_t pL_RxGsHist[(OVERHANG - 1) * N_SUB];
 
 /*_________________________________________________________________________
  |                                                                         |

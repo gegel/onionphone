@@ -11,87 +11,87 @@
  |_________________________________________________________________________|
 */
 
-void speechDecoder(Shortword pswParameters[],
-		   Shortword pswDecodedSpeechFrame[]);
+void speechDecoder(int16_t pswParameters[],
+		   int16_t pswDecodedSpeechFrame[]);
 
-void aFlatRcDp(Longword * pL_R, Shortword * pswRc);
+void aFlatRcDp(int32_t * pL_R, int16_t * pswRc);
 
-void b_con(Shortword swCodeWord, short siNumBits, Shortword pswVectOut[]);
+void b_con(int16_t swCodeWord, short siNumBits, int16_t pswVectOut[]);
 
-void fp_ex(Shortword swOrigLagIn, Shortword pswLTPState[]);
+void fp_ex(int16_t swOrigLagIn, int16_t pswLTPState[]);
 
-Shortword g_corr1(Shortword * pswIn, Longword * pL_out);
+int16_t g_corr1(int16_t * pswIn, int32_t * pL_out);
 
-Shortword g_corr1s(Shortword pswIn[], Shortword swEngyRShft, Longword * pL_out);
+int16_t g_corr1s(int16_t pswIn[], int16_t swEngyRShft, int32_t * pL_out);
 
 void getSfrmLpc(short int siSoftInterpolation,
-		Shortword swPrevR0, Shortword swNewR0,
-		Shortword pswPrevFrmKs[],
-		Shortword pswPrevFrmAs[],
-		Shortword pswPrevFrmPFNum[],
-		Shortword pswPrevFrmPFDenom[],
-		Shortword pswNewFrmKs[],
-		Shortword pswNewFrmAs[],
-		Shortword pswNewFrmPFNum[],
-		Shortword pswNewFrmPFDenom[],
+		int16_t swPrevR0, int16_t swNewR0,
+		int16_t pswPrevFrmKs[],
+		int16_t pswPrevFrmAs[],
+		int16_t pswPrevFrmPFNum[],
+		int16_t pswPrevFrmPFDenom[],
+		int16_t pswNewFrmKs[],
+		int16_t pswNewFrmAs[],
+		int16_t pswNewFrmPFNum[],
+		int16_t pswNewFrmPFDenom[],
 		struct NormSw *psnsSqrtRs,
-		Shortword * ppswSynthAs[],
-		Shortword * ppswPFNumAs[], Shortword * ppswPFDenomAs[]);
+		int16_t * ppswSynthAs[],
+		int16_t * ppswPFNumAs[], int16_t * ppswPFDenomAs[]);
 
-void get_ipjj(Shortword swLagIn, Shortword * pswIp, Shortword * pswJj);
+void get_ipjj(int16_t swLagIn, int16_t * pswIp, int16_t * pswJj);
 
-short int interpolateCheck(Shortword pswRefKs[],
-			   Shortword pswRefCoefsA[],
-			   Shortword pswOldCoefsA[],
-			   Shortword pswNewCoefsA[],
-			   Shortword swOldPer,
-			   Shortword swNewPer,
-			   Shortword swRq,
+short int interpolateCheck(int16_t pswRefKs[],
+			   int16_t pswRefCoefsA[],
+			   int16_t pswOldCoefsA[],
+			   int16_t pswNewCoefsA[],
+			   int16_t swOldPer,
+			   int16_t swNewPer,
+			   int16_t swRq,
 			   struct NormSw *psnsSqrtRsOut,
-			   Shortword pswCoefOutA[]);
+			   int16_t pswCoefOutA[]);
 
-void lpcFir(Shortword pswInput[], Shortword pswCoef[],
-	    Shortword pswState[], Shortword pswFiltOut[]);
+void lpcFir(int16_t pswInput[], int16_t pswCoef[],
+	    int16_t pswState[], int16_t pswFiltOut[]);
 
-void lpcIir(Shortword pswInput[], Shortword pswCoef[],
-	    Shortword pswState[], Shortword pswFiltOut[]);
+void lpcIir(int16_t pswInput[], int16_t pswCoef[],
+	    int16_t pswState[], int16_t pswFiltOut[]);
 
-void lpcIrZsIir(Shortword pswCoef[], Shortword pswFiltOut[]);
+void lpcIrZsIir(int16_t pswCoef[], int16_t pswFiltOut[]);
 
-void lpcZiIir(Shortword pswCoef[], Shortword pswState[],
-	      Shortword pswFiltOut[]);
+void lpcZiIir(int16_t pswCoef[], int16_t pswState[],
+	      int16_t pswFiltOut[]);
 
-void lpcZsFir(Shortword pswInput[], Shortword pswCoef[],
-	      Shortword pswFiltOut[]);
+void lpcZsFir(int16_t pswInput[], int16_t pswCoef[],
+	      int16_t pswFiltOut[]);
 
-void lpcZsIir(Shortword pswInput[], Shortword pswCoef[],
-	      Shortword pswFiltOut[]);
+void lpcZsIir(int16_t pswInput[], int16_t pswCoef[],
+	      int16_t pswFiltOut[]);
 
-void lpcZsIirP(Shortword pswCommonIO[], Shortword pswCoef[]);
+void lpcZsIirP(int16_t pswCommonIO[], int16_t pswCoef[]);
 
-Shortword r0BasedEnergyShft(Shortword swR0Index);
+int16_t r0BasedEnergyShft(int16_t swR0Index);
 
-short rcToADp(Shortword swAscale, Shortword pswRc[], Shortword pswA[]);
+short rcToADp(int16_t swAscale, int16_t pswRc[], int16_t pswA[]);
 
-void rcToCorrDpL(Shortword swAshift, Shortword swAscale,
-		 Shortword pswRc[], Longword pL_R[]);
+void rcToCorrDpL(int16_t swAshift, int16_t swAscale,
+		 int16_t pswRc[], int32_t pL_R[]);
 
-void res_eng(Shortword pswReflecCoefIn[], Shortword swRq,
+void res_eng(int16_t pswReflecCoefIn[], int16_t swRq,
 	     struct NormSw *psnsSqrtRsOut);
 
-void rs_rr(Shortword pswExcitation[], struct NormSw snsSqrtRs,
+void rs_rr(int16_t pswExcitation[], struct NormSw snsSqrtRs,
 	   struct NormSw *snsSqrtRsRr);
 
-void rs_rrNs(Shortword pswExcitation[], struct NormSw snsSqrtRs,
+void rs_rrNs(int16_t pswExcitation[], struct NormSw snsSqrtRs,
 	     struct NormSw *snsSqrtRsRr);
 
-Shortword scaleExcite(Shortword pswVect[],
-		      Shortword swErrTerm, struct NormSw snsRS,
-		      Shortword pswScldVect[]);
+int16_t scaleExcite(int16_t pswVect[],
+		      int16_t swErrTerm, struct NormSw snsRS,
+		      int16_t pswScldVect[]);
 
-Shortword sqroot(Longword L_SqrtIn);
+int16_t sqroot(int32_t L_SqrtIn);
 
-void v_con(Shortword pswBVects[], Shortword pswOutVect[],
-	   Shortword pswBitArray[], short int siNumBVctrs);
+void v_con(int16_t pswBVects[], int16_t pswOutVect[],
+	   int16_t pswBitArray[], short int siNumBVctrs);
 
 #endif

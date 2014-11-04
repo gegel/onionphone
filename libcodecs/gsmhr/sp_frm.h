@@ -12,7 +12,7 @@ struct QuantList {
 	int iNum;		/* total number in list */
 	int iRCIndex;		/* an index to the first vector of the
 				 * block */
-	Shortword pswPredErr[PREQ1_NUM_OF_ROWS];	/* PREQ1 is the biggest block */
+	int16_t pswPredErr[PREQ1_NUM_OF_ROWS];	/* PREQ1 is the biggest block */
 };
 
 /*_________________________________________________________________________
@@ -21,147 +21,147 @@ struct QuantList {
  |_________________________________________________________________________|
 */
 
-void iir_d(Shortword pswCoeff[], Shortword pswIn[],
-	   Shortword pswXstate[],
-	   Shortword pswYstate[],
+void iir_d(int16_t pswCoeff[], int16_t pswIn[],
+	   int16_t pswXstate[],
+	   int16_t pswYstate[],
 	   int npts, int shifts,
-	   Shortword swPreFirDownSh, Shortword swFinalUpShift);
+	   int16_t swPreFirDownSh, int16_t swFinalUpShift);
 
-void filt4_2nd(Shortword pswCoeff[],
-	       Shortword pswIn[],
-	       Shortword pswXstate[],
-	       Shortword pswYstate[], int npts, int shifts);
+void filt4_2nd(int16_t pswCoeff[],
+	       int16_t pswIn[],
+	       int16_t pswXstate[],
+	       int16_t pswYstate[], int npts, int shifts);
 
-void initPBarVBarL(Longword pL_PBarFull[],
-		   Shortword pswPBar[], Shortword pswVBar[]);
+void initPBarVBarL(int32_t pL_PBarFull[],
+		   int16_t pswPBar[], int16_t pswVBar[]);
 
-void initPBarFullVBarFullL(Longword pL_CorrelSeq[],
-			   Longword pL_PBarFull[], Longword pL_VBarFull[]);
+void initPBarFullVBarFullL(int32_t pL_CorrelSeq[],
+			   int32_t pL_PBarFull[], int32_t pL_VBarFull[]);
 
-Shortword aflatRecursion(Shortword pswQntRc[],
-			 Shortword pswPBar[],
-			 Shortword pswVBar[],
-			 Shortword * ppswPAddrs[],
-			 Shortword * ppswVAddrs[], Shortword swSegmentOrder);
+int16_t aflatRecursion(int16_t pswQntRc[],
+			 int16_t pswPBar[],
+			 int16_t pswVBar[],
+			 int16_t * ppswPAddrs[],
+			 int16_t * ppswVAddrs[], int16_t swSegmentOrder);
 
-void aflatNewBarRecursionL(Shortword pswQntRc[],
+void aflatNewBarRecursionL(int16_t pswQntRc[],
 			   int iSegment,
-			   Longword pL_PBar[],
-			   Longword pL_VBar[],
-			   Shortword pswPBar[], Shortword pswVBar[]);
+			   int32_t pL_PBar[],
+			   int32_t pL_VBar[],
+			   int16_t pswPBar[], int16_t pswVBar[]);
 
 void setupPreQ(int iSeg, int iVector);
 
 void setupQuant(int iSeg, int iVector);
 
-void getNextVec(Shortword pswRc[]);
+void getNextVec(int16_t pswRc[]);
 
-void aflat(Shortword pswSpeechToLPC[],
+void aflat(int16_t pswSpeechToLPC[],
 	   int piR0Index[],
-	   Shortword pswFinalRc[],
+	   int16_t pswFinalRc[],
 	   int piVQCodewds[],
-	   Shortword swPtch, Shortword * pswVadFlag, Shortword * pswSP);
+	   int16_t swPtch, int16_t * pswVadFlag, int16_t * pswSP);
 
-Shortword fnExp2(Longword L_Input);
+int16_t fnExp2(int32_t L_Input);
 
-Shortword fnLog2(Longword L_Input);
+int16_t fnLog2(int32_t L_Input);
 
-void weightSpeechFrame(Shortword pswSpeechFrm[],
-		       Shortword pswWNumSpace[],
-		       Shortword pswWDenomSpace[],
-		       Shortword pswWSpeechBuffBase[]);
+void weightSpeechFrame(int16_t pswSpeechFrm[],
+		       int16_t pswWNumSpace[],
+		       int16_t pswWDenomSpace[],
+		       int16_t pswWSpeechBuffBase[]);
 
-void getSfrmLpcTx(Shortword swPrevR0, Shortword swNewR0,
-		  Shortword pswPrevFrmKs[],
-		  Shortword pswPrevFrmAs[],
-		  Shortword pswPrevFrmSNWCoef[],
-		  Shortword pswNewFrmKs[],
-		  Shortword pswNewFrmAs[],
-		  Shortword pswNewFrmSNWCoef[],
-		  Shortword pswHPFSpeech[],
+void getSfrmLpcTx(int16_t swPrevR0, int16_t swNewR0,
+		  int16_t pswPrevFrmKs[],
+		  int16_t pswPrevFrmAs[],
+		  int16_t pswPrevFrmSNWCoef[],
+		  int16_t pswNewFrmKs[],
+		  int16_t pswNewFrmAs[],
+		  int16_t pswNewFrmSNWCoef[],
+		  int16_t pswHPFSpeech[],
 		  short *pswSoftInterp,
 		  struct NormSw *psnsSqrtRs,
-		  Shortword ppswSynthAs[][NP], Shortword ppswSNWCoefAs[][NP]);
+		  int16_t ppswSynthAs[][NP], int16_t ppswSNWCoefAs[][NP]);
 
-short int fnBest_CG(Shortword pswCframe[],
-		    Shortword pswGframe[],
-		    Shortword * pswCmaxSqr,
-		    Shortword * pswGmax, short int siNumPairs);
+short int fnBest_CG(int16_t pswCframe[],
+		    int16_t pswGframe[],
+		    int16_t * pswCmaxSqr,
+		    int16_t * pswGmax, short int siNumPairs);
 
-short compResidEnergy(Shortword pswSpeech[],
-		      Shortword ppswInterpCoef[][NP],
-		      Shortword pswPreviousCoef[],
-		      Shortword pswCurrentCoef[], struct NormSw psnsSqrtRs[]);
+short compResidEnergy(int16_t pswSpeech[],
+		      int16_t ppswInterpCoef[][NP],
+		      int16_t pswPreviousCoef[],
+		      int16_t pswCurrentCoef[], struct NormSw psnsSqrtRs[]);
 
-Shortword r0Quant(Longword L_UnqntzdR0);
+int16_t r0Quant(int32_t L_UnqntzdR0);
 
-Shortword cov32(Shortword pswIn[],
-		Longword pppL_B[NP][NP][2],
-		Longword pppL_F[NP][NP][2],
-		Longword pppL_C[NP][NP][2],
-		Longword * pL_R0,
-		Longword pL_VadAcf[], Shortword * pswVadScalAuto);
+int16_t cov32(int16_t pswIn[],
+		int32_t pppL_B[NP][NP][2],
+		int32_t pppL_F[NP][NP][2],
+		int32_t pppL_C[NP][NP][2],
+		int32_t * pL_R0,
+		int32_t pL_VadAcf[], int16_t * pswVadScalAuto);
 
-Longword flat(Shortword pswSpeechIn[],
-	      Shortword pswRc[],
-	      int *piR0Inx, Longword pL_VadAcf[], Shortword * pswVadScalAuto);
+int32_t flat(int16_t pswSpeechIn[],
+	      int16_t pswRc[],
+	      int *piR0Inx, int32_t pL_VadAcf[], int16_t * pswVadScalAuto);
 
-void openLoopLagSearch(Shortword pswWSpeech[],
-		       Shortword swPrevR0Index,
-		       Shortword swCurrR0Index,
-		       Shortword * psiUVCode,
-		       Shortword pswLagList[],
-		       Shortword pswNumLagList[],
-		       Shortword pswPitchBuf[],
-		       Shortword pswHNWCoefBuf[],
+void openLoopLagSearch(int16_t pswWSpeech[],
+		       int16_t swPrevR0Index,
+		       int16_t swCurrR0Index,
+		       int16_t * psiUVCode,
+		       int16_t pswLagList[],
+		       int16_t pswNumLagList[],
+		       int16_t pswPitchBuf[],
+		       int16_t pswHNWCoefBuf[],
 		       struct NormSw psnsWSfrmEng[],
-		       Shortword pswVadLags[], Shortword swSP);
+		       int16_t pswVadLags[], int16_t swSP);
 
-Shortword getCCThreshold(Shortword swRp0, Shortword swCC, Shortword swG);
+int16_t getCCThreshold(int16_t swRp0, int16_t swCC, int16_t swG);
 
-void pitchLags(Shortword swBestIntLag,
-	       Shortword pswIntCs[],
-	       Shortword pswIntGs[],
-	       Shortword swCCThreshold,
-	       Shortword pswLPeaksSorted[],
-	       Shortword pswCPeaksSorted[],
-	       Shortword pswGPeaksSorted[],
-	       Shortword * psiNumSorted,
-	       Shortword * pswPitch, Shortword * pswHNWCoef);
+void pitchLags(int16_t swBestIntLag,
+	       int16_t pswIntCs[],
+	       int16_t pswIntGs[],
+	       int16_t swCCThreshold,
+	       int16_t pswLPeaksSorted[],
+	       int16_t pswCPeaksSorted[],
+	       int16_t pswGPeaksSorted[],
+	       int16_t * psiNumSorted,
+	       int16_t * pswPitch, int16_t * pswHNWCoef);
 
-short CGInterpValid(Shortword swFullResLag,
-		    Shortword pswCIn[],
-		    Shortword pswGIn[],
-		    Shortword pswLOut[],
-		    Shortword pswCOut[], Shortword pswGOut[]);
+short CGInterpValid(int16_t swFullResLag,
+		    int16_t pswCIn[],
+		    int16_t pswGIn[],
+		    int16_t pswLOut[],
+		    int16_t pswCOut[], int16_t pswGOut[]);
 
-void CGInterp(Shortword pswLIn[],
+void CGInterp(int16_t pswLIn[],
 	      short siNum,
-	      Shortword pswCIn[],
-	      Shortword pswGIn[],
-	      short siLoIntLag, Shortword pswCOut[], Shortword pswGOut[]);
+	      int16_t pswCIn[],
+	      int16_t pswGIn[],
+	      short siLoIntLag, int16_t pswCOut[], int16_t pswGOut[]);
 
-Shortword quantLag(Shortword swRawLag, Shortword * psiCode);
+int16_t quantLag(int16_t swRawLag, int16_t * psiCode);
 
 void findBestInQuantList(struct QuantList psqlInList,
 			 int iNumVectOut, struct QuantList psqlBestOutList[]);
 
-Shortword findPeak(Shortword swSingleResLag,
-		   Shortword pswCIn[], Shortword pswGIn[]);
+int16_t findPeak(int16_t swSingleResLag,
+		   int16_t pswCIn[], int16_t pswGIn[]);
 
-void bestDelta(Shortword pswLagList[],
-	       Shortword pswCSfrm[],
-	       Shortword pswGSfrm[],
+void bestDelta(int16_t pswLagList[],
+	       int16_t pswCSfrm[],
+	       int16_t pswGSfrm[],
 	       short int siNumLags,
 	       short int siSfrmIndex,
-	       Shortword pswLTraj[],
-	       Shortword pswCCTraj[], Shortword pswGTraj[]);
+	       int16_t pswLTraj[],
+	       int16_t pswCCTraj[], int16_t pswGTraj[]);
 
-Shortword
-maxCCOverGWithSign(Shortword pswCIn[],
-		   Shortword pswGIn[],
-		   Shortword * pswCCMax, Shortword * pswGMax, Shortword swNum);
+int16_t
+maxCCOverGWithSign(int16_t pswCIn[],
+		   int16_t pswGIn[],
+		   int16_t * pswCCMax, int16_t * pswGMax, int16_t swNum);
 
-void getNWCoefs(Shortword pswACoefs[], Shortword pswHCoefs[]);
+void getNWCoefs(int16_t pswACoefs[], int16_t pswHCoefs[]);
 
 #endif

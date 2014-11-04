@@ -11,6 +11,6 @@
  |_________________________________________________________________________|
 */
 
-void speechEncoder(Shortword pswSpeechIn[], Shortword pswFrmCodes[]);
+void speechEncoder(int16_t pswSpeechIn[], int16_t pswFrmCodes[]);
 
 #endif

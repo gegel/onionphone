@@ -42,7 +42,7 @@
  |_________________________________________________________________________|
 */
 
-static Shortword
+static int16_t
     pswRvad[9],
     swNormRvad,
     swPt_sacf,
@@ -52,7 +52,7 @@ static Shortword
     swAdaptCount,
     swBurstCount, swHangCount, swOldLagCount, swVeryOldLagCount, swOldLag;
 
-static Longword pL_sacf[27], pL_sav0[36], L_lastdm;
+static int32_t pL_sacf[27], pL_sav0[36], L_lastdm;
 
 /****************************************************************************
  *
@@ -122,9 +122,9 @@ void vad_reset(void)
  *
  ***************************************************************************/
 
-void vad_algorithm(Longword pL_acf[9],
-		   Shortword swScaleAcf,
-		   Shortword pswRc[4], Shortword swPtch, Shortword * pswVadFlag)
+void vad_algorithm(int32_t pL_acf[9],
+		   int16_t swScaleAcf,
+		   int16_t pswRc[4], int16_t swPtch, int16_t * pswVadFlag)
 {
 
 /*_________________________________________________________________________
@@ -133,9 +133,9 @@ void vad_algorithm(Longword pL_acf[9],
  |_________________________________________________________________________|
 */
 
-	Longword pL_av0[9], pL_av1[9];
+	int32_t pL_av0[9], pL_av1[9];
 
-	Shortword
+	int16_t
 	    swM_acf0,
 	    swE_acf0,
 	    pswRav1[9], swNormRav1, swM_pvad, swE_pvad, swStat, swTone, swVvad;
@@ -191,13 +191,13 @@ void vad_algorithm(Longword pL_acf[9],
  *
  ***************************************************************************/
 
-void energy_computation(Longword pL_acf[],
-			Shortword swScaleAcf,
-			Shortword pswRvad[],
-			Shortword swNormRvad,
-			Shortword * pswM_pvad,
-			Shortword * pswE_pvad,
-			Shortword * pswM_acf0, Shortword * pswE_acf0)
+void energy_computation(int32_t pL_acf[],
+			int16_t swScaleAcf,
+			int16_t pswRvad[],
+			int16_t swNormRvad,
+			int16_t * pswM_pvad,
+			int16_t * pswE_pvad,
+			int16_t * pswM_acf0, int16_t * pswE_acf0)
 {
 
 /*_________________________________________________________________________
@@ -206,9 +206,9 @@ void energy_computation(Longword pL_acf[],
  |_________________________________________________________________________|
 */
 
-	Longword L_temp;
+	int32_t L_temp;
 
-	Shortword pswSacf[9], swNormAcf, swNormProd, swShift;
+	int16_t pswSacf[9], swNormAcf, swNormProd, swShift;
 
 	int i;
 
@@ -279,8 +279,8 @@ void energy_computation(Longword pL_acf[],
  *
  ***************************************************************************/
 
-void average_acf(Longword pL_acf[],
-		 Shortword swScaleAcf, Longword pL_av0[], Longword pL_av1[])
+void average_acf(int32_t pL_acf[],
+		 int16_t swScaleAcf, int32_t pL_av0[], int32_t pL_av1[])
 {
 
 /*_________________________________________________________________________
@@ -289,9 +289,9 @@ void average_acf(Longword pL_acf[],
  |_________________________________________________________________________|
 */
 
-	Longword L_temp;
+	int32_t L_temp;
 
-	Shortword swScale;
+	int16_t swScale;
 
 	int i;
 
@@ -347,8 +347,8 @@ void average_acf(Longword pL_acf[],
  *
  ***************************************************************************/
 
-void predictor_values(Longword pL_av1[],
-		      Shortword pswRav1[], Shortword * pswNormRav1)
+void predictor_values(int32_t pL_av1[],
+		      int16_t pswRav1[], int16_t * pswNormRav1)
 {
 
 /*_________________________________________________________________________
@@ -357,7 +357,7 @@ void predictor_values(Longword pL_av1[],
  |_________________________________________________________________________|
 */
 
-	Shortword pswVpar[8], pswAav1[9];
+	int16_t pswVpar[8], pswAav1[9];
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -386,7 +386,7 @@ void predictor_values(Longword pL_av1[],
  *
  ***************************************************************************/
 
-void schur_recursion(Longword pL_av1[], Shortword pswVpar[])
+void schur_recursion(int32_t pL_av1[], int16_t pswVpar[])
 {
 
 /*_________________________________________________________________________
@@ -395,7 +395,7 @@ void schur_recursion(Longword pL_av1[], Shortword pswVpar[])
  |_________________________________________________________________________|
 */
 
-	Shortword pswAcf[9], pswPp[9], pswKk[9], swTemp;
+	int16_t pswAcf[9], pswPp[9], pswKk[9], swTemp;
 
 	int i, k, m, n;
 
@@ -471,7 +471,7 @@ void schur_recursion(Longword pL_av1[], Shortword pswVpar[])
  *
  ***************************************************************************/
 
-void step_up(Shortword swNp, Shortword pswVpar[], Shortword pswAav1[])
+void step_up(int16_t swNp, int16_t pswVpar[], int16_t pswAav1[])
 {
 
 /*_________________________________________________________________________
@@ -480,9 +480,9 @@ void step_up(Shortword swNp, Shortword pswVpar[], Shortword pswAav1[])
  |_________________________________________________________________________|
 */
 
-	Longword pL_coef[9], pL_work[9];
+	int32_t pL_coef[9], pL_work[9];
 
-	Shortword swTemp;
+	int16_t swTemp;
 
 	int i, m;
 
@@ -532,8 +532,8 @@ void step_up(Shortword swNp, Shortword pswVpar[], Shortword pswAav1[])
  *
  ***************************************************************************/
 
-void compute_rav1(Shortword pswAav1[],
-		  Shortword pswRav1[], Shortword * pswNormRav1)
+void compute_rav1(int16_t pswAav1[],
+		  int16_t pswRav1[], int16_t * pswNormRav1)
 {
 
 /*_________________________________________________________________________
@@ -542,7 +542,7 @@ void compute_rav1(Shortword pswAav1[],
  |_________________________________________________________________________|
 */
 
-	Longword pL_work[9];
+	int32_t pL_work[9];
 
 	int i, k;
 
@@ -589,9 +589,9 @@ void compute_rav1(Shortword pswAav1[],
  *
  ***************************************************************************/
 
-void spectral_comparison(Shortword pswRav1[],
-			 Shortword swNormRav1,
-			 Longword pL_av0[], Shortword * pswStat)
+void spectral_comparison(int16_t pswRav1[],
+			 int16_t swNormRav1,
+			 int32_t pL_av0[], int16_t * pswStat)
 {
 
 /*_________________________________________________________________________
@@ -600,9 +600,9 @@ void spectral_comparison(Shortword pswRav1[],
  |_________________________________________________________________________|
 */
 
-	Longword L_dm, L_sump, L_temp;
+	int32_t L_dm, L_sump, L_temp;
 
-	Shortword pswSav0[9], swShift, swDivShift, swTemp;
+	int16_t pswSav0[9], swShift, swDivShift, swTemp;
 
 	int i;
 
@@ -707,7 +707,7 @@ void spectral_comparison(Shortword pswRav1[],
  *
  ***************************************************************************/
 
-void tone_detection(Shortword pswRc[4], Shortword * pswTone)
+void tone_detection(int16_t pswRc[4], int16_t * pswTone)
 {
 
 /*_________________________________________________________________________
@@ -716,9 +716,9 @@ void tone_detection(Shortword pswRc[4], Shortword * pswTone)
  |_________________________________________________________________________|
 */
 
-	Longword L_num, L_den, L_temp;
+	int32_t L_num, L_den, L_temp;
 
-	Shortword swTemp, swPredErr, pswA[3];
+	int16_t swTemp, swPredErr, pswA[3];
 
 	int i;
 
@@ -803,18 +803,18 @@ void tone_detection(Shortword pswRc[4], Shortword * pswTone)
  *
  ***************************************************************************/
 
-void threshold_adaptation(Shortword swStat,
-			  Shortword swPtch,
-			  Shortword swTone,
-			  Shortword pswRav1[],
-			  Shortword swNormRav1,
-			  Shortword swM_pvad,
-			  Shortword swE_pvad,
-			  Shortword swM_acf0,
-			  Shortword swE_acf0,
-			  Shortword pswRvad[],
-			  Shortword * pswNormRvad,
-			  Shortword * pswM_thvad, Shortword * pswE_thvad)
+void threshold_adaptation(int16_t swStat,
+			  int16_t swPtch,
+			  int16_t swTone,
+			  int16_t pswRav1[],
+			  int16_t swNormRav1,
+			  int16_t swM_pvad,
+			  int16_t swE_pvad,
+			  int16_t swM_acf0,
+			  int16_t swE_acf0,
+			  int16_t pswRvad[],
+			  int16_t * pswNormRvad,
+			  int16_t * pswM_thvad, int16_t * pswE_thvad)
 {
 
 /*_________________________________________________________________________
@@ -823,9 +823,9 @@ void threshold_adaptation(Shortword swStat,
  |_________________________________________________________________________|
 */
 
-	Longword L_temp;
+	int32_t L_temp;
 
-	Shortword swTemp, swComp, swComp2, swM_temp, swE_temp;
+	int16_t swTemp, swComp, swComp2, swM_temp, swE_temp;
 
 	int i;
 
@@ -1012,9 +1012,9 @@ void threshold_adaptation(Shortword swStat,
  *
  ***************************************************************************/
 
-void vad_decision(Shortword swM_pvad,
-		  Shortword swE_pvad,
-		  Shortword swM_thvad, Shortword swE_thvad, Shortword * pswVvad)
+void vad_decision(int16_t swM_pvad,
+		  int16_t swE_pvad,
+		  int16_t swM_thvad, int16_t swE_thvad, int16_t * pswVvad)
 {
 
 /*_________________________________________________________________________
@@ -1047,7 +1047,7 @@ void vad_decision(Shortword swM_pvad,
  *
  ***************************************************************************/
 
-void vad_hangover(Shortword swVvad, Shortword * pswVadFlag)
+void vad_hangover(int16_t swVvad, int16_t * pswVadFlag)
 {
 
 /*_________________________________________________________________________
@@ -1090,7 +1090,7 @@ void vad_hangover(Shortword swVvad, Shortword * pswVadFlag)
  *
  ***************************************************************************/
 
-void periodicity_update(Shortword pswLags[4], Shortword * pswPtch)
+void periodicity_update(int16_t pswLags[4], int16_t * pswPtch)
 {
 
 /*_________________________________________________________________________
@@ -1099,7 +1099,7 @@ void periodicity_update(Shortword pswLags[4], Shortword * pswPtch)
  |_________________________________________________________________________|
 */
 
-	Shortword swMinLag, swMaxLag, swSmallLag, swLagCount, swTemp;
+	int16_t swMinLag, swMaxLag, swSmallLag, swLagCount, swTemp;
 
 	int i, j;
 

@@ -109,7 +109,7 @@
 #define LSMIN           (LMIN - CG_INT_MACS/2)
 #define LSP_MASK  0xffff
 #define L_BITS          8
-#define L_ROUND (Longword)0x8000	/* Preload accumulator value for
+#define L_ROUND (int32_t)0x8000	/* Preload accumulator value for
 					 * hr_rounding  */
 #define NP_AFLAT     4
 #define NUM_CLOSED      3
@@ -141,9 +141,9 @@
  |_________________________________________________________________________|
 */
 
-Shortword pswAnalysisState[NP];
+int16_t pswAnalysisState[NP];
 
-Shortword pswWStateNum[NP], pswWStateDenom[NP];
+int16_t pswWStateNum[NP], pswWStateDenom[NP];
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -151,7 +151,7 @@ Shortword pswWStateNum[NP], pswWStateDenom[NP];
  |_________________________________________________________________________|
 */
 
-static ShortwordRom *psrTable;	/* points to correct table of
+static int16_t *psrTable;	/* points to correct table of
 				 * vectors */
 int iLimit;			/* accessible to all in this file
 				 * and to lpcCorrQntz() in dtx.c */
@@ -162,7 +162,7 @@ static int iWordHalfPtr;	/* points to the next byte */
 static int iWordPtr;		/* points to the next word to be
 				 * read */
 
-extern Shortword pswCNVSCode1[],	/* comfort noise parameters */
+extern int16_t pswCNVSCode1[],	/* comfort noise parameters */
  pswCNVSCode2[], pswCNGsp0Code[], pswCNLpc[], swCNR0;
 
 /***************************************************************************
@@ -225,11 +225,11 @@ extern Shortword pswCNVSCode1[],	/* comfort noise parameters */
  *
  *************************************************************************/
 
-void aflat(Shortword pswSpeechToLPC[],
+void aflat(int16_t pswSpeechToLPC[],
 	   int piR0Index[],
-	   Shortword pswFinalRc[],
+	   int16_t pswFinalRc[],
 	   int piVQCodewds[],
-	   Shortword swPtch, Shortword * pswVadFlag, Shortword * pswSP)
+	   int16_t swPtch, int16_t * pswVadFlag, int16_t * pswSP)
 {
 
 /*_________________________________________________________________________
@@ -238,9 +238,9 @@ void aflat(Shortword pswSpeechToLPC[],
  |_________________________________________________________________________|
 */
 
-	Shortword pswPOldSpace[NP_AFLAT], pswPNewSpace[NP_AFLAT], pswVOldSpace[2 * NP_AFLAT - 1], pswVNewSpace[2 * NP_AFLAT - 1], *ppswPAddrs[2], *ppswVAddrs[2], *pswVBar, pswPBar[NP_AFLAT], pswVBarSpace[2 * NP_AFLAT - 1], pswFlatsRc[NP],	/* Unquantized Rc's computed by FLAT */
+	int16_t pswPOldSpace[NP_AFLAT], pswPNewSpace[NP_AFLAT], pswVOldSpace[2 * NP_AFLAT - 1], pswVNewSpace[2 * NP_AFLAT - 1], *ppswPAddrs[2], *ppswVAddrs[2], *pswVBar, pswPBar[NP_AFLAT], pswVBarSpace[2 * NP_AFLAT - 1], pswFlatsRc[NP],	/* Unquantized Rc's computed by FLAT */
 	 pswRc[NP + 1];		/* Temp list for the converted RC's */
-	Longword pL_CorrelSeq[NP + 1],
+	int32_t pL_CorrelSeq[NP + 1],
 	    *pL_VBarFull, pL_PBarFull[NP], pL_VBarFullSpace[2 * NP - 1];
 
 	int i, iVec, iSeg, iCnt;	/* Loop counter */
@@ -249,11 +249,11 @@ void aflat(Shortword pswSpeechToLPC[],
 				 * PreQ */
 	struct QuantList bestQl[LPC_VQ_SEG + 1];	/* Best vectors for each of
 							 * the three segments */
-	Shortword swVadScalAuto;
-	Shortword pswVadRc[4];
-	Longword pL_VadAcf[9];
+	int16_t swVadScalAuto;
+	int16_t pswVadRc[4];
+	int32_t pL_VadAcf[9];
 
-	Longword L_R0;		/* Normalized R0 (use swRShifts to 
+	int32_t L_R0;		/* Normalized R0 (use swRShifts to 
 				 * unnormalize). This is done prior
 				 * to r0quant(). After this, its is
 				 * a unnormalized number */
@@ -330,7 +330,7 @@ void aflat(Shortword pswSpeechToLPC[],
 		/* autocorrelation sequence derived from the optimal reflection       */
 		/* coefficients computed by FLAT. The initial conditions are shifted  */
 		/* right by RSHIFT bits. These initial conditions, stored as          */
-		/* Longwords, are used to initialize PBar and VBar arrays for the     */
+		/* int32_ts, are used to initialize PBar and VBar arrays for the     */
 		/* next VQ segment.                                                   */
     /*--------------------------------------------------------------------*/
 
@@ -459,7 +459,7 @@ void aflat(Shortword pswSpeechToLPC[],
       /*--------------------------------------------*/
 
 			setupQuant(iSeg, bestQl[iSeg].iRCIndex);	/* set up vector ptrs */
-			getNextVec((Shortword *) (pswFinalRc - 1));
+			getNextVec((int16_t *) (pswFinalRc - 1));
 
 			/* Update pBarFull and vBarFull for the next Rc-VQ segment, and */
 			/* update the pswPBar and pswVBar for the next Rc-VQ segment    */
@@ -493,7 +493,7 @@ void aflat(Shortword pswSpeechToLPC[],
  *
  *    FUNCTION NAME: aflatNewBarRecursionL
  *
- *    PURPOSE:  Given the Longword initial condition arrays, pL_PBarFull and
+ *    PURPOSE:  Given the int32_t initial condition arrays, pL_PBarFull and
  *              pL_VBarFull, a reflection coefficient vector selected from
  *              the Rc-VQ at the current stage, and index of the current
  *              Rc-VQ stage, the AFLAT recursion is evaluated to obtain the
@@ -502,7 +502,7 @@ void aflat(Shortword pswSpeechToLPC[],
  *              pL_VBarFull arrays are shifted to be RSHIFT down from full
  *              scale. Two sets of initial conditions are output:
  *
- *              1) pswPBar and pswVBar Shortword arrays are used at the
+ *              1) pswPBar and pswVBar int16_t arrays are used at the
  *                 next Rc-VQ segment as the AFLAT initial conditions
  *                 for the Rc prequantizer and the Rc quantizer searches.
  *              2) pL_PBarFull and pL_VBarFull arrays are output and serve
@@ -527,14 +527,14 @@ void aflat(Shortword pswSpeechToLPC[],
  *                     at each lattice stage. RSHIFT is a global constant.
  *
  *        pL_PBar[0:NP-1]
- *                     A Longword input array containing the P initial
+ *                     A int32_t input array containing the P initial
  *                     conditions for the full 10-th order LPC filter.
  *                     The address of the 0-th element of  pL_PBarFull
  *                     is passed in when function aflatNewBarRecursionL
  *                     is called.
  *
  *        pL_VBar[-NP+1:NP-1]
- *                     A Longword input array containing the V initial
+ *                     A int32_t input array containing the V initial
  *                     conditions for the full 10-th order LPC filter.
  *                     The address of the 0-th element of  pL_VBarFull
  *                     is passed in when function aflatNewBarRecursionL
@@ -543,23 +543,23 @@ void aflat(Shortword pswSpeechToLPC[],
  *    OUTPUTS:
  *
  *        pL_PBar[0:NP-1]
- *                     A Longword output array containing the updated P
+ *                     A int32_t output array containing the updated P
  *                     initial conditions for the full 10-th order LPC
  *                     filter.
  *
  *        pL_VBar[-NP+1:NP-1]
- *                     A Longword output array containing the updated V
+ *                     A int32_t output array containing the updated V
  *                     initial conditions for the full 10-th order LPC
  *                     filter.
  *
  *        pswPBar[0:NP_AFLAT-1]
- *                     An output Shortword array containing the P initial
+ *                     An output int16_t array containing the P initial
  *                     conditions for the P-V AFLAT recursion for the next
  *                     Rc-VQ segment. The address of the 0-th element of
  *                     pswVBar is passed in.
  *
  *        pswVBar[-NP_AFLAT+1:NP_AFLAT-1]
- *                     The output Shortword array containing the V initial
+ *                     The output int16_t array containing the V initial
  *                     conditions for the P-V AFLAT recursion, for the next
  *                     Rc-VQ segment. The address of the 0-th element of
  *                     pswVBar is passed in.
@@ -571,9 +571,9 @@ void aflat(Shortword pswSpeechToLPC[],
  *
  *************************************************************************/
 
-void aflatNewBarRecursionL(Shortword pswQntRc[], int iSegment,
-			   Longword pL_PBar[], Longword pL_VBar[],
-			   Shortword pswPBar[], Shortword pswVBar[])
+void aflatNewBarRecursionL(int16_t pswQntRc[], int iSegment,
+			   int32_t pL_PBar[], int32_t pL_VBar[],
+			   int16_t pswPBar[], int16_t pswVBar[])
 {
 
 /*_________________________________________________________________________
@@ -581,7 +581,7 @@ void aflatNewBarRecursionL(Shortword pswQntRc[], int iSegment,
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Longword *pL_VOld,
+	int32_t *pL_VOld,
 	    *pL_VNew,
 	    *pL_POld,
 	    *pL_PNew,
@@ -590,7 +590,7 @@ void aflatNewBarRecursionL(Shortword pswQntRc[], int iSegment,
 	    pL_VOldSpace[2 * NP - 1],
 	    pL_VNewSpace[2 * NP - 1],
 	    pL_POldSpace[NP], pL_PNewSpace[NP], L_temp, L_sum;
-	Shortword swQntRcSq, swNShift;
+	int16_t swQntRcSq, swNShift;
 	short int i, j, bound;
 
 /*_________________________________________________________________________
@@ -598,10 +598,10 @@ void aflatNewBarRecursionL(Shortword pswQntRc[], int iSegment,
  |                              Executable Code                            |
  |_________________________________________________________________________|
 */
-	memzero(pL_VOldSpace, (2 * NP - 1) * sizeof(Longword));
-	memzero(pL_VNewSpace, (2 * NP - 1) * sizeof(Longword));
-	memzero(pL_POldSpace, NP * sizeof(Longword));
-	memzero(pL_PNewSpace, NP * sizeof(Longword));
+	memzero(pL_VOldSpace, (2 * NP - 1) * sizeof(int32_t));
+	memzero(pL_VNewSpace, (2 * NP - 1) * sizeof(int32_t));
+	memzero(pL_POldSpace, NP * sizeof(int32_t));
+	memzero(pL_PNewSpace, NP * sizeof(int32_t));
 
 	/* Copy the addresses of the input PBar and VBar arrays into  */
 	/* pL_POld and pL_VOld respectively.                          */
@@ -758,7 +758,7 @@ void aflatNewBarRecursionL(Shortword pswQntRc[], int iSegment,
  *
  *    FUNCTION NAME: aflatRecursion
  *
- *    PURPOSE:  Given the Shortword initial condition arrays, pswPBar and
+ *    PURPOSE:  Given the int16_t initial condition arrays, pswPBar and
  *              pswVBar, a reflection coefficient vector from the quantizer
  *              (or a prequantizer), and the order of the current Rc-VQ
  *              segment, function aflatRecursion computes and returns the
@@ -772,13 +772,13 @@ void aflatNewBarRecursionL(Shortword pswQntRc[], int iSegment,
  *                     Rc-prequantizer or the Rc-VQ codebook.
  *
  *        pswPBar[0:NP_AFLAT-1]
- *                     The input Shortword array containing the P initial
+ *                     The input int16_t array containing the P initial
  *                     conditions for the P-V AFLAT recursion at the current
  *                     Rc-VQ segment. The address of the 0-th element of
  *                     pswVBar is passed in.
  *
  *        pswVBar[-NP_AFLAT+1:NP_AFLAT-1]
- *                     The input Shortword array containing the V initial
+ *                     The input int16_t array containing the V initial
  *                     conditions for the P-V AFLAT recursion, at the current
  *                     Rc-VQ segment. The address of the 0-th element of
  *                     pswVBar is passed in.
@@ -816,7 +816,7 @@ void aflatNewBarRecursionL(Shortword pswQntRc[], int iSegment,
  *        None.
  *
  *    RETURN:
- *        swRe         The Shortword value of residual energy for the
+ *        swRe         The int16_t value of residual energy for the
  *                     Rc vector, given the pswPBar and pswVBar initial
  *                     conditions.
  *
@@ -824,11 +824,11 @@ void aflatNewBarRecursionL(Shortword pswQntRc[], int iSegment,
  *
  *************************************************************************/
 
-Shortword aflatRecursion(Shortword pswQntRc[],
-			 Shortword pswPBar[],
-			 Shortword pswVBar[],
-			 Shortword * ppswPAddrs[],
-			 Shortword * ppswVAddrs[], Shortword swSegmentOrder)
+int16_t aflatRecursion(int16_t pswQntRc[],
+			 int16_t pswPBar[],
+			 int16_t pswVBar[],
+			 int16_t * ppswPAddrs[],
+			 int16_t * ppswVAddrs[], int16_t swSegmentOrder)
 {
 
 /*_________________________________________________________________________
@@ -837,9 +837,9 @@ Shortword aflatRecursion(Shortword pswQntRc[],
  |_________________________________________________________________________|
 */
 
-	Shortword *pswPOld,
+	int16_t *pswPOld,
 	    *pswPNew, *pswVOld, *pswVNew, pswQntRcSqd[NP_AFLAT], swRe;
-	Longword L_sum;
+	int32_t L_sum;
 	short int i, j, bound;	/* loop control variables */
 
 /*_________________________________________________________________________
@@ -1013,13 +1013,13 @@ Shortword aflatRecursion(Shortword pswQntRc[],
  *
  *************************************************************************/
 
-void bestDelta(Shortword pswLagList[],
-	       Shortword pswCSfrm[],
-	       Shortword pswGSfrm[],
+void bestDelta(int16_t pswLagList[],
+	       int16_t pswCSfrm[],
+	       int16_t pswGSfrm[],
 	       short int siNumLags,
 	       short int siSfrmIndex,
-	       Shortword pswLTraj[],
-	       Shortword pswCCTraj[], Shortword pswGTraj[])
+	       int16_t pswLTraj[],
+	       int16_t pswCCTraj[], int16_t pswGTraj[])
 {
 
 /*_________________________________________________________________________
@@ -1028,7 +1028,7 @@ void bestDelta(Shortword pswLagList[],
  |_________________________________________________________________________|
 */
 
-	Shortword pswCBuf[DELTA_LEVELS + CG_INT_MACS + 2],
+	int16_t pswCBuf[DELTA_LEVELS + CG_INT_MACS + 2],
 	    pswGBuf[DELTA_LEVELS + CG_INT_MACS + 2],
 	    pswCInterp[DELTA_LEVELS + 2],
 	    pswGInterp[DELTA_LEVELS + 2],
@@ -1171,11 +1171,11 @@ void bestDelta(Shortword pswLagList[],
  *
  *************************************************************************/
 
-void CGInterp(Shortword pswLIn[],
+void CGInterp(int16_t pswLIn[],
 	      short siNum,
-	      Shortword pswCIn[],
-	      Shortword pswGIn[],
-	      short siLoIntLag, Shortword pswCOut[], Shortword pswGOut[])
+	      int16_t pswCIn[],
+	      int16_t pswGIn[],
+	      short siLoIntLag, int16_t pswCOut[], int16_t pswGOut[])
 {
 
 /*_________________________________________________________________________
@@ -1183,9 +1183,9 @@ void CGInterp(Shortword pswLIn[],
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Shortword i, swBig, swLoIntLag;
-	Shortword swLagInt, swTempRem, swLagRem;
-	Longword L_Temp, L_Temp1, L_Temp2;
+	int16_t i, swBig, swLoIntLag;
+	int16_t swLagInt, swTempRem, swLagRem;
+	int32_t L_Temp, L_Temp1, L_Temp2;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1289,11 +1289,11 @@ void CGInterp(Shortword pswLIn[],
  *
  *************************************************************************/
 
-short CGInterpValid(Shortword swFullResLag,
-		    Shortword pswCIn[],
-		    Shortword pswGIn[],
-		    Shortword pswLOut[],
-		    Shortword pswCOut[], Shortword pswGOut[])
+short CGInterpValid(int16_t swFullResLag,
+		    int16_t pswCIn[],
+		    int16_t pswGIn[],
+		    int16_t pswLOut[],
+		    int16_t pswCOut[], int16_t pswGOut[])
 {
 
 /*_________________________________________________________________________
@@ -1303,7 +1303,7 @@ short CGInterpValid(Shortword swFullResLag,
 */
 
 	short int siLowerBound, siUpperBound, siNum, siI;
-	Shortword swLag;
+	int16_t swLag;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1400,10 +1400,10 @@ short CGInterpValid(Shortword swFullResLag,
  *
  **************************************************************************/
 
-short compResidEnergy(Shortword pswSpeech[],
-		      Shortword ppswInterpCoef[][NP],
-		      Shortword pswPreviousCoef[],
-		      Shortword pswCurrentCoef[], struct NormSw psnsSqrtRs[])
+short compResidEnergy(int16_t pswSpeech[],
+		      int16_t ppswInterpCoef[][NP],
+		      int16_t pswPreviousCoef[],
+		      int16_t pswCurrentCoef[], struct NormSw psnsSqrtRs[])
 {
 
 /*_________________________________________________________________________
@@ -1413,10 +1413,10 @@ short compResidEnergy(Shortword pswSpeech[],
 */
 
 	short i, j, siOverflowPossible, siInterpDecision;
-	Shortword swMinShift, swShiftFactor = 0, swSample = 0, *pswCoef;
-	Shortword pswTempState[NP];
-	Shortword pswResidual[S_LEN];
-	Longword L_ResidualEng;
+	int16_t swMinShift, swShiftFactor = 0, swSample = 0, *pswCoef;
+	int16_t pswTempState[NP];
+	int16_t pswResidual[S_LEN];
+	int32_t L_ResidualEng;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1583,7 +1583,7 @@ short compResidEnergy(Shortword pswSpeech[],
  *
  *       CVSHIFT       The number of right shifts by which the normalized
  *                     correlations are to be shifted down prior to being
- *                     hr_rounded into the Shortword output correlation arrays
+ *                     hr_rounded into the int16_t output correlation arrays
  *                     B, F, and C.
  *
  *       pL_rFlatSstCoefs[NP]
@@ -1628,11 +1628,11 @@ short compResidEnergy(Shortword pswSpeech[],
  *                     with the returned shift count are the inputs to
  *                     the frame energy quantizer.
  *
- *        Longword pL_VadAcf[4]
+ *        int32_t pL_VadAcf[4]
  *                     An array with the autocorrelation coefficients to be
  *                     used by the VAD.
  *
- *        Shortword *pswVadScalAuto
+ *        int16_t *pswVadScalAuto
  *                     Input scaling factor used by the VAD.
  *
  *    RETURN:
@@ -1663,12 +1663,12 @@ short compResidEnergy(Shortword pswSpeech[],
  *
  *************************************************************************/
 
-Shortword cov32(Shortword pswIn[],
-		Longword pppL_B[NP][NP][2],
-		Longword pppL_F[NP][NP][2],
-		Longword pppL_C[NP][NP][2],
-		Longword * pL_R0,
-		Longword pL_VadAcf[], Shortword * pswVadScalAuto)
+int16_t cov32(int16_t pswIn[],
+		int32_t pppL_B[NP][NP][2],
+		int32_t pppL_F[NP][NP][2],
+		int32_t pppL_C[NP][NP][2],
+		int32_t * pL_R0,
+		int32_t pL_VadAcf[], int16_t * pswVadScalAuto)
 {
 
 /*_________________________________________________________________________
@@ -1677,8 +1677,8 @@ Shortword cov32(Shortword pswIn[],
  |_________________________________________________________________________|
 */
 
-	Longword L_max, L_Pwr0, L_Pwr, L_temp, pL_Phi[NP + 1];
-	Shortword swTemp,
+	int32_t L_max, L_Pwr0, L_Pwr, L_temp, pL_Phi[NP + 1];
+	int16_t swTemp,
 	    swNorm, swNormSig, swNormPwr, pswInScale[A_LEN], swPhiNorm;
 	short int i, k, kk, n;
 
@@ -2013,8 +2013,8 @@ Shortword cov32(Shortword pswIn[],
  *
  *************************************************************************/
 
-void filt4_2nd(Shortword pswCoeff[], Shortword pswIn[],
-	       Shortword pswXstate[], Shortword pswYstate[],
+void filt4_2nd(int16_t pswCoeff[], int16_t pswIn[],
+	       int16_t pswXstate[], int16_t pswYstate[],
 	       int npts, int shifts)
 {
 
@@ -2165,8 +2165,8 @@ void findBestInQuantList(struct QuantList psqlInList,
  *
  *************************************************************************/
 
-Shortword findPeak(Shortword swSingleResLag,
-		   Shortword pswCIn[], Shortword pswGIn[])
+int16_t findPeak(int16_t swSingleResLag,
+		   int16_t pswCIn[], int16_t pswGIn[])
 {
 
 /*_________________________________________________________________________
@@ -2175,7 +2175,7 @@ Shortword findPeak(Shortword swSingleResLag,
  |_________________________________________________________________________|
 */
 
-	Shortword swCmaxSqr, swGmax, swFullResPeak;
+	int16_t swCmaxSqr, swGmax, swFullResPeak;
 	short int siUpperBound, siLowerBound, siRange, siPeak;
 
 /*_________________________________________________________________________
@@ -2261,12 +2261,12 @@ Shortword findPeak(Shortword swSingleResLag,
  *
  *       *piR0Inx      An index of the quantized frame energy value.
  *
- *       Longword pL_VadAcf[4]
+ *       int32_t pL_VadAcf[4]
  *                     An array with the autocorrelation coefficients to be
  *                     used by the VAD.  Generated by cov16(), a daughter
  *                     function of flat().
  *
- *       Shortword *pswVadScalAuto
+ *       int16_t *pswVadScalAuto
  *                     Input scaling factor used by the VAD.
  *                     Generated by cov16(), a daughter function of flat().
  *                     function.
@@ -2290,9 +2290,9 @@ Shortword findPeak(Shortword swSingleResLag,
  *
  *************************************************************************/
 
-Longword flat(Shortword pswSpeechIn[],
-	      Shortword pswRc[],
-	      int *piR0Inx, Longword pL_VadAcf[], Shortword * pswVadScalAuto)
+int32_t flat(int16_t pswSpeechIn[],
+	      int16_t pswRc[],
+	      int *piR0Inx, int32_t pL_VadAcf[], int16_t * pswVadScalAuto)
 {
 
 /*_________________________________________________________________________
@@ -2300,8 +2300,8 @@ Longword flat(Shortword pswSpeechIn[],
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Shortword swNum, swDen, swRcSq, swSqrtOut, swRShifts, swShift, swShift1;
-	Longword
+	int16_t swNum, swDen, swRcSq, swSqrtOut, swRShifts, swShift, swShift1;
+	int32_t
 	    pppL_F[NP][NP][2],
 	    pppL_B[NP][NP][2],
 	    pppL_C[NP][NP][2],
@@ -2793,8 +2793,8 @@ Longword flat(Shortword pswSpeechIn[],
 
 ****************************************************************************/
 
-short int fnBest_CG(Shortword pswCframe[], Shortword pswGframe[],
-		    Shortword * pswCmaxSqr, Shortword * pswGmax,
+short int fnBest_CG(int16_t pswCframe[], int16_t pswGframe[],
+		    int16_t * pswCmaxSqr, int16_t * pswGmax,
 		    short int siNumPairs)
 {
 
@@ -2804,8 +2804,8 @@ short int fnBest_CG(Shortword pswCframe[], Shortword pswGframe[],
 |___________________________________________________________________________|
 */
 
-	Longword L_Temp2;
-	Shortword swCmaxSqr, swGmax, swTemp;
+	int32_t L_Temp2;
+	int16_t swCmaxSqr, swGmax, swTemp;
 	short int siLoopCnt, siMaxLoc;
 
 /*_________________________________________________________________________
@@ -2904,7 +2904,7 @@ short int fnBest_CG(Shortword pswCframe[], Shortword pswGframe[],
  *
  *************************************************************************/
 
-Shortword fnExp2(Longword L_Input)
+int16_t fnExp2(int32_t L_Input)
 {
 
 /*_________________________________________________________________________
@@ -2912,7 +2912,7 @@ Shortword fnExp2(Longword L_Input)
  |                           Local Static Variables                        |
  |_________________________________________________________________________|
 */
-	static Shortword pswPCoefE[3] = {	/* c2,   c1,    c0 */
+	static int16_t pswPCoefE[3] = {	/* c2,   c1,    c0 */
 		0x15ef, 0x556f, 0x7fbd
 	};
 
@@ -2922,7 +2922,7 @@ Shortword fnExp2(Longword L_Input)
  |_________________________________________________________________________|
 */
 
-	Shortword swTemp1, swTemp2, swTemp3, swTemp4;
+	int16_t swTemp1, swTemp2, swTemp3, swTemp4;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -3007,7 +3007,7 @@ Shortword fnExp2(Longword L_Input)
  *
  *   RETURN VALUE:
  *
- *     Shortword
+ *     int16_t
  *
  *                     output
  *
@@ -3022,7 +3022,7 @@ Shortword fnExp2(Longword L_Input)
  *
  *************************************************************************/
 
-Shortword fnLog2(Longword L_Input)
+int16_t fnLog2(int32_t L_Input)
 {
 
 /*_________________________________________________________________________
@@ -3031,7 +3031,7 @@ Shortword fnLog2(Longword L_Input)
  |_________________________________________________________________________|
 */
 
-	static Shortword swC0 = -0x2b2a, swC1 = 0x7fc5, swC2 = -0x54d0;
+	static int16_t swC0 = -0x2b2a, swC1 = 0x7fc5, swC2 = -0x54d0;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -3040,7 +3040,7 @@ Shortword fnLog2(Longword L_Input)
 */
 
 	short int siShiftCnt;
-	Shortword swInSqrd, swIn;
+	int16_t swInSqrd, swIn;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -3132,7 +3132,7 @@ Shortword fnLog2(Longword L_Input)
  *
  *************************************************************************/
 
-Shortword getCCThreshold(Shortword swRp0, Shortword swCC, Shortword swG)
+int16_t getCCThreshold(int16_t swRp0, int16_t swCC, int16_t swG)
 {
 
 /*_________________________________________________________________________
@@ -3141,8 +3141,8 @@ Shortword getCCThreshold(Shortword swRp0, Shortword swCC, Shortword swG)
  |_________________________________________________________________________|
 */
 
-	Shortword swPGainClamp, swPGainScale, sw1;
-	Longword L_1;
+	int16_t swPGainClamp, swPGainScale, sw1;
+	int32_t L_1;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -3251,7 +3251,7 @@ Shortword getCCThreshold(Shortword swRp0, Shortword swCC, Shortword swG)
  *
  *************************************************************************/
 
-void getNWCoefs(Shortword pswACoefs[], Shortword pswHCoefs[])
+void getNWCoefs(int16_t pswACoefs[], int16_t pswHCoefs[])
 {
 
 /*_________________________________________________________________________
@@ -3260,10 +3260,10 @@ void getNWCoefs(Shortword pswACoefs[], Shortword pswHCoefs[])
  |_________________________________________________________________________|
 */
 
-	Shortword pswCoefTmp2[NP],
+	int16_t pswCoefTmp2[NP],
 	    pswCoefTmp3[NP], pswVecTmp[S_LEN], pswVecTmp2[S_LEN], pswTempRc[NP];
-	Shortword swNormShift, iLoopCnt, iLoopCnt2;
-	Longword pL_AutoCorTmp[NP + 1], L_Temp;
+	int16_t swNormShift, iLoopCnt, iLoopCnt2;
+	int32_t pL_AutoCorTmp[NP + 1], L_Temp;
 	short int siNum, k;
 
 /*_________________________________________________________________________
@@ -3394,7 +3394,7 @@ void getNWCoefs(Shortword pswACoefs[], Shortword pswHCoefs[])
  *
  *************************************************************************/
 
-void getNextVec(Shortword pswRc[])
+void getNextVec(int16_t pswRc[])
 {
 
 /*_________________________________________________________________________
@@ -3491,17 +3491,17 @@ void getNextVec(Shortword pswRc[])
  *
  *************************************************************************/
 
-void getSfrmLpcTx(Shortword swPrevR0, Shortword swNewR0,
+void getSfrmLpcTx(int16_t swPrevR0, int16_t swNewR0,
 /* last frm*/
-		  Shortword pswPrevFrmKs[], Shortword pswPrevFrmAs[],
-		  Shortword pswPrevFrmSNWCoef[],
+		  int16_t pswPrevFrmKs[], int16_t pswPrevFrmAs[],
+		  int16_t pswPrevFrmSNWCoef[],
 /* this frm*/
-		  Shortword pswNewFrmKs[], Shortword pswNewFrmAs[],
-		  Shortword pswNewFrmSNWCoef[], Shortword pswHPFSpeech[],
+		  int16_t pswNewFrmKs[], int16_t pswNewFrmAs[],
+		  int16_t pswNewFrmSNWCoef[], int16_t pswHPFSpeech[],
 /* output */
 		  short *pswSoftInterp,
 		  struct NormSw *psnsSqrtRs,
-		  Shortword ppswSynthAs[][NP], Shortword ppswSNWCoefAs[][NP])
+		  int16_t ppswSynthAs[][NP], int16_t ppswSNWCoefAs[][NP])
 {
 
 /*_________________________________________________________________________
@@ -3510,8 +3510,8 @@ void getSfrmLpcTx(Shortword swPrevR0, Shortword swNewR0,
  |_________________________________________________________________________|
 */
 
-	Shortword swSi;
-	Longword L_Temp;
+	int16_t swSi;
+	int32_t L_Temp;
 	short int siSfrm, siStable, i;
 
 /*_________________________________________________________________________
@@ -3690,9 +3690,9 @@ void getSfrmLpcTx(Shortword swPrevR0, Shortword swNewR0,
  *
  *************************************************************************/
 
-void iir_d(Shortword pswCoeff[], Shortword pswIn[], Shortword pswXstate[],
-	   Shortword pswYstate[], int npts, int shifts,
-	   Shortword swPreFirDownSh, Shortword swFinalUpShift)
+void iir_d(int16_t pswCoeff[], int16_t pswIn[], int16_t pswXstate[],
+	   int16_t pswYstate[], int npts, int shifts,
+	   int16_t swPreFirDownSh, int16_t swFinalUpShift)
 {
 
 /*_________________________________________________________________________
@@ -3702,8 +3702,8 @@ void iir_d(Shortword pswCoeff[], Shortword pswIn[], Shortword pswXstate[],
 */
 
 	int loop_cnt;
-	Longword L_sumA, L_sumB;
-	Shortword swTemp,
+	int32_t L_sumA, L_sumB;
+	int16_t swTemp,
 	    pswYstate_0,
 	    pswYstate_1,
 	    pswYstate_2, pswYstate_3, pswXstate_0, pswXstate_1, swx0, swx1;
@@ -3804,12 +3804,12 @@ void iir_d(Shortword pswCoeff[], Shortword pswIn[], Shortword pswXstate[],
  *
  *    FUNCTION NAME: initPBarVBarFullL
  *
- *    PURPOSE:  Given the Longword normalized correlation sequence, function
- *              initPBarVBarL initializes the Longword initial condition
+ *    PURPOSE:  Given the int32_t normalized correlation sequence, function
+ *              initPBarVBarL initializes the int32_t initial condition
  *              arrays pL_PBarFull and pL_VBarFull for a full 10-th order LPC
  *              filter. It also shifts down the pL_VBarFull and pL_PBarFull
  *              arrays by a global constant RSHIFT bits. The pL_PBarFull and
- *              pL_VBarFull arrays are used to set the initial Shortword
+ *              pL_VBarFull arrays are used to set the initial int16_t
  *              P and V conditions which are used in the actual search of the
  *              Rc prequantizer and the Rc quantizer.
  *
@@ -3819,7 +3819,7 @@ void iir_d(Shortword pswCoeff[], Shortword pswIn[], Shortword pswXstate[],
  *    INPUTS:
  *
  *        pL_CorrelSeq[0:NP]
- *                     A Longword normalized autocorrelation array computed
+ *                     A int32_t normalized autocorrelation array computed
  *                     from unquantized reflection coefficients.
  *
  *       RSHIFT       The number of right shifts to be applied to the
@@ -3830,14 +3830,14 @@ void iir_d(Shortword pswCoeff[], Shortword pswIn[], Shortword pswXstate[],
  *    OUTPUTS:
  *
  *        pL_PBarFull[0:NP-1]
- *                     A Longword output array containing the P initial
+ *                     A int32_t output array containing the P initial
  *                     conditions for the full 10-th order LPC filter.
  *                     The address of the 0-th element of  pL_PBarFull
  *                     is passed in when function initPBarVBarFullL is
  *                     called.
  *
  *        pL_VBarFull[-NP+1:NP-1]
- *                     A Longword output array containing the V initial
+ *                     A int32_t output array containing the V initial
  *                     conditions for the full 10-th order LPC filter.
  *                     The address of the 0-th element of pL_VBarFull is
  *                     passed in when function initPBarVBarFullL is called.
@@ -3848,8 +3848,8 @@ void iir_d(Shortword pswCoeff[], Shortword pswIn[], Shortword pswXstate[],
  *
  *************************************************************************/
 
-void initPBarFullVBarFullL(Longword pL_CorrelSeq[],
-			   Longword pL_PBarFull[], Longword pL_VBarFull[])
+void initPBarFullVBarFullL(int32_t pL_CorrelSeq[],
+			   int32_t pL_PBarFull[], int32_t pL_VBarFull[])
 {
 
 /*_________________________________________________________________________
@@ -3892,11 +3892,11 @@ void initPBarFullVBarFullL(Longword pL_CorrelSeq[],
  *
  *    FUNCTION NAME: initPBarVBarL
  *
- *    PURPOSE:  Given the Longword pL_PBarFull array,
- *              function initPBarVBarL initializes the Shortword initial
+ *    PURPOSE:  Given the int32_t pL_PBarFull array,
+ *              function initPBarVBarL initializes the int16_t initial
  *              condition arrays pswPBar and pswVBar for a 3-rd order LPC
  *              filter, since the order of the 1st Rc-VQ segment is 3.
- *              The pswPBar and pswVBar arrays are a Shortword subset
+ *              The pswPBar and pswVBar arrays are a int16_t subset
  *              of the initial condition array pL_PBarFull.
  *              pswPBar and pswVBar are the initial conditions for the AFLAT
  *              recursion at a given segment. The AFLAT recursion is used
@@ -3908,7 +3908,7 @@ void initPBarFullVBarFullL(Longword pL_CorrelSeq[],
  *    INPUTS:
  *
  *        pL_PBarFull[0:NP-1]
- *                     A Longword input array containing the P initial
+ *                     A int32_t input array containing the P initial
  *                     conditions for the full 10-th order LPC filter.
  *                     The address of the 0-th element of  pL_PBarFull
  *                     is passed in when function initPBarVBarL is called.
@@ -3916,14 +3916,14 @@ void initPBarFullVBarFullL(Longword pL_CorrelSeq[],
  *    OUTPUTS:
  *
  *        pswPBar[0:NP_AFLAT-1]
- *                     The output Shortword array containing the P initial
+ *                     The output int16_t array containing the P initial
  *                     conditions for the P-V AFLAT recursion, set here
  *                     for the Rc-VQ search at the 1st Rc-VQ segment.
  *                     The address of the 0-th element of pswPBar is
  *                     passed in when function initPBarVBarL is called.
  *
  *        pswVBar[-NP_AFLAT+1:NP_AFLAT-1]
- *                     The output Shortword array containing the V initial
+ *                     The output int16_t array containing the V initial
  *                     conditions for the P-V AFLAT recursion, set here
  *                     for the Rc-VQ search at the 1st Rc-VQ segment.
  *                     The address of the 0-th element of pswVBar is
@@ -3938,8 +3938,8 @@ void initPBarFullVBarFullL(Longword pL_CorrelSeq[],
  *
  *************************************************************************/
 
-void initPBarVBarL(Longword pL_PBarFull[],
-		   Shortword pswPBar[], Shortword pswVBar[])
+void initPBarVBarL(int32_t pL_PBarFull[],
+		   int16_t pswPBar[], int16_t pswVBar[])
 {
 
 /*_________________________________________________________________________
@@ -4032,10 +4032,10 @@ void initPBarVBarL(Longword pL_PBarFull[],
  *
  *************************************************************************/
 
-Shortword maxCCOverGWithSign(Shortword pswCIn[],
-			     Shortword pswGIn[],
-			     Shortword * pswCCMax,
-			     Shortword * pswGMax, Shortword swNum)
+int16_t maxCCOverGWithSign(int16_t pswCIn[],
+			     int16_t pswGIn[],
+			     int16_t * pswCCMax,
+			     int16_t * pswGMax, int16_t swNum)
 {
 
 /*_________________________________________________________________________
@@ -4044,8 +4044,8 @@ Shortword maxCCOverGWithSign(Shortword pswCIn[],
  |_________________________________________________________________________|
 */
 
-	Shortword swCC, i, maxCCGIndex, swCCMax, swGMax;
-	Longword L_Temp;
+	int16_t swCC, i, maxCCGIndex, swCCMax, swGMax;
+	int32_t L_Temp;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -4169,7 +4169,7 @@ Shortword maxCCOverGWithSign(Shortword pswCIn[],
  *
  *     pswVadLags[4]
  *
- *                     An array of Shortwords containing the best open
+ *                     An array of int16_ts containing the best open
  *                     loop LTP lags for the four subframes.
 
  *
@@ -4191,16 +4191,16 @@ Shortword maxCCOverGWithSign(Shortword pswCIn[],
  *
  **************************************************************************/
 
-void openLoopLagSearch(Shortword pswWSpeech[],
-		       Shortword swPrevR0Index,
-		       Shortword swCurrR0Index,
-		       Shortword * psiUVCode,
-		       Shortword pswLagList[],
-		       Shortword pswNumLagList[],
-		       Shortword pswPitchBuf[],
-		       Shortword pswHNWCoefBuf[],
+void openLoopLagSearch(int16_t pswWSpeech[],
+		       int16_t swPrevR0Index,
+		       int16_t swCurrR0Index,
+		       int16_t * psiUVCode,
+		       int16_t pswLagList[],
+		       int16_t pswNumLagList[],
+		       int16_t pswPitchBuf[],
+		       int16_t pswHNWCoefBuf[],
 		       struct NormSw psnsWSfrmEng[],
-		       Shortword pswVadLags[], Shortword swSP)
+		       int16_t pswVadLags[], int16_t swSP)
 {
 
 /*_________________________________________________________________________
@@ -4209,31 +4209,31 @@ void openLoopLagSearch(Shortword pswWSpeech[],
  |_________________________________________________________________________|
 */
 
-	Longword L_WSfrmEng, L_G, L_C, L_Voicing;
-	Shortword swBestPG, swCCMax, swGMax, swCCDivG;
-	Shortword swTotalCCDivG, swCC, swG, swRG;
+	int32_t L_WSfrmEng, L_G, L_C, L_Voicing;
+	int16_t swBestPG, swCCMax, swGMax, swCCDivG;
+	int16_t swTotalCCDivG, swCC, swG, swRG;
 	short i, j, k, siShift, siIndex, siTrajIndex, siAnchorIndex;
 	short siNumPeaks, siNumTrajToDo, siPeakIndex, siFIndex;
 	short siNumDelta, siBIndex, siBestTrajIndex = 0;
 	short siLowestSoFar, siLagsSoFar, si1, si2, si3;
 	struct NormSw snsMax;
 
-	Shortword pswGFrame[G_FRAME_LEN];
-	Shortword *ppswGSfrm[N_SUB];
-	Shortword pswSfrmEng[N_SUB];
-	Shortword pswCFrame[C_FRAME_LEN];
-	Shortword *ppswCSfrm[N_SUB];
-	Shortword pswLIntBuf[N_SUB];
-	Shortword pswCCThresh[N_SUB];
-	Shortword pswScaledWSpeechBuffer[W_F_BUFF_LEN];
-	Shortword *pswScaledWSpeech;
-	Shortword ppswTrajLBuf[N_SUB * NUM_TRAJ_MAX][N_SUB];
-	Shortword ppswTrajCCBuf[N_SUB * NUM_TRAJ_MAX][N_SUB];
-	Shortword ppswTrajGBuf[N_SUB * NUM_TRAJ_MAX][N_SUB];
-	Shortword pswLPeaks[2 * LMAX / LMIN];
-	Shortword pswCPeaks[2 * LMAX / LMIN];
-	Shortword pswGPeaks[2 * LMAX / LMIN];
-	Shortword pswLArray[DELTA_LEVELS];
+	int16_t pswGFrame[G_FRAME_LEN];
+	int16_t *ppswGSfrm[N_SUB];
+	int16_t pswSfrmEng[N_SUB];
+	int16_t pswCFrame[C_FRAME_LEN];
+	int16_t *ppswCSfrm[N_SUB];
+	int16_t pswLIntBuf[N_SUB];
+	int16_t pswCCThresh[N_SUB];
+	int16_t pswScaledWSpeechBuffer[W_F_BUFF_LEN];
+	int16_t *pswScaledWSpeech;
+	int16_t ppswTrajLBuf[N_SUB * NUM_TRAJ_MAX][N_SUB];
+	int16_t ppswTrajCCBuf[N_SUB * NUM_TRAJ_MAX][N_SUB];
+	int16_t ppswTrajGBuf[N_SUB * NUM_TRAJ_MAX][N_SUB];
+	int16_t pswLPeaks[2 * LMAX / LMIN];
+	int16_t pswCPeaks[2 * LMAX / LMIN];
+	int16_t pswGPeaks[2 * LMAX / LMIN];
+	int16_t pswLArray[DELTA_LEVELS];
 
 	pswScaledWSpeech = pswScaledWSpeechBuffer + LSMAX;
 
@@ -4415,7 +4415,7 @@ void openLoopLagSearch(Shortword pswWSpeech[],
 			pswLIntBuf[i] = 0;
 			pswVadLags[i] = LMIN;	/* store lag value for VAD algorithm */
 		} else {
-			pswLIntBuf[i] = add(LMIN, (Shortword) siIndex);
+			pswLIntBuf[i] = add(LMIN, (int16_t) siIndex);
 			pswVadLags[i] = pswLIntBuf[i];	/* store lag value for VAD algorithm */
 		}
 
@@ -4919,15 +4919,15 @@ void openLoopLagSearch(Shortword pswWSpeech[],
  *
  *************************************************************************/
 
-void pitchLags(Shortword swBestIntLag,
-	       Shortword pswIntCs[],
-	       Shortword pswIntGs[],
-	       Shortword swCCThreshold,
-	       Shortword pswLPeaksSorted[],
-	       Shortword pswCPeaksSorted[],
-	       Shortword pswGPeaksSorted[],
-	       Shortword * psiNumSorted,
-	       Shortword * pswPitch, Shortword * pswHNWCoef)
+void pitchLags(int16_t swBestIntLag,
+	       int16_t pswIntCs[],
+	       int16_t pswIntGs[],
+	       int16_t swCCThreshold,
+	       int16_t pswLPeaksSorted[],
+	       int16_t pswCPeaksSorted[],
+	       int16_t pswGPeaksSorted[],
+	       int16_t * psiNumSorted,
+	       int16_t * pswPitch, int16_t * pswHNWCoef)
 {
 
 /*_________________________________________________________________________
@@ -4936,18 +4936,18 @@ void pitchLags(Shortword swBestIntLag,
  |_________________________________________________________________________|
 */
 
-	Shortword pswLBuf[2 * OS_FCTR - 1], pswCBuf[2 * OS_FCTR - 1];
-	Shortword pswGBuf[2 * OS_FCTR - 1], pswLPeaks[2 * LMAX / LMIN];
-	Shortword pswCPeaks[2 * LMAX / LMIN], pswGPeaks[2 * LMAX / LMIN];
+	int16_t pswLBuf[2 * OS_FCTR - 1], pswCBuf[2 * OS_FCTR - 1];
+	int16_t pswGBuf[2 * OS_FCTR - 1], pswLPeaks[2 * LMAX / LMIN];
+	int16_t pswCPeaks[2 * LMAX / LMIN], pswGPeaks[2 * LMAX / LMIN];
 	short siLPeakIndex, siCPeakIndex, siGPeakIndex, siPeakIndex;
 	short siSortedIndex, siLPeaksSortedInit, swWorkingLag;
-	Shortword swSubMult, swFullResPeak, swCPitch, swGPitch, swMult;
-	Shortword swMultInt, sw1, sw2, si1, si2;
-	Longword L_1;
+	int16_t swSubMult, swFullResPeak, swCPitch, swGPitch, swMult;
+	int16_t swMultInt, sw1, sw2, si1, si2;
+	int32_t L_1;
 	short siNum, siUpperBound, siLowerBound, siSMFIndex;
 	short siNumPeaks, siRepeat, i, j;
 
-	static ShortwordRom psrSubMultFactor[] = { 0x0aab,	/* 1.0/12.0 */
+	static int16_t psrSubMultFactor[] = { 0x0aab,	/* 1.0/12.0 */
 		0x071c,		/* 1.0/18.0 */
 		0x0555,		/* 1.0/24.0 */
 		0x0444,		/* 1.0/30.0 */
@@ -4960,9 +4960,9 @@ void pitchLags(Shortword swBestIntLag,
  |_________________________________________________________________________|
 */
 
-	memzero(pswLPeaks, (2 * LMAX / LMIN) * sizeof(Shortword));
-	memzero(pswCPeaks, (2 * LMAX / LMIN) * sizeof(Shortword));
-	memzero(pswGPeaks, (2 * LMAX / LMIN) * sizeof(Shortword));
+	memzero(pswLPeaks, (2 * LMAX / LMIN) * sizeof(int16_t));
+	memzero(pswCPeaks, (2 * LMAX / LMIN) * sizeof(int16_t));
+	memzero(pswGPeaks, (2 * LMAX / LMIN) * sizeof(int16_t));
 
 	/* Get array of valid lags within one integer lag of the best open-loop */
 	/* integer lag; get the corresponding interpolated C and G arrays;      */
@@ -5237,7 +5237,7 @@ void pitchLags(Shortword swBestIntLag,
  *
  *************************************************************************/
 
-Shortword quantLag(Shortword swRawLag, Shortword * pswCode)
+int16_t quantLag(int16_t swRawLag, int16_t * pswCode)
 {
 
 /*_________________________________________________________________________
@@ -5245,7 +5245,7 @@ Shortword quantLag(Shortword swRawLag, Shortword * pswCode)
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Shortword siOffset, swIndex1, swIndex2;
+	int16_t siOffset, swIndex1, swIndex2;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -5306,7 +5306,7 @@ Shortword quantLag(Shortword swRawLag, Shortword * pswCode)
  *
  *************************************************************************/
 
-Shortword r0Quant(Longword L_UnqntzdR0)
+int16_t r0Quant(int32_t L_UnqntzdR0)
 {
 
 /*_________________________________________________________________________
@@ -5315,7 +5315,7 @@ Shortword r0Quant(Longword L_UnqntzdR0)
  |_________________________________________________________________________|
 */
 
-	Shortword swR0Index, swUnqntzdR0;
+	int16_t swR0Index, swUnqntzdR0;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -5513,10 +5513,10 @@ void setupQuant(int iSeg, int iVector)
  *
  *************************************************************************/
 
-void weightSpeechFrame(Shortword pswSpeechFrm[],
-		       Shortword pswWNumSpace[],
-		       Shortword pswWDenomSpace[],
-		       Shortword pswWSpeechBuffBase[])
+void weightSpeechFrame(int16_t pswSpeechFrm[],
+		       int16_t pswWNumSpace[],
+		       int16_t pswWDenomSpace[],
+		       int16_t pswWSpeechBuffBase[])
 {
 
 /*_________________________________________________________________________
@@ -5525,7 +5525,7 @@ void weightSpeechFrame(Shortword pswSpeechFrm[],
  |_________________________________________________________________________|
 */
 
-	Shortword pswScratch0[W_F_BUFF_LEN], *pswWSpeechFrm;
+	int16_t pswScratch0[W_F_BUFF_LEN], *pswWSpeechFrm;
 	short int siI;
 
 /*_________________________________________________________________________

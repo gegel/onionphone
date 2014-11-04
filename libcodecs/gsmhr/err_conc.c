@@ -46,8 +46,8 @@
  |_________________________________________________________________________|
 */
 
-Longword plSubfrEnergyMem[4];
-Shortword swLevelMem[4], lastR0, pswLastGood[18], swState, swLastFlag;
+int32_t plSubfrEnergyMem[4];
+int16_t swLevelMem[4], lastR0, pswLastGood[18], swState, swLastFlag;
 
 /*****************************************************************************
  *
@@ -102,9 +102,9 @@ Shortword swLevelMem[4], lastR0, pswLastGood[18], swState, swLastFlag;
  *
  ****************************************************************************/
 
-void para_conceal_speech_decoder(Shortword pswErrorFlag[],
-				 Shortword pswSpeechPara[],
-				 Shortword * pswMutePermit)
+void para_conceal_speech_decoder(int16_t pswErrorFlag[],
+				 int16_t pswSpeechPara[],
+				 int16_t * pswMutePermit)
 {
 
 /*_________________________________________________________________________
@@ -112,13 +112,13 @@ void para_conceal_speech_decoder(Shortword pswErrorFlag[],
  |                           Local Static Variables                        |
  |_________________________________________________________________________|
 */
-	static const Shortword psrR0RepeatThreshold[32] =
+	static const int16_t psrR0RepeatThreshold[32] =
 	    { 15, 15, 15, 12, 12, 12, 12, 11,
 		10, 10, 9, 9, 9, 9, 8, 8,
 		7, 6, 5, 5, 5, 4, 4, 3,
 		2, 2, 2, 2, 2, 2, 10, 10
 	};
-	static const Shortword psrR0MuteThreshold[32] =
+	static const int16_t psrR0MuteThreshold[32] =
 	    { 14, 12, 11, 9, 9, 9, 9, 7,
 		7, 7, 7, 7, 6, 6, 6, 5,
 		5, 4, 3, 3, 3, 3, 3, 2,
@@ -130,7 +130,7 @@ void para_conceal_speech_decoder(Shortword pswErrorFlag[],
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Shortword swLastLag, swR0, swLag, r0_diff, i;
+	int16_t swLastLag, swR0, swLag, r0_diff, i;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -305,8 +305,8 @@ void para_conceal_speech_decoder(Shortword pswErrorFlag[],
  *
  ***************************************************************************/
 
-void level_estimator(Shortword update, Shortword * pswLevelMean,
-		     Shortword * pswLevelMax, Shortword pswDecodedSpeechFrame[])
+void level_estimator(int16_t update, int16_t * pswLevelMean,
+		     int16_t * pswLevelMax, int16_t pswDecodedSpeechFrame[])
 {
 
 /*_________________________________________________________________________
@@ -314,8 +314,8 @@ void level_estimator(Shortword update, Shortword * pswLevelMean,
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Shortword i, tmp, swLevelSub;
-	Longword L_sum;
+	int16_t i, tmp, swLevelSub;
+	int32_t L_sum;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -404,12 +404,12 @@ void level_estimator(Shortword update, Shortword * pswLevelMean,
  *
  ****************************************************************************/
 
-void signal_conceal_sub(Shortword pswPPFExcit[],
-			Shortword ppswSynthAs[], Shortword pswSynthFiltState[],
-			Shortword pswLtpStateOut[], Shortword pswPPreState[],
-			Shortword swLevelMean, Shortword swLevelMax,
-			Shortword swUFI, Shortword swMuteFlagOld,
-			Shortword * pswMuteFlag, Shortword swMutePermit)
+void signal_conceal_sub(int16_t pswPPFExcit[],
+			int16_t ppswSynthAs[], int16_t pswSynthFiltState[],
+			int16_t pswLtpStateOut[], int16_t pswPPreState[],
+			int16_t swLevelMean, int16_t swLevelMax,
+			int16_t swUFI, int16_t swMuteFlagOld,
+			int16_t * pswMuteFlag, int16_t swMutePermit)
 {
 
 /*_________________________________________________________________________
@@ -417,11 +417,11 @@ void signal_conceal_sub(Shortword pswPPFExcit[],
  |                           Local Static Variables                        |
  |_________________________________________________________________________|
 */
-	static const Shortword psrConceal[15] = { 29205, 27571, 24573, 21900,
+	static const int16_t psrConceal[15] = { 29205, 27571, 24573, 21900,
 		19519, 17396, 15504, 13818, 12315, 10976, 9783, 8719, 7771,
 		    6925, 6172
 	};
-	static const Shortword psrLevelMaxIncrease[16] =
+	static const int16_t psrLevelMaxIncrease[16] =
 	    { 0, 0, 1, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16 };
 
 /*_________________________________________________________________________
@@ -429,9 +429,9 @@ void signal_conceal_sub(Shortword pswPPFExcit[],
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Shortword swMute, swLevelSub, i, swIndex;
-	Shortword swTmp, pswStateTmp[10], swOutTmp[40], swPermitMuteSub;
-	Longword L_sum;
+	int16_t swMute, swLevelSub, i, swIndex;
+	int16_t swTmp, pswStateTmp[10], swOutTmp[40], swPermitMuteSub;
+	int32_t L_sum;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -492,7 +492,7 @@ void signal_conceal_sub(Shortword pswPPFExcit[],
 	/* -------------------------- */
 	if (swPermitMuteSub > 0) {
 
-		if (sub(swMute, (Shortword) 15) > 0)
+		if (sub(swMute, (int16_t) 15) > 0)
 			swMute = 15;
 
 		/* Keep information that muting occured for next frame */
@@ -547,7 +547,7 @@ void signal_conceal_sub(Shortword pswPPFExcit[],
  *
  ***************************************************************************/
 
-Shortword level_calc(Shortword swInd, Longword * pl_en)
+int16_t level_calc(int16_t swInd, int32_t * pl_en)
 {
 
 /*_________________________________________________________________________
@@ -555,8 +555,8 @@ Shortword level_calc(Shortword swInd, Longword * pl_en)
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Shortword swPos, swLevel;
-	Longword L_tmp;
+	int16_t swPos, swLevel;
+	int32_t L_tmp;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -565,7 +565,7 @@ Shortword level_calc(Shortword swInd, Longword * pl_en)
 */
 
 	if (*pl_en != 0)
-		swPos = sub((Shortword) 29, norm_l(*pl_en));
+		swPos = sub((int16_t) 29, norm_l(*pl_en));
 	else
 		swPos = 0;
 
@@ -576,7 +576,7 @@ Shortword level_calc(Shortword swInd, Longword * pl_en)
 	/* Determine the term: 2*BIT(MSB-1): */
 	/* --------------------------------- */
 	if (swPos >= 0) {
-		L_tmp = L_shl((Longword) 1, swPos);
+		L_tmp = L_shl((int32_t) 1, swPos);
 		if ((*pl_en & L_tmp) != 0)
 			swLevel += 2;
 	}
@@ -584,7 +584,7 @@ Shortword level_calc(Shortword swInd, Longword * pl_en)
 	/* Determine the term: BIT(MSB-2): */
 	/* ------------------------------- */
 	if (--swPos >= 0) {
-		L_tmp = L_shl((Longword) 1, swPos);
+		L_tmp = L_shl((int32_t) 1, swPos);
 		if ((*pl_en & L_tmp) != 0)
 			++swLevel;
 	}
