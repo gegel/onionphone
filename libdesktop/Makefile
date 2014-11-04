@@ -10,7 +10,8 @@ MODE_DEBUG ?= -O0 -g -ggdb
 # -DLINUX_ALSA -DM_LITTLE_ENDIAN -D_GNU_SOURCE
 EXTRADEFS = -DLINUX_ALSA -DM_LITTLE_ENDIAN -D_GNU_SOURCE
 
-CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
+GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = audio.o \
       cntrls.o \
@@ -28,6 +29,14 @@ build: $(BLOB)
 
 $(BLOB): $(OBJ)
 	$(LD) -r $(OBJ) -o $(BLOB)
+
+audio.o: audio.c audio_wave.c audio_alsa.c
+
+audio.c: audio.h
+
+audio_wave.c: audio_wave.h
+
+audio_alsa.c: audio_alsa.h
 
 %.o: %.c
 	$(CC) $(CFLAGS) $(INCADD) -c $<

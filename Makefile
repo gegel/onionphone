@@ -1,7 +1,12 @@
-APPS = common/crp \
-       libaddkey \
-       libcodecs \
-       libdesktop
+export GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+
+COMMONAPPS = common/crp
+
+ADDKEYAPPS = libaddkey
+
+CODECSAPPS = libcodecs
+
+OPHAPPS = libdesktop
 
 ifdef SYSTEMROOT
 LDADD = -lm -lcomctl32 -lwinmm -lws2_32
@@ -10,30 +15,77 @@ else
 LDADD = -lm -lasound
 endif
 
-BUILDDIRS = $(APPS:%=build-%)
-CLEANDIRS = $(APPS:%=clean-%)
-TESTDIRS = $(APPS:%=test-%)
+COMMONBUILDDIRS = $(COMMONAPPS:%=build-%)
+ADDKEYBUILDDIRS = $(ADDKEYAPPS:%=build-%)
+CODECSBUILDDIRS = $(CODECSAPPS:%=build-%)
+OPHBUILDDIRS = $(OPHAPPS:%=build-%)
+COMMONCLEANDIRS = $(COMMONAPPS:%=clean-%)
+ADDKEYCLEANDIRS = $(ADDKEYAPPS:%=clean-%)
+CODECSCLEANDIRS = $(CODECSAPPS:%=clean-%)
+OPHCLEANDIRS = $(OPHAPPS:%=clean-%)
+COMMONTESTDIRS = $(COMMONAPPS:%=test-%)
+ADDKEYTESTDIRS = $(ADDKEYAPPS:%=test-%)
+CODECSTESTDIRS = $(CODECSAPPS:%=test-%)
+OPHTESTDIRS = $(OPHAPPS:%=test-%)
 
-all: $(BUILDDIRS)
-	$(CC) libaddkey/builtin.o common/crp/builtin.o -o addkey$(EXEADD)
-	$(CC) libdesktop/builtin.o libcodecs/builtin.o common/crp/builtin.o $(LDADD) -o oph$(EXEADD)
+all: $(COMMONBUILDDIRS) $(ADDKEYBUILDDIRS) $(CODECSBUILDDIRS) $(OPHBUILDDIRS)
+	$(CC) $(GENERIC_CFLAGS) $(COMMONAPPS:%=%/builtin.o) $(ADDKEYAPPS:%=%/builtin.o) -o addkey$(EXEADD)
+	$(CC) $(GENERIC_CFLAGS) $(COMMONAPPS:%=%/builtin.o) $(CODECSAPPS:%=%/builtin.o) $(OPHAPPS:%=%/builtin.o) $(LDADD) -o oph$(EXEADD)
 
-$(APPS): $(BUILDDIRS)
-$(BUILDDIRS):
+fast: $(OPHBUILDDIRS)
+	$(CC) $(GENERIC_CFLAGS) $(COMMONAPPS:%=%/builtin.o) $(CODECSAPPS:%=%/builtin.o) $(OPHAPPS:%=%/builtin.o) $(LDADD) -o oph$(EXEADD)
+
+$(COMMONAPPS): $(COMMONBUILDDIRS)
+$(ADDKEYAPPS): $(ADDKEYBUILDDIRS)
+$(CODECSAPPS): $(CODECSBUILDDIRS)
+$(OPHAPPS): $(OPHBUILDDIRS)
+$(COMMONBUILDDIRS):
+	$(MAKE) -C $(@:build-%=%)
+$(ADDKEYBUILDDIRS):
+	$(MAKE) -C $(@:build-%=%)
+$(CODECSBUILDDIRS):
+	$(MAKE) -C $(@:build-%=%)
+$(OPHBUILDDIRS):
 	$(MAKE) -C $(@:build-%=%)
 
-clean: $(CLEANDIRS)
-	rm -f addkey$(EXEADD)
-	rm -f oph$(EXEADD)
-$(CLEANDIRS): 
+clean: $(COMMONCLEANDIRS) $(ADDKEYCLEANDIRS) $(CODECSCLEANDIRS) $(OPHCLEANDIRS)
+$(COMMONCLEANDIRS): 
 	$(MAKE) -C $(@:clean-%=%) clean
+$(ADDKEYCLEANDIRS): 
+	$(MAKE) -C $(@:clean-%=%) clean
+	rm -f addkey
+	rm -f addkey$(EXEADD)
+$(CODECSCLEANDIRS): 
+	$(MAKE) -C $(@:clean-%=%) clean
+$(OPHCLEANDIRS): 
+	$(MAKE) -C $(@:clean-%=%) clean
+	rm -f oph$
+	rm -f oph$(EXEADD)
 
-test: $(TESTDIRS)
-$(TESTDIRS): 
+test: $(COMMONTESTDIRS) $(ADDKEYTESTDIRS) $(CODECSCLEANDIRS) $(OPHTESTDIRS)
+$(COMMONTESTDIRS): 
+	$(MAKE) -C $(@:test-%=%) test
+$(ADDKEYTESTDIRS): 
+	$(MAKE) -C $(@:test-%=%) test
+$(CODECSTESTDIRS): 
+	$(MAKE) -C $(@:test-%=%) test
+$(OPHTESTDIRS): 
 	$(MAKE) -C $(@:test-%=%) test
 
-.PHONY: subdirs $(APPS)
-.PHONY: subdirs $(BUILDDIRS)
-.PHONY: subdirs $(CLEANDIRS)
-.PHONY: subdirs $(TESTDIRS)
-.PHONY: all clean test
+.PHONY: subdirs $(COMMONAPPS)
+.PHONY: subdirs $(ADDKEYAPPS)
+.PHONY: subdirs $(CODECSAPPS)
+.PHONY: subdirs $(OPHAPPS)
+.PHONY: subdirs $(COMMONBUILDDIRS)
+.PHONY: subdirs $(ADDKEYBUILDDIRS)
+.PHONY: subdirs $(CODECSBUILDDIRS)
+.PHONY: subdirs $(OPHBUILDDIRS)
+.PHONY: subdirs $(COMMONCLEANDIRS)
+.PHONY: subdirs $(ADDKEYCLEANDIRS)
+.PHONY: subdirs $(CODECSCLEANDIRS)
+.PHONY: subdirs $(OPHCLEANDIRS)
+.PHONY: subdirs $(COMMONTESTDIRS)
+.PHONY: subdirs $(ADDKEYTESTDIRS)
+.PHONY: subdirs $(CODECSTESTDIRS)
+.PHONY: subdirs $(OPHTESTDIRS)
+.PHONY: all fast clean test

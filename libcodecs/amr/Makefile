@@ -10,7 +10,8 @@ MODE_DEBUG ?= -O0 -g -ggdb
 # -DVAD1 -DVAD2
 EXTRADEFS = -DVAD1
 
-CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
+GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = amr_speech_importance.o \
       interf_dec.o \

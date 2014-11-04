@@ -24,7 +24,7 @@ CLEANDIRS = $(APPS:%=clean-%)
 TESTDIRS = $(APPS:%=test-%)
 
 all: $(BUILDDIRS)
-	$(LD) -r */builtin.o -o $(BLOB)
+	$(LD) -r $(APPS:%=%/builtin.o) -o $(BLOB)
 
 $(APPS): $(BUILDDIRS)
 $(BUILDDIRS):

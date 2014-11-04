@@ -13,7 +13,8 @@ ARITHMETICS ?= FIXED
 # -DHAVE_CONFIG_H -DFIXED_POINT
 EXTRADEFS = -DHAVE_CONFIG_H -D$(ARITHMETICS)_POINT
 
-CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
+GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = CNG.o \
       code_signs.o \

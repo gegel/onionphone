@@ -10,7 +10,8 @@ MODE_DEBUG ?= -O0 -g -ggdb
 # -DHAVE_CONFIG_H
 EXTRADEFS = -DHAVE_CONFIG_H
 
-CFLAGS ?= -std=c99 -Wall -Wextra -pedantic $(MODE_$(MODE)) $(EXTRADEFS)
+GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = LTP_analysis_filter_FIX.o \
       LTP_scale_ctrl_FIX.o \
