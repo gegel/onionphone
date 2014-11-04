@@ -36,9 +36,9 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _FS_LIB_H_
 #define _FS_LIB_H_
 
-void find_harm(Shortword input[], Shortword fsmag[], Shortword pitch,
-	       Shortword num_harm, Shortword length);
+void find_harm(int16_t input[], int16_t fsmag[], int16_t pitch,
+	       int16_t num_harm, int16_t length);
 
-void idft_real(Shortword real[], Shortword signal[], Shortword length);
+void idft_real(int16_t real[], int16_t signal[], int16_t length);
 
 #endif

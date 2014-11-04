@@ -41,30 +41,30 @@ Secretariat fax: +33 493 65 47 16.
 
 /* External function definitions */
 
-Shortword L_divider2(Longword numer, Longword denom, Shortword numer_shift,
-		     Shortword denom_shift);
+int16_t L_divider2(int32_t numer, int32_t denom, int16_t numer_shift,
+		     int16_t denom_shift);
 
-Shortword log10_fxp(Shortword x, Shortword Q);
+int16_t log10_fxp(int16_t x, int16_t Q);
 
-Shortword L_log10_fxp(Longword x, Shortword Q);
+int16_t L_log10_fxp(int32_t x, int16_t Q);
 
-Shortword pow10_fxp(Shortword x, Shortword Q);
+int16_t pow10_fxp(int16_t x, int16_t Q);
 
-Shortword sqrt_fxp(Shortword x, Shortword Q);
+int16_t sqrt_fxp(int16_t x, int16_t Q);
 
-Shortword L_sqrt_fxp(Longword x, Shortword Q);
+int16_t L_sqrt_fxp(int32_t x, int16_t Q);
 
-Shortword L_pow_fxp(Longword x, Shortword power, Shortword Q_in,
-		    Shortword Q_out);
+int16_t L_pow_fxp(int32_t x, int16_t power, int16_t Q_in,
+		    int16_t Q_out);
 
-Shortword sin_fxp(Shortword x);
+int16_t sin_fxp(int16_t x);
 
-Shortword cos_fxp(Shortword x);
+int16_t cos_fxp(int16_t x);
 
-Shortword sqrt_Q15(Shortword x);
+int16_t sqrt_Q15(int16_t x);
 
-Shortword add_shr(Shortword Var1, Shortword Var2);
+int16_t add_shr(int16_t Var1, int16_t Var2);
 
-Shortword sub_shr(Shortword Var1, Shortword Var2);
+int16_t sub_shr(int16_t Var1, int16_t Var2);
 
 #endif

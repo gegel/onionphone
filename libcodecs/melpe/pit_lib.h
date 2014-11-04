@@ -36,20 +36,20 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _PIT_LIB_H_
 #define _PIT_LIB_H_
 
-Shortword f_pitch_scale(Shortword sig_out[], Shortword sig_in[],
-			Shortword length);
+int16_t f_pitch_scale(int16_t sig_out[], int16_t sig_in[],
+			int16_t length);
 
-Shortword find_pitch(Shortword sig_in[], Shortword * pcorr, Shortword lower,
-		     Shortword upper, Shortword length);
+int16_t find_pitch(int16_t sig_in[], int16_t * pcorr, int16_t lower,
+		     int16_t upper, int16_t length);
 
-Shortword frac_pch(Shortword sig_in[], Shortword * pcorr, Shortword fpitch,
-		   Shortword range, Shortword pmin, Shortword pmax,
-		   Shortword pmin_q7, Shortword pmax_q7, Shortword lmin);
+int16_t frac_pch(int16_t sig_in[], int16_t * pcorr, int16_t fpitch,
+		   int16_t range, int16_t pmin, int16_t pmax,
+		   int16_t pmin_q7, int16_t pmax_q7, int16_t lmin);
 
-Shortword p_avg_update(Shortword pitch, Shortword pcorr, Shortword pthresh);
+int16_t p_avg_update(int16_t pitch, int16_t pcorr, int16_t pthresh);
 
-Shortword pitch_ana(Shortword speech[], Shortword resid[],
-		    Shortword pitch_est, Shortword pitch_avg,
-		    Shortword * pcorr2);
+int16_t pitch_ana(int16_t speech[], int16_t resid[],
+		    int16_t pitch_est, int16_t pitch_avg,
+		    int16_t * pcorr2);
 
 #endif

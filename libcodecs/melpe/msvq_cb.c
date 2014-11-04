@@ -34,11 +34,11 @@ Secretariat fax: +33 493 65 47 16.
 
 #include "sc1200.h"
 
-const Shortword msvq_cb_mean[LPC_ORD] = {
+const int16_t msvq_cb_mean[LPC_ORD] = {
 	2858, 4291, 6569, 9792, 12935, 15703, 19199, 21921, 25572, 27909
 };
 
-const Shortword msvq_cb[(128 + 64 + 64 + 64) * LPC_ORD] = {
+const int16_t msvq_cb[(128 + 64 + 64 + 64) * LPC_ORD] = {
 	124, -1043, -5261, -6947, 8481,
 	7520, 2370, 2272, -729, -1243,
 
@@ -1000,7 +1000,7 @@ const Shortword msvq_cb[(128 + 64 + 64 + 64) * LPC_ORD] = {
 	-949, 1188, -718, -155, -130
 };
 
-const Shortword msvq_cb_rate1200[(128 + 64 + 64 + 64) * LPC_ORD] = {
+const int16_t msvq_cb_rate1200[(128 + 64 + 64 + 64) * LPC_ORD] = {
 	2910, 4036, 5205, 8031, 15051,
 	17572, 19772, 22452, 25344, 27596,
 

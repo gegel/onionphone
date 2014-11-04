@@ -39,7 +39,7 @@
 #define X44_Q11			9011	/* 4.4 * (1 << 11) */
 #define X88_Q11			18022	/* 8.8 * (1 << 11) */
 
-static const Shortword sqrt_tukey_256_180[ENH_WINLEN] = {	/* Q15 */
+static const int16_t sqrt_tukey_256_180[ENH_WINLEN] = {	/* Q15 */
 	677, 1354, 2030, 2705, 3380, 4053, 4724, 5393,
 	6060, 6724, 7385, 8044, 8698, 9349, 9996, 10639,
 	11277, 11911, 12539, 13162, 13780, 14391, 14996, 15595,
@@ -75,83 +75,83 @@ static const Shortword sqrt_tukey_256_180[ENH_WINLEN] = {	/* Q15 */
 };
 
 /* ====== Entities from Enhanced_Data ====== */
-static Shortword enh_i = 0;	/* formerly D->I */
-static Shortword lambdaD[ENH_VEC_LENF];	/* overestimated noise */
+static int16_t enh_i = 0;	/* formerly D->I */
+static int16_t lambdaD[ENH_VEC_LENF];	/* overestimated noise */
 					       /* psd(noise_bias * noisespect) */
-static Shortword lambdaD_shift[ENH_VEC_LENF];
-static Shortword SN_LT;		/* long term SNR */
-static Shortword SN_LT_shift;
-static Shortword n_pwr;
-static Shortword n_pwr_shift;
-static Shortword YY[ENH_VEC_LENF];	/* signal periodogram of current frame */
-static Shortword YY_shift[ENH_VEC_LENF];
-static Shortword sm_shift[ENH_VEC_LENF];
-static Shortword noise_shift[ENH_VEC_LENF];
-static Shortword noise2_shift[ENH_VEC_LENF];
-static Shortword av_shift[ENH_VEC_LENF];
-static Shortword av2_shift[ENH_VEC_LENF];
-static Shortword act_min[ENH_VEC_LENF];	/* current minimum of long window */
-static Shortword act_min_shift[ENH_VEC_LENF];
-static Shortword act_min_sub[ENH_VEC_LENF];
+static int16_t lambdaD_shift[ENH_VEC_LENF];
+static int16_t SN_LT;		/* long term SNR */
+static int16_t SN_LT_shift;
+static int16_t n_pwr;
+static int16_t n_pwr_shift;
+static int16_t YY[ENH_VEC_LENF];	/* signal periodogram of current frame */
+static int16_t YY_shift[ENH_VEC_LENF];
+static int16_t sm_shift[ENH_VEC_LENF];
+static int16_t noise_shift[ENH_VEC_LENF];
+static int16_t noise2_shift[ENH_VEC_LENF];
+static int16_t av_shift[ENH_VEC_LENF];
+static int16_t av2_shift[ENH_VEC_LENF];
+static int16_t act_min[ENH_VEC_LENF];	/* current minimum of long window */
+static int16_t act_min_shift[ENH_VEC_LENF];
+static int16_t act_min_sub[ENH_VEC_LENF];
 					     /* current minimum of sub-window */
-static Shortword act_min_sub_shift[ENH_VEC_LENF];
-static Shortword vk[ENH_VEC_LENF];
-static Shortword vk_shift[ENH_VEC_LENF];
-static Shortword ksi[ENH_VEC_LENF];	/* a priori SNR */
-static Shortword ksi_shift[ENH_VEC_LENF];
+static int16_t act_min_sub_shift[ENH_VEC_LENF];
+static int16_t vk[ENH_VEC_LENF];
+static int16_t vk_shift[ENH_VEC_LENF];
+static int16_t ksi[ENH_VEC_LENF];	/* a priori SNR */
+static int16_t ksi_shift[ENH_VEC_LENF];
 
-static Shortword var_rel[ENH_VEC_LENF];
+static int16_t var_rel[ENH_VEC_LENF];
 				       /* est. relative var. of smoothedspect */
-static Shortword var_rel_av;	/* average relative var. of smoothedspect */
+static int16_t var_rel_av;	/* average relative var. of smoothedspect */
 
 /* only for minimum statistics */
 
-static Shortword smoothedspect[ENH_VEC_LENF];	/* smoothed signal spectrum */
-static Shortword var_sp_av[ENH_VEC_LENF];
+static int16_t smoothedspect[ENH_VEC_LENF];	/* smoothed signal spectrum */
+static int16_t var_sp_av[ENH_VEC_LENF];
 					   /* estimated mean of smoothedspect */
-static Shortword var_sp_2[ENH_VEC_LENF];
+static int16_t var_sp_2[ENH_VEC_LENF];
 				     /* esitmated 2nd moment of smoothedspect */
-static Shortword noisespect[ENH_VEC_LENF];	/* estimated noise psd */
-static Shortword noisespect2[ENH_VEC_LENF];
-static Shortword alphacorr;	/* correction factor for alpha_var, Q15 */
-static Shortword alpha_var[ENH_VEC_LENF];	/* variable smoothing */
+static int16_t noisespect[ENH_VEC_LENF];	/* estimated noise psd */
+static int16_t noisespect2[ENH_VEC_LENF];
+static int16_t alphacorr;	/* correction factor for alpha_var, Q15 */
+static int16_t alpha_var[ENH_VEC_LENF];	/* variable smoothing */
 							 /* parameter for psd */
-static Shortword circb[NUM_MINWIN][ENH_VEC_LENF];	/* ring buffer */
-static Shortword circb_shift[NUM_MINWIN][ENH_VEC_LENF];
+static int16_t circb[NUM_MINWIN][ENH_VEC_LENF];	/* ring buffer */
+static int16_t circb_shift[NUM_MINWIN][ENH_VEC_LENF];
 
-static Shortword initial_noise[ENH_WINLEN];	/* look ahead noise */
+static int16_t initial_noise[ENH_WINLEN];	/* look ahead noise */
 							      /* samples (Q0) */
-static Shortword speech_in_npp[ENH_WINLEN];	/* input of one frame */
-static Shortword ybuf[2 * ENH_WINLEN + 2];
+static int16_t speech_in_npp[ENH_WINLEN];	/* input of one frame */
+static int16_t ybuf[2 * ENH_WINLEN + 2];
 				 /* buffer for FFT, this can be eliminated if */
 						    /* we can write a better real-FFT program for DSP */
-static Longword temp_yy[ENH_WINLEN + 2];
+static int32_t temp_yy[ENH_WINLEN + 2];
 
 /* ====== Prototypes ====== */
 
-static void smoothing_win(Shortword initial_noise[]);
-static void compute_qk(Shortword qk[], Shortword gamaK[],
-		       Shortword gamaK_shift[], Shortword GammaQ_TH);
-static void gain_log_mmse(Shortword qk[], Shortword Gain[],
-			  Shortword gamaK[], Shortword gamaK_shift[],
-			  Shortword m);
-static Shortword ksi_min_adapt(BOOLEAN n_flag, Shortword ksi_min,
-			       Shortword sn_lt, Shortword sn_lt_shift);
-static void smoothed_periodogram(Shortword YY_av, Shortword yy_shift);
-static void bias_compensation(Shortword biased_spect[],
-			      Shortword bias_shift[],
-			      Shortword biased_spect_sub[],
-			      Shortword bias_sub_shift[]);
-static Shortword noise_slope();
-static Shortword comp_data_shift(Shortword num1, Shortword shift1,
-				 Shortword num2, Shortword shift2);
-static void min_search(Shortword biased_spect[], Shortword bias_shift[],
-		       Shortword biased_spect_sub[],
-		       Shortword bias_sub_shift[]);
+static void smoothing_win(int16_t initial_noise[]);
+static void compute_qk(int16_t qk[], int16_t gamaK[],
+		       int16_t gamaK_shift[], int16_t GammaQ_TH);
+static void gain_log_mmse(int16_t qk[], int16_t Gain[],
+			  int16_t gamaK[], int16_t gamaK_shift[],
+			  int16_t m);
+static int16_t ksi_min_adapt(BOOLEAN n_flag, int16_t ksi_min,
+			       int16_t sn_lt, int16_t sn_lt_shift);
+static void smoothed_periodogram(int16_t YY_av, int16_t yy_shift);
+static void bias_compensation(int16_t biased_spect[],
+			      int16_t bias_shift[],
+			      int16_t biased_spect_sub[],
+			      int16_t bias_sub_shift[]);
+static int16_t noise_slope();
+static int16_t comp_data_shift(int16_t num1, int16_t shift1,
+				 int16_t num2, int16_t shift2);
+static void min_search(int16_t biased_spect[], int16_t bias_shift[],
+		       int16_t biased_spect_sub[],
+		       int16_t bias_sub_shift[]);
 void enh_init();
 static void minstat_init();
-static void process_frame(Shortword inspeech[], Shortword outspeech[]);
-static void gain_mod(Shortword qk[], Shortword GainD[], Shortword m);
+static void process_frame(int16_t inspeech[], int16_t outspeech[]);
+static void gain_mod(int16_t qk[], int16_t GainD[], int16_t m);
 
 /****************************************************************************
 **
@@ -161,17 +161,17 @@ static void gain_mod(Shortword qk[], Shortword GainD[], Shortword m);
 **
 ** Arguments:
 **
-**	Shortword	sp_in[]  ---- input speech data buffer (Q0)
-**	Shortword	sp_out[] ---- output speech data buffer (Q0)
+**	int16_t	sp_in[]  ---- input speech data buffer (Q0)
+**	int16_t	sp_out[] ---- output speech data buffer (Q0)
 **
 ** Return value:	None
 **
 *****************************************************************************/
-void npp(Shortword sp_in[], Shortword sp_out[])
+void npp(int16_t sp_in[], int16_t sp_out[])
 {
-	static Shortword speech_overlap[ENH_OVERLAP_LEN];
+	static int16_t speech_overlap[ENH_OVERLAP_LEN];
 	static BOOLEAN first_time = TRUE;
-	Shortword speech_out_npp[ENH_WINLEN];	/* output of one frame */
+	int16_t speech_out_npp[ENH_WINLEN];	/* output of one frame */
 
 	if (first_time) {
 
@@ -208,12 +208,12 @@ void npp(Shortword sp_in[], Shortword sp_out[])
 /*	  Subroutine gain_mod: compute gain modification factor based on		 */
 /*		 signal absence probabilities qk									 */
 /*****************************************************************************/
-static void gain_mod(Shortword qk[], Shortword GainD[], Shortword m)
+static void gain_mod(int16_t qk[], int16_t GainD[], int16_t m)
 {
-	register Shortword i;
-	Shortword temp, temp1, temp2, temp3, temp4, shift;
-	Shortword temp_shift, temp2_shift;
-	Longword L_sum, L_tmp;
+	register int16_t i;
+	int16_t temp, temp1, temp2, temp3, temp4, shift;
+	int16_t temp_shift, temp2_shift;
+	int32_t L_sum, L_tmp;
 
 	for (i = 0; i < m; i++) {
 		/*      temp = 1.0 - qk[i]; */
@@ -253,7 +253,7 @@ static void gain_mod(Shortword qk[], Shortword GainD[], Shortword m)
 		L_sum = melpe_L_add(L_sum, melpe_L_deposit_h(temp4));	/* add exp */
 		shift = melpe_extract_h(L_sum);	/* this is exp part */
 
-		temp4 = (Shortword) (melpe_extract_l(melpe_L_shr(L_sum, 1)) & 0x7fff);
+		temp4 = (int16_t) (melpe_extract_l(melpe_L_shr(L_sum, 1)) & 0x7fff);
 		temp1 = melpe_shr(melpe_mult(temp4, 9864), 3);	/* change to base 10 Q12 */
 		temp1 = pow10_fxp(temp1, 14);	/* out Q14 */
 		L_tmp = L_mpy_ls(L_tmp, temp1);	/* Q30 */
@@ -286,12 +286,12 @@ static void gain_mod(Shortword qk[], Shortword GainD[], Shortword m)
 /*	  Subroutine compute_qk: compute the probability of speech absence       */
 /*		This uses an harddecision approach due to Malah (ICASSP 1999).		 */
 /*****************************************************************************/
-static void compute_qk(Shortword qk[], Shortword gamaK[],
-		       Shortword gamaK_shift[], Shortword GammaQ_TH)
+static void compute_qk(int16_t qk[], int16_t gamaK[],
+		       int16_t gamaK_shift[], int16_t GammaQ_TH)
 {
-	register Shortword i;
+	register int16_t i;
 	static BOOLEAN first_time = TRUE;
-	static Shortword qla[ENH_VEC_LENF];
+	static int16_t qla[ENH_VEC_LENF];
 
 	/* Initializing qla[] */
 	if (first_time) {
@@ -316,13 +316,13 @@ static void compute_qk(Shortword qk[], Shortword gamaK[],
 /*		variable vk for the Ephraim&Malah 1985 log spectral estimator.		 */
 /*	  Approximation of the exponential integral due to Malah, 1996			 */
 /*****************************************************************************/
-static void gain_log_mmse(Shortword qk[], Shortword Gain[],
-			  Shortword gamaK[], Shortword gamaK_shift[],
-			  Shortword m)
+static void gain_log_mmse(int16_t qk[], int16_t Gain[],
+			  int16_t gamaK[], int16_t gamaK_shift[],
+			  int16_t m)
 {
-	register Shortword i;
-	Shortword ksi_vq, temp1, temp2, shift;
-	Longword L_sum;
+	register int16_t i;
+	int16_t ksi_vq, temp1, temp2, shift;
+	int32_t L_sum;
 
 	for (i = 0; i < m; i++) {
 
@@ -330,7 +330,7 @@ static void gain_log_mmse(Shortword qk[], Shortword Gain[],
 		temp1 = melpe_sub(ONE_Q15, qk[i]);
 		shift = melpe_norm_s(temp1);
 		temp1 = melpe_shl(temp1, shift);
-		temp2 = melpe_sub(ksi_shift[i], (Shortword) (-shift));
+		temp2 = melpe_sub(ksi_shift[i], (int16_t) (-shift));
 		/*      ksi[] + 1.0 - qk[] */
 		if (temp2 > 0) {
 			temp1 = melpe_shr(temp1, melpe_add(temp2, 1));
@@ -382,7 +382,7 @@ static void gain_log_mmse(Shortword qk[], Shortword Gain[],
 			L_sum = melpe_L_shr(L_sum, melpe_sub(14, vk_shift[i]));
 			L_sum = L_mpy_ls(L_sum, 27213);	/* Q15 to base 2 */
 			shift = melpe_extract_h(melpe_L_shl(L_sum, 1));	/* integer part */
-			temp1 = (Shortword) (melpe_extract_l(L_sum) & 0x7fff);
+			temp1 = (int16_t) (melpe_extract_l(L_sum) & 0x7fff);
 			temp1 = melpe_shr(melpe_mult(temp1, 9864), 3);	/* Q12 to base 10 */
 			temp1 = pow10_fxp(temp1, 14);	/* output Q14 */
 			L_sum = melpe_L_shl(melpe_L_deposit_l(temp1), 10);	/* Q24 now */
@@ -408,7 +408,7 @@ static void gain_log_mmse(Shortword qk[], Shortword Gain[],
 			continue;
 		} else {
 			temp1 = melpe_extract_l(melpe_L_shr(L_sum, 9));
-			temp1 = (Shortword) (temp1 & 0x7fff);
+			temp1 = (int16_t) (temp1 & 0x7fff);
 			temp1 = melpe_shr(melpe_mult(temp1, 9864), 3);	/* change to base 10 Q12 */
 			temp1 = pow10_fxp(temp1, 14);
 
@@ -425,11 +425,11 @@ static void gain_log_mmse(Shortword qk[], Shortword Gain[],
 /*****************************************************************************/
 /*	   Subroutine ksi_min_adapt: computes the adaptive ksi_min				 */
 /*****************************************************************************/
-static Shortword ksi_min_adapt(BOOLEAN n_flag, Shortword ksi_min,
-			       Shortword sn_lt, Shortword sn_lt_shift)
+static int16_t ksi_min_adapt(BOOLEAN n_flag, int16_t ksi_min,
+			       int16_t sn_lt, int16_t sn_lt_shift)
 {
-	Shortword ksi_min_new, temp, shift;
-	Longword L_sum;
+	int16_t ksi_min_new, temp, shift;
+	int32_t L_sum;
 
 	if (n_flag)		/* RM: adaptive modification of ksi limit (10/98) */
 		ksi_min_new = ksi_min;
@@ -461,7 +461,7 @@ static Shortword ksi_min_adapt(BOOLEAN n_flag, Shortword ksi_min,
 		L_sum = melpe_L_add(L_sum, melpe_L_mult(shift, 21299));	/* 21299 = 0.65 Q15 */
 		L_sum = melpe_L_sub(L_sum, 472742L);	/* 472742 = 7.2134752 Q16 */
 		shift = melpe_extract_h(L_sum);	/* the pure shift */
-		temp = (Shortword) (melpe_extract_l(melpe_L_shr(L_sum, 1)) & 0x7fff);
+		temp = (int16_t) (melpe_extract_l(melpe_L_shr(L_sum, 1)) & 0x7fff);
 		temp = melpe_mult(temp, 9864);	/* change to base 10 */
 		temp = melpe_shr(temp, 3);	/* change to Q12 */
 		temp = pow10_fxp(temp, 14);
@@ -483,10 +483,10 @@ static Shortword ksi_min_adapt(BOOLEAN n_flag, Shortword ksi_min,
 /* an inverse trapezoid window and wtr_front[] supplies the coefficients for */
 /* the two edges.                                                            */
 /*****************************************************************************/
-static void smoothing_win(Shortword initial_noise[])
+static void smoothing_win(int16_t initial_noise[])
 {
-	register Shortword i;
-	static const Shortword wtr_front[WTR_FRONT_LEN] = {	/* Q15 */
+	register int16_t i;
+	static const int16_t wtr_front[WTR_FRONT_LEN] = {	/* Q15 */
 		32767, 32582, 32048, 31202, 30080, 28718, 27152, 25418,
 		23552, 21590, 19568, 17522, 15488, 13502, 11600, 9818,
 		8192, 6750, 5488, 4394, 3456, 2662, 2000, 1458,
@@ -508,13 +508,13 @@ static void smoothing_win(Shortword initial_noise[])
 /*	Subroutine smoothed_periodogram: compute short time psd with optimal   */
 /*						 smoothing										   */
 /***************************************************************************/
-static void smoothed_periodogram(Shortword YY_av, Shortword yy_shift)
+static void smoothed_periodogram(int16_t YY_av, int16_t yy_shift)
 {
-	register Shortword i;
-	Shortword smoothed_av, alphacorr_new, alpha_N_min_1, alpha_num;
-	Shortword smav_shift, shift, temp, temp1, tmpns, tmpalpha;
-	Shortword noise__shift, temp_shift, tmpns_shift, max_shift;
-	Longword L_sum, L_tmp;
+	register int16_t i;
+	int16_t smoothed_av, alphacorr_new, alpha_N_min_1, alpha_num;
+	int16_t smav_shift, shift, temp, temp1, tmpns, tmpalpha;
+	int16_t noise__shift, temp_shift, tmpns_shift, max_shift;
+	int32_t L_sum, L_tmp;
 
 	/* ---- compute smoothed_av ---- */
 	max_shift = SW_MIN;
@@ -592,7 +592,7 @@ static void smoothed_periodogram(Shortword YY_av, Shortword yy_shift)
 		L_sum = melpe_L_shl(melpe_L_deposit_l(SN_LT), SN_LT_shift);
 	temp = L_log10_fxp(L_sum, 15);	/* output Q11 */
 	temp = melpe_shl(temp, 1);	/* convert to Q12 */
-	temp = melpe_mult(temp, (Shortword) PDECAY_NUM);
+	temp = melpe_mult(temp, (int16_t) PDECAY_NUM);
 	alpha_N_min_1 = pow10_fxp(temp, 15);
 
 	/* -- alpha_N_min_1 = (0.3 < alpha_N_min_1 ? 0.3 : alpha_N_min_1) -- */
@@ -692,16 +692,16 @@ static void smoothed_periodogram(Shortword YY_av, Shortword yy_shift)
 /* Subroutine normalized_variance: compute variance of smoothed periodogram, */
 /* normalize it, and use it to compute a biased smoothed periodogram		 */
 /*****************************************************************************/
-static void bias_compensation(Shortword biased_spect[],
-			      Shortword bias_shift[],
-			      Shortword biased_spect_sub[],
-			      Shortword bias_sub_shift[])
+static void bias_compensation(int16_t biased_spect[],
+			      int16_t bias_shift[],
+			      int16_t biased_spect_sub[],
+			      int16_t bias_sub_shift[])
 {
-	register Shortword i;
-	Shortword tmp, tmp1, tmp2, tmp5;
-	Shortword beta_var, var_rel_av_sqrt;
-	Shortword av__shift, av2__shift, shift1, shift3, shift4;
-	Longword L_max1, L_max2, L_sum, L_var_sum, L_tmp3, L_tmp4;
+	register int16_t i;
+	int16_t tmp, tmp1, tmp2, tmp5;
+	int16_t beta_var, var_rel_av_sqrt;
+	int16_t av__shift, av2__shift, shift1, shift3, shift4;
+	int32_t L_max1, L_max2, L_sum, L_var_sum, L_tmp3, L_tmp4;
 
 	/* ---- compute variance of smoothed psd ---- */
 	L_var_sum = 0;
@@ -840,9 +840,9 @@ static void bias_compensation(Shortword biased_spect[],
 /*	Subroutine noise_slope: compute maximum of the permitted increase of   */
 /*		   the noise estimate as a function of the mean signal variance    */
 /***************************************************************************/
-static Shortword noise_slope()
+static int16_t noise_slope()
 {
-	Shortword noise_slope_max;
+	int16_t noise_slope_max;
 
 	if (var_rel_av > X018_Q15)
 		noise_slope_max = X132_Q11;
@@ -863,10 +863,10 @@ static Shortword noise_slope()
 /* It actually compares x1 = (num1 * 2^shift1) and x2 = (num2 * 2^shift2). */
 /* The sign of the returned value is the same as that of (x1 - x2).        */
 /***************************************************************************/
-static Shortword comp_data_shift(Shortword num1, Shortword shift1,
-				 Shortword num2, Shortword shift2)
+static int16_t comp_data_shift(int16_t num1, int16_t shift1,
+				 int16_t num2, int16_t shift2)
 {
-	Shortword shift;
+	int16_t shift;
 
 	if ((num1 > 0) && (num2 < 0))
 		return (1);
@@ -886,18 +886,18 @@ static Shortword comp_data_shift(Shortword num1, Shortword shift1,
 /***************************************************************************/
 /*	Subroutine min_search: find minimum of psd's in circular buffer 	   */
 /***************************************************************************/
-static void min_search(Shortword biased_spect[], Shortword bias_shift[],
-		       Shortword biased_spect_sub[], Shortword bias_sub_shift[])
+static void min_search(int16_t biased_spect[], int16_t bias_shift[],
+		       int16_t biased_spect_sub[], int16_t bias_sub_shift[])
 {
-	register Shortword i, k;
+	register int16_t i, k;
 	static BOOLEAN localflag[ENH_VEC_LENF];	/* local minimum indicator */
-	static Shortword minspec_counter = 0;	/* count sub-windows */
-	static Shortword circb_index = 0;	/* ring buffer counter */
-	static Shortword circb_min[ENH_VEC_LENF];
+	static int16_t minspec_counter = 0;	/* count sub-windows */
+	static int16_t circb_index = 0;	/* ring buffer counter */
+	static int16_t circb_min[ENH_VEC_LENF];
 	/* minimum of circular buffer */
-	static Shortword circb_min_shift[ENH_VEC_LENF];
-	Shortword noise_slope_max, tmp, tmp_shift, temp1, temp2;
-	Longword L_sum;
+	static int16_t circb_min_shift[ENH_VEC_LENF];
+	int16_t noise_slope_max, tmp, tmp_shift, temp1, temp2;
+	int32_t L_sum;
 
 	/* localflag[] is initialized to FALSE since it is static. */
 
@@ -1022,10 +1022,10 @@ static void min_search(Shortword biased_spect[], Shortword bias_shift[],
 /***************************************************************************/
 void enh_init()
 {
-	register Shortword i;
-	Shortword max, shift, temp, norm_shift, guard;
-	Shortword a_shift;
-	Longword L_sum = 0, L_data;
+	register int16_t i;
+	int16_t max, shift, temp, norm_shift, guard;
+	int16_t a_shift;
+	int32_t L_sum = 0, L_data;
 
 	/* initialize noise spectrum */
 
@@ -1164,9 +1164,9 @@ void enh_init()
 static void minstat_init()
 {
 	/* Initialize Minimum Statistics Noise Estimator */
-	register Shortword i;
-	Shortword shift;
-	Longword L_sum;
+	register int16_t i;
+	int16_t shift;
+	int32_t L_sum;
 
 	v_equ(smoothedspect, lambdaD, ENH_VEC_LENF);
 	v_scale(smoothedspect, ENH_INV_NOISE_BIAS, ENH_VEC_LENF);
@@ -1203,40 +1203,40 @@ static void minstat_init()
 **
 ** Arguments:
 **
-**  Shortword   inspeech[]  ---- input speech data buffer (Q0)
-**  Shortword   outspeech[] ---- output speech data buffer (Q0)
+**  int16_t   inspeech[]  ---- input speech data buffer (Q0)
+**  int16_t   outspeech[] ---- output speech data buffer (Q0)
 **
 ** Return value:    None
 **
  ***************************************************************************/
-static void process_frame(Shortword inspeech[], Shortword outspeech[])
+static void process_frame(int16_t inspeech[], int16_t outspeech[])
 {
-	register Shortword i;
+	register int16_t i;
 	static BOOLEAN first_time = TRUE;
-	static Shortword agal[ENH_VEC_LENF];	/* GainD*Ymag */
-	static Shortword agal_shift[ENH_VEC_LENF];
-	static Shortword Ksi_min_var = GM_MIN;
-	static Shortword qk[ENH_VEC_LENF];	/* probability of noise only, Q15 */
-	static Shortword Gain[ENH_VEC_LENF];	/* MMSE LOG STA estimator gain */
-	static Shortword YY_LT, YY_LT_shift;
-	static Shortword SN_LT0, SN_LT0_shift;
+	static int16_t agal[ENH_VEC_LENF];	/* GainD*Ymag */
+	static int16_t agal_shift[ENH_VEC_LENF];
+	static int16_t Ksi_min_var = GM_MIN;
+	static int16_t qk[ENH_VEC_LENF];	/* probability of noise only, Q15 */
+	static int16_t Gain[ENH_VEC_LENF];	/* MMSE LOG STA estimator gain */
+	static int16_t YY_LT, YY_LT_shift;
+	static int16_t SN_LT0, SN_LT0_shift;
 	BOOLEAN n_flag;
-	Shortword temp, temp_shift;
-	Shortword YY_av, gamma_av, gamma_max, gamma_av_shift, gamma_max_shift;
-	Shortword shift, YY_av_shift, max, temp1, temp2, temp3, temp4;
-	Shortword max_YY_shift, Y_shift, guard;
-	Shortword a_shift, ygal;
-	Shortword Ymag[ENH_VEC_LENF];	/* magnitude of current frame */
-	Shortword Ymag_shift[ENH_VEC_LENF];
-	Shortword GainD[ENH_VEC_LENF];	/* Gain[].*GM[] */
-	Shortword analy[ENH_WINLEN];
-	Shortword gamaK[ENH_VEC_LENF];	/* a posteriori SNR */
-	Shortword gamaK_shift[ENH_VEC_LENF];
-	Shortword biased_smoothedspect[ENH_VEC_LENF];	/* weighted smoothed */
+	int16_t temp, temp_shift;
+	int16_t YY_av, gamma_av, gamma_max, gamma_av_shift, gamma_max_shift;
+	int16_t shift, YY_av_shift, max, temp1, temp2, temp3, temp4;
+	int16_t max_YY_shift, Y_shift, guard;
+	int16_t a_shift, ygal;
+	int16_t Ymag[ENH_VEC_LENF];	/* magnitude of current frame */
+	int16_t Ymag_shift[ENH_VEC_LENF];
+	int16_t GainD[ENH_VEC_LENF];	/* Gain[].*GM[] */
+	int16_t analy[ENH_WINLEN];
+	int16_t gamaK[ENH_VEC_LENF];	/* a posteriori SNR */
+	int16_t gamaK_shift[ENH_VEC_LENF];
+	int16_t biased_smoothedspect[ENH_VEC_LENF];	/* weighted smoothed */
 	/* spect. for long window */
-	Shortword biased_smoothedspect_sub[ENH_VEC_LENF];	/* for subwindow */
-	Shortword bias_shift[ENH_VEC_LENF], bias_sub_shift[ENH_VEC_LENF];
-	Longword L_sum, L_max;
+	int16_t biased_smoothedspect_sub[ENH_VEC_LENF];	/* for subwindow */
+	int16_t bias_shift[ENH_VEC_LENF], bias_sub_shift[ENH_VEC_LENF];
+	int32_t L_sum, L_max;
 
 	if (first_time) {
 		v_zap(agal, ENH_VEC_LENF);
@@ -1433,7 +1433,7 @@ static void process_frame(Shortword inspeech[], Shortword outspeech[])
 			temp4 = lambdaD_shift[i];
 			if (melpe_sub(temp3, temp1) < 0) {
 				temp1 = melpe_shr(temp1, 1);
-				temp2 = (Shortword) (temp2 + 1);
+				temp2 = (int16_t) (temp2 + 1);
 			}
 			ksi[i] = melpe_divide_s(temp1, temp3);
 			ksi_shift[i] = melpe_sub(temp2, temp4);
@@ -1453,13 +1453,13 @@ static void process_frame(Shortword inspeech[], Shortword outspeech[])
 					ksi[i] =
 					    melpe_add(melpe_shr(ksi[i], 1),
 						melpe_shr(temp1,
-						    (Shortword) (shift + 1)));
+						    (int16_t) (shift + 1)));
 					ksi_shift[i] = melpe_add(ksi_shift[i], 1);
 				} else {
 					ksi[i] =
 					    melpe_add(melpe_shl
 						(ksi[i],
-						 (Shortword) (shift - 1)),
+						 (int16_t) (shift - 1)),
 						melpe_shr(temp1, 1));
 					ksi_shift[i] = melpe_add(temp2, 1);
 				}

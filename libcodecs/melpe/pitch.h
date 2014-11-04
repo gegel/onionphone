@@ -21,19 +21,19 @@
 #ifndef _PITCH_H_
 #define _PITCH_H_
 
-void pitchAuto(Shortword inbuf[], pitTrackParam * pitTrack,
+void pitchAuto(int16_t inbuf[], pitTrackParam * pitTrack,
 	       classParam * classStat);
 
-Shortword multiCheck(Shortword f1, Shortword f2);
+int16_t multiCheck(int16_t f1, int16_t f2);
 
-Shortword trackPitch(Shortword pitch, pitTrackParam * pitTrack);
+int16_t trackPitch(int16_t pitch, pitTrackParam * pitTrack);
 
-Shortword pitLookahead(pitTrackParam * pitTrack, Shortword num);
+int16_t pitLookahead(pitTrackParam * pitTrack, int16_t num);
 
-Shortword ratio(Shortword x, Shortword y);
+int16_t ratio(int16_t x, int16_t y);
 
-Shortword L_ratio(Shortword x, Longword y);
+int16_t L_ratio(int16_t x, int32_t y);
 
-Shortword updateEn(Shortword prev_en, Shortword ifact, Shortword curr_en);
+int16_t updateEn(int16_t prev_en, int16_t ifact, int16_t curr_en);
 
 #endif

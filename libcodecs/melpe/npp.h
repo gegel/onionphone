@@ -49,7 +49,7 @@ These settings are also suitable for the latest version (nsa8).
 #define MINSTAT			/* choice of MALAH or MINSTAT */
 
 /* define the file format for the enhanced speech: WRITEFLOAT writes the data
-   in the Shortword format which might be actually double or float, depending on
+   in the int16_t format which might be actually double or float, depending on
    the USEDOUBLES/USEFLOATS switch. WRITESHORT writes 16 Bit short data. */
 #define WRITESHORT		/* choice of WRITESHORT or WRITEFLOAT */
 
@@ -110,6 +110,6 @@ These settings are also suitable for the latest version (nsa8).
 						    /* qk-value, 0.93375, Q15 */
 #define ENH_BETAQ			2171	/* 0.06625, Q15 */
 
-extern void npp(Shortword sp_in[], Shortword sp_out[]);
+extern void npp(int16_t sp_in[], int16_t sp_out[]);
 
 #endif

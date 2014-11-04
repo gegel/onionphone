@@ -45,25 +45,25 @@ Secretariat fax: +33 493 65 47 16.
 #define lpc_synthesis			   lpc_syn
 
 /* autocorrelation routine */
-void lpc_acor(Shortword input[], const Shortword win_cof[], Shortword r[],
-	      Shortword hf_correction, Shortword order, Shortword npts);
+void lpc_acor(int16_t input[], const int16_t win_cof[], int16_t r[],
+	      int16_t hf_correction, int16_t order, int16_t npts);
 
-Longword lpc_aejw(Shortword lpc[], Shortword omega, Shortword order);
+int32_t lpc_aejw(int16_t lpc[], int16_t omega, int16_t order);
 
-Shortword lpc_bwex(Shortword lpc[], Shortword aw[], Shortword gamma,
-		   Shortword order);
+int16_t lpc_bwex(int16_t lpc[], int16_t aw[], int16_t gamma,
+		   int16_t order);
 
-Shortword lpc_clmp(Shortword lsp[], Shortword delta, Shortword order);
+int16_t lpc_clmp(int16_t lsp[], int16_t delta, int16_t order);
 
-Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order);
+int16_t lpc_schr(int16_t autocorr[], int16_t lpc[], int16_t order);
 
-Shortword lpc_pred2lsp(Shortword lpc[], Shortword lsf[], Shortword order);
+int16_t lpc_pred2lsp(int16_t lpc[], int16_t lsf[], int16_t order);
 
-Shortword lpc_pred2refl(Shortword lpc[], Shortword * refc, Shortword order);
+int16_t lpc_pred2refl(int16_t lpc[], int16_t * refc, int16_t order);
 
-Shortword lpc_lsp2pred(Shortword lsf[], Shortword lpc[], Shortword order);
+int16_t lpc_lsp2pred(int16_t lsf[], int16_t lpc[], int16_t order);
 
-Shortword lpc_syn(Shortword x[], Shortword y[], Shortword a[],
-		  Shortword order, Shortword length);
+int16_t lpc_syn(int16_t x[], int16_t y[], int16_t a[],
+		  int16_t order, int16_t length);
 
 #endif

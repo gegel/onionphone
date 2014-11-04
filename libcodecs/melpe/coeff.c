@@ -41,7 +41,7 @@ Secretariat fax: +33 493 65 47 16.
 /* matlab commands: [z, p, k] = butter(6, 1000/4000);  */
 /*						sos = zp2sos(z, p, k);		   */
 
-const Shortword lpf_num[(LPF_ORD / 2) * 3] = {	/* Q13 */
+const int16_t lpf_num[(LPF_ORD / 2) * 3] = {	/* Q13 */
 	713, 1426, 713,
 	798, 1600, 801,
 	1016, 2028, 1012
@@ -51,7 +51,7 @@ const Shortword lpf_num[(LPF_ORD / 2) * 3] = {	/* Q13 */
 /* initialized at 0, 3, 6 with -8192, but the program does not use their      */
 /* values.                                                                    */
 
-const Shortword lpf_den[(LPF_ORD / 2) * 3] = {	/* Q13 */
+const int16_t lpf_den[(LPF_ORD / 2) * 3] = {	/* Q13 */
 	-8192, 6884, -1543,
 	-8192, 7723, -2731,
 	-8192, 9793, -5657
@@ -59,7 +59,7 @@ const Shortword lpf_den[(LPF_ORD / 2) * 3] = {	/* Q13 */
 
 /* Butterworth bandpass filters in second-order sections */
 
-const Shortword bpf_num[NUM_BANDS * ((BPF_ORD / 2) * 3)] = {	/* Q13 */
+const int16_t bpf_num[NUM_BANDS * ((BPF_ORD / 2) * 3)] = {	/* Q13 */
 	285, 567, 283,		/* lowpass, cutoff at 500 Hz */
 	245, 491, 245,
 	227, 455, 228,
@@ -81,14 +81,14 @@ const Shortword bpf_num[NUM_BANDS * ((BPF_ORD / 2) * 3)] = {	/* Q13 */
 	713, -1426, 713
 };
 
-const Shortword bpf_num_class[BPF_ORD + 1] = {	/* Q24 */
+const int16_t bpf_num_class[BPF_ORD + 1] = {	/* Q24 */
 	484, 2902, 7254, 9672, 7254, 2902, 484
 };
 
 /* Signs of coefficients for bpf_den are reversed.  bpf_den[3*n] are          */
 /* initialized to -8192 but their values are not used.                        */
 
-const Shortword bpf_den[NUM_BANDS * ((BPF_ORD / 2) * 3)] = {
+const int16_t bpf_den[NUM_BANDS * ((BPF_ORD / 2) * 3)] = {
 	-8192, 13772, -6715,	/* lowpass, cutoff at 500 Hz */
 	-8192, 11913, -4703,
 	-8192, 11051, -3770,
@@ -110,13 +110,13 @@ const Shortword bpf_den[NUM_BANDS * ((BPF_ORD / 2) * 3)] = {
 	-8192, -6883, -1543
 };
 
-const Shortword bpf_den_class[BPF_ORD + 1] = {	/* Q11 */
+const int16_t bpf_den_class[BPF_ORD + 1] = {	/* Q11 */
 	2048, -9184, 17467, -17980, 10542, -3334, 444
 };
 
 /* Hamming window coefficents in Q15 */
 
-const Shortword win_cof[LPC_FRAME] = {
+const int16_t win_cof[LPC_FRAME] = {
 	2621, 2628, 2651, 2689, 2741, 2808, 2891, 2988, 3099, 3225,
 	3366, 3521, 3690, 3873, 4070, 4280, 4504, 4741, 4990, 5253,
 	5528, 5815, 6113, 6424, 6745, 7078, 7421, 7774, 8138, 8510,
@@ -141,7 +141,7 @@ const Shortword win_cof[LPC_FRAME] = {
 
 /* Bandpass filter coeffients */
 
-const Shortword bp_cof[NUM_BANDS][MIX_ORD + 1] = {
+const int16_t bp_cof[NUM_BANDS][MIX_ORD + 1] = {
 	{			/* lowpass, cutoff at 500 Hz */
 	 0, -50, -115, -185, -245, -274, -253, -165,
 	 0, 242, 548, 897, 1257, 1590, 1860, 2036,
@@ -176,7 +176,7 @@ const Shortword bp_cof[NUM_BANDS][MIX_ORD + 1] = {
 
 /* Triangle pulse dispersion filter */
 
-const Shortword disp_cof[DISP_ORD + 1] = {
+const int16_t disp_cof[DISP_ORD + 1] = {
 	-5670, -461, 401, 3724, 65, 0, 1484, -30,
 	-34, 836, -2077, -40, 463, 7971, -579, -6,
 	1923, -107, 199, 902, -1098, 197, 471, 27150,

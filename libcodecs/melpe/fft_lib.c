@@ -23,20 +23,20 @@
 #include "global.h"
 #include "fft_lib.h"
 
-#define SWAP(a, b)		{Shortword temp1; temp1 = (a); (a) = (b); (b) = temp1;}
+#define SWAP(a, b)		{int16_t temp1; temp1 = (a); (a) = (b); (b) = temp1;}
 
 /* Memory definition */
-static Shortword wr_array[FFTLENGTH / 2];
-static Shortword wi_array[FFTLENGTH / 2];
+static int16_t wr_array[FFTLENGTH / 2];
+static int16_t wi_array[FFTLENGTH / 2];
 
 /* Radix-2, DIT, 2N-point Real FFT */
-void rfft(Shortword datam1[], Shortword n)
+void rfft(int16_t datam1[], int16_t n)
 {
-	Shortword i, n_2;
-	Shortword r1, r2, i1, i2;
-	Shortword wr, wi, data_max;
-	Shortword index;
-	Longword L_temp1, L_temp2;
+	int16_t i, n_2;
+	int16_t r1, r2, i1, i2;
+	int16_t wr, wi, data_max;
+	int16_t index;
+	int32_t L_temp1, L_temp2;
 
 	n_2 = melpe_shr(n, 1);
 	cfft(datam1, n_2);
@@ -112,17 +112,17 @@ void rfft(Shortword datam1[], Shortword n)
 }
 
 /* Subroutine FFT: Fast Fourier Transform */
-Shortword cfft(Shortword datam1[], Shortword nn)
+int16_t cfft(int16_t datam1[], int16_t nn)
 {
-	register Shortword i, j;
-	register Longword L_tempr, L_tempi;
-	Shortword n, mmax, m, istep;
-	Shortword sPR, sQR, sPI, sQI;
-	Shortword wr, wi, data_max;
-	Shortword *data;
-	Longword L_temp1, L_temp2;
-	Shortword index, index_step;
-	Shortword guard;
+	register int16_t i, j;
+	register int32_t L_tempr, L_tempi;
+	int16_t n, mmax, m, istep;
+	int16_t sPR, sQR, sPI, sQI;
+	int16_t wr, wi, data_max;
+	int16_t *data;
+	int32_t L_temp1, L_temp2;
+	int16_t index, index_step;
+	int16_t guard;
 
 	guard = 0;
 	/* Use pointer indexed from 1 instead of 0 */
@@ -267,9 +267,9 @@ Shortword cfft(Shortword datam1[], Shortword nn)
 	return guard;
 }
 
-Shortword fft_npp(Shortword data[], Shortword dir)
+int16_t fft_npp(int16_t data[], int16_t dir)
 {
-	Shortword guard, n;
+	int16_t guard, n;
 
 	guard = cfft(data, 256);
 	if (dir < 0) {		/* Reverse FFT */
@@ -284,8 +284,8 @@ Shortword fft_npp(Shortword data[], Shortword dir)
 /* Initialization of wr_array and wi_array */
 void fs_init()
 {
-	register Shortword i;
-	Shortword fft_len2, shift, step, theta;
+	register int16_t i;
+	int16_t fft_len2, shift, step, theta;
 
 	fft_len2 = melpe_shr(FFTLENGTH, 1);
 	shift = melpe_norm_s(fft_len2);

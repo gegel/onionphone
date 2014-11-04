@@ -13,9 +13,9 @@
 #ifndef _HARM_H_
 #define _HARM_H_
 
-void set_fc(Shortword bpvc[], Shortword * fc);
+void set_fc(int16_t bpvc[], int16_t * fc);
 
-void harm_syn_pitch(Shortword amp[], Shortword signal[], Shortword fc,
-		    Shortword length);
+void harm_syn_pitch(int16_t amp[], int16_t signal[], int16_t fc,
+		    int16_t length);
 
 #endif

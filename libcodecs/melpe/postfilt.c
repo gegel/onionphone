@@ -39,8 +39,8 @@
 #define X05_Q12			2048
 
 /* ===== Prototypes ===== */
-static void hpf60(Shortword speech[]);
-static void lpf3500(Shortword speech[]);
+static void hpf60(int16_t speech[]);
+static void lpf3500(int16_t speech[]);
 
 /****************************************************************
 **
@@ -51,44 +51,44 @@ static void lpf3500(Shortword speech[]);
 **
 ** Arguments:
 **
-**	Shortword	speech[]	: input/output synthesized speech (Q0)
+**	int16_t	speech[]	: input/output synthesized speech (Q0)
 **
 ** Return value:	None
 **
 *****************************************************************/
 
-void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
+void postfilt(int16_t speech[], int16_t prev_lsf[], int16_t cur_lsf[])
 {
-	register Shortword i, j, k;
-	static const Shortword syn_inp[SYN_SUBNUM] = {	/* Q15 */
+	register int16_t i, j, k;
+	static const int16_t syn_inp[SYN_SUBNUM] = {	/* Q15 */
 		4096, 12288, 20480, 28672
 	};
 	static BOOLEAN postfilt_firsttime = TRUE;
-	static Shortword hpm = 0;	/* Q0 */
-	static Shortword mem1[LPC_ORD] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	static Shortword mem2[LPC_ORD] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-	static Shortword gain = 0;	/* Q14 */
-	static Shortword alphaipFIR[LPC_ORD];	/* Q12 */
-	static Shortword alphaipIIR[LPC_ORD];
-	static Shortword window[SMOOTH_LEN];	/* Q15 */
-	Shortword temp, temp_shift;
-	Shortword temp1, temp2;
-	Longword L_temp;
-	Shortword synLPC[LPC_ORD];	/* Q12 */
-	Shortword inplsf[LPC_ORD];
+	static int16_t hpm = 0;	/* Q0 */
+	static int16_t mem1[LPC_ORD] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	static int16_t mem2[LPC_ORD] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+	static int16_t gain = 0;	/* Q14 */
+	static int16_t alphaipFIR[LPC_ORD];	/* Q12 */
+	static int16_t alphaipIIR[LPC_ORD];
+	static int16_t window[SMOOTH_LEN];	/* Q15 */
+	int16_t temp, temp_shift;
+	int16_t temp1, temp2;
+	int32_t L_temp;
+	int16_t synLPC[LPC_ORD];	/* Q12 */
+	int16_t inplsf[LPC_ORD];
 
 	/* ---- High frequency emphasis ---- */
-	Shortword emph;		/* Q15 */
-	Shortword synhp[SYN_SUBFRAME];	/* Q0 */
+	int16_t emph;		/* Q15 */
+	int16_t synhp[SYN_SUBFRAME];	/* Q0 */
 
 	/* ---- FIR, IIR filter ---- */
-	Longword L_sum;
-	Shortword mem1old[LPC_ORD];
-	Shortword mem2old[LPC_ORD];
+	int32_t L_sum;
+	int16_t mem1old[LPC_ORD];
+	int16_t mem2old[LPC_ORD];
 
-	Shortword nokori[SMOOTH_LEN];
-	Shortword sp, sp_shift;
-	Shortword op, op_shift;
+	int16_t nokori[SMOOTH_LEN];
+	int16_t sp, sp_shift;
+	int16_t op, op_shift;
 
 	if (postfilt_firsttime) {
 		/* ======== Compute smoothing window ======== */
@@ -339,17 +339,17 @@ void postfilt(Shortword speech[], Shortword prev_lsf[], Shortword cur_lsf[])
 /*      = ---------------------------------------- * 0.9672                   */
 /*          (1.0 - 1.9334 z^{-1} + 0.9355 z^{-2})                             */
 
-static void hpf60(Shortword speech[])
+static void hpf60(int16_t speech[])
 {
-	static const Shortword hpf60_num[3] = {	/* Q13 */
+	static const int16_t hpf60_num[3] = {	/* Q13 */
 		8192, -16384, 8192
 	};
-	static const Shortword hpf60_den[3] = {	/* Negated; Q13 */
+	static const int16_t hpf60_den[3] = {	/* Negated; Q13 */
 		-8192, 15838, -7664
 	};
-	static Shortword hpf60_delin[2] = { 0, 0 };	/* Q13 */
-	static Shortword hpf60_delout_hi[2] = { 0, 0 };
-	static Shortword hpf60_delout_lo[2] = { 0, 0 };
+	static int16_t hpf60_delin[2] = { 0, 0 };	/* Q13 */
+	static int16_t hpf60_delout_hi[2] = { 0, 0 };
+	static int16_t hpf60_delout_lo[2] = { 0, 0 };
 
 	iir_2nd_d(speech, hpf60_den, hpf60_num, speech, hpf60_delin,
 		  hpf60_delout_hi, hpf60_delout_lo, FRAME);
@@ -365,17 +365,17 @@ static void hpf60(Shortword speech[])
 /*      = ---------------------------------------- * 0.9178                   */
 /*          (1.0 + 1.8307 z^{-1} + 0.8446 z^{-2})                             */
 
-static void lpf3500(Shortword speech[])
+static void lpf3500(int16_t speech[])
 {
-	static const Shortword lpf3500_num[3] = {	/* Q13 */
+	static const int16_t lpf3500_num[3] = {	/* Q13 */
 		8192, 16384, 8192
 	};
-	static const Shortword lpf3500_den[3] = {	/* Negated; Q13 */
+	static const int16_t lpf3500_den[3] = {	/* Negated; Q13 */
 		-8192, -14997, -6919
 	};
-	static Shortword lpf3500_delin[2] = { 0, 0 };	/* Q13 */
-	static Shortword lpf3500_delout_hi[2] = { 0, 0 };
-	static Shortword lpf3500_delout_lo[2] = { 0, 0 };
+	static int16_t lpf3500_delin[2] = { 0, 0 };	/* Q13 */
+	static int16_t lpf3500_delout_hi[2] = { 0, 0 };
+	static int16_t lpf3500_delout_lo[2] = { 0, 0 };
 
 	iir_2nd_d(speech, lpf3500_den, lpf3500_num, speech, lpf3500_delin,
 		  lpf3500_delout_hi, lpf3500_delout_lo, FRAME);

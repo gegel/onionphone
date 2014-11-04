@@ -41,23 +41,23 @@
 #define X0667_Q15			21845	/* (2/3) * (1 << 15) */
 
 /* ------ Local prototypes ------ */
-static void wvq1(Shortword target[], Shortword weights[],
-		 const Shortword codebook[], Shortword dim,
-		 Shortword cbsize, Shortword index[], Longword dist[],
-		 Shortword cand);
-static Shortword InsertCand(Shortword c1, Shortword s1, Shortword dMin[],
-			    Shortword distortion, Shortword entry,
-			    Shortword nextIndex[], Shortword index[]);
-static Shortword wvq2(Shortword target[], Shortword weights[],
-		      Shortword codebook[], Shortword dim,
-		      Shortword index[], Longword dist[], Shortword cand);
-static Shortword WeightedMSE(Shortword n, Shortword weight[],
-			     const Shortword x[], Shortword target[],
-			     Shortword max_dMin);
-static void lspVQ(Shortword target[], Shortword weight[], Shortword qout[],
-		  const Shortword codebook[], Shortword tos,
-		  const Shortword cb_size[], Shortword cb_index[],
-		  Shortword dim, BOOLEAN flag);
+static void wvq1(int16_t target[], int16_t weights[],
+		 const int16_t codebook[], int16_t dim,
+		 int16_t cbsize, int16_t index[], int32_t dist[],
+		 int16_t cand);
+static int16_t InsertCand(int16_t c1, int16_t s1, int16_t dMin[],
+			    int16_t distortion, int16_t entry,
+			    int16_t nextIndex[], int16_t index[]);
+static int16_t wvq2(int16_t target[], int16_t weights[],
+		      int16_t codebook[], int16_t dim,
+		      int16_t index[], int32_t dist[], int16_t cand);
+static int16_t WeightedMSE(int16_t n, int16_t weight[],
+			     const int16_t x[], int16_t target[],
+			     int16_t max_dMin);
+static void lspVQ(int16_t target[], int16_t weight[], int16_t qout[],
+		  const int16_t codebook[], int16_t tos,
+		  const int16_t cb_size[], int16_t cb_index[],
+		  int16_t dim, BOOLEAN flag);
 
 /****************************************************************************
 **
@@ -74,20 +74,20 @@ static void lspVQ(Shortword target[], Shortword weight[], Shortword qout[],
 *****************************************************************************/
 void pitch_vq(struct melp_param *par)
 {
-	register Shortword i;
+	register int16_t i;
 	static BOOLEAN prev_uv_flag = TRUE;
-	static Shortword prev_pitch = LOG_UV_PITCH_Q12;	/* Q12 */
-	static Shortword prev_qpitch = LOG_UV_PITCH_Q12;	/* Q12 */
-	const Shortword *codebook;
-	Shortword cnt, size, pitch_index;
-	Shortword temp1, temp2;
-	Longword L_temp;
-	Shortword dcb[PITCH_VQ_CAND * NF];	/* Q12 */
-	Shortword target[NF], deltp[NF];	/* Q12 */
-	Shortword deltw[NF];	/* Q0 */
-	Shortword weights[NF];	/* Q0 */
-	Shortword indexlist[PITCH_VQ_CAND];
-	Longword distlist[PITCH_VQ_CAND];	/* Q25 */
+	static int16_t prev_pitch = LOG_UV_PITCH_Q12;	/* Q12 */
+	static int16_t prev_qpitch = LOG_UV_PITCH_Q12;	/* Q12 */
+	const int16_t *codebook;
+	int16_t cnt, size, pitch_index;
+	int16_t temp1, temp2;
+	int32_t L_temp;
+	int16_t dcb[PITCH_VQ_CAND * NF];	/* Q12 */
+	int16_t target[NF], deltp[NF];	/* Q12 */
+	int16_t deltw[NF];	/* Q0 */
+	int16_t weights[NF];	/* Q0 */
+	int16_t indexlist[PITCH_VQ_CAND];
+	int32_t distlist[PITCH_VQ_CAND];	/* Q25 */
 
 	/* ---- Compute pitch in log domain ---- */
 	for (i = 0; i < NF; i++)
@@ -206,28 +206,28 @@ void pitch_vq(struct melp_param *par)
 **    errors.
 **
 ** Arguments:
-**	Shortword target[] 	: target vector (Q12)
-**	Shortword weights[]	: weighting vector (Q0)
-**	Shortword codebook[]: codebook (Q12)
-**	Shortword dim 		: vector dimension
-**	Shortword cbsize	: codebook size
-**	Shortword index[]	: output candidate index list
-**	Longword dist[]		: output candidate distortion list (Q25)
-**	Shortword cand		: number of output candidates
+**	int16_t target[] 	: target vector (Q12)
+**	int16_t weights[]	: weighting vector (Q0)
+**	int16_t codebook[]: codebook (Q12)
+**	int16_t dim 		: vector dimension
+**	int16_t cbsize	: codebook size
+**	int16_t index[]	: output candidate index list
+**	int32_t dist[]		: output candidate distortion list (Q25)
+**	int16_t cand		: number of output candidates
 **
 ** Return value:	None
 **
 *****************************************************************************/
-static void wvq1(Shortword target[], Shortword weights[],
-		 const Shortword codebook[], Shortword dim,
-		 Shortword cbsize, Shortword index[], Longword dist[],
-		 Shortword cand)
+static void wvq1(int16_t target[], int16_t weights[],
+		 const int16_t codebook[], int16_t dim,
+		 int16_t cbsize, int16_t index[], int32_t dist[],
+		 int16_t cand)
 {
-	register Shortword i, j;
-	Shortword maxindex;
-	Longword err, maxdist;	/* Q25 */
-	Longword L_temp;
-	Shortword temp;		/* Q12 */
+	register int16_t i, j;
+	int16_t maxindex;
+	int32_t err, maxdist;	/* Q25 */
+	int32_t L_temp;
+	int16_t temp;		/* Q12 */
 
 	/* ------ Initialize the distortion ------ */
 	L_fill(dist, LW_MAX, cand);
@@ -241,7 +241,7 @@ static void wvq1(Shortword target[], Shortword weights[],
 		err = 0;
 
 		/* Here the for loop computes the distortion between target[] and     */
-		/* codebook[] and stores the result in Longword err.  If              */
+		/* codebook[] and stores the result in int32_t err.  If              */
 		/* (err < maxdist) then we execute some actions.  If err is already   */
 		/* larger than or equal to maxdist, there is no need to keep          */
 		/* computing the distortion.  This improvement is only marginal       */
@@ -288,26 +288,26 @@ static void wvq1(Shortword target[], Shortword weights[],
 ** Description: 	Pitch vq the second stage
 **
 ** Arguments:
-**	Shortword target[] 	: target vector (Q12)
-**	Shortword weights[]	: weighting vector (Q0)
-**	Shortword codebook[]: codebook (Q12)
-**	Shortword dim 		: vector dimension
-**	Shortword index[]	: codebook index
-**	Longword dist[]		: distortion (Q25)
-**	Shortword cand		: number of input candidates
+**	int16_t target[] 	: target vector (Q12)
+**	int16_t weights[]	: weighting vector (Q0)
+**	int16_t codebook[]: codebook (Q12)
+**	int16_t dim 		: vector dimension
+**	int16_t index[]	: codebook index
+**	int32_t dist[]		: distortion (Q25)
+**	int16_t cand		: number of input candidates
 **
-** Return value:	Shortword ---- the final codebook index
+** Return value:	int16_t ---- the final codebook index
 **
 *****************************************************************************/
-static Shortword wvq2(Shortword target[], Shortword weights[],
-		      Shortword codebook[], Shortword dim,
-		      Shortword index[], Longword dist[], Shortword cand)
+static int16_t wvq2(int16_t target[], int16_t weights[],
+		      int16_t codebook[], int16_t dim,
+		      int16_t index[], int32_t dist[], int16_t cand)
 {
-	register Shortword i, j;
-	Shortword ind;
-	Longword err, min;
-	Longword L_temp;
-	Shortword temp;
+	register int16_t i, j;
+	int16_t ind;
+	int32_t err, min;
+	int32_t L_temp;
+	int16_t temp;
 
 	/* To reduce the complexity, we should try to increase the opportunity of */
 	/* making (err >= min).  In other words, set "min" as small as possible   */
@@ -367,12 +367,12 @@ static Shortword wvq2(Shortword target[], Shortword weights[],
 *****************************************************************************/
 void gain_vq(struct melp_param *par)
 {
-	register Shortword i, j;
-	Shortword index;
-	Shortword temp, temp2;
-	Shortword gain_target[NF_X_NUM_GAINFR];
-	Longword err, minErr;	/* Q17 */
-	Longword L_temp;
+	register int16_t i, j;
+	int16_t index;
+	int16_t temp, temp2;
+	int16_t gain_target[NF_X_NUM_GAINFR];
+	int32_t err, minErr;	/* Q17 */
+	int32_t L_temp;
 
 	/* Reshape par[i].gain[j] into a one-dimensional vector gain_target[]. */
 	temp = 0;
@@ -444,9 +444,9 @@ void gain_vq(struct melp_param *par)
 **
 *****************************************************************************/
 
-void quant_bp(struct melp_param *par, Shortword num_frames)
+void quant_bp(struct melp_param *par, int16_t num_frames)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < num_frames; i++) {
 		par[i].uv_flag = q_bpvc(par[i].bpvc, &(quant_par.bpvc_index[i]),
@@ -465,37 +465,37 @@ void quant_bp(struct melp_param *par, Shortword num_frames)
 **
 ** Arguments:
 **
-**	Shortword	target[]	: the target coefficients to be quantized (Q15/Q17)
-**	Shortword	weight[]	: weights for mse calculation (Q11)
-**	Shortword	qout[]		: the output array (Q15/Q17)
-**	Shortword	codebook[]	: codebooks,   cb[0..numStages-1] (Q15/Q17)
-**	Shortword	tos 		: the number of stages
-**  Shortword	cb_size[]	: codebook size (multistages)
-**	Shortword	cb_index[]	: codebook indeces; cb_index[0..numStages-1]
+**	int16_t	target[]	: the target coefficients to be quantized (Q15/Q17)
+**	int16_t	weight[]	: weights for mse calculation (Q11)
+**	int16_t	qout[]		: the output array (Q15/Q17)
+**	int16_t	codebook[]	: codebooks,   cb[0..numStages-1] (Q15/Q17)
+**	int16_t	tos 		: the number of stages
+**  int16_t	cb_size[]	: codebook size (multistages)
+**	int16_t	cb_index[]	: codebook indeces; cb_index[0..numStages-1]
 **                            (output)
-**  Shortword	dim
+**  int16_t	dim
 **  BOOLEAN		flag
 **
 ** Return value:	None
 **
 ***********************************************************************/
-static void lspVQ(Shortword target[], Shortword weight[], Shortword qout[],
-		  const Shortword codebook[], Shortword tos,
-		  const Shortword cb_size[], Shortword cb_index[],
-		  Shortword dim, BOOLEAN flag)
+static void lspVQ(int16_t target[], int16_t weight[], int16_t qout[],
+		  const int16_t codebook[], int16_t tos,
+		  const int16_t cb_size[], int16_t cb_index[],
+		  int16_t dim, BOOLEAN flag)
 {
-	register Shortword i, entry;
-	register Shortword c1, s1;
-	const Shortword *cdbk_ptr, *cdbk_ptr2, *ptr1;
-	Shortword index[LSP_VQ_CAND][LSP_VQ_STAGES];
-	Shortword nextIndex[LSP_VQ_CAND][LSP_VQ_STAGES];
-	Shortword ncPrev;
-	Shortword cand[LSP_VQ_CAND][2 * LPC_ORD];
-	Shortword max_dMin, dMin[LSP_VQ_CAND], distortion;
-	Shortword *cand_target;
-	Longword L_temp;
-	Shortword ptr_offset = 0;
-	Shortword temp1, temp2;
+	register int16_t i, entry;
+	register int16_t c1, s1;
+	const int16_t *cdbk_ptr, *cdbk_ptr2, *ptr1;
+	int16_t index[LSP_VQ_CAND][LSP_VQ_STAGES];
+	int16_t nextIndex[LSP_VQ_CAND][LSP_VQ_STAGES];
+	int16_t ncPrev;
+	int16_t cand[LSP_VQ_CAND][2 * LPC_ORD];
+	int16_t max_dMin, dMin[LSP_VQ_CAND], distortion;
+	int16_t *cand_target;
+	int32_t L_temp;
+	int16_t ptr_offset = 0;
+	int16_t temp1, temp2;
 
 	/*==================================================================*
 	*	Initialize the data before starting the tree search.			*
@@ -656,29 +656,29 @@ static void lspVQ(Shortword target[], Shortword weight[], Shortword qout[],
 **	error between two vectors.
 **
 ** Arguments:
-**	Shortword n		: number of coefficients in the two vectors
-**	Shortword weight[] 	: weighting function; weight[1..n] (Q11)
-**	Shortword x[]		: first vector (Q15/Q17)
-**	Shortword target[]	: second vector (Q15/Q17)
+**	int16_t n		: number of coefficients in the two vectors
+**	int16_t weight[] 	: weighting function; weight[1..n] (Q11)
+**	int16_t x[]		: first vector (Q15/Q17)
+**	int16_t target[]	: second vector (Q15/Q17)
 **
 ** Return value:
 **
-**	Shortword WeightedMSE : distortion returned as function value (Q15/Q17)
+**	int16_t WeightedMSE : distortion returned as function value (Q15/Q17)
 **
 ***********************************************************************/
-static Shortword WeightedMSE(Shortword n, Shortword weight[],
-			     const Shortword x[], Shortword target[],
-			     Shortword max_dMin)
+static int16_t WeightedMSE(int16_t n, int16_t weight[],
+			     const int16_t x[], int16_t target[],
+			     int16_t max_dMin)
 {
-	register Shortword i;
-	Longword distortion;
-	Shortword temp, half_n;
+	register int16_t i;
+	int32_t distortion;
+	int16_t temp, half_n;
 
 	/* x[] and target[] are either Q15 or Q17.  Since the only issue          */
 	/* mattering is the relative magnitude of WeightedMSE() among different   */
 	/* x[]'s, it will be okay to simply treat both x[] and target[] as Q15.   */
 	/* This will make the returned value incorrect in scaling, but it will    */
-	/* not affect the relative magnitudes.  Returning a Shortword in Q11      */
+	/* not affect the relative magnitudes.  Returning a int16_t in Q11      */
 	/* seems to be fine according to some rough statistics collected.         */
 
 	distortion = 0;
@@ -719,28 +719,28 @@ static Shortword WeightedMSE(Shortword n, Shortword weight[],
 **
 ** Arguments:
 **
-**	Shortword c1		: index of candidate to insert into list
-**	Shortword s1		: index of current stage we are searching
-**	Shortword dMin[]	: list of distortions of best nc candidates (Q11)
-**	Shortword distortion[]	: distortion of candidate c when used with
+**	int16_t c1		: index of candidate to insert into list
+**	int16_t s1		: index of current stage we are searching
+**	int16_t dMin[]	: list of distortions of best nc candidates (Q11)
+**	int16_t distortion[]	: distortion of candidate c when used with
 **							  "entry" from current stage (Q11)
-**	Shortword entry		: current stage entry which results in lower
+**	int16_t entry		: current stage entry which results in lower
 **						  distortion
-**	Shortword	**index	: list of past indices for each candidate
-**	Shortword	**nextIndex : indices for next stage (output)
+**	int16_t	**index	: list of past indices for each candidate
+**	int16_t	**nextIndex : indices for next stage (output)
 **
-** Return value:	Shortword
+** Return value:	int16_t
 **
 ***********************************************************************/
-static Shortword InsertCand(Shortword c1, Shortword s1, Shortword dMin[],
-			    Shortword distortion, Shortword entry,
-			    Shortword nextIndex[], Shortword index[])
+static int16_t InsertCand(int16_t c1, int16_t s1, int16_t dMin[],
+			    int16_t distortion, int16_t entry,
+			    int16_t nextIndex[], int16_t index[])
 {
-	register Shortword i, j;
-	Shortword ptr_offset;
-	Shortword temp1, temp2;
-	Shortword *ptr1, *ptr2;
-	Longword L_temp;
+	register int16_t i, j;
+	int16_t ptr_offset;
+	int16_t temp1, temp2;
+	int16_t *ptr1, *ptr2;
+	int32_t L_temp;
 
 	/*==================================================================*
 	*	First find the index into the distortion array where this		*
@@ -796,17 +796,17 @@ static Shortword InsertCand(Shortword c1, Shortword s1, Shortword dMin[],
 **	LSPs, the LSP frequencies must be monotonically increasing.
 **
 ** INPUTS:
-**	Shortword lsp[]	: the LSP coefficients lsp[0..order - 1] (Q15)
-**	Shortword order	: order of the LSP coeffs
+**	int16_t lsp[]	: the LSP coefficients lsp[0..order - 1] (Q15)
+**	int16_t order	: order of the LSP coeffs
 **
 ** OUTPUTS: BOOLEAN : TRUE == stable;	FALSE == unstable
 **
 **********************************************************************/
-BOOLEAN lspStable(Shortword lsp[], Shortword order)
+BOOLEAN lspStable(int16_t lsp[], int16_t order)
 {
-	register Shortword i;
+	register int16_t i;
 	BOOLEAN stable;
-	Shortword temp;
+	int16_t temp;
 
 	/* The following loop attempts to ensure lsp[0] is at least 6.37,         */
 	/* lsp[order - 1] is at most 3992.0, and each consecutive pair of lsp[]   */
@@ -814,7 +814,7 @@ BOOLEAN lspStable(Shortword lsp[], Shortword order)
 	/* be 8000.0.                                                             */
 
 	if (lsp[0] < 52)	/* 52 == (6.37/4000.0 * (1 << 15)) */
-		lsp[0] = (Shortword) 52;
+		lsp[0] = (int16_t) 52;
 	for (i = 0; i < order - 1; i++) {
 		temp = melpe_add(lsp[i], 205);
 		if (lsp[i + 1] < temp)
@@ -822,7 +822,7 @@ BOOLEAN lspStable(Shortword lsp[], Shortword order)
 	}
 	/* 205 == (25.0/4000.0 * (1 << 15)) */
 	if (lsp[order - 1] > 32702)
-		lsp[order - 1] = (Shortword) 32702;
+		lsp[order - 1] = (int16_t) 32702;
 	/* 32702 == (3992.0/4000.0 * (1 << 15)) */
 
 	/* Previously here we use a loop checking whether (lsp[i] < lsp[i - 1])   */
@@ -856,20 +856,20 @@ BOOLEAN lspStable(Shortword lsp[], Shortword order)
 **
 ** Arguments:
 **
-**	Shortword lsp[]	: array to be sorted  arr[1..n] (input/output) (Q15)
-**	Shortword n		: number of samples to sort
+**	int16_t lsp[]	: array to be sorted  arr[1..n] (input/output) (Q15)
+**	int16_t n		: number of samples to sort
 **
 ** Return value:	None
 **
 ***********************************************************************/
-void lspSort(Shortword lsp[], Shortword order)
+void lspSort(int16_t lsp[], int16_t order)
 {
-	register Shortword i, j;
-	Shortword temp;		/* Q15 */
+	register int16_t i, j;
+	int16_t temp;		/* Q15 */
 
 	for (j = 1; j < order; j++) {
 		temp = lsp[j];
-		i = (Shortword) (j - 1);
+		i = (int16_t) (j - 1);
 		while (i >= 0 && lsp[i] > temp) {
 			lsp[i + 1] = lsp[i];
 			i--;
@@ -894,31 +894,31 @@ void lspSort(Shortword lsp[], Shortword order)
 
 void lsf_vq(struct melp_param *par)
 {
-	register Shortword i, j, k;
+	register int16_t i, j, k;
 	static BOOLEAN firstTime = TRUE;
-	static Shortword qplsp[LPC_ORD];	/* Q15 */
-	const Shortword melp_cb_size[4] = { 256, 64, 32, 32 };	/* !!! (12/15/99) */
-	const Shortword res_cb_size[4] = { 256, 64, 64, 64 };
-	const Shortword melp_uv_cb_size[1] = { 512 };
-	Shortword uv_config;	/* Bits of uv_config replace uv1, uv2 and cuv. */
-	Shortword *lsp[NF];
-	Longword err, minErr, acc, bcc;	/* !!! (12/15/99), Q11 */
-	Shortword temp1, temp2;
-	Shortword lpc[LPC_ORD];	/* Q12 */
-	Shortword wgt[NF][LPC_ORD];	/* Q11 */
-	Shortword mwgt[2 * LPC_ORD];	/* Q11 */
-	Shortword bestlsp0[LPC_ORD], bestlsp1[LPC_ORD];	/* Q15 */
-	Shortword res[2 * LPC_ORD];	/* Q17 */
+	static int16_t qplsp[LPC_ORD];	/* Q15 */
+	const int16_t melp_cb_size[4] = { 256, 64, 32, 32 };	/* !!! (12/15/99) */
+	const int16_t res_cb_size[4] = { 256, 64, 64, 64 };
+	const int16_t melp_uv_cb_size[1] = { 512 };
+	int16_t uv_config;	/* Bits of uv_config replace uv1, uv2 and cuv. */
+	int16_t *lsp[NF];
+	int32_t err, minErr, acc, bcc;	/* !!! (12/15/99), Q11 */
+	int16_t temp1, temp2;
+	int16_t lpc[LPC_ORD];	/* Q12 */
+	int16_t wgt[NF][LPC_ORD];	/* Q11 */
+	int16_t mwgt[2 * LPC_ORD];	/* Q11 */
+	int16_t bestlsp0[LPC_ORD], bestlsp1[LPC_ORD];	/* Q15 */
+	int16_t res[2 * LPC_ORD];	/* Q17 */
 
 	/* The original program declares lsp_cand[LSP_VQ_CAND][] and              */
 	/* lsp_index_cand[LSP_VQ_CAND*LSP_VQ_STAGES] with LSP_VQ_CAND == 8.  The  */
 	/* program only uses up to LSP_INP_CAND == 5 and the declaration is       */
 	/* modified.                                                              */
 
-	Shortword lsp_cand[LSP_INP_CAND][LPC_ORD];	/* Q15 */
-	Shortword lsp_index_cand[LSP_INP_CAND * LSP_VQ_STAGES];
-	Shortword ilsp0[LPC_ORD], ilsp1[LPC_ORD];	/* Q15 */
-	Shortword cand, inp_index_cand, tos, intfact;
+	int16_t lsp_cand[LSP_INP_CAND][LPC_ORD];	/* Q15 */
+	int16_t lsp_index_cand[LSP_INP_CAND * LSP_VQ_STAGES];
+	int16_t ilsp0[LPC_ORD], ilsp1[LPC_ORD];	/* Q15 */
+	int16_t cand, inp_index_cand, tos, intfact;
 
 	if (firstTime) {
 		temp2 = melpe_shl(LPC_ORD, 10);	/* Q10 */
@@ -1147,21 +1147,21 @@ void lsf_vq(struct melp_param *par)
 **
 ** Arguments:
 **
-**	Shortword	qout[]	---- (output) quantized data (Q15/Q17)
-**	Shortword	codebook[] 	---- codebooks,	 cb[0..numStages-1] (Q15/Q17)
-**	Shortword 	tos 	----	the number of stages
+**	int16_t	qout[]	---- (output) quantized data (Q15/Q17)
+**	int16_t	codebook[] 	---- codebooks,	 cb[0..numStages-1] (Q15/Q17)
+**	int16_t 	tos 	----	the number of stages
 **	short	*index	----	codebook index
 **
 ** Return value:	None
 **
 ***********************************************************************/
-void deqnt_msvq(Shortword qout[], const Shortword codebook[], Shortword tos,
-		const Shortword cb_size[], Shortword index[], Shortword dim)
+void deqnt_msvq(int16_t qout[], const int16_t codebook[], int16_t tos,
+		const int16_t cb_size[], int16_t index[], int16_t dim)
 {
-	register Shortword i;
-	const Shortword *cdbk_ptr;
-	Shortword temp;
-	Longword L_temp;
+	register int16_t i;
+	const int16_t *cdbk_ptr;
+	int16_t temp;
+	int32_t L_temp;
 
 	/* ====== Clear output ====== */
 	v_zap(qout, dim);
@@ -1197,14 +1197,14 @@ void deqnt_msvq(Shortword qout[], const Shortword codebook[], Shortword tos,
 *****************************************************************************/
 void quant_jitter(struct melp_param *par)
 {
-	register Shortword i;
-	Shortword uv_config;
+	register int16_t i;
+	int16_t uv_config;
 	BOOLEAN flag_jitter;
-	Shortword cnt_jitter;
-	Shortword jitter[NF];	/* Q15 */
+	int16_t cnt_jitter;
+	int16_t jitter[NF];	/* Q15 */
 
 	/* Previously we use a BOOLEAN array uv[] for par[].uv_flag.  Now we use  */
-	/* a Shortword uv_config and use its bits for BOOLEAN values.             */
+	/* a int16_t uv_config and use its bits for BOOLEAN values.             */
 
 	uv_config = 0;
 	for (i = 0; i < NF; i++) {
@@ -1277,12 +1277,12 @@ void quant_jitter(struct melp_param *par)
 void quant_fsmag(struct melp_param *par)
 {
 	static BOOLEAN prev_uv = TRUE;
-	register Shortword i;
-	static Shortword prev_fsmag[NUM_HARM];
-	Shortword qmag[NUM_HARM];	/* Q13 */
-	Shortword temp1, temp2;
-	Shortword p_value, q_value;
-	Shortword count, last;
+	register int16_t i;
+	static int16_t prev_fsmag[NUM_HARM];
+	int16_t qmag[NUM_HARM];	/* Q13 */
+	int16_t temp1, temp2;
+	int16_t p_value, q_value;
+	int16_t count, last;
 
 	count = 0;
 	last = -1;

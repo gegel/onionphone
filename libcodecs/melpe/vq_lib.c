@@ -67,11 +67,11 @@ Secretariat fax: +33 493 65 47 16.
 /* Note:                                                                      */
 /*      The coder does not use the returned value from vq_lspw() at all.      */
 
-Shortword *vq_lspw(Shortword weight[], Shortword lsp[], Shortword lpc[],
-		   Shortword order)
+int16_t *vq_lspw(int16_t weight[], int16_t lsp[], int16_t lpc[],
+		   int16_t order)
 {
-	register Shortword i;
-	Longword L_temp;
+	register int16_t i;
+	int32_t L_temp;
 
 	for (i = 0; i < order; i++) {
 		L_temp = lpc_aejw(lpc, lsp[i], order);	/* L_temp in Q19 */
@@ -115,22 +115,22 @@ Shortword *vq_lspw(Shortword weight[], Shortword lsp[], Shortword lpc[],
 /*      Note:                                                                 */
 /*          The coder does not use the returned value from vq_lspw() at all.  */
 
-Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
-		 const Shortword levels[], Shortword ma, Shortword stages,
-		 Shortword order, Shortword weights[], Shortword * u_hat,
-		 Shortword * a_indices, Shortword max_inner)
+int16_t vq_ms4(const int16_t * cb, int16_t * u, const int16_t * u_est,
+		 const int16_t levels[], int16_t ma, int16_t stages,
+		 int16_t order, int16_t weights[], int16_t * u_hat,
+		 int16_t * a_indices, int16_t max_inner)
 {
-	const Shortword *cbp, *cb_currentstage, *cb_table;
-	Shortword tmp, *u_tmp, *uhatw, uhatw_sq;
-	Shortword d_cj, d_opt;
-	Shortword *d, *p_d, *n_d, *p_distortion;
-	Shortword *errors, *p_errors, *n_errors, *p_e;
-	Shortword i, j, m, s, c, p_max, inner_counter;
-	Shortword *indices, *p_indices, *n_indices;
-	Shortword *parents, *p_parents, *n_parents;
-	Shortword *tmp_p_e;
-	Shortword temp;
-	Longword L_temp, L_temp1;
+	const int16_t *cbp, *cb_currentstage, *cb_table;
+	int16_t tmp, *u_tmp, *uhatw, uhatw_sq;
+	int16_t d_cj, d_opt;
+	int16_t *d, *p_d, *n_d, *p_distortion;
+	int16_t *errors, *p_errors, *n_errors, *p_e;
+	int16_t i, j, m, s, c, p_max, inner_counter;
+	int16_t *indices, *p_indices, *n_indices;
+	int16_t *parents, *p_parents, *n_parents;
+	int16_t *tmp_p_e;
+	int16_t temp;
+	int32_t L_temp, L_temp1;
 
 	/* make sure weights don't get too big */
 	j = 0;
@@ -152,16 +152,16 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 	/* allocate memory for the current node and parent node (thus, the        */
 	/* factors of two everywhere) The parents and current nodes are allocated */
 	/* contiguously */
-	indices = v_get((Shortword) (2 * ma * stages));
-	errors = v_get((Shortword) (2 * ma * order));
+	indices = v_get((int16_t) (2 * ma * stages));
+	errors = v_get((int16_t) (2 * ma * order));
 	uhatw = v_get(order);
-	d = v_get((Shortword) (2 * ma));
-	parents = v_get((Shortword) (2 * ma));
-	tmp_p_e = v_get((Shortword) (ma * order));
+	d = v_get((int16_t) (2 * ma));
+	parents = v_get((int16_t) (2 * ma));
+	tmp_p_e = v_get((int16_t) (ma * order));
 
 	/* initialize memory */
-	v_zap(indices, (Shortword) (2 * stages * ma));
-	v_zap(parents, (Shortword) (2 * ma));
+	v_zap(indices, (int16_t) (2 * stages * ma));
+	v_zap(parents, (int16_t) (2 * ma));
 
 	/* initialize inner loop counter */
 	inner_counter = 0;
@@ -178,7 +178,7 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 
 	/* u_tmp is the input vector (i.e. if u_est is non-null, it is subtracted */
 	/* off) */
-	u_tmp = v_get((Shortword) (order + 1));	/* u_tmp is Q15 */
+	u_tmp = v_get((int16_t) (order + 1));	/* u_tmp is Q15 */
 	(void)v_equ(u_tmp, u, order);
 	if (u_est)
 		(void)v_sub(u_tmp, u_est, order);
@@ -219,10 +219,10 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 		cb_currentstage = cbp;
 
 		/* set up pointers to the parent and current nodes */
-		P_SWAP(p_indices, n_indices, Shortword *);
-		P_SWAP(p_parents, n_parents, Shortword *);
-		P_SWAP(p_errors, n_errors, Shortword *);
-		P_SWAP(p_d, n_d, Shortword *);
+		P_SWAP(p_indices, n_indices, int16_t *);
+		P_SWAP(p_parents, n_parents, int16_t *);
+		P_SWAP(p_errors, n_errors, int16_t *);
+		P_SWAP(p_d, n_d, int16_t *);
 
 		/* p_max is the pointer to the maximum distortion node over all       */
 		/* candidates.  The so-called worst of the best. */
@@ -341,7 +341,7 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 				    &p_indices[n_parents[c] * stages], s);
 		}
 
-		m = (Shortword) (m * levels[s]);
+		m = (int16_t) (m * levels[s]);
 		if (m > ma)
 			m = ma;
 	}			/* for s */
@@ -410,13 +410,13 @@ Shortword vq_ms4(const Shortword * cb, Shortword * u, const Shortword * u_est,
 /*      Note:                                                                 */
 /*          The coder does not use the returned value from vq_lspw() at all.  */
 
-void vq_msd2(const Shortword * cb, Shortword * u_hat, const Shortword * u_est,
-	     Shortword * indices, const Shortword levels[], Shortword stages,
-	     Shortword p, Shortword diff_Q)
+void vq_msd2(const int16_t * cb, int16_t * u_hat, const int16_t * u_est,
+	     int16_t * indices, const int16_t levels[], int16_t stages,
+	     int16_t p, int16_t diff_Q)
 {
-	register Shortword i, j;
-	const Shortword *cb_currentstage, *cb_table;
-	Longword *L_u_hat, L_temp;
+	register int16_t i, j;
+	const int16_t *cb_currentstage, *cb_table;
+	int32_t *L_u_hat, L_temp;
 
 	/* allocate memory (if required) */
 	L_u_hat = L_v_get(p);
@@ -471,14 +471,14 @@ void vq_msd2(const Shortword * cb, Shortword * u_hat, const Shortword * u_est,
 /*      Note:                                                                 */
 /*          The coder does not use the returned value from vq_lspw() at all.  */
 
-Longword vq_enc(const Shortword codebook[], Shortword u[], Shortword levels,
-		Shortword order, Shortword u_hat[], Shortword * indices)
+int32_t vq_enc(const int16_t codebook[], int16_t u[], int16_t levels,
+		int16_t order, int16_t u_hat[], int16_t * indices)
 {
-	register Shortword i, j;
-	const Shortword *p_cb;
-	Shortword index;
-	Longword d, dmin;
-	Shortword temp;
+	register int16_t i, j;
+	const int16_t *p_cb;
+	int16_t index;
+	int32_t d, dmin;
+	int16_t temp;
 
 	/* Search codebook for minimum distance */
 	index = 0;
@@ -509,12 +509,12 @@ Longword vq_enc(const Shortword codebook[], Shortword u[], Shortword levels,
 /*    Q values:                                                               */
 /*       w_fs - Q14, pitch - Q9                                               */
 /* ========================================================================== */
-void vq_fsw(Shortword w_fs[], Shortword num_harm, Shortword pitch)
+void vq_fsw(int16_t w_fs[], int16_t num_harm, int16_t pitch)
 {
-	register Shortword i;
-	register Shortword temp;
-	Shortword tempw0, denom;
-	Longword L_temp;
+	register int16_t i;
+	register int16_t temp;
+	int16_t tempw0, denom;
+	int32_t L_temp;
 
 	/* Calculate fundamental frequency */
 	/* w0 = TWOPI/pitch */

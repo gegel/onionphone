@@ -35,10 +35,10 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _MSVQ_CB_H_
 #define _MSVQ_CB_H_
 
-extern const Shortword msvq_cb_mean[];
+extern const int16_t msvq_cb_mean[];
 
-extern const Shortword msvq_cb[];
+extern const int16_t msvq_cb[];
 
-extern const Shortword msvq_cb_rate1200[];
+extern const int16_t msvq_cb_rate1200[];
 
 #endif

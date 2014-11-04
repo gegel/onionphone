@@ -41,9 +41,9 @@
 
 /* ====== External memory ====== */
 
-Shortword mode;
-Shortword chwordsize;
-Shortword bitBufSize, bitBufSize12, bitBufSize24;
+int16_t mode;
+int16_t chwordsize;
+int16_t bitBufSize, bitBufSize12, bitBufSize24;
 /* ========== Static definations ========== */
 
 #define PROGRAM_NAME			"SC1200 1200 bps speech coder"
@@ -77,7 +77,7 @@ void melpe_i(void)
 	//====== Run MELPE codec ====== 
 	mode = ANA_SYN;
 	rate = RATE1200;
-	frameSize = (Shortword) BLOCK;
+	frameSize = (int16_t) BLOCK;
 
 	chwordsize = 8;
 	bitNum12 = 81;
@@ -151,7 +151,7 @@ void melpe_i2(void)
 	//====== Run MELPE codec at 2400 bps====== 
 	mode = ANA_SYN;
 	rate = RATE2400;
-	frameSize = (Shortword) FRAME;
+	frameSize = (int16_t) FRAME;
 	chwordsize = 8;
 	bitNum12 = 81;
 	bitNum24 = 54;

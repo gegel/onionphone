@@ -56,25 +56,25 @@ Secretariat fax: +33 493 65 47 16.
  *
  *	   INPUTS:
  *
- *		 L_var2 			A Longword input variable
+ *		 L_var2 			A int32_t input variable
  *
- *		 var1				A Shortword input variable
+ *		 var1				A int16_t input variable
  *
  *	   OUTPUTS: 			none
  *
- *	   RETURN VALUE:		A Longword value
+ *	   RETURN VALUE:		A int32_t value
  *
  *	   KEYWORDS: mult,mpy,multiplication
  *
  ***************************************************************************/
 
-Longword L_mpy_ls(Longword L_var2, Shortword var1)
+int32_t L_mpy_ls(int32_t L_var2, int16_t var1)
 {
-	Longword L_varOut;
-	Shortword swtemp;
+	int32_t L_varOut;
+	int16_t swtemp;
 
 	swtemp = melpe_shr(melpe_extract_l(L_var2), 1);
-	swtemp = (Shortword) ((short)32767 & (short)swtemp);
+	swtemp = (int16_t) ((short)32767 & (short)swtemp);
 
 	L_varOut = melpe_L_mult(var1, swtemp);
 	L_varOut = melpe_L_shr(L_varOut, 15);

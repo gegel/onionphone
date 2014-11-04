@@ -51,7 +51,7 @@
 #define LOG2_Q11				617	/* log10(2.0) * (1 << 11) */
 #define ONE_OV_SQRT2_Q15		23170	/* 1/sqrt(2) * (1 << 15) */
 
-const Shortword enlpf_coef[EN_FILTER_ORDER] = {	/* Q14 */
+const int16_t enlpf_coef[EN_FILTER_ORDER] = {	/* Q14 */
 	/* the coefs of the filter (NOT h) */
 	6764, 4336, -274, -2536, -1491,
 	24, -228, -1370, -1502, -480,
@@ -59,7 +59,7 @@ const Shortword enlpf_coef[EN_FILTER_ORDER] = {	/* Q14 */
 	132, 51
 };
 
-const Shortword enhpf_coef[EN_FILTER_ORDER] = {	/* Q14 */
+const int16_t enhpf_coef[EN_FILTER_ORDER] = {	/* Q14 */
 	/* the coefs of the filter (NOT h) */
 	7783, -5211, 439, 1707, -483,
 	-978, 564, 630, -861, 214,
@@ -69,9 +69,9 @@ const Shortword enhpf_coef[EN_FILTER_ORDER] = {	/* Q14 */
 
 /* ========== Prototypes ========== */
 
-static Shortword zeroCrosCount(Shortword speech[]);
-static Shortword bandEn(Shortword autocorr[], Shortword band);
-static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor);
+static int16_t zeroCrosCount(int16_t speech[]);
+static int16_t bandEn(int16_t autocorr[], int16_t band);
+static void frac_cor(int16_t inbuf[], int16_t pitch, int16_t * cor);
 
 /****************************************************************************
 **
@@ -81,34 +81,34 @@ static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor);
 **
 ** Arguments:
 **
-**	Shortword inbuf[]		speech buffer (Q0)
+**	int16_t inbuf[]		speech buffer (Q0)
 **	classParam *classStat	classification structure
-**  Shortword autocorr[]	autocorrelation coefficients (normalized, Q value
+**  int16_t autocorr[]	autocorrelation coefficients (normalized, Q value
 **                          irrelevant)
 **
 ** Return value:	None
 **
 *****************************************************************************/
-void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
+void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[])
 {
-	register Shortword i, j;
+	register int16_t i, j;
 	static BOOLEAN firstTime = TRUE;
-	static Shortword bpfdel[BPF_ORD + BPF_ORD / 3];
-	static Shortword back_sigbuf[PIT_COR_LEN - PIT_SUBFRAME];
-	const Shortword *ptr_bpf_num, *ptr_bpf_den;
-	Shortword classy, sum1_shift = 0;
-	Longword L_sum1, L_sum2;	/* Q0 */
-	Shortword temp1, temp2, max;
-	Longword L_temp;
-	Shortword sigbuf_a[BPF_ORD / 3 + PIT_COR_LEN];
-	Shortword sigbuf_b[BPF_ORD / 3 + PIT_COR_LEN];
-	Shortword *sigbuf_in, *sigbuf_out, *temp_sigbuf;
-	Shortword sigbuf_len;
-	Shortword inspeech[PIT_SUBFRAME];	/* Normalized buffer for inbuf[]. */
-	Shortword lowhighBandDiff;	/* Q12 */
-	Shortword zeroCrosRateDiff;	/* Q15 */
-	Shortword subEnergyDiff;	/* Q11 */
-	Shortword lowBandCorx;	/* low band pcor moved from classParam, Q15 */
+	static int16_t bpfdel[BPF_ORD + BPF_ORD / 3];
+	static int16_t back_sigbuf[PIT_COR_LEN - PIT_SUBFRAME];
+	const int16_t *ptr_bpf_num, *ptr_bpf_den;
+	int16_t classy, sum1_shift = 0;
+	int32_t L_sum1, L_sum2;	/* Q0 */
+	int16_t temp1, temp2, max;
+	int32_t L_temp;
+	int16_t sigbuf_a[BPF_ORD / 3 + PIT_COR_LEN];
+	int16_t sigbuf_b[BPF_ORD / 3 + PIT_COR_LEN];
+	int16_t *sigbuf_in, *sigbuf_out, *temp_sigbuf;
+	int16_t sigbuf_len;
+	int16_t inspeech[PIT_SUBFRAME];	/* Normalized buffer for inbuf[]. */
+	int16_t lowhighBandDiff;	/* Q12 */
+	int16_t zeroCrosRateDiff;	/* Q15 */
+	int16_t subEnergyDiff;	/* Q11 */
+	int16_t lowBandCorx;	/* low band pcor moved from classParam, Q15 */
 
 	if (firstTime) {
 		voicedEn = FIVE_Q11;	/* Both voicedEn and silenceEn are 1/10 of */
@@ -200,7 +200,7 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 	/* range as sum1 can be as small as 0 and as large as                     */
 	/* PIT_SUBFRAME * 32767^2 (in theory, though in reality almost            */
 	/* impossible).  Because L_v_magsq() implements by adding all the         */
-	/* Longword partial products before adjusting the Q value, we need to     */
+	/* int32_t partial products before adjusting the Q value, we need to     */
 	/* avoid overflow this temporary sum, which means making sure the input   */
 	/* for L_v_magsq() is less than sqrt(LW_MAX/PIT_SUBFRAME) ~ 4884.  If we  */
 	/* assume a single-frequency pure sinusoidal inbuf[], the limit is raised */
@@ -230,7 +230,7 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 		sum1_shift = 6;
 	}
 
-	/* Adjust L_sum1 so it does not overflow a Shortword. */
+	/* Adjust L_sum1 so it does not overflow a int16_t. */
 	while (L_sum1 > SW_MAX) {
 		L_sum1 = melpe_L_shr(L_sum1, 2);
 		sum1_shift = melpe_add(sum1_shift, 2);
@@ -281,7 +281,7 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 
 		/* (temp1 * 2^-15 * 2^sum1_shift) is || x ||_2 above, so              */
 		/* L_shr(L_sum2, sum1_shift) is (|| x ||_1 / || x ||_2) * temp1 *     */
-		/* 2^-15, guaranteed to fit in a Shortword.  However, the above       */
+		/* 2^-15, guaranteed to fit in a int16_t.  However, the above       */
 		/* result is upper-bounded by sqrt(PIT_SUBFRAME) and a Q0 could mean  */
 		/* significant loss of precision.  We use Q8 for it and therefore we  */
 		/* adjust sum1_shift beforehand.                                      */
@@ -395,18 +395,18 @@ void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[])
 **
 ** Arguments:
 **
-**	Shortword speech[]		Input speech buffer (Q0)
+**	int16_t speech[]		Input speech buffer (Q0)
 **
 ** Return value:
-**	Shortword				Zero Crossing Rate (Q15)
+**	int16_t				Zero Crossing Rate (Q15)
 **
 *****************************************************************************/
-static Shortword zeroCrosCount(Shortword speech[])
+static int16_t zeroCrosCount(int16_t speech[])
 {
-	register Shortword i;
-	Shortword dcfree_speech[PIT_SUBFRAME];
-	Shortword prev_sign, current_sign;
-	Shortword count;
+	register int16_t i;
+	int16_t dcfree_speech[PIT_SUBFRAME];
+	int16_t prev_sign, current_sign;
+	int16_t count;
 
 	/* ======== Short term DC remove ======== */
 	remove_dc(speech, dcfree_speech, PIT_SUBFRAME);
@@ -438,19 +438,19 @@ static Shortword zeroCrosCount(Shortword speech[])
 **
 ** Arguments:
 **
-**	Shortword autocorr[]    ---- input autocorrelation function (Q15)
+**	int16_t autocorr[]    ---- input autocorrelation function (Q15)
 **
 ** Return value:
-**	Shortword				---- the low band energy (Q12)
+**	int16_t				---- the low band energy (Q12)
 **
 *****************************************************************************/
 
-static Shortword bandEn(Shortword autocorr[], Shortword band)
+static int16_t bandEn(int16_t autocorr[], int16_t band)
 {
-	register Shortword i;
-	const Shortword *coef;	/* Q16 */
-	Shortword temp;
-	Longword energy;
+	register int16_t i;
+	const int16_t *coef;	/* Q16 */
+	int16_t temp;
+	int32_t energy;
 
 	if (band == 0)		/* low band */
 		coef = enlpf_coef;
@@ -460,7 +460,7 @@ static Shortword bandEn(Shortword autocorr[], Shortword band)
 	/* Accumulated sum for "energy".  coef[0] is the one with the largest     */
 	/* absolute value in coef[], but it is still less than 0.5.  autocorr[]   */
 	/* are all less than 1.  EN_FILTER_ORDER is 17, so energy is at most 17   */
-	/* (even this is a very loose upper bound).  We might use a Q10 Shortword */
+	/* (even this is a very loose upper bound).  We might use a Q10 int16_t */
 	/* to store energy after the accumulation is done.                        */
 
 	energy = 0;
@@ -494,22 +494,22 @@ static Shortword bandEn(Shortword autocorr[], Shortword band)
 **
 ** Arguments:
 **
-**	Shortword inbuf[]	---- input data buffer (Q0)
-**	Shortword pitch		---- the input pitch center (Q0)
-**	Shortword *cor		---- output cor coeff (Q15)
+**	int16_t inbuf[]	---- input data buffer (Q0)
+**	int16_t pitch		---- the input pitch center (Q0)
+**	int16_t *cor		---- output cor coeff (Q15)
 **
 ** Return value:	None
 **
 *****************************************************************************/
-static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor)
+static void frac_cor(int16_t inbuf[], int16_t pitch, int16_t * cor)
 {
-	register Shortword i, j;
-	Shortword lowPitch, highPitch;	/* Q0 */
-	Shortword lowStart, highStart;
-	Shortword gp, maxgp, root, win, temp;
-	Shortword r0_shift, rk_shift, shift;
-	Longword L_r0, L_rk, L_temp;	/* Q7 */
-	Word40 ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
+	register int16_t i, j;
+	int16_t lowPitch, highPitch;	/* Q0 */
+	int16_t lowStart, highStart;
+	int16_t gp, maxgp, root, win, temp;
+	int16_t r0_shift, rk_shift, shift;
+	int32_t L_r0, L_rk, L_temp;	/* Q7 */
+	int64_t ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
 
 	/* ------ Calculate the autocorrelation function ------- */
 	/* This is the new version of the autocorrelation function */
@@ -529,7 +529,7 @@ static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor)
 		ACC_r0 = 1;
 	r0_shift = melpe_norm32(ACC_r0);
 	ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
-	L_r0 = (Longword) ACC_r0;
+	L_r0 = (int32_t) ACC_r0;
 
 	ACC_rk = 0;
 	for (i = highPitch; i < PIT_COR_LEN; i++) {
@@ -539,7 +539,7 @@ static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor)
 		ACC_rk = 1;
 	rk_shift = melpe_norm32(ACC_rk);
 	ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
-	L_rk = (Longword) ACC_rk;
+	L_rk = (int32_t) ACC_rk;
 
 	ACC_A = 0;
 	for (i = 0; i < PIT_COR_LEN - highPitch; i++) {
@@ -555,7 +555,7 @@ static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor)
 	ACC_A = melpe_L40_shl(ACC_A, shift);
 	temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 	root = sqrt_Q15(temp);
-	L_temp = (Longword) ACC_A;
+	L_temp = (int32_t) ACC_A;
 	temp = melpe_extract_h(L_temp);
 	if (temp < 0)
 		temp = 0;	/* Negative Autocorrelation doesn't make sense here */
@@ -576,7 +576,7 @@ static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor)
 				ACC_r0 = 1;
 			r0_shift = melpe_norm32(ACC_r0);
 			ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
-			L_r0 = (Longword) ACC_r0;
+			L_r0 = (int32_t) ACC_r0;
 			lowStart++;
 		} else {
 			highStart--;
@@ -591,7 +591,7 @@ static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor)
 				ACC_rk = 1;
 			rk_shift = melpe_norm32(ACC_rk);
 			ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
-			L_rk = (Longword) ACC_rk;
+			L_rk = (int32_t) ACC_rk;
 		}
 		ACC_A = 0;
 		for (j = lowStart; j < lowStart + win; j++) {
@@ -607,7 +607,7 @@ static void frac_cor(Shortword inbuf[], Shortword pitch, Shortword * cor)
 		ACC_A = melpe_L40_shl(ACC_A, shift);
 		temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 		root = sqrt_Q15(temp);
-		L_temp = (Longword) ACC_A;
+		L_temp = (int32_t) ACC_A;
 		temp = melpe_extract_h(L_temp);
 		gp = melpe_divide_s(temp, root);
 		if (gp > maxgp)

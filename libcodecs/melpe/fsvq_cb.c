@@ -44,7 +44,7 @@ Secretariat fax: +33 493 65 47 16.
 /* This change is made because fsvq_cb[] should be made in ROM and therefore  */
 /* modifications on it (weighting) are not appropriate.                       */
 
-const Shortword fsvq_cb[FS_LEVELS * NUM_HARM] = {	/* Q13 */
+const int16_t fsvq_cb[FS_LEVELS * NUM_HARM] = {	/* Q13 */
 	7800, 13665, 5049, 10552, 6260, 4162, 3807, 4987, 6345, 4273,
 	11830, 9319, 4465, 11962, 4813, 4860, 4024, 7128, 4503, 4301,
 	11064, 13408, 6417, 5722, 11575, 4888, 3270, 3718, 3946, 4011,

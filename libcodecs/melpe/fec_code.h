@@ -21,13 +21,13 @@
 #ifndef _FEC_CODE_H_
 #define _FEC_CODE_H_
 
-extern const Shortword low_rate_pitch_enc[][PIT_QLEV];
+extern const int16_t low_rate_pitch_enc[][PIT_QLEV];
 
-extern const Shortword low_rate_pitch_dec[];
+extern const int16_t low_rate_pitch_dec[];
 
 extern void low_rate_fec_code(struct quant_param *par);
 
-extern Shortword low_rate_fec_decode(struct quant_param *qpar,
-				     Shortword erase, Shortword lsp_check[]);
+extern int16_t low_rate_fec_decode(struct quant_param *qpar,
+				     int16_t erase, int16_t lsp_check[]);
 
 #endif

@@ -70,9 +70,9 @@ Secretariat fax: +33 493 65 47 16.
 
 /* Prototype */
 
-static void lsp_to_freq(Shortword lsp[], Shortword freq[], Shortword order);
-static Shortword lpc_refl2pred(Shortword refc[], Shortword lpc[],
-			       Shortword order);
+static void lsp_to_freq(int16_t lsp[], int16_t freq[], int16_t order);
+static int16_t lpc_refl2pred(int16_t refc[], int16_t lpc[],
+			       int16_t order);
 
 /* LPC_ACOR                                                                   */
 /*		Compute autocorrelations based on windowed speech frame               */
@@ -90,20 +90,20 @@ static Shortword lpc_refl2pred(Shortword refc[], Shortword lpc[],
 /*                                                                            */
 /*	Q values: input - Q0, win_cof - Q15, hf_correction - Q15                  */
 
-void lpc_acor(Shortword input[], const Shortword win_cof[],
-	      Shortword autocorr[], Shortword hf_correction, Shortword order,
-	      Shortword npts)
+void lpc_acor(int16_t input[], const int16_t win_cof[],
+	      int16_t autocorr[], int16_t hf_correction, int16_t order,
+	      int16_t npts)
 {
 	/* Lag window coefficients */
-	static const Shortword lagw_cof[EN_FILTER_ORDER - 1] = {
+	static const int16_t lagw_cof[EN_FILTER_ORDER - 1] = {
 		32756, 32721, 32663, 32582, 32478, 32351, 32201, 32030, 31837,
 		    31622,
 		31387, 31131, 30855, 30560, 30246, 29914
 	};
-	register Shortword i, j;
-	Longword L_temp;
-	Shortword *inputw;
-	Shortword norm_var, scale_fact, temp;
+	register int16_t i, j;
+	int32_t L_temp;
+	int16_t *inputw;
+	int16_t norm_var, scale_fact, temp;
 
 	/* window optimized for speed and readability.  does windowing and        */
 	/* autocorrelation sequentially and in the usual manner                   */
@@ -195,16 +195,16 @@ void lpc_acor(Shortword input[], const Shortword win_cof[],
 /* Q values:                                                                  */
 /*      lpc - Q12, omega - Q15, return - Q19                                  */
 
-Longword lpc_aejw(Shortword lpc[], Shortword omega, Shortword order)
+int32_t lpc_aejw(int16_t lpc[], int16_t omega, int16_t order)
 {
-	register Shortword i;
-	Shortword c_re, c_im;
-	Shortword cs, sn, temp;
-	Shortword temp1, temp2;
-	Longword L_temp;
+	register int16_t i;
+	int16_t c_re, c_im;
+	int16_t cs, sn, temp;
+	int16_t temp1, temp2;
+	int32_t L_temp;
 
 	if (order == 0)
-		return ((Longword) ONE_Q19);
+		return ((int32_t) ONE_Q19);
 
 	/* use horners method                                                     */
 	/* A(exp(jw)) = 1+ e(-jw)[a(1) + e(-jw)[a(2) + e(-jw)[a(3) +..            */
@@ -238,7 +238,7 @@ Longword lpc_aejw(Shortword lpc[], Shortword omega, Shortword order)
 	/* L_temp in Q19 */
 	L_temp = melpe_L_add(melpe_L_mult(c_re, c_re), melpe_L_mult(c_im, c_im));
 	if (L_temp < LOW_LIMIT)
-		L_temp = (Longword) LOW_LIMIT;
+		L_temp = (int32_t) LOW_LIMIT;
 
 	return (L_temp);
 }
@@ -268,11 +268,11 @@ Longword lpc_aejw(Shortword lpc[], Shortword omega, Shortword order)
 /*                                                                            */
 /*	Q values: lpc[], aw[] - Q12, gamma - Q15, gk - Q15                        */
 
-Shortword lpc_bwex(Shortword lpc[], Shortword aw[], Shortword gamma,
-		   Shortword order)
+int16_t lpc_bwex(int16_t lpc[], int16_t aw[], int16_t gamma,
+		   int16_t order)
 {
-	register Shortword i;
-	Shortword gk;		/* gk is Q15 */
+	register int16_t i;
+	int16_t gk;		/* gk is Q15 */
 
 	gk = gamma;
 
@@ -309,11 +309,11 @@ Shortword lpc_bwex(Shortword lpc[], Shortword aw[], Shortword gamma,
 /*                                                                            */
 /*	Q values: lsp - Q15, delta - Q15                                          */
 
-Shortword lpc_clmp(Shortword lsp[], Shortword delta, Shortword order)
+int16_t lpc_clmp(int16_t lsp[], int16_t delta, int16_t order)
 {
-	register Shortword i, j;
+	register int16_t i, j;
 	BOOLEAN unsorted;
-	Shortword temp, d, step1, step2;
+	int16_t temp, d, step1, step2;
 
 	/* sort the LSPs for 10 loops */
 	for (j = 0, unsorted = TRUE; unsorted && (j < MAX_LOOPS); j++) {
@@ -441,16 +441,16 @@ Shortword lpc_clmp(Shortword lsp[], Shortword delta, Shortword order)
 /* local dynamic arrays because the calling environment does not need it nor  */
 /* use it.                                                                    */
 
-Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order)
+int16_t lpc_schr(int16_t autocorr[], int16_t lpc[], int16_t order)
 {
-	register Shortword i, j;
-	Shortword shift, alphap;
-	Shortword *refc;	/* Q15 */
-	Longword L_temp, *y1, *y2;
-	Shortword temp1, temp2;
+	register int16_t i, j;
+	int16_t shift, alphap;
+	int16_t *refc;	/* Q15 */
+	int32_t L_temp, *y1, *y2;
+	int16_t temp1, temp2;
 
 	y1 = L_v_get(order);
-	y2 = L_v_get((Shortword) (order + 1));
+	y2 = L_v_get((int16_t) (order + 1));
 	refc = v_get(order);
 
 	temp2 = melpe_abs_s(autocorr[1]);
@@ -482,7 +482,7 @@ Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order)
 		/* statement should never be true.                                    */
 
 		if (L_temp > y2[i]) {
-			v_zap(&(refc[i]), (Shortword) (order - i));
+			v_zap(&(refc[i]), (int16_t) (order - i));
 			break;
 		}
 
@@ -497,7 +497,7 @@ Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order)
 		}
 
 		y2[i + 1] = melpe_L_add(y2[i], L_mpy_ls(L_temp, refc[i]));
-		L_v_equ(y2, y1, (Shortword) (i + 1));
+		L_v_equ(y2, y1, (int16_t) (i + 1));
 	}
 
 	lpc_refl2pred(refc, lpc, order);
@@ -528,13 +528,13 @@ Shortword lpc_schr(Shortword autocorr[], Shortword lpc[], Shortword order)
 /* Q values:                                                                  */
 /* refc - Q15, lpc - Q12                                                      */
 
-static Shortword lpc_refl2pred(Shortword refc[], Shortword lpc[],
-			       Shortword order)
+static int16_t lpc_refl2pred(int16_t refc[], int16_t lpc[],
+			       int16_t order)
 {
-	register Shortword i, j;
-	Shortword *a1;
+	register int16_t i, j;
+	int16_t *a1;
 
-	a1 = v_get((Shortword) (order - 1));
+	a1 = v_get((int16_t) (order - 1));
 
 	for (i = 0; i < order; i++) {
 		/* refl to a recursion */
@@ -563,14 +563,14 @@ static Shortword lpc_refl2pred(Shortword refc[], Shortword lpc[],
 /* Q values:                                                                  */
 /* lpc - Q12, lsf - Q15                                                       */
 
-Shortword lpc_pred2lsp(Shortword lpc[], Shortword lsf[], Shortword order)
+int16_t lpc_pred2lsp(int16_t lpc[], int16_t lsf[], int16_t order)
 {
-	register Shortword i;
-	Shortword p_cof[LPC_ORD / 2 + 1], q_cof[LPC_ORD / 2 + 1],
+	register int16_t i;
+	int16_t p_cof[LPC_ORD / 2 + 1], q_cof[LPC_ORD / 2 + 1],
 	    p_freq[LPC_ORD / 2 + 1], q_freq[LPC_ORD / 2 + 1];
-	Longword L_p_cof[LPC_ORD / 2 + 1], L_q_cof[LPC_ORD / 2 + 1];
-	Longword L_ai, L_api, L_temp;
-	Shortword p2;
+	int32_t L_p_cof[LPC_ORD / 2 + 1], L_q_cof[LPC_ORD / 2 + 1];
+	int32_t L_ai, L_api, L_temp;
+	int16_t p2;
 
 	p2 = melpe_shr(order, 1);
 
@@ -579,8 +579,8 @@ Shortword lpc_pred2lsp(Shortword lpc[], Shortword lsf[], Shortword order)
 	/* for these indices, and hence L_p_cof[] and L_q_cof[] are needed only   */
 	/* from 0 to order/2.                                                     */
 
-	L_p_cof[0] = (Longword) ONE_Q26;
-	L_q_cof[0] = (Longword) ONE_Q26;
+	L_p_cof[0] = (int32_t) ONE_Q26;
+	L_q_cof[0] = (int32_t) ONE_Q26;
 	for (i = 1; i <= p2; i++) {
 		/*      temp = sub(lpc[i - 1], lpc[order - i]); *//* temp in Q12 */
 		L_ai = melpe_L_shr(melpe_L_deposit_h(lpc[i - 1]), 2);
@@ -623,19 +623,19 @@ Shortword lpc_pred2lsp(Shortword lpc[], Shortword lsf[], Shortword order)
 /* Q values:                                                                  */
 /* lsp - Q10, freq - Q15                                                      */
 
-static void lsp_to_freq(Shortword lsp[], Shortword freq[], Shortword order)
+static void lsp_to_freq(int16_t lsp[], int16_t freq[], int16_t order)
 {
-	register Shortword i, j;
+	register int16_t i, j;
 	static BOOLEAN firstTime = TRUE;
-	static Shortword lsp_cos[DFTLENGTH];	/* cosine table */
-	static Shortword default_w, default_w0;
-	Shortword p2, count;
+	static int16_t lsp_cos[DFTLENGTH];	/* cosine table */
+	static int16_t default_w, default_w0;
+	int16_t p2, count;
 	BOOLEAN prev_less;
-	Longword mag[3];
-	Shortword s_mag[3];
-	Shortword p_cos;
-	Shortword temp1, temp2;
-	Longword L_temp1, L_temp2;
+	int32_t mag[3];
+	int16_t s_mag[3];
+	int16_t p_cos;
+	int16_t temp1, temp2;
+	int32_t L_temp1, L_temp2;
 
 	if (firstTime) {
 		/* for (i = 0; i < DFTLENGTH; i++)
@@ -748,17 +748,17 @@ static void lsp_to_freq(Shortword lsp[], Shortword freq[], Shortword order)
 /* Q values:                                                                  */
 /* lpc[] - Q12, *refc - Q15,                                                  */
 
-Shortword lpc_pred2refl(Shortword lpc[], Shortword * refc, Shortword order)
+int16_t lpc_pred2refl(int16_t lpc[], int16_t * refc, int16_t order)
 {
-	register Shortword i, j;
-	Longword acc;
-	Shortword *b, *b1, e;
-	Shortword energy = ONE_Q15;
-	Shortword shift, shift1, sign;
-	Shortword temp;
+	register int16_t i, j;
+	int32_t acc;
+	int16_t *b, *b1, e;
+	int16_t energy = ONE_Q15;
+	int16_t shift, shift1, sign;
+	int16_t temp;
 
 	b = v_get(order);
-	b1 = v_get((Shortword) (order - 1));
+	b1 = v_get((int16_t) (order - 1));
 
 	/* equate temporary variables (b = lpc) */
 	v_equ(b, lpc, order);
@@ -824,13 +824,13 @@ Shortword lpc_pred2refl(Shortword lpc[], Shortword * refc, Shortword order)
 /* Q values:                                                                  */
 /* lsf - Q15, lpc - Q12, c - Q14                                              */
 
-Shortword lpc_lsp2pred(Shortword lsf[], Shortword lpc[], Shortword order)
+int16_t lpc_lsp2pred(int16_t lsf[], int16_t lpc[], int16_t order)
 {
-	register Shortword i, j, k;
-	Shortword p2;
-	Shortword c0, c1;
-	Longword *f0, *f1;
-	Longword L_temp;
+	register int16_t i, j, k;
+	int16_t p2;
+	int16_t c0, c1;
+	int32_t *f0, *f1;
+	int32_t L_temp;
 
 	/* ensure minimum separation and sort */
 	lpc_clmp(lsf, 0, order);
@@ -838,11 +838,11 @@ Shortword lpc_lsp2pred(Shortword lsf[], Shortword lpc[], Shortword order)
 	/* p2 = p/2 */
 	p2 = melpe_shr(order, 1);
 
-	f0 = L_v_get((Shortword) (p2 + 1));
-	f1 = L_v_get((Shortword) (p2 + 1));
+	f0 = L_v_get((int16_t) (p2 + 1));
+	f1 = L_v_get((int16_t) (p2 + 1));
 
 	/* f is Q25 */
-	f0[0] = f1[0] = (Longword) ONE_Q25;
+	f0[0] = f1[0] = (int32_t) ONE_Q25;
 
 	/* -2.0*cos((double) lsf[0]*M_PI) */
 	f0[1] = melpe_L_shr(melpe_L_deposit_h(melpe_negate(cos_fxp(lsf[0]))), 5);
@@ -919,11 +919,11 @@ Shortword lpc_lsp2pred(Shortword lsf[], Shortword lpc[], Shortword order)
 /*	Systems and Info. Science Lab                                             */
 /*	Copyright (c) 1995 by Texas Instruments, Inc.  All rights reserved.       */
 
-Shortword lpc_syn(Shortword x[], Shortword y[], Shortword a[], Shortword order,
-		  Shortword length)
+int16_t lpc_syn(int16_t x[], int16_t y[], int16_t a[], int16_t order,
+		  int16_t length)
 {
-	register Shortword i, j;
-	Longword accum;
+	register int16_t i, j;
+	int32_t accum;
 
 /* Tung-chiang believes a[] is Q12, x[] and y[] are Q0. */
 

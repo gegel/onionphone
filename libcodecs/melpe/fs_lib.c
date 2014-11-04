@@ -59,17 +59,17 @@ Secretariat fax: +33 493 65 47 16.
 /*  fsmag - Q13                                                 */
 /*  pitch - Q7                                                  */
 
-void find_harm(Shortword input[], Shortword fsmag[], Shortword pitch,
-	       Shortword num_harm, Shortword length)
+void find_harm(int16_t input[], int16_t fsmag[], int16_t pitch,
+	       int16_t num_harm, int16_t length)
 {
-	register Shortword i, j, k;
-	Shortword find_hbuf[2 * FFTLENGTH];
-	Shortword iwidth, i2;
-	Shortword fwidth, mult_fwidth, shift, max;
-	Longword *L_fsmag;
-	Longword L_temp, L_max;
-	Word40 avg;
-	Shortword temp1, temp2;
+	register int16_t i, j, k;
+	int16_t find_hbuf[2 * FFTLENGTH];
+	int16_t iwidth, i2;
+	int16_t fwidth, mult_fwidth, shift, max;
+	int32_t *L_fsmag;
+	int32_t L_temp, L_max;
+	int64_t avg;
+	int16_t temp1, temp2;
 
 	L_fsmag = L_v_get(num_harm);
 
@@ -142,7 +142,7 @@ void find_harm(Shortword input[], Shortword fsmag[], Shortword pitch,
 	for (k = 0; k < num_harm; k++)
 		avg = melpe_L40_add(avg, L_fsmag[k]);
 	temp1 = melpe_norm32(avg);
-	L_temp = (Longword) melpe_L40_shl(avg, temp1);	/* man. of avg */
+	L_temp = (int32_t) melpe_L40_shl(avg, temp1);	/* man. of avg */
 	temp1 = melpe_sub(31, temp1);	/* exp. of avg */
 	/* now compute num_harm/avg. avg = L_temp(Q31) x 2^temp1 */
 	temp2 = melpe_shl(num_harm, 10);
@@ -174,14 +174,14 @@ void find_harm(Shortword input[], Shortword fsmag[], Shortword pitch,
 /* Q values:                                                                  */
 /*      real - Q13, signal - Q15                                              */
 
-void idft_real(Shortword real[], Shortword signal[], Shortword length)
+void idft_real(int16_t real[], int16_t signal[], int16_t length)
 {
-	register Shortword i, j, k;
-	static Shortword idftc[DFTMAX];
-	Shortword k_inc, length2;
-	Shortword w, w2;
-	Shortword temp;
-	Longword L_temp;
+	register int16_t i, j, k;
+	static int16_t idftc[DFTMAX];
+	int16_t k_inc, length2;
+	int16_t w, w2;
+	int16_t temp;
+	int32_t L_temp;
 
 	assert(length <= DFTMAX);
 	length2 = melpe_add(melpe_shr(length, 1), 1);
@@ -192,10 +192,10 @@ void idft_real(Shortword real[], Shortword signal[], Shortword length)
 		L_temp = melpe_L_mult(w, i);	/* L_temp in Q19 */
 
 		/* make sure argument for cos function is less than 1 */
-		if (L_temp > (Longword) ONE_Q19) {
+		if (L_temp > (int32_t) ONE_Q19) {
 			/*      cos(pi+x) = cos(pi-x) */
-			L_temp = melpe_L_sub((Longword) TWO_Q19, L_temp);
-		} else if (L_temp == (Longword) ONE_Q19)
+			L_temp = melpe_L_sub((int32_t) TWO_Q19, L_temp);
+		} else if (L_temp == (int32_t) ONE_Q19)
 			L_temp = melpe_L_sub(L_temp, 1);
 
 		L_temp = melpe_L_shr(L_temp, 4);	/* L_temp in Q15 */

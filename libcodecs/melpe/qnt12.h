@@ -25,16 +25,16 @@ void pitch_vq(struct melp_param *par);
 
 void gain_vq(struct melp_param *par);
 
-void quant_bp(struct melp_param *par, Shortword num_frames);
+void quant_bp(struct melp_param *par, int16_t num_frames);
 
-BOOLEAN lspStable(Shortword lsp[], Shortword order);
+BOOLEAN lspStable(int16_t lsp[], int16_t order);
 
-void lspSort(Shortword lsp[], Shortword order);
+void lspSort(int16_t lsp[], int16_t order);
 
 void lsf_vq(struct melp_param *par);
 
-void deqnt_msvq(Shortword qout[], const Shortword codebook[], Shortword tos,
-		const Shortword cb_size[], Shortword * index, Shortword dim);
+void deqnt_msvq(int16_t qout[], const int16_t codebook[], int16_t tos,
+		const int16_t cb_size[], int16_t * index, int16_t dim);
 
 void quant_jitter(struct melp_param *par);
 

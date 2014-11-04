@@ -36,39 +36,39 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _MELP_SUB_H_
 #define _MELP_SUB_H_
 
-void bpvc_ana(Shortword speech[], Shortword fpitch[], Shortword bpvc[],
-	      Shortword * pitch);
+void bpvc_ana(int16_t speech[], int16_t fpitch[], int16_t bpvc[],
+	      int16_t * pitch);
 
-void dc_rmv(Shortword sigin[], Shortword sigout[], Shortword delin[],
-	    Shortword delout_hi[], Shortword delout_lo[], Shortword frame);
+void dc_rmv(int16_t sigin[], int16_t sigout[], int16_t delin[],
+	    int16_t delout_hi[], int16_t delout_lo[], int16_t frame);
 
-void remove_dc(Shortword sigin[], Shortword sigout[], Shortword len);
+void remove_dc(int16_t sigin[], int16_t sigout[], int16_t len);
 
-Shortword gain_ana(Shortword sigin[], Shortword pitch, Shortword minlength,
-		   Shortword maxlength);
+int16_t gain_ana(int16_t sigin[], int16_t pitch, int16_t minlength,
+		   int16_t maxlength);
 
-Shortword lin_int_bnd(Shortword x, Shortword xmin, Shortword xmax,
-		      Shortword ymin, Shortword ymax);
+int16_t lin_int_bnd(int16_t x, int16_t xmin, int16_t xmax,
+		      int16_t ymin, int16_t ymax);
 
-void noise_est(Shortword gain, Shortword * noise_gain, Shortword up,
-	       Shortword down, Shortword min, Shortword max);
+void noise_est(int16_t gain, int16_t * noise_gain, int16_t up,
+	       int16_t down, int16_t min, int16_t max);
 
-void noise_sup(Shortword * gain, Shortword noise_gain, Shortword max_noise,
-	       Shortword max_atten, Shortword nfact);
+void noise_sup(int16_t * gain, int16_t noise_gain, int16_t max_noise,
+	       int16_t max_atten, int16_t nfact);
 
-BOOLEAN q_bpvc(Shortword * bpvc, Shortword * bpvc_index, Shortword num_bands);
+BOOLEAN q_bpvc(int16_t * bpvc, int16_t * bpvc_index, int16_t num_bands);
 
-void q_bpvc_dec(Shortword bpvc[], Shortword bpvc_index, BOOLEAN uv_flag,
-		Shortword num_bands);
+void q_bpvc_dec(int16_t bpvc[], int16_t bpvc_index, BOOLEAN uv_flag,
+		int16_t num_bands);
 
-void q_gain(Shortword * gain, Shortword * gain_index, Shortword qlow,
-	    Shortword qup, Shortword qlev, Shortword qlev_q,
-	    Shortword double_flag, Shortword scale);
+void q_gain(int16_t * gain, int16_t * gain_index, int16_t qlow,
+	    int16_t qup, int16_t qlev, int16_t qlev_q,
+	    int16_t double_flag, int16_t scale);
 
-void q_gain_dec(Shortword * gain, Shortword * gain_index, Shortword qlow,
-		Shortword qup, Shortword qlev_q, Shortword scale);
+void q_gain_dec(int16_t * gain, int16_t * gain_index, int16_t qlow,
+		int16_t qup, int16_t qlev_q, int16_t scale);
 
-void scale_adj(Shortword * speech, Shortword gain, Shortword length,
-	       Shortword scale_over, Shortword inv_scale_over);
+void scale_adj(int16_t * speech, int16_t gain, int16_t length,
+	       int16_t scale_over, int16_t inv_scale_over);
 
 #endif
