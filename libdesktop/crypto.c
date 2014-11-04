@@ -918,6 +918,7 @@ void psleep(int paus)
 
   //set packet type and return fixed length
   pkt[0]=(TYPE_REQ | 0x80);
+  //memcpy(answer, pkt, 5+lenbytype(TYPE_REQ)); //for dubles of reuest
   return (lenbytype(TYPE_REQ)); //48 bytes
 
   //output=REQ:  PUBP[32], COMT[16]
@@ -1048,12 +1049,7 @@ void psleep(int paus)
    //our_nonce contain Na
    //A -> B: ANS
   }
-  else
-  {
-   web_printf("! Unexpected connection request received!\r\n");
-   disconnect();
-   return 0; //check for initial state only
-  }
+  else return 0;
  }
  //*****************************************************************************
 
@@ -1443,7 +1439,7 @@ void psleep(int paus)
  {
   char c;
   int i;
-  if((crp_state!=2)||(!answer[0]))
+  if(crp_state!=2)
   {
    web_printf("! Unexpected answer command!\r\n");
    return;

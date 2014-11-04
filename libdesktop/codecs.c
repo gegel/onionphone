@@ -1245,16 +1245,20 @@ void sp_fine(void)
 
 //*****************************************************************************
 //set encoder type
-void set_encoder(int cd)
+int set_encoder(int cd)
 {
- enc_type=cd; //set internal encoder
- snd_need=codec_len(enc_type); //samples needed for compleet packet
+ if((cd>0)&&(cd<19))
+ {
+  enc_type=cd; //set internal encoder
+  snd_need=codec_len(enc_type); //samples needed for compleet packet
+ }
  web_printf("\r\nCoder=%s\r\n",cd_name[enc_type]); //notify encoder name
+ return enc_type;
 }
 
 
 //*****************************************************************************
-void get_decoder(int cd)
+int get_decoder(int cd)
 {
  if(!cd) cd=dec_type;
  web_printf("Last decoder=%s\r\n", cd_name[cd]);
@@ -1266,6 +1270,7 @@ void get_decoder(int cd)
  else if(tx_flag==2) web_printf(" by PTT\r\n");
  else if(tx_flag==3) web_printf(" continuously\r\n");
  else printf("\r\n");
+ return dec_type;
 }
 
 

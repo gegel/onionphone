@@ -108,8 +108,8 @@ int vox(short* speech, int len, char level, char hist);
 long RateChange(short *src, short *dest, long srcLen, long destRate);
 void sp_init(void);
 void sp_fine(void);
-void set_encoder(int cd);
-void get_decoder(int cd);
+int set_encoder(int cd);
+int get_decoder(int cd);
 void get_jitter(void);
 int amr_setup(char mode, char dtx, char fpp);
 

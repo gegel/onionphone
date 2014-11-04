@@ -53,7 +53,6 @@ extern char book_name[32]; //filename of current addressbook
 extern char command_str[256]; //command for set encryption
 extern char password[32];  //preshared password
 
-int sp_enc=7; 		//voice codec
 char sound_loop=0;      //flag of sound testing
 int menu=0;             //menu pointer
 int menuitem=0;         //menu iteam pointer
@@ -709,7 +708,7 @@ int parsecmd(void)
   }
   else if(cmdbuf[2]=='I')
   {
-   set_encoder(sp_enc);
+   set_encoder(0);
    get_decoder(0);
    if(vox_level) web_printf("VOX level is %d%\r\n", vox_level);
    else web_printf("VOX uses SPEEX VAD detector\r\n");
@@ -827,13 +826,13 @@ int parsecmd(void)
   if(cmdbuf[2])
   {
    i=atoi(cmdbuf+2);
-   if((i>0)&&(i<19))
-   {
-    sp_enc=i;
-    set_encoder(sp_enc);
-   }
+   if((i>0)&&(i<19)) set_encoder(i);
    else if(cmdbuf[2]=='I') get_decoder(0);
-   else web_printf("Current encoder: %d. Avaliable are 1-18\r\n", sp_enc);
+   else
+   {
+    i=set_encoder(0);
+    web_printf("Coder number is %d. Avaliable are 1-18\r\n", i);
+   }
   }
   else
   {
