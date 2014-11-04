@@ -4,7 +4,7 @@ LD ?= ld
 
 # NORMAL DEBUG
 MODE ?= NORMAL
-MODE_NORMAL ?= -O3
+MODE_NORMAL ?= -O3 -ffast-math -funroll-loops
 MODE_DEBUG ?= -O0 -g -ggdb
 
 # -DM_LITTLE_ENDIAN
