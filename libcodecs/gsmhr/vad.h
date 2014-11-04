@@ -14,61 +14,61 @@
 void vad_reset(void);
 
 void vad_algorithm
-    (Longword pL_acf[9],
-     Shortword swScaleAcf,
-     Shortword pswRc[4], Shortword swPtch, Shortword * pswVadFlag);
+    (int32_t pL_acf[9],
+     int16_t swScaleAcf,
+     int16_t pswRc[4], int16_t swPtch, int16_t * pswVadFlag);
 
 void energy_computation
-    (Longword pL_acf[],
-     Shortword swScaleAcf,
-     Shortword pswRvad[],
-     Shortword swNormRvad,
-     Shortword * pswM_pvad,
-     Shortword * pswE_pvad, Shortword * pswM_acf0, Shortword * pswE_acf0);
+    (int32_t pL_acf[],
+     int16_t swScaleAcf,
+     int16_t pswRvad[],
+     int16_t swNormRvad,
+     int16_t * pswM_pvad,
+     int16_t * pswE_pvad, int16_t * pswM_acf0, int16_t * pswE_acf0);
 
 void average_acf
-    (Longword pL_acf[],
-     Shortword swScaleAcf, Longword pL_av0[], Longword pL_av1[]
+    (int32_t pL_acf[],
+     int16_t swScaleAcf, int32_t pL_av0[], int32_t pL_av1[]
     );
 
 void predictor_values
-    (Longword pL_av1[], Shortword pswRav1[], Shortword * pswNormRav1);
+    (int32_t pL_av1[], int16_t pswRav1[], int16_t * pswNormRav1);
 
-void schur_recursion(Longword pL_av1[], Shortword pswVpar[]
+void schur_recursion(int32_t pL_av1[], int16_t pswVpar[]
     );
 
-void step_up(Shortword swNp, Shortword pswVpar[], Shortword pswAav1[]
+void step_up(int16_t swNp, int16_t pswVpar[], int16_t pswAav1[]
     );
 
 void compute_rav1
-    (Shortword pswAav1[], Shortword pswRav1[], Shortword * pswNormRav1);
+    (int16_t pswAav1[], int16_t pswRav1[], int16_t * pswNormRav1);
 
 void spectral_comparison
-    (Shortword pswRav1[],
-     Shortword swNormRav1, Longword pL_av0[], Shortword * pswStat);
+    (int16_t pswRav1[],
+     int16_t swNormRav1, int32_t pL_av0[], int16_t * pswStat);
 
-void tone_detection(Shortword pswRc[4], Shortword * pswTone);
+void tone_detection(int16_t pswRc[4], int16_t * pswTone);
 
 void threshold_adaptation
-    (Shortword swStat,
-     Shortword swPtch,
-     Shortword swTone,
-     Shortword pswRav1[],
-     Shortword swNormRav1,
-     Shortword swM_pvad,
-     Shortword swE_pvad,
-     Shortword swM_acf0,
-     Shortword swE_acf0,
-     Shortword pswRvad[],
-     Shortword * pswNormRvad, Shortword * pswM_thvad, Shortword * pswE_thvad);
+    (int16_t swStat,
+     int16_t swPtch,
+     int16_t swTone,
+     int16_t pswRav1[],
+     int16_t swNormRav1,
+     int16_t swM_pvad,
+     int16_t swE_pvad,
+     int16_t swM_acf0,
+     int16_t swE_acf0,
+     int16_t pswRvad[],
+     int16_t * pswNormRvad, int16_t * pswM_thvad, int16_t * pswE_thvad);
 
 void vad_decision
-    (Shortword swM_pvad,
-     Shortword swE_pvad,
-     Shortword swM_thvad, Shortword swE_thvad, Shortword * pswVvad);
+    (int16_t swM_pvad,
+     int16_t swE_pvad,
+     int16_t swM_thvad, int16_t swE_thvad, int16_t * pswVvad);
 
-void vad_hangover(Shortword swVvad, Shortword * pswVadFlag);
+void vad_hangover(int16_t swVvad, int16_t * pswVadFlag);
 
-void periodicity_update(Shortword pswLags[4], Shortword * pswPtch);
+void periodicity_update(int16_t pswLags[4], int16_t * pswPtch);
 
 #endif

@@ -68,7 +68,7 @@
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -79,7 +79,7 @@
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -87,16 +87,16 @@
  *
  *************************************************************************/
 
-static Shortword saturate(Longword L_var1)
+static int16_t saturate(int32_t L_var1)
 {
-	Shortword swOut;
+	int16_t swOut;
 
 	if (L_var1 > SW_MAX) {
 		swOut = SW_MAX;
 	} else if (L_var1 < SW_MIN) {
 		swOut = SW_MIN;
 	} else
-		swOut = (Shortword) L_var1;	/* automatic type conversion */
+		swOut = (int16_t) L_var1;	/* automatic type conversion */
 	return (swOut);
 }
 
@@ -112,7 +112,7 @@ static Shortword saturate(Longword L_var1)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -122,7 +122,7 @@ static Shortword saturate(Longword L_var1)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0x0000 0000 <= swOut <= 0x0000 7fff.
  *
@@ -135,9 +135,9 @@ static Shortword saturate(Longword L_var1)
  *
  *************************************************************************/
 
-Shortword abs_s(Shortword var1)
+int16_t abs_s(int16_t var1)
 {
-	Shortword swOut;
+	int16_t swOut;
 
 	if (var1 == SW_MIN) {
 		swOut = SW_MAX;
@@ -162,10 +162,10 @@ Shortword abs_s(Shortword var1)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -175,7 +175,7 @@ Shortword abs_s(Shortword var1)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -194,12 +194,12 @@ Shortword abs_s(Shortword var1)
  *
  *************************************************************************/
 
-Shortword add(Shortword var1, Shortword var2)
+int16_t add(int16_t var1, int16_t var2)
 {
-	Longword L_sum;
-	Shortword swOut;
+	int32_t L_sum;
+	int16_t swOut;
 
-	L_sum = (Longword) var1 + var2;
+	L_sum = (int32_t) var1 + var2;
 	swOut = saturate(L_sum);
 	return (swOut);
 }
@@ -217,10 +217,10 @@ Shortword add(Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -230,7 +230,7 @@ Shortword add(Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -244,10 +244,10 @@ Shortword add(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Shortword divide_s(Shortword var1, Shortword var2)
+int16_t divide_s(int16_t var1, int16_t var2)
 {
-	Longword L_div;
-	Shortword swOut;
+	int32_t L_div;
+	int16_t swOut;
 
 	if (var1 < 0 || var2 < 0 || var1 > var2) {
 		/* undefined output for invalid input into divide_s */
@@ -257,7 +257,7 @@ Shortword divide_s(Shortword var1, Shortword var2)
 	if (var1 == var2)
 		return (0x7fff);
 
-	L_div = ((0x00008000L * (Longword) var1) / (Longword) var2);
+	L_div = ((0x00008000L * (int32_t) var1) / (int32_t) var2);
 	swOut = saturate(L_div);
 	return (swOut);
 }
@@ -268,14 +268,14 @@ Shortword divide_s(Shortword var1, Shortword var2)
  *
  *   PURPOSE:
  *
- *     Extract the 16 MS bits of a 32 bit Longword.  Return the 16 bit
- *     number as a Shortword.  This is used as a "truncation" of a fractional
+ *     Extract the 16 MS bits of a 32 bit int32_t.  Return the 16 bit
+ *     number as a int16_t.  This is used as a "truncation" of a fractional
  *     number.
  *
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -286,7 +286,7 @@ Shortword divide_s(Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -296,11 +296,11 @@ Shortword divide_s(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Shortword extract_h(Longword L_var1)
+int16_t extract_h(int32_t L_var1)
 {
-	Shortword var2;
+	int16_t var2;
 
-	var2 = (Shortword) (0x0000ffffL & (L_var1 >> 16));
+	var2 = (int16_t) (0x0000ffffL & (L_var1 >> 16));
 	return (var2);
 }
 
@@ -310,14 +310,14 @@ Shortword extract_h(Longword L_var1)
  *
  *   PURPOSE:
  *
- *     Extract the 16 LS bits of a 32 bit Longword.  Return the 16 bit
- *     number as a Shortword.  The upper portion of the input Longword
+ *     Extract the 16 LS bits of a 32 bit int32_t.  Return the 16 bit
+ *     number as a int16_t.  The upper portion of the input int32_t
  *     has no impact whatsoever on the output.
  *
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -328,7 +328,7 @@ Shortword extract_h(Longword L_var1)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -337,11 +337,11 @@ Shortword extract_h(Longword L_var1)
  *
  *************************************************************************/
 
-Shortword extract_l(Longword L_var1)
+int16_t extract_l(int32_t L_var1)
 {
-	Shortword var2;
+	int16_t var2;
 
-	var2 = (Shortword) (0x0000ffffL & L_var1);
+	var2 = (int16_t) (0x0000ffffL & L_var1);
 	return (var2);
 }
 
@@ -357,7 +357,7 @@ Shortword extract_l(Longword L_var1)
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -368,7 +368,7 @@ Shortword extract_l(Longword L_var1)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -377,9 +377,9 @@ Shortword extract_l(Longword L_var1)
  *   KEYWORDS: absolute value, abs
  *
  *************************************************************************/
-Longword L_abs(Longword L_var1)
+int32_t L_abs(int32_t L_var1)
 {
-	Longword L_Out;
+	int32_t L_Out;
 
 	if (L_var1 == LW_MIN) {
 		L_Out = LW_MAX;
@@ -404,11 +404,11 @@ Longword L_abs(Longword L_var1)
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *     L_var2
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -419,7 +419,7 @@ Longword L_abs(Longword L_var1)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -437,10 +437,10 @@ Longword L_abs(Longword L_var1)
  *   KEYWORDS: add, addition
  *
  *************************************************************************/
-Longword L_add(Longword L_var1, Longword L_var2)
+int32_t L_add(int32_t L_var1, int32_t L_var2)
 {
 
-	Longword L_Sum, L_SumLow, L_SumHigh;
+	int32_t L_Sum, L_SumLow, L_SumHigh;
 
 	L_Sum = L_var1 + L_var2;
 
@@ -475,13 +475,13 @@ Longword L_add(Longword L_var1, Longword L_var2)
  *
  *   PURPOSE:
  *
- *     Put the 16 bit input into the 16 MSB's of the output Longword.  The
+ *     Put the 16 bit input into the 16 MSB's of the output int32_t.  The
  *     LS 16 bits are zeroed.
  *
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -491,7 +491,7 @@ Longword L_add(Longword L_var1, Longword L_var2)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff 0000.
  *
@@ -500,11 +500,11 @@ Longword L_add(Longword L_var1, Longword L_var2)
  *
  *************************************************************************/
 
-Longword L_deposit_h(Shortword var1)
+int32_t L_deposit_h(int16_t var1)
 {
-	Longword L_var2;
+	int32_t L_var2;
 
-	L_var2 = (Longword) var1 << 16;
+	L_var2 = (int32_t) var1 << 16;
 	return (L_var2);
 }
 
@@ -514,13 +514,13 @@ Longword L_deposit_h(Shortword var1)
  *
  *   PURPOSE:
  *
- *     Put the 16 bit input into the 16 LSB's of the output Longword with
+ *     Put the 16 bit input into the 16 LSB's of the output int32_t with
  *     sign extension i.e. the top 16 bits are set to either 0 or 0xffff.
  *
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -530,7 +530,7 @@ Longword L_deposit_h(Shortword var1)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= L_var1 <= 0x0000 7fff.
  *
@@ -538,9 +538,9 @@ Longword L_deposit_h(Shortword var1)
  *
  *************************************************************************/
 
-Longword L_deposit_l(Shortword var1)
+int32_t L_deposit_l(int16_t var1)
 {
-	Longword L_Out;
+	int32_t L_Out;
 
 	L_Out = var1;
 	return (L_Out);
@@ -559,13 +559,13 @@ Longword L_deposit_l(Shortword var1)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *     L_var3
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -576,7 +576,7 @@ Longword L_deposit_l(Shortword var1)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -599,7 +599,7 @@ Longword L_deposit_l(Shortword var1)
  *
  *************************************************************************/
 
-Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
+int32_t L_mac(int32_t L_var3, int16_t var1, int16_t var2)
 {
 	return (L_add(L_var3, L_mult(var1, var2)));
 }
@@ -617,13 +617,13 @@ Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *     L_var3
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -634,7 +634,7 @@ Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -657,7 +657,7 @@ Longword L_mac(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
+int32_t L_msu(int32_t L_var3, int16_t var1, int16_t var2)
 {
 	return (L_sub(L_var3, L_mult(var1, var2)));
 }
@@ -674,10 +674,10 @@ Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -687,7 +687,7 @@ Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -703,14 +703,14 @@ Longword L_msu(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Longword L_mult(Shortword var1, Shortword var2)
+int32_t L_mult(int16_t var1, int16_t var2)
 {
-	Longword L_product;
+	int32_t L_product;
 
 	if (var1 == SW_MIN && var2 == SW_MIN)
 		L_product = LW_MAX;	/* overflow */
 	else {
-		L_product = (Longword) var1 *var2;	/* integer multiply */
+		L_product = (int32_t) var1 *var2;	/* integer multiply */
 
 		L_product = L_product << 1;
 	}
@@ -729,7 +729,7 @@ Longword L_mult(Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -740,7 +740,7 @@ Longword L_mult(Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0001 <= L_var1 <= 0x7fff ffff.
  *
@@ -748,9 +748,9 @@ Longword L_mult(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Longword L_negate(Longword L_var1)
+int32_t L_negate(int32_t L_var1)
 {
-	Longword L_Out;
+	int32_t L_Out;
 
 	if (L_var1 == LW_MIN)
 		L_Out = LW_MAX;
@@ -772,11 +772,11 @@ Longword L_negate(Longword L_var1)
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -786,7 +786,7 @@ Longword L_negate(Longword L_var1)
  *   RETURN VALUE:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -816,9 +816,9 @@ Longword L_negate(Longword L_var1)
  *
  *************************************************************************/
 
-Longword L_shift_r(Longword L_var1, Shortword var2)
+int32_t L_shift_r(int32_t L_var1, int16_t var2)
 {
-	Longword L_Out, L_rnd;
+	int32_t L_Out, L_rnd;
 
 	if (var2 < -31) {
 		L_Out = 0;
@@ -846,10 +846,10 @@ Longword L_shift_r(Longword L_var1, Shortword var2)
  *   INPUTS:
  *
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *   OUTPUTS:
@@ -859,7 +859,7 @@ Longword L_shift_r(Longword L_var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -879,10 +879,10 @@ Longword L_shift_r(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-Longword L_shl(Longword L_var1, Shortword var2)
+int32_t L_shl(int32_t L_var1, int16_t var2)
 {
 
-	Longword L_Mask, L_Out;
+	int32_t L_Mask, L_Out;
 	int i, iOverflow = 0;
 
 	if (var2 == 0 || L_var1 == 0) {
@@ -941,10 +941,10 @@ Longword L_shl(Longword L_var1, Shortword var2)
  *   INPUTS:
  *
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *   OUTPUTS:
@@ -954,7 +954,7 @@ Longword L_shl(Longword L_var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -976,10 +976,10 @@ Longword L_shl(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-Longword L_shr(Longword L_var1, Shortword var2)
+int32_t L_shr(int32_t L_var1, int16_t var2)
 {
 
-	Longword L_Mask, L_Out;
+	int32_t L_Mask, L_Out;
 
 	if (var2 == 0 || L_var1 == 0) {
 		L_Out = L_var1;
@@ -1027,11 +1027,11 @@ Longword L_shr(Longword L_var1, Shortword var2)
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *     L_var2
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -1042,7 +1042,7 @@ Longword L_shr(Longword L_var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     L_Out
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1060,9 +1060,9 @@ Longword L_shr(Longword L_var1, Shortword var2)
  *   KEYWORDS: sub, subtraction
  *
  *************************************************************************/
-Longword L_sub(Longword L_var1, Longword L_var2)
+int32_t L_sub(int32_t L_var1, int32_t L_var2)
 {
-	Longword L_Sum;
+	int32_t L_Sum;
 
 	/* check for overflow */
 	if ((L_var1 > 0 && L_var2 < 0) || (L_var1 < 0 && L_var2 > 0)) {
@@ -1092,13 +1092,13 @@ Longword L_sub(Longword L_var1, Longword L_var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *     L_var3
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -1109,7 +1109,7 @@ Longword L_sub(Longword L_var1, Longword L_var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1123,7 +1123,7 @@ Longword L_sub(Longword L_var1, Longword L_var2)
  *     Round the 32 bit result by adding 0x0000 8000 to the input.
  *     The result may overflow due to the add.  If so, the result
  *     is saturated.  The 32 bit hr_rounded number is then shifted
- *     down 16 bits and returned as a Shortword.
+ *     down 16 bits and returned as a int16_t.
  *
  *     Please note that this is not a true multiply accumulate as
  *     most processors would implement it.  The 0x8000*0x8000
@@ -1135,7 +1135,7 @@ Longword L_sub(Longword L_var1, Longword L_var2)
  *
  *************************************************************************/
 
-Shortword mac_r(Longword L_var3, Shortword var1, Shortword var2)
+int16_t mac_r(int32_t L_var3, int16_t var1, int16_t var2)
 {
 	return (hr_round(L_add(L_var3, L_mult(var1, var2))));
 }
@@ -1155,13 +1155,13 @@ Shortword mac_r(Longword L_var3, Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *     L_var3
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -1172,7 +1172,7 @@ Shortword mac_r(Longword L_var3, Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1186,7 +1186,7 @@ Shortword mac_r(Longword L_var3, Shortword var1, Shortword var2)
  *     Round the 32 bit result by adding 0x0000 8000 to the input.
  *     The result may overflow due to the add.  If so, the result
  *     is saturated.  The 32 bit hr_rounded number is then shifted
- *     down 16 bits and returned as a Shortword.
+ *     down 16 bits and returned as a int16_t.
  *
  *     Please note that this is not a true multiply accumulate as
  *     most processors would implement it.  The 0x8000*0x8000
@@ -1198,7 +1198,7 @@ Shortword mac_r(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
+int16_t msu_r(int32_t L_var3, int16_t var1, int16_t var2)
 {
 	return (hr_round(L_sub(L_var3, L_mult(var1, var2))));
 }
@@ -1215,10 +1215,10 @@ Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -1228,7 +1228,7 @@ Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1243,10 +1243,10 @@ Shortword msu_r(Longword L_var3, Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Shortword mult(Shortword var1, Shortword var2)
+int16_t mult(int16_t var1, int16_t var2)
 {
-	Longword L_product;
-	Shortword swOut;
+	int32_t L_product;
+	int16_t swOut;
 
 	L_product = L_mult(var1, var2);
 	swOut = extract_h(L_product);
@@ -1265,10 +1265,10 @@ Shortword mult(Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -1278,7 +1278,7 @@ Shortword mult(Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1291,16 +1291,16 @@ Shortword mult(Shortword var1, Shortword var2)
  *     output.  This is followed by a an add of 0x0000 8000 to the
  *     32 bit result.  The result may overflow due to the add.  If
  *     so, the result is saturated.  The 32 bit hr_rounded number is
- *     then shifted down 16 bits and returned as a Shortword.
+ *     then shifted down 16 bits and returned as a int16_t.
  *
  *
  *   KEYWORDS: multiply and hr_round, hr_round, mult_r, mpyr
  *
  *************************************************************************/
 
-Shortword mult_r(Shortword var1, Shortword var2)
+int16_t mult_r(int16_t var1, int16_t var2)
 {
-	Shortword swOut;
+	int16_t swOut;
 
 	swOut = hr_round(L_mult(var1, var2));
 	return (swOut);
@@ -1317,7 +1317,7 @@ Shortword mult_r(Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -1327,7 +1327,7 @@ Shortword mult_r(Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8001 <= swOut <= 0x0000 7fff.
  *
@@ -1335,9 +1335,9 @@ Shortword mult_r(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Shortword negate(Shortword var1)
+int16_t negate(int16_t var1)
 {
-	Shortword swOut;
+	int16_t swOut;
 
 	if (var1 == SW_MIN)
 		swOut = SW_MAX;
@@ -1361,7 +1361,7 @@ Shortword negate(Shortword var1)
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1372,7 +1372,7 @@ Shortword negate(Shortword var1)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0 <= swOut <= 31
  *
@@ -1404,10 +1404,10 @@ Shortword negate(Shortword var1)
  *
  *************************************************************************/
 
-Shortword norm_l(Longword L_var1)
+int16_t norm_l(int32_t L_var1)
 {
 
-	Shortword swShiftCnt;
+	int16_t swShiftCnt;
 
 	if (L_var1 != 0) {
 		if (!(L_var1 & LW_SIGN)) {
@@ -1423,7 +1423,7 @@ Shortword norm_l(Longword L_var1)
 			/* negative input */
 			for (swShiftCnt = 0;
 			     !(L_var1 >= LW_MIN
-			       && L_var1 < (Longword) 0xc0000000L);
+			       && L_var1 < (int32_t) 0xc0000000L);
 			     swShiftCnt++) {
 				L_var1 = L_var1 << 1;
 			}
@@ -1449,7 +1449,7 @@ Shortword norm_l(Longword L_var1)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -1458,7 +1458,7 @@ Shortword norm_l(Longword L_var1)
  *
  *   RETURN VALUE:
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0 <= swOut <= 15
  *
@@ -1490,11 +1490,11 @@ Shortword norm_l(Longword L_var1)
  *
  *************************************************************************/
 
-Shortword norm_s(Shortword var1)
+int16_t norm_s(int16_t var1)
 {
 
 	short swShiftCnt;
-	Longword L_var1;
+	int32_t L_var1;
 
 	L_var1 = L_deposit_h(var1);
 	swShiftCnt = norm_l(L_var1);
@@ -1507,12 +1507,12 @@ Shortword norm_s(Shortword var1)
  *
  *   PURPOSE:
  *
- *     Round the 32 bit Longword into a 16 bit shortword with saturation.
+ *     Round the 32 bit int32_t into a 16 bit shortword with saturation.
  *
  *   INPUTS:
  *
  *     L_var1
- *                     32 bit long signed integer (Longword) whose value
+ *                     32 bit long signed integer (int32_t) whose value
  *                     falls in the range
  *                     0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *   OUTPUTS:
@@ -1522,28 +1522,28 @@ Shortword norm_s(Shortword var1)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
  *   IMPLEMENTATION:
  *
- *     Perform a two's complement hr_round on the input Longword with
+ *     Perform a two's complement hr_round on the input int32_t with
  *     saturation.
  *
  *     This is equivalent to adding 0x0000 8000 to the input.  The
  *     result may overflow due to the add.  If so, the result is
  *     saturated.  The 32 bit hr_rounded number is then shifted down
- *     16 bits and returned as a Shortword.
+ *     16 bits and returned as a int16_t.
  *
  *
  *   KEYWORDS: hr_round
  *
  *************************************************************************/
 
-Shortword hr_round(Longword L_var1)
+int16_t hr_round(int32_t L_var1)
 {
-	Longword L_Prod;
+	int32_t L_Prod;
 
 	L_Prod = L_add(L_var1, 0x00008000L);	/* hr_round MSP */
 	return (extract_h(L_Prod));
@@ -1562,10 +1562,10 @@ Shortword hr_round(Longword L_var1)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -1575,7 +1575,7 @@ Shortword hr_round(Longword L_var1)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1604,9 +1604,9 @@ Shortword hr_round(Longword L_var1)
  *
  *************************************************************************/
 
-Shortword shift_r(Shortword var1, Shortword var2)
+int16_t shift_r(int16_t var1, int16_t var2)
 {
-	Shortword swOut, swRnd;
+	int16_t swOut, swRnd;
 
 	if (var2 >= 0)
 		swOut = shl(var1, var2);
@@ -1640,10 +1640,10 @@ Shortword shift_r(Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -1653,7 +1653,7 @@ Shortword shift_r(Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1679,10 +1679,10 @@ Shortword shift_r(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Shortword shl(Shortword var1, Shortword var2)
+int16_t shl(int16_t var1, int16_t var2)
 {
-	Shortword swOut;
-	Longword L_Out;
+	int16_t swOut;
+	int32_t L_Out;
 
 	if (var2 == 0 || var1 == 0) {
 		swOut = var1;
@@ -1693,7 +1693,7 @@ Shortword shl(Shortword var1, Shortword var2)
 
 		if (var2 <= -15) {
 			if (var1 < 0)
-				swOut = (Shortword) 0xffff;
+				swOut = (int16_t) 0xffff;
 			else
 				swOut = 0x0;
 		} else
@@ -1709,9 +1709,9 @@ Shortword shl(Shortword var1, Shortword var2)
 				swOut = SW_MIN;
 		} else {
 
-			L_Out = (Longword) var1 *(1 << var2);
+			L_Out = (int32_t) var1 *(1 << var2);
 
-			swOut = (Shortword) L_Out;	/* copy low portion to swOut, overflow
+			swOut = (int16_t) L_Out;	/* copy low portion to swOut, overflow
 							 * could have hpnd */
 			if (swOut != L_Out) {
 				/* overflow  */
@@ -1739,10 +1739,10 @@ Shortword shl(Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -1752,7 +1752,7 @@ Shortword shl(Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1771,10 +1771,10 @@ Shortword shl(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-Shortword shr(Shortword var1, Shortword var2)
+int16_t shr(int16_t var1, int16_t var2)
 {
 
-	Shortword swMask, swOut;
+	int16_t swMask, swOut;
 
 	if (var2 == 0 || var1 == 0)
 		swOut = var1;
@@ -1799,7 +1799,7 @@ Shortword shr(Shortword var1, Shortword var2)
 
 		if (var2 >= 15) {
 			if (var1 < 0)
-				swOut = (Shortword) 0xffff;
+				swOut = (int16_t) 0xffff;
 			else
 				swOut = 0x0;
 		} else {
@@ -1831,10 +1831,10 @@ Shortword shr(Shortword var1, Shortword var2)
  *   INPUTS:
  *
  *     var1
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *     var2
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *   OUTPUTS:
@@ -1844,7 +1844,7 @@ Shortword shr(Shortword var1, Shortword var2)
  *   RETURN VALUE:
  *
  *     swOut
- *                     16 bit short signed integer (Shortword) whose value
+ *                     16 bit short signed integer (int16_t) whose value
  *                     falls in the range
  *                     0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1862,12 +1862,12 @@ Shortword shr(Shortword var1, Shortword var2)
  *   KEYWORDS: sub, subtraction
  *
  *************************************************************************/
-Shortword sub(Shortword var1, Shortword var2)
+int16_t sub(int16_t var1, int16_t var2)
 {
-	Longword L_diff;
-	Shortword swOut;
+	int32_t L_diff;
+	int16_t swOut;
 
-	L_diff = (Longword) var1 - var2;
+	L_diff = (int32_t) var1 - var2;
 	swOut = saturate(L_diff);
 
 	return (swOut);

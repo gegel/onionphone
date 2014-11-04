@@ -9,31 +9,28 @@
 #ifndef __TYPEDEFS
 #define __TYPEDEFS
 
+#include <stdint.h>
+
 #define DATE    "August 8, 1996    "
 #define VERSION "Version 4.2       "
 
-#define LW_SIGN (long)0x80000000	/* sign bit */
-#define LW_MIN (long)0x80000000
-#define LW_MAX (long)0x7fffffff
+#define LW_SIGN (int32_t)0x80000000	/* sign bit */
+#define LW_MIN (int32_t)0x80000000
+#define LW_MAX (int32_t)0x7fffffff
 
-#define SW_SIGN (short)0x8000	/* sign bit for Shortword type */
-#define SW_MIN (short)0x8000	/* smallest Ram */
-#define SW_MAX (short)0x7fff	/* largest Ram */
+#define SW_SIGN (int16_t)0x8000	/* sign bit for int16_t type */
+#define SW_MIN (int16_t)0x8000	/* smallest Ram */
+#define SW_MAX (int16_t)0x7fff	/* largest Ram */
 
 /* Definition of Types *
  ***********************/
 
-typedef long int Longword;	/* 32 bit "accumulator" (L_*) */
-typedef short int Shortword;	/* 16 bit "register"  (sw*) */
-typedef short int ShortwordRom;	/* 16 bit ROM data    (sr*) */
-typedef long int LongwordRom;	/* 32 bit ROM data    (L_r*)  */
-
-struct NormSw {			/* normalized Shortword fractional
+struct NormSw {			/* normalized int16_t fractional
 				 * number snr.man precedes snr.sh (the
 				 * shift count)i */
-	Shortword man;		/* "mantissa" stored in 16 bit
+	int16_t man;		/* "mantissa" stored in 16 bit
 				 * location */
-	Shortword sh;		/* the shift count, stored in 16 bit
+	int16_t sh;		/* the shift count, stored in 16 bit
 				 * location */
 };
 

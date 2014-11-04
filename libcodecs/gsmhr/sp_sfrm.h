@@ -11,47 +11,47 @@
  |_________________________________________________________________________|
 */
 
-Shortword g_corr2(Shortword * pswIn, Shortword * pswIn2, Longword * pL_out);
+int16_t g_corr2(int16_t * pswIn, int16_t * pswIn2, int32_t * pL_out);
 
-int closedLoopLagSearch(Shortword pswLagList[],
+int closedLoopLagSearch(int16_t pswLagList[],
 			int iNumLags,
-			Shortword pswLtpState[],
-			Shortword pswHCoefs[],
-			Shortword pswPVect[],
-			Shortword * pswLag, Shortword * pswLtpShift);
+			int16_t pswLtpState[],
+			int16_t pswHCoefs[],
+			int16_t pswPVect[],
+			int16_t * pswLag, int16_t * pswLtpShift);
 
-void decorr(int iNumVects, Shortword pswGivenVect[], Shortword pswVects[]);
+void decorr(int iNumVects, int16_t pswGivenVect[], int16_t pswVects[]);
 
-Shortword g_quant_vl(Shortword swUVCode,
-		     Shortword pswWInput[],
-		     Shortword swWIShift,
-		     Shortword pswWLTPVec[],
-		     Shortword pswWVSVec1[],
-		     Shortword pswWVSVec2[],
+int16_t g_quant_vl(int16_t swUVCode,
+		     int16_t pswWInput[],
+		     int16_t swWIShift,
+		     int16_t pswWLTPVec[],
+		     int16_t pswWVSVec1[],
+		     int16_t pswWVSVec2[],
 		     struct NormSw snsRs00,
 		     struct NormSw snsRs11, struct NormSw snsRs22);
 
 void gainTweak(struct NormSw *psErrorTerm);
 
-void hnwFilt(Shortword pswInSample[],
-	     Shortword pswOutSample[],
-	     Shortword pswState[],
-	     Shortword pswInCoef[],
-	     int iStateOffset, Shortword swZeroState, int iNumSamples);
+void hnwFilt(int16_t pswInSample[],
+	     int16_t pswOutSample[],
+	     int16_t pswState[],
+	     int16_t pswInCoef[],
+	     int iStateOffset, int16_t swZeroState, int iNumSamples);
 
-void sfrmAnalysis(Shortword * pswWSpeech,
-		  Shortword swVoicingMode,
+void sfrmAnalysis(int16_t * pswWSpeech,
+		  int16_t swVoicingMode,
 		  struct NormSw snsSqrtRs,
-		  Shortword * pswHCoefs,
-		  Shortword * pswLagList,
+		  int16_t * pswHCoefs,
+		  int16_t * pswLagList,
 		  short siNumLags,
-		  Shortword swPitch,
-		  Shortword swHNWCoef,
+		  int16_t swPitch,
+		  int16_t swHNWCoef,
 		  short *psiLagCode,
 		  short *psiVSCode1,
-		  short *psiVSCode2, short *psiGsp0Code, Shortword swSP);
+		  short *psiVSCode2, short *psiGsp0Code, int16_t swSP);
 
-Shortword v_srch(Shortword pswWInput[],
-		 Shortword pswWBasisVecs[], short int siNumBasis);
+int16_t v_srch(int16_t pswWInput[],
+		 int16_t pswWBasisVecs[], short int siNumBasis);
 
 #endif

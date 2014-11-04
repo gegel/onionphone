@@ -32,7 +32,7 @@
   THE GSP0 TABLE WAS READ FROM THE FILES gsp0_1_*.qnt_97CQ_4
   ET VALUES WRITTEN WERE SCALED BY  4  */
 
-ShortwordRom pppsrGsp0[GSP0_NUM_OF_TABLES][GSP0_NUM][GSP0_VECTOR_SIZE] = {
+int16_t pppsrGsp0[GSP0_NUM_OF_TABLES][GSP0_NUM][GSP0_VECTOR_SIZE] = {
 	{
 
 	 {33, 34, 0, 0, 0}
@@ -306,7 +306,7 @@ ShortwordRom pppsrGsp0[GSP0_NUM_OF_TABLES][GSP0_NUM][GSP0_VECTOR_SIZE] = {
 /* unvoiced code vectors */
 /*-----------------------*/
 
-ShortwordRom pppsrUvCodeVec
+int16_t pppsrUvCodeVec
     [UVCODEVEC_NUM_OF_CODE_BOOKS][UVCODEVEC_NUM_OF_CODE_BITS][S_LEN] = {
 	{
 	 {
@@ -470,7 +470,7 @@ ShortwordRom pppsrUvCodeVec
 /* voiced code vectors */
 /*---------------------*/
 
-ShortwordRom pppsrVcdCodeVec
+int16_t pppsrVcdCodeVec
     [VCDCODEVEC_NUM_OF_CODE_BOOKS][VCDCODEVEC_NUM_OF_CODE_BITS][S_LEN] = {
 	{
 	 {
@@ -577,7 +577,7 @@ ShortwordRom pppsrVcdCodeVec
 /* vector quantizer tables */
 /*-------------------------*/
 
-ShortwordRom psrQuant1[QUANT1_NUM_OF_WORDS] = {
+int16_t psrQuant1[QUANT1_NUM_OF_WORDS] = {
 	-5980,			/* Vector    0, coef 1(232), 2(164) */
 	25056,			/* Vector    0, coef 3( 97) Vector 1,
 				 * Coef 1(224) */
@@ -4676,7 +4676,7 @@ ShortwordRom psrQuant1[QUANT1_NUM_OF_WORDS] = {
 	-4772			/* Vector 2047, coef 2(237), 3( 92) */
 };
 
-ShortwordRom psrQuant2[QUANT2_NUM_OF_WORDS] = {
+int16_t psrQuant2[QUANT2_NUM_OF_WORDS] = {
 	-15195,			/* Vector    0, coef 1(196), 2(165) */
 	-24371,			/* Vector    0, coef 3(160) Vector 1,
 				 * Coef 1(205) */
@@ -5703,7 +5703,7 @@ ShortwordRom psrQuant2[QUANT2_NUM_OF_WORDS] = {
 	27538			/* Vector  511, coef 2(107), 3(146) */
 };
 
-ShortwordRom psrQuant3[QUANT3_NUM_OF_WORDS] = {
+int16_t psrQuant3[QUANT3_NUM_OF_WORDS] = {
 	-26192,			/* Vector    0, coef 1(153), 2(176) */
 	-32358,			/* Vector    0, coef 3(129), 4(154) */
 	-27991,			/* Vector    1, coef 1(146), 2(169) */
@@ -6221,7 +6221,7 @@ ShortwordRom psrQuant3[QUANT3_NUM_OF_WORDS] = {
 /* lpc pre-quantizer */
 /*-------------------*/
 
-ShortwordRom psrPreQ1[PREQ1_NUM_OF_WORDS] = {
+int16_t psrPreQ1[PREQ1_NUM_OF_WORDS] = {
 	-13624,			/* Vector    0, coef 1(202), 2(200) */
 	-31561,			/* Vector    0, coef 3(132) Vector 1,
 				 * Coef 1(183) */
@@ -6352,7 +6352,7 @@ ShortwordRom psrPreQ1[PREQ1_NUM_OF_WORDS] = {
 	-5029			/* Vector   63, coef 2(236), 3( 91) */
 };
 
-ShortwordRom psrPreQ2[PREQ2_NUM_OF_WORDS] = {
+int16_t psrPreQ2[PREQ2_NUM_OF_WORDS] = {
 	-14954,			/* Vector    0, coef 1(197), 2(150) */
 	-26695,			/* Vector    0, coef 3(151) Vector 1,
 				 * Coef 1(185) */
@@ -6419,7 +6419,7 @@ ShortwordRom psrPreQ2[PREQ2_NUM_OF_WORDS] = {
 	30111			/* Vector   31, coef 2(117), 3(159) */
 };
 
-ShortwordRom psrPreQ3[PREQ3_NUM_OF_WORDS] = {
+int16_t psrPreQ3[PREQ3_NUM_OF_WORDS] = {
 	-28246,			/* Vector    0, coef 1(145), 2(170) */
 	30356,			/* Vector    0, coef 3(118), 4(148) */
 	-31320,			/* Vector    1, coef 1(133), 2(168) */
@@ -6457,7 +6457,7 @@ ShortwordRom psrPreQ3[PREQ3_NUM_OF_WORDS] = {
 /* size of the vq subset in the kth segment */
 /*------------------------------------------*/
 
-ShortwordRom psrQuantSz[QUANT_NUM_OF_TABLES] = {
+int16_t psrQuantSz[QUANT_NUM_OF_TABLES] = {
 	1 << (QUANT1_NUM_OF_BITS - PREQ1_NUM_OF_BITS),
 	1 << (QUANT2_NUM_OF_BITS - PREQ2_NUM_OF_BITS),
 	1 << (QUANT3_NUM_OF_BITS - PREQ3_NUM_OF_BITS)
@@ -6466,7 +6466,7 @@ ShortwordRom psrQuantSz[QUANT_NUM_OF_TABLES] = {
 /* pre-quantizer size */
 /*--------------------*/
 
-ShortwordRom psrPreQSz[QUANT_NUM_OF_TABLES] = {
+int16_t psrPreQSz[QUANT_NUM_OF_TABLES] = {
 	1 << PREQ1_NUM_OF_BITS,
 	1 << PREQ2_NUM_OF_BITS,
 	1 << PREQ3_NUM_OF_BITS
@@ -6475,7 +6475,7 @@ ShortwordRom psrPreQSz[QUANT_NUM_OF_TABLES] = {
 /* reflection coeff scalar quantizer */
 /*-----------------------------------*/
 
-ShortwordRom psrSQuant[SQUANT_NUM_OF_ROWS] = {
+int16_t psrSQuant[SQUANT_NUM_OF_ROWS] = {
 	-32766, -32758, -32746, -32729,
 	-32707, -32680, -32648, -32611,
 	-32570, -32523, -32472, -32416,
@@ -6554,7 +6554,7 @@ struct IsubLHn psvqIndex[QUANT_NUM_OF_TABLES] = {
 /* square root of p0 table */
 /*-------------------------*/
 
-ShortwordRom ppsrSqrtP0[SQRTP0_NUM_OF_MODES][SQRTP0_NUM_OF_ROWS] = {
+int16_t ppsrSqrtP0[SQRTP0_NUM_OF_MODES][SQRTP0_NUM_OF_ROWS] = {
 	{
 	 23853, 24682, 21337, 16698,
 	 27731, 24699, 8804, 16227,
@@ -6587,7 +6587,7 @@ ShortwordRom ppsrSqrtP0[SQRTP0_NUM_OF_MODES][SQRTP0_NUM_OF_ROWS] = {
 /* interpolation filter used for C and G */
 /*---------------------------------------*/
 
-ShortwordRom ppsrCGIntFilt[CGINTFILT_MACS][OS_FCTR] = {
+int16_t ppsrCGIntFilt[CGINTFILT_MACS][OS_FCTR] = {
 	{0, 126, 0, -299, -778, -1381},
 	{-1980, -2375, -2326, -1596, 0, 2535},
 	{5936, 9968, 14254, 18322, 21678, 23889},
@@ -6599,7 +6599,7 @@ ShortwordRom ppsrCGIntFilt[CGINTFILT_MACS][OS_FCTR] = {
 /* interpolation filter used pitch */
 /*---------------------------------*/
 
-ShortwordRom ppsrPVecIntFilt[PVECINTFILT_MACS][OS_FCTR] = {
+int16_t ppsrPVecIntFilt[PVECINTFILT_MACS][OS_FCTR] = {
 	{0, 183, 249, 251, 149, -67},
 	{-368, -681, -897, -904, -622, -38},
 	{762, 1595, 2214, 2360, 1842, 611},
@@ -6615,7 +6615,7 @@ ShortwordRom ppsrPVecIntFilt[PVECINTFILT_MACS][OS_FCTR] = {
 /* fractional pitch lag table lag*OS_FCTR */
 /*----------------------------------------*/
 
-ShortwordRom psrLagTbl[LAGTBL_NUM_OF_ROWS] = {
+int16_t psrLagTbl[LAGTBL_NUM_OF_ROWS] = {
 	126, 128, 130, 132, 134, 136, 138, 139,
 	140, 141, 142, 143, 144, 145, 146, 147,
 	148, 149, 150, 151, 152, 153, 154, 155,
@@ -6653,7 +6653,7 @@ ShortwordRom psrLagTbl[LAGTBL_NUM_OF_ROWS] = {
 /* R0 decision value table defines range (not the levels themselves */
 /*------------------------------------------------------------------*/
 
-ShortwordRom psrR0DecTbl[R0DECTBL_NUM_OF_ROWS] = {
+int16_t psrR0DecTbl[R0DECTBL_NUM_OF_ROWS] = {
 	6, 7, 8, 9, 10, 12, 13, 15,
 	16, 18, 21, 23, 26, 29, 33, 37,
 	41, 46, 52, 58, 65, 73, 82, 92,
@@ -6667,7 +6667,7 @@ ShortwordRom psrR0DecTbl[R0DECTBL_NUM_OF_ROWS] = {
 /* high pass filter coefficients */
 /*-------------------------------*/
 
-ShortwordRom psrHPFCoefs[HPFCOEFS_NUM_OF_CODES] = {
+int16_t psrHPFCoefs[HPFCOEFS_NUM_OF_CODES] = {
 	10979, -21954, 10979, -14071, 30347,
 	10979, -21936, 10979, -15385, 31632
 };
@@ -6675,7 +6675,7 @@ ShortwordRom psrHPFCoefs[HPFCOEFS_NUM_OF_CODES] = {
 /* spectral smoothing coefficients */
 /*---------------------------------*/
 
-ShortwordRom psrNWCoefs[NWCOEFS_NUM_OF_CODES] = {
+int16_t psrNWCoefs[NWCOEFS_NUM_OF_CODES] = {
 	30474, 28341, 26357, 24512, 22796,
 	21201, 19717, 18336, 17053, 15859,
 	22938, 16056, 11239, 7868, 5507,
@@ -6685,19 +6685,19 @@ ShortwordRom psrNWCoefs[NWCOEFS_NUM_OF_CODES] = {
 /* spectral smoothing coefficients for FLAT */
 /*------------------------------------------*/
 
-LongwordRom pL_rFlatSstCoefs[FLATSSTCOEFS_NUM_OF_CODES] = {
+int32_t pL_rFlatSstCoefs[FLATSSTCOEFS_NUM_OF_CODES] = {
 	2145262551, 2138972761, 2129579484, 2118274784, 2106083684,
 	2093615080, 2081026796, 2068156528, 2054704628, 2040382328
 };
 
-ShortwordRom psrOldCont[4] = {
+int16_t psrOldCont[4] = {
 	0x599a,			/* 0.70 */
 	0x30a4,			/* 0.38 */
 	0x0a3d,			/* 0.08 */
 	0x0000,			/* 0.00 */
 };
 
-ShortwordRom psrNewCont[4] = {
+int16_t psrNewCont[4] = {
 	0x2666,			/* 0.30 */
 	0x4f5c,			/* 0.62 */
 	0x75c3,			/* 0.92 */

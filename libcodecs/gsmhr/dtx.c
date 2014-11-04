@@ -49,8 +49,8 @@
  |________________________________________________________________________|
 */
 
-#define PN_XOR_REG (Longword)0x00000005L
-#define PN_XOR_ADD (Longword)0x40000000L
+#define PN_XOR_REG (int32_t)0x00000005L
+#define PN_XOR_ADD (int32_t)0x40000000L
 
 #define OH_SHIFT 3		/* shift corresponding to OVERHANG */
 
@@ -66,13 +66,13 @@
  |________________________________________________________________________|
 */
 
-Shortword swVadFrmCnt = 0;	/* Indicates the number of sequential
+int16_t swVadFrmCnt = 0;	/* Indicates the number of sequential
 				 * frames where VAD == 0 */
 
 short int siUpdPointer = 0;
-Shortword swNElapsed = 50;
+int16_t swNElapsed = 50;
 
-Longword pL_GsHist[N_SUB * (OVERHANG - 1)];
+int32_t pL_GsHist[N_SUB * (OVERHANG - 1)];
 
 /*________________________________________________________________________
  |                                                                        |
@@ -82,9 +82,9 @@ Longword pL_GsHist[N_SUB * (OVERHANG - 1)];
 
 extern int iLimit;
 
-extern Shortword swR0Dec, swOldR0Dec, swR0NewCN;
+extern int16_t swR0Dec, swOldR0Dec, swR0NewCN;
 
-extern Shortword swCNR0,
+extern int16_t swCNR0,
     pswCNLpc[], pswCNGsp0Code[], pswCNVSCode1[], pswCNVSCode2[];
 
 /*________________________________________________________________________
@@ -94,14 +94,14 @@ extern Shortword swCNR0,
 */
 
 /* interpolation curve for comfort noise (i*1/12) i=1..12 */
-Shortword psrCNNewFactor[12] = { 0x0aaa, 0x1554, 0x1ffe, 0x2aa8, 0x3552,
+int16_t psrCNNewFactor[12] = { 0x0aaa, 0x1554, 0x1ffe, 0x2aa8, 0x3552,
 	0x3ffc, 0x4aa6, 0x5550, 0x5ffa, 0x6aa4,
 	0x754e, 0x7fff
 };
 
 /* Values of GS for voicing state 0, all values shifted down by 2
    shifts */
-LongwordRom ppLr_gsTable[4][32] = {
+int32_t ppLr_gsTable[4][32] = {
 	{
 	 0x000011ab, 0x000038d2, 0x0000773e, 0x000144ef,
 	 0x00035675, 0x000648c5, 0x000c3d65, 0x0017ae17,
@@ -193,8 +193,8 @@ LongwordRom ppLr_gsTable[4][32] = {
  *
  *************************************************************************/
 
-Shortword swComfortNoise(Shortword swVadFlag,
-			 Longword L_UnqntzdR0, Longword * pL_UnqntzdCorr)
+int16_t swComfortNoise(int16_t swVadFlag,
+			 int32_t L_UnqntzdR0, int32_t * pL_UnqntzdCorr)
 {
 
 /*________________________________________________________________________
@@ -204,18 +204,18 @@ Shortword swComfortNoise(Shortword swVadFlag,
 */
 
 	/* history of unquantized parameters */
-	static Longword pL_R0Hist[OVERHANG];
-	static Longword ppL_CorrHist[OVERHANG][NP + 1];
+	static int32_t pL_R0Hist[OVERHANG];
+	static int32_t ppL_CorrHist[OVERHANG][NP + 1];
 
 	/* quantized reference parameters */
-	static Shortword swQntRefR0, swRefGsIndex;
+	static int16_t swQntRefR0, swRefGsIndex;
 	static int piRefVqCodewds[3];
 
 	/* handling of short speech bursts */
-	static Shortword swShortBurst;
+	static int16_t swShortBurst;
 
 	/* state value of random generator */
-	static Longword L_TxPNSeed;
+	static int32_t L_TxPNSeed;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -223,13 +223,13 @@ Shortword swComfortNoise(Shortword swVadFlag,
  |_________________________________________________________________________|
 */
 
-	Shortword swSP;
-	Shortword pswFinalRc[NP];
+	int16_t swSP;
+	int16_t pswFinalRc[NP];
 
 	/* unquantized reference parameters */
-	Longword L_RefR0;
-	Longword pL_RefCorr[NP + 1];
-	Longword L_RefGs;
+	int32_t L_RefR0;
+	int32_t pL_RefCorr[NP + 1];
+	int32_t L_RefGs;
 
 	int i;
 
@@ -416,10 +416,10 @@ Shortword swComfortNoise(Shortword swVadFlag,
  *
  *************************************************************************/
 
-void updateCNHist(Longword L_UnqntzdR0,
-		  Longword * pL_UnqntzdCorr,
-		  Longword pL_R0History[],
-		  Longword ppL_CorrHistory[OVERHANG][NP + 1])
+void updateCNHist(int32_t L_UnqntzdR0,
+		  int32_t * pL_UnqntzdCorr,
+		  int32_t pL_R0History[],
+		  int32_t ppL_CorrHistory[OVERHANG][NP + 1])
 {
 
 /*_________________________________________________________________________
@@ -475,7 +475,7 @@ void updateCNHist(Longword L_UnqntzdR0,
  *
  *************************************************************************/
 
-void avgGsHistQntz(Longword pL_GsHistory[], Longword * pL_GsAvgd)
+void avgGsHistQntz(int32_t pL_GsHistory[], int32_t * pL_GsAvgd)
 {
 
 /*_________________________________________________________________________
@@ -485,7 +485,7 @@ void avgGsHistQntz(Longword pL_GsHistory[], Longword * pL_GsAvgd)
 */
 
 	int i;
-	Longword L_avg;
+	int32_t L_avg;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -535,7 +535,7 @@ void avgGsHistQntz(Longword pL_GsHistory[], Longword * pL_GsAvgd)
  *
  *************************************************************************/
 
-Shortword gsQuant(Longword L_GsIn, Shortword swVoicingMode)
+int16_t gsQuant(int32_t L_GsIn, int16_t swVoicingMode)
 {
 
 /*_________________________________________________________________________
@@ -544,8 +544,8 @@ Shortword gsQuant(Longword L_GsIn, Shortword swVoicingMode)
  |_________________________________________________________________________|
 */
 
-	Shortword swGsIndex, swBestGs = 0;
-	Longword L_diff, L_min = LW_MAX;
+	int16_t swGsIndex, swBestGs = 0;
+	int32_t L_diff, L_min = LW_MAX;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -604,9 +604,9 @@ Shortword gsQuant(Longword L_GsIn, Shortword swVoicingMode)
  *
  *************************************************************************/
 
-void avgCNHist(Longword pL_R0History[],
-	       Longword ppL_CorrHistory[OVERHANG][NP + 1],
-	       Longword * pL_AvgdR0, Longword pL_AvgdCorrSeq[])
+void avgCNHist(int32_t pL_R0History[],
+	       int32_t ppL_CorrHistory[OVERHANG][NP + 1],
+	       int32_t * pL_AvgdR0, int32_t pL_AvgdCorrSeq[])
 {
 
 /*_________________________________________________________________________
@@ -616,7 +616,7 @@ void avgCNHist(Longword pL_R0History[],
 */
 
 	int i, j;
-	Longword L_avg;
+	int32_t L_avg;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -676,8 +676,8 @@ void avgCNHist(Longword pL_R0History[],
  *
  *************************************************************************/
 
-void lpcCorrQntz(Longword pL_CorrelSeq[],
-		 Shortword pswFinalRc[], int piVQCodewds[])
+void lpcCorrQntz(int32_t pL_CorrelSeq[],
+		 int16_t pswFinalRc[], int piVQCodewds[])
 {
 
 /*_________________________________________________________________________
@@ -686,8 +686,8 @@ void lpcCorrQntz(Longword pL_CorrelSeq[],
  |_________________________________________________________________________|
 */
 
-	Shortword pswPOldSpace[NP_AFLAT], pswPNewSpace[NP_AFLAT], pswVOldSpace[2 * NP_AFLAT - 1], pswVNewSpace[2 * NP_AFLAT - 1], *ppswPAddrs[2], *ppswVAddrs[2], *pswVBar, pswPBar[NP_AFLAT], pswVBarSpace[2 * NP_AFLAT - 1], pswRc[NP + 1];	/* Temp list for the converted RC's */
-	Longword *pL_VBarFull, pL_PBarFull[NP], pL_VBarFullSpace[2 * NP - 1];
+	int16_t pswPOldSpace[NP_AFLAT], pswPNewSpace[NP_AFLAT], pswVOldSpace[2 * NP_AFLAT - 1], pswVNewSpace[2 * NP_AFLAT - 1], *ppswPAddrs[2], *ppswVAddrs[2], *pswVBar, pswPBar[NP_AFLAT], pswVBarSpace[2 * NP_AFLAT - 1], pswRc[NP + 1];	/* Temp list for the converted RC's */
+	int32_t *pL_VBarFull, pL_PBarFull[NP], pL_VBarFullSpace[2 * NP - 1];
 
 	int iVec, iSeg, iCnt;	/* Loop counter */
 	struct QuantList quantList,	/* A list of vectors */
@@ -716,7 +716,7 @@ void lpcCorrQntz(Longword pL_CorrelSeq[],
 	/* autocorrelation sequence derived from the optimal reflection       */
 	/* coefficients computed by FLAT. The initial conditions are shifted  */
 	/* right by RSHIFT bits. These initial conditions, stored as          */
-	/* Longwords, are used to initialize PBar and VBar arrays for the     */
+	/* int32_ts, are used to initialize PBar and VBar arrays for the     */
 	/* next VQ segment.                                                   */
   /*--------------------------------------------------------------------*/
 
@@ -836,7 +836,7 @@ void lpcCorrQntz(Longword pL_CorrelSeq[],
     /*--------------------------------------------*/
 
 		setupQuant(iSeg, bestQl[iSeg].iRCIndex);	/* set up vector ptrs */
-		getNextVec((Shortword *) (pswFinalRc - 1));
+		getNextVec((int16_t *) (pswFinalRc - 1));
 
 		/* Update pBarFull and vBarFull for the next Rc-VQ segment, and */
 		/* update the pswPBar and pswVBar for the next Rc-VQ segment    */
@@ -886,12 +886,12 @@ void lpcCorrQntz(Longword pL_CorrelSeq[],
  *   IMPLEMENTATION:
  *
  *    implementation of x**31 + x**3 + 1 == PN_XOR_REG | PN_XOR_ADD a
- *    PN sequence generator using Longwords generating a 2**31 -1
+ *    PN sequence generator using int32_ts generating a 2**31 -1
  *    length pn-sequence.
  *
  *************************************************************************/
 
-Shortword getPnBits(int iBits, Longword * pL_PNSeed)
+int16_t getPnBits(int iBits, int32_t * pL_PNSeed)
 {
 
 /*_________________________________________________________________________
@@ -900,8 +900,8 @@ Shortword getPnBits(int iBits, Longword * pL_PNSeed)
  |_________________________________________________________________________|
 */
 
-	Shortword swPnBits = 0;
-	Longword L_Taps, L_FeedBack;
+	int16_t swPnBits = 0;
+	int32_t L_Taps, L_FeedBack;
 	int i;
 
 /*_________________________________________________________________________
@@ -1006,9 +1006,9 @@ Shortword getPnBits(int iBits, Longword * pL_PNSeed)
  *
  *************************************************************************/
 
-void rxInterpR0Lpc(Shortword * pswOldKs, Shortword * pswNewKs,
-		   Shortword swRxDTXState,
-		   Shortword swDecoMode, Shortword swFrameType)
+void rxInterpR0Lpc(int16_t * pswOldKs, int16_t * pswNewKs,
+		   int16_t swRxDTXState,
+		   int16_t swDecoMode, int16_t swFrameType)
 {
 
 /*________________________________________________________________________
@@ -1017,8 +1017,8 @@ void rxInterpR0Lpc(Shortword * pswOldKs, Shortword * pswNewKs,
  |________________________________________________________________________|
 */
 
-	static Shortword swR0OldCN;
-	static Longword pL_OldCorrSeq[NP + 1],
+	static int16_t swR0OldCN;
+	static int32_t pL_OldCorrSeq[NP + 1],
 	    pL_NewCorrSeq[NP + 1], pL_CorrSeq[NP + 1];
 
 /*_________________________________________________________________________
@@ -1149,7 +1149,7 @@ void rxInterpR0Lpc(Shortword * pswOldKs, Shortword * pswNewKs,
  *
  *************************************************************************/
 
-Longword linInterpSid(Longword L_New, Longword L_Old, Shortword swDtxState)
+int32_t linInterpSid(int32_t L_New, int32_t L_Old, int16_t swDtxState)
 {
 
 /*_________________________________________________________________________
@@ -1158,7 +1158,7 @@ Longword linInterpSid(Longword L_New, Longword L_Old, Shortword swDtxState)
  |_________________________________________________________________________|
 */
 
-	Shortword swOldFactor;
+	int16_t swOldFactor;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1211,8 +1211,8 @@ Longword linInterpSid(Longword L_New, Longword L_Old, Shortword swDtxState)
  *
  *************************************************************************/
 
-Shortword linInterpSidShort(Shortword swNew, Shortword swOld,
-			    Shortword swDtxState)
+int16_t linInterpSidShort(int16_t swNew, int16_t swOld,
+			    int16_t swDtxState)
 {
 
 /*_________________________________________________________________________
@@ -1221,8 +1221,8 @@ Shortword linInterpSidShort(Shortword swNew, Shortword swOld,
  |_________________________________________________________________________|
 */
 
-	Shortword swOldFactor;
-	Longword L_New, L_Old;
+	int16_t swOldFactor;
+	int32_t L_New, L_Old;
 
 /*_________________________________________________________________________
  |                                                                         |
