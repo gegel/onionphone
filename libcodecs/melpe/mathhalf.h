@@ -111,22 +111,22 @@ static inline int16_t melpe_divide_s(int16_t var1, int16_t var2) __attribute__((
 
 /* new 40 bits basic operators */
 
-static inline Word40 melpe_L40_add(Word40 acc, int32_t L_var1) __attribute__((always_inline));
+static inline int64_t melpe_L40_add(int64_t acc, int32_t L_var1) __attribute__((always_inline));
 
-static inline Word40 melpe_L40_sub(Word40 acc, int32_t L_var1) __attribute__((always_inline));
+static inline int64_t melpe_L40_sub(int64_t acc, int32_t L_var1) __attribute__((always_inline));
 
-static inline Word40 melpe_L40_mac(Word40 acc, int16_t var1, int16_t var2) __attribute__((always_inline));
+static inline int64_t melpe_L40_mac(int64_t acc, int16_t var1, int16_t var2) __attribute__((always_inline));
 
-static inline Word40 melpe_L40_msu(Word40 acc, int16_t var1, int16_t var2) __attribute__((always_inline));
+static inline int64_t melpe_L40_msu(int64_t acc, int16_t var1, int16_t var2) __attribute__((always_inline));
 
-static inline Word40 melpe_L40_shl(Word40 acc, int16_t var1);
+static inline int64_t melpe_L40_shl(int64_t acc, int16_t var1);
 
-static inline Word40 melpe_L40_shr(Word40 acc, int16_t var1) __attribute__((always_inline));
+static inline int64_t melpe_L40_shr(int64_t acc, int16_t var1) __attribute__((always_inline));
 
-static inline Word40 melpe_L40_negate(Word40 acc) __attribute__((always_inline));
+static inline int64_t melpe_L40_negate(int64_t acc) __attribute__((always_inline));
 
-static inline int16_t melpe_norm32(Word40 acc) __attribute__((always_inline));
-static inline int32_t melpe_L_sat32(Word40 acc) __attribute__((always_inline));
+static inline int16_t melpe_norm32(int64_t acc) __attribute__((always_inline));
+static inline int32_t melpe_L_sat32(int64_t acc) __attribute__((always_inline));
 
 #include "mathhalf_i.h"
 

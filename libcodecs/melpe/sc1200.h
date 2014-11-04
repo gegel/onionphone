@@ -23,11 +23,6 @@
 
 #include <stdint.h>
 
-/* =================== */
-/* Definition of Types */
-/* =================== */
-
-typedef double Word40;		/* 40 bit "accumulator" */
 /* ================== */
 /* General Definition */
 /* ================== */

@@ -509,7 +509,7 @@ static void frac_cor(int16_t inbuf[], int16_t pitch, int16_t * cor)
 	int16_t gp, maxgp, root, win, temp;
 	int16_t r0_shift, rk_shift, shift;
 	int32_t L_r0, L_rk, L_temp;	/* Q7 */
-	Word40 ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
+	int64_t ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
 
 	/* ------ Calculate the autocorrelation function ------- */
 	/* This is the new version of the autocorrelation function */

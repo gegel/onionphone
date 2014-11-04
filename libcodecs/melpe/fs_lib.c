@@ -68,7 +68,7 @@ void find_harm(int16_t input[], int16_t fsmag[], int16_t pitch,
 	int16_t fwidth, mult_fwidth, shift, max;
 	int32_t *L_fsmag;
 	int32_t L_temp, L_max;
-	Word40 avg;
+	int64_t avg;
 	int16_t temp1, temp2;
 
 	L_fsmag = L_v_get(num_harm);

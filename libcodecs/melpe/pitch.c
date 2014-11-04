@@ -140,7 +140,7 @@ static void lpfilt(int16_t inbuf[], int16_t lpbuf[], int16_t len)
 static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len)
 {
 	register int16_t i, j;
-	Word40 L40_sum;
+	int64_t L40_sum;
 	int32_t L_temp;
 	int16_t shift, rc1, temp1, temp2, temp3;
 	int16_t r_coeff[3];	/* Q15 */
@@ -224,7 +224,7 @@ static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 	int32_t L_temp;	/* Q0 */
 	int16_t index[MAXPITCH + 1];
 	int16_t lowStart, highStart;
-	Word40 ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
+	int64_t ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
 	int32_t L_r0, L_rk;
 	int16_t r0_shift, rk_shift, root;
 	int16_t gp[MAXPITCH + 1], peak[MAXPITCH + 1], corx[NODE];	/* Q15 */

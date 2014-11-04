@@ -1747,7 +1747,7 @@ static inline int32_t melpe_L_abs(int32_t L_var1)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
  |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
@@ -1755,19 +1755,19 @@ static inline int32_t melpe_L_abs(int32_t L_var1)
  |                                                                           |
  |   Return Value :                                                          |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_add(Word40 acc, int32_t L_var1)
+static inline int64_t melpe_L40_add(int64_t acc, int32_t L_var1)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	acc = acc + (Word40) L_var1;
+	acc = acc + (int64_t) L_var1;
 
 	if (acc > MAX_40) {
 		acc = MAX_40;
@@ -1794,7 +1794,7 @@ static inline Word40 melpe_L40_add(Word40 acc, int32_t L_var1)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
  |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
@@ -1802,19 +1802,19 @@ static inline Word40 melpe_L40_add(Word40 acc, int32_t L_var1)
  |                                                                           |
  |   Return Value :                                                          |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_sub(Word40 acc, int32_t L_var1)
+static inline int64_t melpe_L40_sub(int64_t acc, int32_t L_var1)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	acc = acc - (Word40) L_var1;
+	acc = acc - (int64_t) L_var1;
 
 	if (acc > MAX_40) {
 		acc = MAX_40;
@@ -1841,7 +1841,7 @@ static inline Word40 melpe_L40_sub(Word40 acc, int32_t L_var1)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
  |    var1     16 bit short signed integer (int16_t) whose value falls in the |
@@ -1852,19 +1852,19 @@ static inline Word40 melpe_L40_sub(Word40 acc, int32_t L_var1)
  |                                                                           |
  |   Return Value :                                                          |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_mac(Word40 acc, int16_t var1, int16_t var2)
+static inline int64_t melpe_L40_mac(int64_t acc, int16_t var1, int16_t var2)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	acc = acc + ((Word40) var1 * (Word40) var2 * 2);
+	acc = acc + ((int64_t) var1 * (int64_t) var2 * 2);
 
 	if (acc > MAX_40) {
 		acc = MAX_40;
@@ -1892,7 +1892,7 @@ static inline Word40 melpe_L40_mac(Word40 acc, int16_t var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
  |    var1     16 bit short signed integer (int16_t) whose value falls in the |
@@ -1903,19 +1903,19 @@ static inline Word40 melpe_L40_mac(Word40 acc, int16_t var1, int16_t var2)
  |                                                                           |
  |   Return Value :                                                          |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_msu(Word40 acc, int16_t var1, int16_t var2)
+static inline int64_t melpe_L40_msu(int64_t acc, int16_t var1, int16_t var2)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
 		exit(0);
 	}
 
-	acc = acc - ((Word40) var1 * (Word40) var2 * 2);
+	acc = acc - ((int64_t) var1 * (int64_t) var2 * 2);
 
 	if (acc > MAX_40) {
 		acc = MAX_40;
@@ -1943,7 +1943,7 @@ static inline Word40 melpe_L40_msu(Word40 acc, int16_t var1, int16_t var2)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
  |    var1     16 bit short signed integer (int16_t) whose value falls in the |
@@ -1951,12 +1951,12 @@ static inline Word40 melpe_L40_msu(Word40 acc, int16_t var1, int16_t var2)
  |                                                                           |
  |   Return Value :                                                          |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_shl(Word40 acc, int16_t var1)
+static inline int64_t melpe_L40_shl(int64_t acc, int16_t var1)
 {
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
@@ -1996,7 +1996,7 @@ static inline Word40 melpe_L40_shl(Word40 acc, int16_t var1)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
  |    var1     16 bit short signed integer (int16_t) whose value falls in the |
@@ -2004,12 +2004,12 @@ static inline Word40 melpe_L40_shl(Word40 acc, int16_t var1)
  |                                                                           |
  |   Return Value :                                                          |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_shr(Word40 acc, int16_t var1)
+static inline int64_t melpe_L40_shr(int64_t acc, int16_t var1)
 {
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
@@ -2042,17 +2042,17 @@ static inline Word40 melpe_L40_shr(Word40 acc, int16_t var1)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
  |   Return Value :                                                          |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_negate(Word40 acc)
+static inline int64_t melpe_L40_negate(int64_t acc)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -2084,7 +2084,7 @@ static inline Word40 melpe_L40_negate(Word40 acc)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
  |   Return Value :                                                          |
@@ -2094,7 +2094,7 @@ static inline Word40 melpe_L40_negate(Word40 acc)
  |___________________________________________________________________________|
 */
 
-static inline int16_t melpe_norm32(Word40 acc)
+static inline int16_t melpe_norm32(int64_t acc)
 {
 	int16_t var1;
 
@@ -2106,20 +2106,20 @@ static inline int16_t melpe_norm32(Word40 acc)
 	var1 = 0;
 
 	if (acc > 0) {
-		while (acc > (Word40) MAX_32) {
+		while (acc > (int64_t) MAX_32) {
 			acc = floor(acc * 0.5);
 			var1--;
 		}
-		while (acc <= (0.5 * (Word40) MAX_32)) {
+		while (acc <= (0.5 * (int64_t) MAX_32)) {
 			acc = acc * 2;
 			var1++;
 		}
 	} else if (acc < 0) {
-		while (acc < (Word40) MIN_32) {
+		while (acc < (int64_t) MIN_32) {
 			acc = floor(acc * 0.5);
 			var1--;
 		}
-		while (acc >= (0.5 * (Word40) MIN_32)) {
+		while (acc >= (0.5 * (int64_t) MIN_32)) {
 			acc = acc * 2;
 			var1++;
 		}
@@ -2139,7 +2139,7 @@ static inline int16_t melpe_norm32(Word40 acc)
  |                                                                           |
  |   Inputs :                                                                |
  |                                                                           |
- |    acc      40 bits accumulator (Word40) whose value falls in the         |
+ |    acc      40 bits accumulator (int64_t) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
  |   Return Value :                                                          |
@@ -2150,7 +2150,7 @@ static inline int16_t melpe_norm32(Word40 acc)
  |___________________________________________________________________________|
 */
 
-static inline int32_t melpe_L_sat32(Word40 acc)
+static inline int32_t melpe_L_sat32(int64_t acc)
 {
 	int32_t L_var_out;
 
@@ -2159,11 +2159,11 @@ static inline int32_t melpe_L_sat32(Word40 acc)
 		exit(0);
 	}
 
-	if (acc > (Word40) MAX_32) {
-		acc = (Word40) MAX_32;
+	if (acc > (int64_t) MAX_32) {
+		acc = (int64_t) MAX_32;
 	}
-	if (acc < (Word40) MIN_32) {
-		acc = (Word40) MIN_32;
+	if (acc < (int64_t) MIN_32) {
+		acc = (int64_t) MIN_32;
 	}
 	L_var_out = (int32_t) acc;
 	return (L_var_out);

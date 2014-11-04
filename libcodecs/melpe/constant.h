@@ -81,8 +81,8 @@ Secretariat fax: +33 493 65 47 16.
 #define SW_MIN		((int16_t) -32768)	/* smallest RAM, 0x8000 */
 #define SW_MAX		((int16_t) 32767)	/* largest RAM, 0x7fff */
 
-#define MAX_40		((double)549755813883.0)
-#define MIN_40		((double)-549755813884.0)
+#define MAX_40		((int64_t) 1ULL << 39)
+#define MIN_40		((int64_t) -(1ULL << 39))
 
 #define MAX_32		((int32_t)0x7fffffffL)
 #define MIN_32		((int32_t)0x80000000L)
