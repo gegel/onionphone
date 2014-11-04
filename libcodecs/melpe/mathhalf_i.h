@@ -98,7 +98,7 @@ Secretariat fax: +33 493 65 47 16.
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -109,7 +109,7 @@ Secretariat fax: +33 493 65 47 16.
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -117,9 +117,9 @@ Secretariat fax: +33 493 65 47 16.
  *
  *************************************************************************/
 
-static inline Shortword saturate(Longword L_var1)
+static inline int16_t saturate(int32_t L_var1)
 {
-	Shortword swOut;
+	int16_t swOut;
 
 	if (L_var1 > SW_MAX) {
 		swOut = SW_MAX;
@@ -128,7 +128,7 @@ static inline Shortword saturate(Longword L_var1)
 		swOut = SW_MIN;
 		inc_saturation();
 	} else
-		swOut = (Shortword) L_var1;	/* automatic type conversion */
+		swOut = (int16_t) L_var1;	/* automatic type conversion */
 	return (swOut);
 }
 
@@ -145,10 +145,10 @@ static inline Shortword saturate(Longword L_var1)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -158,7 +158,7 @@ static inline Shortword saturate(Longword L_var1)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -172,20 +172,20 @@ static inline Shortword saturate(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword melpe_divide_s(Shortword var1, Shortword var2)
+static inline int16_t melpe_divide_s(int16_t var1, int16_t var2)
 {
-	Longword L_div;
-	Shortword swOut;
+	int32_t L_div;
+	int16_t swOut;
 
 	if (var1 < 0 || var2 < 0 || var1 > var2) {
 		/* undefined output for invalid input into divide_s() */
-		return ((Shortword) 0);
+		return ((int16_t) 0);
 	}
 
 	if (var1 == var2)
-		return ((Shortword) 0x7fff);
+		return ((int16_t) 0x7fff);
 
-	L_div = ((0x00008000L * (Longword) var1) / (Longword) var2);
+	L_div = ((0x00008000L * (int32_t) var1) / (int32_t) var2);
 	swOut = saturate(L_div);
 	return (swOut);
 }
@@ -196,13 +196,13 @@ static inline Shortword melpe_divide_s(Shortword var1, Shortword var2)
  *
  *	 PURPOSE:
  *
- *	   Put the 16 bit input into the 16 LSB's of the output Longword with
+ *	   Put the 16 bit input into the 16 LSB's of the output int32_t with
  *	   sign extension i.e. the top 16 bits are set to either 0 or 0xffff.
  *
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -212,7 +212,7 @@ static inline Shortword melpe_divide_s(Shortword var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= L_var1 <= 0x0000 7fff.
  *
@@ -220,9 +220,9 @@ static inline Shortword melpe_divide_s(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword melpe_L_deposit_l(Shortword var1)
+static inline int32_t melpe_L_deposit_l(int16_t var1)
 {
-	Longword L_Out;
+	int32_t L_Out;
 
 	L_Out = var1;
 	return (L_Out);
@@ -234,13 +234,13 @@ static inline Longword melpe_L_deposit_l(Shortword var1)
  *
  *	 PURPOSE:
  *
- *	   Put the 16 bit input into the 16 MSB's of the output Longword.  The
+ *	   Put the 16 bit input into the 16 MSB's of the output int32_t.  The
  *	   LS 16 bits are zeroed.
  *
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -250,7 +250,7 @@ static inline Longword melpe_L_deposit_l(Shortword var1)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff 0000.
  *
@@ -259,11 +259,11 @@ static inline Longword melpe_L_deposit_l(Shortword var1)
  *
  *************************************************************************/
 
-static inline Longword melpe_L_deposit_h(Shortword var1)
+static inline int32_t melpe_L_deposit_h(int16_t var1)
 {
-	Longword L_var2;
+	int32_t L_var2;
 
-	L_var2 = (Longword) var1 << 16;
+	L_var2 = (int32_t) var1 << 16;
 	return (L_var2);
 }
 
@@ -273,14 +273,14 @@ static inline Longword melpe_L_deposit_h(Shortword var1)
  *
  *	 PURPOSE:
  *
- *	   Extract the 16 LS bits of a 32 bit Longword.  Return the 16 bit
- *	   number as a Shortword.  The upper portion of the input Longword
+ *	   Extract the 16 LS bits of a 32 bit int32_t.  Return the 16 bit
+ *	   number as a int16_t.  The upper portion of the input int32_t
  *	   has no impact whatsoever on the output.
  *
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -291,7 +291,7 @@ static inline Longword melpe_L_deposit_h(Shortword var1)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -300,11 +300,11 @@ static inline Longword melpe_L_deposit_h(Shortword var1)
  *
  *************************************************************************/
 
-static inline Shortword melpe_extract_l(Longword L_var1)
+static inline int16_t melpe_extract_l(int32_t L_var1)
 {
-	Shortword var2;
+	int16_t var2;
 
-	var2 = (Shortword) (0x0000ffffL & L_var1);
+	var2 = (int16_t) (0x0000ffffL & L_var1);
 	return (var2);
 }
 
@@ -314,14 +314,14 @@ static inline Shortword melpe_extract_l(Longword L_var1)
  *
  *	 PURPOSE:
  *
- *	   Extract the 16 MS bits of a 32 bit Longword.  Return the 16 bit
- *	   number as a Shortword.  This is used as a "truncation" of a fractional
+ *	   Extract the 16 MS bits of a 32 bit int32_t.  Return the 16 bit
+ *	   number as a int16_t.  This is used as a "truncation" of a fractional
  *	   number.
  *
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -332,7 +332,7 @@ static inline Shortword melpe_extract_l(Longword L_var1)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -342,11 +342,11 @@ static inline Shortword melpe_extract_l(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword melpe_extract_h(Longword L_var1)
+static inline int16_t melpe_extract_h(int32_t L_var1)
 {
-	Shortword var2;
+	int16_t var2;
 
-	var2 = (Shortword) (0x0000ffffL & (L_var1 >> 16));
+	var2 = (int16_t) (0x0000ffffL & (L_var1 >> 16));
 	return (var2);
 }
 
@@ -356,12 +356,12 @@ static inline Shortword melpe_extract_h(Longword L_var1)
  *
  *	 PURPOSE:
  *
- *	   r_ound the 32 bit Longword into a 16 bit shortword with saturation.
+ *	   r_ound the 32 bit int32_t into a 16 bit shortword with saturation.
  *
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *	 OUTPUTS:
@@ -371,29 +371,29 @@ static inline Shortword melpe_extract_h(Longword L_var1)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
  *	 IMPLEMENTATION:
  *
- *	   Perform a two's complement r_ound on the input Longword with
+ *	   Perform a two's complement r_ound on the input int32_t with
  *	   saturation.
  *
  *	   This is equivalent to adding 0x0000 8000 to the input.  The
  *	   result may overflow due to the add.	If so, the result is
  *	   saturated.  The 32 bit r_ounded number is then shifted down
- *	   16 bits and returned as a Shortword.
+ *	   16 bits and returned as a int16_t.
  *
  *
  *	 KEYWORDS: r_ound
  *
  *************************************************************************/
 
-static inline Shortword melpe_r_ound(Longword L_var1)
+static inline int16_t melpe_r_ound(int32_t L_var1)
 {
-	Longword L_Prod;
-	Shortword var2;
+	int32_t L_Prod;
+	int16_t var2;
 
     L_Prod = melpe_L_add(L_var1, 0x00008000L);	/* r_ound MSP */
     var2 = melpe_extract_h(L_Prod);
@@ -411,7 +411,7 @@ static inline Shortword melpe_r_ound(Longword L_var1)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -421,7 +421,7 @@ static inline Shortword melpe_r_ound(Longword L_var1)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8001 <= swOut <= 0x0000 7fff.
  *
@@ -429,15 +429,15 @@ static inline Shortword melpe_r_ound(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword melpe_negate(Shortword var1)
+static inline int16_t melpe_negate(int16_t var1)
 {
-	Shortword swOut;
+	int16_t swOut;
 
 	if (var1 == SW_MIN) {
 		inc_saturation();
 		swOut = SW_MAX;
 	} else
-		swOut = (Shortword) (-var1);
+		swOut = (int16_t) (-var1);
 	return (swOut);
 }
 
@@ -453,7 +453,7 @@ static inline Shortword melpe_negate(Shortword var1)
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -464,7 +464,7 @@ static inline Shortword melpe_negate(Shortword var1)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0001 <= L_var1 <= 0x7fff ffff.
  *
@@ -472,9 +472,9 @@ static inline Shortword melpe_negate(Shortword var1)
  *
  *************************************************************************/
 
-static inline Longword melpe_L_negate(Longword L_var1)
+static inline int32_t melpe_L_negate(int32_t L_var1)
 {
-	Longword L_Out;
+	int32_t L_Out;
 
 	if (L_var1 == LW_MIN) {
 		inc_saturation();
@@ -496,10 +496,10 @@ static inline Longword melpe_L_negate(Longword L_var1)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -509,7 +509,7 @@ static inline Longword melpe_L_negate(Longword L_var1)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -528,12 +528,12 @@ static inline Longword melpe_L_negate(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword melpe_add(Shortword var1, Shortword var2)
+static inline int16_t melpe_add(int16_t var1, int16_t var2)
 {
-	Longword L_sum;
-	Shortword swOut;
+	int32_t L_sum;
+	int16_t swOut;
 
-	L_sum = (Longword) var1 + var2;
+	L_sum = (int32_t) var1 + var2;
 	swOut = saturate(L_sum);
 	return (swOut);
 }
@@ -550,11 +550,11 @@ static inline Shortword melpe_add(Shortword var1, Shortword var2)
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *	   L_var2
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -565,7 +565,7 @@ static inline Shortword melpe_add(Shortword var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -583,9 +583,9 @@ static inline Shortword melpe_add(Shortword var1, Shortword var2)
  *	 KEYWORDS: add, addition
  *
  *************************************************************************/
-static inline Longword melpe_L_add(Longword L_var1, Longword L_var2)
+static inline int32_t melpe_L_add(int32_t L_var1, int32_t L_var2)
 {
-	Longword L_Sum, L_SumLow, L_SumHigh;
+	int32_t L_Sum, L_SumLow, L_SumHigh;
 
 	L_Sum = L_var1 + L_var2;
 
@@ -593,22 +593,22 @@ static inline Longword melpe_L_add(Longword L_var1, Longword L_var2)
 
 		/* an overflow is possible */
 		L_SumLow =
-		    (L_var1 & (Longword) 0xffff) + (L_var2 & (Longword) 0xffff);
+		    (L_var1 & (int32_t) 0xffff) + (L_var2 & (int32_t) 0xffff);
 		L_SumHigh =
-		    ((L_var1 >> 16) & (Longword) 0xffff) +
-		    ((L_var2 >> 16) & (Longword) 0xffff);
-		if (L_SumLow & (Longword) 0x10000) {
+		    ((L_var1 >> 16) & (int32_t) 0xffff) +
+		    ((L_var2 >> 16) & (int32_t) 0xffff);
+		if (L_SumLow & (int32_t) 0x10000) {
 			/* carry into high word is set */
 			L_SumHigh++;
 		}
 
 		/* Update sum only if there is an overflow or underflow */
-		if (((Longword) 0x10000 & L_SumHigh) &&
-		    !((Longword) 0x8000 & L_SumHigh)) {
+		if (((int32_t) 0x10000 & L_SumHigh) &&
+		    !((int32_t) 0x8000 & L_SumHigh)) {
 			inc_saturation();
 			L_Sum = LW_MIN;	/* underflow */
-		} else if (!((Longword) 0x10000 & L_SumHigh) &&
-			   ((Longword) 0x8000 & L_SumHigh)) {
+		} else if (!((int32_t) 0x10000 & L_SumHigh) &&
+			   ((int32_t) 0x8000 & L_SumHigh)) {
 			inc_saturation();
 			L_Sum = LW_MAX;	/* overflow */
 		}
@@ -629,10 +629,10 @@ static inline Longword melpe_L_add(Longword L_var1, Longword L_var2)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -642,7 +642,7 @@ static inline Longword melpe_L_add(Longword L_var1, Longword L_var2)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -660,12 +660,12 @@ static inline Longword melpe_L_add(Longword L_var1, Longword L_var2)
  *	 KEYWORDS: sub, subtraction
  *
  *************************************************************************/
-static inline Shortword melpe_sub(Shortword var1, Shortword var2)
+static inline int16_t melpe_sub(int16_t var1, int16_t var2)
 {
-	Longword L_diff;
-	Shortword swOut;
+	int32_t L_diff;
+	int16_t swOut;
 
-	L_diff = (Longword) var1 - var2;
+	L_diff = (int32_t) var1 - var2;
 	swOut = saturate(L_diff);
 
 	return (swOut);
@@ -683,11 +683,11 @@ static inline Shortword melpe_sub(Shortword var1, Shortword var2)
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *	   L_var2
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -698,7 +698,7 @@ static inline Shortword melpe_sub(Shortword var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -716,9 +716,9 @@ static inline Shortword melpe_sub(Shortword var1, Shortword var2)
  *	 KEYWORDS: sub, subtraction
  *
  *************************************************************************/
-static inline Longword melpe_L_sub(Longword L_var1, Longword L_var2)
+static inline int32_t melpe_L_sub(int32_t L_var1, int32_t L_var2)
 {
-	Longword L_Sum;
+	int32_t L_Sum;
 
 	/* check for overflow */
 	if ((L_var1 > 0 && L_var2 < 0) || (L_var1 < 0 && L_var2 > 0)) {
@@ -746,10 +746,10 @@ static inline Longword melpe_L_sub(Longword L_var1, Longword L_var2)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -759,7 +759,7 @@ static inline Longword melpe_L_sub(Longword L_var1, Longword L_var2)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -778,29 +778,29 @@ static inline Longword melpe_L_sub(Longword L_var1, Longword L_var2)
  *
  *************************************************************************/
 
-static inline Shortword melpe_shr(Shortword var1, Shortword var2)
+static inline int16_t melpe_shr(int16_t var1, int16_t var2)
 {
-	Shortword swMask, swOut;
+	int16_t swMask, swOut;
 
 	if (var2 == 0 || var1 == 0)
 		swOut = var1;
 	else if (var2 < 0) {	/* perform an arithmetic left shift */
 		if (var2 <= -15) {
-			swOut = (Shortword) ((var1 > 0) ? SW_MAX : SW_MIN);
+			swOut = (int16_t) ((var1 > 0) ? SW_MAX : SW_MIN);
 			/* saturate */
 			inc_saturation();
 		} else
-            swOut = melpe_shl(var1, (Shortword) - var2);
+            swOut = melpe_shl(var1, (int16_t) - var2);
 	} else {		/* positive shift count */
 		if (var2 >= 15)
-			swOut = (Shortword) ((var1 < 0) ? -1 : 0);
+			swOut = (int16_t) ((var1 < 0) ? -1 : 0);
 		else {		/* take care of sign extension */
 			swMask = 0;
 			if (var1 < 0)
-				swMask = (Shortword) (~swMask << (16 - var2));
+				swMask = (int16_t) (~swMask << (16 - var2));
 
 			var1 >>= var2;
-			swOut = (Shortword) (swMask | var1);
+			swOut = (int16_t) (swMask | var1);
 		}
 	}
 	return (swOut);
@@ -818,10 +818,10 @@ static inline Shortword melpe_shr(Shortword var1, Shortword var2)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -831,7 +831,7 @@ static inline Shortword melpe_shr(Shortword var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -857,31 +857,31 @@ static inline Shortword melpe_shr(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword melpe_shl(Shortword var1, Shortword var2)
+static inline int16_t melpe_shl(int16_t var1, int16_t var2)
 {
-	Shortword swOut;
-	Longword L_Out;
+	int16_t swOut;
+	int32_t L_Out;
 
 	if (var2 == 0 || var1 == 0) {
 		swOut = var1;
 	} else if (var2 < 0) {	/* perform a right shift */
 		if (var2 <= -15)
-			swOut = (Shortword) ((var1 < 0) ? -1 : 0);
+			swOut = (int16_t) ((var1 < 0) ? -1 : 0);
 		else
             swOut = melpe_shr(var1, melpe_negate(var2));
 
 	} else {		/* var2 > 0 */
 		if (var2 >= 15) {
-			swOut = (Shortword) ((var1 > 0) ? SW_MAX : SW_MIN);
+			swOut = (int16_t) ((var1 > 0) ? SW_MAX : SW_MIN);
 			/* saturate */
 			inc_saturation();
 		} else {
-			L_Out = (Longword) var1 *(1 << var2);
-			swOut = (Shortword) L_Out;	/* copy low portion to swOut */
+			L_Out = (int32_t) var1 *(1 << var2);
+			swOut = (int16_t) L_Out;	/* copy low portion to swOut */
 			/* overflow could have happened */
 			if (swOut != L_Out) {	/* overflowed */
 				swOut =
-				    (Shortword) ((var1 > 0) ? SW_MAX : SW_MIN);
+				    (int16_t) ((var1 > 0) ? SW_MAX : SW_MIN);
 				/* saturate */
 				inc_saturation();
 			}
@@ -904,10 +904,10 @@ static inline Shortword melpe_shl(Shortword var1, Shortword var2)
  *	 INPUTS:
  *
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *	 OUTPUTS:
@@ -917,7 +917,7 @@ static inline Shortword melpe_shl(Shortword var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -939,9 +939,9 @@ static inline Shortword melpe_shl(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword melpe_L_shr(Longword L_var1, Shortword var2)
+static inline int32_t melpe_L_shr(int32_t L_var1, int16_t var2)
 {
-	Longword L_Mask, L_Out;
+	int32_t L_Mask, L_Out;
 
 	if (var2 == 0 || L_var1 == 0)
 		L_Out = L_var1;
@@ -950,7 +950,7 @@ static inline Longword melpe_L_shr(Longword L_var1, Shortword var2)
 			L_Out = (L_var1 > 0) ? LW_MAX : LW_MIN;	/* saturate */
 			inc_saturation();
 		} else
-            L_Out = melpe_L_shl(L_var1, (Shortword) - var2);
+            L_Out = melpe_L_shl(L_var1, (int16_t) - var2);
 	} else {
 		if (var2 >= 31)
 			L_Out = (L_var1 > 0) ? 0 : 0xffffffffL;
@@ -980,10 +980,10 @@ static inline Longword melpe_L_shr(Longword L_var1, Shortword var2)
  *	 INPUTS:
  *
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *	 OUTPUTS:
@@ -993,7 +993,7 @@ static inline Longword melpe_L_shr(Longword L_var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1013,9 +1013,9 @@ static inline Longword melpe_L_shr(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword melpe_L_shl(Longword L_var1, Shortword var2)
+static inline int32_t melpe_L_shl(int32_t L_var1, int16_t var2)
 {
-	Longword L_Mask, L_Out = 0;
+	int32_t L_Mask, L_Out = 0;
 	int i, iOverflow = 0;
 
 	if (var2 == 0 || L_var1 == 0)
@@ -1024,7 +1024,7 @@ static inline Longword melpe_L_shl(Longword L_var1, Shortword var2)
 		if (var2 <= -31)
 			L_Out = (L_var1 > 0) ? 0 : 0xffffffffL;
 		else
-            L_Out = melpe_L_shr(L_var1, (Shortword) - var2);
+            L_Out = melpe_L_shr(L_var1, (int16_t) - var2);
 	} else {
 		if (var2 >= 31)
 			iOverflow = 1;
@@ -1063,10 +1063,10 @@ static inline Longword melpe_L_shl(Longword L_var1, Shortword var2)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -1076,7 +1076,7 @@ static inline Longword melpe_L_shl(Longword L_var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1105,9 +1105,9 @@ static inline Longword melpe_L_shl(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword melpe_shift_r(Shortword var1, Shortword var2)
+static inline int16_t melpe_shift_r(int16_t var1, int16_t var2)
 {
-	Shortword swOut, swRnd;
+	int16_t swOut, swRnd;
 
 	if (var2 >= 0)
         swOut = melpe_shl(var1, var2);
@@ -1115,8 +1115,8 @@ static inline Shortword melpe_shift_r(Shortword var1, Shortword var2)
 		if (var2 < -15)
 			swOut = 0;
 		else {
-            swRnd = (Shortword) (melpe_shl(var1, (Shortword) (var2 + 1)) &
-					     (Shortword) 0x1);
+            swRnd = (int16_t) (melpe_shl(var1, (int16_t) (var2 + 1)) &
+					     (int16_t) 0x1);
             swOut = melpe_add(melpe_shl(var1, var2), swRnd);
 		}
 	}
@@ -1136,11 +1136,11 @@ static inline Shortword melpe_shift_r(Shortword var1, Shortword var2)
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -1150,7 +1150,7 @@ static inline Shortword melpe_shift_r(Shortword var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1180,14 +1180,14 @@ static inline Shortword melpe_shift_r(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword melpe_L_shift_r(Longword L_var1, Shortword var2)
+static inline int32_t melpe_L_shift_r(int32_t L_var1, int16_t var2)
 {
-	Longword L_Out, L_rnd;
+	int32_t L_Out, L_rnd;
 
 	if (var2 < -31)
 		L_Out = 0;
 	else if (var2 < 0) {	/* right shift */
-        L_rnd = melpe_L_shl(L_var1, (Shortword) (var2 + 1)) & (Longword) 0x1;
+        L_rnd = melpe_L_shl(L_var1, (int16_t) (var2 + 1)) & (int32_t) 0x1;
         L_Out = melpe_L_add(melpe_L_shl(L_var1, var2), L_rnd);
 	} else
         L_Out = melpe_L_shl(L_var1, var2);
@@ -1210,7 +1210,7 @@ static inline Longword melpe_L_shift_r(Longword L_var1, Shortword var2)
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1221,7 +1221,7 @@ static inline Longword melpe_L_shift_r(Longword L_var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0 <= swOut <= 31
  *
@@ -1253,9 +1253,9 @@ static inline Longword melpe_L_shift_r(Longword L_var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword melpe_norm_l(Longword L_var1)
+static inline int16_t melpe_norm_l(int32_t L_var1)
 {
-	Shortword swShiftCnt;
+	int16_t swShiftCnt;
 
 	if (L_var1 != 0) {
 		if (!(L_var1 & LW_SIGN)) {	/* positive input */
@@ -1267,7 +1267,7 @@ static inline Shortword melpe_norm_l(Longword L_var1)
 		} else {	/* negative input */
 			for (swShiftCnt = 0;
 			     !(L_var1 >= LW_MIN
-			       && L_var1 < (Longword) 0xc0000000L);
+			       && L_var1 < (int32_t) 0xc0000000L);
 			     swShiftCnt++) {
 				L_var1 = L_var1 << 1;
 			}
@@ -1292,7 +1292,7 @@ static inline Shortword melpe_norm_l(Longword L_var1)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -1301,7 +1301,7 @@ static inline Shortword melpe_norm_l(Longword L_var1)
  *
  *	 RETURN VALUE:
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0 <= swOut <= 15
  *
@@ -1333,10 +1333,10 @@ static inline Shortword melpe_norm_l(Longword L_var1)
  *
  *************************************************************************/
 
-static inline Shortword melpe_norm_s(Shortword var1)
+static inline int16_t melpe_norm_s(int16_t var1)
 {
 	short swShiftCnt;
-	Longword L_var1;
+	int32_t L_var1;
 
     L_var1 = melpe_L_deposit_h(var1);
     swShiftCnt = melpe_norm_l(L_var1);
@@ -1355,10 +1355,10 @@ static inline Shortword melpe_norm_s(Shortword var1)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -1368,7 +1368,7 @@ static inline Shortword melpe_norm_s(Shortword var1)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1384,15 +1384,15 @@ static inline Shortword melpe_norm_s(Shortword var1)
  *
  *************************************************************************/
 
-static inline Longword melpe_L_mult(Shortword var1, Shortword var2)
+static inline int32_t melpe_L_mult(int16_t var1, int16_t var2)
 {
-	Longword L_product;
+	int32_t L_product;
 
 	if (var1 == SW_MIN && var2 == SW_MIN) {	/* overflow */
 		inc_saturation();
 		L_product = LW_MAX;
 	} else {
-		L_product = (Longword) var1 *var2;	/* integer multiply */
+		L_product = (int32_t) var1 *var2;	/* integer multiply */
 		L_product <<= 1;
 	}
 	return (L_product);
@@ -1410,10 +1410,10 @@ static inline Longword melpe_L_mult(Shortword var1, Shortword var2)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -1423,7 +1423,7 @@ static inline Longword melpe_L_mult(Shortword var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1438,10 +1438,10 @@ static inline Longword melpe_L_mult(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Shortword melpe_mult(Shortword var1, Shortword var2)
+static inline int16_t melpe_mult(int16_t var1, int16_t var2)
 {
-	Longword L_product;
-	Shortword swOut;
+	int32_t L_product;
+	int16_t swOut;
 
     L_product = melpe_L_mult(var1, var2);
     swOut = melpe_extract_h(L_product);
@@ -1461,13 +1461,13 @@ static inline Shortword melpe_mult(Shortword var1, Shortword var2)
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *	   L_var3
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -1478,7 +1478,7 @@ static inline Shortword melpe_mult(Shortword var1, Shortword var2)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1501,9 +1501,9 @@ static inline Shortword melpe_mult(Shortword var1, Shortword var2)
  *
  *************************************************************************/
 
-static inline Longword melpe_L_mac(Longword L_var3, Shortword var1, Shortword var2)
+static inline int32_t melpe_L_mac(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Longword L_Out;
+	int32_t L_Out;
 
     L_Out = melpe_L_add(L_var3, melpe_L_mult(var1, var2));
 	return (L_Out);
@@ -1522,13 +1522,13 @@ static inline Longword melpe_L_mac(Longword L_var3, Shortword var1, Shortword va
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *	   L_var3
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -1539,7 +1539,7 @@ static inline Longword melpe_L_mac(Longword L_var3, Shortword var1, Shortword va
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1562,9 +1562,9 @@ static inline Longword melpe_L_mac(Longword L_var3, Shortword var1, Shortword va
  *
  *************************************************************************/
 
-static inline Longword melpe_L_msu(Longword L_var3, Shortword var1, Shortword var2)
+static inline int32_t melpe_L_msu(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Longword L_Out;
+	int32_t L_Out;
 
     L_Out = melpe_L_sub(L_var3, melpe_L_mult(var1, var2));
 	return (L_Out);
@@ -1585,13 +1585,13 @@ static inline Longword melpe_L_msu(Longword L_var3, Shortword var1, Shortword va
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *	   var2
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var2 <= 0x0000 7fff.
  *	   L_var3
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var2 <= 0x7fff ffff.
  *
@@ -1602,7 +1602,7 @@ static inline Longword melpe_L_msu(Longword L_var3, Shortword var1, Shortword va
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *
@@ -1616,7 +1616,7 @@ static inline Longword melpe_L_msu(Longword L_var3, Shortword var1, Shortword va
  *	   r_ound the 32 bit result by adding 0x0000 8000 to the input.
  *	   The result may overflow due to the add.	If so, the result
  *	   is saturated.  The 32 bit r_ounded number is then shifted
- *	   down 16 bits and returned as a Shortword.
+ *	   down 16 bits and returned as a int16_t.
  *
  *	   Please note that this is not a true multiply accumulate as
  *	   most processors would implement it.	The 0x8000*0x8000
@@ -1628,9 +1628,9 @@ static inline Longword melpe_L_msu(Longword L_var3, Shortword var1, Shortword va
  *
  *************************************************************************/
 
-static inline Shortword melpe_msu_r(Longword L_var3, Shortword var1, Shortword var2)
+static inline int16_t melpe_msu_r(int32_t L_var3, int16_t var1, int16_t var2)
 {
-	Shortword swOut;
+	int16_t swOut;
 
     swOut = melpe_r_ound(melpe_L_sub(L_var3, melpe_L_mult(var1, var2)));
 	return (swOut);
@@ -1648,7 +1648,7 @@ static inline Shortword melpe_msu_r(Longword L_var3, Shortword var1, Shortword v
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range 0xffff 8000 <= var1 <= 0x0000 7fff.
  *
  *	 OUTPUTS:
@@ -1658,7 +1658,7 @@ static inline Shortword melpe_msu_r(Longword L_var3, Shortword var1, Shortword v
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0x0000 0000 <= swOut <= 0x0000 7fff.
  *
@@ -1671,9 +1671,9 @@ static inline Shortword melpe_msu_r(Longword L_var3, Shortword var1, Shortword v
  *
  *************************************************************************/
 
-static inline Shortword melpe_abs_s(Shortword var1)
+static inline int16_t melpe_abs_s(int16_t var1)
 {
-	Shortword swOut;
+	int16_t swOut;
 
 	if (var1 == SW_MIN)
 		swOut = SW_MAX;
@@ -1698,7 +1698,7 @@ static inline Shortword melpe_abs_s(Shortword var1)
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1709,7 +1709,7 @@ static inline Shortword melpe_abs_s(Shortword var1)
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -1718,9 +1718,9 @@ static inline Shortword melpe_abs_s(Shortword var1)
  *	 KEYWORDS: absolute value, abs
  *
  *************************************************************************/
-static inline Longword melpe_L_abs(Longword L_var1)
+static inline int32_t melpe_L_abs(int32_t L_var1)
 {
-	Longword L_Out;
+	int32_t L_Out;
 
 	if (L_var1 == LW_MIN)
 		L_Out = LW_MAX;
@@ -1750,7 +1750,7 @@ static inline Longword melpe_L_abs(Longword L_var1)
  |    acc      40 bits accumulator (Word40) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Longword) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Return Value :                                                          |
@@ -1760,7 +1760,7 @@ static inline Longword melpe_L_abs(Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_add(Word40 acc, Longword L_var1)
+static inline Word40 melpe_L40_add(Word40 acc, int32_t L_var1)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1797,7 +1797,7 @@ static inline Word40 melpe_L40_add(Word40 acc, Longword L_var1)
  |    acc      40 bits accumulator (Word40) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
- |    L_var1   32 bit long signed integer (Longword) whose value falls in the  |
+ |    L_var1   32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= L_var1 <= 0x7fff ffff.                 |
  |                                                                           |
  |   Return Value :                                                          |
@@ -1807,7 +1807,7 @@ static inline Word40 melpe_L40_add(Word40 acc, Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_sub(Word40 acc, Longword L_var1)
+static inline Word40 melpe_L40_sub(Word40 acc, int32_t L_var1)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1844,10 +1844,10 @@ static inline Word40 melpe_L40_sub(Word40 acc, Longword L_var1)
  |    acc      40 bits accumulator (Word40) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
- |    var1     16 bit short signed integer (Shortword) whose value falls in the |
+ |    var1     16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
- |    var2     16 bit short signed integer (Shortword) whose value falls in the |
+ |    var2     16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Return Value :                                                          |
@@ -1857,7 +1857,7 @@ static inline Word40 melpe_L40_sub(Word40 acc, Longword L_var1)
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_mac(Word40 acc, Shortword var1, Shortword var2)
+static inline Word40 melpe_L40_mac(Word40 acc, int16_t var1, int16_t var2)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1895,10 +1895,10 @@ static inline Word40 melpe_L40_mac(Word40 acc, Shortword var1, Shortword var2)
  |    acc      40 bits accumulator (Word40) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
- |    var1     16 bit short signed integer (Shortword) whose value falls in the |
+ |    var1     16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
- |    var2     16 bit short signed integer (Shortword) whose value falls in the |
+ |    var2     16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Return Value :                                                          |
@@ -1908,7 +1908,7 @@ static inline Word40 melpe_L40_mac(Word40 acc, Shortword var1, Shortword var2)
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_msu(Word40 acc, Shortword var1, Shortword var2)
+static inline Word40 melpe_L40_msu(Word40 acc, int16_t var1, int16_t var2)
 {
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -1946,7 +1946,7 @@ static inline Word40 melpe_L40_msu(Word40 acc, Shortword var1, Shortword var2)
  |    acc      40 bits accumulator (Word40) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
- |    var1     16 bit short signed integer (Shortword) whose value falls in the |
+ |    var1     16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Return Value :                                                          |
@@ -1956,7 +1956,7 @@ static inline Word40 melpe_L40_msu(Word40 acc, Shortword var1, Shortword var2)
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_shl(Word40 acc, Shortword var1)
+static inline Word40 melpe_L40_shl(Word40 acc, int16_t var1)
 {
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
@@ -1965,7 +1965,7 @@ static inline Word40 melpe_L40_shl(Word40 acc, Shortword var1)
 	}
 
 	if (var1 < 0) {
-        acc = melpe_L40_shr(acc, (Shortword) (-var1));
+        acc = melpe_L40_shr(acc, (int16_t) (-var1));
 	} else {
 		for (; var1 > 0; var1--) {
 			acc = acc * 2;
@@ -1999,7 +1999,7 @@ static inline Word40 melpe_L40_shl(Word40 acc, Shortword var1)
  |    acc      40 bits accumulator (Word40) whose value falls in the         |
  |             range : MIN40 <= acc <= MAX40.                                |
  |                                                                           |
- |    var1     16 bit short signed integer (Shortword) whose value falls in the |
+ |    var1     16 bit short signed integer (int16_t) whose value falls in the |
  |             range : 0xffff 8000 <= var1 <= 0x0000 7fff.                   |
  |                                                                           |
  |   Return Value :                                                          |
@@ -2009,7 +2009,7 @@ static inline Word40 melpe_L40_shl(Word40 acc, Shortword var1)
  |___________________________________________________________________________|
 */
 
-static inline Word40 melpe_L40_shr(Word40 acc, Shortword var1)
+static inline Word40 melpe_L40_shr(Word40 acc, int16_t var1)
 {
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
@@ -2018,7 +2018,7 @@ static inline Word40 melpe_L40_shr(Word40 acc, Shortword var1)
 	}
 
 	if (var1 < 0) {
-        acc = melpe_L40_shl(acc, (Shortword) - var1);
+        acc = melpe_L40_shl(acc, (int16_t) - var1);
 	} else {
 		for (; var1 > 0; var1--) {
 			acc = floor(acc * 0.5);
@@ -2089,14 +2089,14 @@ static inline Word40 melpe_L40_negate(Word40 acc)
  |                                                                           |
  |   Return Value :                                                          |
  |                                                                           |
- |    var1     16 bit short signed integer (Shortword) whose value falls in the |
+ |    var1     16 bit short signed integer (int16_t) whose value falls in the |
  |             range : -8 <= var_out <= 31.                                  |
  |___________________________________________________________________________|
 */
 
-static inline Shortword melpe_norm32(Word40 acc)
+static inline int16_t melpe_norm32(Word40 acc)
 {
-	Shortword var1;
+	int16_t var1;
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -2145,14 +2145,14 @@ static inline Shortword melpe_norm32(Word40 acc)
  |   Return Value :                                                          |
  |                                                                           |
  |    L_var_out                                                              |
- |             32 bit long signed integer (Longword) whose value falls in the  |
+ |             32 bit long signed integer (int32_t) whose value falls in the  |
  |             range : 0x8000 0000 <= var_out <= 0x7fff ffff.                |
  |___________________________________________________________________________|
 */
 
-static inline Longword melpe_L_sat32(Word40 acc)
+static inline int32_t melpe_L_sat32(Word40 acc)
 {
-	Longword L_var_out;
+	int32_t L_var_out;
 
 	if ((acc > MAX_40) || (acc < MIN_40) || (acc != floor(acc))) {
 		fprintf(stderr, "BASIC_OP: Error in 40 bits format.\n");
@@ -2165,7 +2165,7 @@ static inline Longword melpe_L_sat32(Word40 acc)
 	if (acc < (Word40) MIN_32) {
 		acc = (Word40) MIN_32;
 	}
-	L_var_out = (Longword) acc;
+	L_var_out = (int32_t) acc;
 	return (L_var_out);
 }
 

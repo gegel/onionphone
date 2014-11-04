@@ -52,19 +52,19 @@ Secretariat fax: +33 493 65 47 16.
 
 /* Prototype */
 
-static ULongword L_mpyu(UShortword var1, UShortword var2);
+static uint32_t L_mpyu(uint16_t var1, uint16_t var2);
 
 /* Subroutine envelope: calculate time envelope of signal.                    */
 /* Note: the delay history requires one previous sample	of the input signal   */
 /* and two previous output samples.  Output is scaled down by 4 bits from     */
 /* input signal.  input[], prev_in and output[] are of the same Q value.      */
 
-void envelope(Shortword input[], Shortword prev_in, Shortword output[],
-	      Shortword npts)
+void envelope(int16_t input[], int16_t prev_in, int16_t output[],
+	      int16_t npts)
 {
-	register Shortword i;
-	Shortword curr_abs, prev_abs;
-	Longword L_temp;
+	register int16_t i;
+	int16_t curr_abs, prev_abs;
+	int32_t L_temp;
 
 	prev_abs = melpe_abs_s(prev_in);
 	for (i = 0; i < npts; i++) {
@@ -84,9 +84,9 @@ void envelope(Shortword input[], Shortword prev_in, Shortword output[],
 /* ====================================================== */
 /* This function fills an input array with a given value. */
 /* ====================================================== */
-void fill(Shortword output[], Shortword fillval, Shortword npts)
+void fill(int16_t output[], int16_t fillval, int16_t npts)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < npts; i++) {
 		output[i] = fillval;
@@ -96,9 +96,9 @@ void fill(Shortword output[], Shortword fillval, Shortword npts)
 /* ====================================================== */
 /* This function fills an input array with a given value. */
 /* ====================================================== */
-void L_fill(Longword output[], Longword fillval, Shortword npts)
+void L_fill(int32_t output[], int32_t fillval, int16_t npts)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < npts; i++) {
 		output[i] = fillval;
@@ -110,12 +110,12 @@ void L_fill(Longword output[], Longword fillval, Shortword npts)
 /*	Q values:                                                  */
 /*      ifact - Q15, prev[], curr[], out[] - the same Q value. */
 
-void interp_array(Shortword prev[], Shortword curr[], Shortword out[],
-		  Shortword ifact, Shortword size)
+void interp_array(int16_t prev[], int16_t curr[], int16_t out[],
+		  int16_t ifact, int16_t size)
 {
-	register Shortword i;
-	Shortword ifact2;
-	Shortword temp1, temp2;
+	register int16_t i;
+	int16_t ifact2;
+	int16_t temp1, temp2;
 
 	if (ifact == 0)
 		v_equ(out, prev, size);
@@ -133,16 +133,16 @@ void interp_array(Shortword prev[], Shortword curr[], Shortword out[],
 
 /* Subroutine median: calculate median value of an array with 3 entries.      */
 
-Shortword median3(Shortword input[])
+int16_t median3(int16_t input[])
 {
-	Shortword min, max, temp;
+	int16_t min, max, temp;
 
 	/* In this coder median() is always invoked with npts being NF (== 3).    */
 	/* Therefore we can hardwire npts to NF and optimize the procedure and    */
 	/* name the result median3().                                             */
 
-	min = (Shortword) Min(input[0], input[1]);
-	max = (Shortword) Max(input[0], input[1]);
+	min = (int16_t) Min(input[0], input[1]);
+	max = (int16_t) Max(input[0], input[1]);
 	temp = input[2];
 	if (temp < min)
 		return (min);
@@ -157,20 +157,20 @@ Shortword median3(Shortword input[])
 /*    is used and they are packed into the array pointed by "ptr_ch_begin".   */
 /*    "ptr_ch_bit" points to the position of the next bit being copied onto.  */
 /* ========================================================================== */
-void pack_code(Shortword code, unsigned char **ptr_ch_begin,
-	       Shortword * ptr_ch_bit, Shortword numbits, Shortword wsize)
+void pack_code(int16_t code, unsigned char **ptr_ch_begin,
+	       int16_t * ptr_ch_bit, int16_t numbits, int16_t wsize)
 {
-	register Shortword i;
+	register int16_t i;
 	unsigned char *ch_word;
-	Shortword ch_bit;
-	Shortword temp;
+	int16_t ch_bit;
+	int16_t temp;
 
 	ch_bit = *ptr_ch_bit;
 	ch_word = *ptr_ch_begin;
 
 	for (i = 0; i < numbits; i++) {	/* Mask in bit from code to channel word */
 		/*      temp = shr(code & (shl(1, i)), i); */
-		temp = (Shortword) (code & 0x0001);
+		temp = (int16_t) (code & 0x0001);
 		if (ch_bit == 0)
 			*ch_word = (unsigned char)temp;
 		else
@@ -197,12 +197,12 @@ void pack_code(Shortword code, unsigned char **ptr_ch_begin,
 /* --------                                                                   */
 /* peak_fact - Q12, input - Q0                                                */
 
-Shortword peakiness(Shortword input[], Shortword npts)
+int16_t peakiness(int16_t input[], int16_t npts)
 {
-	register Shortword i;
-	Shortword peak_fact, scale = 4;
-	Longword sum_abs, L_temp;
-	Shortword temp1, temp2, *temp_buf;
+	register int16_t i;
+	int16_t peak_fact, scale = 4;
+	int32_t sum_abs, L_temp;
+	int16_t temp1, temp2, *temp_buf;
 
 	temp_buf = v_get(npts);
 	v_equ_shr(temp_buf, input, scale, npts);
@@ -256,15 +256,15 @@ Shortword peakiness(Shortword input[], Shortword npts)
 /* Subroutine quant_u(): quantize positive input value with	symmetrical       */
 /* uniform quantizer over given positive input range.                         */
 
-void quant_u(Shortword * p_data, Shortword * p_index, Shortword qmin,
-	     Shortword qmax, Shortword nlev, Shortword nlev_q,
-	     Shortword double_flag, Shortword scale)
+void quant_u(int16_t * p_data, int16_t * p_index, int16_t qmin,
+	     int16_t qmax, int16_t nlev, int16_t nlev_q,
+	     int16_t double_flag, int16_t scale)
 {
-	register Shortword i;
-	Shortword step, half_step, qbnd, *p_in;
-	Longword L_step, L_half_step, L_qbnd, L_qmin, L_p_in;
-	Shortword temp;
-	Longword L_temp;
+	register int16_t i;
+	int16_t step, half_step, qbnd, *p_in;
+	int32_t L_step, L_half_step, L_qbnd, L_qmin, L_p_in;
+	int16_t temp;
+	int32_t L_temp;
 
 	p_in = p_data;
 
@@ -315,11 +315,11 @@ void quant_u(Shortword * p_data, Shortword * p_index, Shortword qmin,
 }
 
 /* Subroutine quant_u_dec(): decode uniformly quantized value.                */
-void quant_u_dec(Shortword index, Shortword * p_data, Shortword qmin,
-		 Shortword qmax, Shortword nlev_q, Shortword scale)
+void quant_u_dec(int16_t index, int16_t * p_data, int16_t qmin,
+		 int16_t qmax, int16_t nlev_q, int16_t scale)
 {
-	Shortword step, temp;
-	Longword L_qmin, L_temp;
+	int16_t step, temp;
+	int32_t L_qmin, L_temp;
 
 	/* Define symmetrical quantizer stepsize.  (nlev - 1) is computed in the  */
 	/* calling function.                                                      */
@@ -340,10 +340,10 @@ void quant_u_dec(Shortword index, Shortword * p_data, Shortword qmin,
 /* Subroutine rand_num: generate random numbers to fill array using "minimal  */
 /* standard" random number generator.                                         */
 
-void rand_num(Shortword output[], Shortword amplitude, Shortword npts)
+void rand_num(int16_t output[], int16_t amplitude, int16_t npts)
 {
-	register Shortword i;
-	Shortword temp;
+	register int16_t i;
+	int16_t temp;
 
 	for (i = 0; i < npts; i++) {
 
@@ -364,14 +364,14 @@ void rand_num(Shortword output[], Shortword amplitude, Shortword npts)
 /*																			*/
 /****************************************************************************/
 
-Shortword rand_minstdgen()
+int16_t rand_minstdgen()
 {
-	static ULongword next = 1;	/* seed; must not be zero!!! */
-	Longword old_saturation;
-	UShortword x0 = melpe_extract_l(next);	/* 16 LSBs OF SEED */
-	UShortword x1 = melpe_extract_h(next);	/* 16 MSBs OF SEED */
-	ULongword p, q;		/* MSW, LSW OF PRODUCT */
-	ULongword L_temp1, L_temp2, L_temp3;
+	static uint32_t next = 1;	/* seed; must not be zero!!! */
+	int32_t old_saturation;
+	uint16_t x0 = melpe_extract_l(next);	/* 16 LSBs OF SEED */
+	uint16_t x1 = melpe_extract_h(next);	/* 16 MSBs OF SEED */
+	uint32_t p, q;		/* MSW, LSW OF PRODUCT */
+	uint32_t L_temp1, L_temp2, L_temp3;
 
 	/*----------------------------------------------------------------------*/
 	/* COMPUTE THE PRODUCT (A * next) USING CROSS MULTIPLICATION OF         */
@@ -396,12 +396,12 @@ Shortword rand_minstdgen()
 	/* store bit 15 to bit 31 in p */
 	p = melpe_L_shr(L_temp1, 15);
 	/* mask bit 15 to bit 31 */
-	L_temp1 = melpe_L_shl((L_temp1 & (Longword) 0x00007fff), 16);
+	L_temp1 = melpe_L_shl((L_temp1 & (int32_t) 0x00007fff), 16);
 	L_temp2 = L_mpyu(A, x0);
 	L_temp3 = melpe_L_sub(LW_MAX, L_temp1);
 	if (L_temp2 > L_temp3) {
 		/* subtract 0x80000000 from sum */
-		L_temp1 = melpe_L_sub(L_temp1, (Longword) 0x7fffffff);
+		L_temp1 = melpe_L_sub(L_temp1, (int32_t) 0x7fffffff);
 		L_temp1 = melpe_L_sub(L_temp1, 1);
 		q = melpe_L_add(L_temp1, L_temp2);
 		p = melpe_L_add(p, 1);
@@ -418,7 +418,7 @@ Shortword rand_minstdgen()
 	L_temp3 = melpe_L_sub(LW_MAX, p);
 	if (q > L_temp3) {
 		/* subtract 0x7fffffff from sum */
-		L_temp1 = melpe_L_sub(p, (Longword) 0x7fffffff);
+		L_temp1 = melpe_L_sub(p, (int32_t) 0x7fffffff);
 		L_temp1 = melpe_L_add(L_temp1, q);
 	} else
 		L_temp1 = melpe_L_add(p, q);
@@ -443,10 +443,10 @@ Shortword rand_minstdgen()
  *	 INPUTS:
  *
  *	   var1
- *					   16 bit short unsigned integer (Shortword) whose value
+ *					   16 bit short unsigned integer (int16_t) whose value
  *					   falls in the range 0xffff 0000 <= var1 <= 0x0000 ffff.
  *	   var2
- *					   16 bit short unsigned integer (Shortword) whose value
+ *					   16 bit short unsigned integer (int16_t) whose value
  *					   falls in the range 0xffff 0000 <= var2 <= 0x0000 ffff.
  *
  *	 OUTPUTS:
@@ -456,7 +456,7 @@ Shortword rand_minstdgen()
  *	 RETURN VALUE:
  *
  *	   L_Out
- *					   32 bit long unsigned integer (Longword) whose value
+ *					   32 bit long unsigned integer (int32_t) whose value
  *					   falls in the range
  *					   0x0000 0000 <= L_var1 <= 0xffff ffff.
  *
@@ -468,11 +468,11 @@ Shortword rand_minstdgen()
  *
  *************************************************************************/
 
-static ULongword L_mpyu(UShortword var1, UShortword var2)
+static uint32_t L_mpyu(uint16_t var1, uint16_t var2)
 {
-	ULongword L_product;
+	uint32_t L_product;
 
-	L_product = (ULongword) var1 *var2;	/* integer multiply */
+	L_product = (uint32_t) var1 *var2;	/* integer multiply */
 	return (L_product);
 }
 
@@ -481,12 +481,12 @@ static ULongword L_mpyu(UShortword var1, UShortword var2)
 /*    of samples read.  Zeros are filled into input[] if there are not suffi- */
 /*    cient data samples.                                                     */
 /* ========================================================================== */
-Shortword readbl(Shortword input[], FILE * fp_in, Shortword size)
+int16_t readbl(int16_t input[], FILE * fp_in, int16_t size)
 {
-	Shortword length;
+	int16_t length;
 
-	length = (Shortword) fread(input, sizeof(Shortword), size, fp_in);
-	v_zap(&(input[length]), (Shortword) (size - length));
+	length = (int16_t) fread(input, sizeof(int16_t), size, fp_in);
+	v_zap(&(input[length]), (int16_t) (size - length));
 
 	return (length);
 }
@@ -497,25 +497,25 @@ Shortword readbl(Shortword input[], FILE * fp_in, Shortword size)
 /*    is used and they are packed into the array pointed by "ptr_ch_begin".   */
 /*    "ptr_ch_bit" points to the position of the next bit being copied onto.  */
 /* ========================================================================== */
-BOOLEAN unpack_code(unsigned char **ptr_ch_begin, Shortword * ptr_ch_bit,
-		    Shortword * code, Shortword numbits, Shortword wsize,
-		    UShortword erase_mask)
+BOOLEAN unpack_code(unsigned char **ptr_ch_begin, int16_t * ptr_ch_bit,
+		    int16_t * code, int16_t numbits, int16_t wsize,
+		    uint16_t erase_mask)
 {
-	register Shortword i;
+	register int16_t i;
 	unsigned char *ch_word;
-	Shortword ret_code;
-	Shortword ch_bit;
+	int16_t ret_code;
+	int16_t ch_bit;
 
 	ch_bit = *ptr_ch_bit;
 	ch_word = *ptr_ch_begin;
 	*code = 0;
-	ret_code = (Shortword) (*ch_word & erase_mask);
+	ret_code = (int16_t) (*ch_word & erase_mask);
 
 	for (i = 0; i < numbits; i++) {
 		/* Mask in bit from channel word to code */
 		*code |=
 		    melpe_shl(melpe_shr
-			((Shortword) ((Shortword) * ch_word & melpe_shl(1, ch_bit)),
+			((int16_t) ((int16_t) * ch_word & melpe_shl(1, ch_bit)),
 			 ch_bit), i);
 
 		/* Check for end of channel word */
@@ -544,10 +544,10 @@ BOOLEAN unpack_code(unsigned char **ptr_ch_begin, Shortword * ptr_ch_bit,
 /*    input - Q0, win_coeff - Q15, output - Q0  */
 /* ============================================ */
 
-void window(Shortword input[], const Shortword win_coeff[], Shortword output[],
-	    Shortword npts)
+void window(int16_t input[], const int16_t win_coeff[], int16_t output[],
+	    int16_t npts)
 {
-	register Shortword i;
+	register int16_t i;
 
 	for (i = 0; i < npts; i++) {
 		output[i] = melpe_mult(win_coeff[i], input[i]);
@@ -561,11 +561,11 @@ void window(Shortword input[], const Shortword win_coeff[], Shortword output[],
 /*    win_coeff - Qin, output = input             */
 /* ============================================== */
 
-void window_Q(Shortword input[], Shortword win_coeff[], Shortword output[],
-	      Shortword npts, Shortword Qin)
+void window_Q(int16_t input[], int16_t win_coeff[], int16_t output[],
+	      int16_t npts, int16_t Qin)
 {
-	register Shortword i;
-	Shortword shift;
+	register int16_t i;
+	int16_t shift;
 
 	/* After computing "shift", win_coeff[]*2^(-shift) is considered Q15.     */
 	shift = melpe_sub(15, Qin);
@@ -578,9 +578,9 @@ void window_Q(Shortword input[], Shortword win_coeff[], Shortword output[],
 /* ============================================ */
 /* This function writes a block of output data. */
 /* ============================================ */
-void writebl(Shortword output[], FILE * fp_out, Shortword size)
+void writebl(int16_t output[], FILE * fp_out, int16_t size)
 {
-	fwrite(output, sizeof(Shortword), size, fp_out);
+	fwrite(output, sizeof(int16_t), size, fp_out);
 }
 
 /* Subroutine polflt(): all pole (IIR) filter.                                */
@@ -590,11 +590,11 @@ void writebl(Shortword output[], FILE * fp_out, Shortword size)
 /* Q value:                                                                   */
 /*   input[], output[]: Q0, coeff[]: Q12                                      */
 
-void polflt(Shortword input[], Shortword coeff[], Shortword output[],
-	    Shortword order, Shortword npts)
+void polflt(int16_t input[], int16_t coeff[], int16_t output[],
+	    int16_t order, int16_t npts)
 {
-	register Shortword i, j;
-	Longword accum;		/* Q12 */
+	register int16_t i, j;
+	int32_t accum;		/* Q12 */
 
 	for (i = 0; i < npts; i++) {
 		accum = melpe_L_shl(melpe_L_deposit_l(input[i]), 12);
@@ -612,11 +612,11 @@ void polflt(Shortword input[], Shortword coeff[], Shortword output[],
 /* Q values:                                                                  */
 /*   input[], output[] - Q0, coeff[] - Q12                                    */
 
-void zerflt(Shortword input[], const Shortword coeff[], Shortword output[],
-	    Shortword order, Shortword npts)
+void zerflt(int16_t input[], const int16_t coeff[], int16_t output[],
+	    int16_t order, int16_t npts)
 {
-	register Shortword i, j;
-	Longword accum;
+	register int16_t i, j;
+	int32_t accum;
 
 	for (i = melpe_sub(npts, 1); i >= 0; i--) {
 		accum = 0;
@@ -634,12 +634,12 @@ void zerflt(Shortword input[], const Shortword coeff[], Shortword output[],
 /* Q values:                                                                  */
 /* coeff - specified by Q_coeff, output - same as input                       */
 
-void zerflt_Q(Shortword input[], const Shortword coeff[], Shortword output[],
-	      Shortword order, Shortword npts, Shortword Q_coeff)
+void zerflt_Q(int16_t input[], const int16_t coeff[], int16_t output[],
+	      int16_t order, int16_t npts, int16_t Q_coeff)
 {
-	register Shortword i, j;
-	Shortword scale;
-	Longword accum;
+	register int16_t i, j;
+	int16_t scale;
+	int32_t accum;
 
 	scale = melpe_sub(15, Q_coeff);
 	for (i = melpe_sub(npts, 1); i >= 0; i--) {
@@ -658,13 +658,13 @@ void zerflt_Q(Shortword input[], const Shortword coeff[], Shortword output[],
 /*                                                                            */
 /* Input scaled down by a factor of 2 to prevent overflow                     */
 /* ========================================================================== */
-void iir_2nd_d(Shortword input[], const Shortword den[], const Shortword num[],
-	       Shortword output[], Shortword delin[], Shortword delout_hi[],
-	       Shortword delout_lo[], Shortword npts)
+void iir_2nd_d(int16_t input[], const int16_t den[], const int16_t num[],
+	       int16_t output[], int16_t delin[], int16_t delout_hi[],
+	       int16_t delout_lo[], int16_t npts)
 {
-	register Shortword i;
-	Shortword temp;
-	Longword accum;
+	register int16_t i;
+	int16_t temp;
+	int32_t accum;
 
 	for (i = 0; i < npts; i++) {
 		accum = melpe_L_mult(delout_lo[0], den[1]);
@@ -689,7 +689,7 @@ void iir_2nd_d(Shortword input[], const Shortword den[], const Shortword num[],
 		delout_lo[1] = delout_lo[0];
 		delout_hi[0] = melpe_extract_h(accum);
 		temp = melpe_shr(melpe_extract_l(accum), 2);
-		delout_lo[0] = (Shortword) (temp & (Shortword) 0x3FFF);
+		delout_lo[0] = (int16_t) (temp & (int16_t) 0x3FFF);
 
 		/* r_ound off result */
 		accum = melpe_L_shl(accum, 1);
@@ -703,12 +703,12 @@ void iir_2nd_d(Shortword input[], const Shortword den[], const Shortword num[],
 /*                                                                            */
 /* Input scaled down by a factor of 2 to prevent overflow                     */
 /* ========================================================================== */
-void iir_2nd_s(Shortword input[], const Shortword den[], const Shortword num[],
-	       Shortword output[], Shortword delin[], Shortword delout[],
-	       Shortword npts)
+void iir_2nd_s(int16_t input[], const int16_t den[], const int16_t num[],
+	       int16_t output[], int16_t delin[], int16_t delout[],
+	       int16_t npts)
 {
-	register Shortword i;
-	Longword accum;
+	register int16_t i;
+	int32_t accum;
 
 	for (i = 0; i < npts; i++) {
 		accum = melpe_L_mult(input[i], num[0]);
@@ -740,9 +740,9 @@ void iir_2nd_s(Shortword input[], const Shortword den[], const Shortword num[],
 /* returned value are of the same Q value.                                    */
 /* ========================================================================== */
 
-Shortword interp_scalar(Shortword prev, Shortword curr, Shortword ifact)
+int16_t interp_scalar(int16_t prev, int16_t curr, int16_t ifact)
 {
-	Shortword out;
+	int16_t out;
 
 	interp_array(&prev, &curr, &out, ifact, 1);
 	return (out);

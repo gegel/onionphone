@@ -39,43 +39,43 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef _MAT_LIB_H_
 #define _MAT_LIB_H_
 
-Shortword *v_add(Shortword vec1[], const Shortword vec2[], Shortword n);
+int16_t *v_add(int16_t vec1[], const int16_t vec2[], int16_t n);
 
-Longword *L_v_add(Longword L_vec1[], Longword L_vec2[], Shortword n);
+int32_t *L_v_add(int32_t L_vec1[], int32_t L_vec2[], int16_t n);
 
-Shortword *v_equ(Shortword vec1[], const Shortword v2[], Shortword n);
+int16_t *v_equ(int16_t vec1[], const int16_t v2[], int16_t n);
 
-Shortword *v_equ_shr(Shortword vec1[], Shortword vec2[], Shortword scale,
-		     Shortword n);
+int16_t *v_equ_shr(int16_t vec1[], int16_t vec2[], int16_t scale,
+		     int16_t n);
 
-Longword *L_v_equ(Longword L_vec1[], Longword L_vec2[], Shortword n);
+int32_t *L_v_equ(int32_t L_vec1[], int32_t L_vec2[], int16_t n);
 
-Shortword v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
-		  Shortword qvec1, Shortword qvec2, Shortword qout);
+int16_t v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
+		  int16_t qvec1, int16_t qvec2, int16_t qout);
 
-Longword L_v_inner(Shortword vec1[], Shortword vec2[], Shortword n,
-		   Shortword qvec1, Shortword qvec2, Shortword qout);
+int32_t L_v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
+		   int16_t qvec1, int16_t qvec2, int16_t qout);
 
-Shortword v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
-		  Shortword qout);
+int16_t v_magsq(int16_t vec1[], int16_t n, int16_t qvec1,
+		  int16_t qout);
 
-Longword L_v_magsq(Shortword vec1[], Shortword n, Shortword qvec1,
-		   Shortword qout);
+int32_t L_v_magsq(int16_t vec1[], int16_t n, int16_t qvec1,
+		   int16_t qout);
 
-Shortword *v_scale(Shortword vec1[], Shortword scale, Shortword n);
+int16_t *v_scale(int16_t vec1[], int16_t scale, int16_t n);
 
-Shortword *v_scale_shl(Shortword vec1[], Shortword scale, Shortword n,
-		       Shortword shift);
+int16_t *v_scale_shl(int16_t vec1[], int16_t scale, int16_t n,
+		       int16_t shift);
 
-Shortword *v_sub(Shortword vec1[], const Shortword vec2[], Shortword n);
+int16_t *v_sub(int16_t vec1[], const int16_t vec2[], int16_t n);
 
-Shortword *v_zap(Shortword vec1[], Shortword n);
+int16_t *v_zap(int16_t vec1[], int16_t n);
 
-Longword *L_v_zap(Longword L_vec1[], Shortword n);
+int32_t *L_v_zap(int32_t L_vec1[], int16_t n);
 
-Shortword *v_get(Shortword n);
+int16_t *v_get(int16_t n);
 
-Longword *L_v_get(Shortword n);
+int32_t *L_v_get(int16_t n);
 
 void v_free(void *v);
 

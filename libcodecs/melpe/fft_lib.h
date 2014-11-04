@@ -18,11 +18,11 @@
 #define _FFT_LIB_H_
 
 /* Radix-2, DIT, 2N-point Real FFT */
-void rfft(Shortword datam1[], Shortword n);
+void rfft(int16_t datam1[], int16_t n);
 /* Radix-2, DIT, N-point Complex FFT */
-Shortword cfft(Shortword datam1[], Shortword nn);
+int16_t cfft(int16_t datam1[], int16_t nn);
 /* Radix-2, DIT, 256-point Complex FFT */
-Shortword fft_npp(Shortword data[], Shortword dir);
+int16_t fft_npp(int16_t data[], int16_t dir);
 
 void fs_init();
 

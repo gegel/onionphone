@@ -84,10 +84,10 @@ Secretariat fax: +33 493 65 47 16.
 #define MAX_40		((double)549755813883.0)
 #define MIN_40		((double)-549755813884.0)
 
-#define MAX_32		((Longword)0x7fffffffL)
-#define MIN_32		((Longword)0x80000000L)
+#define MAX_32		((int32_t)0x7fffffffL)
+#define MIN_32		((int32_t)0x80000000L)
 
-#define MAX_16		((Shortword)0x7fff)
-#define MIN_16		((Shortword)0x8000)
+#define MAX_16		((int16_t)0x7fff)
+#define MIN_16		((int16_t)0x8000)
 
 #endif

@@ -65,15 +65,15 @@ Secretariat fax: +33 493 65 47 16.
 
 /* Prototypes */
 
-static Shortword double_chk(Shortword sig_in[], Shortword * pcorr,
-			    Shortword pitch, Shortword pdouble,
-			    Shortword pmin, Shortword pmax,
-			    Shortword pmin_q7, Shortword pmax_q7,
-			    Shortword lmin);
+static int16_t double_chk(int16_t sig_in[], int16_t * pcorr,
+			    int16_t pitch, int16_t pdouble,
+			    int16_t pmin, int16_t pmax,
+			    int16_t pmin_q7, int16_t pmax_q7,
+			    int16_t lmin);
 
-static void double_ver(Shortword sig_in[], Shortword * pcorr,
-		       Shortword pitch, Shortword pmin, Shortword pmax,
-		       Shortword pmin_q7, Shortword pmax_q7, Shortword lmin);
+static void double_ver(int16_t sig_in[], int16_t * pcorr,
+		       int16_t pitch, int16_t pmin, int16_t pmax,
+		       int16_t pmin_q7, int16_t pmax_q7, int16_t lmin);
 
 /*	double_chk.c: check for pitch doubling and also verify pitch multiple for */
 /*                short pitches.                                              */
@@ -81,15 +81,15 @@ static void double_ver(Shortword sig_in[], Shortword * pcorr,
 /* Q values                                                                   */
 /*     sig_in - Q0, pcorr - Q14, pitch - Q7, pdouble - Q7                     */
 
-static Shortword double_chk(Shortword sig_in[], Shortword * pcorr,
-			    Shortword pitch, Shortword pdouble,
-			    Shortword pmin, Shortword pmax,
-			    Shortword pmin_q7, Shortword pmax_q7,
-			    Shortword lmin)
+static int16_t double_chk(int16_t sig_in[], int16_t * pcorr,
+			    int16_t pitch, int16_t pdouble,
+			    int16_t pmin, int16_t pmax,
+			    int16_t pmin_q7, int16_t pmax_q7,
+			    int16_t lmin)
 {
-	Shortword mult, corr, thresh, temp_pit;
-	Shortword temp1, temp2;
-	Longword L_temp;
+	int16_t mult, corr, thresh, temp_pit;
+	int16_t temp1, temp2;
+	int32_t L_temp;
 
 	pitch = frac_pch(sig_in, pcorr, pitch, 0, pmin, pmax, pmin_q7, pmax_q7,
 			 lmin);
@@ -148,12 +148,12 @@ static Shortword double_chk(Shortword sig_in[], Shortword * pcorr,
 /* Q values                                                                   */
 /*      pitch - Q7, pcorr - Q14                                               */
 
-static void double_ver(Shortword sig_in[], Shortword * pcorr,
-		       Shortword pitch, Shortword pmin, Shortword pmax,
-		       Shortword pmin_q7, Shortword pmax_q7, Shortword lmin)
+static void double_ver(int16_t sig_in[], int16_t * pcorr,
+		       int16_t pitch, int16_t pmin, int16_t pmax,
+		       int16_t pmin_q7, int16_t pmax_q7, int16_t lmin)
 {
-	Shortword multiple;
-	Shortword corr, temp_pit;
+	int16_t multiple;
+	int16_t corr, temp_pit;
 
 	/* Verify pitch multiples for short pitches */
 	multiple = 1;
@@ -175,14 +175,14 @@ static void double_ver(Shortword sig_in[], Shortword * pcorr,
 
 /* f_pitch_scale.c: Scale pitch signal buffer for best precision              */
 
-Shortword f_pitch_scale(Shortword sig_out[], Shortword sig_in[],
-			Shortword length)
+int16_t f_pitch_scale(int16_t sig_out[], int16_t sig_in[],
+			int16_t length)
 {
-	register Shortword i;
-	Shortword scale;
-	Shortword *temp_buf;
-	Longword corr;
-	Longword L_temp, L_sum, L_margin;
+	register int16_t i;
+	int16_t scale;
+	int16_t *temp_buf;
+	int32_t corr;
+	int32_t L_temp, L_sum, L_margin;
 
 	/* Compute signal buffer scale factor */
 	scale = 0;
@@ -237,14 +237,14 @@ Shortword f_pitch_scale(Shortword sig_out[], Shortword sig_in[],
 /* WARNING: this function assumes the input buffer has been normalized by     */
 /*          f_pitch_scale().                                                  */
 
-Shortword find_pitch(Shortword sig_in[], Shortword * pcorr, Shortword lower,
-		     Shortword upper, Shortword length)
+int16_t find_pitch(int16_t sig_in[], int16_t * pcorr, int16_t lower,
+		     int16_t upper, int16_t length)
 {
-	register Shortword i;
-	Shortword cbegin, ipitch, even_flag;
-	Shortword s_corr, shift1a, shift1b, shift2, shift;
-	Longword c0_0, cT_T, corr;
-	Longword denom, max_denom, num, max_num;
+	register int16_t i;
+	int16_t cbegin, ipitch, even_flag;
+	int16_t s_corr, shift1a, shift1b, shift2, shift;
+	int32_t c0_0, cT_T, corr;
+	int32_t denom, max_denom, num, max_num;
 
 	/* Find beginning of correlation window centered on signal */
 	ipitch = lower;
@@ -337,18 +337,18 @@ Shortword find_pitch(Shortword sig_in[], Shortword * pcorr, Shortword lower,
 /* WARNING: this function assumes the input buffer has been normalized by     */
 /* f_pitch_scale().                                                           */
 
-Shortword frac_pch(Shortword sig_in[], Shortword * pcorr, Shortword fpitch,
-		   Shortword range, Shortword pmin, Shortword pmax,
-		   Shortword pmin_q7, Shortword pmax_q7, Shortword lmin)
+int16_t frac_pch(int16_t sig_in[], int16_t * pcorr, int16_t fpitch,
+		   int16_t range, int16_t pmin, int16_t pmax,
+		   int16_t pmin_q7, int16_t pmax_q7, int16_t lmin)
 {
-	Shortword length, cbegin, lower, upper, ipitch;
-	Shortword c0_0, c0_T, c0_T1, cT_T, cT_T1, cT1_T1, c0_Tm1;
-	Shortword shift1a, shift1b, shift2, shift;
-	Shortword frac, frac1, corr;
-	Shortword temp;
-	Longword denom, denom1, denom2, denom3, numer;
-	Longword mag_sq;
-	Longword L_temp1;
+	int16_t length, cbegin, lower, upper, ipitch;
+	int16_t c0_0, c0_T, c0_T1, cT_T, cT_T1, cT1_T1, c0_Tm1;
+	int16_t shift1a, shift1b, shift2, shift;
+	int16_t frac, frac1, corr;
+	int16_t temp;
+	int32_t denom, denom1, denom2, denom3, numer;
+	int32_t mag_sq;
+	int32_t L_temp1;
 
 	/* Perform local integer pitch search for better fpitch estimate */
 	if (range > 0) {
@@ -387,7 +387,7 @@ Shortword frac_pch(Shortword sig_in[], Shortword * pcorr, Shortword fpitch,
 	mag_sq = L_v_magsq(&sig_in[cbegin], length, 0, 1);
 	shift1a = melpe_norm_s(melpe_extract_h(mag_sq));
 	shift1b = melpe_norm_s(melpe_extract_h(L_v_magsq(&sig_in[cbegin + ipitch - 1],
-					     (Shortword) (length + 2), 0, 1)));
+					     (int16_t) (length + 2), 0, 1)));
 	shift = melpe_add(shift1a, shift1b);
 	shift2 = melpe_shr(shift, 1);	/* shift2 = half of total shift */
 	if (melpe_shl(shift2, 1) != shift)
@@ -512,12 +512,12 @@ Shortword frac_pch(Shortword sig_in[], Shortword * pcorr, Shortword fpitch,
 /*                                                                            */
 /* Copyright (c) 1995 by Texas Instruments, Inc.  All rights reserved.        */
 
-Shortword p_avg_update(Shortword pitch, Shortword pcorr, Shortword pthresh)
+int16_t p_avg_update(int16_t pitch, int16_t pcorr, int16_t pthresh)
 {
-	register Shortword i;
-	static Shortword good_pitch[NF];
+	register int16_t i;
+	static int16_t good_pitch[NF];
 	static BOOLEAN firstTime = TRUE;
-	Shortword pitch_avg, temp;
+	int16_t pitch_avg, temp;
 
 	if (firstTime) {
 		fill(good_pitch, DEFAULT_PITCH_Q7, NF);
@@ -568,18 +568,18 @@ Shortword p_avg_update(Shortword pitch, Shortword pcorr, Shortword pthresh)
 /* Q values                                                                   */
 /*      speech - Q0, resid - Q0, pitch_est - Q7, pitch_avg - Q7, pcorr2 - Q14 */
 
-Shortword pitch_ana(Shortword speech[], Shortword resid[],
-		    Shortword pitch_est, Shortword pitch_avg,
-		    Shortword * pcorr2)
+int16_t pitch_ana(int16_t speech[], int16_t resid[],
+		    int16_t pitch_est, int16_t pitch_avg,
+		    int16_t * pcorr2)
 {
-	register Shortword i, section;
-	static Shortword lpres_delin[LPF_ORD];
-	static Shortword lpres_delout[LPF_ORD];
-	static Shortword sigbuf[LPF_ORD + PITCH_FR];
+	register int16_t i, section;
+	static int16_t lpres_delin[LPF_ORD];
+	static int16_t lpres_delout[LPF_ORD];
+	static int16_t sigbuf[LPF_ORD + PITCH_FR];
 	static BOOLEAN firstTime = TRUE;
-	Shortword pcorr, pitch;
-	Shortword temp, temp2;
-	Shortword temp_delin[LPF_ORD], temp_delout[LPF_ORD];
+	int16_t pcorr, pitch;
+	int16_t temp, temp2;
+	int16_t temp_delin[LPF_ORD], temp_delout[LPF_ORD];
 
 	if (firstTime) {
 		v_zap(lpres_delin, LPF_ORD);
@@ -596,8 +596,8 @@ Shortword pitch_ana(Shortword speech[], Shortword resid[],
 			  &lpres_delin[section * 2], &lpres_delout[section * 2],
 			  FRAME);
 		/* save delay buffers for the next overlapping frame */
-		for (i = (Shortword) (section * 2);
-		     i < (Shortword) (section * 2 + 2); i++) {
+		for (i = (int16_t) (section * 2);
+		     i < (int16_t) (section * 2 + 2); i++) {
 			temp_delin[i] = lpres_delin[i];
 			temp_delout[i] = lpres_delout[i];
 		}
@@ -606,8 +606,8 @@ Shortword pitch_ana(Shortword speech[], Shortword resid[],
 			  &lpres_delin[section * 2], &lpres_delout[section * 2],
 			  PITCH_FR - FRAME);
 		/* restore delay buffers for the next overlapping frame */
-		for (i = (Shortword) (section * 2);
-		     i < (Shortword) (section * 2 + 2); i++) {
+		for (i = (int16_t) (section * 2);
+		     i < (int16_t) (section * 2 + 2); i++) {
 			lpres_delin[i] = temp_delin[i];
 			lpres_delout[i] = temp_delout[i];
 		}

@@ -74,7 +74,7 @@ Secretariat fax: +33 493 65 47 16.
 
 #define ORIGINAL_BIT_ORDER	0	/* flag to use bit order of original version */
 #if (ORIGINAL_BIT_ORDER)	/* Original linear order */
-static Shortword bit_order[NUM_CH_BITS] = {
+static int16_t bit_order[NUM_CH_BITS] = {
 	0, 1, 2, 3, 4, 5,
 	6, 7, 8, 9, 10, 11,
 	12, 13, 14, 15, 16, 17,
@@ -86,7 +86,7 @@ static Shortword bit_order[NUM_CH_BITS] = {
 	48, 49, 50, 51, 52, 53
 };
 #else				/* Order based on priority of bits */
-static Shortword bit_order[NUM_CH_BITS] = {
+static int16_t bit_order[NUM_CH_BITS] = {
 	0, 17, 9, 28, 34, 3,
 	4, 39, 1, 2, 13, 38,
 	14, 10, 11, 40, 15, 21,
@@ -102,15 +102,15 @@ static Shortword bit_order[NUM_CH_BITS] = {
 /* Define bit buffer */
 static unsigned char bit_buffer[NUM_CH_BITS];
 
-static Shortword sync_bit = 0;	/* sync bit */
+static int16_t sync_bit = 0;	/* sync bit */
 
-Shortword parity(Shortword x, Shortword leng);
+int16_t parity(int16_t x, int16_t leng);
 
 void melp_chn_write(struct quant_param *qpar, unsigned char chbuf[])
 {
-	register Shortword i;
+	register int16_t i;
 	unsigned char *bit_ptr;
-	Shortword bit_cntr;
+	int16_t bit_cntr;
 
 	/* FEC: code additional information in redundant indeces */
 	fec_code(qpar);
@@ -143,17 +143,17 @@ void melp_chn_write(struct quant_param *qpar, unsigned char chbuf[])
 		pack_code(bit_buffer[bit_order[i]], &qpar->chptr, &qpar->chbit,
 			  1, chwordsize);
 		if (i == 0)	/* set beginning of frame bit */
-			*(qpar->chptr) |= (UShortword) 0x8000;
+			*(qpar->chptr) |= (uint16_t) 0x8000;
 	}
 }
 
 BOOLEAN melp_chn_read(struct quant_param *qpar, struct melp_param *par,
 		      struct melp_param *prev_par, unsigned char chbuf[])
 {
-	register Shortword i;
+	register int16_t i;
 	unsigned char *bit_ptr;
 	BOOLEAN erase = FALSE;
-	Shortword index, bit_cntr, dontcare;
+	int16_t index, bit_cntr, dontcare;
 
 	/* Read channel output buffer into bit buffer */
 	bit_ptr = bit_buffer;
@@ -210,7 +210,7 @@ BOOLEAN melp_chn_read(struct quant_param *qpar, struct melp_param *par,
 		if (qpar->uv_flag[0])
 			fill(par->fs_mag, ONE_Q13, NUM_HARM);
 		else		/* Decode Fourier magnitudes */
-			vq_msd2(fsvq_cb, par->fs_mag, (Shortword *) NULL,
+			vq_msd2(fsvq_cb, par->fs_mag, (int16_t *) NULL,
 				&(qpar->fsvq_index), &dontcare, 1, NUM_HARM, 0);
 
 		/* Decode gain terms with uniform log quantizer */
@@ -261,11 +261,11 @@ BOOLEAN melp_chn_read(struct quant_param *qpar, struct melp_param *par,
 *****************************************************************************/
 void low_rate_chn_write(struct quant_param *qpar)
 {
-	register Shortword i;
-	Shortword bit_cntr, cnt;
-	Shortword uv1, uv2, cuv;
-	Shortword uv_index = 0, bp_prot1 = 0, bp_prot2 = 0, lsp_prot = 0;
-	Shortword uv_parity;
+	register int16_t i;
+	int16_t bit_cntr, cnt;
+	int16_t uv1, uv2, cuv;
+	int16_t uv_index = 0, bp_prot1 = 0, bp_prot2 = 0, lsp_prot = 0;
+	int16_t uv_parity;
 	unsigned char *bit_ptr;
 
 	/* FEC: code additional information in redundant indices */
@@ -319,9 +319,9 @@ void low_rate_chn_write(struct quant_param *qpar)
 			lsp_prot = 7;
 		}
 	} else if (cnt == 3) {	/* VVV */
-		uv_index = (Shortword) (qpar->pitch_index / PITCH_VQ_SIZE);
+		uv_index = (int16_t) (qpar->pitch_index / PITCH_VQ_SIZE);
 		qpar->pitch_index = melpe_sub(qpar->pitch_index,
-					(Shortword) (uv_index * PITCH_VQ_SIZE));
+					(int16_t) (uv_index * PITCH_VQ_SIZE));
 		uv_index = vvv_index_map[uv_index];
 	}
 
@@ -453,32 +453,32 @@ void low_rate_chn_write(struct quant_param *qpar)
 ** Return value:	None
 **
 *****************************************************************************/
-Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
+int16_t low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			    struct melp_param *prev_par)
 {
-	register Shortword i, j, k;
-	static Shortword prev_uv = 1;
-	static Shortword prev_fsmag[NUM_HARM];
-	static Shortword qplsp[LPC_ORD], prev_gain[2 * NF * NUM_GAINFR];
-	static Shortword firstTime = TRUE;
-	const Shortword *codebook;
-	Shortword erase = 0, lsp_check[NF] = { 0, 0, 0 };
-	Shortword bit_cntr, bit_cntr1, cnt, last, index, dontcare;
-	Shortword prot_bp1, prot_bp2, prot_lsp;
-	Shortword uv1, uv2, cuv, uv_index, uv_parity;
+	register int16_t i, j, k;
+	static int16_t prev_uv = 1;
+	static int16_t prev_fsmag[NUM_HARM];
+	static int16_t qplsp[LPC_ORD], prev_gain[2 * NF * NUM_GAINFR];
+	static int16_t firstTime = TRUE;
+	const int16_t *codebook;
+	int16_t erase = 0, lsp_check[NF] = { 0, 0, 0 };
+	int16_t bit_cntr, bit_cntr1, cnt, last, index, dontcare;
+	int16_t prot_bp1, prot_bp2, prot_lsp;
+	int16_t uv1, uv2, cuv, uv_index, uv_parity;
 	unsigned char *bit_ptr, *bit_ptr1;
-	Shortword ilsp1[LPC_ORD], ilsp2[LPC_ORD], res[2 * LPC_ORD];
-	Shortword temp1, temp2, p_value, q_value;
-	Shortword intfact;
-	Shortword weighted_fsmag[NUM_HARM];	/* Q13 */
+	int16_t ilsp1[LPC_ORD], ilsp2[LPC_ORD], res[2 * LPC_ORD];
+	int16_t temp1, temp2, p_value, q_value;
+	int16_t intfact;
+	int16_t weighted_fsmag[NUM_HARM];	/* Q13 */
 
-	Shortword erase_uuu = 0, erase_vvv = 0;
-	Shortword flag_parity = 0, flag_dec_lsp = 1, flag_dec_pitch = 1;
+	int16_t erase_uuu = 0, erase_vvv = 0;
+	int16_t flag_parity = 0, flag_dec_lsp = 1, flag_dec_pitch = 1;
 
-	Shortword melp_v_cb_size[4] = { 256, 64, 32, 32 };
-	Shortword res_cb_size[4] = { 256, 64, 64, 64 };
-	Shortword melp_uv_cb_size[1] = { 512 };
-	Longword L_acc, L_sum1, L_sum2;
+	int16_t melp_v_cb_size[4] = { 256, 64, 32, 32 };
+	int16_t res_cb_size[4] = { 256, 64, 64, 64 };
+	int16_t melp_uv_cb_size[1] = { 512 };
+	int32_t L_acc, L_sum1, L_sum2;
 
 	/* In previous versions we use unweighted_fsmag[] and prev_fsmag[] to     */
 	/* keep track of a previous par[].fs_mag array.  They were obtained by    */
@@ -768,7 +768,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			qpar->uv_flag[2] = par[2].uv_flag = 0;
 			if (uv_index == 5)
 				qpar->pitch_index =
-				    (Shortword) (qpar->pitch_index +
+				    (int16_t) (qpar->pitch_index +
 						 PITCH_VQ_SIZE);
 		} else {
 			if (prot_bp1 == 1 && prot_lsp == 7) {
@@ -779,7 +779,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 				erase_vvv |= 1;
 				if (uv_index == 5)
 					qpar->pitch_index =
-					    (Shortword) (qpar->pitch_index +
+					    (int16_t) (qpar->pitch_index +
 							 PITCH_VQ_SIZE);
 			}
 		}
@@ -789,7 +789,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			qpar->uv_flag[1] = par[1].uv_flag = 0;
 			qpar->uv_flag[2] = par[2].uv_flag = 0;
 			qpar->pitch_index =
-			    (Shortword) (qpar->pitch_index + 2 * PITCH_VQ_SIZE);
+			    (int16_t) (qpar->pitch_index + 2 * PITCH_VQ_SIZE);
 		} else {
 			if (prot_bp1 == 2) {
 				qpar->uv_flag[0] = par[0].uv_flag = 0;
@@ -803,7 +803,7 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			} else {
 				erase_vvv |= 1;
 				qpar->pitch_index =
-				    (Shortword) (qpar->pitch_index +
+				    (int16_t) (qpar->pitch_index +
 						 2 * PITCH_VQ_SIZE);
 			}
 		}
@@ -813,11 +813,11 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 			qpar->uv_flag[1] = par[1].uv_flag = 0;
 			qpar->uv_flag[2] = par[2].uv_flag = 0;
 			qpar->pitch_index =
-			    (Shortword) (qpar->pitch_index + 3 * PITCH_VQ_SIZE);
+			    (int16_t) (qpar->pitch_index + 3 * PITCH_VQ_SIZE);
 		} else {
 			erase_vvv |= 1;
 			qpar->pitch_index =
-			    (Shortword) (qpar->pitch_index + 3 * PITCH_VQ_SIZE);
+			    (int16_t) (qpar->pitch_index + 3 * PITCH_VQ_SIZE);
 		}
 	}
 
@@ -1364,10 +1364,10 @@ Shortword low_rate_chn_read(struct quant_param *qpar, struct melp_param *par,
 	return (erase);
 }
 
-Shortword parity(Shortword x, Shortword leng)
+int16_t parity(int16_t x, int16_t leng)
 {
-	register Shortword i;
-	Shortword p = 0x0;
+	register int16_t i;
+	int16_t p = 0x0;
 
 	for (i = 0; i < leng; i++) {
 		p ^= x & 0x1;

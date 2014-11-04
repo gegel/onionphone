@@ -39,12 +39,12 @@
 #define THREE_Q10		3072	/* 3 * (1 << 10) */
 
 /* ========== Prototypes ========== */
-static void lpfilt(Shortword inbuf[], Shortword lpbuf[], Shortword len);
-static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len);
-static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
+static void lpfilt(int16_t inbuf[], int16_t lpbuf[], int16_t len);
+static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len);
+static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 		    classParam * classStat);
 
-void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2);
+void minCostIndex(int16_t * costBuf, int16_t * index1, int16_t * index2);
 
 /****************************************************************************
 **
@@ -55,19 +55,19 @@ void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2);
 **
 ** Arguments:
 **
-**	Shortword inbuf[]		---- speech buffer (Q0)
+**	int16_t inbuf[]		---- speech buffer (Q0)
 **	pitTrackParam *pitTrack ---- pitch pitTrackParam structure
 **	classParam *classStat	---- classification parameters
 **
 ** Return value:	None
 **
 *****************************************************************************/
-void pitchAuto(Shortword inbuf[], pitTrackParam * pitTrack,
+void pitchAuto(int16_t inbuf[], pitTrackParam * pitTrack,
 	       classParam * classStat)
 {
 	static BOOLEAN firstTime = TRUE;
-	static Shortword lpbuf[PIT_COR_LEN];	/* low pass filter buffer, Q0 */
-	static Shortword ivbuf[PIT_COR_LEN];	/* inverse filter buffer, Q12 */
+	static int16_t lpbuf[PIT_COR_LEN];	/* low pass filter buffer, Q0 */
+	static int16_t ivbuf[PIT_COR_LEN];	/* inverse filter buffer, Q12 */
 
 	if (firstTime) {	/* initialize the buffers */
 		v_zap(lpbuf, PIT_COR_LEN);
@@ -99,16 +99,16 @@ void pitchAuto(Shortword inbuf[], pitTrackParam * pitTrack,
  * lpbuf	---- ouput	low pass filtered data				  *
  * len		---- update buffer length						  *
  *============================================================*/
-static void lpfilt(Shortword inbuf[], Shortword lpbuf[], Shortword len)
+static void lpfilt(int16_t inbuf[], int16_t lpbuf[], int16_t len)
 {
-	register Shortword i, j;
-	static const Shortword lpar[4] = {	/* Q15 */
+	register int16_t i, j;
+	static const int16_t lpar[4] = {	/* Q15 */
 		20113, -20113, 9437, -1720
 	};
-	Longword L_sum;
+	int32_t L_sum;
 
 	/* ====== Shift the lpbuf ====== */
-	v_equ(lpbuf, &(lpbuf[len]), (Shortword) (PIT_COR_LEN - len));
+	v_equ(lpbuf, &(lpbuf[len]), (int16_t) (PIT_COR_LEN - len));
 
 	/* ====== low pass filter ====== */
 
@@ -137,17 +137,17 @@ static void lpfilt(Shortword inbuf[], Shortword lpbuf[], Shortword len)
  * ivbuf ---- residaul values of lpbuf through inverse filer  *
  * len	 ---- update buffer length							  *
  *============================================================*/
-static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len)
+static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len)
 {
-	register Shortword i, j;
+	register int16_t i, j;
 	Word40 L40_sum;
-	Longword L_temp;
-	Shortword shift, rc1, temp1, temp2, temp3;
-	Shortword r_coeff[3];	/* Q15 */
-	Shortword pc1, pc2;	/* Q12 */
+	int32_t L_temp;
+	int16_t shift, rc1, temp1, temp2, temp3;
+	int16_t r_coeff[3];	/* Q15 */
+	int16_t pc1, pc2;	/* Q12 */
 
 	/* ====== Shift the ivbuf ====== */
-	v_equ(ivbuf, &(ivbuf[len]), (Shortword) (PIT_COR_LEN - len));
+	v_equ(ivbuf, &(ivbuf[len]), (int16_t) (PIT_COR_LEN - len));
 
 	/* compute pc1 and pc2 in Q12 as                                          */
 	/*       r(0)*r(1)-r(1)*r(2)           r(0)*r(2)-r(1)**2                  */
@@ -158,13 +158,13 @@ static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len)
 	for (i = 0; i < PIT_COR_LEN; i++)
 		L40_sum = melpe_L40_mac(L40_sum, lpbuf[i], lpbuf[i]);
 	shift = melpe_norm32(L40_sum);
-	L_temp = (Longword) melpe_L40_shl(L40_sum, shift);
+	L_temp = (int32_t) melpe_L40_shl(L40_sum, shift);
 	r_coeff[0] = melpe_r_ound(L_temp);	/* normalized r0 */
 	for (i = 1; i < 3; i++) {
 		L40_sum = 0;
 		for (j = i; j < PIT_COR_LEN; j++)
 			L40_sum = melpe_L40_mac(L40_sum, lpbuf[j], lpbuf[j - i]);
-		L_temp = (Longword) melpe_L40_shl(L40_sum, shift);
+		L_temp = (int32_t) melpe_L40_shl(L40_sum, shift);
 		r_coeff[i] = melpe_r_ound(L_temp);
 	}
 
@@ -183,7 +183,7 @@ static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len)
 		temp3 = melpe_sub(r_coeff[2], temp1);
 		temp1 = melpe_abs_s(temp3);
 		if (temp1 > temp2) {
-			pc2 = (Shortword) - 4096;	/* Q12 */
+			pc2 = (int16_t) - 4096;	/* Q12 */
 		} else {
 			pc2 = melpe_divide_s(temp1, temp2);
 			if (temp3 < 0)
@@ -215,19 +215,19 @@ static void ivfilt(Shortword ivbuf[], Shortword lpbuf[], Shortword len)
  *	pitTrack	---- pitch pitTrackParam structure				*
  *	classStat	---- classification paramters					*
  *==============================================================*/
-static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
+static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 		    classParam * classStat)
 {
-	register Shortword i, j;
-	Shortword temp, temp1, temp2, shift;
-	Shortword proBuf[PIT_COR_LEN];	/* Q15 */
-	Longword L_temp;	/* Q0 */
-	Shortword index[MAXPITCH + 1];
-	Shortword lowStart, highStart;
+	register int16_t i, j;
+	int16_t temp, temp1, temp2, shift;
+	int16_t proBuf[PIT_COR_LEN];	/* Q15 */
+	int32_t L_temp;	/* Q0 */
+	int16_t index[MAXPITCH + 1];
+	int16_t lowStart, highStart;
 	Word40 ACC_r0, ACC_rk, ACC_A;	/* Emulating 40Bit-Accumulator */
-	Longword L_r0, L_rk;
-	Shortword r0_shift, rk_shift, root;
-	Shortword gp[MAXPITCH + 1], peak[MAXPITCH + 1], corx[NODE];	/* Q15 */
+	int32_t L_r0, L_rk;
+	int16_t r0_shift, rk_shift, root;
+	int16_t gp[MAXPITCH + 1], peak[MAXPITCH + 1], corx[NODE];	/* Q15 */
 
 	/* ------ Remove DC component. ------ */
 	remove_dc(inbuf, proBuf, PIT_COR_LEN);
@@ -241,7 +241,7 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 		ACC_r0 = 1;
 	r0_shift = melpe_norm32(ACC_r0);
 	ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
-	L_r0 = (Longword) ACC_r0;
+	L_r0 = (int32_t) ACC_r0;
 
 	ACC_rk = 0;
 	for (i = MAXPITCH; i < PIT_COR_LEN; i++) {
@@ -251,7 +251,7 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 		ACC_rk = 1;
 	rk_shift = melpe_norm32(ACC_rk);
 	ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
-	L_rk = (Longword) ACC_rk;
+	L_rk = (int32_t) ACC_rk;
 
 	ACC_A = 0;
 	for (i = 0; i < PIT_COR_LEN - MAXPITCH; i++) {
@@ -267,7 +267,7 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 	ACC_A = melpe_L40_shl(ACC_A, shift);
 	temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 	root = sqrt_Q15(temp);
-	L_temp = (Longword) ACC_A;
+	L_temp = (int32_t) ACC_A;
 	temp = melpe_extract_h(L_temp);
 	if (temp < 0)
 		temp = 0;	/* Negative Autocorrelation doesn't make sense here */
@@ -290,7 +290,7 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 				ACC_r0 = 1;
 			r0_shift = melpe_norm32(ACC_r0);
 			ACC_r0 = melpe_L40_shl(ACC_r0, r0_shift);
-			L_r0 = (Longword) ACC_r0;
+			L_r0 = (int32_t) ACC_r0;
 			lowStart++;
 		} else {
 			highStart--;
@@ -306,7 +306,7 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 				ACC_rk = 1;
 			rk_shift = melpe_norm32(ACC_rk);
 			ACC_rk = melpe_L40_shl(ACC_rk, rk_shift);
-			L_rk = (Longword) ACC_rk;
+			L_rk = (int32_t) ACC_rk;
 		}
 		ACC_A = 0;
 		for (j = lowStart; j < lowStart + PIT_WIN; j++) {
@@ -322,7 +322,7 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 		ACC_A = melpe_L40_shl(ACC_A, shift);
 		temp = melpe_mult(melpe_extract_h(L_r0), melpe_extract_h(L_rk));
 		root = sqrt_Q15(temp);
-		L_temp = (Longword) ACC_A;
+		L_temp = (int32_t) ACC_A;
 		temp = melpe_extract_h(L_temp);
 		if (temp < 0)
 			temp = 0;	/* ignore negative autocorrelation */
@@ -356,7 +356,7 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 			if (peak[j] > peak[temp])
 				temp = j;
 		}
-		index[temp] = (Shortword) (i + 1);
+		index[temp] = (int16_t) (i + 1);
 		corx[i] = peak[temp];
 		peak[temp] = 0;
 		if (i == 0)
@@ -384,7 +384,7 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 
 	/* ---- Modify time domain correlation by muliple checking ---- */
 	for (i = 0; i < NODE - 1; i++) {
-		for (j = (Shortword) (i + 1); j < NODE; j++) {
+		for (j = (int16_t) (i + 1); j < NODE; j++) {
 			temp1 = pitTrack->pit[j];
 			temp2 = pitTrack->pit[i];
 			temp = temp2;
@@ -426,15 +426,15 @@ static void corPeak(Shortword inbuf[], pitTrackParam * pitTrack,
 ** Description: multiple or sub-multiple pitch check
 **
 ** Input:
-**		Shortword f1	------	the pitch candidate 1 (Q7)
-**		Shortword f2	------	the pitch candidate 2 (Q7)
+**		int16_t f1	------	the pitch candidate 1 (Q7)
+**		int16_t f2	------	the pitch candidate 2 (Q7)
 **
-** Return: Shortword	----- ratio of f1, f2 with multiple (Q15)
+** Return: int16_t	----- ratio of f1, f2 with multiple (Q15)
 **
 ********************************************************************/
-Shortword multiCheck(Shortword f1, Shortword f2)
+int16_t multiCheck(int16_t f1, int16_t f2)
 {
-	Shortword temp, f2_multiple;	/* Q7 */
+	int16_t temp, f2_multiple;	/* Q7 */
 
 	if (f1 <= f2) {		/* Swap f1 and f2 so that f1 is larger than f2. */
 		temp = f1;
@@ -464,17 +464,17 @@ Shortword multiCheck(Shortword f1, Shortword f2)
 ** Description: find first two largest local maxs
 **
 ** Input:
-**		Shortword *costBuf	------	the cost buffer Q5
-**		Shortword *index1	------	the index of the largest peak
-**		Shortword *index2	------	the index of the second largest peak
+**		int16_t *costBuf	------	the cost buffer Q5
+**		int16_t *index1	------	the index of the largest peak
+**		int16_t *index2	------	the index of the second largest peak
 **
 ** Return: None
 **
 ********************************************************************/
-void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2)
+void minCostIndex(int16_t * costBuf, int16_t * index1, int16_t * index2)
 {
-	register Shortword i;
-	Shortword co;
+	register int16_t i;
+	int16_t co;
 
 	*index1 = 0;		/* largest weight */
 	co = costBuf[0];
@@ -490,7 +490,7 @@ void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2)
 	else
 		*index2 = 0;
 	co = costBuf[*index2];
-	for (i = (Shortword) (*index2 + 1); i < NODE; i++) {
+	for (i = (int16_t) (*index2 + 1); i < NODE; i++) {
 		if (*index1 == i)
 			continue;
 		if (costBuf[i] < co) {
@@ -507,18 +507,18 @@ void minCostIndex(Shortword * costBuf, Shortword * index1, Shortword * index2)
 ** Description: Find coresponding pitch index for pitch tracking
 **
 ** Input:
-**		Shortword pitch			------	the pitch candidate (Q7)
+**		int16_t pitch			------	the pitch candidate (Q7)
 **		pitTrackParam *pitTrack ------	The pitch tracker structure
 **
-** Return: Shortword ----- index of the time domain candidates
+** Return: int16_t ----- index of the time domain candidates
 **
 ********************************************************************/
-Shortword trackPitch(Shortword pitch, pitTrackParam * pitTrack)
+int16_t trackPitch(int16_t pitch, pitTrackParam * pitTrack)
 {
-	register Shortword i;
-	Shortword index;
-	Shortword best, temp;	/* Q7 */
-	Shortword co = MONE_Q15;	/* Minus infinity. */
+	register int16_t i;
+	int16_t index;
+	int16_t best, temp;	/* Q7 */
+	int16_t co = MONE_Q15;	/* Minus infinity. */
 
 	/* The following loop finds the index for pitTrack->pit[] so that it      */
 	/* maximizes pitTrack->weight[] among those indices with                  */
@@ -567,16 +567,16 @@ Shortword trackPitch(Shortword pitch, pitTrackParam * pitTrack)
 **
 ** Input:
 **		pitTrackParam *pitTrack ------ The pitch tracker structure
-**		Shortword num			------ The number of available structures
+**		int16_t num			------ The number of available structures
 **
-** Return: Shortword ----- the smoothed pitch (Q7)
+** Return: int16_t ----- the smoothed pitch (Q7)
 **
 ********************************************************************/
-Shortword pitLookahead(pitTrackParam * pitTrack, Shortword num)
+int16_t pitLookahead(pitTrackParam * pitTrack, int16_t num)
 {
-	register Shortword i, j;
-	Shortword index;
-	Longword L_sum, L_cost;
+	register int16_t i, j;
+	int16_t index;
+	int32_t L_sum, L_cost;
 
 	/* compute the cost function of the last strucutre */
 	for (i = 0; i < NODE; i++) {
@@ -629,34 +629,34 @@ Shortword pitLookahead(pitTrackParam * pitTrack, Shortword num)
 /*                                                                            */
 /*    RATIO(x, y) = (fabs((float)(x)-(float)(y))/(float)((x)>(y)?(x):(y)))    */
 /*                                                                            */
-/* The Shortword Q7 arguments x and y are implied to be positive.  The        */
+/* The int16_t Q7 arguments x and y are implied to be positive.  The        */
 /* returned value is Q15.                                                     */
 /* ========================================================================== */
 
-Shortword ratio(Shortword x, Shortword y)
+int16_t ratio(int16_t x, int16_t y)
 {
-	Shortword diff, larger;
+	int16_t diff, larger;
 
 	diff = melpe_sub(x, y);
 	diff = melpe_abs_s(diff);
-	larger = (Shortword) ((x > y) ? x : y);
+	larger = (int16_t) ((x > y) ? x : y);
 	return (melpe_divide_s(diff, larger));
 }
 
 /* ========================================================================== */
 /* This function should be functionally almost the same as ratio() except     */
-/* that the second argument is Longword.  It is used in sc_ana() of           */
+/* that the second argument is int32_t.  It is used in sc_ana() of           */
 /* "melp_ana.c" when we call ratio() in                                       */
 /*                                                                            */
 /*    ratio(par[1].pitch, (prev_pitch*3)) < X008_Q15                          */
 /*                                                                            */
-/* where a Q7 prev_pitch multiplied by 3 could overflow a Shortword.  Both    */
+/* where a Q7 prev_pitch multiplied by 3 could overflow a int16_t.  Both    */
 /* inputs are still Q7 and the returned value is still Q15.                   */
 /* ========================================================================== */
 
-Shortword L_ratio(Shortword x, Longword y)
+int16_t L_ratio(int16_t x, int32_t y)
 {
-	Longword L_x, diff, larger;
+	int32_t L_x, diff, larger;
 
 	L_x = melpe_L_deposit_l(x);
 	diff = melpe_L_sub(y, L_x);
@@ -675,10 +675,10 @@ Shortword L_ratio(Shortword x, Longword y)
 /* the fixed point implementation.  The implementation assumes "ifact" is     */
 /* always equal to 0.9.                                                       */
 /* ========================================================================== */
-Shortword updateEn(Shortword prev_en, Shortword ifact, Shortword curr_en)
+int16_t updateEn(int16_t prev_en, int16_t ifact, int16_t curr_en)
 {
-	Shortword temp1, temp2;
-	Shortword result;	/* Q11 */
+	int16_t temp1, temp2;
+	int16_t result;	/* Q11 */
 
 	/* Now we want to compute                                                 */
 	/* log10(ifact*pow(10.0, prev_en) + (1.0 - ifact)*pow(10.0, curr_en)).    */
@@ -689,7 +689,7 @@ Shortword updateEn(Shortword prev_en, Shortword ifact, Shortword curr_en)
 	/* ignore the pow() term, or ignore the "ifact" term inside log10() (so   */
 	/* the expression becomes curr_en + log10(1 - ifact)).  This manipulation */
 	/* is necessary because pow(10.0, prev_en) and pow(10.0, curr_en) can     */
-	/* easily overflow the dynamic range for Shortword.                       */
+	/* easily overflow the dynamic range for int16_t.                       */
 
 	temp1 = melpe_shr(curr_en, 1);	/* Q10 */
 	temp2 = melpe_shr(prev_en, 1);

@@ -34,23 +34,23 @@
 
 /* ======== Pitch estimation structures ======== */
 typedef struct {
-	Shortword pit[NODE];	/* integer pitch for each node, Q7 */
-	Shortword weight[NODE];	/* time domain correlation, Q15 */
-	Shortword cost[NODE];	/* cost function, Q0 */
+	int16_t pit[NODE];	/* integer pitch for each node, Q7 */
+	int16_t weight[NODE];	/* time domain correlation, Q15 */
+	int16_t cost[NODE];	/* cost function, Q0 */
 } pitTrackParam;
 
 typedef struct {
-	Shortword classy;	/* the class */
-	Shortword subEnergy;	/* full band energy, Q11 */
-	Shortword zeroCrosRate;	/* zero crossing rate, Q15 */
-	Shortword peakiness;	/* peakiness measure, Q11 */
-	Shortword corx;		/* autocorrelation, Q15 */
-	Shortword pitch;	/* pitch period, Q0 */
+	int16_t classy;	/* the class */
+	int16_t subEnergy;	/* full band energy, Q11 */
+	int16_t zeroCrosRate;	/* zero crossing rate, Q15 */
+	int16_t peakiness;	/* peakiness measure, Q11 */
+	int16_t corx;		/* autocorrelation, Q15 */
+	int16_t pitch;	/* pitch period, Q0 */
 } classParam;
 
 /* ============================ */
 /* Prototypes from "classify.c"	*/
 /* ============================ */
-void classify(Shortword inbuf[], classParam * classStat, Shortword autocorr[]);
+void classify(int16_t inbuf[], classParam * classStat, int16_t autocorr[]);
 
 #endif

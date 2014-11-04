@@ -98,7 +98,7 @@ Secretariat fax: +33 493 65 47 16.
  *	 INPUTS:
  *
  *	   L_var1
- *					   32 bit long signed integer (Longword) whose value
+ *					   32 bit long signed integer (int32_t) whose value
  *					   falls in the range
  *					   0x8000 0000 <= L_var1 <= 0x7fff ffff.
  *
@@ -109,7 +109,7 @@ Secretariat fax: +33 493 65 47 16.
  *	 RETURN VALUE:
  *
  *	   swOut
- *					   16 bit short signed integer (Shortword) whose value
+ *					   16 bit short signed integer (int16_t) whose value
  *					   falls in the range
  *					   0xffff 8000 <= swOut <= 0x0000 7fff.
  *

@@ -32,6 +32,6 @@ Secretariat fax: +33 493 65 47 16.
 #ifndef  _MATHDP31_H_
 #define  _MATHDP31_H_
 
-Longword L_mpy_ls(Longword L_var2, Shortword var1);
+int32_t L_mpy_ls(int32_t L_var2, int16_t var1);
 
 #endif

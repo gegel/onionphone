@@ -41,24 +41,24 @@ Secretariat fax: +33 493 65 47 16.
 
 /* Lowpass filter coefficient in second-order sections */
 
-extern const Shortword lpf_num[];
-extern const Shortword lpf_den[];
+extern const int16_t lpf_num[];
+extern const int16_t lpf_den[];
 
 /* Butterworth bandpass filters in second-order sections */
-extern const Shortword bpf_num[];
-extern const Shortword bpf_num_class[];
+extern const int16_t bpf_num[];
+extern const int16_t bpf_num_class[];
 
 /* sign of coefficients for bpf_den is reversed */
-extern const Shortword bpf_den[];
-extern const Shortword bpf_den_class[];
+extern const int16_t bpf_den[];
+extern const int16_t bpf_den_class[];
 
 /* Hamming window coefficents in Q15 */
-extern const Shortword win_cof[];
+extern const int16_t win_cof[];
 
 /* Bandpass filter coeffients */
-extern const Shortword bp_cof[][MIX_ORD + 1];
+extern const int16_t bp_cof[][MIX_ORD + 1];
 
 /* Triangle pulse dispersion filter */
-extern const Shortword disp_cof[];
+extern const int16_t disp_cof[];
 
 #endif

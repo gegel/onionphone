@@ -41,8 +41,8 @@
 #define X102_Q14		16712	/* 1.02 * (1 << 15) */
 #define X105_Q14		17203	/* 1.05 * (1 << 15) */
 
-static void realIDFT(Shortword mag[], Shortword phase[],
-		     Shortword signal[], Shortword length);
+static void realIDFT(int16_t mag[], int16_t phase[],
+		     int16_t signal[], int16_t length);
 
 /***************************************************************************
 **
@@ -52,22 +52,22 @@ static void realIDFT(Shortword mag[], Shortword phase[],
 **
 ** Arguments:
 **
-**	Shortword mag[]		input magnitudes (Q13)
-**	Shortword phase[]	input phase (Q0)
-**	Shortword signal[]	output signal (Q15)
-**	Shortword length	The IDFT length
+**	int16_t mag[]		input magnitudes (Q13)
+**	int16_t phase[]	input phase (Q0)
+**	int16_t signal[]	output signal (Q15)
+**	int16_t length	The IDFT length
 **
 ** Return value:			None
 **
 *****************************************************************************/
-static void realIDFT(Shortword mag[], Shortword phase[], Shortword signal[],
-		     Shortword length)
+static void realIDFT(int16_t mag[], int16_t phase[], int16_t signal[],
+		     int16_t length)
 {
-	register Shortword i, j, k;
-	Shortword w, w2, length2;
-	Shortword temp;
-	Longword L_temp;
-	Shortword idftc[PITCHMAX];
+	register int16_t i, j, k;
+	int16_t w, w2, length2;
+	int16_t temp;
+	int32_t L_temp;
+	int16_t idftc[PITCHMAX];
 
 	/*      length2 = (length/2) + 1; */
 	length2 = melpe_add(melpe_shr(length, 1), 1);
@@ -80,10 +80,10 @@ static void realIDFT(Shortword mag[], Shortword phase[], Shortword signal[],
 		L_temp = melpe_L_mult(w, i);	/* L_temp in Q19 */
 
 		/* make sure argument for cos function is less than 1 */
-		if (L_temp > (Longword) ONE_Q19) {
+		if (L_temp > (int32_t) ONE_Q19) {
 			/*      cos(pi+x) = cos(pi-x) */
-			L_temp = melpe_L_sub((Longword) TWO_Q19, L_temp);
-		} else if (L_temp == (Longword) ONE_Q19)
+			L_temp = melpe_L_sub((int32_t) TWO_Q19, L_temp);
+		} else if (L_temp == (int32_t) ONE_Q19)
 			L_temp = melpe_L_sub(L_temp, 1);
 
 		L_temp = melpe_L_shr(L_temp, 4);	/* L_temp in Q15 */
@@ -122,7 +122,7 @@ static void realIDFT(Shortword mag[], Shortword phase[], Shortword signal[],
 
 		/* It might take some proofs, but mag[] is already weighted by w      */
 		/* (which is inversely proportional to length) and L_temp here never  */
-		/* overflows a Shortword.                                             */
+		/* overflows a int16_t.                                             */
 		signal[i] = melpe_r_ound(L_temp);
 	}
 }
@@ -135,18 +135,18 @@ static void realIDFT(Shortword mag[], Shortword phase[], Shortword signal[],
 **
 ** Arguments:
 **
-**	Shortword bpvc[]	band voicing information (Q14)
-**	Shortword *fc		output cut-off frequency (Q3)
+**	int16_t bpvc[]	band voicing information (Q14)
+**	int16_t *fc		output cut-off frequency (Q3)
 **
 ** Return value:			None
 **
 *****************************************************************************/
 
-void set_fc(Shortword bpvc[], Shortword * fc)
+void set_fc(int16_t bpvc[], int16_t * fc)
 {
-	register Shortword i;
-	Shortword index;
-	const Shortword syn_bp_map[16] = {	/* Q0 */
+	register int16_t i;
+	int16_t index;
+	const int16_t syn_bp_map[16] = {	/* Q0 */
 		500, 500, 500, 500, 500, 500, 500, 4000,
 		1000, 1000, 1000, 4000, 2000, 3000, 3000, 4000
 	};
@@ -170,7 +170,7 @@ void set_fc(Shortword bpvc[], Shortword * fc)
 			index |= 0;
 		}
 	}
-	*fc = (Shortword) (syn_bp_map[index] << 3);
+	*fc = (int16_t) (syn_bp_map[index] << 3);
 }
 
 /***************************************************************************
@@ -181,27 +181,27 @@ void set_fc(Shortword bpvc[], Shortword * fc)
 **
 ** Arguments:
 **
-**	Shortword amp[]			input harmonic mags (Q13)
-**	Shortword signal[]		output synthesized signal buffer (Q15)
-**	Shortword fc			The cut-off frequency (Q3)
-**	Shortword length		The pitch length
+**	int16_t amp[]			input harmonic mags (Q13)
+**	int16_t signal[]		output synthesized signal buffer (Q15)
+**	int16_t fc			The cut-off frequency (Q3)
+**	int16_t length		The pitch length
 **
 ** Return value:			None
 **
 *****************************************************************************/
-void harm_syn_pitch(Shortword amp[], Shortword signal[], Shortword fc,
-		    Shortword length)
+void harm_syn_pitch(int16_t amp[], int16_t signal[], int16_t fc,
+		    int16_t length)
 {
-	register Shortword i;
-	Shortword rndphase[SYN_FFT_SIZE / 2 + 1];	/* Q0 */
-	Shortword factor, fn;	/* Q15 */
-	Shortword temp1, temp2;
-	Shortword totalCnt, voicedCnt, mixedCnt, index;
-	Shortword mag[SYN_FFT_SIZE / 2 + 1];
-	Shortword phase[SYN_FFT_SIZE / 2 + 1];	/* Q0 */
-	Shortword fc1, fc2;
+	register int16_t i;
+	int16_t rndphase[SYN_FFT_SIZE / 2 + 1];	/* Q0 */
+	int16_t factor, fn;	/* Q15 */
+	int16_t temp1, temp2;
+	int16_t totalCnt, voicedCnt, mixedCnt, index;
+	int16_t mag[SYN_FFT_SIZE / 2 + 1];
+	int16_t phase[SYN_FFT_SIZE / 2 + 1];	/* Q0 */
+	int16_t fc1, fc2;
 
-	memzero(phase, (SYN_FFT_SIZE / 2 + 1) * sizeof(Shortword));
+	memzero(phase, (SYN_FFT_SIZE / 2 + 1) * sizeof(int16_t));
 
 	/* ====== Generate random phase for unvoiced segment ====== */
 	/* Note that phase[] and rndphase[] computed in harm_syn_pitch() are now  */
@@ -241,7 +241,7 @@ void harm_syn_pitch(Shortword amp[], Shortword signal[], Shortword fc,
 	temp2 = melpe_divide_s(fc2, melpe_shl(FSAMP, 2));	/* Now temp1 and temp2 are Q15. */
 	voicedCnt = melpe_mult(temp1, length);
 	mixedCnt = melpe_mult(temp2, length);
-	totalCnt = (Shortword) ((length / 2) + 1);
+	totalCnt = (int16_t) ((length / 2) + 1);
 
 	/* ====== set values to mag and phase ====== */
 	v_equ(mag, amp, melpe_add(voicedCnt, 1));	/* Q13 */
@@ -252,12 +252,12 @@ void harm_syn_pitch(Shortword amp[], Shortword signal[], Shortword fc,
 	temp2 = melpe_extract_l(melpe_L_mult(FIXED_PHASE, length));
 	temp2 = melpe_shr(temp2, 1);	/* temp2 = FIXED_PHASE * length */
 	while (temp2 >= 2 * length)
-		temp2 = melpe_sub(temp2, (Shortword) (2 * length));
+		temp2 = melpe_sub(temp2, (int16_t) (2 * length));
 	for (i = 0; i < mixedCnt + 1; i++) {
 		phase[i] = melpe_shr(temp1, 1);
 		temp1 = melpe_add(temp1, temp2);
 		if (temp1 >= 2 * length)
-			temp1 = melpe_sub(temp1, (Shortword) (2 * length));
+			temp1 = melpe_sub(temp1, (int16_t) (2 * length));
 	}
 	index = 0;
 	for (i = melpe_add(voicedCnt, 1); i < melpe_add(mixedCnt, 1); i++, index++) {

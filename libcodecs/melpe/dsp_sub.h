@@ -38,66 +38,66 @@ Secretariat fax: +33 493 65 47 16.
 
 #include <stdio.h>
 
-void envelope(Shortword input[], Shortword prev_in, Shortword output[],
-	      Shortword npts);
+void envelope(int16_t input[], int16_t prev_in, int16_t output[],
+	      int16_t npts);
 
-void fill(Shortword output[], Shortword fillval, Shortword npts);
+void fill(int16_t output[], int16_t fillval, int16_t npts);
 
-void L_fill(Longword output[], Longword fillval, Shortword npts);
+void L_fill(int32_t output[], int32_t fillval, int16_t npts);
 
-void interp_array(Shortword prev[], Shortword curr[], Shortword out[],
-		  Shortword ifact, Shortword size);
+void interp_array(int16_t prev[], int16_t curr[], int16_t out[],
+		  int16_t ifact, int16_t size);
 
-Shortword median3(Shortword input[]);
+int16_t median3(int16_t input[]);
 
-void pack_code(Shortword code, unsigned char **ptr_ch_begin,
-	       Shortword * ptr_ch_bit, Shortword numbits, Shortword wsize);
+void pack_code(int16_t code, unsigned char **ptr_ch_begin,
+	       int16_t * ptr_ch_bit, int16_t numbits, int16_t wsize);
 
-Shortword peakiness(Shortword input[], Shortword npts);
+int16_t peakiness(int16_t input[], int16_t npts);
 
-void quant_u(Shortword * p_data, Shortword * p_index, Shortword qmin,
-	     Shortword qmax, Shortword nlev, Shortword nlev_q,
-	     Shortword double_flag, Shortword scale);
+void quant_u(int16_t * p_data, int16_t * p_index, int16_t qmin,
+	     int16_t qmax, int16_t nlev, int16_t nlev_q,
+	     int16_t double_flag, int16_t scale);
 
-void quant_u_dec(Shortword index, Shortword * p_data, Shortword qmin,
-		 Shortword qmax, Shortword nlev_q, Shortword scale);
+void quant_u_dec(int16_t index, int16_t * p_data, int16_t qmin,
+		 int16_t qmax, int16_t nlev_q, int16_t scale);
 
-void rand_num(Shortword output[], Shortword amplitude, Shortword npts);
+void rand_num(int16_t output[], int16_t amplitude, int16_t npts);
 
-Shortword rand_minstdgen();
+int16_t rand_minstdgen();
 
-Shortword readbl(Shortword input[], FILE * fp_in, Shortword size);
+int16_t readbl(int16_t input[], FILE * fp_in, int16_t size);
 
-BOOLEAN unpack_code(unsigned char **ptr_ch_begin, Shortword * ptr_ch_bit,
-		    Shortword * code, Shortword numbits, Shortword wsize,
-		    UShortword erase_mask);
+BOOLEAN unpack_code(unsigned char **ptr_ch_begin, int16_t * ptr_ch_bit,
+		    int16_t * code, int16_t numbits, int16_t wsize,
+		    uint16_t erase_mask);
 
-void window(Shortword input[], const Shortword win_coeff[],
-	    Shortword output[], Shortword npts);
+void window(int16_t input[], const int16_t win_coeff[],
+	    int16_t output[], int16_t npts);
 
-void window_Q(Shortword input[], Shortword win_coeff[], Shortword output[],
-	      Shortword npts, Shortword Qin);
+void window_Q(int16_t input[], int16_t win_coeff[], int16_t output[],
+	      int16_t npts, int16_t Qin);
 
-void writebl(Shortword output[], FILE * fp_out, Shortword size);
+void writebl(int16_t output[], FILE * fp_out, int16_t size);
 
-void polflt(Shortword input[], Shortword coeff[], Shortword output[],
-	    Shortword order, Shortword npts);
+void polflt(int16_t input[], int16_t coeff[], int16_t output[],
+	    int16_t order, int16_t npts);
 
-void zerflt(Shortword input[], const Shortword coeff[], Shortword output[],
-	    Shortword order, Shortword npts);
+void zerflt(int16_t input[], const int16_t coeff[], int16_t output[],
+	    int16_t order, int16_t npts);
 
-void zerflt_Q(Shortword input[], const Shortword coeff[],
-	      Shortword output[], Shortword order, Shortword npts,
-	      Shortword Q_coeff);
+void zerflt_Q(int16_t input[], const int16_t coeff[],
+	      int16_t output[], int16_t order, int16_t npts,
+	      int16_t Q_coeff);
 
-void iir_2nd_d(Shortword input[], const Shortword den[],
-	       const Shortword num[], Shortword output[], Shortword delin[],
-	       Shortword delout_hi[], Shortword delout_lo[], Shortword npts);
+void iir_2nd_d(int16_t input[], const int16_t den[],
+	       const int16_t num[], int16_t output[], int16_t delin[],
+	       int16_t delout_hi[], int16_t delout_lo[], int16_t npts);
 
-void iir_2nd_s(Shortword input[], const Shortword den[],
-	       const Shortword num[], Shortword output[],
-	       Shortword delin[], Shortword delout[], Shortword npts);
+void iir_2nd_s(int16_t input[], const int16_t den[],
+	       const int16_t num[], int16_t output[],
+	       int16_t delin[], int16_t delout[], int16_t npts);
 
-Shortword interp_scalar(Shortword prev, Shortword curr, Shortword ifact);
+int16_t interp_scalar(int16_t prev, int16_t curr, int16_t ifact);
 
 #endif

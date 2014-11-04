@@ -86,13 +86,13 @@ Secretariat fax: +33 493 65 47 16.
 #endif
 
 static struct melp_param prev_par;
-static Shortword sigsave[PITCHMAX];
-static Shortword syn_begin;
+static int16_t sigsave[PITCHMAX];
+static int16_t syn_begin;
 static BOOLEAN erase;
 
 /* Prototype */
 
-static void melp_syn(struct melp_param *par, Shortword sp_out[]);
+static void melp_syn(struct melp_param *par, int16_t sp_out[]);
 
 /****************************************************************************
 **
@@ -103,14 +103,14 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[]);
 ** Arguments:
 **
 **	melp_param *par ---- output encoded melp parameters
-**	Shortword sp_in[] ---- input speech data buffer
+**	int16_t sp_in[] ---- input speech data buffer
 **
 ** Return value:	None
 **
 *****************************************************************************/
-void synthesis(struct melp_param *par, Shortword sp_out[])
+void synthesis(struct melp_param *par, int16_t sp_out[])
 {
-	register Shortword i;
+	register int16_t i;
 
 	/* Copy previous period of processed speech to output array */
 	if (syn_begin > 0) {
@@ -118,7 +118,7 @@ void synthesis(struct melp_param *par, Shortword sp_out[])
 			v_equ(sp_out, sigsave, frameSize);
 			/* past end: save remainder in sigsave[0] */
 			v_equ(sigsave, &sigsave[frameSize],
-			      (Shortword) (syn_begin - frameSize));
+			      (int16_t) (syn_begin - frameSize));
 		} else
 			v_equ(sp_out, sigsave, syn_begin);
 	}
@@ -158,34 +158,34 @@ void synthesis(struct melp_param *par, Shortword sp_out[])
 /*    speech[] - output speech signal                                         */
 /*  Returns: void                                                             */
 
-static void melp_syn(struct melp_param *par, Shortword sp_out[])
+static void melp_syn(struct melp_param *par, int16_t sp_out[])
 {
-	register Shortword i;
+	register int16_t i;
 	static BOOLEAN firstTime = TRUE;
-	static Shortword noise_gain = MIN_NOISE_Q8;
-	static Shortword prev_lpc_gain = ONE_Q15;
-	static Shortword lpc_del[LPC_ORD];	/* Q0 */
-	static Shortword prev_tilt;
-	static Shortword prev_pcof[MIX_ORD + 1], prev_ncof[MIX_ORD + 1];
-	static Shortword disp_del[DISP_ORD];
-	static Shortword ase_del[LPC_ORD], tilt_del[TILT_ORD];
-	static Shortword pulse_del[MIX_ORD], noise_del[MIX_ORD];
-	Shortword fs_real[PITCHMAX];
-	Shortword sig2[BEGIN + PITCHMAX];
-	Shortword sigbuf[BEGIN + PITCHMAX];
-	Shortword gaincnt, length;
-	Shortword intfact, intfact1, ifact, ifact_gain;
-	Shortword gain, pulse_gain, pitch, jitter;
-	Shortword curr_tilt, tilt_cof[TILT_ORD + 1];
-	Shortword sig_prob, syn_gain, lpc_gain;
-	Shortword lsf[LPC_ORD];
-	Shortword lpc[LPC_ORD + 1];
-	Shortword ase_num[LPC_ORD + 1], ase_den[LPC_ORD];
-	Shortword curr_pcof[MIX_ORD + 1], curr_ncof[MIX_ORD + 1];
-	Shortword pulse_cof[MIX_ORD + 1], noise_cof[MIX_ORD + 1];
-	Shortword temp1, temp2;
-	Longword L_temp1, L_temp2;
-	Shortword fc_prev, fc_curr, fc;
+	static int16_t noise_gain = MIN_NOISE_Q8;
+	static int16_t prev_lpc_gain = ONE_Q15;
+	static int16_t lpc_del[LPC_ORD];	/* Q0 */
+	static int16_t prev_tilt;
+	static int16_t prev_pcof[MIX_ORD + 1], prev_ncof[MIX_ORD + 1];
+	static int16_t disp_del[DISP_ORD];
+	static int16_t ase_del[LPC_ORD], tilt_del[TILT_ORD];
+	static int16_t pulse_del[MIX_ORD], noise_del[MIX_ORD];
+	int16_t fs_real[PITCHMAX];
+	int16_t sig2[BEGIN + PITCHMAX];
+	int16_t sigbuf[BEGIN + PITCHMAX];
+	int16_t gaincnt, length;
+	int16_t intfact, intfact1, ifact, ifact_gain;
+	int16_t gain, pulse_gain, pitch, jitter;
+	int16_t curr_tilt, tilt_cof[TILT_ORD + 1];
+	int16_t sig_prob, syn_gain, lpc_gain;
+	int16_t lsf[LPC_ORD];
+	int16_t lpc[LPC_ORD + 1];
+	int16_t ase_num[LPC_ORD + 1], ase_den[LPC_ORD];
+	int16_t curr_pcof[MIX_ORD + 1], curr_ncof[MIX_ORD + 1];
+	int16_t pulse_cof[MIX_ORD + 1], noise_cof[MIX_ORD + 1];
+	int16_t temp1, temp2;
+	int32_t L_temp1, L_temp2;
+	int16_t fc_prev, fc_curr, fc;
 
 	/* Update adaptive noise level estimate based on last gain */
 	if (firstTime) {
@@ -478,7 +478,7 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 		/* Copy processed speech to output array (not past frame end) */
 		if (melpe_add(syn_begin, length) >= FRAME) {
 			v_equ(&sp_out[syn_begin], &sigbuf[BEGIN],
-			      (Shortword) (FRAME - syn_begin));
+			      (int16_t) (FRAME - syn_begin));
 
 #if POSTFILTER
 			postfilt(sp_out, prev_par.lsf, par->lsf);
@@ -486,7 +486,7 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 
 			/* past end: save remainder in sigsave[0] */
 			v_equ(sigsave, &sigbuf[BEGIN + FRAME - syn_begin],
-			      (Shortword) (length - (FRAME - syn_begin)));
+			      (int16_t) (length - (FRAME - syn_begin)));
 		} else
 			v_equ(&sp_out[syn_begin], &sigbuf[BEGIN], length);
 
@@ -513,8 +513,8 @@ static void melp_syn(struct melp_param *par, Shortword sp_out[])
 
 void melp_syn_init()
 {
-	register Shortword i;
-	Shortword temp;
+	register int16_t i;
+	int16_t temp;
 
 	v_zap(prev_par.gain, NUM_GAINFR);
 	prev_par.pitch = UV_PITCH_Q7;
