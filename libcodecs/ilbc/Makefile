@@ -4,7 +4,7 @@ LD ?= ld
 
 # NORMAL DEBUG
 MODE ?= NORMAL
-MODE_NORMAL ?= -O3 -ffast-math -funroll-loops
+MODE_NORMAL ?= -O2
 MODE_DEBUG ?= -O0 -g -ggdb
 
 #
