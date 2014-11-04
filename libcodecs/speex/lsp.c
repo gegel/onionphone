@@ -140,6 +140,8 @@ static inline spx_word32_t cheb_poly_eva(spx_word16_t * coef,	/* P or Q coefs in
 					 int m,	/* LPC order/2                              */
 					 char *stack)
 {
+	(void)stack;
+
 	int i;
 	spx_word16_t b0, b1;
 	spx_word32_t sum;
