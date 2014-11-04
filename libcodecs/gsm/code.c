@@ -25,7 +25,7 @@ extern char *memcpy P((char *, char *, int));
  *  4.2 FIXED POINT IMPLEMENTATION OF THE RPE-LTP CODER 
  */
 
-void Gsm_Coder P8((S, s, LARc, Nc, bc, Mc, xmaxc, xMc), struct gsm_state *S, word * s,	/* [0..159] samples                     IN      */
+void Gsm_Coder P8((S, s, LARc, Nc, bc, Mc, xmaxc, xMc), struct gsm_state *S, int16_t * s,	/* [0..159] samples                     IN      */
 /*
  * The RPE-LTD coder works on a frame by frame basis.  The length of
  * the frame is equal to 160 samples.  Some computations are done
@@ -35,26 +35,26 @@ void Gsm_Coder P8((S, s, LARc, Nc, bc, Mc, xmaxc, xMc), struct gsm_state *S, wor
  * frame (160 samples of signal d[0..159]).  These parts produce at
  * the output of the coder:
  */
-		  word * LARc,	/* [0..7] LAR coefficients              OUT     */
+		  int16_t * LARc,	/* [0..7] LAR coefficients              OUT     */
 /*
  * Procedure 4.2.11 to 4.2.18 are to be executed four times per
  * frame.  That means once for each sub-segment RPE-LTP analysis of
  * 40 samples.  These parts produce at the output of the coder:
  */
-		  word * Nc,	/* [0..3] LTP lag                       OUT     */
-		  word * bc,	/* [0..3] coded LTP gain                OUT     */
-		  word * Mc,	/* [0..3] RPE grid selection            OUT     */
-		  word * xmaxc,	/* [0..3] Coded maximum amplitude       OUT     */
-		  word * xMc	/* [13*4] normalized RPE samples        OUT     */
+		  int16_t * Nc,	/* [0..3] LTP lag                       OUT     */
+		  int16_t * bc,	/* [0..3] coded LTP gain                OUT     */
+		  int16_t * Mc,	/* [0..3] RPE grid selection            OUT     */
+		  int16_t * xmaxc,	/* [0..3] Coded maximum amplitude       OUT     */
+		  int16_t * xMc	/* [13*4] normalized RPE samples        OUT     */
     )
 {
 	int k;
-	word *dp = S->dp0 + 120;	/* [ -120...-1 ] */
-	word *dpp = dp;		/* [ 0...39 ]    */
+	int16_t *dp = S->dp0 + 120;	/* [ -120...-1 ] */
+	int16_t *dpp = dp;		/* [ 0...39 ]    */
 
-	static word e[50] = { 0 };
+	static int16_t e[50] = { 0 };
 
-	word so[160];
+	int16_t so[160];
 
 	Gsm_Preprocess(S, s, so);
 	Gsm_LPC_Analysis(S, so, LARc);
@@ -77,7 +77,7 @@ void Gsm_Coder P8((S, s, LARc, Nc, bc, Mc, xmaxc, xMc), struct gsm_state *S, wor
 
 		{
 			register int i;
-			register longword ltmp;
+			register int32_t ltmp;
 			for (i = 0; i <= 39; i++)
 				dp[i] = GSM_ADD(e[5 + i], dpp[i]);
 		}

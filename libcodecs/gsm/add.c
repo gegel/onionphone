@@ -22,68 +22,68 @@
 #define	saturate(x) 	\
 	((x) < MIN_WORD ? MIN_WORD : (x) > MAX_WORD ? MAX_WORD: (x))
 
-word gsm_add P2((a, b), word a, word b)
+int16_t gsm_add P2((a, b), int16_t a, int16_t b)
 {
-	longword sum = a + b;
+	int32_t sum = a + b;
 	return saturate(sum);
 }
 
-word gsm_sub P2((a, b), word a, word b)
+int16_t gsm_sub P2((a, b), int16_t a, int16_t b)
 {
-	longword diff = a - b;
+	int32_t diff = a - b;
 	return saturate(diff);
 }
 
-word gsm_mult P2((a, b), word a, word b)
+int16_t gsm_mult P2((a, b), int16_t a, int16_t b)
 {
 	if (a == MIN_WORD && b == MIN_WORD)
 		return MAX_WORD;
 	else
-		return SASR((longword) a * (longword) b, 15);
+		return SASR((int32_t) a * (int32_t) b, 15);
 }
 
-word gsm_mult_r P2((a, b), word a, word b)
+int16_t gsm_mult_r P2((a, b), int16_t a, int16_t b)
 {
 	if (b == MIN_WORD && a == MIN_WORD)
 		return MAX_WORD;
 	else {
-		longword prod = (longword) a * (longword) b + 16384;
+		int32_t prod = (int32_t) a * (int32_t) b + 16384;
 		prod >>= 15;
 		return prod & 0xFFFF;
 	}
 }
 
-word gsm_abs P1((a), word a)
+int16_t gsm_abs P1((a), int16_t a)
 {
 	return a < 0 ? (a == MIN_WORD ? MAX_WORD : -a) : a;
 }
 
-longword gsm_L_mult P2((a, b), word a, word b)
+int32_t gsm_L_mult P2((a, b), int16_t a, int16_t b)
 {
 	assert(a != MIN_WORD || b != MIN_WORD);
-	return ((longword) a * (longword) b) << 1;
+	return ((int32_t) a * (int32_t) b) << 1;
 }
 
-longword gsm_L_add P2((a, b), longword a, longword b)
+int32_t gsm_L_add P2((a, b), int32_t a, int32_t b)
 {
 	if (a < 0) {
 		if (b >= 0)
 			return a + b;
 		else {
-			ulongword A =
-			    (ulongword) - (a + 1) + (ulongword) - (b + 1);
+			uint32_t A =
+			    (uint32_t) - (a + 1) + (uint32_t) - (b + 1);
 			return A >=
-			    MAX_LONGWORD ? MIN_LONGWORD : -(longword) A - 2;
+			    MAX_LONGWORD ? MIN_LONGWORD : -(int32_t) A - 2;
 		}
 	} else if (b <= 0)
 		return a + b;
 	else {
-		ulongword A = (ulongword) a + (ulongword) b;
+		uint32_t A = (uint32_t) a + (uint32_t) b;
 		return A > MAX_LONGWORD ? MAX_LONGWORD : A;
 	}
 }
 
-longword gsm_L_sub P2((a, b), longword a, longword b)
+int32_t gsm_L_sub P2((a, b), int32_t a, int32_t b)
 {
 	if (a >= 0) {
 		if (b >= 0)
@@ -91,7 +91,7 @@ longword gsm_L_sub P2((a, b), longword a, longword b)
 		else {
 			/* a>=0, b<0 */
 
-			ulongword A = (ulongword) a + -(b + 1);
+			uint32_t A = (uint32_t) a + -(b + 1);
 			return A >= MAX_LONGWORD ? MAX_LONGWORD : (A + 1);
 		}
 	} else if (b <= 0)
@@ -99,8 +99,8 @@ longword gsm_L_sub P2((a, b), longword a, longword b)
 	else {
 		/* a<0, b>0 */
 
-		ulongword A = (ulongword) - (a + 1) + b;
-		return A >= MAX_LONGWORD ? MIN_LONGWORD : (longword)(-A - 1);
+		uint32_t A = (uint32_t) - (a + 1) + b;
+		return A >= MAX_LONGWORD ? MIN_LONGWORD : (int32_t)(-A - 1);
 	}
 }
 
@@ -123,7 +123,7 @@ static unsigned char bitoff[256] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-word gsm_norm P1((a), longword a)
+int16_t gsm_norm P1((a), int32_t a)
 /*
  * the number of left shifts needed to normalize the 32 bit
  * variable L_var1 for positive values on the interval
@@ -157,7 +157,7 @@ word gsm_norm P1((a), longword a)
 	       : 23 + bitoff[0xFF & a]);
 }
 
-longword gsm_L_asl P2((a, n), longword a, int n)
+int32_t gsm_L_asl P2((a, n), int32_t a, int n)
 {
 	if (n >= 32)
 		return 0;
@@ -168,7 +168,7 @@ longword gsm_L_asl P2((a, n), longword a, int n)
 	return a << n;
 }
 
-word gsm_asl P2((a, n), word a, int n)
+int16_t gsm_asl P2((a, n), int16_t a, int n)
 {
 	if (n >= 16)
 		return 0;
@@ -179,7 +179,7 @@ word gsm_asl P2((a, n), word a, int n)
 	return a << n;
 }
 
-longword gsm_L_asr P2((a, n), longword a, int n)
+int32_t gsm_L_asr P2((a, n), int32_t a, int n)
 {
 	if (n >= 32)
 		return -(a < 0);
@@ -194,11 +194,11 @@ longword gsm_L_asr P2((a, n), longword a, int n)
 	if (a >= 0)
 		return a >> n;
 	else
-		return -(longword) (-(ulongword) a >> n);
+		return -(int32_t) (-(uint32_t) a >> n);
 #	endif
 }
 
-word gsm_asr P2((a, n), word a, int n)
+int16_t gsm_asr P2((a, n), int16_t a, int n)
 {
 	if (n >= 16)
 		return -(a < 0);
@@ -213,7 +213,7 @@ word gsm_asr P2((a, n), word a, int n)
 	if (a >= 0)
 		return a >> n;
 	else
-		return -(word) (-(uword) a >> n);
+		return -(int16_t) (-(uint16_t) a >> n);
 #	endif
 }
 
@@ -226,11 +226,11 @@ word gsm_asr P2((a, n), word a, int n)
  *	  >= num > 0
  */
 
-word gsm_div P2((num, denum), word num, word denum)
+int16_t gsm_div P2((num, denum), int16_t num, int16_t denum)
 {
-	longword L_num = num;
-	longword L_denum = denum;
-	word div = 0;
+	int32_t L_num = num;
+	int32_t L_denum = denum;
+	int16_t div = 0;
 	int k = 15;
 
 	/* The parameter num sometimes becomes zero.

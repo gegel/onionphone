@@ -18,12 +18,12 @@
  *  4.3 FIXED POINT IMPLEMENTATION OF THE RPE-LTP DECODER
  */
 
-static void Postprocessing P2((S, s), struct gsm_state *S, register word * s)
+static void Postprocessing P2((S, s), struct gsm_state *S, register int16_t * s)
 {
 	register int k;
-	register word msr = S->msr;
-	register longword ltmp;	/* for GSM_ADD */
-	register word tmp;
+	register int16_t msr = S->msr;
+	register int32_t ltmp;	/* for GSM_ADD */
+	register int16_t tmp;
 
 	for (k = 160; k--; s++) {
 		tmp = GSM_MULT_R(msr, 28180);
@@ -33,17 +33,17 @@ static void Postprocessing P2((S, s), struct gsm_state *S, register word * s)
 	S->msr = msr;
 }
 
-void Gsm_Decoder P8((S, LARcr, Ncr, bcr, Mcr, xmaxcr, xMcr, s), struct gsm_state *S, word * LARcr,	/* [0..7]               IN      */
-		    word * Ncr,	/* [0..3]               IN      */
-		    word * bcr,	/* [0..3]               IN      */
-		    word * Mcr,	/* [0..3]               IN      */
-		    word * xmaxcr,	/* [0..3]               IN      */
-		    word * xMcr,	/* [0..13*4]            IN      */
-		    word * s)
+void Gsm_Decoder P8((S, LARcr, Ncr, bcr, Mcr, xmaxcr, xMcr, s), struct gsm_state *S, int16_t * LARcr,	/* [0..7]               IN      */
+		    int16_t * Ncr,	/* [0..3]               IN      */
+		    int16_t * bcr,	/* [0..3]               IN      */
+		    int16_t * Mcr,	/* [0..3]               IN      */
+		    int16_t * xmaxcr,	/* [0..3]               IN      */
+		    int16_t * xMcr,	/* [0..13*4]            IN      */
+		    int16_t * s)
 {				/* [0..159]               OUT     */
 	int j, k;
-	word erp[40], wt[160];
-	word *drp = S->dp0 + 120;
+	int16_t erp[40], wt[160];
+	int16_t *drp = S->dp0 + 120;
 
 	for (j = 0; j <= 3; j++, xmaxcr++, bcr++, Ncr++, Mcr++, xMcr += 13) {
 
