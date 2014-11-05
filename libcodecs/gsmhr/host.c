@@ -67,8 +67,8 @@
 void fillBitAlloc(int iVoicing, int iR0, int *piVqIndeces,
 		  int iSoftInterp, int *piLags,
 		  int *piCodeWrdsA, int *piCodeWrdsB,
-		  int *piGsp0s, Shortword swVadFlag,
-		  Shortword swSP, Shortword * pswBAlloc)
+		  int *piGsp0s, int16_t swVadFlag,
+		  int16_t swSP, int16_t * pswBAlloc)
 {
 
 /*_________________________________________________________________________
@@ -78,7 +78,7 @@ void fillBitAlloc(int iVoicing, int iR0, int *piVqIndeces,
 */
 
 	int i;
-	Shortword *pswNxt;
+	int16_t *pswNxt;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -162,7 +162,7 @@ void fillBitAlloc(int iVoicing, int iR0, int *piVqIndeces,
  **************************************************************************/
 
 int hostEncoderInterface(FILE * pfileInSpeech, int iNumToRead,
-			 Shortword pswSamplesRead[])
+			 int16_t pswSamplesRead[])
 {
 
 /*_________________________________________________________________________
@@ -178,7 +178,7 @@ int hostEncoderInterface(FILE * pfileInSpeech, int iNumToRead,
  |_________________________________________________________________________|
 */
 
-	iNumRead = fread((char *)pswSamplesRead, sizeof(Shortword),
+	iNumRead = fread((char *)pswSamplesRead, sizeof(int16_t),
 			 iNumToRead, pfileInSpeech);
 
 	/* Delete the 3 LSB's - 13 bit speech input */
@@ -221,9 +221,9 @@ int hostEncoderInterface(FILE * pfileInSpeech, int iNumToRead,
  *
  **************************************************************************/
 
-int readDecfile(FILE * infile, Shortword pswSpeechPara[])
+int readDecfile(FILE * infile, int16_t pswSpeechPara[])
 {
-	if (fread((char *)pswSpeechPara, sizeof(Shortword), 22, infile) == 0)
+	if (fread((char *)pswSpeechPara, sizeof(int16_t), 22, infile) == 0)
 		return (1);
 	else
 		return (0);
@@ -265,7 +265,7 @@ int readDecfile(FILE * infile, Shortword pswSpeechPara[])
  *
  **************************************************************************/
 
-void speechDecoderHostInterface(Shortword pswDecodedSpeechFrame[],
+void speechDecoderHostInterface(int16_t pswDecodedSpeechFrame[],
 				FILE * fpfileSpeechOut)
 {
 
@@ -301,7 +301,7 @@ void speechDecoderHostInterface(Shortword pswDecodedSpeechFrame[],
 	/* F_LEN samples of linear pcm to output file */
 	/* ------------------------------------------ */
 
-	fwrite((char *)pswDecodedSpeechFrame, sizeof(Shortword),
+	fwrite((char *)pswDecodedSpeechFrame, sizeof(int16_t),
 	       F_LEN, fpfileSpeechOut);
 }
 
@@ -328,11 +328,11 @@ void speechDecoderHostInterface(Shortword pswDecodedSpeechFrame[],
  **************************************************************************
 */
 
-int writeEncfile(Shortword pswSpeechPara[], FILE * fpfileEnc)
+int writeEncfile(int16_t pswSpeechPara[], FILE * fpfileEnc)
 {
 	int i;
 
-	i = fwrite((char *)pswSpeechPara, sizeof(Shortword), 20, fpfileEnc);
+	i = fwrite((char *)pswSpeechPara, sizeof(int16_t), 20, fpfileEnc);
 
 	return (i);
 }

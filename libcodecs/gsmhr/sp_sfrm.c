@@ -68,9 +68,9 @@
  |_________________________________________________________________________|
 */
 
-Shortword pswLtpStateBase[LTP_LEN + S_LEN];
-Shortword pswHState[NP];
-Shortword pswHNWState[HNW_BUFF_LEN];
+int16_t pswLtpStateBase[LTP_LEN + S_LEN];
+int16_t pswHState[NP];
+int16_t pswHNWState[HNW_BUFF_LEN];
 
 /***************************************************************************
  *
@@ -126,10 +126,10 @@ Shortword pswHNWState[HNW_BUFF_LEN];
  *
  **************************************************************************/
 
-int closedLoopLagSearch(Shortword pswLagList[], int iNumLags,
-			Shortword pswLtpState[], Shortword pswHCoefs[],
-			Shortword pswPVect[],
-			Shortword * pswLag, Shortword * pswLtpShift)
+int closedLoopLagSearch(int16_t pswLagList[], int iNumLags,
+			int16_t pswLtpState[], int16_t pswHCoefs[],
+			int16_t pswPVect[],
+			int16_t * pswLag, int16_t * pswLtpShift)
 {
 
 /*_________________________________________________________________________
@@ -138,9 +138,9 @@ int closedLoopLagSearch(Shortword pswLagList[], int iNumLags,
  |_________________________________________________________________________|
 */
 
-	Longword L_Energy, L_ccNorm, L_cgNorm, L_CrossCorr;
-	Longword pL_CCBuf[MAX_CANDIDATE], pL_CGBuf[MAX_CANDIDATE];
-	Shortword swCCMax,
+	int32_t L_Energy, L_ccNorm, L_cgNorm, L_CrossCorr;
+	int32_t pL_CCBuf[MAX_CANDIDATE], pL_CGBuf[MAX_CANDIDATE];
+	int16_t swCCMax,
 	    swCCShiftCnt,
 	    swCGShiftCnt,
 	    swGMax,
@@ -148,7 +148,7 @@ int closedLoopLagSearch(Shortword pswLagList[], int iNumLags,
 	    swSampleA,
 	    pswCCBuf[MAX_CANDIDATE],
 	    pswCGBuf[MAX_CANDIDATE], ppswTVect[N_SUB][S_LEN];
-	Shortword i, j, siLagOffset, siLagCode;
+	int16_t i, j, siLagOffset, siLagCode;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -156,7 +156,7 @@ int closedLoopLagSearch(Shortword pswLagList[], int iNumLags,
  |_________________________________________________________________________|
 */
 
-	memzero(ppswTVect, (N_SUB * S_LEN) * sizeof(Shortword));
+	memzero(ppswTVect, (N_SUB * S_LEN) * sizeof(int16_t));
 
 	*pswLtpShift = 0;	/* Energy in weighted ltp vector =
 				 * [0..0x7ff] */
@@ -297,7 +297,7 @@ int closedLoopLagSearch(Shortword pswLagList[], int iNumLags,
  *
  ****************************************************************************/
 
-void decorr(int iNumVects, Shortword pswGivenVect[], Shortword pswVects[])
+void decorr(int iNumVects, int16_t pswGivenVect[], int16_t pswVects[])
 {
 
 /*___________________________________________________________________________
@@ -306,9 +306,9 @@ void decorr(int iNumVects, Shortword pswGivenVect[], Shortword pswVects[])
  |___________________________________________________________________________|
 */
 	int i, iLoopCnt;
-	Shortword swNorm_energy, swTemp;
-	Shortword swEShift, swCShift, swShiftSum, swQShift;
-	Longword L_Energy, L_Temp1, L_Temp2, L_Accum;
+	int16_t swNorm_energy, swTemp;
+	int16_t swEShift, swCShift, swShiftSum, swQShift;
+	int32_t L_Energy, L_Temp1, L_Temp2, L_Accum;
 
 /*___________________________________________________________________________
  |                                                                           |
@@ -383,7 +383,7 @@ void decorr(int iNumVects, Shortword pswGivenVect[], Shortword pswVects[])
  *    OUTPUT:
  *
  *       *pL_out
- *                     A Longword containing the normalized correlation
+ *                     A int32_t containing the normalized correlation
  *                     between the input vectors.
  *
  *    RETURN:
@@ -402,7 +402,7 @@ void decorr(int iNumVects, Shortword pswGivenVect[], Shortword pswVects[])
  *
  **************************************************************************/
 
-Shortword g_corr2(Shortword * pswIn, Shortword * pswIn2, Longword * pL_out)
+int16_t g_corr2(int16_t * pswIn, int16_t * pswIn2, int32_t * pL_out)
 {
 
 /*_________________________________________________________________________
@@ -411,8 +411,8 @@ Shortword g_corr2(Shortword * pswIn, Shortword * pswIn2, Longword * pL_out)
  |_________________________________________________________________________|
 */
 
-	Longword L_sum;
-	Shortword swEngyLShft;
+	int32_t L_sum;
+	int16_t swEngyLShft;
 	int i;
 
 /*_________________________________________________________________________
@@ -431,12 +431,12 @@ Shortword g_corr2(Shortword * pswIn, Shortword * pswIn2, Longword * pL_out)
 
 	if (L_sum != 0) {
 
-		/* Normalize the energy in the output Longword */
+		/* Normalize the energy in the output int32_t */
     /*---------------------------------------------*/
 
 		swEngyLShft = norm_l(L_sum);
 		*pL_out = L_shl(L_sum, swEngyLShft);	/* normalize output
-							 * Longword */
+							 * int32_t */
 	} else {
 
 		/* Special case: energy is zero */
@@ -502,10 +502,10 @@ Shortword g_corr2(Shortword * pswIn, Shortword * pswIn2, Longword * pL_out)
  *
  **************************************************************************/
 
-Shortword g_quant_vl(Shortword swUVCode,
-		     Shortword pswWInput[], Shortword swWIShift,
-		     Shortword pswWLTPVec[],
-		     Shortword pswWVSVec1[], Shortword pswWVSVec2[],
+int16_t g_quant_vl(int16_t swUVCode,
+		     int16_t pswWInput[], int16_t swWIShift,
+		     int16_t pswWLTPVec[],
+		     int16_t pswWVSVec1[], int16_t pswWVSVec2[],
 		     struct NormSw snsRs00, struct NormSw snsRs11,
 		     struct NormSw snsRs22)
 {
@@ -516,10 +516,10 @@ Shortword g_quant_vl(Shortword swUVCode,
  |_________________________________________________________________________|
 */
 
-	Longword L_Temp, L_Temp2;
-	Shortword swShift;
+	int32_t L_Temp, L_Temp2;
+	int16_t swShift;
 	struct NormSw ErrorTerm[6];
-	Shortword i, siCode = 0, siNormShift = 0, siNormMin = 0;
+	int16_t i, siCode = 0, siNormShift = 0, siNormMin = 0;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -851,10 +851,10 @@ void gainTweak(struct NormSw *psErrorTerm)
  |_________________________________________________________________________|
 */
 
-	Longword L_Temp;
-	Shortword swTemp, swNum, swDenom, swGainTweak, swShift;
+	int32_t L_Temp;
+	int16_t swTemp, swNum, swDenom, swGainTweak, swShift;
 	struct NormSw terms[5];
-	Shortword i, siNormShift, siNorm;
+	int16_t i, siNormShift, siNorm;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1127,11 +1127,11 @@ void gainTweak(struct NormSw *psErrorTerm)
  *
  **************************************************************************/
 
-void hnwFilt(Shortword pswInSample[],
-	     Shortword pswOutSample[],
-	     Shortword pswState[],
-	     Shortword pswInCoef[],
-	     int iStateOffset, Shortword swZeroState, int iNumSamples)
+void hnwFilt(int16_t pswInSample[],
+	     int16_t pswOutSample[],
+	     int16_t pswState[],
+	     int16_t pswInCoef[],
+	     int iStateOffset, int16_t swZeroState, int iNumSamples)
 {
 
 /*_________________________________________________________________________
@@ -1139,7 +1139,7 @@ void hnwFilt(Shortword pswInSample[],
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Longword L_temp;
+	int32_t L_temp;
 	int i, j;
 
 	int iStatIndx = S_LEN - 1 + iStateOffset;
@@ -1347,17 +1347,17 @@ void hnwFilt(Shortword pswInSample[],
  *
  **************************************************************************/
 
-void sfrmAnalysis(Shortword * pswWSpeech,
-		  Shortword swVoicingMode,
+void sfrmAnalysis(int16_t * pswWSpeech,
+		  int16_t swVoicingMode,
 		  struct NormSw snsSqrtRs,
-		  Shortword * pswHCoefs,
-		  Shortword * pswLagList,
+		  int16_t * pswHCoefs,
+		  int16_t * pswLagList,
 		  short siNumLags,
-		  Shortword swPitch,
-		  Shortword swHNWCoef,
+		  int16_t swPitch,
+		  int16_t swHNWCoef,
 		  short *psiLagCode,
 		  short *psiVSCode1,
-		  short *psiVSCode2, short *psiGsp0Code, Shortword swSP)
+		  short *psiVSCode2, short *psiGsp0Code, int16_t swSP)
 {
 
 /*_________________________________________________________________________
@@ -1377,20 +1377,20 @@ void sfrmAnalysis(Shortword * pswWSpeech,
 	short i, j, siCode, siIntPitch, siRemainder;
 	short siHnwOffset = 0, siHnwNum = 0, siNumBasisVecs = 0;
 
-	Shortword swLag, swPnEnergy, swPnShift, swSampleA;
-	Shortword swLtpShift;
+	int16_t swLag, swPnEnergy, swPnShift, swSampleA;
+	int16_t swLtpShift;
 
-	Longword L_PnEnergy;
+	int32_t L_PnEnergy;
 
 	struct NormSw snsRs00, snsRs11, snsRs22;
 
-	Shortword pswWSVec[S_LEN], pswTempVec[S_LEN];
-	Shortword pswPVec[S_LEN], pswWPVec[S_LEN];
-	Shortword ppswVselpEx[2][S_LEN], ppswWVselpEx[2][S_LEN];
-	Shortword pswWBasisVecs[9 * S_LEN], pswBitArray[9];
-	Shortword pswHNWCoefs[CG_INT_MACS];
+	int16_t pswWSVec[S_LEN], pswTempVec[S_LEN];
+	int16_t pswPVec[S_LEN], pswWPVec[S_LEN];
+	int16_t ppswVselpEx[2][S_LEN], ppswWVselpEx[2][S_LEN];
+	int16_t pswWBasisVecs[9 * S_LEN], pswBitArray[9];
+	int16_t pswHNWCoefs[CG_INT_MACS];
 
-	Shortword *pswLtpStateOut;
+	int16_t *pswLtpStateOut;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1585,11 +1585,11 @@ void sfrmAnalysis(Shortword * pswWSpeech,
 
 			if (swVoicingMode > 0) {
 
-				lpcZsIir((Shortword *) pppsrVcdCodeVec[0][i],
+				lpcZsIir((int16_t *) pppsrVcdCodeVec[0][i],
 					 pswHCoefs, &pswWBasisVecs[i * S_LEN]);
 			} else {
 
-				lpcZsIir((Shortword *) pppsrUvCodeVec[0][i],
+				lpcZsIir((int16_t *) pppsrUvCodeVec[0][i],
 					 pswHCoefs, &pswWBasisVecs[i * S_LEN]);
 			}
 
@@ -1620,11 +1620,11 @@ void sfrmAnalysis(Shortword * pswWSpeech,
 		b_con(*psiVSCode1, siNumBasisVecs, pswBitArray);
 
 		if (swVoicingMode > 0)
-			v_con((Shortword *) pppsrVcdCodeVec[0][0],
+			v_con((int16_t *) pppsrVcdCodeVec[0][0],
 			      ppswVselpEx[0], pswBitArray, siNumBasisVecs);
 
 		else
-			v_con((Shortword *) pppsrUvCodeVec[0][0],
+			v_con((int16_t *) pppsrUvCodeVec[0][0],
 			      ppswVselpEx[0], pswBitArray, siNumBasisVecs);
 
 		if (swVoicingMode == 0) {
@@ -1640,7 +1640,7 @@ void sfrmAnalysis(Shortword * pswWSpeech,
 
 			for (i = 0; i < siNumBasisVecs; i++) {
 
-				lpcZsIir((Shortword *) pppsrUvCodeVec[1][i],
+				lpcZsIir((int16_t *) pppsrUvCodeVec[1][i],
 					 pswHCoefs, &pswWBasisVecs[i * S_LEN]);
 			}
 
@@ -1663,7 +1663,7 @@ void sfrmAnalysis(Shortword * pswWSpeech,
 
 			b_con(*psiVSCode2, siNumBasisVecs, pswBitArray);
 
-			v_con((Shortword *) pppsrUvCodeVec[1][0],
+			v_con((int16_t *) pppsrUvCodeVec[1][0],
 			      ppswVselpEx[1], pswBitArray, siNumBasisVecs);
 		}
 
@@ -1726,13 +1726,13 @@ void sfrmAnalysis(Shortword * pswWSpeech,
 		/* build codevector 1 *//* DTX mode */
 
 		b_con(*psiVSCode1, siNumBasisVecs, pswBitArray);	/* DTX mode */
-		v_con((Shortword *) pppsrUvCodeVec[0][0], ppswVselpEx[0],	/* DTX mode */
+		v_con((int16_t *) pppsrUvCodeVec[0][0], ppswVselpEx[0],	/* DTX mode */
 		      pswBitArray, siNumBasisVecs);	/* DTX mode */
 
 		/* build codevector 2 *//* DTX mode */
 
 		b_con(*psiVSCode2, siNumBasisVecs, pswBitArray);	/* DTX mode */
-		v_con((Shortword *) pppsrUvCodeVec[1][0], ppswVselpEx[1],	/* DTX mode */
+		v_con((int16_t *) pppsrUvCodeVec[1][0], ppswVselpEx[1],	/* DTX mode */
 		      pswBitArray, siNumBasisVecs);	/* DTX mode */
 
 		/* get rs_rr for the two vectors *//* DTX mode */
@@ -1851,7 +1851,7 @@ void sfrmAnalysis(Shortword * pswWSpeech,
  *
  **************************************************************************/
 
-Shortword v_srch(Shortword pswWInput[], Shortword pswWBasisVecs[],
+int16_t v_srch(int16_t pswWInput[], int16_t pswWBasisVecs[],
 		 short int siNumBasis)
 {
 
@@ -1870,7 +1870,7 @@ Shortword v_srch(Shortword pswWInput[], Shortword pswWBasisVecs[],
  |                           Local Static Variables                        |
  |_________________________________________________________________________|
 */
-	static Shortword pswUpdateIndexV[V_ARRAY_SIZE] = {
+	static int16_t pswUpdateIndexV[V_ARRAY_SIZE] = {
 		0x00, 0x09, 0x48, 0x12, 0x00, 0x51, 0x48, 0x1b, 0x00, 0x09,
 		0x48, 0x5a, 0x00, 0x51, 0x48, 0x24, 0x00, 0x09, 0x48, 0x12,
 		0x00, 0x51, 0x48, 0x63, 0x00, 0x09, 0x48, 0x5a, 0x00, 0x51,
@@ -1957,7 +1957,7 @@ Shortword v_srch(Shortword pswWInput[], Shortword pswWBasisVecs[],
  |_________________________________________________________________________|
 */
 
-	Shortword **pppswDubD[C_BITS_V - 1],
+	int16_t **pppswDubD[C_BITS_V - 1],
 	    *ppswD[C_BITS_V - 1],
 	    pswCGUpdates[2 * C_BITS_V * (C_BITS_V - 1)],
 	    pswDSpace[2 * C_BITS_V * (C_BITS_V - 1)],
@@ -1968,7 +1968,7 @@ Shortword v_srch(Shortword pswWInput[], Shortword pswWBasisVecs[],
 	    *pswBIndex,
 	    *pswModNextBit,
 	    *psw0, *psw1, *psw2, swC0, swG0, swCC, swG, swCCMax, swGMax, sw1;
-	Longword pL_R[C_BITS_V], L_R, L_MaxC, L_C0, L_D, L_G0, L_C, L_G, L_1;
+	int32_t pL_R[C_BITS_V], L_R, L_MaxC, L_C0, L_D, L_G0, L_C, L_G, L_1;
 	short int siI,
 	    siJ, siK, siEBits, siShiftCnt, siBitIndex, siBest, siMask;
 
@@ -1978,7 +1978,7 @@ Shortword v_srch(Shortword pswWInput[], Shortword pswWBasisVecs[],
  |_________________________________________________________________________|
 */
 
-	memzero(pL_R, C_BITS_V * sizeof(Longword));
+	memzero(pL_R, C_BITS_V * sizeof(int32_t));
 
 	/* initialize variables based on voicing mode */
 	/* ------------------------------------------ */

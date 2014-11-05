@@ -15,17 +15,17 @@
 void fillBitAlloc(int iVoicing, int iR0, int *piVqIndeces,
 		  int iSoftInterp, int *piLags,
 		  int *piCodeWrdsA, int *piCodeWrdsB,
-		  int *piGsp0s, Shortword swVadFlag,
-		  Shortword swSP, Shortword * pswBAlloc);
+		  int *piGsp0s, int16_t swVadFlag,
+		  int16_t swSP, int16_t * pswBAlloc);
 
 int hostEncoderInterface(FILE * pfileInSpeech, int iNumToRead,
-			 Shortword pswSamplesRead[]);
+			 int16_t pswSamplesRead[]);
 
-int readDecfile(FILE * infile, Shortword pswSpeechPara[]);
+int readDecfile(FILE * infile, int16_t pswSpeechPara[]);
 
-void speechDecoderHostInterface(Shortword pswDecodedSpeechFrame[],
+void speechDecoderHostInterface(int16_t pswDecodedSpeechFrame[],
 				FILE * fpfileSpeechOut);
 
-int writeEncfile(Shortword pswOutBit[], FILE * fpfileEnc);
+int writeEncfile(int16_t pswOutBit[], FILE * fpfileEnc);
 
 #endif

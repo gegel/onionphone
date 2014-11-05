@@ -68,19 +68,19 @@ init_umul_table()
 
 #ifndef  USE_FLOAT_MUL
 
-static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), register word * d,	/* [0..39]      IN      */
-						 register word * dp,	/* [-120..-1]   IN      */
-						 word * bc_out,	/*              OUT     */
-						 word * Nc_out	/*              OUT     */
+static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), register int16_t * d,	/* [0..39]      IN      */
+						 register int16_t * dp,	/* [-120..-1]   IN      */
+						 int16_t * bc_out,	/*              OUT     */
+						 int16_t * Nc_out	/*              OUT     */
     )
 {
 	register int k, lambda;
-	word Nc, bc;
-	word wt[40];
+	int16_t Nc, bc;
+	int16_t wt[40];
 
-	longword L_max, L_power;
-	word R, S, dmax, scal;
-	register word temp;
+	int32_t L_max, L_power;
+	int16_t R, S, dmax, scal;
+	register int16_t temp;
 
 	/*  Search of the optimum scaling of d[0..39].
 	 */
@@ -126,7 +126,7 @@ static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), regist
 #		define STEP(k) (wt[k] * dp[k - lambda])
 #endif
 
-		register longword L_result;
+		register int32_t L_result;
 
 		L_result = STEP(0);
 		L_result += STEP(1);
@@ -193,7 +193,7 @@ static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), regist
 	L_power = 0;
 	for (k = 0; k <= 39; k++) {
 
-		register longword L_temp;
+		register int32_t L_temp;
 
 		L_temp = SASR(dp[k - Nc], 3);
 		L_power += L_temp * L_temp;
@@ -231,21 +231,21 @@ static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), regist
 
 #else				/* USE_FLOAT_MUL */
 
-static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), register word * d,	/* [0..39]      IN      */
-						 register word * dp,	/* [-120..-1]   IN      */
-						 word * bc_out,	/*              OUT     */
-						 word * Nc_out	/*              OUT     */
+static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), register int16_t * d,	/* [0..39]      IN      */
+						 register int16_t * dp,	/* [-120..-1]   IN      */
+						 int16_t * bc_out,	/*              OUT     */
+						 int16_t * Nc_out	/*              OUT     */
     )
 {
 	register int k, lambda;
-	word Nc, bc;
+	int16_t Nc, bc;
 
 	float wt_float[40];
 	float dp_float_base[120], *dp_float = dp_float_base + 120;
 
-	longword L_max, L_power;
-	word R, S, dmax, scal;
-	register word temp;
+	int32_t L_max, L_power;
+	int16_t R, S, dmax, scal;
+	register int16_t temp;
 
 	/*  Search of the optimum scaling of d[0..39].
 	 */
@@ -421,7 +421,7 @@ static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), regist
 	L_power = 0;
 	for (k = 0; k <= 39; k++) {
 
-		register longword L_temp;
+		register int32_t L_temp;
 
 		L_temp = SASR(dp[k - Nc], 3);
 		L_power += L_temp * L_temp;
@@ -459,14 +459,14 @@ static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), regist
 
 #ifdef	FAST
 
-static void Fast_Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), register word * d,	/* [0..39]      IN      */
-						      register word * dp,	/* [-120..-1]   IN      */
-						      word * bc_out,	/*              OUT     */
-						      word * Nc_out	/*              OUT     */
+static void Fast_Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), register int16_t * d,	/* [0..39]      IN      */
+						      register int16_t * dp,	/* [-120..-1]   IN      */
+						      int16_t * bc_out,	/*              OUT     */
+						      int16_t * Nc_out	/*              OUT     */
     )
 {
 	register int k, lambda;
-	word Nc, bc;
+	int16_t Nc, bc;
 
 	float wt_float[40];
 	float dp_float_base[120], *dp_float = dp_float_base + 120;
@@ -639,12 +639,12 @@ static void Fast_Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), r
 
 /* 4.2.12 */
 
-static void Long_term_analysis_filtering P6((bc, Nc, dp, d, dpp, e), word bc,	/*                                      IN  */
-					    word Nc,	/*                                      IN  */
-					    register word * dp,	/* previous d   [-120..-1]              IN  */
-					    register word * d,	/* d            [0..39]                 IN  */
-					    register word * dpp,	/* estimate     [0..39]                 OUT */
-					    register word * e	/* long term res. signal [0..39]        OUT */
+static void Long_term_analysis_filtering P6((bc, Nc, dp, d, dpp, e), int16_t bc,	/*                                      IN  */
+					    int16_t Nc,	/*                                      IN  */
+					    register int16_t * dp,	/* previous d   [-120..-1]              IN  */
+					    register int16_t * d,	/* d            [0..39]                 IN  */
+					    register int16_t * dpp,	/* estimate     [0..39]                 OUT */
+					    register int16_t * e	/* long term res. signal [0..39]        OUT */
     )
 /*
  *  In this part, we have to decode the bc parameter to compute
@@ -654,7 +654,7 @@ static void Long_term_analysis_filtering P6((bc, Nc, dp, d, dpp, e), word bc,	/*
  */
 {
 	register int k;
-	register longword ltmp;
+	register int32_t ltmp;
 
 #	undef STEP
 #	define STEP(BP)					\
@@ -680,12 +680,12 @@ static void Long_term_analysis_filtering P6((bc, Nc, dp, d, dpp, e), word bc,	/*
 }
 
 void Gsm_Long_Term_Predictor P7((S, d, dp, e, dpp, Nc, bc),	/* 4x for 160 samples */
-				struct gsm_state *S, word * d,	/* [0..39]   residual signal    IN      */
-				word * dp,	/* [-120..-1] d'                IN      */
-				word * e,	/* [0..39]                      OUT     */
-				word * dpp,	/* [0..39]                      OUT     */
-				word * Nc,	/* correlation lag              OUT     */
-				word * bc	/* gain factor                  OUT     */
+				struct gsm_state *S, int16_t * d,	/* [0..39]   residual signal    IN      */
+				int16_t * dp,	/* [-120..-1] d'                IN      */
+				int16_t * e,	/* [0..39]                      OUT     */
+				int16_t * dpp,	/* [0..39]                      OUT     */
+				int16_t * Nc,	/* correlation lag              OUT     */
+				int16_t * bc	/* gain factor                  OUT     */
     )
 {
 #if !defined(FAST) && !defined(USE_FLOAT_MUL)
@@ -709,8 +709,8 @@ void Gsm_Long_Term_Predictor P7((S, d, dp, e, dpp, Nc, bc),	/* 4x for 160 sample
 }
 
 /* 4.3.2 */
-void Gsm_Long_Term_Synthesis_Filtering P5((S, Ncr, bcr, erp, drp), struct gsm_state *S, word Ncr, word bcr, register word * erp,	/* [0..39]                IN */
-					  register word * drp	/* [-120..-1] IN, [0..40] OUT */
+void Gsm_Long_Term_Synthesis_Filtering P5((S, Ncr, bcr, erp, drp), struct gsm_state *S, int16_t Ncr, int16_t bcr, register int16_t * erp,	/* [0..39]                IN */
+					  register int16_t * drp	/* [-120..-1] IN, [0..40] OUT */
     )
 /*
  *  This procedure uses the bcr and Ncr parameter to realize the
@@ -718,9 +718,9 @@ void Gsm_Long_Term_Synthesis_Filtering P5((S, Ncr, bcr, erp, drp), struct gsm_st
  *  table 4.3b.
  */
 {
-	register longword ltmp;	/* for ADD */
+	register int32_t ltmp;	/* for ADD */
 	register int k;
-	word brp, drpp, Nr;
+	int16_t brp, drpp, Nr;
 
 	/*  Check the limits of Nr.
 	 */

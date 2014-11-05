@@ -62,15 +62,15 @@ static short LastFrameType = 0;
 
 */
 
-static Shortword swSidDetection(Shortword pswParameters[],
-				Shortword pswErrorFlag[])
+static int16_t swSidDetection(int16_t pswParameters[],
+				int16_t pswErrorFlag[])
 {
-	static Shortword ppswIBit[2][18] = {
+	static int16_t ppswIBit[2][18] = {
 		{5, 11, 9, 8, 1, 2, 7, 7, 5, 7, 7, 5, 7, 7, 5, 7, 7, 5},	/* unvoiced */
 		{5, 11, 9, 8, 1, 2, 8, 9, 5, 4, 9, 5, 4, 9, 5, 4, 9, 5}
 	};			/* voiced */
 
-	static Shortword ppswCL1pCL2[2][18] = {
+	static int16_t ppswCL1pCL2[2][18] = {
 		{0x0001,	/* R0      *//* unvoiced */
 		 0x00ef,	/* LPC1    */
 
@@ -112,7 +112,7 @@ static Shortword swSidDetection(Shortword pswParameters[],
 		 0x001f}
 	};			/* GSP0_4 */
 
-	static Shortword ppswCL2[2][18] = {
+	static int16_t ppswCL2[2][18] = {
 		{0x0000,	/* R0      *//* unvoiced */
 		 0x0000,	/* LPC1    */
 		 0x0000,	/* LPC2    */
@@ -152,9 +152,9 @@ static Shortword swSidDetection(Shortword pswParameters[],
 		 0x0000}
 	};			/* GSP0_4 */
 
-	Shortword swMode, swBitMask;
-	Shortword swSidN1, swSidN2, swSidN1pN2;
-	Shortword swSid;
+	int16_t swMode, swBitMask;
+	int16_t swSidN1, swSidN2, swSidN1pN2;
+	int16_t swSid;
 
 	short siI, siII;
 
@@ -248,8 +248,8 @@ gsmhr_encode(struct gsmhr *state, unsigned char *rb, const short *pcm)
 	(void)state;
 
 	int enc_reset_flg;
-	Shortword pcm_b[F_LEN];
-	Shortword hr_params[20];
+	int16_t pcm_b[F_LEN];
+	int16_t hr_params[20];
 	int i;
 
 	int a = 0;		//param's bytes counter
@@ -299,9 +299,9 @@ gsmhr_decode(struct gsmhr *state, short *pcm, const unsigned char *rb)
 	int a = 0;		//param's bytes counter
 	int b = 0;		//param's bits counter
 	int c;			//output's bits counter
-	Shortword hr_params[22];
-	Shortword hr_params_b[22];
-	Shortword *hr_eflags = hr_params + 18;	//BFI, UFI, BCI
+	int16_t hr_params[22];
+	int16_t hr_params_b[22];
+	int16_t *hr_eflags = hr_params + 18;	//BFI, UFI, BCI
 
 	//check for iddle frame 
 	if (rb) {

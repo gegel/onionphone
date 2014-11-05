@@ -13,11 +13,11 @@
  |_________________________________________________________________________|
 */
 
-int decoderHomingFrameTest(Shortword pswSpeechPara[], int iLastPara);
+int decoderHomingFrameTest(int16_t pswSpeechPara[], int iLastPara);
 
 void decoderReset(void);
 
-int encoderHomingFrameTest(Shortword pswSpeech[]);
+int encoderHomingFrameTest(int16_t pswSpeech[]);
 
 void encoderReset(void);
 

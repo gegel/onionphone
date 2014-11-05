@@ -88,30 +88,30 @@
  |_________________________________________________________________________|
 */
 
-static void a_sst(Shortword swAshift, Shortword swAscale,
-		  Shortword pswDirectFormCoefIn[],
-		  Shortword pswDirectFormCoefOut[]);
+static void a_sst(int16_t swAshift, int16_t swAscale,
+		  int16_t pswDirectFormCoefIn[],
+		  int16_t pswDirectFormCoefOut[]);
 
-static short aToRc(Shortword swAshift, Shortword pswAin[], Shortword pswRc[]);
+static short aToRc(int16_t swAshift, int16_t pswAin[], int16_t pswRc[]);
 
-static Shortword agcGain(Shortword pswStateCurr[],
-			 struct NormSw snsInSigEnergy, Shortword swEngyRShft);
+static int16_t agcGain(int16_t pswStateCurr[],
+			 struct NormSw snsInSigEnergy, int16_t swEngyRShft);
 
-static Shortword lagDecode(Shortword swDeltaLag);
+static int16_t lagDecode(int16_t swDeltaLag);
 
-static void lookupVq(Shortword pswVqCodeWds[], Shortword pswRCOut[]);
+static void lookupVq(int16_t pswVqCodeWds[], int16_t pswRCOut[]);
 
-static void pitchPreFilt(Shortword pswExcite[],
-			 Shortword swRxGsp0,
-			 Shortword swRxLag,
-			 Shortword swUvCode,
-			 Shortword swSemiBeta,
+static void pitchPreFilt(int16_t pswExcite[],
+			 int16_t swRxGsp0,
+			 int16_t swRxLag,
+			 int16_t swUvCode,
+			 int16_t swSemiBeta,
 			 struct NormSw snsSqrtRs,
-			 Shortword pswExciteOut[], Shortword pswPPreState[]);
+			 int16_t pswExciteOut[], int16_t pswPPreState[]);
 
-static void spectralPostFilter(Shortword pswSPFIn[],
-			       Shortword pswNumCoef[], Shortword pswDenomCoef[],
-			       Shortword pswSPFOut[]);
+static void spectralPostFilter(int16_t pswSPFIn[],
+			       int16_t pswNumCoef[], int16_t pswDenomCoef[],
+			       int16_t pswSPFOut[]);
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -143,7 +143,7 @@ static void spectralPostFilter(Shortword pswSPFIn[],
  |_________________________________________________________________________|
 */
 
-Shortword gswPostFiltAgcGain,
+int16_t gswPostFiltAgcGain,
     gpswPostFiltStateNum[NP],
     gpswPostFiltStateDenom[NP],
     swPostEmphasisState,
@@ -155,24 +155,24 @@ Shortword gswPostFiltAgcGain,
     swOldR0Dec,
     pswLtpStateBaseDec[LTP_LEN + S_LEN], pswPPreState[LTP_LEN + S_LEN];
 
-Shortword swMuteFlagOld;	/* error concealment */
+int16_t swMuteFlagOld;	/* error concealment */
 
  /* DTX state variables */
  /* ------------------- */
 
-Shortword swRxDTXState = CNINTPER - 1;	/* DTX State at the rx.
+int16_t swRxDTXState = CNINTPER - 1;	/* DTX State at the rx.
 					 * Modulo */
 
  /* counter [0,11].             */
 
-Shortword swDecoMode = SPEECH;
-Shortword swDtxMuting = 0;
-Shortword swDtxBfiCnt = 0;
+int16_t swDecoMode = SPEECH;
+int16_t swDtxMuting = 0;
+int16_t swDtxBfiCnt = 0;
 
-Shortword swOldR0IndexDec = 0;
+int16_t swOldR0IndexDec = 0;
 
-Shortword swRxGsHistPtr = 0;
-Longword pL_RxGsHist[(OVERHANG - 1) * N_SUB];
+int16_t swRxGsHistPtr = 0;
+int32_t pL_RxGsHist[(OVERHANG - 1) * N_SUB];
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -181,16 +181,16 @@ Longword pL_RxGsHist[(OVERHANG - 1) * N_SUB];
  |_________________________________________________________________________|
 */
 
-Shortword swR0Dec;
+int16_t swR0Dec;
 
-Shortword swVoicingMode,	/* MODE */
+int16_t swVoicingMode,	/* MODE */
  pswVq[3],			/* LPC1, LPC2, LPC3 */
  swSi,				/* INT_LPC */
  swEngyRShift;			/* for use by spectral postfilter */
 
-Shortword swR0NewCN;		/* DTX mode */
+int16_t swR0NewCN;		/* DTX mode */
 
-extern LongwordRom ppLr_gsTable[4][32];	/* DTX mode */
+extern int32_t ppLr_gsTable[4][32];	/* DTX mode */
 
 /***************************************************************************
  *
@@ -198,14 +198,14 @@ extern LongwordRom ppLr_gsTable[4][32];	/* DTX mode */
  *
  *   PURPOSE:
  *
- *     Given a Longword autocorrelation sequence, representing LPC
+ *     Given a int32_t autocorrelation sequence, representing LPC
  *     information, aFlatRcDp converts the vector to one of NP
- *     Shortword reflection coefficients.
+ *     int16_t reflection coefficients.
  *
  *   INPUT:
  *
  *
- *     pL_R[0:NP]    - An input Longword autocorrelation sequence, (pL_R[0] =
+ *     pL_R[0:NP]    - An input int32_t autocorrelation sequence, (pL_R[0] =
  *                     not necessarily 0x7fffffffL).  pL_R is altered in the
  *                     call, by being right shifted by global constant
  *                     AFSHIFT bits.
@@ -218,7 +218,7 @@ extern LongwordRom ppLr_gsTable[4][32];	/* DTX mode */
  *
  *   OUTPUT:
  *
- *     pswRc[0:NP-1] - A Shortword output vector of NP reflection
+ *     pswRc[0:NP-1] - A int16_t output vector of NP reflection
  *                     coefficients.
  *
  *   RETURN VALUE:
@@ -265,7 +265,7 @@ extern LongwordRom ppLr_gsTable[4][32];	/* DTX mode */
  *
  *************************************************************************/
 
-void aFlatRcDp(Longword * pL_R, Shortword * pswRc)
+void aFlatRcDp(int32_t * pL_R, int16_t * pswRc)
 {
 
 /*_________________________________________________________________________
@@ -274,20 +274,20 @@ void aFlatRcDp(Longword * pL_R, Shortword * pswRc)
  |_________________________________________________________________________|
 */
 
-	Longword pL_pjNewSpace[NP];
-	Longword pL_pjOldSpace[NP];
-	Longword pL_vjNewSpace[2 * NP - 1];
-	Longword pL_vjOldSpace[2 * NP - 1];
+	int32_t pL_pjNewSpace[NP];
+	int32_t pL_pjOldSpace[NP];
+	int32_t pL_vjNewSpace[2 * NP - 1];
+	int32_t pL_vjOldSpace[2 * NP - 1];
 
-	Longword *pL_pjOld;
-	Longword *pL_pjNew;
-	Longword *pL_vjOld;
-	Longword *pL_vjNew;
-	Longword *pL_swap;
+	int32_t *pL_pjOld;
+	int32_t *pL_pjNew;
+	int32_t *pL_vjOld;
+	int32_t *pL_vjNew;
+	int32_t *pL_swap;
 
-	Longword L_temp;
-	Longword L_sum;
-	Shortword swRc, swRcSq, swTemp, swTemp1, swAbsTemp1, swTemp2;
+	int32_t L_temp;
+	int32_t L_sum;
+	int16_t swRc, swRcSq, swTemp, swTemp1, swAbsTemp1, swTemp2;
 	int i, j;
 
 /*_________________________________________________________________________
@@ -502,7 +502,7 @@ void aFlatRcDp(Longword * pL_R, Shortword * pswRc)
  *
  *************************************************************************/
 
-static short aToRc(Shortword swAshift, Shortword pswAin[], Shortword pswRc[])
+static short aToRc(int16_t swAshift, int16_t pswAin[], int16_t pswRc[])
 {
 
 /*_________________________________________________________________________
@@ -517,12 +517,12 @@ static short aToRc(Shortword swAshift, Shortword pswAin[], Shortword pswRc[])
  |_________________________________________________________________________|
 */
 
-	Shortword pswTmpSpace[NP],
+	int16_t pswTmpSpace[NP],
 	    pswASpace[NP],
 	    swNormShift,
 	    swActShift, swNormProd, swRcOverE, swDiv, *pswSwap, *pswTmp, *pswA;
 
-	Longword L_temp;
+	int32_t L_temp;
 
 	short int siUnstableFlt, i, j;	/* Loop control variables */
 
@@ -664,7 +664,7 @@ static short aToRc(Shortword swAshift, Shortword pswAin[], Shortword pswRc[])
  *
  *     The spectral smoothing filter coefficients with bandwidth set to 300
  *     and a sampling rate of 8000 be :
- *     static ShortwordRom psrSST[NP+1] = { 0x7FFF,
+ *     static int16_t psrSST[NP+1] = { 0x7FFF,
  *         0x7F5C, 0x7D76, 0x7A5B, 0x7622, 0x70EC,
  *         0x6ADD, 0x641F, 0x5CDD, 0x5546, 0x4D86
  *     }
@@ -676,9 +676,9 @@ static short aToRc(Shortword swAshift, Shortword pswAin[], Shortword pswRc[])
  *
  *************************************************************************/
 
-static void a_sst(Shortword swAshift, Shortword swAscale,
-		  Shortword pswDirectFormCoefIn[],
-		  Shortword pswDirectFormCoefOut[])
+static void a_sst(int16_t swAshift, int16_t swAscale,
+		  int16_t pswDirectFormCoefIn[],
+		  int16_t pswDirectFormCoefOut[])
 {
 
 /*_________________________________________________________________________
@@ -687,7 +687,7 @@ static void a_sst(Shortword swAshift, Shortword swAscale,
  |_________________________________________________________________________|
 */
 
-	static ShortwordRom psrSST[NP + 1] = { 0x7FFF,
+	static int16_t psrSST[NP + 1] = { 0x7FFF,
 		0x7F5C, 0x7D76, 0x7A5B, 0x7622, 0x70EC,
 		0x6ADD, 0x641F, 0x5CDD, 0x5546, 0x4D86,
 	};
@@ -698,9 +698,9 @@ static void a_sst(Shortword swAshift, Shortword swAscale,
  |_________________________________________________________________________|
 */
 
-	Longword pL_CorrTemp[NP + 1];
+	int32_t pL_CorrTemp[NP + 1];
 
-	Shortword pswRCNum[NP], pswRCDenom[NP];
+	int16_t pswRCNum[NP], pswRCDenom[NP];
 
 	short int siLoopCnt;
 
@@ -780,8 +780,8 @@ static void a_sst(Shortword swAshift, Shortword swAscale,
  *
  *************************************************************************/
 
-static Shortword agcGain(Shortword pswStateCurr[],
-			 struct NormSw snsInSigEnergy, Shortword swEngyRShft)
+static int16_t agcGain(int16_t pswStateCurr[],
+			 struct NormSw snsInSigEnergy, int16_t swEngyRShft)
 {
 
 /*_________________________________________________________________________
@@ -790,11 +790,11 @@ static Shortword agcGain(Shortword pswStateCurr[],
  |_________________________________________________________________________|
 */
 
-	Longword L_OutEnergy, L_AgcGain;
+	int32_t L_OutEnergy, L_AgcGain;
 
 	struct NormSw snsOutEnergy, snsAgc;
 
-	Shortword swAgcOut, swAgcShftCnt;
+	int16_t swAgcOut, swAgcShftCnt;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -908,7 +908,7 @@ static Shortword agcGain(Shortword pswStateCurr[],
  *
  *************************************************************************/
 
-void b_con(Shortword swCodeWord, short siNumBits, Shortword pswVectOut[])
+void b_con(int16_t swCodeWord, short siNumBits, int16_t pswVectOut[])
 {
 
 /*_________________________________________________________________________
@@ -928,9 +928,9 @@ void b_con(Shortword swCodeWord, short siNumBits, Shortword pswVectOut[])
 	for (siLoopCnt = 0; siLoopCnt < siNumBits; siLoopCnt++) {
 
 		if (swCodeWord & 1)	/* temp accumulator get 0.5 */
-			pswVectOut[siLoopCnt] = (Shortword) 0x4000;
+			pswVectOut[siLoopCnt] = (int16_t) 0x4000;
 		else		/* temp accumulator gets -0.5 */
-			pswVectOut[siLoopCnt] = (Shortword) 0xc000;
+			pswVectOut[siLoopCnt] = (int16_t) 0xc000;
 
 		swCodeWord = shr(swCodeWord, 1);
 	}
@@ -992,7 +992,7 @@ void b_con(Shortword swCodeWord, short siNumBits, Shortword pswVectOut[])
  *
  *************************************************************************/
 
-void fp_ex(Shortword swOrigLagIn, Shortword pswLTPState[])
+void fp_ex(int16_t swOrigLagIn, int16_t pswLTPState[])
 {
 
 /*_________________________________________________________________________
@@ -1001,8 +1001,8 @@ void fp_ex(Shortword swOrigLagIn, Shortword pswLTPState[])
  |_________________________________________________________________________|
 */
 
-	Longword L_Temp;
-	Shortword swIntLag, swRemain, swRunningLag;
+	int32_t L_Temp;
+	int16_t swIntLag, swRemain, swRunningLag;
 	short int siSampsSoFar, siSampsThisPass, i, j;
 
 /*_________________________________________________________________________
@@ -1114,7 +1114,7 @@ void fp_ex(Shortword swOrigLagIn, Shortword pswLTPState[])
  *    OUTPUT:
  *
  *       *pL_out
- *                     A Longword containing the normalized energy
+ *                     A int32_t containing the normalized energy
  *                     in the input vector.
  *
  *    RETURN:
@@ -1132,7 +1132,7 @@ void fp_ex(Shortword swOrigLagIn, Shortword pswLTPState[])
  *
  *************************************************************************/
 
-Shortword g_corr1(Shortword * pswIn, Longword * pL_out)
+int16_t g_corr1(int16_t * pswIn, int32_t * pL_out)
 {
 
 /*_________________________________________________________________________
@@ -1141,8 +1141,8 @@ Shortword g_corr1(Shortword * pswIn, Longword * pL_out)
  |_________________________________________________________________________|
 */
 
-	Longword L_sum;
-	Shortword swEngyLShft;
+	int32_t L_sum;
+	int16_t swEngyLShft;
 	int i;
 
 /*_________________________________________________________________________
@@ -1161,12 +1161,12 @@ Shortword g_corr1(Shortword * pswIn, Longword * pL_out)
 
 	if (L_sum != 0) {
 
-		/* Normalize the energy in the output Longword */
+		/* Normalize the energy in the output int32_t */
     /*---------------------------------------------*/
 
 		swEngyLShft = norm_l(L_sum);
 		*pL_out = L_shl(L_sum, swEngyLShft);	/* normalize output
-							 * Longword */
+							 * int32_t */
 	} else {
 
 		/* Special case: energy is zero */
@@ -1203,7 +1203,7 @@ Shortword g_corr1(Shortword * pswIn, Longword * pL_out)
  *    OUTPUT:
  *
  *       *pL_out
- *                     A Longword containing the normalized energy
+ *                     A int32_t containing the normalized energy
  *                     in the input vector.
  *
  *    RETURN:
@@ -1222,7 +1222,7 @@ Shortword g_corr1(Shortword * pswIn, Longword * pL_out)
  *
  *************************************************************************/
 
-Shortword g_corr1s(Shortword pswIn[], Shortword swEngyRShft, Longword * pL_out)
+int16_t g_corr1s(int16_t pswIn[], int16_t swEngyRShft, int32_t * pL_out)
 {
 
 /*_________________________________________________________________________
@@ -1231,9 +1231,9 @@ Shortword g_corr1s(Shortword pswIn[], Shortword swEngyRShft, Longword * pL_out)
  |_________________________________________________________________________|
 */
 
-	Longword L_sum;
-	Shortword swTemp, swEngyLShft;
-	Shortword swInputRShft;
+	int32_t L_sum;
+	int16_t swTemp, swEngyLShft;
+	int16_t swInputRShft;
 
 	int i;
 
@@ -1276,11 +1276,11 @@ Shortword g_corr1s(Shortword pswIn[], Shortword swEngyRShft, Longword * pL_out)
 
 	if (L_sum != 0) {
 
-		/* Normalize the energy in the output Longword */
+		/* Normalize the energy in the output int32_t */
     /*---------------------------------------------*/
 
 		swTemp = norm_l(L_sum);
-		*pL_out = L_shl(L_sum, swTemp);	/* normalize output Longword */
+		*pL_out = L_shl(L_sum, swTemp);	/* normalize output int32_t */
 		swEngyLShft = sub(swTemp, swEngyRShft);
 	} else {
 
@@ -1381,15 +1381,15 @@ Shortword g_corr1s(Shortword pswIn[], Shortword swEngyRShft, Longword * pL_out)
  *************************************************************************/
 
 void getSfrmLpc(short int siSoftInterpolation,
-		Shortword swPrevR0, Shortword swNewR0,
-		/* last frm */ Shortword pswPrevFrmKs[],
-		Shortword pswPrevFrmAs[],
-		Shortword pswPrevFrmPFNum[], Shortword pswPrevFrmPFDenom[],
-		/* this frm */ Shortword pswNewFrmKs[], Shortword pswNewFrmAs[],
-		Shortword pswNewFrmPFNum[], Shortword pswNewFrmPFDenom[],
+		int16_t swPrevR0, int16_t swNewR0,
+		/* last frm */ int16_t pswPrevFrmKs[],
+		int16_t pswPrevFrmAs[],
+		int16_t pswPrevFrmPFNum[], int16_t pswPrevFrmPFDenom[],
+		/* this frm */ int16_t pswNewFrmKs[], int16_t pswNewFrmAs[],
+		int16_t pswNewFrmPFNum[], int16_t pswNewFrmPFDenom[],
 		/* output */ struct NormSw *psnsSqrtRs,
-		Shortword * ppswSynthAs[], Shortword * ppswPFNumAs[],
-		Shortword * ppswPFDenomAs[])
+		int16_t * ppswSynthAs[], int16_t * ppswPFNumAs[],
+		int16_t * ppswPFDenomAs[])
 {
 
 /*_________________________________________________________________________
@@ -1406,7 +1406,7 @@ void getSfrmLpc(short int siSoftInterpolation,
 
 	short int siSfrm, siStable, i;
 
-	Longword L_Temp1, L_Temp2;
+	int32_t L_Temp1, L_Temp2;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1583,7 +1583,7 @@ void getSfrmLpc(short int siSoftInterpolation,
  *
  *************************************************************************/
 
-void get_ipjj(Shortword swLagIn, Shortword * pswIp, Shortword * pswJj)
+void get_ipjj(int16_t swLagIn, int16_t * pswIp, int16_t * pswJj)
 {
 
 /*_________________________________________________________________________
@@ -1592,7 +1592,7 @@ void get_ipjj(Shortword swLagIn, Shortword * pswIp, Shortword * pswJj)
  |_________________________________________________________________________|
 */
 
-#define  OS_FCTR_INV  (Shortword)0x1555	/* SW_MAX/OS_FCTR */
+#define  OS_FCTR_INV  (int16_t)0x1555	/* SW_MAX/OS_FCTR */
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1600,9 +1600,9 @@ void get_ipjj(Shortword swLagIn, Shortword * pswIp, Shortword * pswJj)
  |_________________________________________________________________________|
 */
 
-	Longword L_Temp;
+	int32_t L_Temp;
 
-	Shortword swTemp, swTempIp, swTempJj;
+	int16_t swTemp, swTempIp, swTempJj;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1702,13 +1702,13 @@ void get_ipjj(Shortword swLagIn, Shortword * pswIp, Shortword * pswJj)
  *
  *************************************************************************/
 
-short int interpolateCheck(Shortword pswRefKs[],
-			   Shortword pswRefCoefsA[],
-			   Shortword pswOldCoefsA[], Shortword pswNewCoefsA[],
-			   Shortword swOldPer, Shortword swNewPer,
-			   Shortword swRq,
+short int interpolateCheck(int16_t pswRefKs[],
+			   int16_t pswRefCoefsA[],
+			   int16_t pswOldCoefsA[], int16_t pswNewCoefsA[],
+			   int16_t swOldPer, int16_t swNewPer,
+			   int16_t swRq,
 			   struct NormSw *psnsSqrtRsOut,
-			   Shortword pswCoefOutA[])
+			   int16_t pswCoefOutA[])
 {
 
 /*_________________________________________________________________________
@@ -1717,9 +1717,9 @@ short int interpolateCheck(Shortword pswRefKs[],
  |_________________________________________________________________________|
 */
 
-	Shortword pswRcTemp[NP];
+	int16_t pswRcTemp[NP];
 
-	Longword L_Temp;
+	int32_t L_Temp;
 
 	short int siInterp_flg, i;
 
@@ -1821,7 +1821,7 @@ short int interpolateCheck(Shortword pswRefKs[],
  *
  *************************************************************************/
 
-static Shortword lagDecode(Shortword swDeltaLag)
+static int16_t lagDecode(int16_t swDeltaLag)
 {
 
 /*_________________________________________________________________________
@@ -1840,7 +1840,7 @@ static Shortword lagDecode(Shortword swDeltaLag)
  |_________________________________________________________________________|
 */
 
-	static Shortword swLastLag;
+	static int16_t swLastLag;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1848,7 +1848,7 @@ static Shortword lagDecode(Shortword swDeltaLag)
  |_________________________________________________________________________|
 */
 
-	Shortword swLag;
+	int16_t swLag;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -1934,7 +1934,7 @@ static Shortword lagDecode(Shortword swDeltaLag)
  *
  *************************************************************************/
 
-static void lookupVq(Shortword pswVqCodeWds[], Shortword pswRCOut[])
+static void lookupVq(int16_t pswVqCodeWds[], int16_t pswRCOut[])
 {
 /*_________________________________________________________________________
  |                                                                         |
@@ -1952,7 +1952,7 @@ static void lookupVq(Shortword pswVqCodeWds[], Shortword pswRCOut[])
 
 	short int siSeg, siIndex, siVector, siVector1, siVector2, siWordPtr;
 
-	ShortwordRom *psrQTable;
+	int16_t *psrQTable;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -2113,8 +2113,8 @@ static void lookupVq(Shortword pswVqCodeWds[], Shortword pswRCOut[])
  *
  *************************************************************************/
 
-void lpcFir(Shortword pswInput[], Shortword pswCoef[],
-	    Shortword pswState[], Shortword pswFiltOut[])
+void lpcFir(int16_t pswInput[], int16_t pswCoef[],
+	    int16_t pswState[], int16_t pswFiltOut[])
 {
 
 /*_________________________________________________________________________
@@ -2123,7 +2123,7 @@ void lpcFir(Shortword pswInput[], Shortword pswCoef[],
  |_________________________________________________________________________|
 */
 
-	Longword L_Sum;
+	int32_t L_Sum;
 	short int siStage, siSmp;
 
 /*_________________________________________________________________________
@@ -2278,8 +2278,8 @@ void lpcFir(Shortword pswInput[], Shortword pswCoef[],
  *
  *************************************************************************/
 
-void lpcIir(Shortword pswInput[], Shortword pswCoef[],
-	    Shortword pswState[], Shortword pswFiltOut[])
+void lpcIir(int16_t pswInput[], int16_t pswCoef[],
+	    int16_t pswState[], int16_t pswFiltOut[])
 {
 
 /*_________________________________________________________________________
@@ -2288,7 +2288,7 @@ void lpcIir(Shortword pswInput[], Shortword pswCoef[],
  |_________________________________________________________________________|
 */
 
-	Longword L_Sum;
+	int32_t L_Sum;
 	short int siStage, siSmp;
 
 /*_________________________________________________________________________
@@ -2425,7 +2425,7 @@ void lpcIir(Shortword pswInput[], Shortword pswCoef[],
  *
  *************************************************************************/
 
-void lpcIrZsIir(Shortword pswCoef[], Shortword pswFiltOut[])
+void lpcIrZsIir(int16_t pswCoef[], int16_t pswFiltOut[])
 {
 
 /*_________________________________________________________________________
@@ -2434,7 +2434,7 @@ void lpcIrZsIir(Shortword pswCoef[], Shortword pswFiltOut[])
  |_________________________________________________________________________|
 */
 
-	Longword L_Sum;
+	int32_t L_Sum;
 	short int siStage, siSmp;
 
 /*_________________________________________________________________________
@@ -2544,7 +2544,7 @@ void lpcIrZsIir(Shortword pswCoef[], Shortword pswFiltOut[])
  *
  *************************************************************************/
 
-void lpcZiIir(Shortword pswCoef[], Shortword pswState[], Shortword pswFiltOut[])
+void lpcZiIir(int16_t pswCoef[], int16_t pswState[], int16_t pswFiltOut[])
 {
 
 /*_________________________________________________________________________
@@ -2553,7 +2553,7 @@ void lpcZiIir(Shortword pswCoef[], Shortword pswState[], Shortword pswFiltOut[])
  |_________________________________________________________________________|
 */
 
-	Longword L_Sum;
+	int32_t L_Sum;
 	short int siStage, siSmp;
 
 /*_________________________________________________________________________
@@ -2688,7 +2688,7 @@ void lpcZiIir(Shortword pswCoef[], Shortword pswState[], Shortword pswFiltOut[])
  *
  *************************************************************************/
 
-void lpcZsFir(Shortword pswInput[], Shortword pswCoef[], Shortword pswFiltOut[])
+void lpcZsFir(int16_t pswInput[], int16_t pswCoef[], int16_t pswFiltOut[])
 {
 
 /*_________________________________________________________________________
@@ -2697,7 +2697,7 @@ void lpcZsFir(Shortword pswInput[], Shortword pswCoef[], Shortword pswFiltOut[])
  |_________________________________________________________________________|
 */
 
-	Longword L_Sum;
+	int32_t L_Sum;
 	short int siStage, siSmp;
 
 /*_________________________________________________________________________
@@ -2809,7 +2809,7 @@ void lpcZsFir(Shortword pswInput[], Shortword pswCoef[], Shortword pswFiltOut[])
  *
  *************************************************************************/
 
-void lpcZsIir(Shortword pswInput[], Shortword pswCoef[], Shortword pswFiltOut[])
+void lpcZsIir(int16_t pswInput[], int16_t pswCoef[], int16_t pswFiltOut[])
 {
 
 /*_________________________________________________________________________
@@ -2818,7 +2818,7 @@ void lpcZsIir(Shortword pswInput[], Shortword pswCoef[], Shortword pswFiltOut[])
  |_________________________________________________________________________|
 */
 
-	Longword L_Sum;
+	int32_t L_Sum;
 	short int siStage, siSmp;
 
 /*_________________________________________________________________________
@@ -2928,7 +2928,7 @@ void lpcZsIir(Shortword pswInput[], Shortword pswCoef[], Shortword pswFiltOut[])
  *
  *************************************************************************/
 
-void lpcZsIirP(Shortword pswCommonIO[], Shortword pswCoef[])
+void lpcZsIirP(int16_t pswCommonIO[], int16_t pswCoef[])
 {
 
 /*_________________________________________________________________________
@@ -2937,7 +2937,7 @@ void lpcZsIirP(Shortword pswCommonIO[], Shortword pswCoef[])
  |_________________________________________________________________________|
 */
 
-	Longword L_Sum;
+	int32_t L_Sum;
 	short int siStage, siSmp;
 
 /*_________________________________________________________________________
@@ -3076,11 +3076,11 @@ void lpcZsIirP(Shortword pswCommonIO[], Shortword pswCoef[])
  *
  *************************************************************************/
 
-static void pitchPreFilt(Shortword pswExcite[],
-			 Shortword swRxGsp0,
-			 Shortword swRxLag, Shortword swUvCode,
-			 Shortword swSemiBeta, struct NormSw snsSqrtRs,
-			 Shortword pswExciteOut[], Shortword pswPPreState[])
+static void pitchPreFilt(int16_t pswExcite[],
+			 int16_t swRxGsp0,
+			 int16_t swRxLag, int16_t swUvCode,
+			 int16_t swSemiBeta, struct NormSw snsSqrtRs,
+			 int16_t pswExciteOut[], int16_t pswPPreState[])
 {
 
 /*_________________________________________________________________________
@@ -3103,16 +3103,16 @@ static void pitchPreFilt(Shortword pswExcite[],
  |_________________________________________________________________________|
 */
 
-	Longword L_1, L_OrigEnergy;
+	int32_t L_1, L_OrigEnergy;
 
-	Shortword swScale,
+	int16_t swScale,
 	    swSqrtP0, swIntLag, swRemain, swEnergy, pswInterpCoefs[P_INT_MACS];
 
 	short int i, j;
 
 	struct NormSw snsOrigEnergy;
 
-	Shortword *pswPPreCurr = &pswPPreState[LTP_LEN];
+	int16_t *pswPPreCurr = &pswPPreState[LTP_LEN];
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -3292,7 +3292,7 @@ static void pitchPreFilt(Shortword pswExcite[],
  *
  *************************************************************************/
 
-Shortword r0BasedEnergyShft(Shortword swR0Index)
+int16_t r0BasedEnergyShft(int16_t swR0Index)
 {
 
 /*_________________________________________________________________________
@@ -3301,7 +3301,7 @@ Shortword r0BasedEnergyShft(Shortword swR0Index)
  |_________________________________________________________________________|
 */
 
-	Shortword swShiftDownSignal;
+	int16_t swShiftDownSignal;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -3399,7 +3399,7 @@ Shortword r0BasedEnergyShft(Shortword swR0Index)
  *
  *************************************************************************/
 
-short rcToADp(Shortword swAscale, Shortword pswRc[], Shortword pswA[])
+short rcToADp(int16_t swAscale, int16_t pswRc[], int16_t pswA[])
 {
 
 /*_________________________________________________________________________
@@ -3408,7 +3408,7 @@ short rcToADp(Shortword swAscale, Shortword pswRc[], Shortword pswA[])
  |_________________________________________________________________________|
 */
 
-	Longword pL_ASpace[NP],
+	int32_t pL_ASpace[NP],
 	    pL_tmpSpace[NP], L_temp, *pL_A, *pL_tmp, *pL_swap;
 
 	short int i, j,		/* loop counters */
@@ -3466,7 +3466,7 @@ short rcToADp(Shortword swAscale, Shortword pswRc[], Shortword pswA[])
  *
  *     This subroutine computes an autocorrelation vector, given a vector
  *     of reflection coefficients as an input. Double precision calculations
- *     are used internally, and a double precision (Longword)
+ *     are used internally, and a double precision (int32_t)
  *     autocorrelation sequence is returned.
  *
  *   INPUTS:
@@ -3490,7 +3490,7 @@ short rcToADp(Shortword swAscale, Shortword pswRc[], Shortword pswA[])
  *   OUTPUTS:
  *
  *     pL_R[0:NP]
- *                     An output Longword array containing the
+ *                     An output int32_t array containing the
  *                     autocorrelation vector where
  *                     pL_R[0] = 0x7fffffff; (i.e., ~1.0).
  *
@@ -3512,8 +3512,8 @@ short rcToADp(Shortword swAscale, Shortword pswRc[], Shortword pswA[])
  *
  **************************************************************************/
 
-void rcToCorrDpL(Shortword swAshift, Shortword swAscale,
-		 Shortword pswRc[], Longword pL_R[])
+void rcToCorrDpL(int16_t swAshift, int16_t swAscale,
+		 int16_t pswRc[], int32_t pL_R[])
 {
 
 /*_________________________________________________________________________
@@ -3522,7 +3522,7 @@ void rcToCorrDpL(Shortword swAshift, Shortword swAscale,
  |_________________________________________________________________________|
 */
 
-	Longword pL_ASpace[NP],
+	int32_t pL_ASpace[NP],
 	    pL_tmpSpace[NP], L_temp, L_sum, *pL_A, *pL_tmp, *pL_swap;
 
 	short int i, j;		/* loop control variables */
@@ -3631,7 +3631,7 @@ void rcToCorrDpL(Shortword swAshift, Shortword swAscale,
  *
  *************************************************************************/
 
-void res_eng(Shortword pswReflecCoefIn[], Shortword swRq,
+void res_eng(int16_t pswReflecCoefIn[], int16_t swRq,
 	     struct NormSw *psnsSqrtRsOut)
 {
 /*_________________________________________________________________________
@@ -3649,9 +3649,9 @@ void res_eng(Shortword pswReflecCoefIn[], Shortword swRq,
  |_________________________________________________________________________|
 */
 
-	Longword L_Product, L_Shift, L_SqrtResEng;
+	int32_t L_Product, L_Shift, L_SqrtResEng;
 
-	Shortword swPartialProduct,
+	int16_t swPartialProduct,
 	    swPartialProductShift,
 	    swTerm,
 	    swShift, swSqrtPP, swSqrtPPShift, swSqrtResEng, swSqrtResEngShift;
@@ -3766,7 +3766,7 @@ void res_eng(Shortword pswReflecCoefIn[], Shortword swRq,
  *
  *************************************************************************/
 
-void rs_rr(Shortword pswExcitation[], struct NormSw snsSqrtRs,
+void rs_rr(int16_t pswExcitation[], struct NormSw snsSqrtRs,
 	   struct NormSw *snsSqrtRsRr)
 {
 
@@ -3775,8 +3775,8 @@ void rs_rr(Shortword pswExcitation[], struct NormSw snsSqrtRs,
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Longword L_Temp;
-	Shortword swTemp, swTemp2, swEnergy, swNormShift, swShift;
+	int32_t L_Temp;
+	int16_t swTemp, swTemp2, swEnergy, swNormShift, swShift;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -3892,7 +3892,7 @@ void rs_rr(Shortword pswExcitation[], struct NormSw snsSqrtRs,
  *
  *************************************************************************/
 
-void rs_rrNs(Shortword pswExcitation[], struct NormSw snsSqrtRs,
+void rs_rrNs(int16_t pswExcitation[], struct NormSw snsSqrtRs,
 	     struct NormSw *snsSqrtRsRr)
 {
 
@@ -3901,8 +3901,8 @@ void rs_rrNs(Shortword pswExcitation[], struct NormSw snsSqrtRs,
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Longword L_Temp;
-	Shortword swTemp, swTemp2, swNormShift, swShift;
+	int32_t L_Temp;
+	int16_t swTemp, swTemp2, swNormShift, swShift;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -4010,9 +4010,9 @@ void rs_rrNs(Shortword pswExcitation[], struct NormSw snsSqrtRs,
  *
  *************************************************************************/
 
-Shortword scaleExcite(Shortword pswVect[],
-		      Shortword swErrTerm, struct NormSw snsRS,
-		      Shortword pswScldVect[])
+int16_t scaleExcite(int16_t pswVect[],
+		      int16_t swErrTerm, struct NormSw snsRS,
+		      int16_t pswScldVect[])
 {
 
 /*_________________________________________________________________________
@@ -4020,8 +4020,8 @@ Shortword scaleExcite(Shortword pswVect[],
  |                            Automatic Variables                          |
  |_________________________________________________________________________|
 */
-	Longword L_GainUs, L_scaled, L_Round_off;
-	Shortword swGain, swGainUs, swGainShift, i, swGainUsShft;
+	int32_t L_GainUs, L_scaled, L_Round_off;
+	int16_t swGain, swGainUs, swGainShift, i, swGainUsShft;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -4155,9 +4155,9 @@ Shortword scaleExcite(Shortword pswVect[],
  *
  *************************************************************************/
 
-static void spectralPostFilter(Shortword pswSPFIn[],
-			       Shortword pswNumCoef[],
-			       Shortword pswDenomCoef[], Shortword pswSPFOut[])
+static void spectralPostFilter(int16_t pswSPFIn[],
+			       int16_t pswNumCoef[],
+			       int16_t pswDenomCoef[], int16_t pswSPFOut[])
 {
 /*_________________________________________________________________________
  |                                                                         |
@@ -4165,9 +4165,9 @@ static void spectralPostFilter(Shortword pswSPFIn[],
  |_________________________________________________________________________|
 */
 
-#define  AGC_COEF       (Shortword)0x19a	/* (1.0 - POST_AGC_COEF)
+#define  AGC_COEF       (int16_t)0x19a	/* (1.0 - POST_AGC_COEF)
 						 * 1.0-.9875 */
-#define  POST_EMPHASIS  (Shortword)0x199a	/* 0.2 */
+#define  POST_EMPHASIS  (int16_t)0x199a	/* 0.2 */
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -4177,9 +4177,9 @@ static void spectralPostFilter(Shortword pswSPFIn[],
 
 	short int i;
 
-	Longword L_OrigEnergy, L_runningGain, L_Output;
+	int32_t L_OrigEnergy, L_runningGain, L_Output;
 
-	Shortword swAgcGain, swRunningGain, swTemp;
+	int16_t swAgcGain, swRunningGain, swTemp;
 
 	struct NormSw snsOrigEnergy;
 
@@ -4385,7 +4385,7 @@ static void spectralPostFilter(Shortword pswSPFIn[],
  *
  *************************************************************************/
 
-void speechDecoder(Shortword pswParameters[], Shortword pswDecodedSpeechFrame[])
+void speechDecoder(int16_t pswParameters[], int16_t pswDecodedSpeechFrame[])
 {
 
 /*_________________________________________________________________________
@@ -4394,7 +4394,7 @@ void speechDecoder(Shortword pswParameters[], Shortword pswDecodedSpeechFrame[])
  |_________________________________________________________________________|
 */
 
-	static Shortword
+	static int16_t
 	    * pswLtpStateOut = &pswLtpStateBaseDec[LTP_LEN],
 	    pswSythAsSpace[NP * N_SUB],
 	    pswPFNumAsSpace[NP * N_SUB],
@@ -4412,13 +4412,13 @@ void speechDecoder(Shortword pswParameters[], Shortword pswDecodedSpeechFrame[])
 		    &pswPFDenomAsSpace[10],
 		    &pswPFDenomAsSpace[20], &pswPFDenomAsSpace[30],};
 
-	static ShortwordRom psrSPFDenomWidenCf[NP] = {
+	static int16_t psrSPFDenomWidenCf[NP] = {
 		0x6000, 0x4800, 0x3600, 0x2880, 0x1E60,
 		0x16C8, 0x1116, 0x0CD0, 0x099C, 0x0735,
 	};
 
-	static Longword L_RxPNSeed;	/* DTX mode */
-	static Shortword swRxDtxGsIndex;	/* DTX mode */
+	static int32_t L_RxPNSeed;	/* DTX mode */
+	static int16_t swRxDtxGsIndex;	/* DTX mode */
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -4432,7 +4432,7 @@ void speechDecoder(Shortword pswParameters[], Shortword pswDecodedSpeechFrame[])
 	    siGsp0Code = 0,
 	    psiVselpCw[2], siVselpCw = 0, siNumBits = 0, siCodeBook = 0;
 
-	Shortword pswFrmKs[NP],
+	int16_t pswFrmKs[NP],
 	    pswFrmAs[NP],
 	    pswFrmPFNum[NP],
 	    pswFrmPFDenom[NP],
@@ -4445,13 +4445,13 @@ void speechDecoder(Shortword pswParameters[], Shortword pswDecodedSpeechFrame[])
 
 	struct NormSw psnsSqrtRs[N_SUB], snsRs00, snsRs11, snsRs22;
 
-	Shortword swMutePermit, swLevelMean, swLevelMax,	/* error concealment */
+	int16_t swMutePermit, swLevelMean, swLevelMax,	/* error concealment */
 	 swMuteFlag;		/* error concealment */
 
-	Shortword swTAF, swSID, swBfiDtx;	/* DTX mode */
-	Shortword swFrameType;	/* DTX mode */
+	int16_t swTAF, swSID, swBfiDtx;	/* DTX mode */
+	int16_t swFrameType;	/* DTX mode */
 
-	Longword L_RxDTXGs;	/* DTX mode */
+	int32_t L_RxDTXGs;	/* DTX mode */
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -4787,7 +4787,7 @@ void speechDecoder(Shortword pswParameters[], Shortword pswDecodedSpeechFrame[])
 				siVselpCw = psiVselpCw[siCodeBook];
 
 				b_con(siVselpCw, siNumBits,
-				      (Shortword *) pswBitArray);
+				      (int16_t *) pswBitArray);
 
 				v_con(pppsrUvCodeVec[siCodeBook][0],
 				      ppswVselpEx[siCodeBook], pswBitArray,
@@ -4927,7 +4927,7 @@ void speechDecoder(Shortword pswParameters[], Shortword pswDecodedSpeechFrame[])
  *   PURPOSE:
  *
  *     The purpose of this function is to perform a single precision square
- *     root function on a Longword
+ *     root function on a int32_t
  *
  *   INPUTS:
  *
@@ -4962,7 +4962,7 @@ void speechDecoder(Shortword pswParameters[], Shortword pswDecodedSpeechFrame[])
  *
  *************************************************************************/
 
-Shortword sqroot(Longword L_SqrtIn)
+int16_t sqroot(int32_t L_SqrtIn)
 {
 
 /*_________________________________________________________________________
@@ -4982,9 +4982,9 @@ Shortword sqroot(Longword L_SqrtIn)
  |_________________________________________________________________________|
 */
 
-	Longword L_Temp0, L_Temp1;
+	int32_t L_Temp0, L_Temp1;
 
-	Shortword swTemp, swTemp2, swTemp3, swTemp4, swSqrtOut;
+	int16_t swTemp, swTemp2, swTemp3, swTemp4, swSqrtOut;
 
 /*_________________________________________________________________________
  |                                                                         |
@@ -5116,8 +5116,8 @@ Shortword sqroot(Longword L_SqrtIn)
  *
  *************************************************************************/
 
-void v_con(Shortword pswBVects[], Shortword pswOutVect[],
-	   Shortword pswBitArray[], short int siNumBVctrs)
+void v_con(int16_t pswBVects[], int16_t pswOutVect[],
+	   int16_t pswBitArray[], short int siNumBVctrs)
 {
 
 /*_________________________________________________________________________
@@ -5126,7 +5126,7 @@ void v_con(Shortword pswBVects[], Shortword pswOutVect[],
  |_________________________________________________________________________|
 */
 
-	Longword L_Temp;
+	int32_t L_Temp;
 
 	short int siSampleCnt, siCVectCnt;
 

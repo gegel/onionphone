@@ -11,9 +11,9 @@
  |_________________________________________________________________________|
 */
 
-Longword hr_L_mpy_ls(Longword L_var2, Shortword var1);
-Longword hr_L_mpy_ll(Longword L_var1, Longword L_var2);
-short isSwLimit(Shortword swIn);
-short isLwLimit(Longword L_In);
+int32_t hr_L_mpy_ls(int32_t L_var2, int16_t var1);
+int32_t hr_L_mpy_ll(int32_t L_var1, int32_t L_var2);
+short isSwLimit(int16_t swIn);
+short isLwLimit(int32_t L_In);
 
 #endif
