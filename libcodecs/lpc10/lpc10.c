@@ -122,13 +122,13 @@ int lpc10encode(short *in, unsigned char *out, int inlen)
 			speech[i] = ((float)in[i]) / 32768.0f;
 		}
 		hp100(speech);
-		analys(speech, voice, &pitch, &rms, rc - 1);
+		analys(speech, voice, &pitch, &rms, rc);
 
 		memset(ibits, 0, MAXNB * sizeof(int));
 		memset(out, 0, 7);
 
-		encode(voice - 1, &pitch, &rms, rc - 1, &ipitv, &irms, irc - 1);
-		channel(0, &ipitv, &irms, irc - 1, ibits - 1);
+		encode(voice, &pitch, &rms, rc, &ipitv, &irms, irc);
+		channel(0, &ipitv, &irms, irc, ibits);
 		for (j = 0; j < MAXNB; j++) {
 			out[j >> 3] |= (! !ibits[j]) << (j & 7);
 		}
@@ -155,9 +155,9 @@ int lpc10decode(unsigned char *in, short *out, int inlen)
 			ibits[j] = ! !(in[j >> 3] & (1 << (j & 7)));
 		}
 		in += 7;
-		channel(1, &ipitv, &irms, irc - 1, ibits - 1);
-		decode(ipitv, &irms, irc - 1, voice - 1, &pitch, &rms, rc - 1);
-		synths(voice - 1, &pitch, &rms, rc - 1, speech - 1, &len);
+		channel(1, &ipitv, &irms, irc, ibits);
+		decode(ipitv, &irms, irc, voice, &pitch, &rms, rc);
+		synths(voice, &pitch, &rms, rc, speech, &len);
 		buf_man(speech, speech, len);
 		for (i = 0; i < LFRAME; i++) {
 			*out++ =
