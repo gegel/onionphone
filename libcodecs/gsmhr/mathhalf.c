@@ -892,7 +892,7 @@ int32_t L_shl(int32_t L_var1, int16_t var2)
 			if (L_var1 > 0)
 				L_Out = 0;
 			else
-				L_Out = 0xffffffffL;
+				L_Out = -1;
 		} else
 			L_Out = L_shr(L_var1, -var2);
 	} else {
@@ -1000,7 +1000,7 @@ int32_t L_shr(int32_t L_var1, int16_t var2)
 			if (L_var1 > 0)
 				L_Out = 0;
 			else
-				L_Out = 0xffffffffL;
+				L_Out = -1;
 		} else {
 			L_Mask = 0;
 

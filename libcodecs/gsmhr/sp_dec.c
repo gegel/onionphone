@@ -2148,7 +2148,7 @@ void lpcFir(int16_t pswInput[], int16_t pswCoef[],
 	/* --------------------------- */
 
 	L_Sum = L_shl(L_Sum, ASHIFT);
-	L_Sum = L_msu(L_Sum, pswInput[0], 0x8000);
+	L_Sum = L_msu(L_Sum, pswInput[0], -0x8000);
 
 	/* save 1st output sample */
 	/* ---------------------- */
@@ -2185,7 +2185,7 @@ void lpcFir(int16_t pswInput[], int16_t pswCoef[],
 		/* --------------------------- */
 
 		L_Sum = L_shl(L_Sum, ASHIFT);
-		L_Sum = L_msu(L_Sum, pswInput[siSmp], 0x8000);
+		L_Sum = L_msu(L_Sum, pswInput[siSmp], -0x8000);
 
 		/* save current output sample */
 		/* -------------------------- */
@@ -2313,7 +2313,7 @@ void lpcIir(int16_t pswInput[], int16_t pswCoef[],
 	/* --------------------------- */
 
 	L_Sum = L_shl(L_Sum, ASHIFT);
-	L_Sum = L_msu(L_Sum, pswInput[0], 0x8000);
+	L_Sum = L_msu(L_Sum, pswInput[0], -0x8000);
 
 	/* save 1st output sample */
 	/* ---------------------- */
@@ -2350,7 +2350,7 @@ void lpcIir(int16_t pswInput[], int16_t pswCoef[],
 		/* --------------------------- */
 
 		L_Sum = L_shl(L_Sum, ASHIFT);
-		L_Sum = L_msu(L_Sum, pswInput[siSmp], 0x8000);
+		L_Sum = L_msu(L_Sum, pswInput[siSmp], -0x8000);
 
 		/* save current output sample */
 		/* -------------------------- */
@@ -2732,7 +2732,7 @@ void lpcZsFir(int16_t pswInput[], int16_t pswCoef[], int16_t pswFiltOut[])
 		/* --------------------------- */
 
 		L_Sum = L_shl(L_Sum, ASHIFT);
-		L_Sum = L_msu(L_Sum, pswInput[siSmp], 0x8000);
+		L_Sum = L_msu(L_Sum, pswInput[siSmp], -0x8000);
 
 		/* save current output sample */
 		/* -------------------------- */
@@ -2853,7 +2853,7 @@ void lpcZsIir(int16_t pswInput[], int16_t pswCoef[], int16_t pswFiltOut[])
 		/* --------------------------- */
 
 		L_Sum = L_shl(L_Sum, ASHIFT);
-		L_Sum = L_msu(L_Sum, pswInput[siSmp], 0x8000);
+		L_Sum = L_msu(L_Sum, pswInput[siSmp], -0x8000);
 
 		/* save current output sample */
 		/* -------------------------- */
@@ -2967,7 +2967,7 @@ void lpcZsIirP(int16_t pswCommonIO[], int16_t pswCoef[])
 		/* --------------------------- */
 
 		L_Sum = L_shl(L_Sum, ASHIFT);
-		L_Sum = L_msu(L_Sum, pswCommonIO[siSmp], 0x8000);
+		L_Sum = L_msu(L_Sum, pswCommonIO[siSmp], -0x8000);
 
 		/* save current output sample */
 		/* -------------------------- */
@@ -5002,7 +5002,7 @@ int16_t sqroot(int32_t L_SqrtIn)
 	/* add contribution of 2nd term */
 	/* ---------------------------- */
 
-	L_Temp1 = L_sub(L_Temp1, MINUS_ONE);	/* L_Temp1 = 1 + x/2 */
+	L_Temp1 = L_sub(L_Temp1, -MINUS_ONE);	/* L_Temp1 = 1 + x/2 */
 
 	/* determine 3rd term */
 	/* ------------------ */
