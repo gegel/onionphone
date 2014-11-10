@@ -215,7 +215,7 @@ static void Reflection_coefficients P2((L_ACF, r), int32_t * L_ACF,	/* 0...8    
 {
 	register int i, m, n;
 	register int16_t temp;
-	register int32_t ltmp;
+	register volatile int32_t ltmp;
 	int16_t ACF[9];		/* 0..8 */
 	int16_t P[9];		/* 0..8 */
 	int16_t K[9];		/* 2..8 */
@@ -326,7 +326,7 @@ static void Quantization_and_coding P1((LAR), register int16_t * LAR	/* [0..7]  
     )
 {
 	register int16_t temp;
-	int32_t ltmp;
+	volatile int32_t ltmp = 0;
 
 	/*  This procedure needs four tables; the following equations
 	 *  give the optimum scaling for the constants:
@@ -338,12 +338,15 @@ static void Quantization_and_coding P1((LAR), register int16_t * LAR	/* [0..7]  
 	 */
 
 #	undef STEP
-#	define	STEP( A, B, MAC, MIC )		\
+#	define	STEP_LAST( A, B, MAC, MIC )		\
 		temp = GSM_MULT( A,   *LAR );	\
 		temp = GSM_ADD(  temp,   B );	\
 		temp = GSM_ADD(  temp, 256 );	\
 		temp = SASR(     temp,   9 );	\
 		*LAR  =  temp>MAC ? MAC - MIC : (temp<MIC ? 0 : temp - MIC); \
+
+#	define	STEP( A, B, MAC, MIC )		\
+		STEP_LAST( A, B, MAC, MIC);     \
 		LAR++;
 
 	STEP(20480, 0, 31, -32);
@@ -354,9 +357,10 @@ static void Quantization_and_coding P1((LAR), register int16_t * LAR	/* [0..7]  
 	STEP(13964, 94, 7, -8);
 	STEP(15360, -1792, 7, -8);
 	STEP(8534, -341, 3, -4);
-	STEP(9036, -1144, 3, -4);
+	STEP_LAST(9036, -1144, 3, -4);
 
 #	undef	STEP
+	(void)ltmp;
 }
 
 void Gsm_LPC_Analysis P3((S, s, LARc), struct gsm_state *S, int16_t * s,	/* 0..159 signals       IN/OUT  */

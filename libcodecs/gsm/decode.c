@@ -22,7 +22,7 @@ static void Postprocessing P2((S, s), struct gsm_state *S, register int16_t * s)
 {
 	register int k;
 	register int16_t msr = S->msr;
-	register int32_t ltmp;	/* for GSM_ADD */
+	register volatile int32_t ltmp;	/* for GSM_ADD */
 	register int16_t tmp;
 
 	for (k = 160; k--; s++) {

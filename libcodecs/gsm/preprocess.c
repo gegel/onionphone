@@ -47,8 +47,8 @@ void Gsm_Preprocess P3((S, s, so), struct gsm_state *S, int16_t * s, int16_t * s
 	int16_t msp, lsp;
 	int16_t SO;
 
-	int32_t ltmp;		/* for   ADD */
-	uint32_t utmp;		/* for L_ADD */
+	volatile int32_t ltmp = 0;		/* for   ADD */
+	volatile uint32_t utmp = 0;		/* for L_ADD */
 
 	register int k = 160;
 
@@ -107,4 +107,7 @@ void Gsm_Preprocess P3((S, s, so), struct gsm_state *S, int16_t * s, int16_t * s
 	S->z1 = z1;
 	S->L_z2 = L_z2;
 	S->mp = mp;
+
+	(void)ltmp;
+	(void)utmp;
 }

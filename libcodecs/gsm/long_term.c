@@ -654,7 +654,7 @@ static void Long_term_analysis_filtering P6((bc, Nc, dp, d, dpp, e), int16_t bc,
  */
 {
 	register int k;
-	register int32_t ltmp;
+	register volatile int32_t ltmp;
 
 #	undef STEP
 #	define STEP(BP)					\
@@ -718,7 +718,7 @@ void Gsm_Long_Term_Synthesis_Filtering P5((S, Ncr, bcr, erp, drp), struct gsm_st
  *  table 4.3b.
  */
 {
-	register int32_t ltmp;	/* for ADD */
+	register volatile int32_t ltmp;	/* for ADD */
 	register int k;
 	int16_t brp, drpp, Nr;
 

@@ -77,7 +77,7 @@ void Gsm_Coder P8((S, s, LARc, Nc, bc, Mc, xmaxc, xMc), struct gsm_state *S, int
 
 		{
 			register int i;
-			register int32_t ltmp;
+			register volatile int32_t ltmp;
 			for (i = 0; i <= 39; i++)
 				dp[i] = GSM_ADD(e[5 + i], dpp[i]);
 		}
