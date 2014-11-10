@@ -174,7 +174,7 @@ void SKP_Silk_find_pred_coefs_FIX(SKP_Silk_encoder_state_FIX * psEnc,	/* I/O  en
 
 	    /* Calculate residual energy using quantized LPC coefficients */
 	    SKP_Silk_residual_energy_FIX(psEncCtrl->ResNrg, psEncCtrl->ResNrgQ,
-					 LPC_in_pre, psEncCtrl->PredCoef_Q12,
+					 LPC_in_pre, (const int16_t(*)[])psEncCtrl->PredCoef_Q12,
 					 local_gains_Qx, Qx,
 					 psEnc->sCmn.subfr_length,
 					 psEnc->sCmn.predictLPCOrder);
