@@ -31,6 +31,11 @@
     root |= 2 << (N);                           \
   }
 
+#define WEBRTC_SPL_SQRT_ITER_LAST(N)            \
+  try1 = root + (1 << (N));                     \
+  if (value >= try1 << (N))                     \
+    root |= 2 << (N);                           \
+
 int32_t WebRtcSpl_SqrtFloor(int32_t value)
 {
 	int32_t root = 0, try1;
@@ -50,7 +55,7 @@ int32_t WebRtcSpl_SqrtFloor(int32_t value)
 	WEBRTC_SPL_SQRT_ITER(3);
 	WEBRTC_SPL_SQRT_ITER(2);
 	WEBRTC_SPL_SQRT_ITER(1);
-	WEBRTC_SPL_SQRT_ITER(0);
+	WEBRTC_SPL_SQRT_ITER_LAST(0);
 
 	return root >> 1;
 }

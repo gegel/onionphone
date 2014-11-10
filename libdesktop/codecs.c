@@ -231,8 +231,8 @@ static lpcstate_t lpcc; //codec state
 static lpcstate_t lpcv; //vocoder state
 ///*
 //------------------------------------------ILBC-------------------------
-iLBC_encinst_t *Enc_Inst;
-iLBC_decinst_t *Dec_Inst;
+iLBC_Enc_Inst_t *Enc_Inst;
+iLBC_Dec_Inst_t *Dec_Inst;
 int ilbc_frameLen;
 //*/
 //------------------------------------------AMR---------------------------
