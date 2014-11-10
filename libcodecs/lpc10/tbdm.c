@@ -35,9 +35,9 @@ void tbdm(float speech[], int tau[], float amdf[],
 
 /*   Compute full AMDF using log spaced lags, find coarse minimum	*/
 
-	difmag(speech, tau, LTAU, tau[LTAU], amdf, minptr, maxptr);
+	difmag(speech, tau - 1, LTAU, tau[LTAU - 1], amdf, minptr, maxptr);
 
-	*mintau = tau[*minptr];
+	*mintau = tau[*minptr - 1];
 	minamd = (int)amdf[*minptr];
 
 /*   Build table containing all lags within +/- 3 of the AMDF minimum
@@ -45,11 +45,11 @@ void tbdm(float speech[], int tau[], float amdf[],
 
 	ltau2 = 0;
 	ptr = *minptr - 2;
-	for (i = (mmax(*mintau - 3, 41)); i <= (mmin(*mintau + 3, tau[LTAU])); i++) {
-		while (tau[ptr] < i) {
+	for (i = (mmax(*mintau - 3, 41)); i <= (mmin(*mintau + 3, tau[LTAU - 1])); i++) {
+		while (tau[ptr - 1] < i) {
 			ptr++;
 		}
-		if (tau[ptr] != i) {
+		if (tau[ptr - 1] != i) {
 			ltau2++;
 			tau2[ltau2 - 1] = i;
 		}
@@ -59,7 +59,7 @@ void tbdm(float speech[], int tau[], float amdf[],
 *    if it is better than the coarse minimum	*/
 
 	if (ltau2 > 0) {
-		difmag(speech, &tau2[0] - 1, ltau2, tau[LTAU], &amdf2[0] - 1,
+		difmag(speech, &tau2[0], ltau2, tau[LTAU - 1], &amdf2[0],
 		       &minp2, &maxp2);
 
 		if (amdf2[minp2 - 1] < minamd) {
@@ -80,7 +80,7 @@ void tbdm(float speech[], int tau[], float amdf[],
 			ltau2 = 1;
 			tau2[0] = i;
 		}
-		difmag(speech, &tau2[0] - 1, ltau2, tau[LTAU], &amdf2[0] - 1,
+		difmag(speech, &tau2[0], ltau2, tau[LTAU - 1], &amdf2[0],
 		       &minp2, &maxp2);
 
 		if (amdf2[minp2 - 1] < minamd) {

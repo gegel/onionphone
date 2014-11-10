@@ -30,11 +30,10 @@ void synths(int voice[], int *pitch, float *rms,
 
 	*pitch = mmax(mmin(*pitch, 156), 20);
 	for (i = 1; i <= ORDER; i++)
-		rc[i] = mmax(mmin(rc[i], .99f), -.99f);
+		rc[i - 1] = mmax(mmin(rc[i - 1], .99f), -.99f);
 
 	*k = 0;
-	pitsyn(voice, pitch, rms, rc, ivuv - 1, ipiti - 1, rmsi - 1, rci, &nout,
-	       &ratio);
+	pitsyn(voice, pitch, rms, rc, ivuv, ipiti, rmsi, rci, &nout, &ratio);
 
 	if (nout > 0) {
 		for (j = 0; j < nout; j++) {
@@ -43,10 +42,10 @@ void synths(int voice[], int *pitch, float *rms,
 			bsynz(pc, ipiti[j], ivuv[j], sout, rmsi[j], ratio,
 			      g2pass);
 
-			deemp0(sout - 1, ipiti[j]);
+			deemp0(sout, ipiti[j]);
 			for (i = 1; i <= ipiti[j]; i++) {
 				(*k)++;
-				speech[*k] = sout[i - 1] * 0.000244140625f;
+				speech[*k - 1] = sout[i - 1] * 0.000244140625f;
 			}
 		}
 	}

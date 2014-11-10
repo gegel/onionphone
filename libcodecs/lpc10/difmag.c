@@ -32,18 +32,18 @@ void difmag(float speech[], int tau[], int ltau, int maxlag,
 	*minptr = 1;
 	*maxptr = 1;
 	for (i = 1; i <= ltau; i++) {
-		n1 = (int)((maxlag - tau[i]) * 0.5 + 1);
+		n1 = (int)((maxlag - tau[i - 1]) * 0.5 + 1);
 		n2 = n1 + MAXWIN - 1;
 		sum = 0.;
 		for (j = n1; j <= n2; j += 4) {
 			sum +=
 			    (float)
-			    fabs((double)(speech[j] - speech[j + tau[i]]));
+			    fabs((double)(speech[j] - speech[j + tau[i - 1]]));
 		}
-		amdf[i] = sum;
-		if (amdf[i] < amdf[*minptr])
+		amdf[i - 1] = sum;
+		if (amdf[i - 1] < amdf[*minptr - 1])
 			*minptr = i;
-		if (amdf[i] > amdf[*maxptr])
+		if (amdf[i - 1] > amdf[*maxptr - 1])
 			*maxptr = i;
 	}
 

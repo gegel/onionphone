@@ -73,15 +73,15 @@ void channel(int which, int *ipitv, int *irms, int irc[ORDER + 1], int ibits[55]
 		itab[1] = *irms;
 		itab[2] = 0;
 		for (i = 1; i <= ORDER; i++)
-			itab[i + 2] = irc[ORDER + 1 - i] & 32767;
+			itab[i + 2] = irc[ORDER - i] & 32767;
 
 /*   Put 54 bits into IBITS array	*/
 
 		for (i = 1; i <= 53; i++) {
-			ibits[i] = itab[iblist[i - 1] - 1] & 1;
+			ibits[i - 1] = itab[iblist[i - 1] - 1] & 1;
 			itab[iblist[i - 1] - 1] = itab[iblist[i - 1] - 1] >> 1;
 		}
-		ibits[54] = isync & 1;
+		ibits[53] = isync & 1;
 		isync = 1 - isync;
 
 		break;
@@ -98,7 +98,7 @@ void channel(int which, int *ipitv, int *irms, int irc[ORDER + 1], int ibits[55]
 
 		for (i = 1; i <= 53; i++)
 			itab[iblist[53 - i] - 1] =
-			    itab[iblist[53 - i] - 1] * 2 + ibits[54 - i];
+			    itab[iblist[53 - i] - 1] * 2 + ibits[53 - i];
 
 /*   Sign extend RC's   */
 
@@ -111,7 +111,7 @@ void channel(int which, int *ipitv, int *irms, int irc[ORDER + 1], int ibits[55]
 		*ipitv = itab[0];
 		*irms = itab[1];
 		for (i = 1; i <= ORDER; i++)
-			irc[i] = itab[ORDER + 3 - i];
+			irc[i - 1] = itab[ORDER + 3 - i];
 
 		break;
 	}

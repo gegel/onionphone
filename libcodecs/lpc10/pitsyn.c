@@ -49,7 +49,7 @@ void pitsyn(int voice[], int *pitch, float *rms, float rc[],
 	*ratio = (float)(*rms / (rmso + 8.));
 
 	if (first) {		/*1 */
-		ivoice = voice[2];
+		ivoice = voice[1];
 		if (ivoice == 0) {
 			*pitch = (int)(LFRAME * 0.25);
 		}
@@ -57,10 +57,10 @@ void pitsyn(int voice[], int *pitch, float *rms, float rc[],
 		jsamp = LFRAME - *nout * *pitch;
 		for (i = 1; i <= *nout; i++) {
 			for (j = 1; j <= ORDER; j++)
-				rci[j - 1][i - 1] = rc[j];
-			ivuv[i] = ivoice;
-			ipiti[i] = *pitch;
-			rmsi[i] = *rms;
+				rci[j - 1][i - 1] = rc[j - 1];
+			ivuv[i - 1] = ivoice;
+			ipiti[i - 1] = *pitch;
+			rmsi[i - 1] = *rms;
 		}
 		first = 0;
 	} /*1 */
@@ -70,8 +70,8 @@ void pitsyn(int voice[], int *pitch, float *rms, float rc[],
 		*nout = 0;
 		jused = 0;
 		istart = 1;
-		if ((voice[1] == ivoico) && (voice[2] == voice[1])) {	/*2 */
-			if (voice[2] == 0) {
+		if ((voice[0] == ivoico) && (voice[1] == voice[0])) {	/*2 */
+			if (voice[1] == 0) {
 /* SSUV - -   0  ,  0  ,  0	*/
 				*pitch = (int)(LFRAME * 0.25);
 				ipito = *pitch;
@@ -80,27 +80,27 @@ void pitsyn(int voice[], int *pitch, float *rms, float rc[],
 			}
 /* SSVC - -   1  ,  1  ,  1	*/
 			slope = (*pitch - ipito) / (float)lsamp;
-			ivoice = voice[2];
+			ivoice = voice[1];
 		} /*2 */
 		else {		/*2 */
 			if (ivoico != 1) {
-				if (ivoico == voice[1])
+				if (ivoico == voice[0])
 /* UV2VC2 - -  0  ,  0	,  1	*/
 					nl = (int)(lsamp - LFRAME * 0.25);
 				else
 /* UV2VC1 - -  0  ,  1	,  1	*/
 					nl = (int)(lsamp - 3 * LFRAME * 0.25);
 
-				ipiti[1] = (int)(nl * 0.5);
-				ipiti[2] = nl - ipiti[1];
+				ipiti[0] = (int)(nl * 0.5);
+				ipiti[1] = nl - ipiti[0];
+				ivuv[0] = 0;
 				ivuv[1] = 0;
-				ivuv[2] = 0;
+				rmsi[0] = rmso;
 				rmsi[1] = rmso;
-				rmsi[2] = rmso;
 				for (i = 1; i <= ORDER; i++) {
 					rci[i - 1][0] = rco[i - 1];
 					rci[i - 1][1] = rco[i - 1];
-					rco[i - 1] = rc[i];
+					rco[i - 1] = rc[i - 1];
 				}
 				slope = 0;
 				*nout = 2;
@@ -109,7 +109,7 @@ void pitsyn(int voice[], int *pitch, float *rms, float rc[],
 				istart = nl + 1;
 				ivoice = 1;
 			} else {
-				if (ivoico != voice[1])
+				if (ivoico != voice[0])
 /* VC2UV1 - -	1  ,  0  ,  0	*/
 					lsamp = (int)(LFRAME * 0.25 + jsamp);
 				else
@@ -118,8 +118,8 @@ void pitsyn(int voice[], int *pitch, float *rms, float rc[],
 					    (int)(3 * LFRAME * 0.25 + jsamp);
 
 				for (i = 1; i <= ORDER; i++) {
-					yarc[i - 1] = rc[i];
-					rc[i] = rco[i - 1];
+					yarc[i - 1] = rc[i - 1];
+					rc[i - 1] = rco[i - 1];
 				}
 				ivoice = 1;
 				slope = 0.;
@@ -137,9 +137,9 @@ void pitsyn(int voice[], int *pitch, float *rms, float rc[],
 					if (*nout > 11) {
 						exit(1);
 					}
-					ipiti[*nout] = ip;
+					ipiti[*nout - 1] = ip;
 					*pitch = ip;
-					ivuv[*nout] = ivoice;
+					ivuv[*nout - 1] = ivoice;
 					jused += ip;
 					prop =
 					    (float)((jused -
@@ -150,19 +150,19 @@ void pitsyn(int voice[], int *pitch, float *rms, float rc[],
 							       / (1 -
 								  rco[j - 1]));
 						alrn =
-						    (float)log((1 + rc[j]) /
-							       (1 - rc[j]));
+						    (float)log((1 + rc[j - 1]) /
+							       (1 - rc[j - 1]));
 						xxy =
 						    alro + prop * (alrn - alro);
 						xxy = (float)exp(xxy);
 						rci[j - 1][*nout - 1] =
 						    (xxy - 1) / (xxy + 1);
 					}
-					rmsi[*nout] =
+					rmsi[*nout - 1] =
 					    (float)(log(rmso) +
 						    prop * (log(*rms) -
 							    log(rmso)));
-					rmsi[*nout] = (float)exp(rmsi[*nout]);
+					rmsi[*nout - 1] = (float)exp(rmsi[*nout - 1]);
 				}	/*5 */
 			}	/*4 */
 			if (vflag != 1)
@@ -177,19 +177,19 @@ void pitsyn(int voice[], int *pitch, float *rms, float rc[],
 				uvpit *= 0.5;
 			rmso = *rms;
 			for (i = 1; i <= ORDER; i++) {
-				rc[i] = yarc[i - 1];
+				rc[i - 1] = yarc[i - 1];
 				rco[i - 1] = yarc[i - 1];
 			}
 		}		/*3 */
 		jsamp = lsamp - jused;
 	}			/*1 */
 	if (*nout != 0) {
-		ivoico = voice[2];
+		ivoico = voice[1];
 		ipito = *pitch;
 		rmso = *rms;
 		/*DO I = 1,ORDER */
 		for (i = 1; i <= ORDER; i++)
-			rco[i - 1] = rc[i];
+			rco[i - 1] = rc[i - 1];
 	}
 
 }
