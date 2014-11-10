@@ -89,13 +89,24 @@ extern int16_t gsm_asr P((int16_t a, int n));
 #define GSM_L_MULT(a, b) /* int16_t a, int16_t b */	\
 	(((int32_t)(a) * (int32_t)(b)) << 1)
 
-#define GSM_L_ADD(a, b)	\
-	( (a) <  0 ? ( (b) >= 0 ? (a) + (b)	\
-		 : (utmp = (uint32_t)-((a) + 1) + (uint32_t)-((b) + 1)) \
-		   >= MAX_LONGWORD ? MIN_LONGWORD : -(int32_t)utmp-2 )   \
-	: ((b) <= 0 ? (a) + (b)   \
-	          : (utmp = (uint32_t)(a) + (uint32_t)(b)) >= MAX_LONGWORD \
-		    ? MAX_LONGWORD : utmp))
+static inline int32_t GSM_L_ADD(int32_t a, int32_t b) __attribute__((always_inline));
+static inline int32_t GSM_L_ADD(int32_t a, int32_t b)
+{
+	uint32_t A;
+
+	if ((a < 0 && b >= 0) || (a >= 0 && b <= 0))
+		return (a + b);
+
+	if (a < 0)
+	{
+		A = (uint32_t)(-(a + 1)) + (uint32_t)(-(b + 1));
+		return A >= MAX_LONGWORD ? MIN_LONGWORD : (-(int32_t)(A - 2));
+	} else
+	{
+		A = (uint32_t)a + (uint32_t)b;
+		return A > MAX_LONGWORD ? MAX_LONGWORD : A;
+	}
+}
 
 /*
  * # define GSM_ADD(a, b)	\
