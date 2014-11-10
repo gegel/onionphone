@@ -136,12 +136,12 @@ static inline int EXTEND32_(int x, char *file, int line)
 }
 
 #define SHR16(a, shift) SHR16_(a, shift, __FILE__, __LINE__)
-static inline short SHR16_(int a, int shift, char *file, int line)
+static inline short SHR16_(int a, unsigned int shift, char *file, int line)
 {
 	int res;
-	if (!VERIFY_SHORT(a) || !VERIFY_SHORT(shift)) {
+	if (!VERIFY_SHORT(a) || !VERIFY_UINT(shift)) {
 		fprintf(stderr,
-			"SHR16: inputs are not short: %d >> %d in %s: line %d\n",
+			"SHR16: inputs are not short: %d >> %u in %s: line %d\n",
 			a, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
 		assert(0);
@@ -161,12 +161,12 @@ static inline short SHR16_(int a, int shift, char *file, int line)
 }
 
 #define SHL16(a, shift) SHL16_(a, shift, __FILE__, __LINE__)
-static inline short SHL16_(int a, int shift, char *file, int line)
+static inline short SHL16_(int a, unsigned int shift, char *file, int line)
 {
 	int res;
-	if (!VERIFY_SHORT(a) || !VERIFY_SHORT(shift)) {
+	if (!VERIFY_SHORT(a) || !VERIFY_UINT(shift)) {
 		fprintf(stderr,
-			"SHL16: inputs are not short: %d %d in %s: line %d\n",
+			"SHL16: inputs are not short: %d %u in %s: line %d\n",
 			a, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
 		assert(0);
@@ -185,11 +185,11 @@ static inline short SHL16_(int a, int shift, char *file, int line)
 	return res;
 }
 
-static inline int SHR32(int64_t a, int shift)
+static inline int SHR32(int64_t a, unsigned int shift)
 {
 	int64_t res;
-	if (!VERIFY_INT(a) || !VERIFY_SHORT(shift)) {
-		fprintf(stderr, "SHR32: inputs are not int: %d %d\n", (int)a,
+	if (!VERIFY_INT(a) || !VERIFY_UINT(shift)) {
+		fprintf(stderr, "SHR32: inputs are not int: %d %u\n", (int)a,
 			shift);
 #ifdef FIXED_DEBUG_ASSERT
 		assert(0);
@@ -207,12 +207,12 @@ static inline int SHR32(int64_t a, int shift)
 }
 
 #define SHL32(a, shift) SHL32_(a, shift, __FILE__, __LINE__)
-static inline int SHL32_(int64_t a, int shift, char *file, int line)
+static inline int SHL32_(int64_t a, unsigned int shift, char *file, int line)
 {
 	int64_t res;
-	if (!VERIFY_INT(a) || !VERIFY_SHORT(shift)) {
+	if (!VERIFY_INT(a) || !VERIFY_UINT(shift)) {
 		fprintf(stderr,
-			"SHL32: inputs are not int: %lld %d in %s: line %d\n",
+			"SHL32: inputs are not int: %lld %u in %s: line %d\n",
 			a, shift, file, line);
 #ifdef FIXED_DEBUG_ASSERT
 		assert(0);
@@ -221,7 +221,7 @@ static inline int SHL32_(int64_t a, int shift, char *file, int line)
 	res = a << shift;
 	if (!VERIFY_INT(res)) {
 		fprintf(stderr,
-			"SHL32: output is not int: %lld<<%d = %lld in %s: line %d\n",
+			"SHL32: output is not int: %lld<<%u = %lld in %s: line %d\n",
 			a, shift, res, file, line);
 #ifdef FIXED_DEBUG_ASSERT
 		assert(0);
