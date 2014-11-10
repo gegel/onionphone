@@ -23,6 +23,7 @@ Group (phone 972 480 7442).
 
 */
 
+#include <assert.h>
 #include <stdio.h>
 #include <math.h>
 #include "spbstd.h"
@@ -103,20 +104,15 @@ float mf_vq_ms4(float *cb, float *u, float *u_est, int *levels, int ma,
 	   parent node (thus, the factors of two everywhere)
 	   The parents and current nodes are allocated contiguously */
 	indices = calloc(1, (2 * ma * stages) * sizeof(int));
-	if (!indices)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(indices);
 	errors = calloc(1, (2 * ma * p) * sizeof(float));
-	if (!errors)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(errors);
 	uhatw = calloc(1, (p) * sizeof(float));
-	if (!uhatw)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(uhatw);
 	d = calloc(1, (2 * ma) * sizeof(float));
-	if (!d)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(d);
 	parents = calloc(1, (2 * ma) * sizeof(int));
-	if (!parents)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(parents);
 
 	/* initialize memory */
 	mf_mf_v_zap_int(indices, 2 * stages * ma);
@@ -138,8 +134,7 @@ float mf_vq_ms4(float *cb, float *u, float *u_est, int *levels, int ma,
 	/* u_tmp is the input vector (i.e. if u_est is non-null, it
 	   is subtracted off) */
 	u_tmp = calloc(1, (p + 1) * sizeof(float));
-	if (!u_tmp)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(u_tmp);
 	(void)mf_v_equ(u_tmp, u, p);
 	if (u_est) {
 		(void)mf_v_sub(u_tmp, u_est, p);
@@ -352,8 +347,7 @@ float *mf_vq_msd2(float *cb, float *u, float *u_est, float *a, int *indices,
 	/* allocate memory (if required) */
 	if (u == (float *)NULL) {
 		u_hat = calloc(1, (p) * sizeof(float));
-		if (!u_hat)
-			program_abort(__FILE__, "calloc", 0, __LINE__);
+		assert(u_hat);
 	} else
 		u_hat = u;
 

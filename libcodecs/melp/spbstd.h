@@ -69,9 +69,6 @@ extern void rewind(FILE * stream);
 ** Macros.
 */
 
-#ifndef program_abort
-#define program_abort(s1,s2,i1,i2) (void)fprintf(stderr,"%s: %s (instance %d, line %d)",s1,s2,i1,i2),exit(1)
-#endif
 #ifndef SQR
 #define SQR(x)          ((x)*(x))
 #endif

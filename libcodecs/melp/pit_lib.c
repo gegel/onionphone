@@ -23,6 +23,7 @@ Group (phone 972 480 7442).
 
 */
 
+#include <assert.h>
 #include <stdio.h>
 #include <math.h>
 #include "spbstd.h"
@@ -337,8 +338,7 @@ void mf_p_avg_init(float pdecay, float default_pitch, int num_good)
 
 	/* Allocate and initialize good pitch array */
 	mf_good_pitch = calloc(1, (mf_NUM_GOOD) * sizeof(float));
-	if (!mf_good_pitch)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(mf_good_pitch);
 	mf_fill(mf_good_pitch, mf_DEFAULT_PITCH, mf_NUM_GOOD);
 
 }
@@ -470,12 +470,10 @@ void mf_mf_pitch_ana_init(int pmin, int pmax, int fr, int lpf_ord, int lmin)
 
 	/* Allocate and initialize delay memory */
 	mf_lpres_del = calloc(1, (mf_LPF_ORD) * sizeof(float));
-	if (!mf_lpres_del)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(mf_lpres_del);
 	mf_v_zap(mf_lpres_del, mf_LPF_ORD);
 
 	/* Allocate scratch buffer */
 	mf_sigbuf = calloc(1, (mf_LPF_ORD + mf_PITCH_FR) * sizeof(float));
-	if (!mf_sigbuf)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(mf_sigbuf);
 }
