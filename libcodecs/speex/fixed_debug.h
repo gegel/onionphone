@@ -103,12 +103,12 @@ static inline int _EXTEND32(int x, char *file, int line)
 }
 
 #define SHR16(a, shift) _SHR16(a, shift, __FILE__, __LINE__)
-static inline short _SHR16(int a, int shift, char *file, int line)
+static inline short _SHR16(int a, unsigned int shift, char *file, int line)
 {
 	int res;
-	if (!VERIFY_SHORT(a) || !VERIFY_SHORT(shift)) {
+	if (!VERIFY_SHORT(a) || !VERIFY_UINT(shift)) {
 		fprintf(stderr,
-			"SHR16: inputs are not short: %d >> %d in %s: line %d\n",
+			"SHR16: inputs are not short: %d >> %u in %s: line %d\n",
 			a, shift, file, line);
 	}
 	res = a >> shift;
@@ -121,12 +121,12 @@ static inline short _SHR16(int a, int shift, char *file, int line)
 }
 
 #define SHL16(a, shift) _SHL16(a, shift, __FILE__, __LINE__)
-static inline short _SHL16(int a, int shift, char *file, int line)
+static inline short _SHL16(int a, unsigned int shift, char *file, int line)
 {
 	int res;
-	if (!VERIFY_SHORT(a) || !VERIFY_SHORT(shift)) {
+	if (!VERIFY_SHORT(a) || !VERIFY_UINT(shift)) {
 		fprintf(stderr,
-			"SHL16: inputs are not short: %d %d in %s: line %d\n",
+			"SHL16: inputs are not short: %d %u in %s: line %d\n",
 			a, shift, file, line);
 	}
 	res = a << shift;
@@ -138,11 +138,11 @@ static inline short _SHL16(int a, int shift, char *file, int line)
 	return res;
 }
 
-static inline int SHR32(long long a, int shift)
+static inline int SHR32(long long a, unsigned int shift)
 {
 	long long res;
-	if (!VERIFY_INT(a) || !VERIFY_SHORT(shift)) {
-		fprintf(stderr, "SHR32: inputs are not int: %d %d\n", (int)a,
+	if (!VERIFY_INT(a) || !VERIFY_UINT(shift)) {
+		fprintf(stderr, "SHR32: inputs are not int: %d %u\n", (int)a,
 			shift);
 	}
 	res = a >> shift;
@@ -153,11 +153,11 @@ static inline int SHR32(long long a, int shift)
 	return res;
 }
 
-static inline int SHL32(long long a, int shift)
+static inline int SHL32(long long a, unsigned int shift)
 {
 	long long res;
-	if (!VERIFY_INT(a) || !VERIFY_SHORT(shift)) {
-		fprintf(stderr, "SHL32: inputs are not int: %d %d\n", (int)a,
+	if (!VERIFY_INT(a) || !VERIFY_UINT(shift)) {
+		fprintf(stderr, "SHL32: inputs are not int: %d %u\n", (int)a,
 			shift);
 	}
 	res = a << shift;
