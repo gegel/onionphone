@@ -22,6 +22,7 @@ Group (phone 972 480 7442).
 
 */
 
+#include <assert.h>
 #include <stdio.h>
 #include <math.h>
 #include "spbstd.h"
@@ -249,16 +250,13 @@ float mf_lpc_schr(float *r, float *a, float *k_tmp, int p)
 	float temp, alphap, *y1, *y2, *k;
 
 	y1 = calloc(1, (p + 2) * sizeof(float));
-	if (!y1)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(y1);
 	y2 = calloc(1, (p + 2) * sizeof(float));
-	if (!y2)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(y2);
 
 	if (k_tmp == NULL) {
 		k = calloc(1, (p + 1) * sizeof(float));
-		if (!k)
-			program_abort(__FILE__, "calloc", 0, __LINE__);
+		assert(k);
 	} else
 		k = k_tmp;
 
@@ -328,14 +326,10 @@ int mf_lpc_pred2lsp(float *a, float *w, int p)
 	p2 = p / 2;
 
 	c = calloc(1, (2) * sizeof(float *));
-	if (!c)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
-	else {
-		for (u__i = 0; u__i < 2; u__i++) {
-			c[u__i] = calloc(1, (p2 + 1) * sizeof(float));
-			if (!c[u__i])
-				program_abort(__FILE__, "calloc", 0, __LINE__);
-		}
+	assert(c);
+	for (u__i = 0; u__i < 2; u__i++) {
+		c[u__i] = calloc(1, (p2 + 1) * sizeof(float));
+		assert(c[u__i]);
 	}
 	c[0][p2] = c[1][p2] = 1.0;
 
@@ -380,11 +374,9 @@ int mf_lpc_pred2refl(float *a, float *k, int p)
 	int i, j;
 
 	b = calloc(1, (p + 1) * sizeof(float));
-	if (!b)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(b);
 	b1 = calloc(1, (p + 1) * sizeof(float));
-	if (!b1)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(b1);
 
 	/* equate temporary variables (b = a) */
 	for (i = 1; i <= p; i++)
@@ -428,14 +420,10 @@ int mf_lpc_lsp2pred(float *w, float *a, int p)
 
 	p2 = p / 2;
 	f = calloc(1, (2) * sizeof(float *));
-	if (!f)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
-	else {
-		for (u__i = 0; u__i < 2; u__i++) {
-			f[u__i] = calloc(1, (p2 + 1) * sizeof(float));
-			if (!f[u__i])
-				program_abort(__FILE__, "calloc", 0, __LINE__);
-		}
+	assert(f);
+	for (u__i = 0; u__i < 2; u__i++) {
+		f[u__i] = calloc(1, (p2 + 1) * sizeof(float));
+		assert(f[u__i]);
 	}
 	f[0][0] = f[1][0] = 1.0;
 	f[0][1] = (float)-2.0 * cos((double)w[1] * M_PI);
@@ -490,8 +478,7 @@ int mf_lpc_refl2pred(float *k, float *a, int p)
 	float *a1;
 
 	a1 = calloc(1, (p + 1) * sizeof(float));
-	if (!a1)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(a1);
 
 	for (i = 1; i <= p; i++) {
 		/* refl to a recursion */
