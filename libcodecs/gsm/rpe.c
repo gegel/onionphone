@@ -378,7 +378,7 @@ static void APCM_inverse_quantization P4((xMc, mant, exp, xMp), register int16_t
 	 */
 	int i;
 	int16_t temp, temp1, temp2, temp3;
-	int32_t ltmp;
+	volatile int32_t ltmp = 0;
 
 	assert(mant >= 0 && mant <= 7);
 
@@ -399,6 +399,8 @@ static void APCM_inverse_quantization P4((xMc, mant, exp, xMp), register int16_t
 		temp = GSM_ADD(temp, temp3);
 		*xMp++ = gsm_asr(temp, temp2);
 	}
+
+	(void)ltmp;
 }
 
 /* 4.2.17 */

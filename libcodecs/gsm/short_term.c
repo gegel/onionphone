@@ -26,7 +26,7 @@ static void Decoding_of_the_coded_Log_Area_Ratios P2((LARc, LARpp), int16_t * LA
 						     int16_t * LARpp)
 {				/* out: decoded ..                        */
 	register int16_t temp1;
-	register long ltmp;	/* for GSM_ADD */
+	register volatile long ltmp;	/* for GSM_ADD */
 
 	/*  This procedure requires for efficient implementation
 	 *  two tables.
@@ -94,7 +94,7 @@ static void Coefficients_0_12 P3((LARpp_j_1, LARpp_j, LARp),
 				 register int16_t * LARpp_j, register int16_t * LARp)
 {
 	register int i;
-	register int32_t ltmp;
+	register volatile int32_t ltmp;
 
 	for (i = 1; i <= 8; i++, LARp++, LARpp_j_1++, LARpp_j++) {
 		*LARp = GSM_ADD(SASR(*LARpp_j_1, 2), SASR(*LARpp_j, 2));
@@ -107,7 +107,7 @@ static void Coefficients_13_26 P3((LARpp_j_1, LARpp_j, LARp),
 				  register int16_t * LARpp_j, register int16_t * LARp)
 {
 	register int i;
-	register int32_t ltmp;
+	register volatile int32_t ltmp;
 	for (i = 1; i <= 8; i++, LARpp_j_1++, LARpp_j++, LARp++) {
 		*LARp = GSM_ADD(SASR(*LARpp_j_1, 1), SASR(*LARpp_j, 1));
 	}
@@ -118,7 +118,7 @@ static void Coefficients_27_39 P3((LARpp_j_1, LARpp_j, LARp),
 				  register int16_t * LARpp_j, register int16_t * LARp)
 {
 	register int i;
-	register int32_t ltmp;
+	register volatile int32_t ltmp;
 
 	for (i = 1; i <= 8; i++, LARpp_j_1++, LARpp_j++, LARp++) {
 		*LARp = GSM_ADD(SASR(*LARpp_j_1, 2), SASR(*LARpp_j, 2));
@@ -147,7 +147,7 @@ static void LARp_to_rp P1((LARp), register int16_t * LARp)
 	 */
 	register int i;
 	register int16_t temp;
-	register int32_t ltmp;
+	register volatile int32_t ltmp;
 
 	for (i = 1; i <= 8; i++, LARp++) {
 
@@ -193,7 +193,7 @@ static void Short_term_analysis_filtering P4((S, rp, k_n, s), struct gsm_state *
 	register int16_t *u = S->u;
 	register int i;
 	register int16_t di, zzz, ui, sav, rpi;
-	register int32_t ltmp;
+	register volatile int32_t ltmp;
 
 	for (; k_n--; s++) {
 
@@ -262,7 +262,7 @@ static void Short_term_synthesis_filtering P5((S, rrp, k, wt, sr), struct gsm_st
 	register int16_t *v = S->v;
 	register int i;
 	register int16_t sri, tmp1, tmp2;
-	register int32_t ltmp;	/* for GSM_ADD  & GSM_SUB */
+	register volatile int32_t ltmp;	/* for GSM_ADD  & GSM_SUB */
 
 	while (k--) {
 		sri = *wt++;
