@@ -85,6 +85,7 @@ Heavily modified by Jean-Marc Valin (c) 2002-2006 (fixed-point,
 #include "config.h"
 #endif
 
+#include <assert.h>
 #include <math.h>
 #include <ophmconsts.h>
 #include "lsp.h"
@@ -528,6 +529,8 @@ void lsp_to_lpc(spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr, char *stack)
 	float *pw, *n1, *n2, *n3, *n4 = NULL;
 	VARDECL(float *x_freq);
 	int m = lpcrdr >> 1;
+
+	assert(m > 0);
 
 	ALLOC(Wp, 4 * m + 2, float);
 	pw = Wp;

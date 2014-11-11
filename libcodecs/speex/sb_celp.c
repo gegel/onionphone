@@ -35,6 +35,7 @@
 #include "config.h"
 #endif
 
+#include <assert.h>
 #include <math.h>
 #include <ophmconsts.h>
 #include "sb_celp.h"
@@ -1074,10 +1075,9 @@ int sb_decode(void *state, SpeexBits * bits, void *vout)
 		sp = out + st->frame_size + offset;
 		ALLOC(exc, st->subframeSize, spx_word32_t);
 		/* Pointer for saving innovation */
-		if (st->innov_save) {
-			innov_save = st->innov_save + 2 * offset;
-			SPEEX_MEMSET(innov_save, 0, 2 * st->subframeSize);
-		}
+		assert(st->innov_save);
+		innov_save = st->innov_save + 2 * offset;
+		SPEEX_MEMSET(innov_save, 0, 2 * st->subframeSize);
 
 		/* LSP interpolation */
 		lsp_interpolate(st->old_qlsp, qlsp, interp_qlsp, st->lpcSize,
