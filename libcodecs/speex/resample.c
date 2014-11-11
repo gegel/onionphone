@@ -725,7 +725,7 @@ static void update_filter(SpeexResamplerState * st)
 			st->sinc_table_length = st->filt_len * st->den_rate;
 		}
 		for (i = 0; i < st->den_rate; i++) {
-			int32_t j;
+			uint32_t j;
 			for (j = 0; j < st->filt_len; j++) {
 				st->sinc_table[i * st->filt_len + j] =
 				    sinc(st->cutoff,
@@ -822,7 +822,8 @@ static void update_filter(SpeexResamplerState * st)
 							   (spx_word16_t));
 		}
 		for (i = st->nb_channels - 1; i >= 0; i--) {
-			int32_t j;
+			uint32_t j;
+			int32_t k;
 			uint32_t olen /* = old_length */ ;
 			/*if (st->magic_samples[i]) */
 			{
@@ -830,11 +831,11 @@ static void update_filter(SpeexResamplerState * st)
 
 				/* FIXME: This is wrong but for now we need it to avoid going over the array bounds */
 				olen = old_length + 2 * st->magic_samples[i];
-				for (j = old_length - 2 + st->magic_samples[i];
-				     j >= 0; j--)
-					st->mem[i * st->mem_alloc_size + j +
+				for (k = old_length - 2 + st->magic_samples[i];
+				     k >= 0; k--)
+					st->mem[i * st->mem_alloc_size + k +
 						st->magic_samples[i]] =
-					    st->mem[i * old_alloc_size + j];
+					    st->mem[i * old_alloc_size + k];
 				for (j = 0; j < st->magic_samples[i]; j++)
 					st->mem[i * st->mem_alloc_size + j] = 0;
 				st->magic_samples[i] = 0;
@@ -1039,7 +1040,7 @@ int speex_resampler_process_float(SpeexResamplerState * st,
 				  uint32_t * out_len)
 #endif
 {
-	int j;
+	unsigned int j;
 	uint32_t ilen = *in_len;
 	uint32_t olen = *out_len;
 	spx_word16_t *x = st->mem + channel_index * st->mem_alloc_size;
@@ -1087,7 +1088,7 @@ int speex_resampler_process_int(SpeexResamplerState * st,
 				int16_t * out, uint32_t * out_len)
 #endif
 {
-	int j;
+	unsigned int j;
 	const int istride_save = st->in_stride;
 	const int ostride_save = st->out_stride;
 	uint32_t ilen = *in_len;
