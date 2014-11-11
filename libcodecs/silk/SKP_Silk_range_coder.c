@@ -313,6 +313,8 @@ void SKP_Silk_range_enc_wrap_up(SKP_Silk_range_coder_state * psRC	/* I/O  compre
 
 	/* Number of additional bits (1..9) required to be stored to stream */
 	bits_to_store = bits_in_stream - SKP_LSHIFT(psRC->bufferIx, 3);
+	assert(bits_to_store >= 1);
+	assert(bits_to_store <= 24);
 	/* Round up to required resolution */
 	base_Q24 += SKP_RSHIFT_uint(0x00800000, bits_to_store - 1);
 	base_Q24 &= SKP_LSHIFT_ovflw(0xFFFFFFFF, 24 - bits_to_store);

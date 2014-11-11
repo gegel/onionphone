@@ -27,6 +27,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
 #include "SKP_Silk_main.h"
 
 /**********************************************************/
@@ -232,7 +233,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 		if (psDec->LPC_order == 16) {
 			for (i = 0; i < psDec->subfr_length; i++) {
 				/* unrolled */
-				Atmp = *((int32_t *) & A_Q12_tmp[0]);	/* read two coefficients at once */
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 0, 1);	/* read two coefficients at once */
 				LPC_pred_Q10 =
 				    SKP_SMULWB(psDec->
 					       sLPC_Q14[MAX_LPC_ORDER + i - 1],
@@ -241,7 +242,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 2], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[2]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 2, 3);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -250,7 +251,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 4], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[4]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 4, 5);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -259,7 +260,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 6], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[6]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 6, 7);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -268,7 +269,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 8], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[8]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 8, 9);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -277,7 +278,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 10], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[10]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 10, 11);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -286,7 +287,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 12], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[12]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 12, 13);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -295,7 +296,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 14], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[14]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 14, 15);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -317,7 +318,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 			assert(psDec->LPC_order == 10);
 			for (i = 0; i < psDec->subfr_length; i++) {
 				/* unrolled */
-				Atmp = *((int32_t *) & A_Q12_tmp[0]);	/* read two coefficients at once */
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 0, 1);	/* read two coefficients at once */
 				LPC_pred_Q10 =
 				    SKP_SMULWB(psDec->
 					       sLPC_Q14[MAX_LPC_ORDER + i - 1],
@@ -326,7 +327,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 2], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[2]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 2, 3);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -335,7 +336,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 4], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[4]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 4, 5);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -344,7 +345,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 6], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[6]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 6, 7);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
@@ -353,7 +354,7 @@ void SKP_Silk_decode_core(SKP_Silk_decoder_state * psDec,	/* I/O  Decoder state 
 				    SKP_SMLAWT(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +
 							       i - 8], Atmp);
-				Atmp = *((int32_t *) & A_Q12_tmp[8]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, 8, 9);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +

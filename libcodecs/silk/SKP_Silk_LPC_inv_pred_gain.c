@@ -156,6 +156,7 @@ int SKP_Silk_LPC_inverse_pred_gain_Q13(	/* O:   Returns 1 if unstable, otherwise
 
 		/* rc_mult2_Q16 range: [ 2^16 : int32_t_MAX ] */
 		rc_mult2_Q16 = SKP_INVERSE32_varQ(rc_mult1_Q30, 46);	/* 16 = 46 - 30 */
+		assert(rc_mult2_Q16 >= 1 << 16);
 
 		/* Update inverse gain */
 		/* invGain_Q30 range: [ 0 : 2^30 ] */

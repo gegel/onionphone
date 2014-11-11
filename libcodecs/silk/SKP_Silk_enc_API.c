@@ -120,9 +120,7 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 	    && (encControl->sampleRate != 12000)
 	    && (encControl->sampleRate != 16000)
 	    && (encControl->sampleRate != 24000)) {
-		ret = SKP_SILK_ENC_FS_NOT_SUPPORTED;
 		assert(0);
-		return (ret);
 	}
 
 	/* Set Encoder parameters from Control structure */
@@ -137,16 +135,12 @@ int SKP_Silk_SDK_Encode(void *encState,	/* I/O: State                           
 	/* Only accept input lengths that are multiplum of 10 ms */
 	input_ms = SKP_DIV32_16(nSamplesIn, API_fs_kHz);
 	if ((input_ms % 10) != 0 || nSamplesIn < 0) {
-		ret = SKP_SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
 		assert(0);
-		return (ret);
 	}
 
 	/* Make sure no more than one packet can be produced */
 	if (nSamplesIn > SKP_SMULBB(psEnc->sCmn.PacketSize_ms, API_fs_kHz)) {
-		ret = SKP_SILK_ENC_INPUT_INVALID_NO_OF_SAMPLES;
 		assert(0);
-		return (ret);
 	}
 
 	if ((ret =
