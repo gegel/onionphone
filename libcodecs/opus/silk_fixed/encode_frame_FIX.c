@@ -31,6 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "config.h"
 #endif
 
+#include <assert.h>
 #include "main_FIX.h"
 #include "tuning_parameters.h"
 
@@ -351,6 +352,7 @@ int silk_encode_frame_FIX(silk_encoder_state_FIX * psEnc,	/* I/O  Pointer to Sil
 				    silk_SMULWB(gain_factor_Q16, gainMult_Q8);
 			} else {
 				/* Adjust gain by interpolating */
+				assert(nBits_upper != nBits_lower);
 				gainMult_Q8 =
 				    gainMult_lower +
 				    silk_DIV32_16(silk_MUL

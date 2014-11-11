@@ -27,11 +27,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
-#include <ophtools.h>
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#include <assert.h>
+#include <ophtools.h>
 
 /* conversion between prediction filter coefficients and LSFs   */
 /* order should be even                                         */
@@ -124,6 +125,7 @@ void silk_NLSF2A(int16_t * a_Q12,	/* O    monic whitening filter coefficients in
 	}
 
 	dd = silk_RSHIFT(d, 1);
+	assert(dd < SILK_MAX_ORDER_LPC / 2 + 3);
 
 	/* generate even and odd polynomials using convolution */
 	silk_NLSF2A_find_poly(P, &cos_LSF_QA[0], dd);
