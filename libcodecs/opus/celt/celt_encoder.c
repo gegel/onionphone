@@ -35,6 +35,7 @@
 
 #define CELT_ENCODER_C
 
+#include <assert.h>
 #include "cpu_support.h"
 #include "os_support.h"
 #include "mdct.h"
@@ -399,6 +400,9 @@ int patch_transient_decision(opus_val16 * newE, opus_val16 * oldE, int nbEBands,
 	int i, c;
 	opus_val32 mean_diff = 0;
 	opus_val16 spread_old[26];
+
+	assert(end != 3);
+
 	/* Apply an aggressive (-6 dB/Bark) spreading function to the old frame to
 	   avoid false detection caused by irrelevant bands */
 	if (C == 1) {
