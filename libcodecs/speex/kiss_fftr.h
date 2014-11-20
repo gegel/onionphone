@@ -47,7 +47,7 @@ extern "C" {
  output timedata has nfft scalar points
 */
 
-#define kiss_fftr_free speex_free
+#define kiss_fftr_free free
 
 #ifdef __cplusplus
 }

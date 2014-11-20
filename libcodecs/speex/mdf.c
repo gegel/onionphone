@@ -419,7 +419,7 @@ SpeexEchoState *speex_echo_state_init(int frame_size, int filter_length)
 {
 	int i, N, M;
 	SpeexEchoState *st =
-	    (SpeexEchoState *) speex_alloc(sizeof(SpeexEchoState));
+	    (SpeexEchoState *) calloc(1, sizeof(SpeexEchoState));
 
 #ifdef DUMP_ECHO_CANCEL_DATA
 	if (rFile || pFile || oFile)
@@ -454,48 +454,48 @@ SpeexEchoState *speex_echo_state_init(int frame_size, int filter_length)
 
 	st->fft_table = spx_fft_init(N);
 
-	st->e = (spx_word16_t *) speex_alloc(N * sizeof(spx_word16_t));
-	st->x = (spx_word16_t *) speex_alloc(N * sizeof(spx_word16_t));
+	st->e = (spx_word16_t *) calloc(1, N * sizeof(spx_word16_t));
+	st->x = (spx_word16_t *) calloc(1, N * sizeof(spx_word16_t));
 	st->input =
-	    (spx_word16_t *) speex_alloc(st->frame_size * sizeof(spx_word16_t));
-	st->y = (spx_word16_t *) speex_alloc(N * sizeof(spx_word16_t));
-	st->last_y = (spx_word16_t *) speex_alloc(N * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, st->frame_size * sizeof(spx_word16_t));
+	st->y = (spx_word16_t *) calloc(1, N * sizeof(spx_word16_t));
+	st->last_y = (spx_word16_t *) calloc(1, N * sizeof(spx_word16_t));
 	st->Yf =
-	    (spx_word32_t *) speex_alloc((st->frame_size + 1) *
+	    (spx_word32_t *) calloc(1, (st->frame_size + 1) *
 					 sizeof(spx_word32_t));
 	st->Rf =
-	    (spx_word32_t *) speex_alloc((st->frame_size + 1) *
+	    (spx_word32_t *) calloc(1, (st->frame_size + 1) *
 					 sizeof(spx_word32_t));
 	st->Xf =
-	    (spx_word32_t *) speex_alloc((st->frame_size + 1) *
+	    (spx_word32_t *) calloc(1, (st->frame_size + 1) *
 					 sizeof(spx_word32_t));
 	st->Yh =
-	    (spx_word32_t *) speex_alloc((st->frame_size + 1) *
+	    (spx_word32_t *) calloc(1, (st->frame_size + 1) *
 					 sizeof(spx_word32_t));
 	st->Eh =
-	    (spx_word32_t *) speex_alloc((st->frame_size + 1) *
+	    (spx_word32_t *) calloc(1, (st->frame_size + 1) *
 					 sizeof(spx_word32_t));
 
 	st->X =
-	    (spx_word16_t *) speex_alloc((M + 1) * N * sizeof(spx_word16_t));
-	st->Y = (spx_word16_t *) speex_alloc(N * sizeof(spx_word16_t));
-	st->E = (spx_word16_t *) speex_alloc(N * sizeof(spx_word16_t));
-	st->W = (spx_word32_t *) speex_alloc(M * N * sizeof(spx_word32_t));
+	    (spx_word16_t *) calloc(1, (M + 1) * N * sizeof(spx_word16_t));
+	st->Y = (spx_word16_t *) calloc(1, N * sizeof(spx_word16_t));
+	st->E = (spx_word16_t *) calloc(1, N * sizeof(spx_word16_t));
+	st->W = (spx_word32_t *) calloc(1, M * N * sizeof(spx_word32_t));
 #ifdef TWO_PATH
 	st->foreground =
-	    (spx_word16_t *) speex_alloc(M * N * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, M * N * sizeof(spx_word16_t));
 #endif
-	st->PHI = (spx_word32_t *) speex_alloc(N * sizeof(spx_word32_t));
+	st->PHI = (spx_word32_t *) calloc(1, N * sizeof(spx_word32_t));
 	st->power =
-	    (spx_word32_t *) speex_alloc((frame_size + 1) *
+	    (spx_word32_t *) calloc(1, (frame_size + 1) *
 					 sizeof(spx_word32_t));
 	st->power_1 =
-	    (spx_float_t *) speex_alloc((frame_size + 1) * sizeof(spx_float_t));
-	st->window = (spx_word16_t *) speex_alloc(N * sizeof(spx_word16_t));
-	st->prop = (spx_word16_t *) speex_alloc(M * sizeof(spx_word16_t));
-	st->wtmp = (spx_word16_t *) speex_alloc(N * sizeof(spx_word16_t));
+	    (spx_float_t *) calloc(1, (frame_size + 1) * sizeof(spx_float_t));
+	st->window = (spx_word16_t *) calloc(1, N * sizeof(spx_word16_t));
+	st->prop = (spx_word16_t *) calloc(1, M * sizeof(spx_word16_t));
+	st->wtmp = (spx_word16_t *) calloc(1, N * sizeof(spx_word16_t));
 #ifdef FIXED_POINT
-	st->wtmp2 = (spx_word16_t *) speex_alloc(N * sizeof(spx_word16_t));
+	st->wtmp2 = (spx_word16_t *) calloc(1, N * sizeof(spx_word16_t));
 	for (i = 0; i < N >> 1; i++) {
 		st->window[i] =
 		    (16383 -
@@ -547,7 +547,7 @@ SpeexEchoState *speex_echo_state_init(int frame_size, int filter_length)
 #endif
 
 	st->play_buf =
-	    (int16_t *) speex_alloc((PLAYBACK_DELAY + 1) * st->frame_size *
+	    (int16_t *) calloc(1, (PLAYBACK_DELAY + 1) * st->frame_size *
 					sizeof(int16_t));
 	st->play_buf_pos = PLAYBACK_DELAY * st->frame_size;
 	st->play_buf_started = 0;
@@ -607,35 +607,35 @@ void speex_echo_state_destroy(SpeexEchoState * st)
 {
 	spx_fft_destroy(st->fft_table);
 
-	speex_free(st->e);
-	speex_free(st->x);
-	speex_free(st->input);
-	speex_free(st->y);
-	speex_free(st->last_y);
-	speex_free(st->Yf);
-	speex_free(st->Rf);
-	speex_free(st->Xf);
-	speex_free(st->Yh);
-	speex_free(st->Eh);
+	free(st->e);
+	free(st->x);
+	free(st->input);
+	free(st->y);
+	free(st->last_y);
+	free(st->Yf);
+	free(st->Rf);
+	free(st->Xf);
+	free(st->Yh);
+	free(st->Eh);
 
-	speex_free(st->X);
-	speex_free(st->Y);
-	speex_free(st->E);
-	speex_free(st->W);
+	free(st->X);
+	free(st->Y);
+	free(st->E);
+	free(st->W);
 #ifdef TWO_PATH
-	speex_free(st->foreground);
+	free(st->foreground);
 #endif
-	speex_free(st->PHI);
-	speex_free(st->power);
-	speex_free(st->power_1);
-	speex_free(st->window);
-	speex_free(st->prop);
-	speex_free(st->wtmp);
+	free(st->PHI);
+	free(st->power);
+	free(st->power_1);
+	free(st->window);
+	free(st->prop);
+	free(st->wtmp);
 #ifdef FIXED_POINT
-	speex_free(st->wtmp2);
+	free(st->wtmp2);
 #endif
-	speex_free(st->play_buf);
-	speex_free(st);
+	free(st->play_buf);
+	free(st);
 
 #ifdef DUMP_ECHO_CANCEL_DATA
 	fclose(rFile);

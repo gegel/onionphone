@@ -210,7 +210,7 @@ void *sb_encoder_init(const SpeexMode * m)
 	SBEncState *st;
 	const SpeexSBMode *mode;
 
-	st = (SBEncState *) speex_alloc(sizeof(SBEncState));
+	st = (SBEncState *) calloc(1, sizeof(SBEncState));
 	if (!st)
 		return NULL;
 	st->mode = m;
@@ -220,7 +220,7 @@ void *sb_encoder_init(const SpeexMode * m)
 #if defined(VAR_ARRAYS) || defined (USE_ALLOCA)
 	st->stack = NULL;
 #else
-	/*st->stack = (char*)speex_alloc_scratch(SB_ENC_STACK); */
+	/*st->stack = (char*)calloc(1, SB_ENC_STACK); */
 	speex_encoder_ctl(st->st_low, SPEEX_GET_STACK, &st->stack);
 #endif
 
@@ -246,38 +246,38 @@ void *sb_encoder_init(const SpeexMode * m)
 	st->first = 1;
 
 	st->high =
-	    (spx_word16_t *) speex_alloc((st->windowSize - st->frame_size) *
+	    (spx_word16_t *) calloc(1, (st->windowSize - st->frame_size) *
 					 sizeof(spx_word16_t));
 
 	st->h0_mem =
-	    (spx_word16_t *) speex_alloc((QMF_ORDER) * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, (QMF_ORDER) * sizeof(spx_word16_t));
 	st->h1_mem =
-	    (spx_word16_t *) speex_alloc((QMF_ORDER) * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, (QMF_ORDER) * sizeof(spx_word16_t));
 
 	st->window = lpc_window;
 
 	st->lagWindow = lag_window;
 
 	st->old_lsp =
-	    (spx_lsp_t *) speex_alloc(st->lpcSize * sizeof(spx_lsp_t));
+	    (spx_lsp_t *) calloc(1, st->lpcSize * sizeof(spx_lsp_t));
 	st->old_qlsp =
-	    (spx_lsp_t *) speex_alloc(st->lpcSize * sizeof(spx_lsp_t));
+	    (spx_lsp_t *) calloc(1, st->lpcSize * sizeof(spx_lsp_t));
 	st->interp_qlpc =
-	    (spx_coef_t *) speex_alloc(st->lpcSize * sizeof(spx_coef_t));
+	    (spx_coef_t *) calloc(1, st->lpcSize * sizeof(spx_coef_t));
 	st->pi_gain =
-	    (spx_word32_t *) speex_alloc((st->nbSubframes) *
+	    (spx_word32_t *) calloc(1, (st->nbSubframes) *
 					 sizeof(spx_word32_t));
 	st->exc_rms =
-	    (spx_word16_t *) speex_alloc((st->nbSubframes) *
+	    (spx_word16_t *) calloc(1, (st->nbSubframes) *
 					 sizeof(spx_word16_t));
 	st->innov_rms_save = NULL;
 
 	st->mem_sp =
-	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
 	st->mem_sp2 =
-	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
 	st->mem_sw =
-	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
 
 	for (i = 0; i < st->lpcSize; i++)
 		st->old_lsp[i] =
@@ -310,25 +310,25 @@ void sb_encoder_destroy(void *state)
 
 	speex_encoder_destroy(st->st_low);
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	/*speex_free_scratch(st->stack); */
+	/*free(st->stack); */
 #endif
 
-	speex_free(st->high);
+	free(st->high);
 
-	speex_free(st->h0_mem);
-	speex_free(st->h1_mem);
+	free(st->h0_mem);
+	free(st->h1_mem);
 
-	speex_free(st->old_lsp);
-	speex_free(st->old_qlsp);
-	speex_free(st->interp_qlpc);
-	speex_free(st->pi_gain);
-	speex_free(st->exc_rms);
+	free(st->old_lsp);
+	free(st->old_qlsp);
+	free(st->interp_qlpc);
+	free(st->pi_gain);
+	free(st->exc_rms);
 
-	speex_free(st->mem_sp);
-	speex_free(st->mem_sp2);
-	speex_free(st->mem_sw);
+	free(st->mem_sp);
+	free(st->mem_sp2);
+	free(st->mem_sw);
 
-	speex_free(st);
+	free(st);
 }
 
 int sb_encode(void *state, void *vin, SpeexBits * bits)
@@ -815,7 +815,7 @@ void *sb_decoder_init(const SpeexMode * m)
 	int32_t tmp;
 	SBDecState *st;
 	const SpeexSBMode *mode;
-	st = (SBDecState *) speex_alloc(sizeof(SBDecState));
+	st = (SBDecState *) calloc(1, sizeof(SBDecState));
 	if (!st)
 		return NULL;
 	st->mode = m;
@@ -826,7 +826,7 @@ void *sb_decoder_init(const SpeexMode * m)
 #if defined(VAR_ARRAYS) || defined (USE_ALLOCA)
 	st->stack = NULL;
 #else
-	/*st->stack = (char*)speex_alloc_scratch(SB_DEC_STACK); */
+	/*st->stack = (char*)calloc(1, SB_DEC_STACK); */
 	speex_decoder_ctl(st->st_low, SPEEX_GET_STACK, &st->stack);
 #endif
 
@@ -847,27 +847,27 @@ void *sb_decoder_init(const SpeexMode * m)
 	st->first = 1;
 
 	st->g0_mem =
-	    (spx_word16_t *) speex_alloc((QMF_ORDER) * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, (QMF_ORDER) * sizeof(spx_word16_t));
 	st->g1_mem =
-	    (spx_word16_t *) speex_alloc((QMF_ORDER) * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, (QMF_ORDER) * sizeof(spx_word16_t));
 
 	st->excBuf =
-	    (spx_word16_t *) speex_alloc((st->subframeSize) *
+	    (spx_word16_t *) calloc(1, (st->subframeSize) *
 					 sizeof(spx_word16_t));
 
 	st->old_qlsp =
-	    (spx_lsp_t *) speex_alloc((st->lpcSize) * sizeof(spx_lsp_t));
+	    (spx_lsp_t *) calloc(1, (st->lpcSize) * sizeof(spx_lsp_t));
 	st->interp_qlpc =
-	    (spx_coef_t *) speex_alloc(st->lpcSize * sizeof(spx_coef_t));
+	    (spx_coef_t *) calloc(1, st->lpcSize * sizeof(spx_coef_t));
 
 	st->pi_gain =
-	    (spx_word32_t *) speex_alloc((st->nbSubframes) *
+	    (spx_word32_t *) calloc(1, (st->nbSubframes) *
 					 sizeof(spx_word32_t));
 	st->exc_rms =
-	    (spx_word16_t *) speex_alloc((st->nbSubframes) *
+	    (spx_word16_t *) calloc(1, (st->nbSubframes) *
 					 sizeof(spx_word16_t));
 	st->mem_sp =
-	    (spx_mem_t *) speex_alloc((2 * st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) calloc(1, (2 * st->lpcSize) * sizeof(spx_mem_t));
 
 	st->innov_save = NULL;
 
@@ -886,19 +886,19 @@ void sb_decoder_destroy(void *state)
 	st = (SBDecState *) state;
 	speex_decoder_destroy(st->st_low);
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	/*speex_free_scratch(st->stack); */
+	/*free(st->stack); */
 #endif
 
-	speex_free(st->g0_mem);
-	speex_free(st->g1_mem);
-	speex_free(st->excBuf);
-	speex_free(st->old_qlsp);
-	speex_free(st->interp_qlpc);
-	speex_free(st->pi_gain);
-	speex_free(st->exc_rms);
-	speex_free(st->mem_sp);
+	free(st->g0_mem);
+	free(st->g1_mem);
+	free(st->excBuf);
+	free(st->old_qlsp);
+	free(st->interp_qlpc);
+	free(st->pi_gain);
+	free(st->exc_rms);
+	free(st->mem_sp);
 
-	speex_free(state);
+	free(state);
 }
 
 static void sb_decode_lost(SBDecState * st, spx_word16_t * out, int dtx,
