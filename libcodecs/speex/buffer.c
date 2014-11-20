@@ -158,11 +158,11 @@ int speex_buffer_resize(SpeexBuffer * st, int len)
 {
 	int old_len = st->size;
 	if (len > old_len) {
-		st->data = speex_realloc(st->data, len);
+		st->data = realloc(st->data, len);
 		/* FIXME: move data/pointers properly for growing the buffer */
 	} else {
 		/* FIXME: move data/pointers properly for shrinking the buffer */
-		st->data = speex_realloc(st->data, len);
+		st->data = realloc(st->data, len);
 	}
 	return len;
 }

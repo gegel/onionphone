@@ -47,15 +47,6 @@
 #include "os_support_custom.h"
 #endif
 
-/** Speex wrapper for realloc. To do your own dynamic allocation, all you need to do is replace this function and speex_free */
-#ifndef OVERRIDE_SPEEX_REALLOC
-static inline void *speex_realloc(void *ptr, int size)
-{
-	return realloc(ptr, size);
-}
-#endif
-
-/** Speex wrapper for calloc. To do your own dynamic allocation, all you need to do is replace this function, speex_realloc and speex_alloc */
 #ifndef OVERRIDE_SPEEX_FREE
 static inline void speex_free(void *ptr)
 {

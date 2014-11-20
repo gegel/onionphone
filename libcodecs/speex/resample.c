@@ -65,7 +65,7 @@
 
 #ifdef OUTSIDE_SPEEX
 #include <stdlib.h>
-static void *speex_realloc(void *ptr, int size)
+static void *realloc(void *ptr, int size)
 {
 	return realloc(ptr, size);
 }
@@ -711,7 +711,7 @@ static void update_filter(SpeexResamplerState * st)
 							 sizeof(spx_word16_t));
 		else if (st->sinc_table_length < st->filt_len * st->den_rate) {
 			st->sinc_table =
-			    (spx_word16_t *) speex_realloc(st->sinc_table,
+			    (spx_word16_t *) realloc(st->sinc_table,
 							   st->filt_len *
 							   st->den_rate *
 							   sizeof
@@ -748,7 +748,7 @@ static void update_filter(SpeexResamplerState * st)
 		else if (st->sinc_table_length <
 			 st->filt_len * st->oversample + 8) {
 			st->sinc_table =
-			    (spx_word16_t *) speex_realloc(st->sinc_table,
+			    (spx_word16_t *) realloc(st->sinc_table,
 							   (st->filt_len *
 							    st->oversample +
 							    8) *
@@ -794,7 +794,7 @@ static void update_filter(SpeexResamplerState * st)
 		uint32_t i;
 		st->mem_alloc_size = st->filt_len - 1 + st->buffer_size;
 		st->mem =
-		    (spx_word16_t *) speex_realloc(st->mem,
+		    (spx_word16_t *) realloc(st->mem,
 						   st->nb_channels *
 						   st->mem_alloc_size *
 						   sizeof(spx_word16_t));
@@ -809,7 +809,7 @@ static void update_filter(SpeexResamplerState * st)
 		if ((st->filt_len - 1 + st->buffer_size) > st->mem_alloc_size) {
 			st->mem_alloc_size = st->filt_len - 1 + st->buffer_size;
 			st->mem =
-			    (spx_word16_t *) speex_realloc(st->mem,
+			    (spx_word16_t *) realloc(st->mem,
 							   st->nb_channels *
 							   st->mem_alloc_size *
 							   sizeof
