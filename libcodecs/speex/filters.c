@@ -447,6 +447,8 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 			      const spx_coef_t * awk2, spx_word16_t * y, int N,
 			      int ord, char *stack)
 {
+	(void)stack;
+
 	int i, j;
 	spx_word16_t y1, ny1i, ny2i;
 	spx_mem_t mem1[ord];
@@ -482,6 +484,8 @@ void qmf_decomp(const spx_word16_t * xx, const spx_word16_t * aa,
 		spx_word16_t * y1, spx_word16_t * y2, int N, int M,
 		spx_word16_t * mem, char *stack)
 {
+	(void)stack;
+
 	int i, j, k, M2;
 	spx_word16_t *x2;
 
@@ -527,6 +531,8 @@ void qmf_synth(const spx_word16_t * x1, const spx_word16_t * x2,
       all odd x[i] are zero -- well, actually they are left out of the array now
       N and M are multiples of 4 */
 {
+	(void)stack;
+
 	int i, j;
 	int M2, N2;
 
@@ -712,6 +718,8 @@ void multicomb(spx_word16_t * exc,	/*decoded excitation */
 	       int max_pitch, spx_word16_t comb_gain,	/*gain of comb filter */
 	       char *stack)
 {
+	(void)stack;
+
 	(void)ak;
 	(void)p;
 

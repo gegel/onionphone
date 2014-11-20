@@ -513,6 +513,8 @@ void lsp_to_lpc(spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr, char *stack)
 /*  float *ak 		array of LPC coefficients 			*/
 /*  int lpcrdr  	order of LPC coefficients 			*/
 {
+	(void)stack;
+
 	int i, j;
 	float xout1, xout2, xin1, xin2;
 	float *pw, *n1, *n2, *n3, *n4 = NULL;

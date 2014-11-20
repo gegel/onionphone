@@ -60,6 +60,7 @@ static void compute_weighted_codebook(const signed char *shape_cb,
 				      int subvect_size, char *stack)
 {
 	(void)resp2;
+	(void)stack;
 
 	int i, j, k;
 	spx_word16_t shape[subvect_size];
@@ -513,6 +514,7 @@ void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overla
 {
 	(void)nsf;
 	(void)seed;
+	(void)stack;
 
 	int i, j;
 	const signed char *shape_cb;
