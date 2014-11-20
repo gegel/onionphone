@@ -71,7 +71,7 @@ extern "C" {
 
 /* If kiss_fft_alloc allocated a buffer, it is one contiguous 
    buffer and can be simply free()d when no longer needed*/
-#define kiss_fft_free speex_free
+#define kiss_fft_free free
 
 /*
  Cleans up some memory that gets managed internally. Not necessary to call, but it might clean up 

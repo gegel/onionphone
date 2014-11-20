@@ -126,14 +126,14 @@ FilterBank *filterbank_new(int banks, spx_word32_t sampling, int len, int type)
 
 void filterbank_destroy(FilterBank * bank)
 {
-	speex_free(bank->bank_left);
-	speex_free(bank->bank_right);
-	speex_free(bank->filter_left);
-	speex_free(bank->filter_right);
+	free(bank->bank_left);
+	free(bank->bank_right);
+	free(bank->filter_left);
+	free(bank->filter_right);
 #ifndef FIXED_POINT
-	speex_free(bank->scaling);
+	free(bank->scaling);
 #endif
-	speex_free(bank);
+	free(bank);
 }
 
 void filterbank_compute_bank32(FilterBank * bank, spx_word32_t * ps,

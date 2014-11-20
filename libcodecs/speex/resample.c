@@ -70,7 +70,7 @@ static void *realloc(void *ptr, int size)
 	return realloc(ptr, size);
 }
 
-static void speex_free(void *ptr)
+static void free(void *ptr)
 {
 	free(ptr);
 }
@@ -960,12 +960,12 @@ SpeexResamplerState *speex_resampler_init_frac(uint32_t nb_channels,
 
 void speex_resampler_destroy(SpeexResamplerState * st)
 {
-	speex_free(st->mem);
-	speex_free(st->sinc_table);
-	speex_free(st->last_sample);
-	speex_free(st->magic_samples);
-	speex_free(st->samp_frac_num);
-	speex_free(st);
+	free(st->mem);
+	free(st->sinc_table);
+	free(st->last_sample);
+	free(st->magic_samples);
+	free(st->samp_frac_num);
+	free(st);
 }
 
 static int speex_resampler_process_native(SpeexResamplerState * st,

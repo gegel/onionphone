@@ -62,8 +62,8 @@ SpeexBuffer *speex_buffer_init(int size)
 
 void speex_buffer_destroy(SpeexBuffer * st)
 {
-	speex_free(st->data);
-	speex_free(st);
+	free(st->data);
+	free(st);
 }
 
 int speex_buffer_write(SpeexBuffer * st, void *_data, int len)

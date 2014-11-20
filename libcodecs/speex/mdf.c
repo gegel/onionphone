@@ -607,35 +607,35 @@ void speex_echo_state_destroy(SpeexEchoState * st)
 {
 	spx_fft_destroy(st->fft_table);
 
-	speex_free(st->e);
-	speex_free(st->x);
-	speex_free(st->input);
-	speex_free(st->y);
-	speex_free(st->last_y);
-	speex_free(st->Yf);
-	speex_free(st->Rf);
-	speex_free(st->Xf);
-	speex_free(st->Yh);
-	speex_free(st->Eh);
+	free(st->e);
+	free(st->x);
+	free(st->input);
+	free(st->y);
+	free(st->last_y);
+	free(st->Yf);
+	free(st->Rf);
+	free(st->Xf);
+	free(st->Yh);
+	free(st->Eh);
 
-	speex_free(st->X);
-	speex_free(st->Y);
-	speex_free(st->E);
-	speex_free(st->W);
+	free(st->X);
+	free(st->Y);
+	free(st->E);
+	free(st->W);
 #ifdef TWO_PATH
-	speex_free(st->foreground);
+	free(st->foreground);
 #endif
-	speex_free(st->PHI);
-	speex_free(st->power);
-	speex_free(st->power_1);
-	speex_free(st->window);
-	speex_free(st->prop);
-	speex_free(st->wtmp);
+	free(st->PHI);
+	free(st->power);
+	free(st->power_1);
+	free(st->window);
+	free(st->prop);
+	free(st->wtmp);
 #ifdef FIXED_POINT
-	speex_free(st->wtmp2);
+	free(st->wtmp2);
 #endif
-	speex_free(st->play_buf);
-	speex_free(st);
+	free(st->play_buf);
+	free(st);
 
 #ifdef DUMP_ECHO_CANCEL_DATA
 	fclose(rFile);

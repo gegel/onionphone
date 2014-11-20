@@ -239,37 +239,37 @@ void nb_encoder_destroy(void *state)
 	EncState *st = (EncState *) state;
 	/* Free all allocated memory */
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	speex_free_scratch(st->stack);
+	free(st->stack);
 #endif
 
-	speex_free(st->winBuf);
-	speex_free(st->excBuf);
-	speex_free(st->old_qlsp);
-	speex_free(st->swBuf);
+	free(st->winBuf);
+	free(st->excBuf);
+	free(st->old_qlsp);
+	free(st->swBuf);
 
-	speex_free(st->old_lsp);
-	speex_free(st->mem_sp);
-	speex_free(st->mem_sw);
-	speex_free(st->mem_sw_whole);
-	speex_free(st->mem_exc);
-	speex_free(st->mem_exc2);
-	speex_free(st->pi_gain);
-	speex_free(st->pitch);
+	free(st->old_lsp);
+	free(st->mem_sp);
+	free(st->mem_sw);
+	free(st->mem_sw_whole);
+	free(st->mem_exc);
+	free(st->mem_exc2);
+	free(st->pi_gain);
+	free(st->pitch);
 
 #ifndef DISABLE_VBR
 	vbr_destroy(st->vbr);
-	speex_free(st->vbr);
+	free(st->vbr);
 #endif				/* #ifndef DISABLE_VBR */
 
 #ifdef VORBIS_PSYCHO
 	vorbis_psy_destroy(st->psy);
-	speex_free(st->curve);
-	speex_free(st->old_curve);
-	speex_free(st->psy_window);
+	free(st->curve);
+	free(st->old_curve);
+	free(st->psy_window);
 #endif
 
 	/*Free state memory... should be last */
-	speex_free(st);
+	free(st);
 }
 
 int nb_encode(void *state, void *vin, SpeexBits * bits)
@@ -1103,16 +1103,16 @@ void nb_decoder_destroy(void *state)
 	st = (DecState *) state;
 
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	speex_free_scratch(st->stack);
+	free(st->stack);
 #endif
 
-	speex_free(st->excBuf);
-	speex_free(st->interp_qlpc);
-	speex_free(st->old_qlsp);
-	speex_free(st->mem_sp);
-	speex_free(st->pi_gain);
+	free(st->excBuf);
+	free(st->interp_qlpc);
+	free(st->old_qlsp);
+	free(st->mem_sp);
+	free(st->pi_gain);
 
-	speex_free(state);
+	free(state);
 }
 
 #define median3(a, b, c)	((a) < (b) ? ((b) < (c) ? (b) : ((a) < (c) ? (c) : (a))) : ((c) < (b) ? (b) : ((c) < (a) ? (c) : (a))))

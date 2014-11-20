@@ -310,25 +310,25 @@ void sb_encoder_destroy(void *state)
 
 	speex_encoder_destroy(st->st_low);
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	/*speex_free_scratch(st->stack); */
+	/*free(st->stack); */
 #endif
 
-	speex_free(st->high);
+	free(st->high);
 
-	speex_free(st->h0_mem);
-	speex_free(st->h1_mem);
+	free(st->h0_mem);
+	free(st->h1_mem);
 
-	speex_free(st->old_lsp);
-	speex_free(st->old_qlsp);
-	speex_free(st->interp_qlpc);
-	speex_free(st->pi_gain);
-	speex_free(st->exc_rms);
+	free(st->old_lsp);
+	free(st->old_qlsp);
+	free(st->interp_qlpc);
+	free(st->pi_gain);
+	free(st->exc_rms);
 
-	speex_free(st->mem_sp);
-	speex_free(st->mem_sp2);
-	speex_free(st->mem_sw);
+	free(st->mem_sp);
+	free(st->mem_sp2);
+	free(st->mem_sw);
 
-	speex_free(st);
+	free(st);
 }
 
 int sb_encode(void *state, void *vin, SpeexBits * bits)
@@ -886,19 +886,19 @@ void sb_decoder_destroy(void *state)
 	st = (SBDecState *) state;
 	speex_decoder_destroy(st->st_low);
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	/*speex_free_scratch(st->stack); */
+	/*free(st->stack); */
 #endif
 
-	speex_free(st->g0_mem);
-	speex_free(st->g1_mem);
-	speex_free(st->excBuf);
-	speex_free(st->old_qlsp);
-	speex_free(st->interp_qlpc);
-	speex_free(st->pi_gain);
-	speex_free(st->exc_rms);
-	speex_free(st->mem_sp);
+	free(st->g0_mem);
+	free(st->g1_mem);
+	free(st->excBuf);
+	free(st->old_qlsp);
+	free(st->interp_qlpc);
+	free(st->pi_gain);
+	free(st->exc_rms);
+	free(st->mem_sp);
 
-	speex_free(state);
+	free(state);
 }
 
 static void sb_decode_lost(SBDecState * st, spx_word16_t * out, int dtx,

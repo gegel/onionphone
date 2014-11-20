@@ -617,36 +617,36 @@ SpeexPreprocessState *speex_preprocess_state_init(int frame_size,
 
 void speex_preprocess_state_destroy(SpeexPreprocessState * st)
 {
-	speex_free(st->frame);
-	speex_free(st->ft);
-	speex_free(st->ps);
-	speex_free(st->gain2);
-	speex_free(st->gain_floor);
-	speex_free(st->window);
-	speex_free(st->noise);
-	speex_free(st->reverb_estimate);
-	speex_free(st->old_ps);
-	speex_free(st->gain);
-	speex_free(st->prior);
-	speex_free(st->post);
+	free(st->frame);
+	free(st->ft);
+	free(st->ps);
+	free(st->gain2);
+	free(st->gain_floor);
+	free(st->window);
+	free(st->noise);
+	free(st->reverb_estimate);
+	free(st->old_ps);
+	free(st->gain);
+	free(st->prior);
+	free(st->post);
 #ifndef FIXED_POINT
-	speex_free(st->loudness_weight);
+	free(st->loudness_weight);
 #endif
-	speex_free(st->echo_noise);
-	speex_free(st->residual_echo);
+	free(st->echo_noise);
+	free(st->residual_echo);
 
-	speex_free(st->S);
-	speex_free(st->Smin);
-	speex_free(st->Stmp);
-	speex_free(st->update_prob);
-	speex_free(st->zeta);
+	free(st->S);
+	free(st->Smin);
+	free(st->Stmp);
+	free(st->update_prob);
+	free(st->zeta);
 
-	speex_free(st->inbuf);
-	speex_free(st->outbuf);
+	free(st->inbuf);
+	free(st->outbuf);
 
 	spx_fft_destroy(st->fft_lookup);
 	filterbank_destroy(st->bank);
-	speex_free(st);
+	free(st);
 }
 
 /* FIXME: The AGC doesn't work yet with fixed-point*/

@@ -297,7 +297,7 @@ void jitter_buffer_reset(JitterBuffer * jitter)
 			if (jitter->destroy)
 				jitter->destroy(jitter->packets[i].data);
 			else
-				speex_free(jitter->packets[i].data);
+				free(jitter->packets[i].data);
 			jitter->packets[i].data = NULL;
 		}
 	}
@@ -320,7 +320,7 @@ void jitter_buffer_reset(JitterBuffer * jitter)
 void jitter_buffer_destroy(JitterBuffer * jitter)
 {
 	jitter_buffer_reset(jitter);
-	speex_free(jitter);
+	free(jitter);
 }
 
 /** Take the following timing into consideration for future calculations */
@@ -374,7 +374,7 @@ void jitter_buffer_put(JitterBuffer * jitter, const JitterBufferPacket * packet)
 					jitter->destroy(jitter->packets[i].
 							data);
 				else
-					speex_free(jitter->packets[i].data);
+					free(jitter->packets[i].data);
 				jitter->packets[i].data = NULL;
 			}
 		}
@@ -424,7 +424,7 @@ void jitter_buffer_put(JitterBuffer * jitter, const JitterBufferPacket * packet)
 			if (jitter->destroy)
 				jitter->destroy(jitter->packets[i].data);
 			else
-				speex_free(jitter->packets[i].data);
+				free(jitter->packets[i].data);
 			jitter->packets[i].data = NULL;
 			/*fprintf (stderr, "Buffer is full, discarding earliest frame %d (currently at %d)\n", timestamp, jitter->pointer_timestamp); */
 		}
@@ -608,7 +608,7 @@ int jitter_buffer_get(JitterBuffer * jitter, JitterBufferPacket * packet,
 			for (j = 0; j < packet->len; j++)
 				packet->data[j] = jitter->packets[i].data[j];
 			/* Remove packet */
-			speex_free(jitter->packets[i].data);
+			free(jitter->packets[i].data);
 		}
 		jitter->packets[i].data = NULL;
 		/* Set timestamp and span (if requested) */
@@ -702,7 +702,7 @@ int jitter_buffer_get_another(JitterBuffer * jitter,
 			for (j = 0; j < packet->len; j++)
 				packet->data[j] = jitter->packets[i].data[j];
 			/* Remove packet */
-			speex_free(jitter->packets[i].data);
+			free(jitter->packets[i].data);
 		}
 		jitter->packets[i].data = NULL;
 		packet->timestamp = jitter->packets[i].timestamp;

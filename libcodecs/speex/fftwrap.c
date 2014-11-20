@@ -102,7 +102,7 @@ void *spx_fft_init(int size)
 void spx_fft_destroy(void *table)
 {
 	spx_drft_clear(table);
-	speex_free(table);
+	free(table);
 }
 
 void spx_fft(void *table, float *in, float *out)
@@ -159,7 +159,7 @@ void spx_fft_destroy(void *table)
 {
 	struct mkl_config *t = (struct mkl_config *)table;
 	DftiFreeDescriptor(t->desc);
-	speex_free(table);
+	free(table);
 }
 
 void spx_fft(void *table, spx_word16_t * in, spx_word16_t * out)
@@ -211,7 +211,7 @@ void spx_fft_destroy(void *table)
 	fftwf_destroy_plan(t->ifft);
 	fftwf_free(t->in);
 	fftwf_free(t->out);
-	speex_free(table);
+	free(table);
 }
 
 void spx_fft(void *table, spx_word16_t * in, spx_word16_t * out)
@@ -278,7 +278,7 @@ void spx_fft_destroy(void *table)
 	struct kiss_config *t = (struct kiss_config *)table;
 	kiss_fftr_free(t->forward);
 	kiss_fftr_free(t->backward);
-	speex_free(table);
+	free(table);
 }
 
 #ifdef FIXED_POINT

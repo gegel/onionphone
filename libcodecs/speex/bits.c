@@ -88,7 +88,7 @@ void speex_bits_set_bit_buffer(SpeexBits * bits, void *buff, int buf_size)
 void speex_bits_destroy(SpeexBits * bits)
 {
 	if (bits->owner)
-		speex_free(bits->chars);
+		free(bits->chars);
 	/* Will do something once the allocation is dynamic */
 }
 

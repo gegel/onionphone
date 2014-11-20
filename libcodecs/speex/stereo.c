@@ -107,7 +107,7 @@ void speex_stereo_state_reset(SpeexStereoState * _stereo)
 
 void speex_stereo_state_destroy(SpeexStereoState * stereo)
 {
-	speex_free(stereo);
+	free(stereo);
 }
 
 #ifndef DISABLE_FLOAT_API

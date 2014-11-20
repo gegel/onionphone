@@ -181,7 +181,7 @@ SpeexHeader *speex_packet_to_header(char *packet, int size)
 
 	if (le_header->mode >= SPEEX_NB_MODES || le_header->mode < 0) {
 		speex_notify("Invalid mode specified in Speex header");
-		speex_free(le_header);
+		free(le_header);
 		return NULL;
 	}
 
@@ -196,5 +196,5 @@ SpeexHeader *speex_packet_to_header(char *packet, int size)
 
 void speex_header_free(void *ptr)
 {
-	speex_free(ptr);
+	free(ptr);
 }

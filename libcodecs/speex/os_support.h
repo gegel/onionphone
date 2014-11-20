@@ -47,21 +47,6 @@
 #include "os_support_custom.h"
 #endif
 
-#ifndef OVERRIDE_SPEEX_FREE
-static inline void speex_free(void *ptr)
-{
-	free(ptr);
-}
-#endif
-
-/** Same as speex_free, except that the area is only needed inside a Speex call (might cause problem with wideband though) */
-#ifndef OVERRIDE_SPEEX_FREE_SCRATCH
-static inline void speex_free_scratch(void *ptr)
-{
-	free(ptr);
-}
-#endif
-
 /** Copy n bytes of memory from src to dst. The 0* term provides compile-time type checking  */
 #ifndef OVERRIDE_SPEEX_COPY
 #define SPEEX_COPY(dst, src, n) (memcpy((dst), (src), (n)*sizeof(*(dst)) + 0*((dst)-(src)) ))
