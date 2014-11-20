@@ -80,7 +80,7 @@ static const spx_word16_t balance_bounds[31] =
 
 SpeexStereoState *speex_stereo_state_init()
 {
-	SpeexStereoState *stereo = speex_alloc(sizeof(SpeexStereoState));
+	SpeexStereoState *stereo = calloc(1, sizeof(SpeexStereoState));
 	speex_stereo_state_reset(stereo);
 	return stereo;
 }

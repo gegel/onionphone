@@ -65,11 +65,6 @@
 
 #ifdef OUTSIDE_SPEEX
 #include <stdlib.h>
-static void *speex_alloc(int size)
-{
-	return calloc(size, 1);
-}
-
 static void *speex_realloc(void *ptr, int size)
 {
 	return realloc(ptr, size);
@@ -711,7 +706,7 @@ static void update_filter(SpeexResamplerState * st)
 		uint32_t i;
 		if (!st->sinc_table)
 			st->sinc_table =
-			    (spx_word16_t *) speex_alloc(st->filt_len *
+			    (spx_word16_t *) calloc(1, st->filt_len *
 							 st->den_rate *
 							 sizeof(spx_word16_t));
 		else if (st->sinc_table_length < st->filt_len * st->den_rate) {
@@ -748,7 +743,7 @@ static void update_filter(SpeexResamplerState * st)
 		if (!st->sinc_table)
 			st->sinc_table =
 			    (spx_word16_t *)
-			    speex_alloc((st->filt_len * st->oversample +
+			    calloc(1, (st->filt_len * st->oversample +
 					 8) * sizeof(spx_word16_t));
 		else if (st->sinc_table_length <
 			 st->filt_len * st->oversample + 8) {
@@ -789,7 +784,7 @@ static void update_filter(SpeexResamplerState * st)
 		uint32_t i;
 		st->mem_alloc_size = st->filt_len - 1 + st->buffer_size;
 		st->mem =
-		    (spx_word16_t *) speex_alloc(st->nb_channels *
+		    (spx_word16_t *) calloc(1, st->nb_channels *
 						 st->mem_alloc_size *
 						 sizeof(spx_word16_t));
 		for (i = 0; i < st->nb_channels * st->mem_alloc_size; i++)
@@ -912,7 +907,7 @@ SpeexResamplerState *speex_resampler_init_frac(uint32_t nb_channels,
 			*err = RESAMPLER_ERR_INVALID_ARG;
 		return NULL;
 	}
-	st = (SpeexResamplerState *) speex_alloc(sizeof(SpeexResamplerState));
+	st = (SpeexResamplerState *) calloc(1, sizeof(SpeexResamplerState));
 	st->initialised = 0;
 	st->started = 0;
 	st->in_rate = 0;
@@ -939,11 +934,11 @@ SpeexResamplerState *speex_resampler_init_frac(uint32_t nb_channels,
 
 	/* Per channel data */
 	st->last_sample =
-	    (int32_t *) speex_alloc(nb_channels * sizeof(int));
+	    (int32_t *) calloc(1, nb_channels * sizeof(int));
 	st->magic_samples =
-	    (uint32_t *) speex_alloc(nb_channels * sizeof(int));
+	    (uint32_t *) calloc(1, nb_channels * sizeof(int));
 	st->samp_frac_num =
-	    (uint32_t *) speex_alloc(nb_channels * sizeof(int));
+	    (uint32_t *) calloc(1, nb_channels * sizeof(int));
 	for (i = 0; i < nb_channels; i++) {
 		st->last_sample[i] = 0;
 		st->magic_samples[i] = 0;

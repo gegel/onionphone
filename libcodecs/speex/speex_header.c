@@ -124,7 +124,7 @@ void speex_init_header(SpeexHeader * header, int rate, int nb_channels,
 char *speex_header_to_packet(SpeexHeader * header, int *size)
 {
 	SpeexHeader *le_header;
-	le_header = (SpeexHeader *) speex_alloc(sizeof(SpeexHeader));
+	le_header = (SpeexHeader *) calloc(1, sizeof(SpeexHeader));
 
 	SPEEX_COPY(le_header, header, 1);
 
@@ -162,7 +162,7 @@ SpeexHeader *speex_packet_to_header(char *packet, int size)
 		return NULL;
 	}
 
-	le_header = (SpeexHeader *) speex_alloc(sizeof(SpeexHeader));
+	le_header = (SpeexHeader *) calloc(1, sizeof(SpeexHeader));
 
 	SPEEX_COPY(le_header, (SpeexHeader *) packet, 1);
 

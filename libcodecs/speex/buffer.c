@@ -51,8 +51,8 @@ struct SpeexBuffer_ {
 
 SpeexBuffer *speex_buffer_init(int size)
 {
-	SpeexBuffer *st = speex_alloc(sizeof(SpeexBuffer));
-	st->data = speex_alloc(size);
+	SpeexBuffer *st = calloc(1, sizeof(SpeexBuffer));
+	st->data = calloc(1, size);
 	st->size = size;
 	st->read_ptr = 0;
 	st->write_ptr = 0;

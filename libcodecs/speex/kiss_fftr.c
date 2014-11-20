@@ -78,7 +78,7 @@ static kiss_fft_cfg kiss_fft_alloc(int nfft, int inverse_fft, void *mem,
 	    + sizeof(kiss_fft_cpx) * (nfft - 1);	/* twiddle factors */
 
 	if (lenmem == NULL) {
-		st = (kiss_fft_cfg) KISS_FFT_MALLOC(memneeded);
+		st = (kiss_fft_cfg) calloc(1, memneeded);
 	} else {
 		if (mem != NULL && *lenmem >= memneeded)
 			st = (kiss_fft_cfg) mem;
@@ -575,7 +575,7 @@ kiss_fftr_cfg kiss_fftr_alloc(int nfft, int inverse_fft, void *mem,
 	    sizeof(kiss_fft_cpx) * (nfft * 2);
 
 	if (lenmem == NULL) {
-		st = (kiss_fftr_cfg) KISS_FFT_MALLOC(memneeded);
+		st = (kiss_fftr_cfg) calloc(1, memneeded);
 	} else {
 		if (*lenmem >= memneeded)
 			st = (kiss_fftr_cfg) mem;

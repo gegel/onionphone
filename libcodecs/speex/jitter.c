@@ -266,7 +266,7 @@ static int16_t compute_opt_delay(JitterBuffer * jitter)
 JitterBuffer *jitter_buffer_init(int step_size)
 {
 	JitterBuffer *jitter =
-	    (JitterBuffer *) speex_alloc(sizeof(JitterBuffer));
+	    (JitterBuffer *) calloc(1, sizeof(JitterBuffer));
 	if (jitter) {
 		int i;
 		int32_t tmp;
@@ -434,7 +434,7 @@ void jitter_buffer_put(JitterBuffer * jitter, const JitterBufferPacket * packet)
 			jitter->packets[i].data = packet->data;
 		} else {
 			jitter->packets[i].data =
-			    (char *)speex_alloc(packet->len);
+			    (char *)calloc(1, packet->len);
 			for (j = 0; j < packet->len; j++)
 				jitter->packets[i].data[j] = packet->data[j];
 		}

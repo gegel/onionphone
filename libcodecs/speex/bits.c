@@ -50,7 +50,7 @@
 
 void speex_bits_init(SpeexBits * bits)
 {
-	bits->chars = (char *)speex_alloc(MAX_CHARS_PER_FRAME);
+	bits->chars = (char *)calloc(1, MAX_CHARS_PER_FRAME);
 	if (!bits->chars)
 		return;
 

@@ -67,18 +67,18 @@ FilterBank *filterbank_new(int banks, spx_word32_t sampling, int len, int type)
 	max_mel = toBARK(EXTRACT16(sampling / 2));
 	mel_interval = PDIV32(max_mel, banks - 1);
 
-	bank = (FilterBank *) speex_alloc(sizeof(FilterBank));
+	bank = (FilterBank *) calloc(1, sizeof(FilterBank));
 	bank->nb_banks = banks;
 	bank->len = len;
-	bank->bank_left = (int *)speex_alloc(len * sizeof(int));
-	bank->bank_right = (int *)speex_alloc(len * sizeof(int));
+	bank->bank_left = (int *)calloc(1, len * sizeof(int));
+	bank->bank_right = (int *)calloc(1, len * sizeof(int));
 	bank->filter_left =
-	    (spx_word16_t *) speex_alloc(len * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, len * sizeof(spx_word16_t));
 	bank->filter_right =
-	    (spx_word16_t *) speex_alloc(len * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, len * sizeof(spx_word16_t));
 	/* Think I can safely disable normalisation that for fixed-point (and probably float as well) */
 #ifndef FIXED_POINT
-	bank->scaling = (float *)speex_alloc(banks * sizeof(float));
+	bank->scaling = (float *)calloc(1, banks * sizeof(float));
 #endif
 	for (i = 0; i < len; i++) {
 		spx_word16_t curr_freq;
