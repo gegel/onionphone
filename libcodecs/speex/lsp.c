@@ -524,6 +524,8 @@ void lsp_to_lpc(spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr, char *stack)
 	assert(m > 0);
 
 	float Wp[4 * m + 2];
+	memzero(Wp, (4 * m + 2) * sizeof(float));
+
 	pw = Wp;
 
 	/* initialise contents of array */
