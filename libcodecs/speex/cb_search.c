@@ -145,6 +145,8 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 	spx_word16_t t[nsf];
 	spx_sig_t e[nsf];
 
+	memzero(e, nsf * sizeof(spx_sig_t));
+
 	/* FIXME: Do we still need to copy the target? */
 	SPEEX_COPY(t, target, nsf);
 
@@ -306,6 +308,8 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 	spx_word16_t t[nsf];
 	spx_sig_t e[nsf];
 	int ind[nb_subvect];
+
+	memzero(e, nsf * sizeof(spx_sig_t));
 
 	spx_word16_t tmp[2 * N * nsf];
 	memzero(tmp, 2 * N * nsf * sizeof(spx_word16_t));

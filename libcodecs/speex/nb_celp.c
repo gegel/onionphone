@@ -37,6 +37,7 @@
 
 #include <math.h>
 #include <ophmconsts.h>
+#include <ophtools.h>
 #include "nb_celp.h"
 #include "lpc.h"
 #include "lsp.h"
@@ -679,6 +680,8 @@ int nb_encode(void *state, void *vin, SpeexBits * bits)
 	spx_word16_t syn_resp[st->subframeSize];
 	spx_word16_t real_exc[st->subframeSize];
 	spx_mem_t mem[st->lpcSize];
+
+	memzero(real_exc, st->subframeSize * sizeof(spx_word16_t));
 
 	/* Loop on sub-frames */
 	for (sub = 0; sub < st->nbSubframes; sub++) {

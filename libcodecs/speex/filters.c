@@ -41,6 +41,7 @@
 #include "math_approx.h"
 #include "ltp.h"
 #include <math.h>
+#include <ophtools.h>
 
 #ifdef _USE_SSE
 #include "filters_sse.h"
@@ -420,6 +421,9 @@ void syn_percep_zero16(const spx_word16_t * xx, const spx_coef_t * ak,
 {
 	int i;
 	spx_mem_t mem[ord];
+
+	memzero(mem, ord * sizeof(spx_mem_t));
+
 	for (i = 0; i < ord; i++)
 		mem[i] = 0;
 	iir_mem16(xx, ak, y, N, ord, mem, stack);
@@ -434,6 +438,9 @@ void residue_percep_zero16(const spx_word16_t * xx, const spx_coef_t * ak,
 {
 	int i;
 	spx_mem_t mem[ord];
+
+	memzero(mem, ord * sizeof(spx_mem_t));
+
 	for (i = 0; i < ord; i++)
 		mem[i] = 0;
 	filter_mem16(xx, ak, awk1, y, N, ord, mem, stack);
@@ -453,6 +460,9 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 	spx_word16_t y1, ny1i, ny2i;
 	spx_mem_t mem1[ord];
 	spx_mem_t mem2[ord];
+
+	memzero(mem1, ord * sizeof(spx_mem_t));
+	memzero(mem2, ord * sizeof(spx_mem_t));
 
 	y[0] = LPC_SCALING;
 	for (i = 0; i < ord; i++)
@@ -491,6 +501,10 @@ void qmf_decomp(const spx_word16_t * xx, const spx_word16_t * aa,
 
 	spx_word16_t a[M];
 	spx_word16_t x[N + M - 1];
+
+	memzero(a, M * sizeof(spx_word16_t));
+	memzero(x, (N + M - 1) * sizeof(spx_word16_t));
+
 	x2 = x + M - 1;
 	M2 = M >> 1;
 	for (i = 0; i < M; i++)
@@ -540,6 +554,9 @@ void qmf_synth(const spx_word16_t * x1, const spx_word16_t * x2,
 	N2 = N >> 1;
 	spx_word16_t xx1[M2 + N2];
 	spx_word16_t xx2[M2 + N2];
+
+	memzero(xx1, (M2 + N2) * sizeof(spx_word16_t));
+	memzero(xx2, (M2 + N2) * sizeof(spx_word16_t));
 
 	for (i = 0; i < N2; i++)
 		xx1[i] = x1[N2 - 1 - i];

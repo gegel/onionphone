@@ -88,6 +88,7 @@ Heavily modified by Jean-Marc Valin (c) 2002-2006 (fixed-point,
 #include <assert.h>
 #include <math.h>
 #include <ophmconsts.h>
+#include <ophtools.h>
 #include "lsp.h"
 #include "math_approx.h"
 
@@ -538,6 +539,7 @@ void lsp_to_lpc(spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr, char *stack)
 	xin2 = 1.0;
 
 	float x_freq[lpcrdr];
+	memzero(x_freq, lpcrdr * sizeof(float));
 	for (i = 0; i < lpcrdr; i++)
 		x_freq[i] = ANGLE2X(freq[i]);
 
