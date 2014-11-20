@@ -89,7 +89,6 @@ static void speex_free(void *ptr)
 #include "os_support.h"
 #endif				/* OUTSIDE_SPEEX */
 
-#include "stack_alloc.h"
 #include <math.h>
 #include <ophmconsts.h>
 
@@ -1098,8 +1097,7 @@ int speex_resampler_process_int(SpeexResamplerState * st,
 #ifdef VAR_ARRAYS
 	const unsigned int ylen =
 	    (olen < FIXED_STACK_ALLOC) ? olen : FIXED_STACK_ALLOC;
-	VARDECL(spx_word16_t * ystack);
-	ALLOC(ystack, ylen, spx_word16_t);
+	spx_word16_t ystack[ylen];
 #else
 	const unsigned int ylen = FIXED_STACK_ALLOC;
 	spx_word16_t ystack[FIXED_STACK_ALLOC];

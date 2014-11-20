@@ -89,7 +89,6 @@ Heavily modified by Jean-Marc Valin (c) 2002-2006 (fixed-point,
 #include <math.h>
 #include <ophmconsts.h>
 #include "lsp.h"
-#include "stack_alloc.h"
 #include "math_approx.h"
 
 #ifndef NULL
@@ -226,10 +225,6 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 	spx_word16_t temp_xr, xl, xr, xm = 0;
 	spx_word32_t psuml, psumr, psumm, temp_psumr /*,temp_qsumr */ ;
 	int i, j, m, flag, k;
-	VARDECL(spx_word32_t * Q);	/* ptrs for memory allocation           */
-	VARDECL(spx_word32_t * P);
-	VARDECL(spx_word16_t * Q16);	/* ptrs for memory allocation           */
-	VARDECL(spx_word16_t * P16);
 	spx_word32_t *px;	/* ptrs of respective P'(z) & Q'(z)     */
 	spx_word32_t *qx;
 	spx_word32_t *p;
@@ -240,8 +235,8 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 	m = lpcrdr / 2;		/* order of P'(z) & Q'(z) polynomials   */
 
 	/* Allocate memory space for polynomials */
-	ALLOC(Q, (m + 1), spx_word32_t);
-	ALLOC(P, (m + 1), spx_word32_t);
+	spx_word32_t Q[(m + 1)];
+	spx_word32_t P[(m + 1)];
 
 	/* determine P'(z)'s and Q'(z)'s coefficients where
 	   P'(z) = P(z)/(1 + z^(-1)) and Q'(z) = Q(z)/(1-z^(-1)) */
@@ -297,8 +292,8 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 	/* now that we have computed P and Q convert to 16 bits to
 	   speed up cheb_poly_eval */
 
-	ALLOC(P16, m + 1, spx_word16_t);
-	ALLOC(Q16, m + 1, spx_word16_t);
+	spx_word16_t P16[m + 1];
+	spx_word16_t Q16[m + 1];
 
 	for (i = 0; i < m + 1; i++) {
 		P16[i] = P[i];
@@ -403,11 +398,6 @@ void lsp_to_lpc(spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr, char *stack)
 	int i, j;
 	spx_word32_t xout1, xout2, xin;
 	spx_word32_t mult, a;
-	VARDECL(spx_word16_t * freqn);
-	VARDECL(spx_word32_t ** xp);
-	VARDECL(spx_word32_t * xpmem);
-	VARDECL(spx_word32_t ** xq);
-	VARDECL(spx_word32_t * xqmem);
 	int m = lpcrdr >> 1;
 
 	/* 
@@ -434,11 +424,11 @@ void lsp_to_lpc(spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr, char *stack)
 	   outputs samples are non-zero (it's an FIR filter).
 	 */
 
-	ALLOC(xp, (m + 1), spx_word32_t *);
-	ALLOC(xpmem, (m + 1) * (lpcrdr + 1 + 2), spx_word32_t);
+	spx_word32_t * xp[(m + 1)];
+	spx_word32_t xpmem[(m + 1) * (lpcrdr + 1 + 2)];
 
-	ALLOC(xq, (m + 1), spx_word32_t *);
-	ALLOC(xqmem, (m + 1) * (lpcrdr + 1 + 2), spx_word32_t);
+	spx_word32_t * xq[(m + 1)];
+	spx_word32_t xqmem[(m + 1) * (lpcrdr + 1 + 2)];
 
 	for (i = 0; i <= m; i++) {
 		xp[i] = xpmem + i * (lpcrdr + 1 + 2);
@@ -447,7 +437,7 @@ void lsp_to_lpc(spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr, char *stack)
 
 	/* work out 2cos terms in Q14 */
 
-	ALLOC(freqn, lpcrdr, spx_word16_t);
+	spx_word16_t freqn[lpcrdr];
 	for (i = 0; i < lpcrdr; i++)
 		freqn[i] = ANGLE2X(freq[i]);
 
@@ -525,14 +515,12 @@ void lsp_to_lpc(spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr, char *stack)
 {
 	int i, j;
 	float xout1, xout2, xin1, xin2;
-	VARDECL(float *Wp);
 	float *pw, *n1, *n2, *n3, *n4 = NULL;
-	VARDECL(float *x_freq);
 	int m = lpcrdr >> 1;
 
 	assert(m > 0);
 
-	ALLOC(Wp, 4 * m + 2, float);
+	float Wp[4 * m + 2];
 	pw = Wp;
 
 	/* initialise contents of array */
@@ -547,7 +535,7 @@ void lsp_to_lpc(spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr, char *stack)
 	xin1 = 1.0;
 	xin2 = 1.0;
 
-	ALLOC(x_freq, lpcrdr, float);
+	float x_freq[lpcrdr];
 	for (i = 0; i < lpcrdr; i++)
 		x_freq[i] = ANGLE2X(freq[i]);
 

@@ -37,7 +37,6 @@
 #endif
 
 #include "filters.h"
-#include "stack_alloc.h"
 #include "arch.h"
 #include "math_approx.h"
 #include "ltp.h"
@@ -420,8 +419,7 @@ void syn_percep_zero16(const spx_word16_t * xx, const spx_coef_t * ak,
 		       spx_word16_t * y, int N, int ord, char *stack)
 {
 	int i;
-	VARDECL(spx_mem_t * mem);
-	ALLOC(mem, ord, spx_mem_t);
+	spx_mem_t mem[ord];
 	for (i = 0; i < ord; i++)
 		mem[i] = 0;
 	iir_mem16(xx, ak, y, N, ord, mem, stack);
@@ -435,8 +433,7 @@ void residue_percep_zero16(const spx_word16_t * xx, const spx_coef_t * ak,
 			   spx_word16_t * y, int N, int ord, char *stack)
 {
 	int i;
-	VARDECL(spx_mem_t * mem);
-	ALLOC(mem, ord, spx_mem_t);
+	spx_mem_t mem[ord];
 	for (i = 0; i < ord; i++)
 		mem[i] = 0;
 	filter_mem16(xx, ak, awk1, y, N, ord, mem, stack);
@@ -452,10 +449,8 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 {
 	int i, j;
 	spx_word16_t y1, ny1i, ny2i;
-	VARDECL(spx_mem_t * mem1);
-	VARDECL(spx_mem_t * mem2);
-	ALLOC(mem1, ord, spx_mem_t);
-	ALLOC(mem2, ord, spx_mem_t);
+	spx_mem_t mem1[ord];
+	spx_mem_t mem2[ord];
 
 	y[0] = LPC_SCALING;
 	for (i = 0; i < ord; i++)
@@ -488,12 +483,10 @@ void qmf_decomp(const spx_word16_t * xx, const spx_word16_t * aa,
 		spx_word16_t * mem, char *stack)
 {
 	int i, j, k, M2;
-	VARDECL(spx_word16_t * a);
-	VARDECL(spx_word16_t * x);
 	spx_word16_t *x2;
 
-	ALLOC(a, M, spx_word16_t);
-	ALLOC(x, N + M - 1, spx_word16_t);
+	spx_word16_t a[M];
+	spx_word16_t x[N + M - 1];
 	x2 = x + M - 1;
 	M2 = M >> 1;
 	for (i = 0; i < M; i++)
@@ -536,13 +529,11 @@ void qmf_synth(const spx_word16_t * x1, const spx_word16_t * x2,
 {
 	int i, j;
 	int M2, N2;
-	VARDECL(spx_word16_t * xx1);
-	VARDECL(spx_word16_t * xx2);
 
 	M2 = M >> 1;
 	N2 = N >> 1;
-	ALLOC(xx1, M2 + N2, spx_word16_t);
-	ALLOC(xx2, M2 + N2, spx_word16_t);
+	spx_word16_t xx1[M2 + N2];
+	spx_word16_t xx2[M2 + N2];
 
 	for (i = 0; i < N2; i++)
 		xx1[i] = x1[N2 - 1 - i];
@@ -725,7 +716,6 @@ void multicomb(spx_word16_t * exc,	/*decoded excitation */
 	(void)p;
 
 	int i;
-	VARDECL(spx_word16_t * iexc);
 	spx_word16_t old_ener, new_ener;
 	int corr_pitch;
 
@@ -767,7 +757,7 @@ void multicomb(spx_word16_t * exc,	/*decoded excitation */
 	corr_pitch = pitch;
 #endif
 
-	ALLOC(iexc, 2 * nsf, spx_word16_t);
+	spx_word16_t iexc[2 * nsf];
 
 	interp_pitch(exc, iexc, corr_pitch, 80);
 	if (corr_pitch > max_pitch)
