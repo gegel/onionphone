@@ -478,7 +478,7 @@ SpeexPreprocessState *speex_preprocess_state_init(int frame_size,
 	int N, N3, N4, M;
 
 	SpeexPreprocessState *st =
-	    (SpeexPreprocessState *) speex_alloc(sizeof(SpeexPreprocessState));
+	    (SpeexPreprocessState *) calloc(1, sizeof(SpeexPreprocessState));
 	st->frame_size = frame_size;
 
 	/* Round ps_size down to the nearest power of two */
@@ -523,38 +523,38 @@ SpeexPreprocessState *speex_preprocess_state_init(int frame_size,
 	M = st->nbands;
 	st->bank = filterbank_new(M, sampling_rate, N, 1);
 
-	st->frame = (spx_word16_t *) speex_alloc(2 * N * sizeof(spx_word16_t));
-	st->window = (spx_word16_t *) speex_alloc(2 * N * sizeof(spx_word16_t));
-	st->ft = (spx_word16_t *) speex_alloc(2 * N * sizeof(spx_word16_t));
+	st->frame = (spx_word16_t *) calloc(1, 2 * N * sizeof(spx_word16_t));
+	st->window = (spx_word16_t *) calloc(1, 2 * N * sizeof(spx_word16_t));
+	st->ft = (spx_word16_t *) calloc(1, 2 * N * sizeof(spx_word16_t));
 
-	st->ps = (spx_word32_t *) speex_alloc((N + M) * sizeof(spx_word32_t));
+	st->ps = (spx_word32_t *) calloc(1, (N + M) * sizeof(spx_word32_t));
 	st->noise =
-	    (spx_word32_t *) speex_alloc((N + M) * sizeof(spx_word32_t));
+	    (spx_word32_t *) calloc(1, (N + M) * sizeof(spx_word32_t));
 	st->echo_noise =
-	    (spx_word32_t *) speex_alloc((N + M) * sizeof(spx_word32_t));
+	    (spx_word32_t *) calloc(1, (N + M) * sizeof(spx_word32_t));
 	st->residual_echo =
-	    (spx_word32_t *) speex_alloc((N + M) * sizeof(spx_word32_t));
+	    (spx_word32_t *) calloc(1, (N + M) * sizeof(spx_word32_t));
 	st->reverb_estimate =
-	    (spx_word32_t *) speex_alloc((N + M) * sizeof(spx_word32_t));
+	    (spx_word32_t *) calloc(1, (N + M) * sizeof(spx_word32_t));
 	st->old_ps =
-	    (spx_word32_t *) speex_alloc((N + M) * sizeof(spx_word32_t));
+	    (spx_word32_t *) calloc(1, (N + M) * sizeof(spx_word32_t));
 	st->prior =
-	    (spx_word16_t *) speex_alloc((N + M) * sizeof(spx_word16_t));
-	st->post = (spx_word16_t *) speex_alloc((N + M) * sizeof(spx_word16_t));
-	st->gain = (spx_word16_t *) speex_alloc((N + M) * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, (N + M) * sizeof(spx_word16_t));
+	st->post = (spx_word16_t *) calloc(1, (N + M) * sizeof(spx_word16_t));
+	st->gain = (spx_word16_t *) calloc(1, (N + M) * sizeof(spx_word16_t));
 	st->gain2 =
-	    (spx_word16_t *) speex_alloc((N + M) * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, (N + M) * sizeof(spx_word16_t));
 	st->gain_floor =
-	    (spx_word16_t *) speex_alloc((N + M) * sizeof(spx_word16_t));
-	st->zeta = (spx_word16_t *) speex_alloc((N + M) * sizeof(spx_word16_t));
+	    (spx_word16_t *) calloc(1, (N + M) * sizeof(spx_word16_t));
+	st->zeta = (spx_word16_t *) calloc(1, (N + M) * sizeof(spx_word16_t));
 
-	st->S = (spx_word32_t *) speex_alloc(N * sizeof(spx_word32_t));
-	st->Smin = (spx_word32_t *) speex_alloc(N * sizeof(spx_word32_t));
-	st->Stmp = (spx_word32_t *) speex_alloc(N * sizeof(spx_word32_t));
-	st->update_prob = (int *)speex_alloc(N * sizeof(int));
+	st->S = (spx_word32_t *) calloc(1, N * sizeof(spx_word32_t));
+	st->Smin = (spx_word32_t *) calloc(1, N * sizeof(spx_word32_t));
+	st->Stmp = (spx_word32_t *) calloc(1, N * sizeof(spx_word32_t));
+	st->update_prob = (int *)calloc(1, N * sizeof(int));
 
-	st->inbuf = (spx_word16_t *) speex_alloc(N3 * sizeof(spx_word16_t));
-	st->outbuf = (spx_word16_t *) speex_alloc(N3 * sizeof(spx_word16_t));
+	st->inbuf = (spx_word16_t *) calloc(1, N3 * sizeof(spx_word16_t));
+	st->outbuf = (spx_word16_t *) calloc(1, N3 * sizeof(spx_word16_t));
 
 	conj_window(st->window, 2 * N3);
 	for (i = 2 * N3; i < 2 * st->ps_size; i++)
@@ -584,7 +584,7 @@ SpeexPreprocessState *speex_preprocess_state_init(int frame_size,
 #ifndef FIXED_POINT
 	st->agc_enabled = 0;
 	st->agc_level = 8000;
-	st->loudness_weight = (float *)speex_alloc(N * sizeof(float));
+	st->loudness_weight = (float *)calloc(1, N * sizeof(float));
 	for (i = 0; i < N; i++) {
 		float ff = ((float)i) * .5 * sampling_rate / ((float)N);
 		/*st->loudness_weight[i] = .5f*(1.f/(1.f+ff/8000.f))+1.f*exp(-.5f*(ff-3800.f)*(ff-3800.f)/9e5f); */
@@ -617,36 +617,36 @@ SpeexPreprocessState *speex_preprocess_state_init(int frame_size,
 
 void speex_preprocess_state_destroy(SpeexPreprocessState * st)
 {
-	speex_free(st->frame);
-	speex_free(st->ft);
-	speex_free(st->ps);
-	speex_free(st->gain2);
-	speex_free(st->gain_floor);
-	speex_free(st->window);
-	speex_free(st->noise);
-	speex_free(st->reverb_estimate);
-	speex_free(st->old_ps);
-	speex_free(st->gain);
-	speex_free(st->prior);
-	speex_free(st->post);
+	free(st->frame);
+	free(st->ft);
+	free(st->ps);
+	free(st->gain2);
+	free(st->gain_floor);
+	free(st->window);
+	free(st->noise);
+	free(st->reverb_estimate);
+	free(st->old_ps);
+	free(st->gain);
+	free(st->prior);
+	free(st->post);
 #ifndef FIXED_POINT
-	speex_free(st->loudness_weight);
+	free(st->loudness_weight);
 #endif
-	speex_free(st->echo_noise);
-	speex_free(st->residual_echo);
+	free(st->echo_noise);
+	free(st->residual_echo);
 
-	speex_free(st->S);
-	speex_free(st->Smin);
-	speex_free(st->Stmp);
-	speex_free(st->update_prob);
-	speex_free(st->zeta);
+	free(st->S);
+	free(st->Smin);
+	free(st->Stmp);
+	free(st->update_prob);
+	free(st->zeta);
 
-	speex_free(st->inbuf);
-	speex_free(st->outbuf);
+	free(st->inbuf);
+	free(st->outbuf);
 
 	spx_fft_destroy(st->fft_lookup);
 	filterbank_destroy(st->bank);
-	speex_free(st);
+	free(st);
 }
 
 /* FIXME: The AGC doesn't work yet with fixed-point*/

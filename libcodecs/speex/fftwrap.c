@@ -94,7 +94,7 @@ static void renorm_range(spx_word16_t * in, spx_word16_t * out, int shift,
 void *spx_fft_init(int size)
 {
 	struct drft_lookup *table;
-	table = speex_alloc(sizeof(struct drft_lookup));
+	table = calloc(1, sizeof(struct drft_lookup));
 	spx_drft_init((struct drft_lookup *)table, size);
 	return (void *)table;
 }
@@ -102,7 +102,7 @@ void *spx_fft_init(int size)
 void spx_fft_destroy(void *table)
 {
 	spx_drft_clear(table);
-	speex_free(table);
+	free(table);
 }
 
 void spx_fft(void *table, float *in, float *out)
@@ -145,7 +145,7 @@ struct mkl_config {
 void *spx_fft_init(int size)
 {
 	struct mkl_config *table =
-	    (struct mkl_config *)speex_alloc(sizeof(struct mkl_config));
+	    (struct mkl_config *)calloc(1, sizeof(struct mkl_config));
 	table->N = size;
 	DftiCreateDescriptor(&table->desc, DFTI_SINGLE, DFTI_REAL, 1, size);
 	DftiSetValue(table->desc, DFTI_PACKED_FORMAT, DFTI_PACK_FORMAT);
@@ -159,7 +159,7 @@ void spx_fft_destroy(void *table)
 {
 	struct mkl_config *t = (struct mkl_config *)table;
 	DftiFreeDescriptor(t->desc);
-	speex_free(table);
+	free(table);
 }
 
 void spx_fft(void *table, spx_word16_t * in, spx_word16_t * out)
@@ -189,7 +189,7 @@ struct fftw_config {
 void *spx_fft_init(int size)
 {
 	struct fftw_config *table =
-	    (struct fftw_config *)speex_alloc(sizeof(struct fftw_config));
+	    (struct fftw_config *)calloc(1, sizeof(struct fftw_config));
 	table->in = fftwf_malloc(sizeof(float) * (size + 2));
 	table->out = fftwf_malloc(sizeof(float) * (size + 2));
 
@@ -211,7 +211,7 @@ void spx_fft_destroy(void *table)
 	fftwf_destroy_plan(t->ifft);
 	fftwf_free(t->in);
 	fftwf_free(t->out);
-	speex_free(table);
+	free(table);
 }
 
 void spx_fft(void *table, spx_word16_t * in, spx_word16_t * out)
@@ -266,7 +266,7 @@ struct kiss_config {
 void *spx_fft_init(int size)
 {
 	struct kiss_config *table;
-	table = (struct kiss_config *)speex_alloc(sizeof(struct kiss_config));
+	table = (struct kiss_config *)calloc(1, sizeof(struct kiss_config));
 	table->forward = kiss_fftr_alloc(size, 0, NULL, NULL);
 	table->backward = kiss_fftr_alloc(size, 1, NULL, NULL);
 	table->N = size;
@@ -278,7 +278,7 @@ void spx_fft_destroy(void *table)
 	struct kiss_config *t = (struct kiss_config *)table;
 	kiss_fftr_free(t->forward);
 	kiss_fftr_free(t->backward);
-	speex_free(table);
+	free(table);
 }
 
 #ifdef FIXED_POINT

@@ -1337,8 +1337,8 @@ void spx_drft_backward(struct drft_lookup *l, float *data)
 void spx_drft_init(struct drft_lookup *l, int n)
 {
 	l->n = n;
-	l->trigcache = (float *)speex_alloc(3 * n * sizeof(*l->trigcache));
-	l->splitcache = (int *)speex_alloc(32 * sizeof(*l->splitcache));
+	l->trigcache = (float *)calloc(1, 3 * n * sizeof(*l->trigcache));
+	l->splitcache = (int *)calloc(1, 32 * sizeof(*l->splitcache));
 	fdrffti(n, l->trigcache, l->splitcache);
 }
 
@@ -1346,8 +1346,8 @@ void spx_drft_clear(struct drft_lookup *l)
 {
 	if (l) {
 		if (l->trigcache)
-			speex_free(l->trigcache);
+			free(l->trigcache);
 		if (l->splitcache)
-			speex_free(l->splitcache);
+			free(l->splitcache);
 	}
 }

@@ -38,6 +38,7 @@
 #include "config.h"
 #endif
 
+#include <assert.h>
 #include "speex/speex_bits.h"
 #include "arch.h"
 #include "os_support.h"
@@ -49,7 +50,7 @@
 
 void speex_bits_init(SpeexBits * bits)
 {
-	bits->chars = (char *)speex_alloc(MAX_CHARS_PER_FRAME);
+	bits->chars = (char *)calloc(1, MAX_CHARS_PER_FRAME);
 	if (!bits->chars)
 		return;
 
@@ -87,7 +88,7 @@ void speex_bits_set_bit_buffer(SpeexBits * bits, void *buff, int buf_size)
 void speex_bits_destroy(SpeexBits * bits)
 {
 	if (bits->owner)
-		speex_free(bits->chars);
+		free(bits->chars);
 	/* Will do something once the allocation is dynamic */
 }
 
@@ -115,7 +116,7 @@ void speex_bits_read_from(SpeexBits * bits, char *chars, int len)
 	if (nchars > bits->buf_size) {
 		speex_notify("Packet is larger than allocated buffer");
 		if (bits->owner) {
-			char *tmp = (char *)speex_realloc(bits->chars, nchars);
+			char *tmp = (char *)realloc(bits->chars, nchars);
 			if (tmp) {
 				bits->buf_size = nchars;
 				bits->chars = tmp;
@@ -165,7 +166,7 @@ void speex_bits_read_whole_bytes(SpeexBits * bits, char *chars, int nbytes)
 		/* Packet is larger than allocated buffer */
 		if (bits->owner) {
 			char *tmp =
-			    (char *)speex_realloc(bits->chars,
+			    (char *)realloc(bits->chars,
 						  (bits->
 						   nbBits >> LOG2_BITS_PER_CHAR)
 						  + nchars + 1);
@@ -248,7 +249,7 @@ void speex_bits_pack(SpeexBits * bits, int data, int nbBits)
 		if (bits->owner) {
 			int new_nchars = ((bits->buf_size + 5) * 3) >> 1;
 			char *tmp =
-			    (char *)speex_realloc(bits->chars, new_nchars);
+			    (char *)realloc(bits->chars, new_nchars);
 			if (tmp) {
 				bits->buf_size = new_nchars;
 				bits->chars = tmp;
@@ -283,6 +284,9 @@ void speex_bits_pack(SpeexBits * bits, int data, int nbBits)
 int speex_bits_unpack_signed(SpeexBits * bits, int nbBits)
 {
 	unsigned int d = speex_bits_unpack_unsigned(bits, nbBits);
+
+	assert(nbBits >= 1);
+
 	/* If number is negative */
 	if (d >> (nbBits - 1)) {
 		d |= (-1) << nbBits;

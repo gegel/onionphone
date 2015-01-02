@@ -2170,7 +2170,7 @@ int16_t v_srch(int16_t pswWInput[], int16_t pswWBasisVecs[],
 
 		siBitIndex = pswBIndex[siI];
 
-		L_C = L_msu(L_C, pswUpdatePtr[0], 0x8000);
+		L_C = L_msu(L_C, pswUpdatePtr[0], -0x8000);
 
 		for (siJ = 0; siJ < siEBits - 1; siJ++) {
 			L_G =
@@ -2178,7 +2178,7 @@ int16_t v_srch(int16_t pswWInput[], int16_t pswWBasisVecs[],
 				  pswBits[siBitIndex]);
 			siBitIndex = pswModNextBit[siBitIndex];
 		}
-		L_G = L_msu(L_G, pswUpdatePtr[siJ + 1], 0x8000);
+		L_G = L_msu(L_G, pswUpdatePtr[siJ + 1], -0x8000);
 
 		pswBits[siBitIndex] = negate(pswBits[siBitIndex]);
 

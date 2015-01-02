@@ -33,6 +33,7 @@ Group (phone 972 480 7442).
 
 /* compiler include files */
 
+#include <assert.h>
 #include <stdio.h>
 #include <math.h>
 #include "melp.h"
@@ -429,14 +430,11 @@ void mf_mf_melp_syn_init()
 	 */
 
 	mf_vq_par.num_levels = calloc(1, (mf_vq_par.num_stages) * sizeof(int));
-	if (!mf_vq_par.num_levels)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(mf_vq_par.num_levels);
 	mf_vq_par.indices = calloc(1, (mf_vq_par.num_stages) * sizeof(int));
-	if (!mf_vq_par.indices)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(mf_vq_par.indices);
 	mf_vq_par.num_bits = calloc(1, (mf_vq_par.num_stages) * sizeof(int));
-	if (!mf_vq_par.num_bits)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(mf_vq_par.num_bits);
 
 	mf_vq_par.num_levels[0] = 128;
 	mf_vq_par.num_levels[1] = 64;
@@ -470,18 +468,15 @@ void mf_mf_melp_syn_init()
 	mf_fs_mf_vq_par.num_levels = calloc(1,
 					    (mf_fs_mf_vq_par.num_stages) *
 					    sizeof(int));
-	if (!mf_fs_mf_vq_par.num_levels)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(mf_fs_mf_vq_par.num_levels);
 	mf_fs_mf_vq_par.indices = calloc(1,
 					 (mf_fs_mf_vq_par.num_stages) *
 					 sizeof(int));
-	if (!mf_fs_mf_vq_par.indices)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(mf_fs_mf_vq_par.indices);
 	mf_fs_mf_vq_par.num_bits = calloc(1,
 					  (mf_fs_mf_vq_par.num_stages) *
 					  sizeof(int));
-	if (!mf_fs_mf_vq_par.num_bits)
-		program_abort(__FILE__, "calloc", 0, __LINE__);
+	assert(mf_fs_mf_vq_par.num_bits);
 
 	mf_fs_mf_vq_par.num_levels[0] = FS_LEVELS;
 

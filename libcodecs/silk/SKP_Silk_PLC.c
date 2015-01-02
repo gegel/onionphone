@@ -27,6 +27,7 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 ***********************************************************************/
 
+#include <ophtools.h>
 #include "SKP_Silk_main.h"
 #include "SKP_Silk_PLC.h"
 
@@ -354,7 +355,7 @@ void SKP_Silk_PLC_conceal(SKP_Silk_decoder_state * psDec,	/* I/O Decoder state *
 	for (k = 0; k < NB_SUBFR; k++) {
 		for (i = 0; i < psDec->subfr_length; i++) {
 			/* unrolled */
-			Atmp = *((int32_t *) & A_Q12_tmp[0]);	/* read two coefficients at once */
+			Atmp = oph_2s16_to_s32(A_Q12_tmp, 0, 1);	/* read two coefficients at once */
 			LPC_pred_Q10 =
 			    SKP_SMULWB(psDec->sLPC_Q14[MAX_LPC_ORDER + i - 1],
 				       Atmp);
@@ -362,7 +363,7 @@ void SKP_Silk_PLC_conceal(SKP_Silk_decoder_state * psDec,	/* I/O Decoder state *
 			    SKP_SMLAWT(LPC_pred_Q10,
 				       psDec->sLPC_Q14[MAX_LPC_ORDER + i - 2],
 				       Atmp);
-			Atmp = *((int32_t *) & A_Q12_tmp[2]);
+			Atmp = oph_2s16_to_s32(A_Q12_tmp, 2, 3);
 			LPC_pred_Q10 =
 			    SKP_SMLAWB(LPC_pred_Q10,
 				       psDec->sLPC_Q14[MAX_LPC_ORDER + i - 3],
@@ -371,7 +372,7 @@ void SKP_Silk_PLC_conceal(SKP_Silk_decoder_state * psDec,	/* I/O Decoder state *
 			    SKP_SMLAWT(LPC_pred_Q10,
 				       psDec->sLPC_Q14[MAX_LPC_ORDER + i - 4],
 				       Atmp);
-			Atmp = *((int32_t *) & A_Q12_tmp[4]);
+			Atmp = oph_2s16_to_s32(A_Q12_tmp, 4, 5);
 			LPC_pred_Q10 =
 			    SKP_SMLAWB(LPC_pred_Q10,
 				       psDec->sLPC_Q14[MAX_LPC_ORDER + i - 5],
@@ -380,7 +381,7 @@ void SKP_Silk_PLC_conceal(SKP_Silk_decoder_state * psDec,	/* I/O Decoder state *
 			    SKP_SMLAWT(LPC_pred_Q10,
 				       psDec->sLPC_Q14[MAX_LPC_ORDER + i - 6],
 				       Atmp);
-			Atmp = *((int32_t *) & A_Q12_tmp[6]);
+			Atmp = oph_2s16_to_s32(A_Q12_tmp, 6, 7);
 			LPC_pred_Q10 =
 			    SKP_SMLAWB(LPC_pred_Q10,
 				       psDec->sLPC_Q14[MAX_LPC_ORDER + i - 7],
@@ -389,7 +390,7 @@ void SKP_Silk_PLC_conceal(SKP_Silk_decoder_state * psDec,	/* I/O Decoder state *
 			    SKP_SMLAWT(LPC_pred_Q10,
 				       psDec->sLPC_Q14[MAX_LPC_ORDER + i - 8],
 				       Atmp);
-			Atmp = *((int32_t *) & A_Q12_tmp[8]);
+			Atmp = oph_2s16_to_s32(A_Q12_tmp, 8, 9);
 			LPC_pred_Q10 =
 			    SKP_SMLAWB(LPC_pred_Q10,
 				       psDec->sLPC_Q14[MAX_LPC_ORDER + i - 9],
@@ -399,7 +400,7 @@ void SKP_Silk_PLC_conceal(SKP_Silk_decoder_state * psDec,	/* I/O Decoder state *
 				       psDec->sLPC_Q14[MAX_LPC_ORDER + i - 10],
 				       Atmp);
 			for (j = 10; j < psDec->LPC_order; j += 2) {
-				Atmp = *((int32_t *) & A_Q12_tmp[j]);
+				Atmp = oph_2s16_to_s32(A_Q12_tmp, j, j + 1);
 				LPC_pred_Q10 =
 				    SKP_SMLAWB(LPC_pred_Q10,
 					       psDec->sLPC_Q14[MAX_LPC_ORDER +

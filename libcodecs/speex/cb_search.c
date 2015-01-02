@@ -39,7 +39,6 @@
 
 #include "cb_search.h"
 #include "filters.h"
-#include "stack_alloc.h"
 #include "vq.h"
 #include "arch.h"
 #include "math_approx.h"
@@ -61,10 +60,10 @@ static void compute_weighted_codebook(const signed char *shape_cb,
 				      int subvect_size, char *stack)
 {
 	(void)resp2;
+	(void)stack;
 
 	int i, j, k;
-	VARDECL(spx_word16_t * shape);
-	ALLOC(shape, subvect_size, spx_word16_t);
+	spx_word16_t shape[subvect_size];
 	for (i = 0; i < shape_cb_size; i++) {
 		spx_word16_t *res;
 
@@ -118,16 +117,10 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 					  char *stack, int update_target)
 {
 	int i, j, m, q;
-	VARDECL(spx_word16_t * resp);
 #ifdef _USE_SSE
-	VARDECL(__m128 * resp2);
-	VARDECL(__m128 * E);
 #else
 	spx_word16_t *resp2;
-	VARDECL(spx_word32_t * E);
 #endif
-	VARDECL(spx_word16_t * t);
-	VARDECL(spx_sig_t * e);
 	const signed char *shape_cb;
 	int shape_cb_size, subvect_size, nb_subvect;
 	const split_cb_params *params;
@@ -141,16 +134,18 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 	shape_cb_size = 1 << params->shape_bits;
 	shape_cb = params->shape_cb;
 	have_sign = params->have_sign;
-	ALLOC(resp, shape_cb_size * subvect_size, spx_word16_t);
+	spx_word16_t resp[shape_cb_size * subvect_size];
 #ifdef _USE_SSE
-	ALLOC(resp2, (shape_cb_size * subvect_size) >> 2, __m128);
-	ALLOC(E, shape_cb_size >> 2, __m128);
+	__m128 resp2[(shape_cb_size * subvect_size) >> 2];
+	__m128 E[shape_cb_size >> 2];
 #else
 	resp2 = resp;
-	ALLOC(E, shape_cb_size, spx_word32_t);
+	spx_word32_t E[shape_cb_size];
 #endif
-	ALLOC(t, nsf, spx_word16_t);
-	ALLOC(e, nsf, spx_sig_t);
+	spx_word16_t t[nsf];
+	spx_sig_t e[nsf];
+
+	memzero(e, nsf * sizeof(spx_sig_t));
 
 	/* FIXME: Do we still need to copy the target? */
 	SPEEX_COPY(t, target, nsf);
@@ -246,8 +241,7 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 
 	/* Update target: only update target if necessary */
 	if (update_target) {
-		VARDECL(spx_word16_t * r2);
-		ALLOC(r2, nsf, spx_word16_t);
+		spx_word16_t r2[nsf];
 		for (j = 0; j < nsf; j++)
 			r2[j] = EXTRACT16(PSHR32(e[j], 6));
 		syn_percep_zero16(r2, ak, awk1, awk2, r2, nsf, p, stack);
@@ -269,34 +263,15 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 				char *stack, int complexity, int update_target)
 {
 	int i, j, k, m, n, q;
-	VARDECL(spx_word16_t * resp);
 #ifdef _USE_SSE
-	VARDECL(__m128 * resp2);
-	VARDECL(__m128 * E);
 #else
 	spx_word16_t *resp2;
-	VARDECL(spx_word32_t * E);
 #endif
-	VARDECL(spx_word16_t * t);
-	VARDECL(spx_sig_t * e);
-	VARDECL(spx_word16_t * tmp);
-	VARDECL(spx_word32_t * ndist);
-	VARDECL(spx_word32_t * odist);
-	VARDECL(int *itmp);
-	VARDECL(spx_word16_t ** ot2);
-	VARDECL(spx_word16_t ** nt2);
 	spx_word16_t **ot, **nt;
-	VARDECL(int **nind);
-	VARDECL(int **oind);
-	VARDECL(int *ind);
 	const signed char *shape_cb;
 	int shape_cb_size, subvect_size, nb_subvect;
 	const split_cb_params *params;
 	int N;
-	VARDECL(int *best_index);
-	VARDECL(spx_word32_t * best_dist);
-	VARDECL(int *best_nind);
-	VARDECL(int *best_ntarget);
 	int have_sign;
 	N = complexity;
 	if (N > 10)
@@ -311,10 +286,10 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 					      update_target);
 		return;
 	}
-	ALLOC(ot2, N, spx_word16_t *);
-	ALLOC(nt2, N, spx_word16_t *);
-	ALLOC(oind, N, int *);
-	ALLOC(nind, N, int *);
+	spx_word16_t * ot2[N];
+	spx_word16_t * nt2[N];
+	int * oind[N];
+	int * nind[N];
 
 	params = (const split_cb_params *)par;
 	subvect_size = params->subvect_size;
@@ -322,19 +297,21 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 	shape_cb_size = 1 << params->shape_bits;
 	shape_cb = params->shape_cb;
 	have_sign = params->have_sign;
-	ALLOC(resp, shape_cb_size * subvect_size, spx_word16_t);
+	spx_word16_t resp[shape_cb_size * subvect_size];
 #ifdef _USE_SSE
-	ALLOC(resp2, (shape_cb_size * subvect_size) >> 2, __m128);
-	ALLOC(E, shape_cb_size >> 2, __m128);
+	__m128 resp2[(shape_cb_size * subvect_size) >> 2];
+	__m128 E[shape_cb_size >> 2];
 #else
 	resp2 = resp;
-	ALLOC(E, shape_cb_size, spx_word32_t);
+	spx_word32_t E[shape_cb_size];
 #endif
-	ALLOC(t, nsf, spx_word16_t);
-	ALLOC(e, nsf, spx_sig_t);
-	ALLOC(ind, nb_subvect, int);
+	spx_word16_t t[nsf];
+	spx_sig_t e[nsf];
+	int ind[nb_subvect];
 
-	ALLOC(tmp, 2 * N * nsf, spx_word16_t);
+	memzero(e, nsf * sizeof(spx_sig_t));
+
+	spx_word16_t tmp[2 * N * nsf];
 	memzero(tmp, 2 * N * nsf * sizeof(spx_word16_t));
 	for (i = 0; i < N; i++) {
 		ot2[i] = tmp + 2 * i * nsf;
@@ -342,14 +319,14 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 	}
 	ot = ot2;
 	nt = nt2;
-	ALLOC(best_index, N, int);
-	ALLOC(best_dist, N, spx_word32_t);
-	ALLOC(best_nind, N, int);
-	ALLOC(best_ntarget, N, int);
-	ALLOC(ndist, N, spx_word32_t);
-	ALLOC(odist, N, spx_word32_t);
+	int best_index[N];
+	spx_word32_t best_dist[N];
+	int best_nind[N];
+	int best_ntarget[N];
+	spx_word32_t ndist[N];
+	spx_word32_t odist[N];
 
-	ALLOC(itmp, 2 * N * nb_subvect, int);
+	int itmp[2 * N * nb_subvect];
 	memzero(itmp, 2 * N * nb_subvect * sizeof(int));
 	for (i = 0; i < N; i++) {
 		nind[i] = itmp + 2 * i * nb_subvect;
@@ -525,8 +502,7 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 
 	/* Update target: only update target if necessary */
 	if (update_target) {
-		VARDECL(spx_word16_t * r2);
-		ALLOC(r2, nsf, spx_word16_t);
+		spx_word16_t r2[nsf];
 		for (j = 0; j < nsf; j++)
 			r2[j] = EXTRACT16(PSHR32(e[j], 6));
 		syn_percep_zero16(r2, ak, awk1, awk2, r2, nsf, p, stack);
@@ -542,10 +518,9 @@ void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overla
 {
 	(void)nsf;
 	(void)seed;
+	(void)stack;
 
 	int i, j;
-	VARDECL(int *ind);
-	VARDECL(int *signs);
 	const signed char *shape_cb;
 	int subvect_size, nb_subvect;
 	const split_cb_params *params;
@@ -557,8 +532,8 @@ void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overla
 	shape_cb = params->shape_cb;
 	have_sign = params->have_sign;
 
-	ALLOC(ind, nb_subvect, int);
-	ALLOC(signs, nb_subvect, int);
+	int ind[nb_subvect];
+	int signs[nb_subvect];
 
 	/* Decode codewords and gains */
 	for (i = 0; i < nb_subvect; i++) {
@@ -616,8 +591,7 @@ void noise_codebook_quant(spx_word16_t target[],	/* target vector */
 	(void)update_target;
 
 	int i;
-	VARDECL(spx_word16_t * tmp);
-	ALLOC(tmp, nsf, spx_word16_t);
+	spx_word16_t tmp[nsf];
 	residue_percep_zero16(target, ak, awk1, awk2, tmp, nsf, p, stack);
 
 	for (i = 0; i < nsf; i++)

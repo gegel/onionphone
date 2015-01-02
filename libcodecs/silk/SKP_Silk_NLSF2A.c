@@ -111,6 +111,7 @@ void SKP_Silk_NLSF2A(int16_t * a,	/* o    monic whitening filter coefficients in
 	}
 
 	dd = SKP_RSHIFT(d, 1);
+	assert(dd < SigProc_MAX_ORDER_LPC / 2 + 3);
 
 	/* generate even and odd polynomials using convolution */
 	SKP_Silk_NLSF2A_find_poly(P, &cos_LSF_Q20[0], dd);

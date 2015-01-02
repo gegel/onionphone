@@ -65,17 +65,12 @@
 
 #ifdef OUTSIDE_SPEEX
 #include <stdlib.h>
-static void *speex_alloc(int size)
-{
-	return calloc(size, 1);
-}
-
-static void *speex_realloc(void *ptr, int size)
+static void *realloc(void *ptr, int size)
 {
 	return realloc(ptr, size);
 }
 
-static void speex_free(void *ptr)
+static void free(void *ptr)
 {
 	free(ptr);
 }
@@ -89,7 +84,6 @@ static void speex_free(void *ptr)
 #include "os_support.h"
 #endif				/* OUTSIDE_SPEEX */
 
-#include "stack_alloc.h"
 #include <math.h>
 #include <ophmconsts.h>
 
@@ -712,12 +706,12 @@ static void update_filter(SpeexResamplerState * st)
 		uint32_t i;
 		if (!st->sinc_table)
 			st->sinc_table =
-			    (spx_word16_t *) speex_alloc(st->filt_len *
+			    (spx_word16_t *) calloc(1, st->filt_len *
 							 st->den_rate *
 							 sizeof(spx_word16_t));
 		else if (st->sinc_table_length < st->filt_len * st->den_rate) {
 			st->sinc_table =
-			    (spx_word16_t *) speex_realloc(st->sinc_table,
+			    (spx_word16_t *) realloc(st->sinc_table,
 							   st->filt_len *
 							   st->den_rate *
 							   sizeof
@@ -725,7 +719,7 @@ static void update_filter(SpeexResamplerState * st)
 			st->sinc_table_length = st->filt_len * st->den_rate;
 		}
 		for (i = 0; i < st->den_rate; i++) {
-			int32_t j;
+			uint32_t j;
 			for (j = 0; j < st->filt_len; j++) {
 				st->sinc_table[i * st->filt_len + j] =
 				    sinc(st->cutoff,
@@ -749,12 +743,12 @@ static void update_filter(SpeexResamplerState * st)
 		if (!st->sinc_table)
 			st->sinc_table =
 			    (spx_word16_t *)
-			    speex_alloc((st->filt_len * st->oversample +
+			    calloc(1, (st->filt_len * st->oversample +
 					 8) * sizeof(spx_word16_t));
 		else if (st->sinc_table_length <
 			 st->filt_len * st->oversample + 8) {
 			st->sinc_table =
-			    (spx_word16_t *) speex_realloc(st->sinc_table,
+			    (spx_word16_t *) realloc(st->sinc_table,
 							   (st->filt_len *
 							    st->oversample +
 							    8) *
@@ -790,7 +784,7 @@ static void update_filter(SpeexResamplerState * st)
 		uint32_t i;
 		st->mem_alloc_size = st->filt_len - 1 + st->buffer_size;
 		st->mem =
-		    (spx_word16_t *) speex_alloc(st->nb_channels *
+		    (spx_word16_t *) calloc(1, st->nb_channels *
 						 st->mem_alloc_size *
 						 sizeof(spx_word16_t));
 		for (i = 0; i < st->nb_channels * st->mem_alloc_size; i++)
@@ -800,7 +794,7 @@ static void update_filter(SpeexResamplerState * st)
 		uint32_t i;
 		st->mem_alloc_size = st->filt_len - 1 + st->buffer_size;
 		st->mem =
-		    (spx_word16_t *) speex_realloc(st->mem,
+		    (spx_word16_t *) realloc(st->mem,
 						   st->nb_channels *
 						   st->mem_alloc_size *
 						   sizeof(spx_word16_t));
@@ -815,14 +809,15 @@ static void update_filter(SpeexResamplerState * st)
 		if ((st->filt_len - 1 + st->buffer_size) > st->mem_alloc_size) {
 			st->mem_alloc_size = st->filt_len - 1 + st->buffer_size;
 			st->mem =
-			    (spx_word16_t *) speex_realloc(st->mem,
+			    (spx_word16_t *) realloc(st->mem,
 							   st->nb_channels *
 							   st->mem_alloc_size *
 							   sizeof
 							   (spx_word16_t));
 		}
 		for (i = st->nb_channels - 1; i >= 0; i--) {
-			int32_t j;
+			uint32_t j;
+			int32_t k;
 			uint32_t olen /* = old_length */ ;
 			/*if (st->magic_samples[i]) */
 			{
@@ -830,11 +825,11 @@ static void update_filter(SpeexResamplerState * st)
 
 				/* FIXME: This is wrong but for now we need it to avoid going over the array bounds */
 				olen = old_length + 2 * st->magic_samples[i];
-				for (j = old_length - 2 + st->magic_samples[i];
-				     j >= 0; j--)
-					st->mem[i * st->mem_alloc_size + j +
+				for (k = old_length - 2 + st->magic_samples[i];
+				     k >= 0; k--)
+					st->mem[i * st->mem_alloc_size + k +
 						st->magic_samples[i]] =
-					    st->mem[i * old_alloc_size + j];
+					    st->mem[i * old_alloc_size + k];
 				for (j = 0; j < st->magic_samples[i]; j++)
 					st->mem[i * st->mem_alloc_size + j] = 0;
 				st->magic_samples[i] = 0;
@@ -912,7 +907,7 @@ SpeexResamplerState *speex_resampler_init_frac(uint32_t nb_channels,
 			*err = RESAMPLER_ERR_INVALID_ARG;
 		return NULL;
 	}
-	st = (SpeexResamplerState *) speex_alloc(sizeof(SpeexResamplerState));
+	st = (SpeexResamplerState *) calloc(1, sizeof(SpeexResamplerState));
 	st->initialised = 0;
 	st->started = 0;
 	st->in_rate = 0;
@@ -939,11 +934,11 @@ SpeexResamplerState *speex_resampler_init_frac(uint32_t nb_channels,
 
 	/* Per channel data */
 	st->last_sample =
-	    (int32_t *) speex_alloc(nb_channels * sizeof(int));
+	    (int32_t *) calloc(1, nb_channels * sizeof(int));
 	st->magic_samples =
-	    (uint32_t *) speex_alloc(nb_channels * sizeof(int));
+	    (uint32_t *) calloc(1, nb_channels * sizeof(int));
 	st->samp_frac_num =
-	    (uint32_t *) speex_alloc(nb_channels * sizeof(int));
+	    (uint32_t *) calloc(1, nb_channels * sizeof(int));
 	for (i = 0; i < nb_channels; i++) {
 		st->last_sample[i] = 0;
 		st->magic_samples[i] = 0;
@@ -965,12 +960,12 @@ SpeexResamplerState *speex_resampler_init_frac(uint32_t nb_channels,
 
 void speex_resampler_destroy(SpeexResamplerState * st)
 {
-	speex_free(st->mem);
-	speex_free(st->sinc_table);
-	speex_free(st->last_sample);
-	speex_free(st->magic_samples);
-	speex_free(st->samp_frac_num);
-	speex_free(st);
+	free(st->mem);
+	free(st->sinc_table);
+	free(st->last_sample);
+	free(st->magic_samples);
+	free(st->samp_frac_num);
+	free(st);
 }
 
 static int speex_resampler_process_native(SpeexResamplerState * st,
@@ -1039,7 +1034,7 @@ int speex_resampler_process_float(SpeexResamplerState * st,
 				  uint32_t * out_len)
 #endif
 {
-	int j;
+	unsigned int j;
 	uint32_t ilen = *in_len;
 	uint32_t olen = *out_len;
 	spx_word16_t *x = st->mem + channel_index * st->mem_alloc_size;
@@ -1087,7 +1082,7 @@ int speex_resampler_process_int(SpeexResamplerState * st,
 				int16_t * out, uint32_t * out_len)
 #endif
 {
-	int j;
+	unsigned int j;
 	const int istride_save = st->in_stride;
 	const int ostride_save = st->out_stride;
 	uint32_t ilen = *in_len;
@@ -1097,8 +1092,7 @@ int speex_resampler_process_int(SpeexResamplerState * st,
 #ifdef VAR_ARRAYS
 	const unsigned int ylen =
 	    (olen < FIXED_STACK_ALLOC) ? olen : FIXED_STACK_ALLOC;
-	VARDECL(spx_word16_t * ystack);
-	ALLOC(ystack, ylen, spx_word16_t);
+	spx_word16_t ystack[ylen];
 #else
 	const unsigned int ylen = FIXED_STACK_ALLOC;
 	spx_word16_t ystack[FIXED_STACK_ALLOC];

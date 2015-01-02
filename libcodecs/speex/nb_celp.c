@@ -37,6 +37,7 @@
 
 #include <math.h>
 #include <ophmconsts.h>
+#include <ophtools.h>
 #include "nb_celp.h"
 #include "lpc.h"
 #include "lsp.h"
@@ -44,7 +45,6 @@
 #include "quant_lsp.h"
 #include "cb_search.h"
 #include "filters.h"
-#include "stack_alloc.h"
 #include "vq.h"
 #include "speex/speex_bits.h"
 #include "vbr.h"
@@ -124,13 +124,13 @@ void *nb_encoder_init(const SpeexMode * m)
 	int i;
 
 	mode = (const SpeexNBMode *)m->mode;
-	st = (EncState *) speex_alloc(sizeof(EncState));
+	st = (EncState *) calloc(1, sizeof(EncState));
 	if (!st)
 		return NULL;
 #if defined(VAR_ARRAYS) || defined (USE_ALLOCA)
 	st->stack = NULL;
 #else
-	st->stack = (char *)speex_alloc_scratch(NB_ENC_STACK);
+	st->stack = (char *)calloc(1, NB_ENC_STACK);
 #endif
 
 	st->mode = m;
@@ -154,24 +154,24 @@ void *nb_encoder_init(const SpeexMode * m)
 
 #ifdef VORBIS_PSYCHO
 	st->psy = vorbis_psy_init(8000, 256);
-	st->curve = (float *)speex_alloc(128 * sizeof(float));
-	st->old_curve = (float *)speex_alloc(128 * sizeof(float));
-	st->psy_window = (float *)speex_alloc(256 * sizeof(float));
+	st->curve = (float *)calloc(1, 128 * sizeof(float));
+	st->old_curve = (float *)calloc(1, 128 * sizeof(float));
+	st->psy_window = (float *)calloc(1, 256 * sizeof(float));
 #endif
 
 	st->cumul_gain = 1024;
 
 	/* Allocating input buffer */
 	st->winBuf =
-	    (spx_word16_t *) speex_alloc((st->windowSize - st->frameSize) *
+	    (spx_word16_t *) calloc(1, (st->windowSize - st->frameSize) *
 					 sizeof(spx_word16_t));
 	/* Allocating excitation buffer */
 	st->excBuf =
-	    (spx_word16_t *) speex_alloc((mode->frameSize + mode->pitchEnd + 2)
+	    (spx_word16_t *) calloc(1, (mode->frameSize + mode->pitchEnd + 2)
 					 * sizeof(spx_word16_t));
 	st->exc = st->excBuf + mode->pitchEnd + 2;
 	st->swBuf =
-	    (spx_word16_t *) speex_alloc((mode->frameSize + mode->pitchEnd + 2)
+	    (spx_word16_t *) calloc(1, (mode->frameSize + mode->pitchEnd + 2)
 					 * sizeof(spx_word16_t));
 	st->sw = st->swBuf + mode->pitchEnd + 2;
 
@@ -181,9 +181,9 @@ void *nb_encoder_init(const SpeexMode * m)
 	st->lagWindow = lag_window;
 
 	st->old_lsp =
-	    (spx_lsp_t *) speex_alloc((st->lpcSize) * sizeof(spx_lsp_t));
+	    (spx_lsp_t *) calloc(1, (st->lpcSize) * sizeof(spx_lsp_t));
 	st->old_qlsp =
-	    (spx_lsp_t *) speex_alloc((st->lpcSize) * sizeof(spx_lsp_t));
+	    (spx_lsp_t *) calloc(1, (st->lpcSize) * sizeof(spx_lsp_t));
 	st->first = 1;
 	for (i = 0; i < st->lpcSize; i++)
 		st->old_lsp[i] =
@@ -191,25 +191,25 @@ void *nb_encoder_init(const SpeexMode * m)
 			  st->lpcSize + 1);
 
 	st->mem_sp =
-	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
 	st->mem_sw =
-	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
 	st->mem_sw_whole =
-	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
 	st->mem_exc =
-	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
 	st->mem_exc2 =
-	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
 
 	st->pi_gain =
-	    (spx_word32_t *) speex_alloc((st->nbSubframes) *
+	    (spx_word32_t *) calloc(1, (st->nbSubframes) *
 					 sizeof(spx_word32_t));
 	st->innov_rms_save = NULL;
 
-	st->pitch = (int *)speex_alloc((st->nbSubframes) * sizeof(int));
+	st->pitch = (int *)calloc(1, (st->nbSubframes) * sizeof(int));
 
 #ifndef DISABLE_VBR
-	st->vbr = (VBRState *) speex_alloc(sizeof(VBRState));
+	st->vbr = (VBRState *) calloc(1, sizeof(VBRState));
 	vbr_init(st->vbr);
 	st->vbr_quality = 8;
 	st->vbr_enabled = 0;
@@ -239,37 +239,37 @@ void nb_encoder_destroy(void *state)
 	EncState *st = (EncState *) state;
 	/* Free all allocated memory */
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	speex_free_scratch(st->stack);
+	free(st->stack);
 #endif
 
-	speex_free(st->winBuf);
-	speex_free(st->excBuf);
-	speex_free(st->old_qlsp);
-	speex_free(st->swBuf);
+	free(st->winBuf);
+	free(st->excBuf);
+	free(st->old_qlsp);
+	free(st->swBuf);
 
-	speex_free(st->old_lsp);
-	speex_free(st->mem_sp);
-	speex_free(st->mem_sw);
-	speex_free(st->mem_sw_whole);
-	speex_free(st->mem_exc);
-	speex_free(st->mem_exc2);
-	speex_free(st->pi_gain);
-	speex_free(st->pitch);
+	free(st->old_lsp);
+	free(st->mem_sp);
+	free(st->mem_sw);
+	free(st->mem_sw_whole);
+	free(st->mem_exc);
+	free(st->mem_exc2);
+	free(st->pi_gain);
+	free(st->pitch);
 
 #ifndef DISABLE_VBR
 	vbr_destroy(st->vbr);
-	speex_free(st->vbr);
+	free(st->vbr);
 #endif				/* #ifndef DISABLE_VBR */
 
 #ifdef VORBIS_PSYCHO
 	vorbis_psy_destroy(st->psy);
-	speex_free(st->curve);
-	speex_free(st->old_curve);
-	speex_free(st->psy_window);
+	free(st->curve);
+	free(st->old_curve);
+	free(st->psy_window);
 #endif
 
 	/*Free state memory... should be last */
-	speex_free(st);
+	free(st);
 }
 
 int nb_encode(void *state, void *vin, SpeexBits * bits)
@@ -279,23 +279,7 @@ int nb_encode(void *state, void *vin, SpeexBits * bits)
 	int ol_pitch;
 	spx_word16_t ol_pitch_coef;
 	spx_word32_t ol_gain;
-	VARDECL(spx_word16_t * ringing);
-	VARDECL(spx_word16_t * target);
-	VARDECL(spx_sig_t * innov);
-	VARDECL(spx_word32_t * exc32);
-	VARDECL(spx_mem_t * mem);
-	VARDECL(spx_coef_t * bw_lpc1);
-	VARDECL(spx_coef_t * bw_lpc2);
-	VARDECL(spx_coef_t * lpc);
-	VARDECL(spx_lsp_t * lsp);
-	VARDECL(spx_lsp_t * qlsp);
-	VARDECL(spx_lsp_t * interp_lsp);
-	VARDECL(spx_lsp_t * interp_qlsp);
-	VARDECL(spx_coef_t * interp_lpc);
-	VARDECL(spx_coef_t * interp_qlpc);
 	char *stack;
-	VARDECL(spx_word16_t * syn_resp);
-	VARDECL(spx_word16_t * real_exc);
 
 	spx_word32_t ener = 0;
 	spx_word16_t fine_gain;
@@ -304,15 +288,15 @@ int nb_encode(void *state, void *vin, SpeexBits * bits)
 	st = (EncState *) state;
 	stack = st->stack;
 
-	ALLOC(lpc, st->lpcSize, spx_coef_t);
-	ALLOC(bw_lpc1, st->lpcSize, spx_coef_t);
-	ALLOC(bw_lpc2, st->lpcSize, spx_coef_t);
-	ALLOC(lsp, st->lpcSize, spx_lsp_t);
-	ALLOC(qlsp, st->lpcSize, spx_lsp_t);
-	ALLOC(interp_lsp, st->lpcSize, spx_lsp_t);
-	ALLOC(interp_qlsp, st->lpcSize, spx_lsp_t);
-	ALLOC(interp_lpc, st->lpcSize, spx_coef_t);
-	ALLOC(interp_qlpc, st->lpcSize, spx_coef_t);
+	spx_coef_t lpc[st->lpcSize];
+	spx_coef_t bw_lpc1[st->lpcSize];
+	spx_coef_t bw_lpc2[st->lpcSize];
+	spx_lsp_t lsp[st->lpcSize];
+	spx_lsp_t qlsp[st->lpcSize];
+	spx_lsp_t interp_lsp[st->lpcSize];
+	spx_lsp_t interp_qlsp[st->lpcSize];
+	spx_coef_t interp_lpc[st->lpcSize];
+	spx_coef_t interp_qlpc[st->lpcSize];
 
 	/* Move signals 1 frame towards the past */
 	SPEEX_MOVE(st->excBuf, st->excBuf + st->frameSize, st->max_pitch + 2);
@@ -325,10 +309,8 @@ int nb_encode(void *state, void *vin, SpeexBits * bits)
 			 | HIGHPASS_INPUT, st->mem_hp);
 
 	{
-		VARDECL(spx_word16_t * w_sig);
-		VARDECL(spx_word16_t * autocorr);
-		ALLOC(w_sig, st->windowSize, spx_word16_t);
-		ALLOC(autocorr, st->lpcSize + 1, spx_word16_t);
+		spx_word16_t w_sig[st->windowSize];
+		spx_word16_t autocorr[st->lpcSize + 1];
 		/* Window for analysis */
 		for (i = 0; i < st->windowSize - st->frameSize; i++)
 			w_sig[i] =
@@ -691,13 +673,15 @@ int nb_encode(void *state, void *vin, SpeexBits * bits)
 	}
 
 	/* Target signal */
-	ALLOC(target, st->subframeSize, spx_word16_t);
-	ALLOC(innov, st->subframeSize, spx_sig_t);
-	ALLOC(exc32, st->subframeSize, spx_word32_t);
-	ALLOC(ringing, st->subframeSize, spx_word16_t);
-	ALLOC(syn_resp, st->subframeSize, spx_word16_t);
-	ALLOC(real_exc, st->subframeSize, spx_word16_t);
-	ALLOC(mem, st->lpcSize, spx_mem_t);
+	spx_word16_t target[st->subframeSize];
+	spx_sig_t innov[st->subframeSize];
+	spx_word32_t exc32[st->subframeSize];
+	spx_word16_t ringing[st->subframeSize];
+	spx_word16_t syn_resp[st->subframeSize];
+	spx_word16_t real_exc[st->subframeSize];
+	spx_mem_t mem[st->lpcSize];
+
+	memzero(real_exc, st->subframeSize * sizeof(spx_word16_t));
 
 	/* Loop on sub-frames */
 	for (sub = 0; sub < st->nbSubframes; sub++) {
@@ -955,8 +939,7 @@ int nb_encode(void *state, void *vin, SpeexBits * bits)
 			/* In some (rare) modes, we do a second search (more bits) to reduce noise even more */
 			if (SUBMODE(double_codebook)) {
 				char *tmp_stack = stack;
-				VARDECL(spx_sig_t * innov2);
-				ALLOC(innov2, st->subframeSize, spx_sig_t);
+				spx_sig_t innov2[st->subframeSize];
 				SPEEX_MEMSET(innov2, 0, st->subframeSize);
 				for (i = 0; i < st->subframeSize; i++)
 					target[i] =
@@ -1045,13 +1028,13 @@ void *nb_decoder_init(const SpeexMode * m)
 	int i;
 
 	mode = (const SpeexNBMode *)m->mode;
-	st = (DecState *) speex_alloc(sizeof(DecState));
+	st = (DecState *) calloc(1, sizeof(DecState));
 	if (!st)
 		return NULL;
 #if defined(VAR_ARRAYS) || defined (USE_ALLOCA)
 	st->stack = NULL;
 #else
-	st->stack = (char *)speex_alloc_scratch(NB_DEC_STACK);
+	st->stack = (char *)calloc(1, NB_DEC_STACK);
 #endif
 
 	st->mode = m;
@@ -1074,18 +1057,18 @@ void *nb_decoder_init(const SpeexMode * m)
 
 	st->excBuf =
 	    (spx_word16_t *)
-	    speex_alloc((st->frameSize + 2 * st->max_pitch + st->subframeSize +
+	    calloc(1, (st->frameSize + 2 * st->max_pitch + st->subframeSize +
 			 12) * sizeof(spx_word16_t));
 	st->exc = st->excBuf + 2 * st->max_pitch + st->subframeSize + 6;
 	SPEEX_MEMSET(st->excBuf, 0, st->frameSize + st->max_pitch);
 
 	st->interp_qlpc =
-	    (spx_coef_t *) speex_alloc(st->lpcSize * sizeof(spx_coef_t));
+	    (spx_coef_t *) calloc(1, st->lpcSize * sizeof(spx_coef_t));
 	st->old_qlsp =
-	    (spx_lsp_t *) speex_alloc(st->lpcSize * sizeof(spx_lsp_t));
-	st->mem_sp = (spx_mem_t *) speex_alloc(st->lpcSize * sizeof(spx_mem_t));
+	    (spx_lsp_t *) calloc(1, st->lpcSize * sizeof(spx_lsp_t));
+	st->mem_sp = (spx_mem_t *) calloc(1, st->lpcSize * sizeof(spx_mem_t));
 	st->pi_gain =
-	    (spx_word32_t *) speex_alloc((st->nbSubframes) *
+	    (spx_word32_t *) calloc(1, (st->nbSubframes) *
 					 sizeof(spx_word32_t));
 	st->last_pitch = 40;
 	st->count_lost = 0;
@@ -1120,16 +1103,16 @@ void nb_decoder_destroy(void *state)
 	st = (DecState *) state;
 
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	speex_free_scratch(st->stack);
+	free(st->stack);
 #endif
 
-	speex_free(st->excBuf);
-	speex_free(st->interp_qlpc);
-	speex_free(st->old_qlsp);
-	speex_free(st->mem_sp);
-	speex_free(st->pi_gain);
+	free(st->excBuf);
+	free(st->interp_qlpc);
+	free(st->old_qlsp);
+	free(st->mem_sp);
+	free(st->pi_gain);
 
-	speex_free(state);
+	free(state);
 }
 
 #define median3(a, b, c)	((a) < (b) ? ((b) < (c) ? (b) : ((a) < (c) ? (c) : (a))) : ((c) < (b) ? (b) : ((c) < (a) ? (c) : (a))))
@@ -1233,14 +1216,9 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 	int wideband;
 	int m;
 	char *stack;
-	VARDECL(spx_sig_t * innov);
-	VARDECL(spx_word32_t * exc32);
-	VARDECL(spx_coef_t * ak);
-	VARDECL(spx_lsp_t * qlsp);
 	spx_word16_t pitch_average = 0;
 
 	spx_word16_t *out = (spx_word16_t *) vout;
-	VARDECL(spx_lsp_t * interp_qlsp);
 
 	st = (DecState *) state;
 	stack = st->stack;
@@ -1353,8 +1331,7 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 
 	/* If null mode (no transmission), just set a couple things to zero */
 	if (st->submodes[st->submodeID] == NULL) {
-		VARDECL(spx_coef_t * lpc);
-		ALLOC(lpc, st->lpcSize, spx_coef_t);
+		spx_coef_t lpc[st->lpcSize];
 		bw_lpc(QCONST16(0.93f, 15), st->interp_qlpc, lpc, st->lpcSize);
 		{
 			spx_word16_t innov_gain = 0;
@@ -1374,7 +1351,7 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 		return 0;
 	}
 
-	ALLOC(qlsp, st->lpcSize, spx_lsp_t);
+	spx_lsp_t qlsp[st->lpcSize];
 
 	/* Unquantize LSPs */
 	SUBMODE(lsp_unquant) (qlsp, st->lpcSize, bits);
@@ -1427,9 +1404,9 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 #endif
 	}
 
-	ALLOC(ak, st->lpcSize, spx_coef_t);
-	ALLOC(innov, st->subframeSize, spx_sig_t);
-	ALLOC(exc32, st->subframeSize, spx_word32_t);
+	spx_coef_t ak[st->lpcSize];
+	spx_sig_t innov[st->subframeSize];
+	spx_word32_t exc32[st->subframeSize];
 
 	if (st->submodeID == 1) {
 		int extra;
@@ -1570,9 +1547,7 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 				/* Decode second codebook (only for some modes) */
 				if (SUBMODE(double_codebook)) {
 					char *tmp_stack = stack;
-					VARDECL(spx_sig_t * innov2);
-					ALLOC(innov2, st->subframeSize,
-					      spx_sig_t);
+					spx_sig_t innov2[st->subframeSize];
 					SPEEX_MEMSET(innov2, 0,
 						     st->subframeSize);
 					SUBMODE(innovation_unquant) (innov2,
@@ -1684,7 +1659,7 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 		}
 	}
 
-	ALLOC(interp_qlsp, st->lpcSize, spx_lsp_t);
+	spx_lsp_t interp_qlsp[st->lpcSize];
 
 	if (st->lpc_enh_enabled && SUBMODE(comb_gain) > 0 && !st->count_lost) {
 		multicomb(st->exc - st->subframeSize, out, st->interp_qlpc,

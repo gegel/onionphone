@@ -1244,11 +1244,12 @@ float speech_to_uq_lsps(float lsp[],
 void encode_lsps_scalar(int indexes[], float lsp[], int order)
 {
 	int i, k, m;
-	float wt[1];
+	float wt[2];
 	float lsp_hz[LPC_MAX];
 	const float *cb;
 	float se = 0;
 
+	memzero(wt, 2 * sizeof(float));
 	memzero(lsp_hz, LPC_MAX * sizeof(float));
 
 	/* convert from radians to Hz so we can use human readable

@@ -140,11 +140,13 @@ float *per;
 		d[j++] = w[i];
 #else
 	/* New: average rather than decimating. */
-	for (i = 0, j = 0; i < BUFLEN; j++) {
+	for (i = 0, j = 0;; j++) {
 		d[j] = 0;
 		for (rpos = 0; rpos < DOWN; rpos++) {
 			d[j] += w[i++];
 		}
+		if (i >= BUFLEN)
+			break;
 		/* d[j] /- DOWN;       Not actually necessary. */
 	}
 #endif

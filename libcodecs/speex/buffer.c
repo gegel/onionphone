@@ -51,8 +51,8 @@ struct SpeexBuffer_ {
 
 SpeexBuffer *speex_buffer_init(int size)
 {
-	SpeexBuffer *st = speex_alloc(sizeof(SpeexBuffer));
-	st->data = speex_alloc(size);
+	SpeexBuffer *st = calloc(1, sizeof(SpeexBuffer));
+	st->data = calloc(1, size);
 	st->size = size;
 	st->read_ptr = 0;
 	st->write_ptr = 0;
@@ -62,8 +62,8 @@ SpeexBuffer *speex_buffer_init(int size)
 
 void speex_buffer_destroy(SpeexBuffer * st)
 {
-	speex_free(st->data);
-	speex_free(st);
+	free(st->data);
+	free(st);
 }
 
 int speex_buffer_write(SpeexBuffer * st, void *_data, int len)
@@ -158,11 +158,11 @@ int speex_buffer_resize(SpeexBuffer * st, int len)
 {
 	int old_len = st->size;
 	if (len > old_len) {
-		st->data = speex_realloc(st->data, len);
+		st->data = realloc(st->data, len);
 		/* FIXME: move data/pointers properly for growing the buffer */
 	} else {
 		/* FIXME: move data/pointers properly for shrinking the buffer */
-		st->data = speex_realloc(st->data, len);
+		st->data = realloc(st->data, len);
 	}
 	return len;
 }
