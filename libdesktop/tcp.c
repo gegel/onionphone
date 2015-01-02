@@ -115,20 +115,20 @@ char tcp_outsock_flag=0; //status of tcp outgoing connection
 char udp_insock_flag=0;  //status of tcp incomin connection/listener
 char udp_outsock_flag=0; //status of udp outgoing/switch connection
 char onion_flag=0; //flag of onion connection over Tor
-long con_time=0; //timestamp of next connection reset
-long rc_level=0; //trashhold for change slowest onion connection
-long rc_state=0; //status of onion rate after receiving a packet
-long rc_cnt=0;   //counter for change slowest onion connection
-long rc_in=0;  //counter of incoming packets over tcp_in
-long rc_out=0; //counter of incoming packets over tcp_out
-long u_cnt=0; //counter of tries of NAT traversal
+int con_time=0; //timestamp of next connection reset
+int rc_level=0; //trashhold for change slowest onion connection
+int rc_state=0; //status of onion rate after receiving a packet
+int rc_cnt=0;   //counter for change slowest onion connection
+int rc_in=0;  //counter of incoming packets over tcp_in
+int rc_out=0; //counter of incoming packets over tcp_out
+int u_cnt=0; //counter of tries of NAT traversal
 char d_flg=0; //flag of REQ dubles for sending
-long bytes_sended=0; //traffic during current session (includes tcp/udp headers)
-long bytes_received=0;
-long pkt_counter=0; //packets for bitrate calculation
-long last_sended=0; //bytes senden at last mesure time
-long last_received=0;//received
-long last_timestamp=0; //last measure timestamp
+int bytes_sended=0; //traffic during current session (includes tcp/udp headers)
+int bytes_received=0;
+int pkt_counter=0; //packets for bitrate calculation
+int last_sended=0; //bytes senden at last mesure time
+int last_received=0;//received
+int last_timestamp=0; //last measure timestamp
 float up_bitrate=0; //upstream bitrate, Kbit/s
 float down_bitrate=0; //downstream bitrate, Kbit/s
 
@@ -619,7 +619,8 @@ int disconnect(void)
  strcpy((char*)msgbuf, "Our_onion");
  if( parseconf(msgbuf)>0 )  //search interface address in conf-file
  {
-   if( strlen((char*)msgbuf) <31 ) strcpy(our_onion, msgbuf);
+  msgbuf[255]=0;
+  if( strlen((char*)msgbuf) <31 ) strcpy(our_onion, msgbuf);
  }
  return 0;
 }
@@ -826,7 +827,8 @@ int connectudp(char* udpaddr)
    udp_outsock_flag=SOCK_INUSE; //set socket state for now
    web_printf("Connect over UDP\r\n");
    //send initial connection request to remote
-   strcpy(msgbuf, udpaddr); //use initial connection command with -Nname specified
+   strncpy(msgbuf, udpaddr, 31); //use initial connection command with -Nname specified
+   msgbuf[31]=0;
    i=do_req(msgbuf); //send request
    if(i>0) i=do_data(msgbuf, &c);
    //if onion/tcp connection exist: try switch to udp
@@ -920,7 +922,8 @@ int connecttcp(char* tcpaddr)
  //init connection state
  tcp_outsock_flag=SOCK_WAIT_HOST; //set soccket status
  settimeout(TCPTIMEOUT);  //set timeout for waiting connection
- strcpy(msgbuf, tcpaddr); //store command for do request after connection
+ strncpy(msgbuf, tcpaddr, 31); //store command for do request after connection
+ msgbuf[31]=0;
  web_printf("Connecting over TCP, please wait...\r\n");
  fflush(stdout);
  return 0;
@@ -957,6 +960,7 @@ int connecttor(char* toraddr)
   }
   else
   {
+   msgbuf[255]=0;
    if(strlen(msgbuf)<31) strcpy(their_onion, msgbuf);
    else
    {
@@ -967,12 +971,13 @@ int connecttor(char* toraddr)
  }
 
  //use their_onion for make sock5 request
- if(their_onion[0]) strcpy(msgbuf, their_onion);
+ if(their_onion[0]) strncpy(msgbuf, their_onion, 31);
  else
  {
   web_printf("! Onion address is not specified!\r\n");
   return 0;
  }
+ msgbuf[31]=0;
  //scan address string for port
  port=fndport(msgbuf);  //check for port speecified
  if(!port) port=DEFPORT;  //if not use default
@@ -988,7 +993,7 @@ int connecttor(char* toraddr)
  i=4; //IPv4 Len
  torbuf[3]=0x01; //for IPv4 socks request
  //check for adress string is IP, replace string by integer
- if(inet_addr(torbuf+5)!= INADDR_NONE) (*(unsigned long *)(torbuf+4)) = inet_addr(torbuf+5);
+ if(inet_addr(torbuf+5)!= INADDR_NONE) (*(unsigned int *)(torbuf+4)) = (unsigned int) inet_addr(torbuf+5);
  else
  {
   i=strlen(torbuf+5); //length of hostname string
@@ -1044,7 +1049,8 @@ int connecttor(char* toraddr)
  settimeout(DBLTIMEOUT);
  if(toraddr)
  {  //for initial connection, not for doubling reconections
-  strcpy(msgbuf, toraddr); //store command for do request after connection
+  strncpy(msgbuf, toraddr, 31); //store command for do request after connection
+  msgbuf[31]=0;
   web_printf("Connecting over Tor, please wait...\r\n");
   fflush (stdout);
  }
@@ -1314,7 +1320,7 @@ int readudpin(unsigned char* pkt)
     unsigned short Our_portUDP;
     unsigned long Our_naddrUDP;
     Our_portUDP=htons(*(unsigned short*)(pkt+26)); //our external PORT reported by STUN
-    Our_naddrUDP=(*(unsigned long*)(pkt+28)); //our external IP reported by STUN
+    Our_naddrUDP=(*(unsigned int*)(pkt+28)); //our external IP reported by STUN
     saddrTCP.sin_addr.s_addr=Our_naddrUDP; //for convertion IP to strin
     web_printf("STUN  report: UDP listener on %s:%d\r\n",
     inet_ntoa(saddrTCP.sin_addr), Our_portUDP);
@@ -1435,7 +1441,7 @@ int readudpout(unsigned char* pkt)
    if(u_cnt&&(pkt[0]==1)&&(pkt[1]==1)&&(i>31)&&(saddrTCP.sin_port==htons(portSTUN)))
    {
     Our_portUDPext=htons(*(unsigned short*)(pkt+26)); //our external PORT reported by STUN
-    Our_naddrUDPext=(*(unsigned long*)(pkt+28)); //our external IP reported by STUN
+    Our_naddrUDPext=(*(unsigned int*)(pkt+28)); //our external IP reported by STUN
     //make chat packet with own external IP:port reported by STUN
     pkt[0]=TYPE_CHAT|0x80; //chat packet header
     sprintf((char*)(pkt+1), "-S%d.%d.%d.%d:%d",
@@ -2119,7 +2125,8 @@ void do_stun(char* cmd)
   web_printf("! Unavaliable: UDP listener disabled by config!\r\n");
   return;
  }
- strcpy(msgbuf, cmd);
+ strncpy(msgbuf, cmd, 255);
+ msgbuf[255]=0;
  naddrSTUN=INADDR_NONE; //reset STUN interface IP and port
  portSTUN=0;
  if(!msgbuf[0]) //STUN interface  is not specified in command
@@ -2558,7 +2565,9 @@ int sendweb(char* str)
  //check for socket exist
  if(web_sock==INVALID_SOCKET) return -1;
  //check max data length
- l=strlen(str);
+ strncpy(webmsgbuf, str, 511);
+ webmsgbuf[511]=0;
+ l=strlen(webmsgbuf);
  if(l>(sizeof(webmsgbuf)-5)) return -2;
  //websock protocol
  if(web_sock_flag==SOCK_READY)

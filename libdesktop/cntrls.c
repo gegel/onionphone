@@ -38,12 +38,12 @@ extern int sp_voc;		//vocoder mode
 extern int vad_tail;		//silence transmitted (frames)
 extern int vad_signal;	//signal before mute
 extern int vad_level; //level of 3-tone signal (end of remote transmition) 
-extern long rc_level; //trashhold for change slowest onion connection
+extern int rc_level; //trashhold for change slowest onion connection
 extern char onion_flag; //flag of onion connection status
 extern char crp_state; //crypto protocol state (crypto.c)
 extern char vox_level; //level of voice active detection (codecs.c)
-extern long bytes_received;
-extern long bytes_sended;  //bytes counters (tcp.c)
+extern int bytes_received;
+extern int bytes_sended;  //bytes counters (tcp.c)
 extern float up_bitrate;
 extern float down_bitrate; //communication bitrate (tcp.c) 
 extern char sound_test; //flag of continuous jitter notification (codecs.c)
@@ -62,8 +62,8 @@ int cmdptr=0;           //pointer to last inputted char
 char menuhdr[10][64];   //menu headers
 char menustr[10][10][64]; //menu iteams
 
-unsigned long esc_time=0; //time after asc char detected
-unsigned long esc_key=0;  //chars getted after esc during some time
+unsigned int esc_time=0; //time after asc char detected
+unsigned int esc_key=0;  //chars getted after esc during some time
 char old_char=0;        //last char for flush keyboard while TAB holded
 char next_char=0;       //nrext char emulated by remote
 #define DEFCONF "conf.txt"  //configuration filename
@@ -179,7 +179,8 @@ int  parseconf(char* param)
    for(i=0;i<strlen(p);i++)
    if( (p[i]=='\r')||(p[i]=='\n')||(p[i]==' ') ) break;
    p[i]=0;
-   strcpy(param, p); //replace input parameter by it's value
+   strncpy(param, p, 31); //replace input parameter by it's value
+   param[31]=0;
   }
   return (strlen(param)); //length of value's string or null
 }
@@ -195,7 +196,8 @@ void parsecmdline(int argc, char **argv)
   if(argv[j][1]=='Y') set_access(argv[j]+2, 0); //access to current secret key
   else if(argv[j][1]=='F')
   {
-   strcpy(confname, argv[j]+2); //config file name
+   strncpy(confname, argv[j]+2, 31); //config file name
+   confname[31]=0;
    web_printf("Configuration file '%s' will be used\r\n", confname);
   }
  }
@@ -228,8 +230,9 @@ int docmd(char* s)
   return 0;
  }
  p++; //poiter to command
- strcpy(cmdbuf, p); //output command from menu iteam
- cmdptr=strlen(p);  //set command length
+ strncpy(cmdbuf, p, 255); //output command from menu iteam
+ cmdbuf[255]=0;
+ cmdptr=strlen(cmdbuf);  //set command length
  return cmdptr;     //return length
 }
 
@@ -244,7 +247,7 @@ void loadmenu(void)
  //parce address book filename from config or set defautl
  strcpy(buf, "AddressBook"); //parameter name
  i=parseconf(buf); //get parameter from ini file
- if(i>0) strcpy(book_name, buf); //use it if specified
+ if((i>0)&&(i<32)) strcpy(book_name, buf); //use it if specified
  else strcpy(book_name, BOOK);  //or set default
 
  memset(menustr, 0, sizeof(menustr));
@@ -260,8 +263,10 @@ void loadmenu(void)
        j=buf[1]-0x30; //item index (0-9)
        if((i>=0)&&(i<11)&&(j>=0)&&(j<11)) //cifers
        {
-        if(j<10) strcpy(menustr[i][j], buf+2); //menu item
-        else strcpy(menuhdr[i], buf+2); //menu header (command)
+        if(j<10) strncpy(menustr[i][j], buf+2, 63); //menu item
+        else strncpy(menuhdr[i], buf+2, 63); //menu header (command)
+        menustr[i][j][63]=0;
+        menuhdr[i][63]=0;
        }
       }
  }
@@ -404,7 +409,8 @@ void sendkey(char* keyname)
  unsigned char bb[512];
  int t, l=0;
  char c;
- strcpy((char*)bb, keyname); //key filename from command
+ strncpy((char*)bb, keyname, 511); //key filename from command
+ bb[511]=0;
  do
  { //now bb[0]!=0 then key loaded and process inited
   t=do_key(bb); //key paccket prepared
@@ -424,6 +430,7 @@ void dochat(void)
  unsigned char bb[264];
  int l;
  char c;
+ cmdbuf[255]=0;
  if(strlen(cmdbuf)<254) //chatting message length restricition
  {
   memset(bb, 0, sizeof(bb)); //clear
@@ -546,7 +553,7 @@ void domenu(int c)
 //look for ESC-sequence (control keys) and returns input char, null or ctrl code(1-8)
 int goesc(int cc)
 {
- unsigned long ii;
+ unsigned int ii;
 
  if(cc==KEY_ESC)  //if esc char detected
  {
@@ -650,7 +657,8 @@ int parsecmd(void)
   }
   else
   {
-   strcpy(command_str, cmdbuf);
+   strncpy(command_str, cmdbuf, 255);
+   command_str[255]=0;
    sound_loop=0;
    do_connect(command_str);
   }
@@ -797,7 +805,8 @@ int parsecmd(void)
   if(strlen(cmdbuf+2)<32)
   {
    memset(password, 0, 32);
-   strcpy(password, cmdbuf+2);
+   strncpy(password, cmdbuf+2, 31);
+   password[31]=0;
    if(!password[0]) web_printf("Password cleared\r\n");
    else if(crp_state<3) web_printf("Store password: '%s'\r\n", password);
    else
@@ -1182,6 +1191,7 @@ int do_char(void)
 void setcmd(char* cmdstr)
 {
  int i;
+ cmdstr[255]=0;
  if(cmdstr[0]=='#') //command mode: one char ascii code
  {
   next_char=(char)atoi(cmdstr+1); //negative for >127
@@ -1193,9 +1203,10 @@ void setcmd(char* cmdstr)
   }
  }
  else  //websocket mode
- { //truncate to first non-printable symbol
+ { //truncate to first non-printable symbol 
   for(i=0;i<strlen(cmdstr);i++) if((cmdstr[i]<32)&&(cmdstr[i]>0)) cmdstr[i]=0;
-  strcpy(cmdbuf, cmdstr); //apply incoming string as a command
+  strncpy(cmdbuf, cmdstr, 255); //apply incoming string as a command
+  cmdbuf[255]=0;
   cmdptr=strlen(cmdbuf);  //length
   if(cmdptr) next_char=KEY_ENTER; //emulate enter key to execute command
  }

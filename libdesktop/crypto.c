@@ -57,8 +57,8 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
     tmpres -= DELTA_EPOCH_IN_MICROSECS;
 
     tmpres_h=tmpres / 1000000UL; //sec
-    tv->tv_sec = (long)(tmpres_h);
-    tv->tv_usec = (long)(tmpres % 1000000UL);
+    tv->tv_sec = (int)(tmpres_h);
+    tv->tv_usec = (int)(tmpres % 1000000UL);
   }
   return 0;
 }
@@ -147,13 +147,13 @@ short pktlen[32]={
  //0 -> -2 -> 2 -> -4 -> 4 for acceptor
  char crp_state=0;
  char invite_tcp=0; //received invite with remote onion address
- unsigned long in_ctr=0; //counter of incoming packets
- unsigned long out_ctr=0; //counter of outgoing packets
+ unsigned int in_ctr=0; //counter of incoming packets
+ unsigned int out_ctr=0; //counter of outgoing packets
  int udp_counter=0; //counter of TCP->UDP tries
 
  //from tcp.c
  extern char onion_flag; //status of onion connection
- extern long rc_level;  //onion doubling interval
+ extern int rc_level;  //onion doubling interval
  //from codecs.c
  extern char redundant; //single packetloss flag for UDP transport
  int bad_mac=0; //counter of bad autentificating packets
@@ -165,25 +165,25 @@ short pktlen[32]={
  //*****************************************************************************
 
  //returns timestamp: average mS*10
-unsigned long getmsec(void)
+unsigned int getmsec(void)
 {
      struct timeval tt1;
      gettimeofday(&tt1, NULL);
-     return (unsigned long) (((tt1.tv_sec)<<8) | ((tt1.tv_usec)>>12));
+     return (unsigned int) (((tt1.tv_sec)<<8) | ((tt1.tv_usec)>>12));
 }
 //*****************************************************************************
 
 //returns timestamp: Sec
-long getsec(void)
+int getsec(void)
 {
  #ifdef _WIN32
     time_t tt;
     time(&tt);
-    return tt;
+    return (int) tt;
  #else
     struct timeval tt1;
     gettimeofday(&tt1, NULL);
-    return (long) (tt1.tv_sec);
+    return (int) (tt1.tv_sec);
  #endif
 }
 //*****************************************************************************
@@ -250,7 +250,8 @@ void psleep(int paus)
     p=str+i+2;  //pointer to option data
    }
    if(!p) return -1; //p points to last option's data
-   strcpy(option, p); //copy to output
+   strncpy(option, p, 31); //copy to output
+   option[31]=0;
    for(i=0;i<strlen(option);i++) //truncate to first space
    {
     if(option[i]==' ')
@@ -384,7 +385,8 @@ void psleep(int paus)
   str[0]=0;
   while(!feof(fl))  //load strings from file
   {
-   fgets(str, 256, fl);
+   fgets(str, 255, fl);
+   str[255]=0;
    if(str[0]!='#') continue;  //chech for first char is '#'
    break; //find first block
   }
@@ -424,6 +426,7 @@ void psleep(int paus)
   while(!feof(fl)) //loads strings from adressbook
   {
    fgets(str, sizeof(str), fl);
+   str[255]=0;
    if(str[0]!='[') continue; //check for first char is '['
    if(!memcmp(str+1, name, len)) strcpy(res, str); //compare contacts name
   }
@@ -620,7 +623,7 @@ void psleep(int paus)
    while(!feof(fl))
    {
     fgets(res, 256, fl); //load contact's string from addressbook
-
+    res[255]=0;
      //find key owner nickname from book
     i=get_nickname(res, key_id); //find #nickname from contacts key
     if(i<=0) continue;
@@ -687,7 +690,8 @@ void psleep(int paus)
   strcpy(str, "Our_name");
   if( parseconf(str)>0 )  //search interface address in conf-file
   {
-   if( strlen(str) <31 ) strcpy(our_name, str);
+   strncpy(our_name, str, 31);
+   our_name[31]=0;
   }
 
   xmemset(password, 0,32);
@@ -740,7 +744,8 @@ void psleep(int paus)
   //init state
   reset_crp();
   //set our identity default
-  strcpy(ourname, our_name);
+  strncpy(ourname, our_name, 31);
+  ourname[31]=0;
 
   //parce contact string for -Nname, use NONAME default
   str[0]='N'; //remote contact's name option
@@ -835,7 +840,8 @@ void psleep(int paus)
   i=get_key(str, their_key);
   if( (i!=32) && their_id[0] ) //try to load from keyfile specified by produser
   {
-   strcpy(contact, their_id);
+   strncpy(contact, their_id, 31);
+   contact[31]=0;
    sprintf(str, "%s", contact);
    i=get_key(str, their_key); //B: store their pubKey (B)
    if(i!=32)
@@ -873,9 +879,10 @@ void psleep(int paus)
   }
 
   //store participants names for this call
-  strcpy(our_name, ourname);
-  strcpy(their_name, contact);
-
+  strncpy(our_name, ourname, 31);
+  our_name[31]=0;
+  strncpy(their_name, contact, 31);
+  their_name[31]=0;
   //****************************************************
   //-----------------Protocol running by originator (A)
   //****************************************************
@@ -900,7 +907,6 @@ void psleep(int paus)
   Sponge_finalize(&spng, COMT, 16); //commitment Ca
 
   //notify call
-  strcpy(their_name, contact);
   web_printf("Outgoing call from '%s' to '%s', waiting for answer...\n", ourname, contact);
 
   //check access to used secret key
@@ -1112,8 +1118,10 @@ void psleep(int paus)
    memcpy(crp_temp, PREF, 16);       //Da
 
    //search sender name in adressbook for ourkey receiver
-   strcpy(ourname, our_name);
-   strcpy(bookfile, book_name);
+   strncpy(ourname, our_name, 31);
+   ourname[31]=0;
+   strncpy(bookfile, book_name, 31);
+   bookfile[31]=0;
    //now we check each contact from adressbook matches for
    //received hidden id (for our default key and guest key)
    i=search_bookstr(bookfile, ourname, buf, bookstr);
@@ -1135,7 +1143,7 @@ void psleep(int paus)
 
    //get keys owner
    i=get_nickname(bookstr, str); //find #nickname from contacts key
-   if(i>0) strcpy(their_id, str); //originator'd id (for acceptor)
+   if((i>0)&&(i<32)) strcpy(their_id, str); //originator'd id (for acceptor)
    else
    {
     web_printf("! Nickname for their key not found in adressbook!\r\n");
@@ -1154,7 +1162,7 @@ void psleep(int paus)
 
    //get name of sender
    i=get_keyname(bookstr, keyname);
-   if((i>0)&&(i<64)) strcpy(keyname, str);
+   if((i>0)&&(i<32)) strcpy(keyname, str);
    else
    {
     web_printf("! Adressbook error!\r\n");
@@ -1214,7 +1222,7 @@ void psleep(int paus)
 
    //get our nickname
    i=get_nickname(bookstr, str); //find #nickname from our key
-   if(i>0) strcpy(our_id, str); //acceptors'd id (for acceptor)
+   if((i>0)&&(i<32)) strcpy(our_id, str); //acceptors'd id (for acceptor)
    else
    {
     web_printf("! Nickname for our key not found in adressbook!\r\n");
@@ -1232,8 +1240,10 @@ void psleep(int paus)
    }
 
    //save actual our_name and their_name uses in current session
-   strcpy(their_name, keyname);
-   strcpy(our_name, ourname);
+   strncpy(their_name, keyname, 31);
+   their_name[31]=0;
+   strncpy(our_name, ourname, 31);
+   our_name[31]=0;
 
    //load our secret key
    i=get_seckey(our_name, session_key); //temporary store b
@@ -1661,7 +1671,11 @@ void psleep(int paus)
   unsigned char* buf=pkt+1;
 
   //overwrite using specified passphrase
-  if(pkt[0]) strcpy(password, (char*)pkt);
+  if(pkt[0])
+  {
+   strncpy(password, (char*)pkt, 31);
+   password[31]=0;
+  }
   //check password minimum 3 chars
   if(strlen(password)<3) return 0;
   //check for status and set originator flag
@@ -1891,7 +1905,12 @@ void psleep(int paus)
     {
      //their onion address received: reconnect outgoing connection
      //copy it to their_onion (if less then 31 bytes)
-     if(strlen(pkt+3)<31) strcpy(their_onion, pkt+3);
+     if(strlen(pkt+3)<31)
+     {
+         strncpy(their_onion, pkt+3, 31);
+         their_onion[31]=0;
+     }
+
      //check for permission, crp_state, onion_flg incoming tcp
      //also check for change T value>=0, tcp_insock_flag==SOCK_INUSE
      if(crp_state>2) reconecttor(); //reconect outgoing tcp to specified onion address
@@ -2309,7 +2328,7 @@ void psleep(int paus)
   //received: CTR, MAC (4+4 bytes)
   unsigned char mac[4];
   struct timeval time1;
-  long t;
+  int t;
 
   //check for type
   if((0x9F&pkt[0])!=(TYPE_SYN|0x80)) return -2;
@@ -2348,7 +2367,7 @@ void psleep(int paus)
    gettimeofday(&time1, NULL); //get our time now
    //computes differencies with our time now
    //and our time of request sending
-   t=time1.tv_usec - TM.tv_usec; //microseconds
+   t=(int)(time1.tv_usec - TM.tv_usec); //microseconds
    if(t<0) //seconds bondaries
    {
     t=1000000-t;

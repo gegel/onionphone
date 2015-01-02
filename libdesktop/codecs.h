@@ -105,7 +105,7 @@ int sp_decode(short* sp, unsigned char* bf);
 
 int playjit(void);
 int vox(short* speech, int len, char level, char hist);
-long RateChange(short *src, short *dest, long srcLen, long destRate);
+int RateChange(short *src, short *dest, int srcLen, int destRate);
 void sp_init(void);
 void sp_fine(void);
 int set_encoder(int cd);

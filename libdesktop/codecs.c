@@ -138,7 +138,7 @@ char tx_flag=0;  //actual transmission state
 char etx_flag=0; //TX_ON; //estimated transmittion state (setted by user or by vad detector)
 char tx_note=0; //flag for notify remote then transmition disabled
 int vad_t=0; //vad trashhold: number of vad-inactive frames still transmitted
-unsigned long ptt_flag=0; //timestamp of disabling PTT after TAB key releasing
+unsigned int ptt_flag=0; //timestamp of disabling PTT after TAB key releasing
 int Vad_cnt=0;  //counter for frames in VAD tail
 char vox_level=90; //Level of amlitude for altenative VAD or SpeexVAD if 0
 int sp_npp=1;		//noise reduction
@@ -153,8 +153,8 @@ int vad_level=0; //level of 3-tone signal (end of remote transmition)
 int vad_tail=1; //number of transmitted inactive frames before squelch
 //-----------audio output------------------------
 int dec_type=0; //decoder usefull for last incoming packet
-unsigned long rx_flg=0; //user id of last packet sender or 0 after alsa underrun
-unsigned long rx_flg1=0;
+unsigned int rx_flg=0; //user id of last packet sender or 0 after alsa underrun
+unsigned int rx_flg1=0;
 unsigned char pkt_buf[MAX_PKT][MAX_PKT_LEN]; //buffer for incoming undecoded packets
 short l_pkt[MAX_PKT]; //average number of samples in packet (before resampling)
 short l_pkt_buf=0; //average total number of buffering samples (before resampling)
@@ -183,7 +183,7 @@ char sound_test=0; //flag of continuous notification of buffering status
 //------------------external  values-----------------
 
 extern int cmdptr;  //actual number of chars in command strings buffer
-extern long rc_cnt; //onion counter (for test only) (from tcp.c)
+extern int rc_cnt; //onion counter (for test only) (from tcp.c)
 extern char sound_loop; //sound self-test mode flag (from ctrls.c)
 extern char crp_state; //crypto state (from crypto.c)
 //==========================Codec's states==============================
@@ -1106,10 +1106,10 @@ int vox(short* speech, int len, char level, char hist)
 //----------------Alternative resampler--------------------------------------------
 
 //Change samples rate (from PGPFone)
-long
-RateChange(short *src, short *dest, long srcLen, long destRate)
+int
+RateChange(short *src, short *dest, int srcLen, int destRate)
 {
-        long srcRate = 8000;
+        int srcRate = 8000;
         short *sourceShortPtr;
 	short *destShortPtr;
 	float nSrcRate, nDestRate;
@@ -1138,8 +1138,8 @@ RateChange(short *src, short *dest, long srcLen, long destRate)
 		
 		while(srcLen)
 		{
-			long destSample = 0;
-			long count = 0;
+            int destSample = 0;
+            int count = 0;
 			
 			// Accumulate source samples, until the fractional destination position
 			// crosses a boundary (or we run out of source data)
@@ -1161,8 +1161,8 @@ RateChange(short *src, short *dest, long srcLen, long destRate)
 
 		while(--srcLen)
 		{
-			long leftSample = *sourceShortPtr++;
-			long sampleDifference = *sourceShortPtr-leftSample;
+            int leftSample = *sourceShortPtr++;
+            int sampleDifference = *sourceShortPtr-leftSample;
 
 			while(position < 1.0)
 			{

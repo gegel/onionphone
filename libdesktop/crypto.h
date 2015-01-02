@@ -62,8 +62,8 @@ typedef enum{
         }TypeSet;
 
  //time tools
- unsigned long getmsec(void);
- long getsec(void);
+ unsigned int getmsec(void);
+ int getsec(void);
  void psleep(int paus);
  //convert packet type and length
  short lenbytype(unsigned char type); //get length of packet by type
