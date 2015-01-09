@@ -29,6 +29,7 @@
 #include "../libcodecs/codec2/codec2.h"
 #include "../libcodecs/melp/melplib.h"
 #include "../libcodecs/lpc10/lpc10.h"
+#include "../libcodecs/lpc10/lpc10tools.h"
 #include "../libcodecs/celp/celp.h"
 #include "../libcodecs/g723/lbccodec.h"
 #include "../libcodecs/g729/g729.h"
@@ -229,6 +230,9 @@ static gsm gsmhs; //decoders state
 //------------------------------------------LPC---------------------------
 static lpcstate_t lpcc; //codec state
 static lpcstate_t lpcv; //vocoder state
+//------------------------------------------LPC10-------------------------
+static struct lpc10_encoder_state* lpc10_enc_state;
+static struct lpc10_decoder_state* lpc10_dec_state;
 ///*
 //------------------------------------------ILBC-------------------------
 iLBC_Enc_Inst_t *Enc_Inst;
@@ -572,6 +576,47 @@ int opus_d(short* speech, unsigned char* buf, int len)
 {
  return (opus_decode(dec, buf, len, speech, 960, 0));
 }
+
+// LPC10
+// Init LPC10
+void lpc10_i(void)
+{
+	lpc10_enc_state = create_lpc10_encoder_state();
+	lpc10_dec_state = create_lpc10_decoder_state();
+	init_lpc10_encoder_state(lpc10_enc_state);
+	init_lpc10_decoder_state(lpc10_dec_state);
+}
+
+// Encode LPC10
+void lpc10_e(short* in, unsigned char* out)
+{
+	real speech[LPC10_SAMPLES_PER_FRAME];
+	INT32 bits[LPC10_BITS_IN_COMPRESSED_FRAME];
+	unsigned int i;
+
+	for (i = 0; i < LPC10_SAMPLES_PER_FRAME; i++)
+		speech[i] = (real)in[i] / 32768.0;
+	lpc10_encode(speech, bits, lpc10_enc_state);
+	lpc10_build_bits(out, bits);
+
+	return;
+}
+
+// Decode LPC10
+void lpc10_d(unsigned char* in, short* out)
+{
+	INT32 bits[LPC10_BITS_IN_COMPRESSED_FRAME];
+	real speech[LPC10_SAMPLES_PER_FRAME];
+	unsigned int i;
+
+	lpc10_extract_bits(bits, in);
+	lpc10_decode(bits, speech, lpc10_dec_state);
+	for (i = 0; i < LPC10_SAMPLES_PER_FRAME; i++)
+		out[i] = (short)(speech[i] * 32768.0);
+
+	return;
+}
+
 //*****************************************************************************
 // */
 //--------------------------------------LPC-------------------------
@@ -785,7 +830,7 @@ int sp_encode(short* sp, unsigned char* bf)
 	break;
    case CODEC_MELP: melp_enc(bp, sp);
 	break;
-   case CODEC_LPC10: lpc10encode(sp, bp, 180);
+   case CODEC_LPC10: lpc10_e(sp, bp);
 	break;	
    case CODEC_CELP: celp_encode(sp, bp);
 	break;
@@ -923,7 +968,7 @@ int sp_decode(short* sp, unsigned char* bf)
 	break;
    case CODEC_MELP: melp_dec(spp, bp);
 	break;
-   case CODEC_LPC10: lpc10decode(bp, spp, 7);	
+   case CODEC_LPC10: lpc10_d(bp, spp);
 	break;	
    case CODEC_CELP: celp_decode(bp, spp);
 	break;
@@ -1198,7 +1243,7 @@ void sp_init(void)
  melpe_i();
  ///*
  celp_init(0);
- lpc10init();
+ lpc10_i();
  melp_ini();
  gsm_ini(); 
  gsmhr_ini(0); //dtx 1/0
