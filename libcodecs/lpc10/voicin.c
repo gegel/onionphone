@@ -37,13 +37,14 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
+#include "lpc10tools.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int voicin_(integer * vwin, real * inbuf, real * lpbuf, integer * buflim,
-		   integer * half, real * minamd, real * maxamd,
-		   integer * mintau, real * ivrc, integer * obound,
-		   integer * voibuf, integer * af,
+extern int voicin_(int32_t * vwin, float *inbuf, float *lpbuf, int32_t * buflim,
+		   int32_t * half, float *minamd, float *maxamd,
+		   int32_t * mintau, float *ivrc, int32_t * obound,
+		   int32_t * voibuf, int32_t * af,
 		   struct lpc10_encoder_state *st);
 /* comlen contrl_ 12 */
 /*:ref: vparms_ 14 14 4 6 6 4 4 6 4 4 4 4 6 6 6 6 */
@@ -52,8 +53,8 @@ extern int voicin_(integer * vwin, real * inbuf, real * lpbuf, integer * buflim,
 /* Common Block Declarations */
 
 extern struct {
-	integer order, lframe;
-	logical corrp;
+	int32_t order, lframe;
+	int32_t corrp;
 } contrl_;
 
 #define contrl_1 contrl_
@@ -260,18 +261,18 @@ s*/
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITVOICIN. */
 
-/* Subroutine */ int voicin_(integer * vwin, real * inbuf, real *
-			     lpbuf, integer * buflim, integer * half,
-			     real * minamd, real * maxamd, integer * mintau,
-			     real * ivrc, integer * obound, integer * voibuf,
-			     integer * af, struct lpc10_encoder_state *st)
+/* Subroutine */ int voicin_(int32_t * vwin, float *inbuf, float *
+			     lpbuf, int32_t * buflim, int32_t * half,
+			     float *minamd, float *maxamd, int32_t * mintau,
+			     float *ivrc, int32_t * obound, int32_t * voibuf,
+			     int32_t * af, struct lpc10_encoder_state *st)
 {
 	(void)af;
 
 	/* Initialized data */
 
-	real *dither;
-	static real vdc[100] /* was [10][10] */  = { 0.f, 1714.f, -110.f,
+	float *dither;
+	static float vdc[100] /* was [10][10] */  = { 0.f, 1714.f, -110.f,
 		334.f, -4096.f, -654.f, 3752.f, 3769.f, 0.f, 1181.f, 0.f, 874.f,
 		-97.f,
 		300.f, -4096.f, -1021.f, 2451.f, 2527.f, 0.f, -500.f, 0.f,
@@ -288,41 +289,41 @@ s*/
 		0.f, 0.f, 0.f,
 		0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f
 	};
-	static integer nvdcl = 5;
-	static real vdcl[10] =
+	static int32_t nvdcl = 5;
+	static float vdcl[10] =
 	    { 600.f, 450.f, 300.f, 200.f, 0.f, 0.f, 0.f, 0.f, 0.f, 0.f }
 	;
 
 	/* System generated locals */
-	integer inbuf_offset = 0, lpbuf_offset = 0, i__1, i__2;
-	real r__1, r__2;
+	int32_t inbuf_offset = 0, lpbuf_offset = 0, i__1, i__2;
+	float r__1, r__2;
 
 	/* Builtin functions */
-	integer i_nint(real *);
-	double sqrt(doublereal);
+	int32_t i_nint(float *);
+	double sqrt(double);
 
 	/* Local variables */
-	real ar_b__, ar_f__;
-	integer *lbve, *lbue, *fbve, *fbue;
-	integer snrl, i__;
-	integer *ofbue, *sfbue;
-	real *voice;
-	integer *olbue, *slbue;
-	real value[9];
-	integer zc;
-	logical ot;
-	real qs;
-	real *maxmin;
-	integer vstate;
-	real rc1;
-	extern /* Subroutine */ int vparms_(integer *, real *, real *,
-					    integer *,
-					    integer *, real *, integer *,
-					    integer *, integer *, integer *,
-					    real *, real *, real *, real *);
-	integer fbe, lbe;
-	real *snr;
-	real snr2;
+	float ar_b__, ar_f__;
+	int32_t *lbve, *lbue, *fbve, *fbue;
+	int32_t snrl, i__;
+	int32_t *ofbue, *sfbue;
+	float *voice;
+	int32_t *olbue, *slbue;
+	float value[9];
+	int32_t zc;
+	int32_t ot;
+	float qs;
+	float *maxmin;
+	int32_t vstate;
+	float rc1;
+	extern /* Subroutine */ int vparms_(int32_t *, float *, float *,
+					    int32_t *,
+					    int32_t *, float *, int32_t *,
+					    int32_t *, int32_t *, int32_t *,
+					    float *, float *, float *, float *);
+	int32_t fbe, lbe;
+	float *snr;
+	float snr2;
 
 /* 	Global Variables: */
 /*       Arguments */
@@ -377,7 +378,7 @@ s*/
 
 /* Many files which use fdebug are not listed, since it is only used in */
 /* those other files conditionally, to print trace statements. */
-/* 	integer fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
+/* 	int32_t fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /*  LPC order, Frame size, Quantization rate, Bits per frame, */
 /*    Error correction */
 /* Subroutine SETUP is the only place where order is assigned a value, */
@@ -406,7 +407,7 @@ s*/
 /* unvoiced frames, with no change in the coding rate, and no noticeable 
 */
 /* quality difference in the decoded speech. */
-/* 	integer quant, nbits */
+/* 	int32_t quant, nbits */
 /* *** Read/write: variables for debugging, not needed for LPC algorithm 
 */
 
@@ -432,7 +433,7 @@ s*/
 /* would be of much interest to an application in which LPC10 is */
 /* embedded. */
 /* listl and lincnt are not needed for an embedded LPC10 at all. */
-/* 	integer nframe, nunsfm, iclip, maxosp, listl, lincnt */
+/* 	int32_t nframe, nunsfm, iclip, maxosp, listl, lincnt */
 /* 	common /contrl/ fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /* 	common /contrl/ quant, nbits */
 /* 	common /contrl/ nframe, nunsfm, iclip, maxosp, listl, lincnt */
@@ -591,8 +592,8 @@ n*/
 /*   The SNR is estimated as the running average of the ratio of the */
 /*   running average full-band voiced energy to the running average */
 /*   full-band unvoiced energy. SNR filter has gain of 63. */
-	r__1 = (*snr + *fbve / (real) max(*fbue, 1)) * 63 / 64.f;
-	*snr = (real) i_nint(&r__1);
+	r__1 = (*snr + *fbve / (float)max(*fbue, 1)) * 63 / 64.f;
+	*snr = (float)i_nint(&r__1);
 	snr2 = *snr * *fbue / max(*lbue, 1);
 /*   Quantize SNR to SNRL according to VDCL thresholds. */
 	snrl = 1;
@@ -606,8 +607,8 @@ n*/
  L69:
 /*   Linear discriminant voicing parameters: */
 	value[0] = *maxmin;
-	value[1] = (real) lbe / max(*lbve, 1);
-	value[2] = (real) zc;
+	value[1] = (float)lbe / max(*lbve, 1);
+	value[2] = (float)zc;
 	value[3] = rc1;
 	value[4] = qs;
 	value[5] = ivrc[2];
@@ -813,7 +814,7 @@ d*/
 /*   NOTE: The divisor is a function of REF, the expected energies. */
 /* Computing MIN */
 /* Computing MAX */
-	r__2 = (real) (sqrt((real) (*lbue * *lbve)) * 64 / 3000);
+	r__2 = (float)(sqrt((float)(*lbue * *lbve)) * 64 / 3000);
 	r__1 = max(r__2, 1.f);
 	*dither = min(r__1, 20.f);
 /*   Voicing decisions are returned in VOIBUF. */

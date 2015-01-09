@@ -37,13 +37,13 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int pitsyn_(integer * order, integer * voice, integer * pitch,
-		   real * rms, real * rc, integer * lframe, integer * ivuv,
-		   integer * ipiti, real * rmsi, real * rci, integer * nout,
-		   real * ratio, struct lpc10_decoder_state *st);
+extern int pitsyn_(int32_t * order, int32_t * voice, int32_t * pitch,
+		   float *rms, float *rc, int32_t * lframe, int32_t * ivuv,
+		   int32_t * ipiti, float *rmsi, float *rci, int32_t * nout,
+		   float *ratio, struct lpc10_decoder_state *st);
 #endif
 
 /* ***************************************************************** */
@@ -133,36 +133,36 @@ extern int pitsyn_(integer * order, integer * voice, integer * pitch,
 /*  RATIO  - Previous to present energy ratio */
 /*           Always assigned a value. */
 
-/* Subroutine */ int pitsyn_(integer * order, integer * voice,
-			     integer * pitch, real * rms, real * rc,
-			     integer * lframe, integer * ivuv, integer * ipiti,
-			     real * rmsi, real * rci, integer * nout,
-			     real * ratio, struct lpc10_decoder_state *st)
+/* Subroutine */ int pitsyn_(int32_t * order, int32_t * voice,
+			     int32_t * pitch, float *rms, float *rc,
+			     int32_t * lframe, int32_t * ivuv, int32_t * ipiti,
+			     float *rmsi, float *rci, int32_t * nout,
+			     float *ratio, struct lpc10_decoder_state *st)
 {
 	/* Initialized data */
 
-	real *rmso;
-	logical *first;
+	float *rmso;
+	int32_t *first;
 
 	/* System generated locals */
-	integer rci_dim1 = 0, rci_offset, i__1, i__2;
-	real r__1;
+	int32_t rci_dim1 = 0, rci_offset, i__1, i__2;
+	float r__1;
 
 	/* Builtin functions */
-	double log(doublereal), exp(doublereal);
+	double log(double), exp(double);
 
 	/* Local variables */
-	real alrn, alro, yarc[10], prop;
-	integer i__, j, vflag, jused, lsamp;
-	integer *jsamp;
-	real slope;
-	integer *ipito;
-	real uvpit;
-	integer ip, nl, ivoice;
-	integer *ivoico;
-	integer istart;
-	real *rco;
-	real xxy;
+	float alrn, alro, yarc[10], prop;
+	int32_t i__, j, vflag, jused, lsamp;
+	int32_t *jsamp;
+	float slope;
+	int32_t *ipito;
+	float uvpit;
+	int32_t ip, nl, ivoice;
+	int32_t *ivoico;
+	int32_t istart;
+	float *rco;
+	float xxy;
 
 /*       Arguments */
 /* $Log$
@@ -301,11 +301,11 @@ e */
 			ipiti[i__] = *pitch;
 			rmsi[i__] = *rms;
 		}
-		*first = FALSE_;
+		*first = 0;
 	} else {
 		vflag = 0;
 		lsamp = *lframe + *jsamp;
-		slope = (*pitch - *ipito) / (real) lsamp;
+		slope = (*pitch - *ipito) / (float)lsamp;
 		*nout = 0;
 		jused = 0;
 		istart = 1;
@@ -319,7 +319,7 @@ e */
 				}
 			}
 /* SSVC - -   1  ,  1  ,  1 */
-			slope = (*pitch - *ipito) / (real) lsamp;
+			slope = (*pitch - *ipito) / (float)lsamp;
 			ivoice = voice[2];
 		} else {
 			if (*ivoico != 1) {
@@ -386,7 +386,7 @@ t */
 /* thing to happen, and if so, could that cause NOUT to ever go over 1
 1? */
 
-/* Note that all of the 180 values in the table are really LFRAME, but
+/* Note that all of the 180 values in the table are floatly LFRAME, but
  */
 /* 180 has fewer characters, and it makes the table a little more */
 /* concrete.  If LFRAME is ever changed, keep this in mind.  Similarly
@@ -447,7 +447,7 @@ to */
 RT */
 /* to LSAMP. */
 
-		while (TRUE_) {
+		while (1) {
 
 /*             JUSED is the total length of all pitch periods curr
 ently */
@@ -470,9 +470,9 @@ after */
 			i__1 = lsamp;
 			for (i__ = istart; i__ <= i__1; ++i__) {
 				r__1 = *ipito + slope * i__;
-				ip = (integer) (r__1 + .5f);
+				ip = (int32_t) (r__1 + .5f);
 				if (uvpit != 0.f) {
-					ip = (integer) uvpit;
+					ip = (int32_t) uvpit;
 				}
 				if (ip <= i__ - jused) {
 					++(*nout);
@@ -489,27 +489,27 @@ over 16. */
 					*pitch = ip;
 					ivuv[*nout] = ivoice;
 					jused += ip;
-					prop = (jused - ip / 2) / (real) lsamp;
+					prop = (jused - ip / 2) / (float)lsamp;
 					i__2 = *order;
 					for (j = 1; j <= i__2; ++j) {
 						alro =
-						    (real) log((rco[j - 1] + 1)
+						    (float)log((rco[j - 1] + 1)
 							       / (1 -
 								  rco[j - 1]));
 						alrn =
-						    (real) log((rc[j] + 1) /
+						    (float)log((rc[j] + 1) /
 							       (1 - rc[j]));
 						xxy =
 						    alro + prop * (alrn - alro);
-						xxy = (real) exp(xxy);
+						xxy = (float)exp(xxy);
 						rci[j + *nout * rci_dim1] =
 						    (xxy - 1) / (xxy + 1);
 					}
 					rmsi[*nout] =
-					    (real) (log(*rmso) +
+					    (float)(log(*rmso) +
 						    prop * (log(*rms) -
 							    log(*rmso)));
-					rmsi[*nout] = (real) exp(rmsi[*nout]);
+					rmsi[*nout] = (float)exp(rmsi[*nout]);
 				}
 			}
 			if (vflag != 1) {
@@ -567,7 +567,7 @@ ge. */
 			lsamp = *lframe + *jsamp;
 			slope = 0.f;
 			ivoice = 0;
-			uvpit = (real) ((lsamp - istart) / 2);
+			uvpit = (float)((lsamp - istart) / 2);
 			if (uvpit > 90.f) {
 				uvpit /= 2;
 			}

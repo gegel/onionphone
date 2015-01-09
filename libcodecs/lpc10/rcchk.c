@@ -26,10 +26,13 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include <stdlib.h>
+
+#include "lpc10.h"
+#include "lpc10tools.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int rcchk_(integer * order, real * rc1f, real * rc2f);
+extern int rcchk_(int32_t * order, float *rc1f, float *rc2f);
 #endif
 
 /* ********************************************************************* */
@@ -80,14 +83,14 @@ extern int rcchk_(integer * order, real * rc1f, real * rc2f);
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int rcchk_(integer * order, real * rc1f, real * rc2f)
+/* Subroutine */ int rcchk_(int32_t * order, float *rc1f, float *rc2f)
 {
 	/* System generated locals */
-	integer i__1;
-	real r__1;
+	int32_t i__1;
+	float r__1;
 
 	/* Local variables */
-	integer i__;
+	int32_t i__;
 
 /*       Arguments */
 /*       Local variables that need not be saved */

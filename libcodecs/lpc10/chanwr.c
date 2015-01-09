@@ -32,7 +32,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 */
 
 #include <stdlib.h>
-#include "f2c.h"
+
+#include "lpc10.h"
 
 /* *********************************************************************** */
 
@@ -78,7 +79,7 @@ Some OSS fixes and a few lpc changes to make it actually work
 /*   Place quantized parameters into bitstream */
 
 /* Input: */
-/*  ORDER  - Number of reflection coefficients (not really variable) */
+/*  ORDER  - Number of reflection coefficients (not floatly variable) */
 /*  IPITV  - Quantized pitch/voicing parameter */
 /*  IRMS   - Quantized energy parameter */
 /*  IRC    - Quantized reflection coefficients */
@@ -105,7 +106,7 @@ Some OSS fixes and a few lpc changes to make it actually work
 /*   Reconstruct parameters from bitstream */
 
 /* Input: */
-/*  ORDER  - Number of reflection coefficients (not really variable) */
+/*  ORDER  - Number of reflection coefficients (not floatly variable) */
 /*  IBITS  - Serial bitstream */
 /*           Indices 1 through 53 read (SYNC bit is ignored). */
 /* Output: */
@@ -127,15 +128,15 @@ Some OSS fixes and a few lpc changes to make it actually work
 /* 	R5-1, R6-1, R7-2, R9-0,  P-5, */
 /* 	R5-2, R6-2,R10-1, R8-2,  P-6, R9-1, */
 /* 	R5-3, R6-3, R7-3, R9-2, R8-3, SYNC */
-/* Subroutine */ int chanwr_0_(int n__, integer * order, integer * ipitv,
-			       integer * irms, integer * irc, integer * ibits,
+/* Subroutine */ int chanwr_0_(int n__, int32_t * order, int32_t * ipitv,
+			       int32_t * irms, int32_t * irc, int32_t * ibits,
 			       struct lpc10_encoder_state *st)
 {
 	/* Initialized data */
 
-	integer *isync;
-	static integer bit[10] = { 2, 4, 8, 8, 8, 8, 16, 16, 16, 16 };
-	static integer iblist[53] =
+	int32_t *isync;
+	static int32_t bit[10] = { 2, 4, 8, 8, 8, 8, 16, 16, 16, 16 };
+	static int32_t iblist[53] =
 	    { 13, 12, 11, 1, 2, 13, 12, 11, 1, 2, 13, 10, 11, 2, 1, 10,
 		13, 12, 11, 10, 2, 13, 12, 11, 10, 2, 1, 12, 7, 6, 1, 10, 9, 8,
 		7, 4, 6, 9, 8, 7, 5, 1, 9, 8,
@@ -143,10 +144,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	};
 
 	/* System generated locals */
-	integer i__1;
+	int32_t i__1;
 
 	/* Local variables */
-	integer itab[13], i__;
+	int32_t itab[13], i__;
 
 /*       Arguments */
 /*       Parameters/constants */
@@ -223,15 +224,15 @@ Some OSS fixes and a few lpc changes to make it actually work
 	return 0;
 }				/* chanwr_ */
 
-/* Subroutine */ int chanwr_(integer * order, integer * ipitv, integer * irms,
-			     integer * irc, integer * ibits,
+/* Subroutine */ int chanwr_(int32_t * order, int32_t * ipitv, int32_t * irms,
+			     int32_t * irc, int32_t * ibits,
 			     struct lpc10_encoder_state *st)
 {
 	return chanwr_0_(0, order, ipitv, irms, irc, ibits, st);
 }
 
-/* Subroutine */ int chanrd_(integer * order, integer * ipitv, integer * irms,
-			     integer * irc, integer * ibits)
+/* Subroutine */ int chanrd_(int32_t * order, int32_t * ipitv, int32_t * irms,
+			     int32_t * irc, int32_t * ibits)
 {
 	return chanwr_0_(1, order, ipitv, irms, irc, ibits, NULL);
 }

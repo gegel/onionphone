@@ -34,17 +34,20 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include <stdlib.h>
+
+#include "lpc10.h"
+#include "lpc10tools.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int onset_(real * pebuf, integer * osbuf, integer * osptr,
-		  integer * oslen, integer * sbufl, integer * sbufh,
-		  integer * lframe, struct lpc10_encoder_state *st);
+extern int onset_(float *pebuf, int32_t * osbuf, int32_t * osptr,
+		  int32_t * oslen, int32_t * sbufl, int32_t * sbufh,
+		  int32_t * lframe, struct lpc10_encoder_state *st);
 #endif
 
 /* Table of constant values */
 
-static real c_b2 = 1.f;
+static float c_b2 = 1.f;
 
 /* ****************************************************************** */
 
@@ -127,33 +130,33 @@ static real c_b2 = 1.f;
 /* you want to switch to using a new audio stream for this subroutine, or */
 /* reinitialize its state for any other reason, call the ENTRY INITONSET. */
 
-/* Subroutine */ int onset_(real * pebuf, integer * osbuf, integer *
-			    osptr, integer * oslen, integer * sbufl,
-			    integer * sbufh, integer * lframe,
+/* Subroutine */ int onset_(float *pebuf, int32_t * osbuf, int32_t *
+			    osptr, int32_t * oslen, int32_t * sbufl,
+			    int32_t * sbufh, int32_t * lframe,
 			    struct lpc10_encoder_state *st)
 {
 	/* Initialized data */
 
-	real *n;
-	real *d__;
-	real *l2buf;
-	real *l2sum1;
-	integer *l2ptr1;
-	integer *l2ptr2;
-	logical *hyst;
+	float *n;
+	float *d__;
+	float *l2buf;
+	float *l2sum1;
+	int32_t *l2ptr1;
+	int32_t *l2ptr2;
+	int32_t *hyst;
 
 	/* System generated locals */
-	integer pebuf_offset, i__1;
-	real r__1;
+	int32_t pebuf_offset, i__1;
+	float r__1;
 
 	/* Builtin functions */
-	double r_sign(real *, real *);
+	double r_sign(float *, float *);
 
 	/* Local variables */
-	integer i__;
-	integer *lasti;
-	real l2sum2;
-	real *fpc;
+	int32_t i__;
+	int32_t *lasti;
+	float l2sum2;
+	float *fpc;
 
 /*       Arguments */
 /* $Log$
@@ -274,7 +277,7 @@ static real c_b2 = 1.f;
 		*d__ = (r__1 * r__1 + (*d__) * 63.f) / 64.f;
 		if ((*d__) != 0.f) {
 			if (abs(*n) > (*d__)) {
-				*fpc = (real) r_sign(&c_b2, n);
+				*fpc = (float)r_sign(&c_b2, n);
 			} else {
 				*fpc = (*n) / (*d__);
 			}
@@ -312,14 +315,14 @@ of */
 					osbuf[*osptr] = i__ - 9;
 					++(*osptr);
 				}
-				*hyst = TRUE_;
+				*hyst = 1;
 			}
 			*lasti = i__;
 /*       After one onset detection, at least OSHYST sample times m
 ust go */
 /*       by before another is allowed to occur. */
 		} else if ((*hyst) && i__ - *lasti >= 10) {
-			*hyst = FALSE_;
+			*hyst = 0;
 		}
 	}
 	return 0;

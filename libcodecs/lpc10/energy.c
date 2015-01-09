@@ -26,10 +26,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int energy_(integer * len, real * speech, real * rms);
+extern int energy_(int32_t * len, float *speech, float *rms);
 #endif
 
 /* ********************************************************************* */
@@ -76,16 +76,16 @@ extern int energy_(integer * len, real * speech, real * rms);
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int energy_(integer * len, real * speech, real * rms)
+/* Subroutine */ int energy_(int32_t * len, float *speech, float *rms)
 {
 	/* System generated locals */
-	integer i__1;
+	int32_t i__1;
 
 	/* Builtin functions */
-	double sqrt(doublereal);
+	double sqrt(double);
 
 	/* Local variables */
-	integer i__;
+	int32_t i__;
 
 /*       Arguments */
 /*       Local variables that need not be saved */
@@ -98,6 +98,6 @@ extern int energy_(integer * len, real * speech, real * rms);
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		*rms += speech[i__] * speech[i__];
 	}
-	*rms = (real) sqrt(*rms / *len);
+	*rms = (float)sqrt(*rms / *len);
 	return 0;
 }				/* energy_ */

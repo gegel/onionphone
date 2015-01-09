@@ -26,10 +26,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern integer median_(integer * d1, integer * d2, integer * d3);
+extern int32_t median_(int32_t * d1, int32_t * d2, int32_t * d3);
 #endif
 
 /* ********************************************************************* */
@@ -67,10 +67,10 @@ extern integer median_(integer * d1, integer * d2, integer * d3);
 /* Output: */
 /*  MEDIAN - Median value */
 
-integer median_(integer * d1, integer * d2, integer * d3)
+int32_t median_(int32_t * d1, int32_t * d2, int32_t * d3)
 {
 	/* System generated locals */
-	integer ret_val;
+	int32_t ret_val;
 
 /*       Arguments */
 	ret_val = *d2;

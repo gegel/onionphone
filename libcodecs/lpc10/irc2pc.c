@@ -26,12 +26,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int irc2pc_(real * rc, real * pc, integer * order, real * gprime,
-		   real * g2pass);
-#endif
+#include "irc2pc.h"
+#include "lpc10.h"
 
 /* ***************************************************************** */
 
@@ -81,18 +77,18 @@ extern int irc2pc_(real * rc, real * pc, integer * order, real * gprime,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int irc2pc_(real * rc, real * pc, integer * order,
-			     real * gprime, real * g2pass)
+/* Subroutine */ int irc2pc_(float *rc, float *pc, int32_t * order,
+			     float *gprime, float *g2pass)
 {
 	/* System generated locals */
-	integer i__1, i__2;
+	int32_t i__1, i__2;
 
 	/* Builtin functions */
-	double sqrt(doublereal);
+	double sqrt(double);
 
 	/* Local variables */
-	real temp[10];
-	integer i__, j;
+	float temp[10];
+	int32_t i__, j;
 
 /* 	Arguments */
 /* $Log$
@@ -134,7 +130,7 @@ extern int irc2pc_(real * rc, real * pc, integer * order, real * gprime,
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		*g2pass *= 1.f - rc[i__] * rc[i__];
 	}
-	*g2pass = *gprime * (real) sqrt(*g2pass);
+	*g2pass = *gprime * (float)sqrt(*g2pass);
 	pc[1] = rc[1];
 	i__1 = *order;
 	for (i__ = 2; i__ <= i__1; ++i__) {

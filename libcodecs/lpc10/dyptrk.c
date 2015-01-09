@@ -34,11 +34,11 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int dyptrk_(real * amdf, integer * ltau, integer * minptr,
-		   integer * voice, integer * pitch, integer * midx,
+extern int dyptrk_(float *amdf, int32_t * ltau, int32_t * minptr,
+		   int32_t * voice, int32_t * pitch, int32_t * midx,
 		   struct lpc10_encoder_state *st);
 /* comlen contrl_ 12 */
 #endif
@@ -46,8 +46,8 @@ extern int dyptrk_(real * amdf, integer * ltau, integer * minptr,
 /* Common Block Declarations */
 
 extern struct {
-	integer order, lframe;
-	logical corrp;
+	int32_t order, lframe;
+	int32_t corrp;
 } contrl_;
 
 #define contrl_1 contrl_
@@ -129,25 +129,25 @@ extern struct {
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITDYPTRK. */
 
-/* Subroutine */ int dyptrk_(real * amdf, integer * ltau, integer *
-			     minptr, integer * voice, integer * pitch,
-			     integer * midx, struct lpc10_encoder_state *st)
+/* Subroutine */ int dyptrk_(float *amdf, int32_t * ltau, int32_t *
+			     minptr, int32_t * voice, int32_t * pitch,
+			     int32_t * midx, struct lpc10_encoder_state *st)
 {
 	/* Initialized data */
 
-	real *s;
-	integer *p;
-	integer *ipoint;
-	real *alphax;
+	float *s;
+	int32_t *p;
+	int32_t *ipoint;
+	float *alphax;
 
 	/* System generated locals */
-	integer i__1;
+	int32_t i__1;
 
 	/* Local variables */
-	integer pbar;
-	real sbar;
-	integer iptr, i__, j;
-	real alpha, minsc, maxsc;
+	int32_t pbar;
+	float sbar;
+	int32_t iptr, i__, j;
+	float alpha, minsc, maxsc;
 
 /*       Arguments */
 /* $Log$
@@ -198,7 +198,7 @@ extern struct {
 
 /* Many files which use fdebug are not listed, since it is only used in */
 /* those other files conditionally, to print trace statements. */
-/* 	integer fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
+/* 	int32_t fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /*  LPC order, Frame size, Quantization rate, Bits per frame, */
 /*    Error correction */
 /* Subroutine SETUP is the only place where order is assigned a value, */
@@ -227,7 +227,7 @@ extern struct {
 /* unvoiced frames, with no change in the coding rate, and no noticeable 
 */
 /* quality difference in the decoded speech. */
-/* 	integer quant, nbits */
+/* 	int32_t quant, nbits */
 /* *** Read/write: variables for debugging, not needed for LPC algorithm 
 */
 
@@ -253,7 +253,7 @@ extern struct {
 /* would be of much interest to an application in which LPC10 is */
 /* embedded. */
 /* listl and lincnt are not needed for an embedded LPC10 at all. */
-/* 	integer nframe, nunsfm, iclip, maxosp, listl, lincnt */
+/* 	int32_t nframe, nunsfm, iclip, maxosp, listl, lincnt */
 /* 	common /contrl/ fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /* 	common /contrl/ quant, nbits */
 /* 	common /contrl/ nframe, nunsfm, iclip, maxosp, listl, lincnt */

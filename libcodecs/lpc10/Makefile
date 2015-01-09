@@ -23,7 +23,6 @@ OBJ = analys.o \
       dyptrk.o \
       encode.o \
       energy.o \
-      f2clib.o \
       ham84.o \
       hp100.o \
       invert.o \

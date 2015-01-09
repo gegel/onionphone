@@ -37,11 +37,14 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include <stdlib.h>
+
+#include "lpc10.h"
+#include "lpc10tools.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int decode_(integer * ipitv, integer * irms, integer * irc,
-		   integer * voice, integer * pitch, real * rms, real * rc,
+extern int decode_(int32_t * ipitv, int32_t * irms, int32_t * irc,
+		   int32_t * voice, int32_t * pitch, float *rms, float *rc,
 		   struct lpc10_decoder_state *st);
 /* comlen contrl_ 12 */
 /*:ref: ham84_ 14 3 4 4 4 */
@@ -51,15 +54,15 @@ extern int decode_(integer * ipitv, integer * irms, integer * irc,
 /* Common Block Declarations */
 
 extern struct {
-	integer order, lframe;
-	logical corrp;
+	int32_t order, lframe;
+	int32_t corrp;
 } contrl_;
 
 #define contrl_1 contrl_
 
 /* Table of constant values */
 
-static integer c__2 = 2;
+static int32_t c__2 = 2;
 
 /* ***************************************************************** */
 
@@ -147,19 +150,19 @@ static integer c__2 = 2;
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITDECODE. */
 
-/* Subroutine */ int decode_(integer * ipitv, integer * irms,
-			     integer * irc, integer * voice, integer * pitch,
-			     real * rms, real * rc,
+/* Subroutine */ int decode_(int32_t * ipitv, int32_t * irms,
+			     int32_t * irc, int32_t * voice, int32_t * pitch,
+			     float *rms, float *rc,
 			     struct lpc10_decoder_state *st)
 {
 	/* Initialized data */
 
-	logical *first;
-	static integer ethrs = 2048;
-	static integer ethrs1 = 128;
-	static integer ethrs2 = 1024;
-	static integer ethrs3 = 2048;
-	static integer ivtab[32] =
+	int32_t *first;
+	static int32_t ethrs = 2048;
+	static int32_t ethrs1 = 128;
+	static int32_t ethrs2 = 1024;
+	static int32_t ethrs3 = 2048;
+	static int32_t ivtab[32] =
 	    { 24960, 24960, 24960, 24960, 25480, 25480, 25483,
 		25480, 16640, 1560, 1560, 1560, 16640, 1816, 1563, 1560, 24960,
 		24960, 24859,
@@ -167,14 +170,14 @@ static integer c__2 = 2;
 		1561, 3643,
 		3641
 	};
-	static real corth[32] /* was [4][8] */  = { 32767.f, 10.f, 5.f, 0.f,
+	static float corth[32] /* was [4][8] */  = { 32767.f, 10.f, 5.f, 0.f,
 		32767.f, 8.f, 4.f, 0.f, 32.f, 6.4f, 3.2f, 0.f, 32.f, 6.4f, 3.2f,
 		0.f, 32.f,
 		11.2f, 6.4f, 0.f, 32.f, 11.2f, 6.4f, 0.f, 16.f, 5.6f, 3.2f, 0.f,
 		16.f, 5.6f,
 		3.2f, 0.f
 	};
-	static integer detau[128] =
+	static int32_t detau[128] =
 	    { 0, 0, 0, 3, 0, 3, 3, 31, 0, 3, 3, 21, 3, 3, 29, 30, 0, 3, 3,
 		20, 3, 25, 27, 26, 3, 23, 58, 22, 3, 24, 28, 3, 0, 3, 3, 3, 3,
 		39, 33, 32, 3, 37, 35, 36,
@@ -186,7 +189,7 @@ static integer c__2 = 2;
 		3, 3, 1, 124, 120, 128,
 		3, 3, 3, 3, 1, 3, 3, 3, 1, 3, 1, 1, 1
 	};
-	static integer rmst[64] =
+	static int32_t rmst[64] =
 	    { 1024, 936, 856, 784, 718, 656, 600, 550, 502, 460, 420,
 		384, 352, 328, 294, 270, 246, 226, 206, 188, 172, 158, 144, 132,
 		120, 110, 102,
@@ -194,43 +197,40 @@ static integer c__2 = 2;
 		22, 20, 18, 17, 16, 15,
 		14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0
 	};
-	static integer detab7[32] =
+	static int32_t detab7[32] =
 	    { 4, 11, 18, 25, 32, 39, 46, 53, 60, 66, 72, 77, 82, 87, 92,
 		96, 101, 104, 108, 111, 114, 115, 117, 119, 121, 122, 123, 124,
 		125, 126, 127,
 		127
 	};
-	static real descl[8] =
+	static float descl[8] =
 	    { .6953f, .625f, .5781f, .5469f, .5312f, .5391f, .4688f,
 		.3828f
 	};
-	integer *ivp2h;
-	static integer deadd[8] =
+	int32_t *ivp2h;
+	static int32_t deadd[8] =
 	    { 1152, -2816, -1536, -3584, -1280, -2432, 768, -1920 }
 	;
-	static integer qb[8] = { 511, 511, 1023, 1023, 1023, 1023, 2047, 4095 };
-	static integer nbit[10] = { 8, 8, 5, 5, 4, 4, 4, 4, 3, 2 };
-	static integer zrc[10] = { 0, 0, 0, 0, 0, 3, 0, 2, 0, 0 };
-	static integer bit[5] = { 2, 4, 8, 16, 32 };
-	integer *iovoic;
-	integer *iavgp;
-	integer *iptold;
-	integer *erate;
-	integer *drc;
-	integer *dpit;
-	integer *drms;
+	static int32_t qb[8] = { 511, 511, 1023, 1023, 1023, 1023, 2047, 4095 };
+	static int32_t nbit[10] = { 8, 8, 5, 5, 4, 4, 4, 4, 3, 2 };
+	static int32_t zrc[10] = { 0, 0, 0, 0, 0, 3, 0, 2, 0, 0 };
+	static int32_t bit[5] = { 2, 4, 8, 16, 32 };
+	int32_t *iovoic;
+	int32_t *iavgp;
+	int32_t *iptold;
+	int32_t *erate;
+	int32_t *drc;
+	int32_t *dpit;
+	int32_t *drms;
 
 	/* System generated locals */
-	integer i__1, i__2;
-
-	/* Builtin functions */
-	integer pow_ii(integer *, integer *);
+	int32_t i__1, i__2;
 
 	/* Local variables */
-	extern /* Subroutine */ int ham84_(integer *, integer *, integer *);
-	integer ipit, iout, i__, icorf, index, ivoic, ixcor, i1, i2, i4;
-	extern integer median_(integer *, integer *, integer *);
-	integer ishift, errcnt, lsb;
+	extern /* Subroutine */ int ham84_(int32_t *, int32_t *, int32_t *);
+	int32_t ipit, iout, i__, icorf, index, ivoic, ixcor, i1, i2, i4;
+	extern int32_t median_(int32_t *, int32_t *, int32_t *);
+	int32_t ishift, errcnt, lsb;
 
 /* $Log$
  * Revision 1.16  2004/06/26 03:50:14  markster
@@ -323,7 +323,7 @@ static integer c__2 = 2;
 
 /* Many files which use fdebug are not listed, since it is only used in */
 /* those other files conditionally, to print trace statements. */
-/* 	integer fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
+/* 	int32_t fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /*  LPC order, Frame size, Quantization rate, Bits per frame, */
 /*    Error correction */
 /* Subroutine SETUP is the only place where order is assigned a value, */
@@ -352,7 +352,7 @@ static integer c__2 = 2;
 /* unvoiced frames, with no change in the coding rate, and no noticeable 
 */
 /* quality difference in the decoded speech. */
-/* 	integer quant, nbits */
+/* 	int32_t quant, nbits */
 /* *** Read/write: variables for debugging, not needed for LPC algorithm 
 */
 
@@ -378,7 +378,7 @@ static integer c__2 = 2;
 /* would be of much interest to an application in which LPC10 is */
 /* embedded. */
 /* listl and lincnt are not needed for an embedded LPC10 at all. */
-/* 	integer nframe, nunsfm, iclip, maxosp, listl, lincnt */
+/* 	int32_t nframe, nunsfm, iclip, maxosp, listl, lincnt */
 /* 	common /contrl/ fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /* 	common /contrl/ quant, nbits */
 /* 	common /contrl/ nframe, nunsfm, iclip, maxosp, listl, lincnt */
@@ -499,7 +499,7 @@ static integer c__2 = 2;
 	voice[2] = icorf & 1;
 /*  Skip decoding on first frame because present data not yet available */
 	if (*first) {
-		*first = FALSE_;
+		*first = 0;
 /*          Assign PITCH a "default" value on the first call, since */
 /*          otherwise it would be left uninitialized.  The two lines 
 */
@@ -545,7 +545,7 @@ static integer c__2 = 2;
 			drc[(5 - i__) * 3 - 2] = iout;
 		}
 /*  Determine error rate */
-		*erate = (integer) (*erate * .96875f + errcnt * 102);
+		*erate = (int32_t) (*erate * .96875f + errcnt * 102);
 	}
 /*  Get unsmoothed RMS, RC's, and PITCH */
 	*irms = drms[1];
@@ -563,20 +563,20 @@ static integer c__2 = 2;
 /*  If bit 2 of ICORF is set then smooth RMS and RC's, */
 	if ((icorf & bit[1]) != 0) {
 		if ((i__1 =
-		     drms[1] - drms[0], (real) abs(i__1)) >= corth[ixcor + 3]
+		     drms[1] - drms[0], (float)abs(i__1)) >= corth[ixcor + 3]
 		    && (i__2 =
 			drms[1] - drms[2],
-			(real) abs(i__2)) >= corth[ixcor + 3]) {
+			(float)abs(i__2)) >= corth[ixcor + 3]) {
 			*irms = median_(&drms[2], &drms[1], drms);
 		}
 		for (i__ = 1; i__ <= 6; ++i__) {
 			if ((i__1 =
 			     drc[i__ * 3 - 2] - drc[i__ * 3 - 3],
-			     (real) abs(i__1))
+			     (float)abs(i__1))
 			    >= corth[ixcor + ((i__ + 2) << 2) - 5]
 			    && (i__2 =
 				drc[i__ * 3 - 2] - drc[i__ * 3 - 1],
-				(real) abs(i__2)) >=
+				(float)abs(i__2)) >=
 			    corth[ixcor + ((i__ + 2) << 2) - 5]) {
 				irc[i__] =
 				    median_(&drc[i__ * 3 - 1],
@@ -588,10 +588,10 @@ static integer c__2 = 2;
 /*  If bit 3 of ICORF is set then smooth pitch */
 	if ((icorf & bit[2]) != 0) {
 		if ((i__1 =
-		     dpit[1] - dpit[0], (real) abs(i__1)) >= corth[ixcor - 1]
+		     dpit[1] - dpit[0], (float)abs(i__1)) >= corth[ixcor - 1]
 		    && (i__2 =
 			dpit[1] - dpit[2],
-			(real) abs(i__2)) >= corth[ixcor - 1]) {
+			(float)abs(i__2)) >= corth[ixcor - 1]) {
 			*pitch = median_(&dpit[2], &dpit[1], dpit);
 		}
 	}
@@ -648,12 +648,12 @@ static integer c__2 = 2;
 		ishift = 15 - nbit[i__ - 1];
 		i2 *= pow_ii(&c__2, &ishift);
 		i2 += qb[i__ - 3];
-		irc[i__] = (integer) (i2 * descl[i__ - 3] + deadd[i__ - 3]);
+		irc[i__] = (int32_t) (i2 * descl[i__ - 3] + deadd[i__ - 3]);
 	}
 /* 	IF (LISTL.GE.3) WRITE(FDEBUG,811) IRMS, (IRC(I),I=1,ORDER) */
 /* 811	FORMAT(1X,'<<DECODE OUT>>',T45,I4,1X,10I8) */
-/*  Scale RMS and RC's to reals */
-	*rms = (real) (*irms);
+/*  Scale RMS and RC's to floats */
+	*rms = (float)(*irms);
 	i__1 = contrl_1.order;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		rc[i__] = irc[i__] / 16384.f;

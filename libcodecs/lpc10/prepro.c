@@ -33,10 +33,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int prepro_(real * speech, integer * length,
+extern int prepro_(float *speech, int32_t * length,
 		   struct lpc10_encoder_state *st);
 /*:ref: hp100_ 14 3 6 4 4 */
 /*:ref: inithp100_ 14 0 */
@@ -44,7 +44,7 @@ extern int prepro_(real * speech, integer * length,
 
 /* Table of constant values */
 
-static integer c__1 = 1;
+static int32_t c__1 = 1;
 
 /* ********************************************************************* */
 
@@ -99,10 +99,10 @@ static integer c__1 = 1;
 /* stream for this filter, or reinitialize its state for any other */
 /* reason, call the ENTRY INITPREPRO. */
 
-/* Subroutine */ int prepro_(real * speech, integer * length,
+/* Subroutine */ int prepro_(float *speech, int32_t * length,
 			     struct lpc10_encoder_state *st)
 {
-	extern /* Subroutine */ int hp100_(real *, integer *, integer *,
+	extern /* Subroutine */ int hp100_(float *, int32_t *, int32_t *,
 					   struct lpc10_encoder_state *);
 
 /*       Arguments */

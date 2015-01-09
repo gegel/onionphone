@@ -34,10 +34,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int deemp_(real * x, integer * n, struct lpc10_decoder_state *st);
+extern int deemp_(float *x, int32_t * n, struct lpc10_decoder_state *st);
 #endif
 
 /* ***************************************************************** */
@@ -104,24 +104,24 @@ extern int deemp_(real * x, integer * n, struct lpc10_decoder_state *st);
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITDEEMP. */
 
-/* Subroutine */ int deemp_(real * x, integer * n,
+/* Subroutine */ int deemp_(float *x, int32_t * n,
 			    struct lpc10_decoder_state *st)
 {
 	/* Initialized data */
 
-	real *dei1;
-	real *dei2;
-	real *deo1;
-	real *deo2;
-	real *deo3;
+	float *dei1;
+	float *dei2;
+	float *deo1;
+	float *deo2;
+	float *deo3;
 
 	/* System generated locals */
-	integer i__1;
-	real r__1;
+	int32_t i__1;
+	float r__1;
 
 	/* Local variables */
-	integer k;
-	real dei0;
+	int32_t k;
+	float dei0;
 
 /*       Arguments */
 /*       Local variables that need not be saved */

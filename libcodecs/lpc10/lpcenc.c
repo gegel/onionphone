@@ -37,10 +37,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int lpcenc_(real * speech, integer * bits);
+extern int lpcenc_(float *speech, int32_t * bits);
 extern int initlpcenc_(void);
 /*:ref: prepro_ 14 2 6 4 */
 /*:ref: analys_ 14 5 6 4 4 6 6 */
@@ -52,8 +52,8 @@ extern int initlpcenc_(void);
 
 /* Table of constant values */
 
-static integer c__180 = 180;
-static integer c__10 = 10;
+static int32_t c__180 = 180;
+static int32_t c__10 = 10;
 
 /* ***************************************************************** */
 
@@ -95,7 +95,7 @@ static integer c__10 = 10;
 /* Encode one frame of 180 speech samples to 54 bits. */
 
 /* Input: */
-/*  SPEECH - Speech encoded as real values in the range [-1,+1]. */
+/*  SPEECH - Speech encoded as float values in the range [-1,+1]. */
 /*           Indices 1 through 180 read, and modified (by PREPRO). */
 /* Output: */
 /*  BITS   - 54 encoded bits, stored 1 per array element. */
@@ -106,26 +106,26 @@ static integer c__10 = 10;
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITLPCENC. */
 
-/* Subroutine */ int lpc10_encode(real * speech, integer * bits,
+/* Subroutine */ int lpc10_encode(float *speech, int32_t * bits,
 				  struct lpc10_encoder_state *st)
 {
-	integer irms, voice[2], pitch, ipitv;
-	real rc[10];
-	extern /* Subroutine */ int encode_(integer *, integer *, real *,
-					    real *,
-					    integer *, integer *, integer *),
-	    chanwr_(integer *, integer *, integer *, integer *, integer *,
-		    struct lpc10_encoder_state *), analys_(real *, integer *,
-							   integer *, real *,
-							   real *, struct
+	int32_t irms, voice[2], pitch, ipitv;
+	float rc[10];
+	extern /* Subroutine */ int encode_(int32_t *, int32_t *, float *,
+					    float *,
+					    int32_t *, int32_t *, int32_t *),
+	    chanwr_(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *,
+		    struct lpc10_encoder_state *), analys_(float *, int32_t *,
+							   int32_t *, float *,
+							   float *, struct
 							   lpc10_encoder_state
-							   *), prepro_(real *,
-								       integer
+							   *), prepro_(float *,
+								       int32_t
 								       *, struct
 								       lpc10_encoder_state
 								       *);
-	integer irc[10];
-	real rms;
+	int32_t irc[10];
+	float rms;
 
 /*       Arguments */
 /* $Log$

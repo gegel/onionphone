@@ -38,7 +38,7 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 #include <stdlib.h>
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
 extern int lpcini_(void);
@@ -50,8 +50,8 @@ extern int lpcini_(void);
 /* Common Block Declarations */
 
 struct {
-	integer order, lframe;
-	logical corrp;
+	int32_t order, lframe;
+	int32_t corrp;
 } contrl_;
 
 #define contrl_1 contrl_
@@ -183,7 +183,7 @@ struct {
 
 /* Many files which use fdebug are not listed, since it is only used in */
 /* those other files conditionally, to print trace statements. */
-/* 	integer fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
+/* 	int32_t fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /*  LPC order, Frame size, Quantization rate, Bits per frame, */
 /*    Error correction */
 /* Subroutine SETUP is the only place where order is assigned a value, */
@@ -212,7 +212,7 @@ struct {
 /* unvoiced frames, with no change in the coding rate, and no noticeable 
 */
 /* quality difference in the decoded speech. */
-/* 	integer quant, nbits */
+/* 	int32_t quant, nbits */
 /* *** Read/write: variables for debugging, not needed for LPC algorithm 
 */
 
@@ -238,13 +238,13 @@ struct {
 /* would be of much interest to an application in which LPC10 is */
 /* embedded. */
 /* listl and lincnt are not needed for an embedded LPC10 at all. */
-/* 	integer nframe, nunsfm, iclip, maxosp, listl, lincnt */
+/* 	int32_t nframe, nunsfm, iclip, maxosp, listl, lincnt */
 /* 	common /contrl/ fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /* 	common /contrl/ quant, nbits */
 /* 	common /contrl/ nframe, nunsfm, iclip, maxosp, listl, lincnt */
 	contrl_1.order = 10;
 	contrl_1.lframe = 180;
-	contrl_1.corrp = TRUE_;
+	contrl_1.corrp = 1;
 	return 0;
 }				/* lpcini_ */
 
@@ -289,7 +289,7 @@ void init_lpc10_encoder_state(struct lpc10_encoder_state *st)
 		st->ivbuf[i] = 0.0f;
 	}
 	st->bias = 0.0f;
-	/* integer osbuf[10];  *//* no initial value necessary */
+	/* int32_t osbuf[10];  *//* no initial value necessary */
 	st->osptr = 1;
 	for (i = 0; i < 3; i++) {
 		st->obound[i] = 0;
@@ -312,15 +312,15 @@ void init_lpc10_encoder_state(struct lpc10_encoder_state *st)
 	/* State used by function onset */
 	st->n = 0.0f;
 	st->d__ = 1.0f;
-	/* real fpc;   *//* no initial value necessary */
+	/* float fpc;   *//* no initial value necessary */
 	for (i = 0; i < 16; i++) {
 		st->l2buf[i] = 0.0f;
 	}
 	st->l2sum1 = 0.0f;
 	st->l2ptr1 = 1;
 	st->l2ptr2 = 9;
-	/* integer lasti; *//* no initial value necessary */
-	st->hyst = FALSE_;
+	/* int32_t lasti; *//* no initial value necessary */
+	st->hyst = 0;
 
 	/* State used by function voicin */
 	st->dither = 20.0f;
@@ -336,7 +336,7 @@ void init_lpc10_encoder_state(struct lpc10_encoder_state *st)
 	st->lbue = 93;
 	st->olbue = 93;
 	st->slbue = 93;
-	st->snr = (real) (st->fbve / st->fbue << 6);
+	st->snr = (float)(st->fbve / st->fbue << 6);
 
 	/* State used by function dyptrk */
 	for (i = 0; i < 60; i++) {
@@ -378,7 +378,7 @@ void init_lpc10_decoder_state(struct lpc10_decoder_state *st)
 
 	/* State used by function decode */
 	st->iptold = 60;
-	st->first = TRUE_;
+	st->first = 1;
 	st->ivp2h = 0;
 	st->iovoic = 0;
 	st->iavgp = 60;
@@ -398,12 +398,12 @@ void init_lpc10_decoder_state(struct lpc10_decoder_state *st)
 	st->buflen = 180;
 
 	/* State used by function pitsyn */
-	/* ivoico; *//* no initial value necessary as long as first_pitsyn is initially TRUE_ */
-	/* ipito;  *//* no initial value necessary as long as first_pitsyn is initially TRUE_ */
+	/* ivoico; *//* no initial value necessary as long as first_pitsyn is initially 1 */
+	/* ipito;  *//* no initial value necessary as long as first_pitsyn is initially 1 */
 	st->rmso = 1.0f;
-	/* rco[10]; *//* no initial value necessary as long as first_pitsyn is initially TRUE_ */
-	/* integer jsamp; *//* no initial value necessary as long as first_pitsyn is initially TRUE_ */
-	st->first_pitsyn = TRUE_;
+	/* rco[10]; *//* no initial value necessary as long as first_pitsyn is initially 1 */
+	/* int32_t jsamp; *//* no initial value necessary as long as first_pitsyn is initially 1 */
+	st->first_pitsyn = 1;
 
 	/* State used by function bsynz */
 	st->ipo = 0;
@@ -422,11 +422,11 @@ void init_lpc10_decoder_state(struct lpc10_decoder_state *st)
 	/* State used by function random */
 	st->j = 2;
 	st->k = 5;
-	st->y[0] = (shortint) - 21161;
-	st->y[1] = (shortint) - 8478;
-	st->y[2] = (shortint) 30892;
-	st->y[3] = (shortint) - 10216;
-	st->y[4] = (shortint) 16950;
+	st->y[0] = (int16_t) - 21161;
+	st->y[1] = (int16_t) - 8478;
+	st->y[2] = (int16_t) 30892;
+	st->y[3] = (int16_t) - 10216;
+	st->y[4] = (int16_t) 16950;
 
 	/* State used by function deemp */
 	st->dei1 = 0.0f;

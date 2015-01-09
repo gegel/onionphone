@@ -26,10 +26,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int dcbias_(integer * len, real * speech, real * sigout);
+extern int dcbias_(int32_t * len, float *speech, float *sigout);
 #endif
 
 /* ********************************************************************* */
@@ -77,14 +77,14 @@ extern int dcbias_(integer * len, real * speech, real * sigout);
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int dcbias_(integer * len, real * speech, real * sigout)
+/* Subroutine */ int dcbias_(int32_t * len, float *speech, float *sigout)
 {
 	/* System generated locals */
-	integer i__1;
+	int32_t i__1;
 
 	/* Local variables */
-	real bias;
-	integer i__;
+	float bias;
+	int32_t i__;
 
 /* 	Arguments */
 /*       Local variables that need not be saved */

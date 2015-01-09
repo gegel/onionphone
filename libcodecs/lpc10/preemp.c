@@ -26,11 +26,11 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int preemp_(real * inbuf, real * pebuf, integer * nsamp, real * coef,
-		   real * z__);
+extern int preemp_(float *inbuf, float *pebuf, int32_t * nsamp, float *coef,
+		   float *z__);
 #endif
 
 /* ******************************************************************* */
@@ -81,15 +81,15 @@ extern int preemp_(real * inbuf, real * pebuf, integer * nsamp, real * coef,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int preemp_(real * inbuf, real * pebuf, integer * nsamp, real *
-			     coef, real * z__)
+/* Subroutine */ int preemp_(float *inbuf, float *pebuf, int32_t * nsamp, float *
+			     coef, float *z__)
 {
 	/* System generated locals */
-	integer i__1;
+	int32_t i__1;
 
 	/* Local variables */
-	real temp;
-	integer i__;
+	float temp;
+	int32_t i__;
 
 /*       Arguments */
 /*       Local variables */
@@ -126,7 +126,7 @@ extern int preemp_(real * inbuf, real * pebuf, integer * nsamp, real * coef,
 
 /*       The reason for temp is so that even if pebuf and inbuf are the */
 /*       same arrays in memory (i.e., they are aliased), then this */
-/*       subroutine will still work correctly.  I didn't realize this */
+/*       subroutine will still work correctly.  I didn't floatize this */
 /*       until seeing the comment after PEBUF above that says "(can be */
 /*       equal to INBUF)". */
 	/* Parameter adjustments */

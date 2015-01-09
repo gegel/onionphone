@@ -26,12 +26,15 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include <stdlib.h>
+
+#include "lpc10.h"
+#include "lpc10tools.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int difmag_(real * speech, integer * lpita, integer * tau,
-		   integer * ltau, integer * maxlag, real * amdf,
-		   integer * minptr, integer * maxptr);
+extern int difmag_(float *speech, int32_t * lpita, int32_t * tau,
+		   int32_t * ltau, int32_t * maxlag, float *amdf,
+		   int32_t * minptr, int32_t * maxptr);
 #endif
 
 /* ********************************************************************** */
@@ -90,17 +93,17 @@ extern int difmag_(real * speech, integer * lpita, integer * tau,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int difmag_(real * speech, integer * lpita, integer * tau,
-			     integer * ltau, integer * maxlag, real * amdf,
-			     integer * minptr, integer * maxptr)
+/* Subroutine */ int difmag_(float *speech, int32_t * lpita, int32_t * tau,
+			     int32_t * ltau, int32_t * maxlag, float *amdf,
+			     int32_t * minptr, int32_t * maxptr)
 {
 	/* System generated locals */
-	integer i__1, i__2;
-	real r__1;
+	int32_t i__1, i__2;
+	float r__1;
 
 	/* Local variables */
-	integer i__, j, n1, n2;
-	real sum;
+	int32_t i__, j, n1, n2;
+	float sum;
 
 /*       Arguments */
 /*       Local variables that need not be saved */

@@ -29,11 +29,11 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int ivfilt_(real * lpbuf, real * ivbuf, integer * len, integer * nsamp,
-		   real * ivrc);
+extern int ivfilt_(float *lpbuf, float *ivbuf, int32_t * len, int32_t * nsamp,
+		   float *ivrc);
 #endif
 
 /* ********************************************************************* */
@@ -88,15 +88,15 @@ extern int ivfilt_(real * lpbuf, real * ivbuf, integer * len, integer * nsamp,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int ivfilt_(real * lpbuf, real * ivbuf, integer * len,
-			     integer * nsamp, real * ivrc)
+/* Subroutine */ int ivfilt_(float *lpbuf, float *ivbuf, int32_t * len,
+			     int32_t * nsamp, float *ivrc)
 {
 	/* System generated locals */
-	integer i__1;
+	int32_t i__1;
 
 	/* Local variables */
-	integer i__, j, k;
-	real r__[3], pc1, pc2;
+	int32_t i__, j, k;
+	float r__[3], pc1, pc2;
 
 /* 	Arguments */
 /*       Local variables that need not be saved */

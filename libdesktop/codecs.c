@@ -590,12 +590,12 @@ void lpc10_i(void)
 // Encode LPC10
 void lpc10_e(short* in, unsigned char* out)
 {
-	real speech[LPC10_SAMPLES_PER_FRAME];
-	INT32 bits[LPC10_BITS_IN_COMPRESSED_FRAME];
+	float speech[LPC10_SAMPLES_PER_FRAME];
+	int32_t bits[LPC10_BITS_IN_COMPRESSED_FRAME];
 	unsigned int i;
 
 	for (i = 0; i < LPC10_SAMPLES_PER_FRAME; i++)
-		speech[i] = (real)in[i] / 32768.0;
+		speech[i] = (float)in[i] / 32768.0;
 	lpc10_encode(speech, bits, lpc10_enc_state);
 	lpc10_build_bits(out, bits);
 
@@ -605,8 +605,8 @@ void lpc10_e(short* in, unsigned char* out)
 // Decode LPC10
 void lpc10_d(unsigned char* in, short* out)
 {
-	INT32 bits[LPC10_BITS_IN_COMPRESSED_FRAME];
-	real speech[LPC10_SAMPLES_PER_FRAME];
+	int32_t bits[LPC10_BITS_IN_COMPRESSED_FRAME];
+	float speech[LPC10_SAMPLES_PER_FRAME];
 	unsigned int i;
 
 	lpc10_extract_bits(bits, in);

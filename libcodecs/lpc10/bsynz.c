@@ -34,21 +34,15 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int bsynz_(real * coef, integer * ip, integer * iv, real * sout,
-		  real * rms, real * ratio, real * g2pass,
-		  struct lpc10_decoder_state *st);
-/* comlen contrl_ 12 */
-/*:ref: random_ 4 0 */
-#endif
+#include "bsynz.h"
+#include "lpc10.h"
+#include "lpc10tools.h"
 
 /* Common Block Declarations */
 
 extern struct {
-	integer order, lframe;
-	logical corrp;
+	int32_t order, lframe;
+	int32_t corrp;
 } contrl_;
 
 #define contrl_1 contrl_
@@ -122,43 +116,43 @@ extern struct {
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITBSYNZ. */
 
-/* Subroutine */ int bsynz_(real * coef, integer * ip, integer * iv,
-			    real * sout, real * rms, real * ratio,
-			    real * g2pass, struct lpc10_decoder_state *st)
+/* Subroutine */ int bsynz_(float *coef, int32_t * ip, int32_t * iv,
+			    float *sout, float *rms, float *ratio,
+			    float *g2pass, struct lpc10_decoder_state *st)
 {
 	/* Initialized data */
 
-	integer *ipo;
-	real *rmso;
-	static integer kexc[25] =
+	int32_t *ipo;
+	float *rmso;
+	static int32_t kexc[25] =
 	    { 8, -16, 26, -48, 86, -162, 294, -502, 718, -728, 184,
 		672, -610, -672, 184, 728, 718, 502, 294, 162, 86, 48, 26, 16, 8
 	};
-	real *exc;
-	real *exc2;
-	real *lpi1;
-	real *lpi2;
-	real *lpi3;
-	real *hpi1;
-	real *hpi2;
-	real *hpi3;
+	float *exc;
+	float *exc2;
+	float *lpi1;
+	float *lpi2;
+	float *lpi3;
+	float *hpi1;
+	float *hpi2;
+	float *hpi3;
 
 	/* System generated locals */
-	integer i__1, i__2;
-	real r__1, r__2;
+	int32_t i__1, i__2;
+	float r__1, r__2;
 
 	/* Builtin functions */
-	double sqrt(doublereal);
+	double sqrt(double);
 
 	/* Local variables */
-	real gain, xssq;
-	integer i__, j, k;
-	real noise[166], pulse;
-	integer px;
-	real sscale;
-	extern integer random_(struct lpc10_decoder_state *);
-	real xy, sum, ssq;
-	real lpi0, hpi0;
+	float gain, xssq;
+	int32_t i__, j, k;
+	float noise[166], pulse;
+	int32_t px;
+	float sscale;
+	extern int32_t random_(struct lpc10_decoder_state *);
+	float xy, sum, ssq;
+	float lpi0, hpi0;
 
 /* $Log$
  * Revision 1.15  2004/06/26 03:50:14  markster
@@ -245,7 +239,7 @@ extern struct {
 
 /* Many files which use fdebug are not listed, since it is only used in */
 /* those other files conditionally, to print trace statements. */
-/* 	integer fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
+/* 	int32_t fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /*  LPC order, Frame size, Quantization rate, Bits per frame, */
 /*    Error correction */
 /* Subroutine SETUP is the only place where order is assigned a value, */
@@ -274,7 +268,7 @@ extern struct {
 /* unvoiced frames, with no change in the coding rate, and no noticeable 
 */
 /* quality difference in the decoded speech. */
-/* 	integer quant, nbits */
+/* 	int32_t quant, nbits */
 /* *** Read/write: variables for debugging, not needed for LPC algorithm 
 */
 
@@ -300,7 +294,7 @@ extern struct {
 /* would be of much interest to an application in which LPC10 is */
 /* embedded. */
 /* listl and lincnt are not needed for an embedded LPC10 at all. */
-/* 	integer nframe, nunsfm, iclip, maxosp, listl, lincnt */
+/* 	int32_t nframe, nunsfm, iclip, maxosp, listl, lincnt */
 /* 	common /contrl/ fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /* 	common /contrl/ quant, nbits */
 /* 	common /contrl/ nframe, nunsfm, iclip, maxosp, listl, lincnt */
@@ -358,12 +352,12 @@ extern struct {
 		i__1 = *ip;
 		for (i__ = 1; i__ <= i__1; ++i__) {
 			exc[contrl_1.order + i__ - 1] =
-			    (real) (random_(st) / 64);
+			    (float)(random_(st) / 64);
 		}
 /*  Impulse doublet excitation for plosives */
 /*       (RANDOM()+32768) is in the range 0 to 2**16-1.  Therefore the
  */
-/*       following expression should be evaluated using integers with 
+/*       following expression should be evaluated using int32_ts with 
 at */
 /*       least 32 bits (16 isn't enough), and PX should be in the rang
 e */
@@ -379,7 +373,7 @@ e */
 		exc[px] -= pulse;
 /*  Load voiced excitation */
 	} else {
-		sscale = (real) sqrt((real) (*ip)) / 6.928f;
+		sscale = (float)sqrt((float)(*ip)) / 6.928f;
 		i__1 = *ip;
 		for (i__ = 1; i__ <= i__1; ++i__) {
 			exc[contrl_1.order + i__ - 1] = 0.f;
@@ -452,7 +446,7 @@ e */
 /*  Apply gain to match RMS */
 	r__1 = *rms * *rms;
 	ssq = r__1 * *ip;
-	gain = (real) sqrt(ssq / xssq);
+	gain = (float)sqrt(ssq / xssq);
 	i__1 = *ip;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		sout[i__] = gain * exc2[contrl_1.order + i__ - 1];

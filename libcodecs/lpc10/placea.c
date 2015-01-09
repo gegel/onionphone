@@ -32,12 +32,13 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
+#include "lpc10tools.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int placea_(integer * ipitch, integer * voibuf, integer * obound,
-		   integer * af, integer * vwin, integer * awin, integer * ewin,
-		   integer * lframe, integer * maxwin);
+extern int placea_(int32_t * ipitch, int32_t * voibuf, int32_t * obound,
+		   int32_t * af, int32_t * vwin, int32_t * awin, int32_t * ewin,
+		   int32_t * lframe, int32_t * maxwin);
 #endif
 
 /* *********************************************************************** */
@@ -116,22 +117,22 @@ extern int placea_(integer * ipitch, integer * voibuf, integer * obound,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int placea_(integer * ipitch, integer * voibuf, integer *
-			     obound, integer * af, integer * vwin,
-			     integer * awin, integer * ewin, integer * lframe,
-			     integer * maxwin)
+/* Subroutine */ int placea_(int32_t * ipitch, int32_t * voibuf, int32_t *
+			     obound, int32_t * af, int32_t * vwin,
+			     int32_t * awin, int32_t * ewin, int32_t * lframe,
+			     int32_t * maxwin)
 {
 	/* System generated locals */
-	real r__1;
+	float r__1;
 
 	/* Builtin functions */
-	integer i_nint(real *);
+	int32_t i_nint(float *);
 
 	/* Local variables */
-	logical allv, winv;
-	integer i__, j, k, l, hrange;
-	logical ephase;
-	integer lrange;
+	int32_t allv, winv;
+	int32_t i__, j, k, l, hrange;
+	int32_t ephase;
+	int32_t lrange;
 
 /*       Arguments */
 /*       Local variables that need not be saved */
@@ -189,7 +190,7 @@ t. */
 		k = (vwin[(*af << 1) + 1] + vwin[(*af << 1) + 2] + 1 - l) / 2;
 /* Choose the actual location to be the pitch multiple closest to this
 . */
-		r__1 = (real) (k - i__) / *ipitch;
+		r__1 = (float)(k - i__) / *ipitch;
 		awin[(*af << 1) + 1] = i__ + i_nint(&r__1) * *ipitch;
 		awin[(*af << 1) + 2] = awin[(*af << 1) + 1] + l - 1;
 /* If there is an onset bounding the right of the voicing window and t
@@ -208,7 +209,7 @@ rd */
 			awin[(*af << 1) + 2] += *ipitch;
 		}
 /* If this placement puts the analysis window above HRANGE, then */
-/* move it backward an integer number of pitch periods. */
+/* move it backward an int32_t number of pitch periods. */
 		while (awin[(*af << 1) + 2] > hrange) {
 			awin[(*af << 1) + 1] -= *ipitch;
 			awin[(*af << 1) + 2] -= *ipitch;
@@ -220,14 +221,14 @@ rd */
 			awin[(*af << 1) + 2] += *ipitch;
 		}
 /* Make Energy window be phase-synchronous. */
-		ephase = TRUE_;
+		ephase = 1;
 /* Case 3 */
 	} else {
 		awin[(*af << 1) + 1] = vwin[(*af << 1) + 1];
 		awin[(*af << 1) + 2] = vwin[(*af << 1) + 2];
-		ephase = FALSE_;
+		ephase = 0;
 	}
-/* RMS is computed over an integer number of pitch periods in the analysis
+/* RMS is computed over an int32_t number of pitch periods in the analysis
  */
 /*window.  When it is not placed phase-synchronously, it is placed as clos
 e*/

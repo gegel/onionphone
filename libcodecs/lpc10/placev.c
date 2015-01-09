@@ -29,13 +29,14 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
+#include "lpc10tools.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int placev_(integer * osbuf, integer * osptr, integer * oslen,
-		   integer * obound, integer * vwin, integer * af,
-		   integer * lframe, integer * minwin, integer * maxwin,
-		   integer * dvwinl, integer * dvwinh);
+extern int placev_(int32_t * osbuf, int32_t * osptr, int32_t * oslen,
+		   int32_t * obound, int32_t * vwin, int32_t * af,
+		   int32_t * lframe, int32_t * minwin, int32_t * maxwin,
+		   int32_t * dvwinl, int32_t * dvwinh);
 #endif
 
 /* ****************************************************************** */
@@ -113,21 +114,21 @@ extern int placev_(integer * osbuf, integer * osptr, integer * oslen,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int placev_(integer * osbuf, integer * osptr, integer * oslen,
-			     integer * obound, integer * vwin, integer * af,
-			     integer * lframe, integer * minwin,
-			     integer * maxwin, integer * dvwinl,
-			     integer * dvwinh)
+/* Subroutine */ int placev_(int32_t * osbuf, int32_t * osptr, int32_t * oslen,
+			     int32_t * obound, int32_t * vwin, int32_t * af,
+			     int32_t * lframe, int32_t * minwin,
+			     int32_t * maxwin, int32_t * dvwinl,
+			     int32_t * dvwinh)
 {
 	(void)oslen;
 	(void)dvwinh;
 
 	/* System generated locals */
-	integer i__1, i__2;
+	int32_t i__1, i__2;
 
 	/* Local variables */
-	logical crit;
-	integer i__, q, osptr1, hrange, lrange;
+	int32_t crit;
+	int32_t i__, q, osptr1, hrange, lrange;
 
 /*       Arguments */
 /*       Local variables that need not be saved */
@@ -241,11 +242,11 @@ t*/
 		i__1 = osptr1 - 1;
 		for (i__ = q + 1; i__ <= i__1; ++i__) {
 			if (osbuf[i__] - osbuf[q] >= *minwin) {
-				crit = TRUE_;
+				crit = 1;
 				goto L105;
 			}
 		}
-		crit = FALSE_;
+		crit = 0;
  L105:
 /* Computing MAX */
 		i__1 = (*af - 1) * *lframe, i__2 = lrange + *minwin - 1;

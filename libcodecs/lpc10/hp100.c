@@ -34,10 +34,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int hp100_(real * speech, integer * start, integer * end,
+extern int hp100_(float *speech, int32_t * start, int32_t * end,
 		  struct lpc10_encoder_state *st);
 extern int inithp100_(void);
 #endif
@@ -111,7 +111,7 @@ extern int inithp100_(void);
 /* you want to switch to using a new audio stream for this filter, or */
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITHP100. */
-/* Subroutine */ int hp100_(real * speech, integer * start, integer * end,
+/* Subroutine */ int hp100_(float *speech, int32_t * start, int32_t * end,
 			    struct lpc10_encoder_state *st)
 {
 	/* Temporary local copies of variables in lpc10_encoder_state.
@@ -120,17 +120,17 @@ extern int inithp100_(void);
 	   variables in the lpc10_encoder_state structure.  It is just a
 	   guess that it will be faster. */
 
-	real z11;
-	real z21;
-	real z12;
-	real z22;
+	float z11;
+	float z21;
+	float z12;
+	float z22;
 
 	/* System generated locals */
-	integer i__1;
+	int32_t i__1;
 
 	/* Local variables */
-	integer i__;
-	real si, err;
+	int32_t i__;
+	float si, err;
 
 /*       Arguments */
 /*       Local variables that need not be saved */

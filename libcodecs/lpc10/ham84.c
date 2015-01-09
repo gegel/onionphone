@@ -26,10 +26,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int ham84_(integer * input, integer * output, integer * errcnt);
+extern int ham84_(int32_t * input, int32_t * output, int32_t * errcnt);
 #endif
 
 /* ***************************************************************** */
@@ -83,11 +83,11 @@ extern int ham84_(integer * input, integer * output, integer * errcnt);
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int ham84_(integer * input, integer * output, integer * errcnt)
+/* Subroutine */ int ham84_(int32_t * input, int32_t * output, int32_t * errcnt)
 {
 	/* Initialized data */
 
-	static integer dactab[128] =
+	static int32_t dactab[128] =
 	    { 16, 0, 0, 3, 0, 5, 14, 7, 0, 9, 14, 11, 14, 13, 30, 14, 0,
 		9, 2, 7, 4, 7, 7, 23, 9, 25, 10, 9, 12, 9, 14, 7, 0, 5, 2, 11,
 		5, 21, 6, 5, 8, 11, 11, 27,
@@ -100,7 +100,7 @@ extern int ham84_(integer * input, integer * output, integer * errcnt);
 		12, 15, 15, 31
 	};
 
-	integer i__, j, parity;
+	int32_t i__, j, parity;
 
 /*       Arguments */
 /*       Parameters/constants */

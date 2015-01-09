@@ -26,10 +26,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int lpfilt_(real * inbuf, real * lpbuf, integer * len, integer * nsamp);
+extern int lpfilt_(float *inbuf, float *lpbuf, int32_t * len, int32_t * nsamp);
 #endif
 
 /* *********************************************************************** */
@@ -81,15 +81,15 @@ extern int lpfilt_(real * inbuf, real * lpbuf, integer * len, integer * nsamp);
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int lpfilt_(real * inbuf, real * lpbuf, integer * len,
-			     integer * nsamp)
+/* Subroutine */ int lpfilt_(float *inbuf, float *lpbuf, int32_t * len,
+			     int32_t * nsamp)
 {
 	/* System generated locals */
-	integer i__1;
+	int32_t i__1;
 
 	/* Local variables */
-	integer j;
-	real t;
+	int32_t j;
+	float t;
 
 /* 	Arguments */
 /* 	Parameters/constants */

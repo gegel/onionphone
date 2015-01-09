@@ -26,12 +26,13 @@ Some OSS fixes and a few lpc changes to make it actually work
 	-lf2c -lm   (in that order)
 */
 
-#include "f2c.h"
+#include "lpc10.h"
+#include "lpc10tools.h"
 
 #ifdef P_R_O_T_O_T_Y_P_E_S
-extern int tbdm_(real * speech, integer * lpita, integer * tau, integer * ltau,
-		 real * amdf, integer * minptr, integer * maxptr,
-		 integer * mintau);
+extern int tbdm_(float *speech, int32_t * lpita, int32_t * tau, int32_t * ltau,
+		 float *amdf, int32_t * minptr, int32_t * maxptr,
+		 int32_t * mintau);
 /*:ref: difmag_ 14 8 6 4 4 4 4 6 4 4 */
 #endif
 
@@ -94,20 +95,20 @@ extern int tbdm_(real * speech, integer * lpita, integer * tau, integer * ltau,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int tbdm_(real * speech, integer * lpita, integer * tau,
-			   integer * ltau, real * amdf, integer * minptr,
-			   integer * maxptr, integer * mintau)
+/* Subroutine */ int tbdm_(float *speech, int32_t * lpita, int32_t * tau,
+			   int32_t * ltau, float *amdf, int32_t * minptr,
+			   int32_t * maxptr, int32_t * mintau)
 {
 	/* System generated locals */
-	integer i__1, i__2, i__3, i__4;
+	int32_t i__1, i__2, i__3, i__4;
 
 	/* Local variables */
-	real amdf2[6];
-	integer minp2, ltau2, maxp2, i__;
-	extern /* Subroutine */ int difmag_(real *, integer *, integer *, integer
-					    *, integer *, real *, integer *,
-					    integer *);
-	integer minamd, ptr, tau2[6];
+	float amdf2[6];
+	int32_t minp2, ltau2, maxp2, i__;
+	extern /* Subroutine */ int difmag_(float *, int32_t *, int32_t *, int32_t
+					    *, int32_t *, float *, int32_t *,
+					    int32_t *);
+	int32_t minamd, ptr, tau2[6];
 
 /* 	Arguments */
 /* 	REAL SPEECH(LPITA+TAU(LTAU)), AMDF(LTAU) */
@@ -125,7 +126,7 @@ extern int tbdm_(real * speech, integer * lpita, integer * tau, integer * ltau,
 	difmag_(&speech[1], lpita, &tau[1], ltau, &tau[*ltau], &amdf[1], minptr,
 		maxptr);
 	*mintau = tau[*minptr];
-	minamd = (integer) amdf[*minptr];
+	minamd = (int32_t) amdf[*minptr];
 /*   Build table containing all lags within +/- 3 of the AMDF minimum */
 /*    excluding all that have already been computed */
 	ltau2 = 0;
@@ -149,9 +150,9 @@ extern int tbdm_(real * speech, integer * lpita, integer * tau, integer * ltau,
 	if (ltau2 > 0) {
 		difmag_(&speech[1], lpita, tau2, &ltau2, &tau[*ltau], amdf2,
 			&minp2, &maxp2);
-		if (amdf2[minp2 - 1] < (real) minamd) {
+		if (amdf2[minp2 - 1] < (float)minamd) {
 			*mintau = tau2[minp2 - 1];
-			minamd = (integer) amdf2[minp2 - 1];
+			minamd = (int32_t) amdf2[minp2 - 1];
 		}
 	}
 /*   Check one octave up, if there are any lags not yet computed */
@@ -167,14 +168,14 @@ extern int tbdm_(real * speech, integer * lpita, integer * tau, integer * ltau,
 		}
 		difmag_(&speech[1], lpita, tau2, &ltau2, &tau[*ltau], amdf2,
 			&minp2, &maxp2);
-		if (amdf2[minp2 - 1] < (real) minamd) {
+		if (amdf2[minp2 - 1] < (float)minamd) {
 			*mintau = tau2[minp2 - 1];
-			minamd = (integer) amdf2[minp2 - 1];
+			minamd = (int32_t) amdf2[minp2 - 1];
 			*minptr += -20;
 		}
 	}
 /*   Force minimum of the AMDF array to the high resolution minimum */
-	amdf[*minptr] = (real) minamd;
+	amdf[*minptr] = (float)minamd;
 /*   Find maximum of AMDF within 1/2 octave of minimum */
 /* Computing MAX */
 	i__2 = *minptr - 5;
