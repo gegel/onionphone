@@ -184,7 +184,7 @@ void voicin(int vwin[2][AF], float *inbuf, float *lpbuf, int half, float minamd,
 	value[2] = (float)zc;
 	value[3] = rc1;
 	value[4] = qs;
-	value[5] = ivrc[1];
+	value[5] = ivrc[2];
 	value[6] = ar_b;
 	value[7] = ar_f;
 	value[8] = 0.0;
@@ -250,8 +250,8 @@ void voicin(int vwin[2][AF], float *inbuf, float *lpbuf, int half, float minamd,
 */
 
 /*OT = (AND(OBOUND(1), 2) .NE. 0 .OR. OBOUND(2) .EQ. 1) .AND. AND(OBOUND(3), 1) .EQ. 0 */
-		ot = ((obound[0] & 2) != 0 || obound[1] == 1)
-		    && (obound[2] & 1) == 0;
+		ot = ((obound[1] & 2) != 0 || obound[2] == 1)
+		    && (obound[3] & 1) == 0;
 
 /*   Multi-way dispatch on voicing decision history:	*/
 

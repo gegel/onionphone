@@ -73,7 +73,7 @@ void onset(float pebuf[], int osbuf[], int *osptr)
 			if (!hyst) {
 /*   Ignore if buffer full	*/
 				if (*osptr <= OSLEN) {
-					osbuf[*osptr - 1] = i - l2lag;
+					osbuf[*osptr] = i - l2lag;
 					*osptr = *osptr + 1;
 				}
 				hyst = 1;

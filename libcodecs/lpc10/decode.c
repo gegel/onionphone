@@ -114,7 +114,7 @@ void decode(int ipitv, int *irms, int irc[MAXORD + 1],
 	drms[fut] = *irms;
 
 	for (i = 1; i <= ORDER; i++)
-		drc[fut][i - 1] = irc[i - 1];
+		drc[fut][i - 1] = irc[i];
 
 /*  Determine index to IVTAB from V/UV decision
 *  If error rate is high then use alternate table	*/
@@ -138,8 +138,8 @@ void decode(int ipitv, int *irms, int irc[MAXORD + 1],
 
 /*  Voice/unvoice decision determined from bits 0 and 1 of IVTAB	*/
 
-	voice[0] = (int)(icorf * 0.5) & 1;
-	voice[1] = icorf & 1;
+	voice[1] = (int)(icorf * 0.5) & 1;
+	voice[2] = icorf & 1;
 
 /*  Skip decoding on first frame because present data not yet available */
 
@@ -190,7 +190,7 @@ void decode(int ipitv, int *irms, int irc[MAXORD + 1],
 		*irms = drms[pres];
 
 		for (i = 1; i <= ORDER; i++)
-			irc[i - 1] = drc[pres][i - 1];
+			irc[i] = drc[pres][i - 1];
 		if (ipit == 1)
 			dpit[pres] = dpit[past];
 		if (ipit == 3)
@@ -212,7 +212,7 @@ void decode(int ipitv, int *irms, int irc[MAXORD + 1],
 				    && abs(drc[pres][i - 1] -
 					   drc[past][i - 1]) >=
 				    corth[ixcor - 1][i + 1])
-					irc[i - 1] =
+					irc[i] =
 					    median(drc[past][i - 1],
 						   drc[pres][i - 1],
 						   drc[fut][i - 1]);
@@ -234,12 +234,12 @@ void decode(int ipitv, int *irms, int irc[MAXORD + 1],
 	}			/* end if first */
 	if ((icorf & abit[4]) != 0)
 		for (i = 5; i <= ORDER; i++)
-			irc[i - 1] = zrc[i - 1];
+			irc[i] = zrc[i - 1];
 
 /*  House keeping  - one frame delay	*/
 
 	iovoic = ivoic;
-	ivp2h = voice[1];
+	ivp2h = voice[2];
 	dpit[past] = dpit[pres];
 	dpit[pres] = dpit[fut];
 	drms[past] = drms[pres];
@@ -258,7 +258,7 @@ void decode(int ipitv, int *irms, int irc[MAXORD + 1],
 *  Protect from illegal coded value (-16) caused by bit errors	*/
 
 	for (i = 1; i <= 2; i++) {
-		i2 = irc[i - 1];
+		i2 = irc[i];
 		i1 = 0;
 		if (i2 < 0) {
 			i1 = 1;
@@ -270,14 +270,14 @@ void decode(int ipitv, int *irms, int irc[MAXORD + 1],
 		if (i1 == 1)
 			i2 = -i2;
 		ishift = 15 - nbit[i - 1];
-/*	   irc[i - 1]= i2*pow(2.0,(float)ishift); */
-		irc[i - 1] = i2 * (2 << (ishift - 1));
+/*	   irc[i]= i2*pow(2.0,(float)ishift); */
+		irc[i] = i2 * (2 << (ishift - 1));
 	}
 
 /*  Decode RC(3)-RC(10) to sign plus 14 bits	*/
 
 	for (i = 3; i <= ORDER; i++) {
-		i2 = irc[i - 1];
+		i2 = irc[i];
 		ishift = 15 - nbit[i - 1];
 /*	   i2 = i2*pow(2.0,(float)ishift);  */
 		i2 = i2 * (2 << (ishift - 1));
@@ -286,15 +286,15 @@ void decode(int ipitv, int *irms, int irc[MAXORD + 1],
 		if (ftemp < 0) {
 			ftemp = -ftemp;
 			itemp = (int)ftemp;
-			irc[i - 1] = -itemp;
+			irc[i] = -itemp;
 		} else
-			irc[i - 1] = (int)ftemp;
+			irc[i] = (int)ftemp;
 	}
 
 /*  Scale RMS and RC's to reals */
 
 	*rms = (float)(*irms);
 	for (i = 1; i <= ORDER; i++)
-		rc[i - 1] = (float)(irc[i - 1] * 6.103515625e-05);	/* 16,384 = 2**14  */
+		rc[i] = (float)(irc[i] * 6.103515625e-05);	/* 16,384 = 2**14  */
 
 }

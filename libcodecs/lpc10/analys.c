@@ -157,7 +157,7 @@ void analys(float speech[], int voice[2], int *pitch, float *rms, float rc[])
 	i = SBUFH + 1 - LFRAME;
 	preemp(&inbuf[i - 1], &pebuf[i - 1], LFRAME, 0.4f, zpre);
 
-	onset(pebuf, osbuf, &osptr);
+	onset(pebuf, osbuf - 1, &osptr);
 
 	placev(osbuf, osptr, &obound[AF - 1], vwin);
 
@@ -174,9 +174,9 @@ void analys(float speech[], int voice[2], int *pitch, float *rms, float rc[])
 
 	lpfilt31(&inbuf[LBUFH - 1 - PWLEN - 1], &lpbuf[LBUFH + 1 - PWLEN - 1]);
 
-	ivfilt(&lpbuf[PWINL - 1], &ivbuf[PWINL - 1], ivrc);	/*C-shifted */
+	ivfilt(&lpbuf[PWINL - 1], &ivbuf[PWINL - 1], ivrc - 1);	/*C-shifted */
 
-	tbdm(&ivbuf[PWINL - 1], tau, amdf, &minptr, &maxptr, &mintau);	/*C-shifted */
+	tbdm(&ivbuf[PWINL - 1], tau - 1, amdf - 1, &minptr, &maxptr, &mintau);	/*C-shifted */
 
 /*	  Voicing decisions are made for each half frame of input speech.
 *   An initial voicing classification is made for each half of the
@@ -195,7 +195,7 @@ void analys(float speech[], int voice[2], int *pitch, float *rms, float rc[])
 #ifndef NN_VOICE
 	for (half = 1; half <= 2; half++) {
 		voicin(vwin, inbuf, lpbuf, half, amdf[minptr - 1],
-		       amdf[maxptr - 1], mintau, ivrc, obound, voibuf);
+		       amdf[maxptr - 1], mintau, ivrc - 1, obound - 1, voibuf);
 	}
 
 #else
@@ -208,7 +208,7 @@ void analys(float speech[], int voice[2], int *pitch, float *rms, float rc[])
 *   given the current voicing decision and the AMDF array
 */
 
-	dyptrk(amdf, minptr, voibuf[1][AF], pitch, &midx);
+	dyptrk(amdf - 1, minptr, voibuf[1][AF], pitch, &midx);
 	ipitch = tau[midx - 1];
 
 /*   Place spectrum analysis and energy windows */
@@ -218,7 +218,7 @@ void analys(float speech[], int voice[2], int *pitch, float *rms, float rc[])
 
 	lanal = awin[1][AF - 1] + 1 - awin[0][AF - 1];
 
-	dcbias(lanal, &pebuf[awin[0][AF - 1]] - 1, abuf);
+	dcbias(lanal, &pebuf[awin[0][AF - 1]] - 1, abuf - 1);
 
 /*   Compute RMS over integer number of pitch periods within the
 *   analysis window.
@@ -229,7 +229,7 @@ void analys(float speech[], int voice[2], int *pitch, float *rms, float rc[])
 	       &abuf[ewin[0][AF - 1] - awin[0][AF - 1]] - 1, &rmsbuf[AF - 1]);
 
 /*   Matrix load and invert, check RC's for stability  */
-	mload(lanal, abuf, phi, psi);
+	mload(lanal, abuf - 1, phi, psi - 1);
 	invert(phi, psi, rcbuf);
 	rcchk(rcbuf);
 
@@ -239,5 +239,5 @@ void analys(float speech[], int voice[2], int *pitch, float *rms, float rc[])
 	voice[1] = voibuf[1][AF - 2];
 	*rms = rmsbuf[AF - 3];
 	for (i = 1; i <= ORDER; i++)
-		rc[i - 1] = rcbuf[i - 1][AF - 3];
+		rc[i] = rcbuf[i - 1][AF - 3];
 }

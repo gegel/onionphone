@@ -37,13 +37,13 @@ void ivfilt(float lpbuf[], float ivbuf[], float ivrc[])
 
 	pc1 = 0.;
 	pc2 = 0.;
-	ivrc[0] = 0.;
 	ivrc[1] = 0.;
+	ivrc[2] = 0.;
 	if (r[0] > 0.000001) {
-		ivrc[0] = r[1] / r[0];
-		ivrc[1] = (r[2] - ivrc[0] * r[1]) / (r[0] - ivrc[0] * r[1]);
-		pc1 = ivrc[0] - ivrc[0] * ivrc[1];
-		pc2 = ivrc[1];
+		ivrc[1] = r[1] / r[0];
+		ivrc[2] = (r[2] - ivrc[1] * r[1]) / (r[0] - ivrc[1] * r[1]);
+		pc1 = ivrc[1] - ivrc[1] * ivrc[2];
+		pc2 = ivrc[2];
 	}
 
 /*  Inverse filter LPBUF into IVBUF	*/

@@ -38,7 +38,7 @@ void dyptrk(float amdf[], int minptr, int voice, int *pitch, int *midx)
 *   is used to maintain arithmetic precision.	*/
 
 	if (voice == 1)
-		alphax = (float)(.75 * alphax + amdf[minptr - 1] * .5);
+		alphax = (float)(.75 * alphax + amdf[minptr] * .5);
 	else
 		/*alphax = (63./64.)*alphax; */
 		alphax = (0.984375f) * alphax;
@@ -87,13 +87,13 @@ void dyptrk(float amdf[], int minptr, int voice, int *pitch, int *midx)
 /*   Update S using AMDF
 *   Find maximum, minimum, and location of minimum	*/
 
-	s[0] += (float)(amdf[0] * 0.5);
+	s[0] += (float)(amdf[1] * 0.5);
 	minsc = s[0];
 	maxsc = minsc;
 	*midx = 1;
 
 	for (i = 2; i <= LTAU; i++) {
-		s[i - 1] += (float)(amdf[i - 1] * 0.5);
+		s[i - 1] += (float)(amdf[i] * 0.5);
 		if (s[i - 1] > maxsc)
 			maxsc = s[i - 1];
 		if (s[i - 1] < minsc)

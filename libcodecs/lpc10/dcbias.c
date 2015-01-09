@@ -28,7 +28,7 @@ void dcbias(int len, float *speech, float *sigout)
 		bias = bias + *ptr1++;
 
 	bias = bias / len;
-	ptr1 = sigout;
+	ptr1 = sigout + 1;
 	ptr2 = speech + 1;
 	for (i = 1; i <= len; i++)
 		*ptr1++ = *ptr2++ - bias;

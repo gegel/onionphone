@@ -66,15 +66,15 @@ void encode(int voice[3], int *pitch, float *rms, float rc[ORDER + 1],
 	*irms = (int)(*rms);
 
 	for (i = 1; i <= ORDER; i++)
-		irc[i - 1] = (int)(rc[i - 1] * 32768);
+		irc[i] = (int)(rc[i] * 32768);
 
 /*  Encode pitch and voicing	*/
 
-	if (voice[0] != 0 && voice[1] != 0)
+	if (voice[1] != 0 && voice[2] != 0)
 		*ipitch = entau[*pitch - 1];
 	else
 		*ipitch = 0;
-	if (voice[0] != voice[1])
+	if (voice[1] != voice[2])
 		*ipitch = 127;
 
 /*  Encode RMS by binary table search	*/
@@ -96,7 +96,7 @@ void encode(int voice[3], int *pitch, float *rms, float rc[ORDER + 1],
 /*  Encode RC(1) and (2) as log-area-ratios	*/
 
 	for (i = 1; i <= 2; i++) {
-		i2 = irc[i - 1];
+		i2 = irc[i];
 		mrk = 0;
 		if (i2 < 0) {
 			i2 = -i2;
@@ -107,13 +107,13 @@ void encode(int voice[3], int *pitch, float *rms, float rc[ORDER + 1],
 		i2 = entab6[i2];
 		if (mrk != 0)
 			i2 = -i2;
-		irc[i - 1] = i2;
+		irc[i] = i2;
 	}
 
 /*  Encode RC(3) - (10) linearly, remove bias then scale	*/
 
 	for (i = 3; i <= ORDER; i++) {
-		i2 = irc[i - 1] >> 1;
+		i2 = irc[i] >> 1;
 /*	i2 = (i2+enadd[ORDER-i])*enscl[ORDER-i]; */
 		/* problem with truncating negative numbers */
 		if (enadd[ORDER - i] < 0) {
@@ -143,7 +143,7 @@ void encode(int voice[3], int *pitch, float *rms, float rc[ORDER + 1],
 		i2 = i2 / (2 << (nbit - 1));
 		if (i3 == -1)
 			i2--;
-		irc[i - 1] = i2;
+		irc[i] = i2;
 	}
 
 /*	    Protect the most significant bits of the most
@@ -152,12 +152,12 @@ void encode(int voice[3], int *pitch, float *rms, float rc[ORDER + 1],
 *     replacing RC(5) - RC(10). */
 
 	if (*ipitch == 0 || *ipitch == 127) {
-		irc[4] = enctab[(irc[0] & 30) >> 1];
 		irc[5] = enctab[(irc[1] & 30) >> 1];
 		irc[6] = enctab[(irc[2] & 30) >> 1];
-		irc[7] = enctab[(*irms & 30) >> 1];
-		irc[8] = enctab[(irc[3] & 30) >> 1] >> 1;
-		irc[9] = enctab[(irc[3] & 30) >> 1] & 1;
+		irc[7] = enctab[(irc[3] & 30) >> 1];
+		irc[8] = enctab[(*irms & 30) >> 1];
+		irc[9] = enctab[(irc[4] & 30) >> 1] >> 1;
+		irc[10] = enctab[(irc[4] & 30) >> 1] & 1;
 	}
 
 }
