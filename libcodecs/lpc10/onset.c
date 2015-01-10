@@ -29,6 +29,7 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "lpc10.h"
@@ -266,7 +267,7 @@ int lpc10_onset(float *pebuf, int32_t * osbuf, int32_t *
 		r__1 = pebuf[i__ - 1];
 		*d__ = (r__1 * r__1 + (*d__) * 63.f) / 64.f;
 		if ((*d__) != 0.f) {
-			if (abs(*n) > (*d__)) {
+			if (fabsf(*n) > (*d__)) {
 				*fpc = (float)r_sign(&c_b2, n);
 			} else {
 				*fpc = (*n) / (*d__);
@@ -298,7 +299,7 @@ of */
 		l2buf[*l2ptr1 - 1] = *fpc;
 		*l2ptr1 = *l2ptr1 % 16 + 1;
 		*l2ptr2 = *l2ptr2 % 16 + 1;
-		if ((r__1 = *l2sum1 - l2sum2, abs(r__1)) > 1.7f) {
+		if ((r__1 = *l2sum1 - l2sum2, fabsf(r__1)) > 1.7f) {
 			if (!(*hyst)) {
 /*   Ignore if buffer full */
 				if (*osptr <= *oslen) {

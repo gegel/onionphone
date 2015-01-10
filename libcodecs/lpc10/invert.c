@@ -21,6 +21,7 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "invert.h"
@@ -155,7 +156,7 @@ int lpc10_invert(int32_t * order, float *phi, float *psi, float *rc)
 			}
 		}
 /*  Compute intermediate results, which are similar to RC's */
-		if ((r__1 = v[j + j * 10 - 11], abs(r__1)) < 1e-10f) {
+		if ((r__1 = v[j + j * 10 - 11], fabsf(r__1)) < 1e-10f) {
 			goto L100;
 		}
 		rc[j] = psi[j];

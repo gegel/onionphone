@@ -21,6 +21,7 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "lpc10.h"
@@ -195,9 +196,9 @@ int lpc10_vparms(int32_t * vwin, float *inbuf, float *lpbuf, int32_t
 	oldsgn = (float)r_sign(&c_b2, &r__1);
 	i__1 = stop;
 	for (i__ = start; i__ <= i__1; ++i__) {
-		lp_rms__ += (r__1 = lpbuf[i__], abs(r__1));
-		ap_rms__ += (r__1 = inbuf[i__], abs(r__1));
-		e_pre__ += (r__1 = inbuf[i__] - inbuf[i__ - 1], abs(r__1));
+		lp_rms__ += (r__1 = lpbuf[i__], fabsf(r__1));
+		ap_rms__ += (r__1 = inbuf[i__], fabsf(r__1));
+		e_pre__ += (r__1 = inbuf[i__] - inbuf[i__ - 1], fabsf(r__1));
 /* Computing 2nd power */
 		r__1 = inbuf[i__];
 		e0ap += r__1 * r__1;

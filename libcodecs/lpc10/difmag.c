@@ -21,6 +21,7 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include <math.h>
 #include <stdlib.h>
 
 #include "difmag.h"
@@ -115,7 +116,7 @@ int lpc10_difmag(float *speech, int32_t * lpita, int32_t * tau,
 		i__2 = n2;
 		for (j = n1; j <= i__2; j += 4) {
 			sum += (r__1 =
-				speech[j] - speech[j + tau[i__]], abs(r__1));
+				speech[j] - speech[j + tau[i__]], fabsf(r__1));
 		}
 		amdf[i__] = sum;
 		if (amdf[i__] < amdf[*minptr]) {
