@@ -268,7 +268,6 @@ int lpc10_pitsyn(int32_t * order, int32_t * voice,
 	uvpit = 0.f;
 	*ratio = *rms / (*rmso + 8.f);
 	if (*first) {
-		lsamp = 0;
 		ivoice = voice[2];
 		if (ivoice == 0) {
 			*pitch = *lframe / 4;
@@ -299,7 +298,6 @@ e */
 	} else {
 		vflag = 0;
 		lsamp = *lframe + *jsamp;
-		slope = (*pitch - *ipito) / (float)lsamp;
 		*nout = 0;
 		jused = 0;
 		istart = 1;

@@ -306,7 +306,6 @@ n*/
 /*   Left to right pass: */
 	iptr = *ipoint + 1;
 	p[iptr * 60 - 60] = 1;
-	i__ = 1;
 	pbar = 1;
 	sbar = s[0];
 	i__1 = *ltau;

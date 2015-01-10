@@ -572,7 +572,6 @@ n*/
 	*snr = (float)i_nint(&r__1);
 	snr2 = *snr * *fbue / max(*lbue, 1);
 /*   Quantize SNR to SNRL according to VDCL thresholds. */
-	snrl = 1;
 	i__1 = nvdcl - 1;
 	for (snrl = 1; snrl <= i__1; ++snrl) {
 		if (snr2 > vdcl[snrl - 1]) {
@@ -609,7 +608,6 @@ n*/
 /*     The value of VSTATE is not used for any other purpose when this is 
 */
 /*     true. */
-	vstate = -1;
 	if (*half == 1) {
 		goto L99;
 	}
