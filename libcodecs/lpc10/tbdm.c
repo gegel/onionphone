@@ -123,7 +123,7 @@ int lpc10_tbdm(float *speech, int32_t * lpita, int32_t * tau,
 /* Computing MIN */
 	i__3 = *mintau + 3, i__4 = tau[*ltau] - 1;
 	i__2 = min(i__3, i__4);
-	for (i__ = max(i__1, 41); i__ <= i__2; ++i__) {
+	for (i__ = (max(i__1, 41)); i__ <= i__2; ++i__) {
 		while (tau[ptr] < i__) {
 			++ptr;
 		}
