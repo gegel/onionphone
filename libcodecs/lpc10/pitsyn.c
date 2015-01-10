@@ -32,11 +32,6 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "lpc10.h"
 #include "pitsyn.h"
 
