@@ -29,18 +29,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "hp100.h"
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int hp100_(float *speech, int32_t * start, int32_t * end,
-		  struct lpc10_encoder_state *st);
-extern int inithp100_(void);
-#endif
 
 /* ********************************************************************* */
 
@@ -111,8 +101,8 @@ extern int inithp100_(void);
 /* you want to switch to using a new audio stream for this filter, or */
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITHP100. */
-/* Subroutine */ int hp100_(float *speech, int32_t * start, int32_t * end,
-			    struct lpc10_encoder_state *st)
+int lpc10_hp100(float *speech, int32_t * start, int32_t * end,
+		struct lpc10_encoder_state *st)
 {
 	/* Temporary local copies of variables in lpc10_encoder_state.
 	   I've only created these because it might cause the loop below
@@ -167,4 +157,4 @@ extern int inithp100_(void);
 	st->z22 = z22;
 
 	return 0;
-}				/* hp100_ */
+}				/* lpc10_hp100 */

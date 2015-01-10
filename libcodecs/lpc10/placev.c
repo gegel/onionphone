@@ -24,20 +24,9 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "lpc10.h"
 #include "lpc10tools.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int placev_(int32_t * osbuf, int32_t * osptr, int32_t * oslen,
-		   int32_t * obound, int32_t * vwin, int32_t * af,
-		   int32_t * lframe, int32_t * minwin, int32_t * maxwin,
-		   int32_t * dvwinl, int32_t * dvwinh);
-#endif
+#include "placev.h"
 
 /* ****************************************************************** */
 
@@ -114,11 +103,10 @@ extern int placev_(int32_t * osbuf, int32_t * osptr, int32_t * oslen,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int placev_(int32_t * osbuf, int32_t * osptr, int32_t * oslen,
-			     int32_t * obound, int32_t * vwin, int32_t * af,
-			     int32_t * lframe, int32_t * minwin,
-			     int32_t * maxwin, int32_t * dvwinl,
-			     int32_t * dvwinh)
+int lpc10_placev(int32_t * osbuf, int32_t * osptr, int32_t * oslen,
+		 int32_t * obound, int32_t * vwin, int32_t * af,
+		 int32_t * lframe, int32_t * minwin,
+		 int32_t * maxwin, int32_t * dvwinl, int32_t * dvwinh)
 {
 	(void)oslen;
 	(void)dvwinh;
@@ -282,4 +270,4 @@ t*/
 		}
 	}
 	return 0;
-}				/* placev_ */
+}				/* lpc10_placev */

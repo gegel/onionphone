@@ -21,16 +21,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "dcbias.h"
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int dcbias_(int32_t * len, float *speech, float *sigout);
-#endif
 
 /* ********************************************************************* */
 
@@ -77,7 +69,7 @@ extern int dcbias_(int32_t * len, float *speech, float *sigout);
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int dcbias_(int32_t * len, float *speech, float *sigout)
+int lpc10_dcbias(int32_t * len, float *speech, float *sigout)
 {
 	/* System generated locals */
 	int32_t i__1;
@@ -104,4 +96,4 @@ extern int dcbias_(int32_t * len, float *speech, float *sigout);
 		sigout[i__] = speech[i__] - bias;
 	}
 	return 0;
-}				/* dcbias_ */
+}				/* lpc10_dcbias */

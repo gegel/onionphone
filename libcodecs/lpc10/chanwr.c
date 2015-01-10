@@ -26,13 +26,9 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include <stdlib.h>
 
+#include "chanwr.h"
 #include "lpc10.h"
 
 /* *********************************************************************** */
@@ -128,9 +124,9 @@ Some OSS fixes and a few lpc changes to make it actually work
 /* 	R5-1, R6-1, R7-2, R9-0,  P-5, */
 /* 	R5-2, R6-2,R10-1, R8-2,  P-6, R9-1, */
 /* 	R5-3, R6-3, R7-3, R9-2, R8-3, SYNC */
-/* Subroutine */ int chanwr_0_(int n__, int32_t * order, int32_t * ipitv,
-			       int32_t * irms, int32_t * irc, int32_t * ibits,
-			       struct lpc10_encoder_state *st)
+static int chanwr_0_(int n__, int32_t * order, int32_t * ipitv,
+		     int32_t * irms, int32_t * irc, int32_t * ibits,
+		     struct lpc10_encoder_state *st)
 {
 	/* Initialized data */
 
@@ -224,15 +220,14 @@ Some OSS fixes and a few lpc changes to make it actually work
 	return 0;
 }				/* chanwr_ */
 
-/* Subroutine */ int chanwr_(int32_t * order, int32_t * ipitv, int32_t * irms,
-			     int32_t * irc, int32_t * ibits,
-			     struct lpc10_encoder_state *st)
+int lpc10_chanwr(int32_t * order, int32_t * ipitv, int32_t * irms,
+		 int32_t * irc, int32_t * ibits, struct lpc10_encoder_state *st)
 {
 	return chanwr_0_(0, order, ipitv, irms, irc, ibits, st);
 }
 
-/* Subroutine */ int chanrd_(int32_t * order, int32_t * ipitv, int32_t * irms,
-			     int32_t * irc, int32_t * ibits)
+int lpc10_chanrd(int32_t * order, int32_t * ipitv, int32_t * irms,
+		 int32_t * irc, int32_t * ibits)
 {
 	return chanwr_0_(1, order, ipitv, irms, irc, ibits, NULL);
 }

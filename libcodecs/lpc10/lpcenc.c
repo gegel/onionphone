@@ -32,23 +32,11 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "analys.h"
+#include "chanwr.h"
+#include "encode.h"
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int lpcenc_(float *speech, int32_t * bits);
-extern int initlpcenc_(void);
-/*:ref: prepro_ 14 2 6 4 */
-/*:ref: analys_ 14 5 6 4 4 6 6 */
-/*:ref: encode_ 14 7 4 4 6 6 4 4 4 */
-/*:ref: chanwr_ 14 5 4 4 4 4 4 */
-/*:ref: initprepro_ 14 0 */
-/*:ref: initanalys_ 14 0 */
-#endif
+#include "prepro.h"
 
 /* Table of constant values */
 
@@ -106,24 +94,10 @@ static int32_t c__10 = 10;
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITLPCENC. */
 
-/* Subroutine */ int lpc10_encode(float *speech, int32_t * bits,
-				  struct lpc10_encoder_state *st)
+int lpc10_encode(float *speech, int32_t * bits, struct lpc10_encoder_state *st)
 {
 	int32_t irms, voice[2], pitch, ipitv;
 	float rc[10];
-	extern /* Subroutine */ int encode_(int32_t *, int32_t *, float *,
-					    float *,
-					    int32_t *, int32_t *, int32_t *),
-	    chanwr_(int32_t *, int32_t *, int32_t *, int32_t *, int32_t *,
-		    struct lpc10_encoder_state *), analys_(float *, int32_t *,
-							   int32_t *, float *,
-							   float *, struct
-							   lpc10_encoder_state
-							   *), prepro_(float *,
-								       int32_t
-								       *, struct
-								       lpc10_encoder_state
-								       *);
 	int32_t irc[10];
 	float rms;
 
@@ -181,9 +155,9 @@ static int32_t c__10 = 10;
 	}
 
 	/* Function Body */
-	prepro_(&speech[1], &c__180, st);
-	analys_(&speech[1], voice, &pitch, &rms, rc, st);
-	encode_(voice, &pitch, &rms, rc, &ipitv, &irms, irc);
-	chanwr_(&c__10, &ipitv, &irms, irc, &bits[1], st);
+	lpc10_prepro(&speech[1], &c__180, st);
+	lpc10_analys(&speech[1], voice, &pitch, &rms, rc, st);
+	lpc10_internal_encode(voice, &pitch, &rms, rc, &ipitv, &irms, irc);
+	lpc10_chanwr(&c__10, &ipitv, &irms, irc, &bits[1], st);
 	return 0;
-}				/* lpcenc_ */
+}				/* lpc10_encode */

@@ -38,13 +38,7 @@ Some OSS fixes and a few lpc changes to make it actually work
 */
 
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int pitsyn_(int32_t * order, int32_t * voice, int32_t * pitch,
-		   float *rms, float *rc, int32_t * lframe, int32_t * ivuv,
-		   int32_t * ipiti, float *rmsi, float *rci, int32_t * nout,
-		   float *ratio, struct lpc10_decoder_state *st);
-#endif
+#include "pitsyn.h"
 
 /* ***************************************************************** */
 
@@ -133,11 +127,11 @@ extern int pitsyn_(int32_t * order, int32_t * voice, int32_t * pitch,
 /*  RATIO  - Previous to present energy ratio */
 /*           Always assigned a value. */
 
-/* Subroutine */ int pitsyn_(int32_t * order, int32_t * voice,
-			     int32_t * pitch, float *rms, float *rc,
-			     int32_t * lframe, int32_t * ivuv, int32_t * ipiti,
-			     float *rmsi, float *rci, int32_t * nout,
-			     float *ratio, struct lpc10_decoder_state *st)
+int lpc10_pitsyn(int32_t * order, int32_t * voice,
+		 int32_t * pitch, float *rms, float *rc,
+		 int32_t * lframe, int32_t * ivuv, int32_t * ipiti,
+		 float *rmsi, float *rci, int32_t * nout,
+		 float *ratio, struct lpc10_decoder_state *st)
 {
 	/* Initialized data */
 
@@ -595,4 +589,4 @@ ge. */
 		}
 	}
 	return 0;
-}				/* pitsyn_ */
+}				/* lpc10_pitsyn */

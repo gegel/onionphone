@@ -3,6 +3,7 @@
 #include <math.h>
 
 #include "lpc10.h"
+#include "lpc10tools.h"
 
 void lpc10_build_bits(unsigned char *c, int32_t * bits)
 {

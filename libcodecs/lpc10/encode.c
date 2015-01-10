@@ -21,28 +21,13 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "encode.h"
 #include "lpc10.h"
 #include "lpc10tools.h"
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int encode_(int32_t * voice, int32_t * pitch, float *rms, float *rc,
-		   int32_t * ipitch, int32_t * irms, int32_t * irc);
-/* comlen contrl_ 12 */
-#endif
-
 /* Common Block Declarations */
 
-extern struct {
-	int32_t order, lframe;
-	int32_t corrp;
-} contrl_;
-
-#define contrl_1 contrl_
+extern lpc10_contrl_t lpc10_contrl_ctx;
 
 /* Table of constant values */
 
@@ -111,9 +96,9 @@ static int32_t c__2 = 2;
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int encode_(int32_t * voice, int32_t * pitch, float *rms,
-			     float *rc, int32_t * ipitch, int32_t * irms,
-			     int32_t * irc)
+int lpc10_internal_encode(int32_t * voice, int32_t * pitch, float *rms,
+			  float *rc, int32_t * ipitch, int32_t * irms,
+			  int32_t * irc)
 {
 	/* Initialized data */
 
@@ -299,7 +284,7 @@ static int32_t c__2 = 2;
 	/* Function Body */
 /*  Scale RMS and RC's to int32_ts */
 	*irms = (int32_t) * rms;
-	i__1 = contrl_1.order;
+	i__1 = lpc10_contrl_ctx.order;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		irc[i__] = (int32_t) (rc[i__] * 32768.f);
 	}
@@ -309,7 +294,7 @@ static int32_t c__2 = 2;
 	if (voice[1] != 0 && voice[2] != 0) {
 		*ipitch = entau[*pitch - 1];
 	} else {
-		if (contrl_1.corrp) {
+		if (lpc10_contrl_ctx.corrp) {
 			*ipitch = 0;
 			if (voice[1] != voice[2]) {
 				*ipitch = 127;
@@ -352,17 +337,17 @@ static int32_t c__2 = 2;
 		irc[i__] = i2;
 	}
 /*  Encode RC(3) - (10) linearly, remove bias then scale */
-	i__1 = contrl_1.order;
+	i__1 = lpc10_contrl_ctx.order;
 	for (i__ = 3; i__ <= i__1; ++i__) {
 		i2 = irc[i__] / 2;
 		i2 = (int32_t) ((i2 +
-				 enadd[contrl_1.order + 1 - i__ -
-				       1]) * enscl[contrl_1.order + 1 - i__ -
-						   1]);
+				 enadd[lpc10_contrl_ctx.order + 1 - i__ -
+				       1]) * enscl[lpc10_contrl_ctx.order + 1 -
+						   i__ - 1]);
 /* Computing MIN */
 		i__2 = max(i2, -127);
 		i2 = min(i__2, 127);
-		nbit = enbits[contrl_1.order + 1 - i__ - 1];
+		nbit = enbits[lpc10_contrl_ctx.order + 1 - i__ - 1];
 		i3 = 0;
 		if (i2 < 0) {
 			i3 = -1;
@@ -377,7 +362,7 @@ static int32_t c__2 = 2;
 /*     important parameters during non-voiced frames. */
 /*     RC(1) - RC(4) are protected using 20 parity bits */
 /*     replacing RC(5) - RC(10). */
-	if (contrl_1.corrp) {
+	if (lpc10_contrl_ctx.corrp) {
 		if (*ipitch == 0 || *ipitch == 127) {
 			irc[5] = enctab[(irc[1] & 30) / 2];
 			irc[6] = enctab[(irc[2] & 30) / 2];
@@ -390,4 +375,4 @@ static int32_t c__2 = 2;
 /* 	IF(LISTL.GE.3)WRITE(FDEBUG,801)VOICE,IPITCH,IRMS,(IRC(J),J=1,ORDER) */
 /* 801	FORMAT(1X,'<<ENCODE OUT>>',T32,2I3,I6,I5,T50,10I8) */
 	return 0;
-}				/* encode_ */
+}				/* lpc10_internal_encode_ */

@@ -29,21 +29,11 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include <stdlib.h>
 
 #include "lpc10.h"
 #include "lpc10tools.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int onset_(float *pebuf, int32_t * osbuf, int32_t * osptr,
-		  int32_t * oslen, int32_t * sbufl, int32_t * sbufh,
-		  int32_t * lframe, struct lpc10_encoder_state *st);
-#endif
+#include "onset.h"
 
 /* Table of constant values */
 
@@ -130,10 +120,10 @@ static float c_b2 = 1.f;
 /* you want to switch to using a new audio stream for this subroutine, or */
 /* reinitialize its state for any other reason, call the ENTRY INITONSET. */
 
-/* Subroutine */ int onset_(float *pebuf, int32_t * osbuf, int32_t *
-			    osptr, int32_t * oslen, int32_t * sbufl,
-			    int32_t * sbufh, int32_t * lframe,
-			    struct lpc10_encoder_state *st)
+int lpc10_onset(float *pebuf, int32_t * osbuf, int32_t *
+		osptr, int32_t * oslen, int32_t * sbufl,
+		int32_t * sbufh, int32_t * lframe,
+		struct lpc10_encoder_state *st)
 {
 	/* Initialized data */
 
@@ -326,4 +316,4 @@ ust go */
 		}
 	}
 	return 0;
-}				/* onset_ */
+}				/* lpc10_onset */

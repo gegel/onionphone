@@ -21,11 +21,6 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "irc2pc.h"
 #include "lpc10.h"
 
@@ -77,8 +72,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int irc2pc_(float *rc, float *pc, int32_t * order,
-			     float *gprime, float *g2pass)
+int lpc10_irc2pc(float *rc, float *pc, int32_t * order,
+		 float *gprime, float *g2pass)
 {
 	/* System generated locals */
 	int32_t i__1, i__2;
@@ -145,4 +140,4 @@ Some OSS fixes and a few lpc changes to make it actually work
 		pc[i__] = rc[i__];
 	}
 	return 0;
-}				/* irc2pc_ */
+}				/* lpc10_irc2pc */

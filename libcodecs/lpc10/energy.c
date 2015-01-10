@@ -21,16 +21,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "energy.h"
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int energy_(int32_t * len, float *speech, float *rms);
-#endif
 
 /* ********************************************************************* */
 
@@ -76,7 +68,7 @@ extern int energy_(int32_t * len, float *speech, float *rms);
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int energy_(int32_t * len, float *speech, float *rms)
+int lpc10_energy(int32_t * len, float *speech, float *rms)
 {
 	/* System generated locals */
 	int32_t i__1;
@@ -100,4 +92,4 @@ extern int energy_(int32_t * len, float *speech, float *rms);
 	}
 	*rms = (float)sqrt(*rms / *len);
 	return 0;
-}				/* energy_ */
+}				/* lpc10_energy */

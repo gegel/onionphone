@@ -21,17 +21,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int preemp_(float *inbuf, float *pebuf, int32_t * nsamp, float *coef,
-		   float *z__);
-#endif
+#include "preemp.h"
 
 /* ******************************************************************* */
 
@@ -81,8 +72,8 @@ extern int preemp_(float *inbuf, float *pebuf, int32_t * nsamp, float *coef,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int preemp_(float *inbuf, float *pebuf, int32_t * nsamp, float *
-			     coef, float *z__)
+int lpc10_preemp(float *inbuf, float *pebuf, int32_t * nsamp, float *coef,
+		 float *z__)
 {
 	/* System generated locals */
 	int32_t i__1;
@@ -142,4 +133,4 @@ extern int preemp_(float *inbuf, float *pebuf, int32_t * nsamp, float *coef,
 /* L10: */
 	}
 	return 0;
-}				/* preemp_ */
+}				/* lpc10_preemp */

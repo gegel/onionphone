@@ -35,22 +35,16 @@ Add broken lpc10 code...  It's not too far from working I don't think...
 
 #include <stdint.h>
 
-#define P_R_O_T_O_T_Y_P_E_S
-
 #define LPC10_SAMPLES_PER_FRAME 180
 #define LPC10_BITS_IN_COMPRESSED_FRAME 54
 
-/*
-
-  The "#if defined"'s in this file are by no means intended to be
-  complete.  They are what Nautilus uses, which has been successfully
-  compiled under DOS with the Microsoft C compiler, and under a few
-  versions of Unix with the GNU C compiler.
-
- */
-
 /* The initial values for every member of this structure is 0, except
    where noted in comments. */
+
+typedef struct lpc10_contrl {
+	int32_t order, lframe;
+	int32_t corrp;
+} lpc10_contrl_t;
 
 struct lpc10_encoder_state {
 	/* State used only by function hp100 */

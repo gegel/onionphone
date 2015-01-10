@@ -24,17 +24,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "ivfilt.h"
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int ivfilt_(float *lpbuf, float *ivbuf, int32_t * len, int32_t * nsamp,
-		   float *ivrc);
-#endif
 
 /* ********************************************************************* */
 
@@ -88,8 +79,8 @@ extern int ivfilt_(float *lpbuf, float *ivbuf, int32_t * len, int32_t * nsamp,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int ivfilt_(float *lpbuf, float *ivbuf, int32_t * len,
-			     int32_t * nsamp, float *ivrc)
+int lpc10_ivfilt(float *lpbuf, float *ivbuf, int32_t * len,
+		 int32_t * nsamp, float *ivrc)
 {
 	/* System generated locals */
 	int32_t i__1;
@@ -136,4 +127,4 @@ extern int ivfilt_(float *lpbuf, float *ivbuf, int32_t * len, int32_t * nsamp,
 		    lpbuf[i__] - pc1 * lpbuf[i__ - 4] - pc2 * lpbuf[i__ - 8];
 	}
 	return 0;
-}				/* ivfilt_ */
+}				/* lpc10_ivfilt */

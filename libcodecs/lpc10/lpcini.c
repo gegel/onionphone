@@ -31,30 +31,13 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include <stdlib.h>
 
 #include "lpc10.h"
 
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int lpcini_(void);
-/* comlen contrl_ 12 */
-/*:ref: initlpcenc_ 14 0 */
-/*:ref: initlpcdec_ 14 0 */
-#endif
-
 /* Common Block Declarations */
 
-struct {
-	int32_t order, lframe;
-	int32_t corrp;
-} contrl_;
-
-#define contrl_1 contrl_
+lpc10_contrl_t lpc10_contrl_ctx;
 
 /* ***************************************************************** */
 
@@ -92,7 +75,7 @@ struct {
 /* Initialize COMMON block variables used by LPC-10 encoder and decoder, */
 /* and call initialization routines for both of them. */
 
-/* Subroutine */ int lpcini_(void)
+static int lpcini_(void)
 {
 
 /* $Log$
@@ -242,9 +225,9 @@ struct {
 /* 	common /contrl/ fsi, fso, fpi, fpo, fbi, fbo, pbin, fmsg, fdebug */
 /* 	common /contrl/ quant, nbits */
 /* 	common /contrl/ nframe, nunsfm, iclip, maxosp, listl, lincnt */
-	contrl_1.order = 10;
-	contrl_1.lframe = 180;
-	contrl_1.corrp = 1;
+	lpc10_contrl_ctx.order = 10;
+	lpc10_contrl_ctx.lframe = 180;
+	lpc10_contrl_ctx.corrp = 1;
 	return 0;
 }				/* lpcini_ */
 

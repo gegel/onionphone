@@ -21,22 +21,11 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include <stdlib.h>
 
 #include "lpc10.h"
 #include "lpc10tools.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int vparms_(int32_t * vwin, float *inbuf, float *lpbuf, int32_t * buflim,
-		   int32_t * half, float *dither, int32_t * mintau,
-		   int32_t * zc, int32_t * lbe, int32_t * fbe, float *qs,
-		   float *rc1, float *ar_b__, float *ar_f__);
-#endif
+#include "vparms.h"
 
 /* Table of constant values */
 
@@ -138,11 +127,11 @@ static float c_b2 = 1.f;
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int vparms_(int32_t * vwin, float *inbuf, float *lpbuf, int32_t
-			     * buflim, int32_t * half, float *dither,
-			     int32_t * mintau, int32_t * zc, int32_t * lbe,
-			     int32_t * fbe, float *qs, float *rc1,
-			     float *ar_b__, float *ar_f__)
+int lpc10_vparms(int32_t * vwin, float *inbuf, float *lpbuf, int32_t
+		 * buflim, int32_t * half, float *dither,
+		 int32_t * mintau, int32_t * zc, int32_t * lbe,
+		 int32_t * fbe, float *qs, float *rc1,
+		 float *ar_b__, float *ar_f__)
 {
 	/* System generated locals */
 	int32_t inbuf_offset, lpbuf_offset, i__1;
@@ -260,4 +249,4 @@ is)*/
 	i__1 = i_nint(&r__1);
 	*fbe = min(i__1, 32767);
 	return 0;
-}				/* vparms_ */
+}				/* lpc10_vparms */

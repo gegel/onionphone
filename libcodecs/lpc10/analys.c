@@ -32,47 +32,26 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include "analys.h"
+#include "dcbias.h"
+#include "dyptrk.h"
+#include "energy.h"
+#include "invert.h"
+#include "ivfilt.h"
 #include "lpc10.h"
+#include "lpfilt.h"
+#include "mload.h"
+#include "onset.h"
 #include "placea.h"
 #include "placev.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int analys_(float *speech, int32_t * voice, int32_t * pitch, float *rms,
-		   float *rc, struct lpc10_encoder_state *st);
-/* comlen contrl_ 12 */
-/*:ref: preemp_ 14 5 6 6 4 6 6 */
-/*:ref: onset_ 14 7 6 4 4 4 4 4 4 */
-/*:ref: placev_ 14 11 4 4 4 4 4 4 4 4 4 4 4 */
-/*:ref: lpfilt_ 14 4 6 6 4 4 */
-/*:ref: ivfilt_ 14 5 6 6 4 4 6 */
-/*:ref: tbdm_ 14 8 6 4 4 4 6 4 4 4 */
-/*:ref: voicin_ 14 12 4 6 6 4 4 6 6 4 6 4 4 4 */
-/*:ref: dyptrk_ 14 6 6 4 4 4 4 4 */
-/*:ref: placea_ 14 9 4 4 4 4 4 4 4 4 4 */
-/*:ref: dcbias_ 14 3 4 6 6 */
-/*:ref: energy_ 14 3 4 6 6 */
-/*:ref: mload_ 14 6 4 4 4 6 6 6 */
-/*:ref: invert_ 14 4 4 6 6 6 */
-/*:ref: rcchk_ 14 3 4 6 6 */
-/*:ref: initonset_ 14 0 */
-/*:ref: initvoicin_ 14 0 */
-/*:ref: initdyptrk_ 14 0 */
-/* Rerunning f2c -P may change prototypes or declarations. */
-#endif
-
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
+#include "preemp.h"
+#include "rcchk.h"
+#include "tbdm.h"
+#include "voicin.h"
 
 /* Common Block Declarations */
 
-extern struct {
-	int32_t order, lframe;
-	int32_t corrp;
-} contrl_;
-
-#define contrl_1 contrl_
+extern lpc10_contrl_t lpc10_contrl_ctx;
 
 /* Table of constant values */
 
@@ -206,9 +185,8 @@ static int32_t c__1 = 1;
 /* This entry has no local state.  It accesses a "constant" array */
 /* declared in ANALYS. */
 
-/* Subroutine */ int analys_(float *speech, int32_t * voice, int32_t
-			     * pitch, float *rms, float *rc,
-			     struct lpc10_encoder_state *st)
+int lpc10_analys(float *speech, int32_t * voice, int32_t
+		 * pitch, float *rms, float *rc, struct lpc10_encoder_state *st)
 {
 	/* Initialized data */
 
@@ -231,68 +209,23 @@ static int32_t c__1 = 1;
 	int32_t half;
 	float abuf[156];
 	float *bias;
-	extern /* Subroutine */ int tbdm_(float *, int32_t *, int32_t *,
-					  int32_t *,
-					  float *, int32_t *, int32_t *,
-					  int32_t *);
 	int32_t *awin;
 	int32_t midx, ewin[6] /* was [2][3] */ ;
 	float ivrc[2], temp;
 	float *zpre;
 	int32_t *vwin;
 	int32_t i__, j, lanal;
-	extern /* Subroutine */ int rcchk_(int32_t *, float *, float *), mload_(
-										       int32_t
-										       *,
-										       int32_t
-										       *,
-										       int32_t
-										       *,
-										       float
-										       *, float
-										       *, float
-										       *);
 	float *inbuf, *pebuf;
 	float *lpbuf, *ivbuf;
 	float *rcbuf;
 	int32_t *osbuf;
-	extern /* Subroutine */ int onset_(float *, int32_t *, int32_t *,
-					   int32_t *, int32_t *, int32_t *,
-					   int32_t *,
-					   struct lpc10_encoder_state *);
 	int32_t *osptr;
-	extern int dcbias_(int32_t *, float *, float *);
 	int32_t ipitch;
 	int32_t *obound;
-	extern /* Subroutine */ int preemp_(float *, float *, int32_t *,
-					    float *,
-					    float *), voicin_(int32_t *,
-							      float *, float *,
-							      int32_t *,
-							      int32_t *,
-							      float *, float *,
-							      int32_t *,
-							      float *,
-							      int32_t *,
-							      int32_t *,
-							      int32_t *, struct
-							      lpc10_encoder_state
-							      *);
 	int32_t *voibuf;
 	int32_t mintau;
 	float *rmsbuf;
-	extern /* Subroutine */ int lpfilt_(float *, float *, int32_t *,
-					    int32_t *), ivfilt_(float *,
-								float *,
-								int32_t *,
-								int32_t *,
-								float *),
-	    energy_(int32_t *, float *, float *), invert_(int32_t *, float *,
-							  float *, float *);
 	int32_t minptr, maxptr;
-	extern /* Subroutine */ int dyptrk_(float *, int32_t *, int32_t *, int32_t
-					    *, int32_t *, int32_t *,
-					    struct lpc10_encoder_state *);
 	float phi[100] /* was [10][10] */ , psi[10];
 
 /* $Log$
@@ -519,24 +452,24 @@ static int32_t c__1 = 1;
 	rcbuf = &(st->rcbuf[0]);
 	zpre = &(st->zpre);
 
-	i__1 = 720 - contrl_1.lframe;
+	i__1 = 720 - lpc10_contrl_ctx.lframe;
 	for (i__ = 181; i__ <= i__1; ++i__) {
-		inbuf[i__ - 181] = inbuf[contrl_1.lframe + i__ - 181];
-		pebuf[i__ - 181] = pebuf[contrl_1.lframe + i__ - 181];
+		inbuf[i__ - 181] = inbuf[lpc10_contrl_ctx.lframe + i__ - 181];
+		pebuf[i__ - 181] = pebuf[lpc10_contrl_ctx.lframe + i__ - 181];
 	}
-	i__1 = 540 - contrl_1.lframe;
+	i__1 = 540 - lpc10_contrl_ctx.lframe;
 	for (i__ = 229; i__ <= i__1; ++i__) {
-		ivbuf[i__ - 229] = ivbuf[contrl_1.lframe + i__ - 229];
+		ivbuf[i__ - 229] = ivbuf[lpc10_contrl_ctx.lframe + i__ - 229];
 	}
-	i__1 = 720 - contrl_1.lframe;
+	i__1 = 720 - lpc10_contrl_ctx.lframe;
 	for (i__ = 25; i__ <= i__1; ++i__) {
-		lpbuf[i__ - 25] = lpbuf[contrl_1.lframe + i__ - 25];
+		lpbuf[i__ - 25] = lpbuf[lpc10_contrl_ctx.lframe + i__ - 25];
 	}
 	j = 1;
 	i__1 = (*osptr) - 1;
 	for (i__ = 1; i__ <= i__1; ++i__) {
-		if (osbuf[i__ - 1] > contrl_1.lframe) {
-			osbuf[j - 1] = osbuf[i__ - 1] - contrl_1.lframe;
+		if (osbuf[i__ - 1] > lpc10_contrl_ctx.lframe) {
+			osbuf[j - 1] = osbuf[i__ - 1] - lpc10_contrl_ctx.lframe;
 			++j;
 		}
 	}
@@ -545,13 +478,13 @@ static int32_t c__1 = 1;
 	voibuf[1] = voibuf[3];
 	for (i__ = 1; i__ <= 2; ++i__) {
 		vwin[(i__ << 1) - 2] =
-		    vwin[((i__ + 1) << 1) - 2] - contrl_1.lframe;
+		    vwin[((i__ + 1) << 1) - 2] - lpc10_contrl_ctx.lframe;
 		vwin[(i__ << 1) - 1] =
-		    vwin[((i__ + 1) << 1) - 1] - contrl_1.lframe;
+		    vwin[((i__ + 1) << 1) - 1] - lpc10_contrl_ctx.lframe;
 		awin[(i__ << 1) - 2] =
-		    awin[((i__ + 1) << 1) - 2] - contrl_1.lframe;
+		    awin[((i__ + 1) << 1) - 2] - lpc10_contrl_ctx.lframe;
 		awin[(i__ << 1) - 1] =
-		    awin[((i__ + 1) << 1) - 1] - contrl_1.lframe;
+		    awin[((i__ + 1) << 1) - 1] - lpc10_contrl_ctx.lframe;
 /*       EWIN(*,J) is unused for J .NE. AF, so the following shift is 
 */
 /*       unnecessary.  It also causes error messages when the C versio
@@ -566,7 +499,7 @@ n */
 		voibuf[i__ * 2] = voibuf[(i__ + 1) * 2];
 		voibuf[(i__ << 1) + 1] = voibuf[((i__ + 1) << 1) + 1];
 		rmsbuf[i__ - 1] = rmsbuf[i__];
-		i__1 = contrl_1.order;
+		i__1 = lpc10_contrl_ctx.order;
 		for (j = 1; j <= i__1; ++j) {
 			rcbuf[j + i__ * 10 - 11] =
 			    rcbuf[j + (i__ + 1) * 10 - 11];
@@ -582,31 +515,32 @@ n */
 */
 /*       cases, keep BIAS the same. */
 	temp = 0.f;
-	i__1 = contrl_1.lframe;
+	i__1 = lpc10_contrl_ctx.lframe;
 	for (i__ = 1; i__ <= i__1; ++i__) {
-		inbuf[720 - contrl_1.lframe + i__ - 181] =
+		inbuf[720 - lpc10_contrl_ctx.lframe + i__ - 181] =
 		    speech[i__] * 4096.f - (*bias);
-		temp += inbuf[720 - contrl_1.lframe + i__ - 181];
+		temp += inbuf[720 - lpc10_contrl_ctx.lframe + i__ - 181];
 	}
-	if (temp > (float)contrl_1.lframe) {
+	if (temp > (float)lpc10_contrl_ctx.lframe) {
 		*bias += 1;
 	}
-	if (temp < (float)(-contrl_1.lframe)) {
+	if (temp < (float)(-lpc10_contrl_ctx.lframe)) {
 		*bias += -1;
 	}
 /*   Place Voicing Window */
-	i__ = 721 - contrl_1.lframe;
-	preemp_(&inbuf[i__ - 181], &pebuf[i__ - 181], &contrl_1.lframe,
-		&precoef, zpre);
-	onset_(pebuf, osbuf, osptr, &c__10, &c__181, &c__720, &contrl_1.lframe,
-	       st);
+	i__ = 721 - lpc10_contrl_ctx.lframe;
+	lpc10_preemp(&inbuf[i__ - 181], &pebuf[i__ - 181],
+		     &lpc10_contrl_ctx.lframe, &precoef, zpre);
+	lpc10_onset(pebuf, osbuf, osptr, &c__10, &c__181, &c__720,
+		    &lpc10_contrl_ctx.lframe, st);
 
 /*       MAXOSP is just a debugging variable. */
 
 /* 	MAXOSP = MAX( MAXOSP, OSPTR ) */
 
-	placev_(osbuf, osptr, &c__10, &obound[2], vwin, &c__3, &contrl_1.lframe,
-		&c__90, &c__156, &c__307, &c__462);
+	lpc10_placev(osbuf, osptr, &c__10, &obound[2], vwin, &c__3,
+		     &lpc10_contrl_ctx.lframe, &c__90, &c__156, &c__307,
+		     &c__462);
 /*        The Pitch Extraction algorithm estimates the pitch for a frame 
 */
 /*   of speech by locating the minimum of the average magnitude difference
@@ -626,17 +560,20 @@ n */
 /*       of INBUF, and writes indices LBUFH+1-LFRAME = 541 through LBUFH 
 */
 /*       = 720 of LPBUF. */
-	lpfilt_(&inbuf[228], &lpbuf[384], &c__312, &contrl_1.lframe);
+	lpc10_lpfilt(&inbuf[228], &lpbuf[384], &c__312,
+		     &lpc10_contrl_ctx.lframe);
 /*       IVFILT reads indices (PWINH-LFRAME-7) = 353 through PWINH = 540 
 */
 /*       of LPBUF, and writes indices (PWINH-LFRAME+1) = 361 through */
 /*       PWINH = 540 of IVBUF. */
-	ivfilt_(&lpbuf[204], ivbuf, &c__312, &contrl_1.lframe, ivrc);
+	lpc10_ivfilt(&lpbuf[204], ivbuf, &c__312, &lpc10_contrl_ctx.lframe,
+		     ivrc);
 /*       TBDM reads indices PWINL = 229 through */
 /*       (PWINL-1)+MAXWIN+(TAU(LTAU)-TAU(1))/2 = 452 of IVBUF, and writes 
 */
 /*       indices 1 through LTAU = 60 of AMDF. */
-	tbdm_(ivbuf, &c__156, tau, &c__60, amdf, &minptr, &maxptr, &mintau);
+	lpc10_tbdm(ivbuf, &c__156, tau, &c__60, amdf, &minptr, &maxptr,
+		   &mintau);
 /*        Voicing decisions are made for each half frame of input speech. 
 */
 /*   An initial voicing classification is made for each half of the */
@@ -653,21 +590,21 @@ n */
 */
 /*   voicing decisions. */
 	for (half = 1; half <= 2; ++half) {
-		voicin_(&vwin[4], inbuf, lpbuf, buflim, &half,
-			&amdf[minptr - 1], &amdf[maxptr - 1], &mintau, ivrc,
-			obound, voibuf, &c__3, st);
+		lpc10_voicin(&vwin[4], inbuf, lpbuf, buflim, &half,
+			     &amdf[minptr - 1], &amdf[maxptr - 1], &mintau,
+			     ivrc, obound, voibuf, &c__3, st);
 	}
 /*   Find the minimum cost pitch decision over several frames */
 /*   given the current voicing decision and the AMDF array */
-	dyptrk_(amdf, &c__60, &minptr, &voibuf[7], pitch, &midx, st);
+	lpc10_dyptrk(amdf, &c__60, &minptr, &voibuf[7], pitch, &midx, st);
 	ipitch = tau[midx - 1];
 /*   Place spectrum analysis and energy windows */
-	placea_(&ipitch, voibuf, &obound[2], &c__3, vwin, awin, ewin,
-		&contrl_1.lframe, &c__156);
+	lpc10_placea(&ipitch, voibuf, &obound[2], &c__3, vwin, awin, ewin,
+		     &lpc10_contrl_ctx.lframe, &c__156);
 /*  Remove short term DC bias over the analysis window, Put result in ABUF
 */
 	lanal = awin[5] + 1 - awin[4];
-	dcbias_(&lanal, &pebuf[awin[4] - 181], abuf);
+	lpc10_dcbias(&lanal, &pebuf[awin[4] - 181], abuf);
 /*       ABUF(1:LANAL) is now defined.  It is equal to */
 /*       PEBUF(AWIN(1,AF):AWIN(2,AF)) corrected for short term DC bias. */
 /*   Compute RMS over int32_t number of pitch periods within the */
@@ -675,18 +612,18 @@ n */
 /*   Note that in a hardware implementation this computation may be */
 /*   simplified by using diagonal elements of PHI computed by MLOAD. */
 	i__1 = ewin[5] - ewin[4] + 1;
-	energy_(&i__1, &abuf[ewin[4] - awin[4]], &rmsbuf[2]);
+	lpc10_energy(&i__1, &abuf[ewin[4] - awin[4]], &rmsbuf[2]);
 /*   Matrix load and invert, check RC's for stability */
-	mload_(&contrl_1.order, &c__1, &lanal, abuf, phi, psi);
-	invert_(&contrl_1.order, phi, psi, &rcbuf[20]);
-	rcchk_(&contrl_1.order, &rcbuf[10], &rcbuf[20]);
+	lpc10_mload(&lpc10_contrl_ctx.order, &c__1, &lanal, abuf, phi, psi);
+	lpc10_invert(&lpc10_contrl_ctx.order, phi, psi, &rcbuf[20]);
+	lpc10_rcchk(&lpc10_contrl_ctx.order, &rcbuf[10], &rcbuf[20]);
 /*   Set return parameters */
 	voice[1] = voibuf[2];
 	voice[2] = voibuf[3];
 	*rms = rmsbuf[0];
-	i__1 = contrl_1.order;
+	i__1 = lpc10_contrl_ctx.order;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		rc[i__] = rcbuf[i__ - 1];
 	}
 	return 0;
-}				/* analys_ */
+}				/* lpc10_analys */

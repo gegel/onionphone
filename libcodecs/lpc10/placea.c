@@ -34,12 +34,7 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 #include "lpc10.h"
 #include "lpc10tools.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int placea_(int32_t * ipitch, int32_t * voibuf, int32_t * obound,
-		   int32_t * af, int32_t * vwin, int32_t * awin, int32_t * ewin,
-		   int32_t * lframe, int32_t * maxwin);
-#endif
+#include "placea.h"
 
 /* *********************************************************************** */
 
@@ -117,10 +112,10 @@ extern int placea_(int32_t * ipitch, int32_t * voibuf, int32_t * obound,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int placea_(int32_t * ipitch, int32_t * voibuf, int32_t *
-			     obound, int32_t * af, int32_t * vwin,
-			     int32_t * awin, int32_t * ewin, int32_t * lframe,
-			     int32_t * maxwin)
+int lpc10_placea(int32_t * ipitch, int32_t * voibuf, int32_t *
+		 obound, int32_t * af, int32_t * vwin,
+		 int32_t * awin, int32_t * ewin, int32_t * lframe,
+		 int32_t * maxwin)
 {
 	/* System generated locals */
 	float r__1;
@@ -246,4 +241,4 @@ e*/
 		ewin[(*af << 1) + 2] = awin[(*af << 1) + 1] + j - 1;
 	}
 	return 0;
-}				/* placea_ */
+}				/* lpc10_placea */

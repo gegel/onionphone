@@ -21,20 +21,10 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "difmag.h"
 #include "lpc10.h"
 #include "lpc10tools.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int tbdm_(float *speech, int32_t * lpita, int32_t * tau, int32_t * ltau,
-		 float *amdf, int32_t * minptr, int32_t * maxptr,
-		 int32_t * mintau);
-/*:ref: difmag_ 14 8 6 4 4 4 4 6 4 4 */
-#endif
+#include "tbdm.h"
 
 /* ********************************************************************** */
 
@@ -95,9 +85,9 @@ extern int tbdm_(float *speech, int32_t * lpita, int32_t * tau, int32_t * ltau,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int tbdm_(float *speech, int32_t * lpita, int32_t * tau,
-			   int32_t * ltau, float *amdf, int32_t * minptr,
-			   int32_t * maxptr, int32_t * mintau)
+int lpc10_tbdm(float *speech, int32_t * lpita, int32_t * tau,
+	       int32_t * ltau, float *amdf, int32_t * minptr,
+	       int32_t * maxptr, int32_t * mintau)
 {
 	/* System generated locals */
 	int32_t i__1, i__2, i__3, i__4;
@@ -105,9 +95,6 @@ extern int tbdm_(float *speech, int32_t * lpita, int32_t * tau, int32_t * ltau,
 	/* Local variables */
 	float amdf2[6];
 	int32_t minp2, ltau2, maxp2, i__;
-	extern /* Subroutine */ int difmag_(float *, int32_t *, int32_t *, int32_t
-					    *, int32_t *, float *, int32_t *,
-					    int32_t *);
 	int32_t minamd, ptr, tau2[6];
 
 /* 	Arguments */
@@ -123,8 +110,8 @@ extern int tbdm_(float *speech, int32_t * lpita, int32_t * tau, int32_t * ltau,
 	--tau;
 
 	/* Function Body */
-	difmag_(&speech[1], lpita, &tau[1], ltau, &tau[*ltau], &amdf[1], minptr,
-		maxptr);
+	lpc10_difmag(&speech[1], lpita, &tau[1], ltau, &tau[*ltau], &amdf[1],
+		     minptr, maxptr);
 	*mintau = tau[*minptr];
 	minamd = (int32_t) amdf[*minptr];
 /*   Build table containing all lags within +/- 3 of the AMDF minimum */
@@ -148,8 +135,8 @@ extern int tbdm_(float *speech, int32_t * lpita, int32_t * tau, int32_t * ltau,
 /*   Compute AMDF of the new lags, if there are any, and choose one */
 /*    if it is better than the coarse minimum */
 	if (ltau2 > 0) {
-		difmag_(&speech[1], lpita, tau2, &ltau2, &tau[*ltau], amdf2,
-			&minp2, &maxp2);
+		lpc10_difmag(&speech[1], lpita, tau2, &ltau2, &tau[*ltau],
+			     amdf2, &minp2, &maxp2);
 		if (amdf2[minp2 - 1] < (float)minamd) {
 			*mintau = tau2[minp2 - 1];
 			minamd = (int32_t) amdf2[minp2 - 1];
@@ -166,8 +153,8 @@ extern int tbdm_(float *speech, int32_t * lpita, int32_t * tau, int32_t * ltau,
 			ltau2 = 1;
 			tau2[0] = i__;
 		}
-		difmag_(&speech[1], lpita, tau2, &ltau2, &tau[*ltau], amdf2,
-			&minp2, &maxp2);
+		lpc10_difmag(&speech[1], lpita, tau2, &ltau2, &tau[*ltau],
+			     amdf2, &minp2, &maxp2);
 		if (amdf2[minp2 - 1] < (float)minamd) {
 			*mintau = tau2[minp2 - 1];
 			minamd = (int32_t) amdf2[minp2 - 1];
@@ -189,4 +176,4 @@ extern int tbdm_(float *speech, int32_t * lpita, int32_t * tau, int32_t * ltau,
 		}
 	}
 	return 0;
-}				/* tbdm_ */
+}				/* lpc10_tbdm */

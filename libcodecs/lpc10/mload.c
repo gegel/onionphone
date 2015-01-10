@@ -21,17 +21,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int mload_(int32_t * order, int32_t * awins, int32_t * awinf,
-		  float *speech, float *phi, float *psi);
-#endif
+#include "mload.h"
 
 /* ***************************************************************** */
 
@@ -98,8 +89,8 @@ extern int mload_(int32_t * order, int32_t * awins, int32_t * awinf,
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int mload_(int32_t * order, int32_t * awins, int32_t * awinf,
-			    float *speech, float *phi, float *psi)
+int lpc10_mload(int32_t * order, int32_t * awins, int32_t * awinf,
+		float *speech, float *phi, float *psi)
 {
 	/* System generated locals */
 	int32_t phi_dim1, phi_offset, i__1, i__2;
@@ -167,4 +158,4 @@ extern int mload_(int32_t * order, int32_t * awins, int32_t * awinf,
 /* 	   END DO */
 /* 	END DO */
 	return 0;
-}				/* mload_ */
+}				/* lpc10_mload */

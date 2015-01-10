@@ -28,19 +28,9 @@ Some OSS fixes and a few lpc changes to make it actually work
  *
  */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "hp100.h"
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int prepro_(float *speech, int32_t * length,
-		   struct lpc10_encoder_state *st);
-/*:ref: hp100_ 14 3 6 4 4 */
-/*:ref: inithp100_ 14 0 */
-#endif
+#include "prepro.h"
 
 /* Table of constant values */
 
@@ -99,12 +89,9 @@ static int32_t c__1 = 1;
 /* stream for this filter, or reinitialize its state for any other */
 /* reason, call the ENTRY INITPREPRO. */
 
-/* Subroutine */ int prepro_(float *speech, int32_t * length,
-			     struct lpc10_encoder_state *st)
+int lpc10_prepro(float *speech, int32_t * length,
+		 struct lpc10_encoder_state *st)
 {
-	extern /* Subroutine */ int hp100_(float *, int32_t *, int32_t *,
-					   struct lpc10_encoder_state *);
-
 /*       Arguments */
 /*   High Pass Filter at 100 Hz */
 	/* Parameter adjustments */
@@ -113,6 +100,6 @@ static int32_t c__1 = 1;
 	}
 
 	/* Function Body */
-	hp100_(&speech[1], &c__1, length, st);
+	lpc10_hp100(&speech[1], &c__1, length, st);
 	return 0;
-}				/* prepro_ */
+}				/* lpc10_prepro */

@@ -32,37 +32,17 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "bsynz.h"
+#include "deemp.h"
 #include "irc2pc.h"
 #include "lpc10.h"
 #include "lpc10tools.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int synths_(int32_t * voice, int32_t * pitch, float *rms, float *rc,
-		   float *speech, int32_t * k, struct lpc10_decoder_state *st);
-/* comlen contrl_ 12 */
-/*:ref: pitsyn_ 14 12 4 4 4 6 6 4 4 4 6 6 4 6 */
-/*:ref: irc2pc_ 14 5 6 6 4 6 6 */
-/*:ref: bsynz_ 14 7 6 4 4 6 6 6 6 */
-/*:ref: deemp_ 14 2 6 4 */
-/*:ref: initpitsyn_ 14 0 */
-/*:ref: initbsynz_ 14 0 */
-/*:ref: initdeemp_ 14 0 */
-#endif
+#include "pitsyn.h"
+#include "synths.h"
 
 /* Common Block Declarations */
 
-extern struct {
-	int32_t order, lframe;
-	int32_t corrp;
-} contrl_;
-
-#define contrl_1 contrl_
+extern lpc10_contrl_t lpc10_contrl_ctx;
 
 /* Table of constant values */
 
@@ -172,9 +152,8 @@ static float c_b2 = .7f;
 /*  K      - Number of samples placed into array SPEECH. */
 /*           This is always MAXFRM. */
 
-/* Subroutine */ int synths_(int32_t * voice, int32_t * pitch, float *
-			     rms, float *rc, float *speech, int32_t * k,
-			     struct lpc10_decoder_state *st)
+int lpc10_synths(int32_t * voice, int32_t * pitch, float *rms, float *rc,
+		 float *speech, int32_t * k, struct lpc10_decoder_state *st)
 {
 	/* Initialized data */
 
@@ -188,17 +167,10 @@ static float c_b2 = .7f;
 	/* Local variables */
 	float rmsi[16];
 	int32_t nout, ivuv[16], i__, j;
-	extern /* Subroutine */ int deemp_(float *, int32_t *,
-					   struct lpc10_decoder_state *);
 	float ratio;
 	int32_t ipiti[16];
 	float g2pass;
 	float pc[10];
-	extern /* Subroutine */ int pitsyn_(int32_t *, int32_t *, int32_t *, float
-					    *, float *, int32_t *, int32_t *,
-					    int32_t *, float *, float *,
-					    int32_t *, float *,
-					    struct lpc10_decoder_state *);
 	float rci[160] /* was [10][16] */ ;
 
 /* $Log$
@@ -389,7 +361,7 @@ static float c_b2 = .7f;
 /* Computing MAX */
 	i__1 = min(*pitch, 156);
 	*pitch = max(i__1, 20);
-	i__1 = contrl_1.order;
+	i__1 = lpc10_contrl_ctx.order;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 /* Computing MAX */
 /* Computing MIN */
@@ -397,8 +369,9 @@ static float c_b2 = .7f;
 		r__1 = min(r__2, .99f);
 		rc[i__] = max(r__1, -.99f);
 	}
-	pitsyn_(&contrl_1.order, &voice[1], pitch, rms, &rc[1],
-		&contrl_1.lframe, ivuv, ipiti, rmsi, rci, &nout, &ratio, st);
+	lpc10_pitsyn(&lpc10_contrl_ctx.order, &voice[1], pitch, rms, &rc[1],
+		     &lpc10_contrl_ctx.lframe, ivuv, ipiti, rmsi, rci, &nout,
+		     &ratio, st);
 	if (nout > 0) {
 		i__1 = nout;
 		for (j = 1; j <= i__1; ++j) {
@@ -407,12 +380,12 @@ static float c_b2 = .7f;
 d of */
 /*             BUF. */
 
-			irc2pc_(&rci[j * 10 - 10], pc, &contrl_1.order, &c_b2,
-				&g2pass);
-			bsynz_(pc, &ipiti[j - 1], &ivuv[j - 1], &buf[*buflen],
-			       &rmsi[j - 1]
-			       , &ratio, &g2pass, st);
-			deemp_(&buf[*buflen], &ipiti[j - 1], st);
+			lpc10_irc2pc(&rci[j * 10 - 10], pc,
+				     &lpc10_contrl_ctx.order, &c_b2, &g2pass);
+			lpc10_bsynz(pc, &ipiti[j - 1], &ivuv[j - 1],
+				    &buf[*buflen], &rmsi[j - 1]
+				    , &ratio, &g2pass, st);
+			lpc10_deemp(&buf[*buflen], &ipiti[j - 1], st);
 			*buflen += ipiti[j - 1];
 		}
 
@@ -433,4 +406,4 @@ d of */
 		}
 	}
 	return 0;
-}				/* synths_ */
+}				/* lpc10_synths */

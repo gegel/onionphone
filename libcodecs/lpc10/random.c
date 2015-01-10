@@ -29,16 +29,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int32_t random_(struct lpc10_decoder_state *st);
-#endif
+#include "random.h"
 
 /* ********************************************************************** */
 
@@ -91,7 +83,7 @@ extern int32_t random_(struct lpc10_decoder_state *st);
 /* this local state when switching between audio streams, because its */
 /* results are only used to generate noise for unvoiced frames. */
 
-int32_t random_(struct lpc10_decoder_state *st)
+int32_t lpc10_random(struct lpc10_decoder_state * st)
 {
 	/* Initialized data */
 
@@ -122,4 +114,4 @@ int32_t random_(struct lpc10_decoder_state *st)
 		*j = 5;
 	}
 	return ret_val;
-}				/* random_ */
+}				/* lpc10_random */

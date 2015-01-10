@@ -21,16 +21,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "ham84.h"
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int ham84_(int32_t * input, int32_t * output, int32_t * errcnt);
-#endif
 
 /* ***************************************************************** */
 
@@ -83,7 +75,7 @@ extern int ham84_(int32_t * input, int32_t * output, int32_t * errcnt);
 
 /* This subroutine has no local state. */
 
-/* Subroutine */ int ham84_(int32_t * input, int32_t * output, int32_t * errcnt)
+int lpc10_ham84(int32_t * input, int32_t * output, int32_t * errcnt)
 {
 	/* Initialized data */
 
@@ -129,4 +121,4 @@ extern int ham84_(int32_t * input, int32_t * output, int32_t * errcnt);
 		}
 	}
 	return 0;
-}				/* ham84_ */
+}				/* lpc10_ham84 */

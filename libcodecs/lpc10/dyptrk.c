@@ -29,28 +29,12 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "dyptrk.h"
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int dyptrk_(float *amdf, int32_t * ltau, int32_t * minptr,
-		   int32_t * voice, int32_t * pitch, int32_t * midx,
-		   struct lpc10_encoder_state *st);
-/* comlen contrl_ 12 */
-#endif
 
 /* Common Block Declarations */
 
-extern struct {
-	int32_t order, lframe;
-	int32_t corrp;
-} contrl_;
-
-#define contrl_1 contrl_
+extern lpc10_contrl_t lpc10_contrl_ctx;
 
 /* ********************************************************************* */
 
@@ -129,9 +113,9 @@ extern struct {
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITDYPTRK. */
 
-/* Subroutine */ int dyptrk_(float *amdf, int32_t * ltau, int32_t *
-			     minptr, int32_t * voice, int32_t * pitch,
-			     int32_t * midx, struct lpc10_encoder_state *st)
+int lpc10_dyptrk(float *amdf, int32_t * ltau, int32_t *
+		 minptr, int32_t * voice, int32_t * pitch,
+		 int32_t * midx, struct lpc10_encoder_state *st)
 {
 	/* Initialized data */
 
@@ -403,4 +387,4 @@ n*/
 
 	*ipoint = (*ipoint + 1) % 2;
 	return 0;
-}				/* dyptrk_ */
+}				/* lpc10_dyptrk */

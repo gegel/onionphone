@@ -32,32 +32,14 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
+#include "chanwr.h"
+#include "decode.h"
 #include "lpc10.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int lpcdec_(int32_t * bits, float *speech);
-extern int initlpcdec_(void);
-/* comlen contrl_ 12 */
-/*:ref: chanrd_ 14 5 4 4 4 4 4 */
-/*:ref: decode_ 14 7 4 4 4 4 4 6 6 */
-/*:ref: synths_ 14 6 4 4 6 6 6 4 */
-/*:ref: initdecode_ 14 0 */
-/*:ref: initsynths_ 14 0 */
-#endif
+#include "synths.h"
 
 /* Common Block Declarations */
 
-extern struct {
-	int32_t order, lframe;
-	int32_t corrp;
-} contrl_;
-
-#define contrl_1 contrl_
+extern lpc10_contrl_t lpc10_contrl_ctx;
 
 /* Table of constant values */
 
@@ -111,19 +93,10 @@ static int32_t c__10 = 10;
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITLPCDEC. */
 
-/* Subroutine */ int lpc10_decode(int32_t * bits, float *speech,
-				  struct lpc10_decoder_state *st)
+int lpc10_decode(int32_t * bits, float *speech, struct lpc10_decoder_state *st)
 {
 	int32_t irms, voice[2], pitch, ipitv;
-	extern /* Subroutine */ int decode_(int32_t *, int32_t *, int32_t *,
-					    int32_t *, int32_t *, float *,
-					    float *,
-					    struct lpc10_decoder_state *);
 	float rc[10];
-	extern /* Subroutine */ int chanrd_(int32_t *, int32_t *, int32_t *,
-					    int32_t *, int32_t *),
-	    synths_(int32_t *, int32_t *, float *, float *, float *, int32_t *,
-		    struct lpc10_decoder_state *);
 	int32_t irc[10], len;
 	float rms;
 
@@ -293,8 +266,8 @@ static int32_t c__10 = 10;
 
 	/* Function Body */
 
-	chanrd_(&c__10, &ipitv, &irms, irc, &bits[1]);
-	decode_(&ipitv, &irms, irc, voice, &pitch, &rms, rc, st);
-	synths_(voice, &pitch, &rms, rc, &speech[1], &len, st);
+	lpc10_chanrd(&c__10, &ipitv, &irms, irc, &bits[1]);
+	lpc10_internal_decode(&ipitv, &irms, irc, voice, &pitch, &rms, rc, st);
+	lpc10_synths(voice, &pitch, &rms, rc, &speech[1], &len, st);
 	return 0;
-}				/* lpcdec_ */
+}				/* lpc10_decode */

@@ -32,33 +32,17 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
-/*  -- translated by f2c (version 19951025).
-   You must link the resulting object file with the libraries:
-	-lf2c -lm   (in that order)
-*/
-
 #include <stdlib.h>
 
+#include "decode.h"
+#include "ham84.h"
 #include "lpc10.h"
 #include "lpc10tools.h"
-
-#ifdef P_R_O_T_O_T_Y_P_E_S
-extern int decode_(int32_t * ipitv, int32_t * irms, int32_t * irc,
-		   int32_t * voice, int32_t * pitch, float *rms, float *rc,
-		   struct lpc10_decoder_state *st);
-/* comlen contrl_ 12 */
-/*:ref: ham84_ 14 3 4 4 4 */
-/*:ref: median_ 4 3 4 4 4 */
-#endif
+#include "median.h"
 
 /* Common Block Declarations */
 
-extern struct {
-	int32_t order, lframe;
-	int32_t corrp;
-} contrl_;
-
-#define contrl_1 contrl_
+extern lpc10_contrl_t lpc10_contrl_ctx;
 
 /* Table of constant values */
 
@@ -150,10 +134,9 @@ static int32_t c__2 = 2;
 /* reinitialize its state for any other reason, call the ENTRY */
 /* INITDECODE. */
 
-/* Subroutine */ int decode_(int32_t * ipitv, int32_t * irms,
-			     int32_t * irc, int32_t * voice, int32_t * pitch,
-			     float *rms, float *rc,
-			     struct lpc10_decoder_state *st)
+int lpc10_internal_decode(int32_t * ipitv, int32_t * irms,
+			  int32_t * irc, int32_t * voice, int32_t * pitch,
+			  float *rms, float *rc, struct lpc10_decoder_state *st)
 {
 	/* Initialized data */
 
@@ -227,9 +210,7 @@ static int32_t c__2 = 2;
 	int32_t i__1, i__2;
 
 	/* Local variables */
-	extern /* Subroutine */ int ham84_(int32_t *, int32_t *, int32_t *);
 	int32_t ipit, iout, i__, icorf, index, ivoic, ixcor, i1, i2, i4;
-	extern int32_t median_(int32_t *, int32_t *, int32_t *);
 	int32_t ishift, errcnt, lsb;
 
 /* $Log$
@@ -439,7 +420,7 @@ static int32_t c__2 = 2;
 /* 800	FORMAT(1X,' <<ERRCOR IN>>',T32,6X,I6,I5,T50,10I8) */
 /*  If no error correction, do pitch and voicing then jump to decode */
 	i4 = detau[*ipitv];
-	if (!contrl_1.corrp) {
+	if (!lpc10_contrl_ctx.corrp) {
 		voice[1] = 1;
 		voice[2] = 1;
 		if (*ipitv <= 1) {
@@ -470,7 +451,7 @@ static int32_t c__2 = 2;
 		dpit[0] = *iavgp;
 	}
 	drms[0] = *irms;
-	i__1 = contrl_1.order;
+	i__1 = lpc10_contrl_ctx.order;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		drc[i__ * 3 - 3] = irc[i__];
 	}
@@ -519,7 +500,7 @@ static int32_t c__2 = 2;
 		errcnt = 0;
 		lsb = drms[1] & 1;
 		index = (drc[22] << 4) + drms[1] / 2;
-		ham84_(&index, &iout, &errcnt);
+		lpc10_ham84(&index, &iout, &errcnt);
 		drms[1] = drms[2];
 		if (iout >= 0) {
 			drms[1] = (iout << 1) + lsb;
@@ -533,7 +514,7 @@ static int32_t c__2 = 2;
 			i2 = drc[(5 - i__) * 3 - 2] & 31;
 			lsb = i2 & 1;
 			index = (i1 << 4) + i2 / 2;
-			ham84_(&index, &iout, &errcnt);
+			lpc10_ham84(&index, &iout, &errcnt);
 			if (iout >= 0) {
 				iout = (iout << 1) + lsb;
 				if ((iout & 16) == 16) {
@@ -549,7 +530,7 @@ static int32_t c__2 = 2;
 	}
 /*  Get unsmoothed RMS, RC's, and PITCH */
 	*irms = drms[1];
-	i__1 = contrl_1.order;
+	i__1 = lpc10_contrl_ctx.order;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		irc[i__] = drc[i__ * 3 - 2];
 	}
@@ -567,7 +548,7 @@ static int32_t c__2 = 2;
 		    && (i__2 =
 			drms[1] - drms[2],
 			(float)abs(i__2)) >= corth[ixcor + 3]) {
-			*irms = median_(&drms[2], &drms[1], drms);
+			*irms = lpc10_median(&drms[2], &drms[1], drms);
 		}
 		for (i__ = 1; i__ <= 6; ++i__) {
 			if ((i__1 =
@@ -579,9 +560,9 @@ static int32_t c__2 = 2;
 				(float)abs(i__2)) >=
 			    corth[ixcor + ((i__ + 2) << 2) - 5]) {
 				irc[i__] =
-				    median_(&drc[i__ * 3 - 1],
-					    &drc[i__ * 3 - 2],
-					    &drc[i__ * 3 - 3]);
+				    lpc10_median(&drc[i__ * 3 - 1],
+						 &drc[i__ * 3 - 2],
+						 &drc[i__ * 3 - 3]);
 			}
 		}
 	}
@@ -592,7 +573,7 @@ static int32_t c__2 = 2;
 		    && (i__2 =
 			dpit[1] - dpit[2],
 			(float)abs(i__2)) >= corth[ixcor - 1]) {
-			*pitch = median_(&dpit[2], &dpit[1], dpit);
+			*pitch = lpc10_median(&dpit[2], &dpit[1], dpit);
 		}
 	}
 /*  If bit 5 of ICORF is set then RC(5) - RC(10) are loaded with */
@@ -600,7 +581,7 @@ static int32_t c__2 = 2;
 /*  the values will be zero. */
  L500:
 	if ((icorf & bit[4]) != 0) {
-		i__1 = contrl_1.order;
+		i__1 = lpc10_contrl_ctx.order;
 		for (i__ = 5; i__ <= i__1; ++i__) {
 			irc[i__] = zrc[i__ - 1];
 		}
@@ -612,7 +593,7 @@ static int32_t c__2 = 2;
 	dpit[1] = dpit[0];
 	drms[2] = drms[1];
 	drms[1] = drms[0];
-	i__1 = contrl_1.order;
+	i__1 = lpc10_contrl_ctx.order;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		drc[i__ * 3 - 1] = drc[i__ * 3 - 2];
 		drc[i__ * 3 - 2] = drc[i__ * 3 - 3];
@@ -642,7 +623,7 @@ static int32_t c__2 = 2;
 		irc[i__] = i2 * pow_ii(&c__2, &ishift);
 	}
 /*  Decode RC(3)-RC(10) to sign plus 14 bits */
-	i__1 = contrl_1.order;
+	i__1 = lpc10_contrl_ctx.order;
 	for (i__ = 3; i__ <= i__1; ++i__) {
 		i2 = irc[i__];
 		ishift = 15 - nbit[i__ - 1];
@@ -654,9 +635,9 @@ static int32_t c__2 = 2;
 /* 811	FORMAT(1X,'<<DECODE OUT>>',T45,I4,1X,10I8) */
 /*  Scale RMS and RC's to floats */
 	*rms = (float)(*irms);
-	i__1 = contrl_1.order;
+	i__1 = lpc10_contrl_ctx.order;
 	for (i__ = 1; i__ <= i__1; ++i__) {
 		rc[i__] = irc[i__] / 16384.f;
 	}
 	return 0;
-}				/* decode_ */
+}				/* lpc10_decode */
