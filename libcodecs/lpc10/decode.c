@@ -393,15 +393,9 @@ int lpc10_internal_decode(int32_t * ipitv, int32_t * irms,
 */
 /*       value. */
 	/* Parameter adjustments */
-	if (irc) {
-		--irc;
-	}
-	if (voice) {
-		--voice;
-	}
-	if (rc) {
-		--rc;
-	}
+	--irc;
+	--voice;
+	--rc;
 
 	/* Function Body */
 

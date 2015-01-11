@@ -307,12 +307,8 @@ int lpc10_bsynz(float *coef, int32_t * ip, int32_t * iv,
 /*       original code.  I'm guessing that 0 is a reasonable initial */
 /*       value for all of them. */
 	/* Parameter adjustments */
-	if (coef) {
-		--coef;
-	}
-	if (sout) {
-		--sout;
-	}
+	--coef;
+	--sout;
 
 	/* Function Body */
 	ipo = &(st->ipo);

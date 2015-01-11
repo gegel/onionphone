@@ -344,15 +344,9 @@ int lpc10_synths(int32_t * voice, int32_t * pitch, float *rms, float *rc,
 */
 /*       a frame of silence is always returned. */
 	/* Parameter adjustments */
-	if (voice) {
-		--voice;
-	}
-	if (rc) {
-		--rc;
-	}
-	if (speech) {
-		--speech;
-	}
+	--voice;
+	--rc;
+	--speech;
 
 	/* Function Body */
 	buf = &(st->buf[0]);

@@ -242,13 +242,9 @@ int lpc10_onset(float *pebuf, int32_t * osbuf, int32_t *
 	hyst = &(st->hyst);
 
 	/* Parameter adjustments */
-	if (osbuf) {
-		--osbuf;
-	}
-	if (pebuf) {
-		pebuf_offset = *sbufl;
-		pebuf -= pebuf_offset;
-	}
+	--osbuf;
+	pebuf_offset = *sbufl;
+	pebuf -= pebuf_offset;
 
 	/* Function Body */
 

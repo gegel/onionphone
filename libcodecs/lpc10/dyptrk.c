@@ -279,9 +279,7 @@ int lpc10_dyptrk(float *amdf, int32_t * ltau, int32_t *
 	alphax = &(st->alphax);
 
 	/* Parameter adjustments */
-	if (amdf) {
-		--amdf;
-	}
+	--amdf;
 
 	/* Function Body */
 

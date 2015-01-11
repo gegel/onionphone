@@ -225,26 +225,14 @@ int lpc10_pitsyn(int32_t * order, int32_t * voice,
 /* FIRST and RMSO should be initialized with DATA statements, because */
 /* even on the first call, they are used before being initialized. */
 	/* Parameter adjustments */
-	if (rc) {
-		--rc;
-	}
-	if (rci) {
-		rci_dim1 = *order;
-		rci_offset = rci_dim1 + 1;
-		rci -= rci_offset;
-	}
-	if (voice) {
-		--voice;
-	}
-	if (ivuv) {
-		--ivuv;
-	}
-	if (ipiti) {
-		--ipiti;
-	}
-	if (rmsi) {
-		--rmsi;
-	}
+	--rc;
+	rci_dim1 = *order;
+	rci_offset = rci_dim1 + 1;
+	rci -= rci_offset;
+	--voice;
+	--ivuv;
+	--ipiti;
+	--rmsi;
 
 	/* Function Body */
 	ivoico = &(st->ivoico);

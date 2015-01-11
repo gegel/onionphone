@@ -120,9 +120,7 @@ int lpc10_deemp(float *x, int32_t * n, struct lpc10_decoder_state *st)
 /*       All of the locals saved below were not given explicit initial */
 /*       values in the original code.  I think 0 is a safe choice. */
 	/* Parameter adjustments */
-	if (x) {
-		--x;
-	}
+	--x;
 
 	/* Function Body */
 

@@ -481,29 +481,15 @@ int lpc10_voicin(int32_t * vwin, float *inbuf, float *lpbuf, int32_t * buflim,
 	slbue = (&st->slbue);
 
 	/* Parameter adjustments */
-	if (vwin) {
-		--vwin;
-	}
-	if (buflim) {
-		--buflim;
-	}
-	if (inbuf) {
-		inbuf_offset = buflim[1];
-		inbuf -= inbuf_offset;
-	}
-	if (lpbuf) {
-		lpbuf_offset = buflim[3];
-		lpbuf -= lpbuf_offset;
-	}
-	if (ivrc) {
-		--ivrc;
-	}
-	if (obound) {
-		--obound;
-	}
-	if (voibuf) {
-		--voibuf;
-	}
+	--vwin;
+	--buflim;
+	inbuf_offset = buflim[1];
+	inbuf -= inbuf_offset;
+	lpbuf_offset = buflim[3];
+	lpbuf -= lpbuf_offset;
+	--ivrc;
+	--obound;
+	--voibuf;
 
 	/* Function Body */
 

@@ -126,9 +126,7 @@ int lpc10_hp100(float *speech, int32_t * start, int32_t * end,
 /*       Local variables that need not be saved */
 /*       Local state */
 	/* Parameter adjustments */
-	if (speech) {
-		--speech;
-	}
+	--speech;
 
 	/* Function Body */
 

@@ -420,15 +420,9 @@ int lpc10_analys(float *speech, int32_t * voice, int32_t
 /*    PITCH 	The encoded pitch value (index into TAU) for the present */
 /* 		frame (delayed and smoothed by Dyptrack) */
 	/* Parameter adjustments */
-	if (speech) {
-		--speech;
-	}
-	if (voice) {
-		--voice;
-	}
-	if (rc) {
-		--rc;
-	}
+	--speech;
+	--voice;
+	--rc;
 
 	/* Function Body */
 
