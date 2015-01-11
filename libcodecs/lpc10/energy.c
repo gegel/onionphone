@@ -21,6 +21,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include <math.h>
+
 #include "energy.h"
 #include "lpc10.h"
 
@@ -72,9 +74,6 @@ int lpc10_energy(int32_t * len, float *speech, float *rms)
 {
 	/* System generated locals */
 	int32_t i__1;
-
-	/* Builtin functions */
-	double sqrt(double);
 
 	/* Local variables */
 	int32_t i__;

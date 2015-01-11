@@ -29,6 +29,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include <math.h>
+
 #include "bsynz.h"
 #include "lpc10.h"
 #include "lpc10tools.h"
@@ -131,9 +133,6 @@ int lpc10_bsynz(float *coef, int32_t * ip, int32_t * iv,
 	/* System generated locals */
 	int32_t i__1, i__2;
 	float r__1, r__2;
-
-	/* Builtin functions */
-	double sqrt(double);
 
 	/* Local variables */
 	float gain, xssq;

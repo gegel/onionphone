@@ -32,6 +32,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include <math.h>
+
 #include "lpc10.h"
 #include "lpc10tools.h"
 #include "voicin.h"
@@ -281,7 +283,6 @@ int lpc10_voicin(int32_t * vwin, float *inbuf, float *lpbuf, int32_t * buflim,
 
 	/* Builtin functions */
 	int32_t i_nint(float *);
-	double sqrt(double);
 
 	/* Local variables */
 	float ar_b__, ar_f__;

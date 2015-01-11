@@ -21,6 +21,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include <math.h>
+
 #include "irc2pc.h"
 #include "lpc10.h"
 
@@ -77,9 +79,6 @@ int lpc10_irc2pc(float *rc, float *pc, int32_t * order,
 {
 	/* System generated locals */
 	int32_t i__1, i__2;
-
-	/* Builtin functions */
-	double sqrt(double);
 
 	/* Local variables */
 	float temp[10];
