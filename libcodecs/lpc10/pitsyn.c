@@ -32,6 +32,8 @@ Some OSS fixes and a few lpc changes to make it actually work
 
 */
 
+#include <math.h>
+
 #include "lpc10.h"
 #include "pitsyn.h"
 
@@ -136,9 +138,6 @@ int lpc10_pitsyn(int32_t * order, int32_t * voice,
 	/* System generated locals */
 	int32_t rci_dim1 = 0, rci_offset, i__1, i__2;
 	float r__1;
-
-	/* Builtin functions */
-	double log(double), exp(double);
 
 	/* Local variables */
 	float alrn, alro, yarc[10], prop;

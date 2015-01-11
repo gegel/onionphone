@@ -281,9 +281,6 @@ int lpc10_voicin(int32_t * vwin, float *inbuf, float *lpbuf, int32_t * buflim,
 	int32_t inbuf_offset = 0, lpbuf_offset = 0, i__1, i__2;
 	float r__1, r__2;
 
-	/* Builtin functions */
-	int32_t i_nint(float *);
-
 	/* Local variables */
 	float ar_b__, ar_f__;
 	int32_t *lbve, *lbue, *fbve, *fbue;

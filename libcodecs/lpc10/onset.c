@@ -140,9 +140,6 @@ int lpc10_onset(float *pebuf, int32_t * osbuf, int32_t *
 	int32_t pebuf_offset, i__1;
 	float r__1;
 
-	/* Builtin functions */
-	double r_sign(float *, float *);
-
 	/* Local variables */
 	int32_t i__;
 	int32_t *lasti;

@@ -138,10 +138,6 @@ int lpc10_vparms(int32_t * vwin, float *inbuf, float *lpbuf, int32_t
 	int32_t inbuf_offset, lpbuf_offset, i__1;
 	float r__1, r__2;
 
-	/* Builtin functions */
-	double r_sign(float *, float *);
-	int32_t i_nint(float *);
-
 	/* Local variables */
 	int32_t vlen, stop, i__;
 	float e_pre__;

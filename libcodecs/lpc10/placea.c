@@ -115,9 +115,6 @@ int lpc10_placea(int32_t * ipitch, int32_t * voibuf, int32_t *
 	/* System generated locals */
 	float r__1;
 
-	/* Builtin functions */
-	int32_t i_nint(float *);
-
 	/* Local variables */
 	int32_t allv, winv;
 	int32_t i__, j, k, l, hrange;

@@ -137,9 +137,6 @@ int lpc10_internal_encode(int32_t * voice, int32_t * pitch, float *rms,
 	/* System generated locals */
 	int32_t i__1, i__2;
 
-	/* Builtin functions */
-	int32_t pow_ii(int32_t *, int32_t *);
-
 	/* Local variables */
 	int32_t idel, nbit, i__, j, i2, i3, mrk;
 
