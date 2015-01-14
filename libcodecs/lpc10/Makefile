@@ -15,7 +15,7 @@ CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = analys.o \
       bsynz.o \
-      channel.o \
+      chanwr.o \
       dcbias.o \
       decode.o \
       deemp.o \
@@ -23,16 +23,16 @@ OBJ = analys.o \
       dyptrk.o \
       encode.o \
       energy.o \
-      filter.o \
       ham84.o \
       hp100.o \
-      initial.o \
       invert.o \
       irc2pc.o \
       ivfilt.o \
-      lpc10.o \
-      lpc_both.o \
-      lpfilt31.o \
+      lpc10tools.o \
+      lpcdec.o \
+      lpcenc.o \
+      lpcini.o \
+      lpfilt.o \
       median.o \
       mload.o \
       onset.o \
@@ -40,14 +40,12 @@ OBJ = analys.o \
       placea.o \
       placev.o \
       preemp.o \
+      prepro.o \
       random.o \
       rcchk.o \
-      round.o \
-      setup.o \
       synths.o \
       tbdm.o \
-      voice.o \
-      voice_nn.o \
+      voicin.o \
       vparms.o
 
 INCADD ?= -I. -I../../common/inc
