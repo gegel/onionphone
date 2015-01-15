@@ -214,7 +214,6 @@ int sock_init(void)
    int ret = 0; //error code
    unsigned long naddrTCP=0; //temporary IP adress
    unsigned short port=0;      //temporary port
-   struct hostent *hh; //for resolving
    
    //Inites WSA for Windows
    #ifdef _WIN32
@@ -1510,7 +1509,6 @@ int readudpout(unsigned char* pkt)
 int readtcpout(unsigned char* pkt)
 {
  int i; //data length or error code
- char c;
  //check socket status, read all data if socket not ready
  if((!tcp_outsock_flag)||(tcp_outsock==INVALID_SOCKET)) return 0; //invalid socket
  else if(tcp_outsock_flag<SOCK_READY) //socket not ready: read all avaliable data

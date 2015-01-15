@@ -580,6 +580,7 @@ void psleep(int paus)
  // Dn =? H(IDn | P^b | P^q)
  int search_bookstr(const char* book, char* ourname, const unsigned char* buf, char* res)
  {
+	 (void)buf;
    int i;
    FILE* fl=0;
    unsigned char our_secret[32];
@@ -732,13 +733,11 @@ void psleep(int paus)
 
   int i;
   unsigned char* buf=pkt+1; //pointer to outputted data area (skip type byte)
-  char* p;
   char str[256];
 
   char contact[64]; //name of requested contact
   char bookname[64]; //adressbook file
   char bookstr[256]; //contacts string from adressbook
-  char keyname[64];  //their public key used for connection
   char ourname[64];  //own name used for contact
 
   //init state
@@ -955,10 +954,7 @@ void psleep(int paus)
   //PUBX=buf+16 : encryption DH-key(32 bytes)
   //NONCE=buf+48 : nonce (32 bytes)
 
-  int i, l;
   unsigned char* buf=pkt+1; //pointer to outputted data area (skip type byte)
-  char* p;
-  char str[256];
 
   //check for state
   if(crp_state==0) //acceptor side (B)
@@ -1046,7 +1042,6 @@ void psleep(int paus)
    pkt[0]=(TYPE_ANS | 0x80);
    crp_state=1; //set state 1: originator wait for ID
    settimeout(RINGTIME); //set reset timeout
-   i=lenbytype(TYPE_ANS);
    return (lenbytype(TYPE_ANS));
 
    //output=ANS:  PREF[16], PUBX[32], NONCE[32]  (80 bytes)
@@ -1879,8 +1874,6 @@ void psleep(int paus)
   //check for option defines
   if(pkt[1]=='-') //invites
   {
-   char str[256];
-
    if((pkt[2]=='U')||(pkt[2]=='S')) //TCP<>UDP invite
    {
     setaddr(pkt);//check for TCP->UDP invite with internal adress
@@ -1928,7 +1921,6 @@ void psleep(int paus)
  //returns length for sending in bytes
  int do_data(unsigned char* pkt, unsigned char* udp)
  {
-  unsigned char au_key[16];
   unsigned char* buf=pkt+1;
   int len=0;
   unsigned char c=0;
@@ -2110,7 +2102,6 @@ void psleep(int paus)
  int do_key(unsigned char* buf)
  {
   int i, len;
-  char* p;
   char str[256];
   char str1[64];
 
@@ -2326,7 +2317,6 @@ void psleep(int paus)
  int go_syn(unsigned char* pkt)
  {
   //received: CTR, MAC (4+4 bytes)
-  unsigned char mac[4];
   struct timeval time1;
   int t;
 

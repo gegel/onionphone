@@ -95,10 +95,8 @@ int IsGo=0;     //flag: input runs
 //read specified alsa buffer parameters from config file
 static int rdcfg(void)
 {
- FILE *fpp;
  char buf[256];
  char* p=NULL;
- int l=0;
  
  //set defaults
  periods=DEFPERIODS;
@@ -450,6 +448,8 @@ void soundterm(void)
  */
 void sound_open_file_descriptors(int *audio_io, int *audio_ctl)
 {
+	(void)audio_io;
+	(void)audio_ctl;
 	return;
 }
 
@@ -459,6 +459,8 @@ void sound_open_file_descriptors(int *audio_io, int *audio_ctl)
 /* what: string "overrun" or "underrun", just for user information */
 static void xrun(char *what, snd_pcm_t *pcm_handle)
 {
+	(void)what;
+
 	snd_pcm_status_t *status;
 	int res;
 	
@@ -684,6 +686,9 @@ void soundrecgain(int value)
 /* select the output - speaker, or audio output jack.  Not implemented */
 void sounddest(int where)
 {
+	(void)where;
+
+	return;
 }
 
 /* Record some audio non-blocking (as much as accessable and fits into the given buffer) */
@@ -692,7 +697,7 @@ int soundgrab(char *buf, int len)
     size_t result = 0;
     if(IsGo) {
         ssize_t r;
-        size_t count = len;
+        //size_t count = len;
         snd_pcm_t *pcm_handle=pcm_handle_in;
    
 

@@ -32,9 +32,11 @@ extern char sound_loop; //flag of sound selftest (from cntrls.c)
 //asynchronosly poll sound input device, network sockets and keyboard input
 int main(int argc, char **argv)
 {
+	(void)argc;
+	(void)argv;
  unsigned char bbuf[540]; //work buffer
- int i,j,k, job=0;
- char c, old_k=0;
+ int i, job=0;
+ char c;
 
  randInit(0, 0); //SPRNG initialization
  loadmenu(); //loading menu items from file

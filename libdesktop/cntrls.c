@@ -188,7 +188,7 @@ int  parseconf(char* param)
 //parse application command line arguments
 void parsecmdline(int argc, char **argv)
 {
- int i, j;
+ int j;
  char str[256];
  if(argc>1) for(j=1; j<argc; j++) //for each argv
  {
@@ -220,7 +220,6 @@ void doclr(void)
 //process users cmd from menu iteam
 int docmd(char* s)
 {
- int i,j;
  char* p;
  p=strchr(s, ':');   //search command
  //check for validity

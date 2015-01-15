@@ -267,7 +267,6 @@ OpusDecoder *dec=NULL;
 //returns frame length in samples
 int speex_i(int squal, int svbr, int prepr, int sfpp)
 {
-  int i;
   const int brate[8]={2150, 3950, 5950, 8000, 11000, 15000, 18200, 24600};
  //set speex globals
   spx_vbr=svbr & 1;
@@ -635,7 +634,6 @@ void lpc_i(void)
 //LPC compress 160 samples to 14 bytes 
 void lpc_e(unsigned char* buf, short* speech)
 {
-        int i;
         lpcparams_t lp;   
 	lpc_analyze(speech, &lp);
         memcpy((char*)buf, &lp, LPCRECSIZE);
@@ -770,7 +768,7 @@ int codec_len(int cdk)
 //returns buffer length in bytes including first type/len byte
 int sp_encode(short* sp, unsigned char* bf)
 {
- int i, l, t, fpp;
+ int i, l, fpp;
  unsigned char dtxcnt=0;
  unsigned char* bp=bf+1; //pointer to encodec data ares
  
@@ -1378,7 +1376,6 @@ void go_vad(void)
 //Play ringtone if jitter buffer is empty
 void playring(void)
 {
- int i;
  if(!l_jit_buf)
  {  //fill buffer for beep sygnal
   memset(jit_buf, 0, JIT_BUF_LEN); //silency
