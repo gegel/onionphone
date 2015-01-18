@@ -130,7 +130,6 @@ void r2tru(char* in, char* out)
 //read configuration file and get specified input and output device numbers
 int rdcfg(void)
 {
- double f;
  //FILE *fpp;
  char buf[256];
  char* p=0;
