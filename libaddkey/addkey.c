@@ -309,7 +309,7 @@ int main(int argc, char **argv)
   //check for seckey with specified name already exist
   sprintf(str, "%s%s.sec", KEYDIR, name);
   F=0;
-  if(F = fopen(str, "rb" ))
+  if((F = fopen(str, "rb" )))
   {
    printf("Specified secret file already exists!\r\n");
    fclose(F);
@@ -317,7 +317,7 @@ int main(int argc, char **argv)
   }
   //check for pubkey with specified name already exist
   sprintf(str, "%s%s", KEYDIR, name);
-  if(F = fopen(str, "rb" ))
+  if((F = fopen(str, "rb" )))
   {
    printf("Specified key file already exists!\r\n");
    fclose(F);
