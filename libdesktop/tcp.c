@@ -2214,7 +2214,7 @@ void do_nat(char* cmd)
    web_printf("! STUN server is not specified!\r\n");
    return;
   }
-  else if(msgbuf!='0') //check for STUN disabled
+  else if(msgbuf[0]!='0') //check for STUN disabled
   {
    //determines STUN IP and port from string
    portSTUN=fndport(msgbuf);  //check for port speecified
