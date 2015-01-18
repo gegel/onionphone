@@ -222,7 +222,7 @@ int resampler_quality=3;
 
 ///*
 //-----------------------------------------GSM_HR-------------------------
-static gsmhr *gsmhd=0; //half-rate coder state
+static struct gsmhr *gsmhd=0; //half-rate coder state
 //-----------------------------------------GSM_FR-------------------------
 static gsm gsmha; //encoders state
 static gsm gsmhs; //decoders state 
