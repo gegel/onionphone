@@ -122,7 +122,6 @@
   char str[256];
   unsigned char aukey[64]; //access|nonce|mac|our_mac
   FILE* fl=0;
-  int i;
 
   //save to binary seckey file
   sprintf(str, "%s%s.sec", KEYDIR, name);
