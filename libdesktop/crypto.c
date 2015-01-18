@@ -546,7 +546,7 @@ void psleep(int paus)
     Sponge_finalize(&spng, (BYTE*)aukey+48, 16); //our mac
 
     //check MAC and try access specified in command line
-    if((i>0)&&(memcmp((const void*)aukey+32, (const void*)aukey+48, 16)))
+    if((i>0)&&(memcmp((const void*)(aukey+32), (const void*)(aukey+48), 16)))
     {
      set_access(str, (unsigned char*)aukey);  //computes temporary access to key
      //computes mac
@@ -556,7 +556,7 @@ void psleep(int paus)
      Sponge_finalize(&spng, (BYTE*)aukey+48, 16); //our mac
     }
     //check MAC
-    if(memcmp((const void*)aukey+32, (const void*)aukey+48, 16))
+    if(memcmp((const void*)(aukey+32), (const void*)(aukey+48), 16))
     {
      web_printf("! Wrong access to our secret key!\r\n");
      return 0;
