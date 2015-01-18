@@ -243,7 +243,7 @@ void psleep(int paus)
    if(strlen(str)<2) return -1;
    c=option[0]; //option's char
    option[0]=0; //clear output
-   for(i=0;i<(strlen(str)-1);i++) //look for option
+   for(i=0;i<(int)(strlen(str)-1);i++) //look for option
    {
     if(str[i]!='-') continue; //must be as -Nname
     if(str[i+1]!=c) continue;
@@ -252,7 +252,7 @@ void psleep(int paus)
    if(!p) return -1; //p points to last option's data
    strncpy(option, p, 31); //copy to output
    option[31]=0;
-   for(i=0;i<strlen(option);i++) //truncate to first space
+   for(i=0;i<(int)strlen(option);i++) //truncate to first space
    {
     if(option[i]==' ')
     {
@@ -273,7 +273,7 @@ void psleep(int paus)
   keyname[0]=0;
   j=0;
 //search for [, collect chars up to ] or spase
-  for(i=0;i<strlen(str);i++)
+  for(i=0;i<(int)strlen(str);i++)
   {
    if((str[i]==']')||(str[i]==' ')) //we are out of block now
    {
@@ -306,7 +306,7 @@ void psleep(int paus)
   nickname[0]=0;
   j=0;
   //search for #, collect chars up to spase
-  for(i=0;i<strlen(str);i++)
+  for(i=0;i<(int)strlen(str);i++)
   {
    if(str[i]==' ') //we are out of block now
    {
@@ -393,7 +393,7 @@ void psleep(int paus)
   fclose(fl);
   if(str[0]!='#') return 0;
   //truncate to first \r or \n
-  for(i=0;i<strlen(str);i++)
+  for(i=0;i<(int)strlen(str);i++)
   {
    if( (str[i]=='\r')||(str[i]=='\n') )
    {
@@ -432,7 +432,7 @@ void psleep(int paus)
   }
   fclose(fl);
   if(!res[0]) return 0; //return  0 if contact not found
-  for(i=0; i<strlen(res); i++)
+  for(i=0; i<(int)strlen(res); i++)
   {
    if( (res[i]=='\r')||(res[i]=='\n') )
    {
@@ -664,7 +664,7 @@ void psleep(int paus)
    if(!(iskeys&4)) return 0; //if no one contact from book matched returns 0
 
   //current contact matched
-   for(i=0; i<strlen(res); i++)
+   for(i=0; i<(int)strlen(res); i++)
    {
     if( (res[i]=='\r')||(res[i]=='\n') ) //truncate contact's string
     {

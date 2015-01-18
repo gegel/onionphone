@@ -2566,7 +2566,7 @@ int sendweb(char* str)
  strncpy(webmsgbuf, str, 511);
  webmsgbuf[511]=0;
  l=strlen(webmsgbuf);
- if(l>(sizeof(webmsgbuf)-5)) return -2;
+ if(l>((int)sizeof(webmsgbuf)-5)) return -2;
  //websock protocol
  if(web_sock_flag==SOCK_READY)
  {

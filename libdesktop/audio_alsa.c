@@ -257,7 +257,7 @@ static int soundinit_2(int iomode)
 		return FALSE;
 	}
 
-	if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, &snd_rate, NULL) < 0) {
+	if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, (unsigned int*)&snd_rate, NULL) < 0) {
 		fprintf(stderr, "The rate %d Hz is not supported.  "
 			"Try a plughw device.\n", snd_rate);
 		return FALSE;

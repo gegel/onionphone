@@ -176,7 +176,7 @@ int  parseconf(char* param)
   param[0]=0; //clear input string
   if(p) //if parameter found
   {  //truncate value string to first space or end of string
-   for(i=0;i<strlen(p);i++)
+   for(i=0;i<(int)strlen(p);i++)
    if( (p[i]=='\r')||(p[i]=='\n')||(p[i]==' ') ) break;
    p[i]=0;
    strncpy(param, p, 31); //replace input parameter by it's value
@@ -257,7 +257,7 @@ void loadmenu(void)
       fgets(buf, 66, fl); //load next string
       if(strlen(buf)>1) //skip empty strings
       {
-       for(i=0;i<strlen(buf);i++) if(buf[i]<28) buf[i]=0; //truncate to first unprintable char
+       for(i=0;i<(int)strlen(buf);i++) if(buf[i]<28) buf[i]=0; //truncate to first unprintable char
        i=buf[0]-0x30; //menu index (0-9)
        j=buf[1]-0x30; //item index (0-9)
        if((i>=0)&&(i<11)&&(j>=0)&&(j<11)) //cifers
@@ -305,7 +305,7 @@ int doaddr(void)
   {
    fgets(buf, 256, fl); //load next string
    if(buf[0]!='[') continue;
-   for(i=0;i<strlen(buf);i++) if(buf[i]<28) buf[i]=0; //reject to first unprintable
+   for(i=0;i<(int)strlen(buf);i++) if(buf[i]<28) buf[i]=0; //reject to first unprintable
    if( memcmp(buf+1, cmdbuf+2, l) ) continue; //continue if name not matched pattern
    k=2; //flag for OK
    break;
@@ -368,7 +368,7 @@ void showaddr(void)
   buf[0]=0;
   fgets(buf, 256, fl); //load next string
   if(buf[0]!='[') continue;
-  for(i=0;i<strlen(buf);i++) if(buf[i]<28) buf[i]=0; //reject to first unprintable symbol
+  for(i=0;i<(int)strlen(buf);i++) if(buf[i]<28) buf[i]=0; //reject to first unprintable symbol
   if(cmdbuf[2]) //if string not null
   {
    if(!strstr(buf, cmdbuf+2)) continue; //find pattern
@@ -1203,7 +1203,7 @@ void setcmd(char* cmdstr)
  }
  else  //websocket mode
  { //truncate to first non-printable symbol 
-  for(i=0;i<strlen(cmdstr);i++) if((cmdstr[i]<32)&&(cmdstr[i]>0)) cmdstr[i]=0;
+  for(i=0;i<(int)strlen(cmdstr);i++) if((cmdstr[i]<32)&&(cmdstr[i]>0)) cmdstr[i]=0;
   strncpy(cmdbuf, cmdstr, 255); //apply incoming string as a command
   cmdbuf[255]=0;
   cmdptr=strlen(cmdbuf);  //length
