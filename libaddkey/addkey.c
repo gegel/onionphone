@@ -193,9 +193,7 @@ int main(int argc, char **argv)
  char* name=0; //name  of contact/key_file
  char* pass=0; //acess to secret file
  char* book=BOOK; //-B  adrressbook file name
- char* p;
  int i;
- char into=0;
  unsigned char c;
  FILE* F=0;
 
