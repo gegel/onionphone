@@ -480,13 +480,13 @@ int disconnect(void)
    if(crp_state>2)  //if connection was completely established
    {
     msgbuf[0]=0; //make finalise syn
-    do_syn(msgbuf);   //terminate encrypted connection
+    do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
     sendto(udp_insock, msgbuf, 9, 0, &saddrUDPTo, sizeof(saddrUDPTo));
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
-    do_inv(msgbuf); //terminate unecrypted
+    do_inv((unsigned char*)msgbuf); //terminate unecrypted
     sendto(udp_insock, msgbuf, 13, 0, &saddrUDPTo, sizeof(saddrUDPTo));
    }
    web_printf("! Incoming UDP connection terminated\r\n");
@@ -504,13 +504,13 @@ int disconnect(void)
    if(crp_state>2)  //if connection was completely established
    {
     msgbuf[0]=0; //make finalise syn
-    do_syn(msgbuf);   //terminate encrypted connection
+    do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
     sendto(udp_outsock, msgbuf, 9, 0, &saddrUDPTo, sizeof(saddrUDPTo));
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
-    do_inv(msgbuf); //terminate unecrypted
+    do_inv((unsigned char*)msgbuf); //terminate unecrypted
     sendto(udp_outsock, msgbuf, 13, 0, &saddrUDPTo, sizeof(saddrUDPTo));
    }
    web_printf("! Outgoing UDP connection terminated\r\n");
@@ -529,13 +529,13 @@ int disconnect(void)
    if(crp_state>2)  //if connection was completely established
    {
     msgbuf[0]=0; //make finalise syn
-    do_syn(msgbuf);   //terminate encrypted connection
+    do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
     send(tcp_insock, msgbuf, 9, 0);
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
-    do_inv(msgbuf); //terminate unecrypted
+    do_inv((unsigned char*)msgbuf); //terminate unecrypted
     send(tcp_insock, msgbuf, 13, 0);
    }
    web_printf("! Incoming connection terminated\r\n");
@@ -562,13 +562,13 @@ int disconnect(void)
    if(crp_state>2)  //if connection was completely established
    {
     msgbuf[0]=0; //make finalise syn
-    do_syn(msgbuf);   //terminate encrypted connection
+    do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
     send(tcp_outsock, msgbuf, 9, 0);
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
-    do_inv(msgbuf); //terminate unecrypted
+    do_inv((unsigned char*)msgbuf); //terminate unecrypted
     send(tcp_outsock, msgbuf, 13, 0);
    }
    web_printf("! Outgoing connection terminated\r\n");
@@ -761,7 +761,7 @@ int connectudp(char* udpaddr)
   if(udp_outsock==INVALID_SOCKET)
   {
    //generate random port
-   randFetch(msgbuf, 2);
+   randFetch((uchar*)msgbuf, 2);
    port=2000+(*((short*)msgbuf));
    if(port>65530) port/=2;
    //set port of UDP local interface
@@ -828,10 +828,10 @@ int connectudp(char* udpaddr)
    //send initial connection request to remote
    strncpy(msgbuf, udpaddr, 31); //use initial connection command with -Nname specified
    msgbuf[31]=0;
-   i=do_req(msgbuf); //send request
-   if(i>0) i=do_data(msgbuf, &c);
+   i=do_req((unsigned char*)msgbuf); //send request
+   if(i>0) i=do_data((unsigned char*)msgbuf, (unsigned char*)&c);
    //if onion/tcp connection exist: try switch to udp
-   if(i>0) do_send(msgbuf, i, c); //send packet over udp i bytes
+   if(i>0) do_send((unsigned char*)msgbuf, i, c); //send packet over udp i bytes
   }
   settimeout(UDPTIMEOUT); //set time for disconnect
   return 0;
@@ -988,14 +988,14 @@ int connecttor(char* toraddr)
   return 0;
  }
  //Make socks5 request in torbuf
- strcpy(torbuf+5, msgbuf); //hostname or IP string
+ strcpy((char*)torbuf+5, msgbuf); //hostname or IP string
  i=4; //IPv4 Len
  torbuf[3]=0x01; //for IPv4 socks request
  //check for adress string is IP, replace string by integer
- if(inet_addr(torbuf+5)!= INADDR_NONE) (*(unsigned int *)(torbuf+4)) = (unsigned int) inet_addr(torbuf+5);
+ if(inet_addr((const char*)torbuf+5)!= INADDR_NONE) (*(unsigned int *)(torbuf+4)) = (unsigned int) inet_addr((const char*)torbuf+5);
  else
  {
-  i=strlen(torbuf+5); //length of hostname string
+  i=strlen((const char*)torbuf+5); //length of hostname string
   torbuf[3]=0x03; //for hostname socks request
  }
  torbuf[4]=i;  //length of hostname or integer IP
@@ -1095,7 +1095,7 @@ void reset_dbl(void)
   memset(bb, 0, sizeof(bb));
   bb[0]=TYPE_CHAT|0x80; //chat header
   sprintf((char*)(bb+1), "-W%s", our_onion); //represent our onion
-  l=do_data(bb, &c); //encrypt
+  l=do_data(bb, (unsigned char*)&c); //encrypt
   if(l>0) do_send(bb, l, c);  //send packet
   //now send SYN req over outgoing socket if it is in work
   bb[0]=1; //syn request must be generates
@@ -1129,7 +1129,7 @@ void init_dbl(void)
   rc_in=0;
   rc_out=0;
   msgbuf[0]=1; //syn request must be generates
-  if(0<do_syn(msgbuf)) send(tcp_insock, msgbuf, 9, 0);
+  if(0<do_syn((unsigned char*)msgbuf)) send(tcp_insock, msgbuf, 9, 0);
  }
 }
 
@@ -1149,7 +1149,7 @@ void reconecttor(void)
   rc_in=0;
   rc_out=0;
   msgbuf[0]=1; //syn request must be generates
-  if(0<do_syn(msgbuf)) send(tcp_insock, msgbuf, 9, 0);
+  if(0<do_syn((unsigned char*)msgbuf)) send(tcp_insock, msgbuf, 9, 0);
  }
 }
 
@@ -1168,7 +1168,7 @@ int tcpaccept(void)
  if(tcp_listener==INVALID_SOCKET) return 0;
  ll = sizeof(saddrTCP);
  //try accept incoming asynchronosly
- sTemp  = accept(tcp_listener, (struct sockaddr *) &saddrTCP, &ll);
+ sTemp  = accept(tcp_listener, (struct sockaddr *) &saddrTCP, (socklen_t*)&ll);
  if(sTemp<=0) return -1; //no incoming connections accepted
  if(saddrTCP.sin_addr.s_addr==0x0100007F) //if incoming from localhost (Tor)
  {
@@ -1291,7 +1291,7 @@ int readudpin(unsigned char* pkt)
  int l=sizeof(saddrTCP); //addr structure size
 
  //try read socket asynchronosly
- i=recvfrom(udp_insock, pkt, MAXTCPSIZE, 0, &saddrTCP, &l);
+ i=recvfrom(udp_insock, pkt, MAXTCPSIZE, 0, &saddrTCP, (socklen_t*)&l);
  if(i==SOCKET_ERROR) //error/no data
  {
   i=getsockerr();  //get error code
@@ -1400,7 +1400,7 @@ int readudpout(unsigned char* pkt)
 
 //===========================================
  //try read socket
- i=recvfrom(udp_outsock, pkt, MAXTCPSIZE, 0, &saddrTCP, &l);
+ i=recvfrom(udp_outsock, pkt, MAXTCPSIZE, 0, &saddrTCP, (socklen_t*)&l);
  if(i==SOCKET_ERROR) //error/no data
  {
   i=getsockerr();  //get error code
@@ -1449,7 +1449,7 @@ int readudpout(unsigned char* pkt)
     i=1+strlen((char*)(pkt+1)); //-S111.111.111.111:11111
     memset(pkt+i, 0, 256-i); //zeroed rest string
     i=lenbytype(TYPE_CHAT);
-    if(i>0) i=do_data(pkt, &c); //encrypt
+    if(i>0) i=do_data(pkt, (unsigned char*)&c); //encrypt
     if(i>0) do_send(pkt, i, c); //send packet
     return 0;
    }
@@ -1543,7 +1543,7 @@ int readtcpout(unsigned char* pkt)
     tr_out=0; //init bytes counter
     pr_out=0; //init bytes pointer
     //send initial connection crypto request to remote
-    i=do_req(msgbuf); //make and send request
+    i=do_req((unsigned char*)msgbuf); //make and send request
     if(i>0)
     {
      i=send(tcp_outsock, msgbuf, i+5, 0);
@@ -1589,7 +1589,7 @@ int readtcpout(unsigned char* pkt)
     tr_out=0; //init bytes counter
     pr_out=0; //init bytes pointer
     tcp_outsock_flag=SOCK_INUSE;
-    i=do_req(msgbuf); //make and send request
+    i=do_req((unsigned char*)msgbuf); //make and send request
     if(i>0) send(tcp_outsock, msgbuf, i+5, 0);
     else disconnect(); //contact not in addressbook
    }
@@ -1600,7 +1600,7 @@ int readtcpout(unsigned char* pkt)
     pr_out=0; //init bytes pointer
     tcp_outsock_flag=SOCK_READY; //wait for answer invite
     msgbuf[0]=1; //non-zero invite must be generates
-    i=do_inv(msgbuf); //generate answer invite
+    i=do_inv((unsigned char*)msgbuf); //generate answer invite
     if(i>0) send(tcp_outsock, msgbuf, 13, 0); //send it to remote over Tor
     else //key not agree
     {
@@ -1844,7 +1844,7 @@ int readtcpin(unsigned char* pkt)
   {
    //send invite to answer
    msgbuf[0]=1; //non-zero invite must be generates
-   i=do_inv(msgbuf); //generate answer invite
+   i=do_inv((unsigned char*)msgbuf); //generate answer invite
    if(i>0) send(tcp_insock, msgbuf, 13, 0); //send it to remote over Tor
    else //key not agree
    {
@@ -1967,7 +1967,7 @@ int do_read(unsigned char* pkt)
     if((saddrTCP.sin_port)&&(saddrTCP.sin_addr.s_addr!=INADDR_NONE)&&(udp_outsock!=INVALID_SOCKET))
     {
      msgbuf[0]=1; //syn request must be generates
-     i=do_syn(msgbuf); //send UDP over our NAT to remote NAT
+     i=do_syn((unsigned char*)msgbuf); //send UDP over our NAT to remote NAT
      if(i>0) i=sendto(udp_outsock, msgbuf, 9, 0, &saddrTCP, sizeof(saddrTCP));
     }
     u_cnt--; //decrement packets to send
@@ -2038,7 +2038,7 @@ int do_read(unsigned char* pkt)
   memset(bb, 0, sizeof(bb));
   bb[0]=TYPE_CHAT|0x80; //chat header
   sprintf((char*)(bb+1), "-W%s", our_onion); //represent our onion
-  l=do_data(bb, &c); //encrypt
+  l=do_data(bb, (unsigned char*)&c); //encrypt
   if(l>0) do_send(bb, l, c);  //send packet
   //decrease counter for next measurement
   rc_cnt=rc_level/2;
@@ -2268,7 +2268,7 @@ void do_nat(char* cmd)
   (*(unsigned char*)msgbuf)=TYPE_CHAT|0x80; //chat header
   saddrTCP.sin_addr.s_addr=Our_naddrUDPint; //our local UDP interfaces IP address
   sprintf((char*)(msgbuf+1), "-U%s:%d", inet_ntoa(saddrTCP.sin_addr), Our_portUDPint);
-  i=do_data((unsigned char*)msgbuf, &c); //encrypt answer, returns pkt len
+  i=do_data((unsigned char*)msgbuf, (unsigned char*)&c); //encrypt answer, returns pkt len
   if(i>0) do_send((unsigned char*)msgbuf, i, c); //send answer
 
   //set number of NAT penentrates packets to send
@@ -2337,10 +2337,10 @@ void stopudp(void)
   //we must synchronize counter by first TCP SYN packet after
   //self-synchronized udp packets and not use UDP after this
   msgbuf[0]=1; //syn request must be generates
-  i=do_syn(msgbuf);   //synchronize in_counter first
-  if(i>0) i=do_data(msgbuf, &c);
+  i=do_syn((unsigned char*)msgbuf);   //synchronize in_counter first
+  if(i>0) i=do_data((unsigned char*)msgbuf, (unsigned char*)&c);
   //send first TCP after UDP: this is a SYN
-  if(i>0) do_send(msgbuf, i, c); 
+  if(i>0) do_send((unsigned char*)msgbuf, i, c); 
   web_printf("    Stop UDP");
  }
 }
@@ -2416,7 +2416,7 @@ int webaccept(void)
  if(web_listener==INVALID_SOCKET) return 0;
  ll = sizeof(saddrTCP);
  //try accept incoming asynchronosly
- sTemp  = accept(web_listener, (struct sockaddr *) &saddrTCP, &ll);
+ sTemp  = accept(web_listener, (struct sockaddr *) &saddrTCP, (socklen_t*)&ll);
  if(sTemp<=0) return -1; //no incoming connections accepted
  if(saddrTCP.sin_addr.s_addr!=0x0100007F) //if incoming not from localhost (Tor)
  {

@@ -437,7 +437,7 @@ int speex_r(short* spin, short* spout, int inlen,  int outrate)
  if(outrate!=Rs_out_rate) speex_resampler_set_rate(resampler, 8000, outrate); 
  //processing
  res=MAX_RESAMPL_BUF;
- if(resampler) speex_resampler_process_int(resampler, 0, spin, &inlen, spout, &res);
+ if(resampler) speex_resampler_process_int(resampler, 0, spin, (uint32_t*)&inlen, spout, (uint32_t*)&res);
  else res=1;
  return res;
 }
@@ -830,7 +830,7 @@ int sp_encode(short* sp, unsigned char* bf)
 	break;
    case CODEC_LPC10: lpc10_e(sp, bp);
 	break;	
-   case CODEC_CELP: celp_encode(sp, bp);
+   case CODEC_CELP: celp_encode(sp, (char*)bp);
 	break;
    //*/
    case CODEC_LPC: lpc_e(bp, sp);
@@ -968,7 +968,7 @@ int sp_decode(short* sp, unsigned char* bf)
 	break;
    case CODEC_LPC10: lpc10_d(bp, spp);
 	break;	
-   case CODEC_CELP: celp_decode(bp, spp);
+   case CODEC_CELP: celp_decode((char*)bp, spp);
 	break;
   //*/
    case CODEC_LPC: lpc_d(spp, bp);
@@ -1075,8 +1075,8 @@ int playjit(void)
    j=(j<<(vad_signal+5))-1; //noise signal level
    if(vad_signal==1) memset(jit_buf, 0, 3200); //silency for signal=1
    else for(i=0;i<1600;i++) jit_buf[i]=(rand()%j); //noise signal
-   i=soundplay(1600, (char*)(jit_buf)); //play and returns number of played samples
-   if(i<chunk) soundplay(1600, (char*)(jit_buf)); //play again if underrun was occured
+   i=soundplay(1600, (unsigned char*)(jit_buf)); //play and returns number of played samples
+   if(i<chunk) soundplay(1600, (unsigned char*)(jit_buf)); //play again if underrun was occured
   }
   rx_flg=0; //clear rx_flag: no plagged incoming users now
   rx_flg1=0; //clear rx_flg1: no PTT off remote signal
@@ -1091,8 +1091,8 @@ int playjit(void)
     i=est_jit; //number of samples of silency will be played
     if(i>JIT_BUF_LEN/2) i=JIT_BUF_LEN/2; //restriction buffer size
     memset(jit_buf1, 0, 2*i); //put silency to alternative buffer
-    i=soundplay(i, (char*)(jit_buf1)); //play and returns number of played samples
-    if(i<chunk) soundplay(min_jitter, (char*)(jit_buf1)); //play again if underrun was occured
+    i=soundplay(i, (unsigned char*)(jit_buf1)); //play and returns number of played samples
+    if(i<chunk) soundplay(min_jitter, (unsigned char*)(jit_buf1)); //play again if underrun was occured
     job+=0x100;
    }
    rx_flg1=0; //clear rx_flag: no plagged incoming users now   
@@ -1101,7 +1101,7 @@ int playjit(void)
  //play samples in jitter buffer
  if(l_jit_buf)
  {
-  i=soundplay(l_jit_buf, (char*)(p_jit_buf)); //returns number of played samples
+  i=soundplay(l_jit_buf, (unsigned char*)(p_jit_buf)); //returns number of played samples
   if(i) job+=0x200;
   if(i<=0) i=0; //must play againbif underrun (PTT mode etc.)
   l_jit_buf-=i; //number of unplayed samples
@@ -1530,8 +1530,8 @@ int go_snd(unsigned char* pkt)
    if(sdelay<chunk) //if less then one chunk in alsa buffer
    {  
     memset(jit_buf, 0, min_jitter*2); //put silency to jitter buffer
-    i=soundplay(min_jitter, (char*)jit_buf); //play it
-    if(i<chunk) i=soundplay(min_jitter, (char*)jit_buf); //if underrun play again
+    i=soundplay(min_jitter, (unsigned char*)jit_buf); //play it
+    if(i<chunk) i=soundplay(min_jitter, (unsigned char*)jit_buf); //if underrun play again
     sdelay=getdelay(); //renew number of samples in alsa buffer
     //crate=8100; //set rate a little more then nominal for start collecting samles in jitter buffer
     i=1; //set flag of first packet after inactivity
@@ -1603,7 +1603,7 @@ int do_snd(unsigned char *pkt)
  else
  {
   //feed SPRNG
-  randFeed(raw_buf, 2*RawBufSize);
+  randFeed((const uchar*)raw_buf, 2*RawBufSize);
  }
  //change mode and notify
  if((tx_flag!=etx_flag) && etx_flag) //if active mode was setted while current mode was inactive

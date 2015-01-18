@@ -413,7 +413,7 @@ void sendkey(char* keyname)
  do
  { //now bb[0]!=0 then key loaded and process inited
   t=do_key(bb); //key paccket prepared
-  if(t>0) l=do_data(bb, &c); //encrypts
+  if(t>0) l=do_data(bb, (unsigned char*)&c); //encrypts
   if(l>0) do_send(bb, l, c);  //sends to remote
   bb[0]=0;  //next do_key will be generates subsequent packets of this key
  }
@@ -435,7 +435,7 @@ void dochat(void)
   memset(bb, 0, sizeof(bb)); //clear
   bb[0]=TYPE_CHAT|0x80;    //set chat message header
   strcpy((char*)(bb+1), cmdbuf); //message body
-  l=do_data(bb, &c);     //encrypt
+  l=do_data(bb, (unsigned char*)&c);     //encrypt
   if(l>0) do_send(bb, l, c);  //send to remote
   printf("\r<%s\r\n", cmdbuf); //otput to local terminal
  }
@@ -763,9 +763,9 @@ int parsecmd(void)
    if(crp_state>2) //if connection established now
    {
     str[0]=1; //syn request must be generates
-    i=do_syn(str);
+    i=do_syn((unsigned char*)str);
     c=str[0]; //udp=tcp
-    if(i>0) if(i>0) do_send(str, 9, c); //send ping  currently used channel
+    if(i>0) if(i>0) do_send((unsigned char*)str, 9, c); //send ping  currently used channel
     web_printf("Ping remote...\r\n");
    }
   }
@@ -812,7 +812,7 @@ int parsecmd(void)
    { //send au1
     str[0]=0;
     i=do_au((unsigned char*)str);
-    if(i>0) i=do_data((unsigned char*)str, &c);
+    if(i>0) i=do_data((unsigned char*)str, (unsigned char*)&c);
     if(i>0) do_send((unsigned char*)str, i, c);
    }
   }
