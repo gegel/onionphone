@@ -70,6 +70,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "libcrp.h"
 #include "tcp.h"

@@ -61,6 +61,7 @@
 #include "../libcodecs/amr/interf_enc.h"
 #include "../libcodecs/amr/interf_dec.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -73,7 +74,6 @@
 
  #include <windows.h>
  #include <time.h>
- #include <math.h>
 #endif
 
 #include "libcrp.h"
