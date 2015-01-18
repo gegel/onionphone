@@ -327,7 +327,7 @@ static int soundinit_2(int iomode)
 	else
 		n = (double) snd_rate * avail_min / 1000000;
 	if (snd_pcm_sw_params_set_avail_min(pcm_handle, swparams, n) < 0) {
-		fprintf(stderr, "Can't set avail_min to %d\n", n);
+		fprintf(stderr, "Can't set avail_min to %ju\n", n);
 		return FALSE;
 	}
 
@@ -386,7 +386,7 @@ static int soundinit_2(int iomode)
 	chunk_bytes = chunk_size * bits_per_frame / 8;
 
 	if (verbose)
-		printf("Audio buffer size should be %d bytes\n\r", chunk_bytes);
+		printf("Audio buffer size should be %ju bytes\n\r", chunk_bytes);
 
 //	audiobuf = realloc(audiobuf, chunk_bytes);
 //	if (audiobuf == NULL) {
@@ -737,7 +737,7 @@ int soundgrab(char *buf, int len)
 				 * no harm.  So, just return whatever has been
 				 * already read. */
 			}
-			fprintf(stderr, "read error: %s (%d); state=%d\n\r",
+			fprintf(stderr, "read error: %s (%ju); state=%d\n\r",
 				snd_strerror(r), r, snd_pcm_state(pcm_handle));
 		}
     }
