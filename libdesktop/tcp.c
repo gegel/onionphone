@@ -1202,7 +1202,7 @@ if(onion_flag && (!oflag)) ll=1; //busy for external connect during onion seans
 if(ll) //send busy notification and close
  {
   char buf[13];
-  buf[0]=0x80|TYPE_INV;
+  buf[0]=(char)(0x80|TYPE_INV);
   memset(buf+1,0, 12); //zeroed invite for busy notification
   if(13!=send(sTemp, (char*)(&ll), 13, 0)) perror("Sending Busy");//send busy nitification
 
@@ -2542,7 +2542,7 @@ int readweb(void)
    }
    else if(((unsigned char)(webmsgbuf[0])==0x89)&&(i<126)) //check for ping packet
    {  //only short ping precessed
-    webmsgbuf[0]=0x8A; //set pong type
+    webmsgbuf[0]=(char)0x8A; //set pong type
     webmsgbuf[1]=0x80+i; //set data length
     for(j=0;j<i;j++) webmsgbuf[2+j]=p[j]; //copy data from ping
     send(web_sock, webmsgbuf, i+2, 0); //send pong to answer
@@ -2571,7 +2571,7 @@ int sendweb(char* str)
  //websock protocol
  if(web_sock_flag==SOCK_READY)
  {
-  webmsgbuf[0]=0x81; //header for final (one frame) text data packet
+  webmsgbuf[0]=(char)0x81; //header for final (one frame) text data packet
   if(l<126) //short packet
   {
    webmsgbuf[1]=l; //7 bits length
