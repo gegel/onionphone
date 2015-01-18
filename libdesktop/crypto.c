@@ -26,23 +26,13 @@
  #include <windows.h>
  #include <time.h>
 
-//for Windows emulation of gettimeofday
-#ifndef _TIMEZONE_DEFINED /* also in sys/time.h */
-#define _TIMEZONE_DEFINED
-struct timezone
-{
-  int  tz_minuteswest; //minutes W of Greenwich
-  int  tz_dsttime;     //type of dst correction 
-};
-#endif /* _TIMEZONE_DEFINED */
-
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
+  (void)tz;
   FILETIME ft;
   const __int64 DELTA_EPOCH_IN_MICROSECS= 11644473600000000;
   unsigned __int64 tmpres = 0;
   unsigned __int64 tmpres_h = 0;
-  static int tzflag;
 
   if (NULL != tv)
   {
