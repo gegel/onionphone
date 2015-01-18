@@ -426,6 +426,7 @@ int get_ipif(unsigned int ip, unsigned short port)
  if(port) web_printf(":%d", (int)port);
  printf("\r\n");
  fflush(stdout);
+ return 0;
 }
 
 
