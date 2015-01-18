@@ -2522,7 +2522,7 @@ int readweb(void)
    i=0x7F&webmsgbuf[1];  //data length for short packet
    if(i>125) //this is a long packet
    {
-    i=webmsgbuf[3]<<8+webmsgbuf[4]; //data length for long packet
+    i=webmsgbuf[3]<<(8+webmsgbuf[4]); //data length for long packet
     p+=2; //skip 2 byte length
    }
    if(0x80&webmsgbuf[1]) //check for mask

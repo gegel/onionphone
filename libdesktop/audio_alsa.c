@@ -288,7 +288,7 @@ static int soundinit_2(int iomode)
 	}
  }
  
-	if (ret=snd_pcm_hw_params(pcm_handle, hwparams) < 0) {
+	if ((ret=snd_pcm_hw_params(pcm_handle, hwparams)) < 0) {
 		fprintf(stderr, "Error setting hardware parameters=%d\n", ret);
 		return FALSE;
 	}

@@ -1567,7 +1567,7 @@ int go_snd(unsigned char* pkt)
     }
  */
     //length of added udecoded packet in bytes
-    if(0x80&pkt[0]) i=1+frm_ppk[dec_type]*buf_len[dec_type]; else i=1+pkt[0]&0x7F; 
+    if(0x80&pkt[0]) i=1+frm_ppk[dec_type]*buf_len[dec_type]; else i=(1+pkt[0])&0x7F; 
     memcpy(pkt_buf[j], pkt, i); //copy packet to buffer's slot
   }
  }
