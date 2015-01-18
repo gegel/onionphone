@@ -30,7 +30,7 @@
 #define NATINTERVAL 17  //interval between NAT penentrate packets 2^n microseconds
 #define MAXPKTCNT 300  //packets for measure traffics bitrate
 
-
+#include <limits.h>
 #include <stdio.h>
 
 #ifdef _WIN32
@@ -763,7 +763,7 @@ int connectudp(char* udpaddr)
   {
    //generate random port
    randFetch((uchar*)msgbuf, 2);
-   port=2000+(*((short*)msgbuf));
+   port=2000+(((short)msgbuf[1] << (CHAR_BIT * sizeof(short) / 2)) | ((short)msgbuf[0]));
    if(port>65530) port/=2;
    //set port of UDP local interface
    Our_portUDPint=port;  //out UDP port in intranet
