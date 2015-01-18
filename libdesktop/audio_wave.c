@@ -102,7 +102,7 @@ void r2tru(char* in, char* out)
  int i,j;
  char*p=out;
 
- for(i=0;i<1+strlen(in); i++)
+ for(i=0;i<1+(int)strlen(in); i++)
  {
   if(in[i]>=0) (*p++)=in[i];
   else
