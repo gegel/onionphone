@@ -227,7 +227,7 @@ void CloseDevices (void)
 //release dynamically allocated wave header
 void ReleaseBuffers(void)
 {
- int i;
+ volatile int i;
  if(WorkerThreadId) PostThreadMessage (WorkerThreadId, WM_QUIT, 0, 0);
  for(i=0;i<CHNUMS; i++) if(Hdr_out[i]) LocalFree ((HLOCAL)Hdr_out[i]);
  for(i=0;i<CHNUMS; i++) if(Hdr_in[i]) LocalFree ((HLOCAL)Hdr_in[i]);
@@ -238,7 +238,7 @@ void ReleaseBuffers(void)
 int OpenDevices (void)
 {
   MMRESULT Res;
-  int i;
+  volatile int i;
   WAVEHDR *Hdr;
 
   InitCommonControls (); //init system controls
@@ -257,7 +257,7 @@ int OpenDevices (void)
   //---------------------Open Devices----------------
   //Output
   Res = waveOutOpen (
-      (HWAVE *)&Out,
+      (LPHWAVEOUT)&Out,
       DevOutN - 1,
       &Format,
       (DWORD)WorkerThreadId,
@@ -269,7 +269,7 @@ int OpenDevices (void)
 
   //Input
   Res = waveInOpen (
-      (HWAVE *)&In,
+      (LPHWAVEIN)&In,
       DevInN - 1,
       &Format,
       (DWORD)WorkerThreadId,
@@ -286,7 +286,7 @@ int OpenDevices (void)
    Hdr = (WAVEHDR *)LocalAlloc (LMEM_FIXED, sizeof (*Hdr));
    if (Hdr)
    {
-    Hdr->lpData = wave_out[i];
+    Hdr->lpData = (char*)wave_out[i];
     Hdr->dwBufferLength = ChSize;
     Hdr->dwFlags = 0;
     Hdr->dwLoops = 0;
@@ -311,7 +311,7 @@ int OpenDevices (void)
    Hdr = (WAVEHDR *)LocalAlloc (LMEM_FIXED, sizeof (*Hdr));
    if (Hdr)
    {
-    Hdr->lpData = wave_in[i];
+    Hdr->lpData = (char*)wave_in[i];
     Hdr->dwBufferLength = ChSize;
     Hdr->dwFlags = 0;
     Hdr->dwLoops = 0;
@@ -532,7 +532,7 @@ DWORD WINAPI WorkerThreadProc (void *Arg)
      bc++;     //computes pointer to next frame for passes to input device
      bc&=ROLLMASK; //roll mask
      //returns header with next frame to input device
-     Hdr->lpData=wave_in[bc]; //attach next buffer to this header
+     Hdr->lpData=(char*)wave_in[bc]; //attach next buffer to this header
      waveInPrepareHeader (In, Hdr, sizeof (*Hdr)); //prepare header
      waveInAddBuffer (In, Hdr, sizeof (*Hdr)); //back to input device
      break;
