@@ -483,13 +483,13 @@ int disconnect(void)
    {
     msgbuf[0]=0; //make finalise syn
     do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
-    sendto(udp_insock, msgbuf, 9, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+    sendto(udp_insock, msgbuf, 9, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
     do_inv((unsigned char*)msgbuf); //terminate unecrypted
-    sendto(udp_insock, msgbuf, 13, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+    sendto(udp_insock, msgbuf, 13, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
    }
    web_printf("! Incoming UDP connection terminated\r\n");
    fflush(stdout);
@@ -507,13 +507,13 @@ int disconnect(void)
    {
     msgbuf[0]=0; //make finalise syn
     do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
-    sendto(udp_outsock, msgbuf, 9, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+    sendto(udp_outsock, msgbuf, 9, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
     do_inv((unsigned char*)msgbuf); //terminate unecrypted
-    sendto(udp_outsock, msgbuf, 13, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+    sendto(udp_outsock, msgbuf, 13, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
    }
    web_printf("! Outgoing UDP connection terminated\r\n");
    fflush(stdout);
@@ -919,7 +919,7 @@ int connecttcp(char* tcpaddr)
  opt=1;
  ioctl(tcp_outsock, FIONBIO, &opt);
  //Connect to remote host asynchronosly
- connect(tcp_outsock, &saddrTCP, sizeof(saddrTCP));
+ connect(tcp_outsock, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
  //init connection state
  tcp_outsock_flag=SOCK_WAIT_HOST; //set soccket status
  settimeout(TCPTIMEOUT);  //set timeout for waiting connection
@@ -1043,7 +1043,7 @@ int connecttor(char* toraddr)
  saddrTCP.sin_port = htons(portTor);
  saddrTCP.sin_addr.s_addr=naddrTor;
  //Connect to Tor interface asynchronosly
- connect(tcp_outsock, &saddrTCP, sizeof(saddrTCP));
+ connect(tcp_outsock, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
  //set socket status wor waiting connection to tor interface
  tcp_outsock_flag=SOCK_WAIT_TOR;
  if(!onion_flag) onion_flag=1;
@@ -1250,7 +1250,7 @@ int do_send(unsigned char* pkt, int len, char c)
  if((udp_outsock!=(int)INVALID_SOCKET)&&(udp_outsock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
  {
   pkt[0]=c; //set udp header and send udp
-  sendto(udp_outsock, pkt, len, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+  sendto(udp_outsock, pkt, len, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
   bytes_sended+=(len+28);
   pkt_counter++;
   return 0; //this is incoming UDP direct, no other connection can be active at time
@@ -1276,7 +1276,7 @@ int do_send(unsigned char* pkt, int len, char c)
  if((udp_insock!=(int)INVALID_SOCKET)&&(udp_insock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
  {
   pkt[0]=c; //set udp header and send udp
-  sendto(udp_insock, pkt, len, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+  sendto(udp_insock, pkt, len, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
   bytes_sended+=(len+28);
   pkt_counter++;
  }
@@ -1358,7 +1358,7 @@ int readudpin(unsigned char* pkt)
  {
   pkt[0]=TYPE_INV|0x80; //zeroed invite
   memset(pkt+1, 0, 12);
-  sendto(udp_insock, pkt, 13, 0, &saddrTCP, sizeof(saddrTCP));
+  sendto(udp_insock, pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   return -1; //no data
  }
 
@@ -1380,7 +1380,7 @@ int readudpin(unsigned char* pkt)
  if((i==9)&&(crp_state>2))
  {
 
-  if(0<go_syn(pkt)) sendto(udp_insock, pkt, 9, 0, &saddrTCP, sizeof(saddrTCP));
+  if(0<go_syn(pkt)) sendto(udp_insock, pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   else web_printf(" ping on UDP incoming\r\n");
   return -1;
  }
@@ -1433,7 +1433,7 @@ int readudpout(unsigned char* pkt)
   {
    pkt[0]=TYPE_INV|0x80; //send zeroed invite
    memset(pkt+1, 0, 12);
-   sendto(udp_outsock, pkt, 13, 0, &saddrTCP, sizeof(saddrTCP));
+   sendto(udp_outsock, pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
    return 0;
   }
 
@@ -1468,7 +1468,7 @@ int readudpout(unsigned char* pkt)
      //fix senders address as remote address for answering
      memcpy(&saddrUDPTo, &saddrTCP, sizeof(saddrUDPTo));
      //send answer over UDP for notify himself address:port for remote
-     sendto(udp_outsock, pkt, 9, 0, &saddrTCP, sizeof(saddrTCP));
+     sendto(udp_outsock, pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
      pkt[0]=1; //make syn request for fixing timestamp
      do_syn(pkt);
      u_cnt=0; //terminate NAT travelsal procedure
@@ -1480,7 +1480,7 @@ int readudpout(unsigned char* pkt)
    } //if(u_cnt)
    else
    {  //!u_cnt: send SYN to answer
-    if(0<go_syn(pkt)) sendto(udp_outsock, pkt, 9, 0, &saddrTCP, sizeof(saddrTCP));
+    if(0<go_syn(pkt)) sendto(udp_outsock, pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
     else web_printf(" ping on UDP outgoing\r\n");
    } //!u_cnt
    return 0;
@@ -1497,7 +1497,7 @@ int readudpout(unsigned char* pkt)
  {  //this is a packet from another sender then was specified on connect
   pkt[0]=TYPE_INV|0x80; //send zeroed invite back: busy
   memset(pkt+1, 0, 12);
-  sendto(udp_outsock, pkt, 13, 0, &saddrTCP, sizeof(saddrTCP));
+  sendto(udp_outsock, pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   return -1;
  }
  bytes_received+=(i+28);
@@ -1970,7 +1970,7 @@ int do_read(unsigned char* pkt)
     {
      msgbuf[0]=1; //syn request must be generates
      i=do_syn((unsigned char*)msgbuf); //send UDP over our NAT to remote NAT
-     if(i>0) i=sendto(udp_outsock, msgbuf, 9, 0, &saddrTCP, sizeof(saddrTCP));
+     if(i>0) i=sendto(udp_outsock, msgbuf, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
     }
     u_cnt--; //decrement packets to send
     //exhausted: unsuccessful 
@@ -2178,7 +2178,7 @@ void do_stun(char* cmd)
    saddrTCP.sin_port = htons(portSTUN); //port of used STUN server
    saddrTCP.sin_addr.s_addr=naddrSTUN; //IP adress of used STUN server
    //send STUN request
-   sendto(udp_insock, msgbuf, 28, 0, &saddrTCP, sizeof(saddrTCP));
+   sendto(udp_insock, msgbuf, 28, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   } //if(portSTUN && (naddrSTUN!=INADDR_NONE))
 }
 
@@ -2262,7 +2262,7 @@ void do_nat(char* cmd)
    saddrTCP.sin_port = htons(portSTUN); //port of used STUN server
    saddrTCP.sin_addr.s_addr=naddrSTUN; //IP adress of used STUN server
    //send STUN request
-   sendto(udp_outsock, msgbuf, 28, 0, &saddrTCP, sizeof(saddrTCP));
+   sendto(udp_outsock, msgbuf, 28, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   }
 
   //make chat packet contains string -Uudpaddr:udpport
