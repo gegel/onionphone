@@ -172,7 +172,7 @@ int  parseconf(char* param)
    p++; //set pointer to value
    break;
   }
-  close(fpp);
+  fclose(fpp);
   param[0]=0; //clear input string
   if(p) //if parameter found
   {  //truncate value string to first space or end of string
