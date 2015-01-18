@@ -41,6 +41,7 @@
 #include <stdint.h>
 #include <winsock2.h>
 #include <windows.h>
+#include <ws2tcpip.h>
 #include <htons.h>
 #define ioctl ioctlsocket
 #define close closesocket
