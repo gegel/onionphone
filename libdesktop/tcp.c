@@ -1013,7 +1013,7 @@ int connecttor(char* toraddr)
  {
   //Tor not pass socket closing immediately, we must notify other side first
   i=0;
-  send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+  send(tcp_outsock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
   close(tcp_outsock);  //now closing socket
   tcp_outsock=INVALID_SOCKET;
   tcp_outsock_flag=0;
@@ -1101,7 +1101,7 @@ void reset_dbl(void)
   if(l>0) do_send(bb, l, c);  //send packet
   //now send SYN req over outgoing socket if it is in work
   bb[0]=1; //syn request must be generates
-  if(0<do_syn(bb)) send(tcp_outsock, bb, 9, 0);
+  if(0<do_syn(bb)) send(tcp_outsock, (const char*)bb, 9, 0);
  }
 }
 //*****************************************************************************
@@ -1250,7 +1250,7 @@ int do_send(unsigned char* pkt, int len, char c)
  if((udp_outsock!=(int)INVALID_SOCKET)&&(udp_outsock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
  {
   pkt[0]=c; //set udp header and send udp
-  sendto(udp_outsock, pkt, len, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
+  sendto(udp_outsock, (const char*)pkt, len, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
   bytes_sended+=(len+28);
   pkt_counter++;
   return 0; //this is incoming UDP direct, no other connection can be active at time
@@ -1258,14 +1258,14 @@ int do_send(unsigned char* pkt, int len, char c)
  //check for tcp sockets in use (both can be)
  if((tcp_outsock!=(int)INVALID_SOCKET)&&(tcp_outsock_flag==SOCK_INUSE))
  {
-  send(tcp_outsock, pkt, len, 0);
+  send(tcp_outsock, (const char*)pkt, len, 0);
   bytes_sended+=(len+40);
   pkt_counter++;
   i=1;
  }
  if((tcp_insock!=(int)INVALID_SOCKET)&&(tcp_insock_flag==SOCK_INUSE))
  {
-  send(tcp_insock, pkt, len, 0);
+  send(tcp_insock, (const char*)pkt, len, 0);
   bytes_sended+=(len+40);
   pkt_counter++;
   i=1;
@@ -1276,7 +1276,7 @@ int do_send(unsigned char* pkt, int len, char c)
  if((udp_insock!=(int)INVALID_SOCKET)&&(udp_insock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
  {
   pkt[0]=c; //set udp header and send udp
-  sendto(udp_insock, pkt, len, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
+  sendto(udp_insock, (const char*)pkt, len, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
   bytes_sended+=(len+28);
   pkt_counter++;
  }
@@ -1293,7 +1293,7 @@ int readudpin(unsigned char* pkt)
  int l=sizeof(saddrTCP); //addr structure size
 
  //try read socket asynchronosly
- i=recvfrom(udp_insock, pkt, MAXTCPSIZE, 0, &saddrTCP, (socklen_t*)&l);
+ i=recvfrom(udp_insock, (char*)pkt, MAXTCPSIZE, 0, (struct sockaddr*)&saddrTCP, (socklen_t*)&l);
  if(i==SOCKET_ERROR) //error/no data
  {
   i=getsockerr();  //get error code
@@ -1358,7 +1358,7 @@ int readudpin(unsigned char* pkt)
  {
   pkt[0]=TYPE_INV|0x80; //zeroed invite
   memset(pkt+1, 0, 12);
-  sendto(udp_insock, pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
+  sendto(udp_insock, (const char*)pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   return -1; //no data
  }
 
@@ -1380,7 +1380,7 @@ int readudpin(unsigned char* pkt)
  if((i==9)&&(crp_state>2))
  {
 
-  if(0<go_syn(pkt)) sendto(udp_insock, pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
+  if(0<go_syn(pkt)) sendto(udp_insock, (const char*)pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   else web_printf(" ping on UDP incoming\r\n");
   return -1;
  }
@@ -1402,7 +1402,7 @@ int readudpout(unsigned char* pkt)
 
 //===========================================
  //try read socket
- i=recvfrom(udp_outsock, pkt, MAXTCPSIZE, 0, &saddrTCP, (socklen_t*)&l);
+ i=recvfrom(udp_outsock, (char*)pkt, MAXTCPSIZE, 0, (struct sockaddr*)&saddrTCP, (socklen_t*)&l);
  if(i==SOCKET_ERROR) //error/no data
  {
   i=getsockerr();  //get error code
@@ -1433,7 +1433,7 @@ int readudpout(unsigned char* pkt)
   {
    pkt[0]=TYPE_INV|0x80; //send zeroed invite
    memset(pkt+1, 0, 12);
-   sendto(udp_outsock, pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
+   sendto(udp_outsock, (const char*)pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
    return 0;
   }
 
@@ -1468,7 +1468,7 @@ int readudpout(unsigned char* pkt)
      //fix senders address as remote address for answering
      memcpy(&saddrUDPTo, &saddrTCP, sizeof(saddrUDPTo));
      //send answer over UDP for notify himself address:port for remote
-     sendto(udp_outsock, pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
+     sendto(udp_outsock, (const char*)pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
      pkt[0]=1; //make syn request for fixing timestamp
      do_syn(pkt);
      u_cnt=0; //terminate NAT travelsal procedure
@@ -1480,7 +1480,7 @@ int readudpout(unsigned char* pkt)
    } //if(u_cnt)
    else
    {  //!u_cnt: send SYN to answer
-    if(0<go_syn(pkt)) sendto(udp_outsock, pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
+    if(0<go_syn(pkt)) sendto(udp_outsock, (const char*)pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
     else web_printf(" ping on UDP outgoing\r\n");
    } //!u_cnt
    return 0;
@@ -1497,7 +1497,7 @@ int readudpout(unsigned char* pkt)
  {  //this is a packet from another sender then was specified on connect
   pkt[0]=TYPE_INV|0x80; //send zeroed invite back: busy
   memset(pkt+1, 0, 12);
-  sendto(udp_outsock, pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
+  sendto(udp_outsock, (const char*)pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   return -1;
  }
  bytes_received+=(i+28);
@@ -1512,10 +1512,10 @@ int readtcpout(unsigned char* pkt)
 {
  int i; //data length or error code
  //check socket status, read all data if socket not ready
- if((!tcp_outsock_flag)||(tcp_outsock==INVALID_SOCKET)) return 0; //invalid socket
+ if((!tcp_outsock_flag)||(tcp_outsock==(int)INVALID_SOCKET)) return 0; //invalid socket
  else if(tcp_outsock_flag<SOCK_READY) //socket not ready: read all avaliable data
  {
-  i=recv(tcp_outsock, br_out, MAXTCPSIZE, 0); //try read socket
+  i=recv(tcp_outsock, (char*)br_out, MAXTCPSIZE, 0); //try read socket
 
   if(!i)  //no data but recv event
   {  //socket remotely closed (like eof)
@@ -1563,7 +1563,7 @@ int readtcpout(unsigned char* pkt)
    {
     tcp_outsock_flag=SOCK_WAIT_HELLO; //wait hello from Tor
     //send socks5 hello
-    i=send(tcp_outsock, torbuf, 3, 0);
+    i=send(tcp_outsock, (const char*)torbuf, 3, 0);
     if(i<=0) d_flg=SOCK_WAIT_TOR;
     else d_flg=0;
    }
@@ -1577,7 +1577,7 @@ int readtcpout(unsigned char* pkt)
    //check for socks5 Hello pattern
    if( (i<2) || (i>9) || (br_out[0]!=5) || br_out[1] ) return 0;
    tcp_outsock_flag=SOCK_WAIT_HS; //wait connection to specified Hidden Service
-   i=send(tcp_outsock, torbuf, torbuflen, 0); //send sock5 HS-request to Tor
+   i=send(tcp_outsock, (const char*)torbuf, torbuflen, 0); //send sock5 HS-request to Tor
    if(i>0) settimeout(TORTIMEOUT);
    return 0;
   }
@@ -1585,7 +1585,7 @@ int readtcpout(unsigned char* pkt)
   if(tcp_outsock_flag==SOCK_WAIT_HS) //if we are waiting connection to HS
   { //check for socks5 connection compleet pattern
    if((i<10)||(br_out[0]!=5)||(br_out[1])) return 0;
-   if(tcp_insock==INVALID_SOCKET) //this is initil connection, send req
+   if(tcp_insock==(int)INVALID_SOCKET) //this is initil connection, send req
    {
     //send initial connection crypto request to remote
     tr_out=0; //init bytes counter
@@ -1608,7 +1608,7 @@ int readtcpout(unsigned char* pkt)
     {
      //Tor not pass socket closing immediately, we must notify other side first
      i=0;
-     send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+     send(tcp_outsock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
      web_printf("! No key agreement!\r\n");
      sock_close(0);
     }
@@ -1621,7 +1621,7 @@ int readtcpout(unsigned char* pkt)
  //socket ready now: read one byte first (header) specifies length
  if(!tr_out) //no data in buffer: new packet estimates
  {
-  i=recv(tcp_outsock, br_out, 1, 0); //read first byte
+  i=recv(tcp_outsock, (char*)br_out, 1, 0); //read first byte
   if(!i) //socket remotely closed (like eof)
   {
    web_printf("! TCP outgoing connection closed remotely\r\n");
@@ -1658,7 +1658,7 @@ int readtcpout(unsigned char* pkt)
  } //if(!tr_out)
 
   //try to read rest of packets bytes
-  i=recv(tcp_outsock, br_out+pr_out, tr_out, 0); //read up to all expected bytes of packet
+  i=recv(tcp_outsock, (char*)(br_out+pr_out), tr_out, 0); //read up to all expected bytes of packet
   if(!i) //socket remotely closed (like eof)
   {
    web_printf("! TCP outgoing connection closed remotely\r\n");
@@ -1691,7 +1691,7 @@ int readtcpout(unsigned char* pkt)
  //check for SYN there (crp_state>2)
  if((i==9)&&(crp_state>2))
  {
-  if(0<go_syn(br_out)) send(tcp_outsock, br_out, 9, 0);
+  if(0<go_syn(br_out)) send(tcp_outsock, (const char*)br_out, 9, 0);
   else web_printf(" ping on TCP outgoing\r\n");
   return 0;
  }
@@ -1728,7 +1728,7 @@ int readtcpout(unsigned char* pkt)
    {
     //Tor not pass socket closing immediately, we must notify other side first
     i=0;
-    send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+    send(tcp_outsock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
     web_printf("! Connection closed because doubling is not permitted in config\r\n");
     sock_close(0);
    }
@@ -1755,12 +1755,12 @@ int readtcpin(unsigned char* pkt)
  int i; //data length or error code
 
  //check socket status, read all data if socket not ready
- if((tcp_insock_flag<SOCK_READY)||(tcp_insock==INVALID_SOCKET)) return 0; //invalid socket
+ if((tcp_insock_flag<SOCK_READY)||(tcp_insock==(int)INVALID_SOCKET)) return 0; //invalid socket
 
  //socket ready: read one byte first (header) specifies length
  if(!tr_in) //no data in buffer: new packet estimates
  {
-  i=recv(tcp_insock, br_in, 1, 0); //read first byte
+  i=recv(tcp_insock, (char*)br_in, 1, 0); //read first byte
   if(!i) //socket remotely closed (like eof)
   {
    web_printf("! TCP incoming connection closed remotely\r\n");
@@ -1796,7 +1796,7 @@ int readtcpin(unsigned char* pkt)
 
   //try to read rest of packets bytes
   
-  i=recv(tcp_insock, br_in+pr_in, tr_in, 0); //read up to all expected bytes of packet
+  i=recv(tcp_insock, (char*)(br_in+pr_in), tr_in, 0); //read up to all expected bytes of packet
   if(!i) //socket remotely closed (like eof)
   {
    sock_close(1);
@@ -1828,7 +1828,7 @@ int readtcpin(unsigned char* pkt)
  //check for SYN there (crp_state>2)
  if((i==9)&&(crp_state>2))
  {
-  if(0<go_syn(br_in)) send(tcp_insock, br_in, 9, 0);
+  if(0<go_syn(br_in)) send(tcp_insock, (const char*)br_in, 9, 0);
   else web_printf(" ping on TCP incoming\r\n");
   return 0;
  }
@@ -1852,7 +1852,7 @@ int readtcpin(unsigned char* pkt)
    {
     //Tor not pass socket closing immediately, we must notify other side first
     i=0;
-    send(tcp_insock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+    send(tcp_insock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
     sock_close(1);
     return 0;
    }
@@ -1868,7 +1868,7 @@ int readtcpin(unsigned char* pkt)
    {
     //Tor not pass socket closing immediately, we must notify other side first
     i=0;
-    send(tcp_insock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+    send(tcp_insock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
     sock_close(1);
     web_printf("! Connecting closed because doubling is not permitted in config\r\n");
    }
@@ -1911,7 +1911,7 @@ int do_read(unsigned char* pkt)
       else if(d_flg==SOCK_WAIT_TOR) //Duble HELLO for connection to Tor SOCKS5
       {
        d_flg=0;
-       i=send(tcp_outsock, torbuf, 3, 0);
+       i=send(tcp_outsock, (const char*)torbuf, 3, 0);
        if(i==3) settimeout(DBLTIMEOUT);
        return 0;
       }
@@ -2048,7 +2048,7 @@ int do_read(unsigned char* pkt)
   if(tcp_outsock_flag==SOCK_INUSE)
   {
    bb[0]=1; //syn request must be generates
-   if(0<do_syn(bb)) send(tcp_outsock, bb, 9, 0);
+   if(0<do_syn(bb)) send(tcp_outsock, (const char*)bb, 9, 0);
   }
  }  //restrict minimal counter value if outgoing too slow
      //only other part must check this and send reconection invite for us
