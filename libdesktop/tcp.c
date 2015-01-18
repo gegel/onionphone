@@ -247,11 +247,11 @@ int sock_init(void)
   else rc_level=0;  //defaults: onion verification enabling bat dubling not
 
   //reset sockets and flags
-  if(tcp_listener!=INVALID_SOCKET) close(tcp_listener);
-  if(tcp_insock!=INVALID_SOCKET) close(tcp_insock);
-  if(tcp_outsock!=INVALID_SOCKET) close(tcp_outsock);
-  if(udp_insock!=INVALID_SOCKET) close(udp_insock);
-  if(udp_outsock!=INVALID_SOCKET) close(tcp_insock);
+  if(tcp_listener!=(int)INVALID_SOCKET) close(tcp_listener);
+  if(tcp_insock!=(int)INVALID_SOCKET) close(tcp_insock);
+  if(tcp_outsock!=(int)INVALID_SOCKET) close(tcp_outsock);
+  if(udp_insock!=(int)INVALID_SOCKET) close(udp_insock);
+  if(udp_outsock!=(int)INVALID_SOCKET) close(tcp_insock);
 
   tcp_listener=INVALID_SOCKET;
   tcp_insock=INVALID_SOCKET;
@@ -439,14 +439,14 @@ int get_sockstatus(void)
  web_printf("Local IP if is ");
  get_ipif(Our_naddrUDPloc, 0);
  //UDP listener
- if(udp_insock!=INVALID_SOCKET)
+ if(udp_insock!=(int)INVALID_SOCKET)
  {
   sst+=1;
   web_printf("UDP listening IF is ");
   get_ipif(naddrUDPlistener, portUDPlistener);
  }
  //UDP outgoing socket
- if(udp_outsock!=INVALID_SOCKET)
+ if(udp_outsock!=(int)INVALID_SOCKET)
  {
   sst+=2;
   web_printf("UDP socket now bound on port %d\r\n", Our_portUDPint);
@@ -458,14 +458,14 @@ int get_sockstatus(void)
   }
  }
  //TCP listenet
- if(tcp_listener!=INVALID_SOCKET)
+ if(tcp_listener!=(int)INVALID_SOCKET)
  {
   web_printf("TCP listening IF is ");
   get_ipif(naddrTCPlistener, portTCPlistener);
  }
 
- if(tcp_insock!=INVALID_SOCKET) sst+=4;
- if(tcp_outsock!=INVALID_SOCKET) sst+=8;
+ if(tcp_insock!=(int)INVALID_SOCKET) sst+=4;
+ if(tcp_outsock!=(int)INVALID_SOCKET) sst+=8;
  return sst;
 }
 
@@ -475,7 +475,7 @@ int get_sockstatus(void)
 int disconnect(void)
 {
  //terminate udp incoming connection
- if(udp_insock!=INVALID_SOCKET) //if socket exist
+ if(udp_insock!=(int)INVALID_SOCKET) //if socket exist
  {
   if(udp_insock_flag==SOCK_INUSE) //if socket in use
   {
@@ -499,7 +499,7 @@ int disconnect(void)
  else udp_insock_flag=SOCK_IDDL; //no socket: set iddle flag
 
  //terminate udp outgoing connection
- if(udp_outsock!=INVALID_SOCKET) //if socket exist
+ if(udp_outsock!=(int)INVALID_SOCKET) //if socket exist
  {
   if(udp_outsock_flag==SOCK_INUSE) //if socket in use
   {
@@ -524,7 +524,7 @@ int disconnect(void)
  }
 
  //terminate tcp incoming connection
- if(tcp_insock!=INVALID_SOCKET) //if socket exist
+ if(tcp_insock!=(int)INVALID_SOCKET) //if socket exist
  {
   if(tcp_insock_flag==SOCK_INUSE) //if socket in use
   {
@@ -549,7 +549,7 @@ int disconnect(void)
  }
 
   //terminate tcp outgoing connection
- if(tcp_outsock!=INVALID_SOCKET) //if socket exist
+ if(tcp_outsock!=(int)INVALID_SOCKET) //if socket exist
  {
   if(tcp_outsock_flag==SOCK_WAIT_TOR)
   web_printf("! Failed attempt to connect to Tor\r\n");
@@ -634,7 +634,7 @@ void sock_close(char direction)
  //TCP out
  if(!direction)
  {
-  if(tcp_insock!=INVALID_SOCKET)
+  if(tcp_insock!=(int)INVALID_SOCKET)
   {
    close(tcp_outsock);
    tcp_outsock=INVALID_SOCKET;
@@ -645,7 +645,7 @@ void sock_close(char direction)
  //TCP in
  else if(direction==1)
  {
-  if(tcp_outsock!=INVALID_SOCKET)
+  if(tcp_outsock!=(int)INVALID_SOCKET)
   {
    close(tcp_insock);
    tcp_insock=INVALID_SOCKET;
@@ -656,7 +656,7 @@ void sock_close(char direction)
  //UDP out
  else
  {
-  if((tcp_outsock!=INVALID_SOCKET)||(tcp_insock!=INVALID_SOCKET))
+  if((tcp_outsock!=(int)INVALID_SOCKET)||(tcp_insock!=(int)INVALID_SOCKET))
   {
    close(udp_outsock);
    udp_outsock=INVALID_SOCKET;
@@ -760,7 +760,7 @@ int connectudp(char* udpaddr)
   saddrUDPFrom.sin_addr.s_addr=INADDR_NONE;
   naddrTCP=INADDR_NONE;
   //check for udp socket alredy exist, creates new if not 
-  if(udp_outsock==INVALID_SOCKET)
+  if(udp_outsock==(int)INVALID_SOCKET)
   {
    //generate random port
    randFetch((uchar*)msgbuf, 2);
@@ -857,7 +857,7 @@ int connecttcp(char* tcpaddr)
  //Check: remote address must be specified
  if(!tcpaddr[0]) return -4;
  //Check for outgoing tcp exist
- if(tcp_outsock!=INVALID_SOCKET)
+ if(tcp_outsock!=(int)INVALID_SOCKET)
  {
   close(tcp_outsock);
   tcp_outsock=INVALID_SOCKET;
@@ -1009,7 +1009,7 @@ int connecttor(char* toraddr)
  torbuflen=i+7; //total length of request packet
 
  //close old socket if exist
- if(tcp_outsock!=INVALID_SOCKET)
+ if(tcp_outsock!=(int)INVALID_SOCKET)
  {
   //Tor not pass socket closing immediately, we must notify other side first
   i=0;
@@ -1075,14 +1075,14 @@ void reset_dbl(void)
  web_printf("! Doubling not permitted, set interval first\r\n");
  else if(!our_onion[0])
  web_printf("! Our onion adress is not specified in config file!\r\n");
- else if((tcp_outsock_flag!=SOCK_INUSE)||(tcp_outsock==INVALID_SOCKET))
+ else if((tcp_outsock_flag!=SOCK_INUSE)||(tcp_outsock==(int)INVALID_SOCKET))
  {
   web_printf("! Impossible: outgoing connection inactive now\r\n");
   web_printf("Ask the remote party to perform this command\r\n");
  }
  else
  {
-  if(tcp_insock!=INVALID_SOCKET)
+  if(tcp_insock!=(int)INVALID_SOCKET)
   {
    close(tcp_insock);
    tcp_insock=INVALID_SOCKET;
@@ -1118,7 +1118,7 @@ void init_dbl(void)
  web_printf("! Doubling not permitted, set interval first\r\n");
  else if(!their_onion[0])
  web_printf("! Our onion adress not received yet!\r\n");
- else if((tcp_insock_flag!=SOCK_INUSE)||(tcp_insock==INVALID_SOCKET))
+ else if((tcp_insock_flag!=SOCK_INUSE)||(tcp_insock==(int)INVALID_SOCKET))
  {
   web_printf("! Impossible: incoming connection inactive now\r\n");
   web_printf("Ask the remote party to perform this command\r\n");
@@ -1167,7 +1167,7 @@ int tcpaccept(void)
  unsigned long opt=1;
  //struct linger ling;
 
- if(tcp_listener==INVALID_SOCKET) return 0;
+ if(tcp_listener==(int)INVALID_SOCKET) return 0;
  ll = sizeof(saddrTCP);
  //try accept incoming asynchronosly
  sTemp  = accept(tcp_listener, (struct sockaddr *) &saddrTCP, (socklen_t*)&ll);
@@ -1197,8 +1197,8 @@ int tcpaccept(void)
 
 //check for connections already exist
 ll=0; //busy flag
-if(tcp_insock!=INVALID_SOCKET) ll=1; //another incoming exist: we are busy
-if((tcp_outsock!=INVALID_SOCKET) && (!onion_flag)) ll=1; //outgoing exist: we are busy except onion doubling
+if(tcp_insock!=(int)INVALID_SOCKET) ll=1; //another incoming exist: we are busy
+if((tcp_outsock!=(int)INVALID_SOCKET) && (!onion_flag)) ll=1; //outgoing exist: we are busy except onion doubling
 if(onion_flag && (!oflag)) ll=1; //busy for external connect during onion seans
 if(ll) //send busy notification and close
  {
@@ -1217,7 +1217,7 @@ if(ll) //send busy notification and close
  }
 
  //set socket mode (ready for doubling, other inuse)
- if(tcp_outsock!=INVALID_SOCKET) tcp_insock_flag=SOCK_READY;
+ if(tcp_outsock!=(int)INVALID_SOCKET) tcp_insock_flag=SOCK_READY;
  else
  {
   tcp_insock_flag=SOCK_INUSE;
@@ -1247,7 +1247,7 @@ int do_send(unsigned char* pkt, int len, char c)
 
  int i=0;
  //check for udp out_sock inuse (outgoing UDP or switch from onion)
- if((udp_outsock!=INVALID_SOCKET)&&(udp_outsock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
+ if((udp_outsock!=(int)INVALID_SOCKET)&&(udp_outsock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
  {
   pkt[0]=c; //set udp header and send udp
   sendto(udp_outsock, pkt, len, 0, &saddrUDPTo, sizeof(saddrUDPTo));
@@ -1256,14 +1256,14 @@ int do_send(unsigned char* pkt, int len, char c)
   return 0; //this is incoming UDP direct, no other connection can be active at time
  }
  //check for tcp sockets in use (both can be)
- if((tcp_outsock!=INVALID_SOCKET)&&(tcp_outsock_flag==SOCK_INUSE))
+ if((tcp_outsock!=(int)INVALID_SOCKET)&&(tcp_outsock_flag==SOCK_INUSE))
  {
   send(tcp_outsock, pkt, len, 0);
   bytes_sended+=(len+40);
   pkt_counter++;
   i=1;
  }
- if((tcp_insock!=INVALID_SOCKET)&&(tcp_insock_flag==SOCK_INUSE))
+ if((tcp_insock!=(int)INVALID_SOCKET)&&(tcp_insock_flag==SOCK_INUSE))
  {
   send(tcp_insock, pkt, len, 0);
   bytes_sended+=(len+40);
@@ -1273,7 +1273,7 @@ int do_send(unsigned char* pkt, int len, char c)
  if(i) return 0;
 
  //else ckeck for udp in socket (only one can be while incoming UDP direct)
- if((udp_insock!=INVALID_SOCKET)&&(udp_insock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
+ if((udp_insock!=(int)INVALID_SOCKET)&&(udp_insock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
  {
   pkt[0]=c; //set udp header and send udp
   sendto(udp_insock, pkt, len, 0, &saddrUDPTo, sizeof(saddrUDPTo));
@@ -1334,9 +1334,9 @@ int readudpin(unsigned char* pkt)
 //-----------------------------------
 
  //some data received
- if( (udp_outsock!=INVALID_SOCKET)||
-     (tcp_insock!=INVALID_SOCKET)||
-     (tcp_outsock!=INVALID_SOCKET) )
+ if( (udp_outsock!=(int)INVALID_SOCKET)||
+     (tcp_insock!=(int)INVALID_SOCKET)||
+     (tcp_outsock!=(int)INVALID_SOCKET) )
  {
   b=1; //if any other socket exist set busy flag
  }
@@ -1424,8 +1424,8 @@ int readudpout(unsigned char* pkt)
 
 //==============================================
  //check for exist tcp sockets:
- if( (tcp_insock!=INVALID_SOCKET)||
-     (tcp_outsock!=INVALID_SOCKET) )
+ if( (tcp_insock!=(int)INVALID_SOCKET)||
+     (tcp_outsock!=(int)INVALID_SOCKET) )
  {  //this is swith from tcp to udp
 //------------------------------------------
   //check for connection already established
@@ -1966,7 +1966,7 @@ int do_read(unsigned char* pkt)
     }
 
     //make and send SYN packet for NAT traversal
-    if((saddrTCP.sin_port)&&(saddrTCP.sin_addr.s_addr!=INADDR_NONE)&&(udp_outsock!=INVALID_SOCKET))
+    if((saddrTCP.sin_port)&&(saddrTCP.sin_addr.s_addr!=INADDR_NONE)&&(udp_outsock!=(int)INVALID_SOCKET))
     {
      msgbuf[0]=1; //syn request must be generates
      i=do_syn((unsigned char*)msgbuf); //send UDP over our NAT to remote NAT
@@ -2056,13 +2056,13 @@ int do_read(unsigned char* pkt)
 
  //------------------------------------------------------
  //check for udp sockets exist and poll
- if(udp_outsock!=INVALID_SOCKET)
+ if(udp_outsock!=(int)INVALID_SOCKET)
  {
   i=readudpout(pkt);
   if(i>0) return i;
  }
  //-------------------------------------------------------
- if(udp_insock!=INVALID_SOCKET) //this is also udp listener
+ if(udp_insock!=(int)INVALID_SOCKET) //this is also udp listener
  {
   i=readudpin(pkt);
   if(i>0) return i;
@@ -2072,21 +2072,21 @@ int do_read(unsigned char* pkt)
  if(tcp_listener) tcpaccept();
 //--------------------------------------------------------
  //check for exist and poll tcp sockets
- if(tcp_outsock!=INVALID_SOCKET)
+ if(tcp_outsock!=(int)INVALID_SOCKET)
  {
   i=readtcpout(pkt);
   if(i>0) return i;
  }
 //----------------------------------------------------------
- if(tcp_insock!=INVALID_SOCKET)
+ if(tcp_insock!=(int)INVALID_SOCKET)
  {
   i=readtcpin(pkt);
   if(i>0) return i;
  }
 
  //int do_read(unsigned char* pkt)
- if(web_listener!=INVALID_SOCKET) webaccept();
- if(web_sock!=INVALID_SOCKET) readweb();
+ if(web_listener!=(int)INVALID_SOCKET) webaccept();
+ if(web_sock!=(int)INVALID_SOCKET) readweb();
 
  return 0;
 }
@@ -2120,7 +2120,7 @@ void checkdouble(void)
 void do_stun(char* cmd)
 {
 
- if(udp_insock==INVALID_SOCKET)
+ if(udp_insock==(int)INVALID_SOCKET)
  {
   web_printf("! Unavaliable: UDP listener disabled by config!\r\n");
   return;
@@ -2242,9 +2242,9 @@ void do_nat(char* cmd)
    } //if(naddrTCP==INADDR_NONE)
   } //if(msgbuf!='0')
   //creates outgoing UDP socket if it is not created before
-  if(udp_outsock==INVALID_SOCKET) connectudp("-U");
+  if(udp_outsock==(int)INVALID_SOCKET) connectudp("-U");
   //check for udp socket is ready
-  if((udp_outsock==INVALID_SOCKET)||(udp_outsock_flag!=SOCK_READY)) return;
+  if((udp_outsock==(int)INVALID_SOCKET)||(udp_outsock_flag!=SOCK_READY)) return;
 
   //send stun request over it
   if(portSTUN && (naddrSTUN!=INADDR_NONE))
@@ -2415,7 +2415,7 @@ int webaccept(void)
  unsigned long opt=1;
  //struct linger ling;
 
- if(web_listener==INVALID_SOCKET) return 0;
+ if(web_listener==(int)INVALID_SOCKET) return 0;
  ll = sizeof(saddrTCP);
  //try accept incoming asynchronosly
  sTemp  = accept(web_listener, (struct sockaddr *) &saddrTCP, (socklen_t*)&ll);
@@ -2441,7 +2441,7 @@ int webaccept(void)
  ioctl(sTemp, FIONBIO, &opt);
 
  //close old control connection
- if(web_sock!=INVALID_SOCKET)
+ if(web_sock!=(int)INVALID_SOCKET)
  {
   close(web_sock);
   printf("Existed control closed\r\n");
@@ -2463,7 +2463,7 @@ int readweb(void)
  int l; //data length or error code
  char* p=0;
  //check socket status, read all data if socket not ready
- if(web_sock==INVALID_SOCKET) return 0; //invalid socket
+ if(web_sock==(int)INVALID_SOCKET) return 0; //invalid socket
 
   l=recv(web_sock, webmsgbuf, sizeof(webmsgbuf)-1, 0); //read all bytes
   if(!l) //socket remotely closed (like eof)
@@ -2563,7 +2563,7 @@ int sendweb(char* str)
 {
  int l;
  //check for socket exist
- if(web_sock==INVALID_SOCKET) return -1;
+ if(web_sock==(int)INVALID_SOCKET) return -1;
  //check max data length
  strncpy(webmsgbuf, str, 511);
  webmsgbuf[511]=0;
