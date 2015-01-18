@@ -248,7 +248,7 @@ void psleep(int paus)
    {
     if(str[i]!='-') continue; //must be as -Nname
     if(str[i+1]!=c) continue;
-    p=str+i+2;  //pointer to option data
+    p=(char*)(str+i+2);  //pointer to option data
    }
    if(!p) return -1; //p points to last option's data
    strncpy(option, p, 31); //copy to output
@@ -508,7 +508,7 @@ void psleep(int paus)
    FILE* fl=0;
    int i;
 
-   if(!seckey) seckey=tmpkey; //check mode - decrypt locally onle
+   if(!seckey) seckey=(unsigned char*)tmpkey; //check mode - decrypt locally onle
 
    sprintf(str, "%s%s.sec", KEYDIR, name); //add path
    if(!(fl = fopen(str, "rb" ))) return 0; //open specified keyfile
