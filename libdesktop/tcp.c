@@ -1889,7 +1889,7 @@ int readtcpin(unsigned char* pkt)
 //socket polling and reading wrapper
 int do_read(unsigned char* pkt)
 {
- int i;
+ int i = 0;
  struct timeval time1;
 
  //------------------------------------------------------

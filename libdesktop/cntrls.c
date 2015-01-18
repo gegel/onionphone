@@ -639,7 +639,7 @@ int goesc(int cc)
 //process command typed in terminal
 int parsecmd(void)
 {
- int i;
+ int i = 0;
  char str[256];
  char c;
 
