@@ -777,7 +777,7 @@ int sp_encode(short* sp, unsigned char* bf)
  if(enc_type==CODEC_AMRV)
  {
   fpp=amrfpp; //sets frame per packets for amr_vbr
-  l=amr_block_size[amrmode]; //set encode block size
+  l=amr_block_size[(int)amrmode]; //set encode block size
   bp[0] = 0x40 | (amrmode<<3) | (amrfpp-3); //first packets byte: flag, mode, fpp
   bp++; //amr data from next byte 
   bf[0]=1; //initialize length byte
@@ -917,7 +917,7 @@ int sp_decode(short* sp, unsigned char* bf)
  if(cd==CODEC_AMRV)
  {
   amrmd = 0x07&(bf[1]>>3); //amr mode for packet
-  l=amr_block_size[amrmd]; ////encoded frames length for this mode 
+  l=amr_block_size[(int)amrmd]; ////encoded frames length for this mode 
   fpp = 3 + (0x07&bf[1]); //amr frames in packet
   bp++;
  }
@@ -945,7 +945,7 @@ int sp_decode(short* sp, unsigned char* bf)
 	  }
 	  else l=5; //this was last SID, go to next frame
 	 }
-         else l=amr_block_size[amrmd]; //this is speech frame
+         else l=amr_block_size[(int)amrmd]; //this is speech frame
 	}
 	break; 
 
