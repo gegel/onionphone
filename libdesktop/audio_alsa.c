@@ -120,10 +120,10 @@ static int rdcfg(void)
    periods=0;
    p[0]=0;
    periods=atoi(++p);
-   printf("PPPeriods=%d\r\n", periods);
+   printf("PPPeriods=%u\r\n", periods);
    if(!periods) periods=DEFPERIODS;
    bufsize=periods*atoi(buf);
-   printf("BBBufsize=%d\r\n", bufsize);
+   printf("BBBufsize=%u\r\n", bufsize);
    if(!bufsize) bufsize=DEFBUFSIZE; 
  }
  
@@ -267,19 +267,19 @@ static int soundinit_2(int iomode)
 
 
 	if (snd_pcm_hw_params_set_buffer_time_near(pcm_handle, hwparams, &buffer_time, 0) < 0) {
-		fprintf(stderr, "Error setting buffer time to %d\n", buffer_time);
+		fprintf(stderr, "Error setting buffer time to %u\n", buffer_time);
 		return FALSE;
 	}
 
 	if (snd_pcm_hw_params_set_period_time_near(pcm_handle, hwparams, &period_time, 0) < 0) {
-		fprintf(stderr, "Error setting period time to %d\n", period_time);
+		fprintf(stderr, "Error setting period time to %u\n", period_time);
 		return FALSE;
 	}
 
  if(!showparam) //read config file
  {      //sets specified buffer parameters
 	if (snd_pcm_hw_params_set_buffer_size(pcm_handle, hwparams, bufsize) < 0) {
-		fprintf(stderr, "Error setting buffer size to %d\n", bufsize);
+		fprintf(stderr, "Error setting buffer size to %u\n", bufsize);
 		return FALSE;
 	}
 	if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, periods, 0) < 0) {
