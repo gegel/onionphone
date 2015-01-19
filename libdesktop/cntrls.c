@@ -847,7 +847,7 @@ int parsecmd(void)
    //apply codec from profile
    strcpy(str, "VoiceCodec");
    if(parseconf(str)>0) i=atoi(str);
-   if((i<=0)&&(i>18)) i=7;
+   if((i<=0)||(i>18)) i=7;
    set_encoder(i);
   }
  }                     

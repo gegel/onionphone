@@ -1677,7 +1677,7 @@ void setaudio(void)
 
  strcpy(str, "VoiceCodec");
  if(parseconf(str)>0) i=atoi(str); else i=-1;
- if((i<=0)&&(i>18)) i=7;
+ if((i<=0)||(i>18)) i=7;
  set_encoder(i);
 
  strcpy(str, "Vocoder");
