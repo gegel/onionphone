@@ -509,7 +509,12 @@ void psleep(int paus)
     seckey[i]=getc(fl);
     if(feof(fl)) break;
    }
-   if(i<32) return 0;  //key not compleet
+   if(i<32)
+   {
+	 if (fl)
+	    fclose(fl);
+	 return 0;  //key not compleet
+   }
 
    //try load nonce+mac byte-by-byte
    for(i=0; i<32; i++) //load seckey byte-by-byte
@@ -517,8 +522,8 @@ void psleep(int paus)
     aukey[i+16]=getc(fl);
     if(feof(fl)) break;
    }
-   if(i&&(i<32)) return 0; //au-data existed but not compleet
    fclose(fl);
+   if(i&&(i<32)) return 0; //au-data existed but not compleet
 
    if(i) //if keyfile length more then 32 bytes (encrypted format)
    {  //process as encrypted secret key
@@ -652,6 +657,8 @@ void psleep(int paus)
      }
     }
    }
+   if (fl)
+	fclose(fl);
    if(!(iskeys&4)) return 0; //if no one contact from book matched returns 0
 
   //current contact matched
