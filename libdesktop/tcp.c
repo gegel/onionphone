@@ -2362,7 +2362,7 @@ unsigned long get_local_if(void)
  
  if(our_ip==INADDR_NONE)
  {
-   struct sockaddr_in *paddr;
+   struct sockaddr_in paddr;
 #ifdef _WIN32
  //look for local interface
    struct hostent *hh;
@@ -2375,8 +2375,8 @@ unsigned long get_local_if(void)
      i=0;
      while(i<1) //check for mingw bag!!! bcb compiler OK!
      {
-      paddr->sin_addr.s_addr=*(unsigned long*)hh->h_addr_list[i++];
-      our_ip=paddr->sin_addr.s_addr; //for inet_ntoa only
+      paddr.sin_addr.s_addr=*(unsigned long*)hh->h_addr_list[i++];
+      our_ip=paddr.sin_addr.s_addr; //for inet_ntoa only
       saddrTCP.sin_addr.s_addr=our_ip;
       web_printf("Local interface: %s\r\n", inet_ntoa(saddrTCP.sin_addr) ); //notify
      }     
@@ -2392,9 +2392,9 @@ unsigned long get_local_if(void)
     {
      if(tmp->ifa_addr && tmp->ifa_addr->sa_family==AF_INET)
      {
-      paddr=(struct sockaddr_in *)tmp->ifa_addr;
-      our_ip=paddr->sin_addr.s_addr;
-      web_printf("%s: %s\r\n", tmp->ifa_name, inet_ntoa(paddr->sin_addr));
+      paddr=*((struct sockaddr_in *)tmp->ifa_addr);
+      our_ip=paddr.sin_addr.s_addr;
+      web_printf("%s: %s\r\n", tmp->ifa_name, inet_ntoa(paddr.sin_addr));
      }
      tmp=tmp->ifa_next;   
     }
