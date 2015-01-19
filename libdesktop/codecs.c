@@ -1194,7 +1194,10 @@ RateChange(short *src, short *dest, int srcLen, int destRate)
 				count++;
 			}
 			position = position - 1.0;
-			*destShortPtr++ = (destSample/count);
+			if (count == 0)
+				*destShortPtr++ = 0;
+			else
+				*destShortPtr++ = (destSample/count);
 		}
 	}
 	else // Upsample
@@ -1531,7 +1534,7 @@ int go_snd(unsigned char* pkt)
    {  
     memset(jit_buf, 0, min_jitter*2); //put silency to jitter buffer
     i=soundplay(min_jitter, (unsigned char*)jit_buf); //play it
-    if(i<chunk) i=soundplay(min_jitter, (unsigned char*)jit_buf); //if underrun play again
+    if(i<chunk) soundplay(min_jitter, (unsigned char*)jit_buf); //if underrun play again
     sdelay=getdelay(); //renew number of samples in alsa buffer
     //crate=8100; //set rate a little more then nominal for start collecting samles in jitter buffer
     i=1; //set flag of first packet after inactivity

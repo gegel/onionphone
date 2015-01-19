@@ -1970,7 +1970,7 @@ int do_read(unsigned char* pkt)
     {
      msgbuf[0]=1; //syn request must be generates
      i=do_syn((unsigned char*)msgbuf); //send UDP over our NAT to remote NAT
-     if(i>0) i=sendto(udp_outsock, msgbuf, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
+     if(i>0) sendto(udp_outsock, msgbuf, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
     }
     u_cnt--; //decrement packets to send
     //exhausted: unsuccessful 
