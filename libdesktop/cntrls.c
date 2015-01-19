@@ -1152,7 +1152,6 @@ int do_char(void)
  do
  {
   c=0;
-  j=0;
 #ifdef _WIN32
   if(kbhit()) //if key was pressed
   {
