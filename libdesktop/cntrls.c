@@ -542,8 +542,8 @@ void domenu(int c)
 
  //print item
  doclr(); //clear field
- sprintf((char*)cmdbuf, menuhdr[menu]); //add menu string to buffer
- sprintf((char*)cmdbuf+strlen(cmdbuf), menustr[menu][menuitem]); //add iteam to buffer
+ sprintf((char*)cmdbuf, "%s", menuhdr[menu]); //add menu string to buffer
+ sprintf((char*)cmdbuf+strlen(cmdbuf), "%s", menustr[menu][menuitem]); //add iteam to buffer
  cmdptr=strlen((char*)cmdbuf); //set buffer pointer to end of string
  web_printf((char*)cmdbuf); //add menu string to screen
 }
