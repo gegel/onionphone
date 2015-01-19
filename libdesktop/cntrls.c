@@ -750,7 +750,7 @@ int parsecmd(void)
     else if((i==1)||(i==2)) web_printf(" over UDP");
     else web_printf(" over TCP");
     if(onion_flag>1) web_printf(" (onion verified OK)");
-    if((i&4)&&(i&&8)) web_printf(" Doubling active now");
+    if((i&4)&&(i&8)) web_printf(" Doubling active now");
     if((i&0xC)&&(i&2)) web_printf(" Switched to UDP");
     printf("\r\n");
    }
@@ -1218,7 +1218,7 @@ void web_printf(char* s, ...)
 
     va_start(ap, s);  //parce arguments
     vsprintf(st, s, ap); //printf arg list to array
-    printf(st);  //out to stdout
+    printf("%s", st);  //out to stdout
     sendweb(st); //out to control port
     va_end(ap);  //clear arg list
     return;
