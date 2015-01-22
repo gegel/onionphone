@@ -55,12 +55,12 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 #else //Linux
  #include <time.h>
  #include <sys/time.h>
+ #include <ophh_time.h>
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <unistd.h>
 
 #include "libcrp.h"
 #include "tcp.h"
@@ -185,7 +185,7 @@ void psleep(int paus)
  #ifdef _WIN32
     Sleep(paus);
  #else
-    usleep(paus*10);
+    ophh_time_ussleep(paus*10);
  #endif
 }
 
