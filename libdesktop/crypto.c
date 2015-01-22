@@ -24,43 +24,15 @@
  #include <basetsd.h>
  #include <stdint.h>
  #include <windows.h>
- #include <time.h>
-
-int gettimeofday(struct timeval *tv, struct timezone *tz)
-{
-  (void)tz;
-  FILETIME ft;
-  const __int64 DELTA_EPOCH_IN_MICROSECS= 11644473600000000;
-  unsigned __int64 tmpres = 0;
-  unsigned __int64 tmpres_h = 0;
-
-  if (NULL != tv)
-  {
-    GetSystemTimeAsFileTime(&ft);
-
-    tmpres |= ft.dwHighDateTime;
-    tmpres <<= 32;
-    tmpres |= ft.dwLowDateTime;
-
-    //converting file time to unix epoch
-    tmpres /= 10;  //convert into microseconds
-    tmpres -= DELTA_EPOCH_IN_MICROSECS;
-
-    tmpres_h=tmpres / 1000000UL; //sec
-    tv->tv_sec = (int)(tmpres_h);
-    tv->tv_usec = (int)(tmpres % 1000000UL);
-  }
-  return 0;
-}
 #else //Linux
- #include <time.h>
- #include <sys/time.h>
  #include <ophh_time.h>
 #endif
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
+#include <sys/time.h>
 
 #include "libcrp.h"
 #include "tcp.h"

@@ -1,3 +1,5 @@
+#ifndef _WIN32
+
 #define _DEFAULT_SOURCE
 #define _GNU_SOURCE
 
@@ -23,3 +25,4 @@ void ophh_time_ussleep(unsigned long long _us)
 		continue;
 }
 
+#endif /* _WIN32 */
