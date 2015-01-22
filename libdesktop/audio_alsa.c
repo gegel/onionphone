@@ -95,10 +95,8 @@ int IsGo=0;     //flag: input runs
 //read specified alsa buffer parameters from config file
 static int rdcfg(void)
 {
- FILE *fpp;
  char buf[256];
  char* p=NULL;
- int l=0;
  
  //set defaults
  periods=DEFPERIODS;
@@ -122,10 +120,10 @@ static int rdcfg(void)
    periods=0;
    p[0]=0;
    periods=atoi(++p);
-   printf("PPPeriods=%d\r\n", periods);
+   printf("PPPeriods=%u\r\n", periods);
    if(!periods) periods=DEFPERIODS;
    bufsize=periods*atoi(buf);
-   printf("BBBufsize=%d\r\n", bufsize);
+   printf("BBBufsize=%u\r\n", bufsize);
    if(!bufsize) bufsize=DEFBUFSIZE; 
  }
  
@@ -259,7 +257,7 @@ static int soundinit_2(int iomode)
 		return FALSE;
 	}
 
-	if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, &snd_rate, NULL) < 0) {
+	if (snd_pcm_hw_params_set_rate_near(pcm_handle, hwparams, (unsigned int*)&snd_rate, NULL) < 0) {
 		fprintf(stderr, "The rate %d Hz is not supported.  "
 			"Try a plughw device.\n", snd_rate);
 		return FALSE;
@@ -269,19 +267,19 @@ static int soundinit_2(int iomode)
 
 
 	if (snd_pcm_hw_params_set_buffer_time_near(pcm_handle, hwparams, &buffer_time, 0) < 0) {
-		fprintf(stderr, "Error setting buffer time to %d\n", buffer_time);
+		fprintf(stderr, "Error setting buffer time to %u\n", buffer_time);
 		return FALSE;
 	}
 
 	if (snd_pcm_hw_params_set_period_time_near(pcm_handle, hwparams, &period_time, 0) < 0) {
-		fprintf(stderr, "Error setting period time to %d\n", period_time);
+		fprintf(stderr, "Error setting period time to %u\n", period_time);
 		return FALSE;
 	}
 
  if(!showparam) //read config file
  {      //sets specified buffer parameters
 	if (snd_pcm_hw_params_set_buffer_size(pcm_handle, hwparams, bufsize) < 0) {
-		fprintf(stderr, "Error setting buffer size to %d\n", bufsize);
+		fprintf(stderr, "Error setting buffer size to %u\n", bufsize);
 		return FALSE;
 	}
 	if (snd_pcm_hw_params_set_periods(pcm_handle, hwparams, periods, 0) < 0) {
@@ -290,7 +288,7 @@ static int soundinit_2(int iomode)
 	}
  }
  
-	if (ret=snd_pcm_hw_params(pcm_handle, hwparams) < 0) {
+	if ((ret=snd_pcm_hw_params(pcm_handle, hwparams)) < 0) {
 		fprintf(stderr, "Error setting hardware parameters=%d\n", ret);
 		return FALSE;
 	}
@@ -329,7 +327,7 @@ static int soundinit_2(int iomode)
 	else
 		n = (double) snd_rate * avail_min / 1000000;
 	if (snd_pcm_sw_params_set_avail_min(pcm_handle, swparams, n) < 0) {
-		fprintf(stderr, "Can't set avail_min to %d\n", n);
+		fprintf(stderr, "Can't set avail_min to %ju\n", n);
 		return FALSE;
 	}
 
@@ -388,7 +386,7 @@ static int soundinit_2(int iomode)
 	chunk_bytes = chunk_size * bits_per_frame / 8;
 
 	if (verbose)
-		printf("Audio buffer size should be %d bytes\n\r", chunk_bytes);
+		printf("Audio buffer size should be %ju bytes\n\r", chunk_bytes);
 
 //	audiobuf = realloc(audiobuf, chunk_bytes);
 //	if (audiobuf == NULL) {
@@ -450,6 +448,8 @@ void soundterm(void)
  */
 void sound_open_file_descriptors(int *audio_io, int *audio_ctl)
 {
+	(void)audio_io;
+	(void)audio_ctl;
 	return;
 }
 
@@ -459,6 +459,8 @@ void sound_open_file_descriptors(int *audio_io, int *audio_ctl)
 /* what: string "overrun" or "underrun", just for user information */
 static void xrun(char *what, snd_pcm_t *pcm_handle)
 {
+	(void)what;
+
 	snd_pcm_status_t *status;
 	int res;
 	
@@ -684,6 +686,9 @@ void soundrecgain(int value)
 /* select the output - speaker, or audio output jack.  Not implemented */
 void sounddest(int where)
 {
+	(void)where;
+
+	return;
 }
 
 /* Record some audio non-blocking (as much as accessable and fits into the given buffer) */
@@ -692,7 +697,7 @@ int soundgrab(char *buf, int len)
     size_t result = 0;
     if(IsGo) {
         ssize_t r;
-        size_t count = len;
+        //size_t count = len;
         snd_pcm_t *pcm_handle=pcm_handle_in;
    
 
@@ -732,7 +737,7 @@ int soundgrab(char *buf, int len)
 				 * no harm.  So, just return whatever has been
 				 * already read. */
 			}
-			fprintf(stderr, "read error: %s (%d); state=%d\n\r",
+			fprintf(stderr, "read error: %s (%ju); state=%d\n\r",
 				snd_strerror(r), r, snd_pcm_state(pcm_handle));
 		}
     }

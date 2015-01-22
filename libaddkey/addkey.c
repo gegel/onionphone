@@ -49,9 +49,9 @@
   #define PKDFCOUNT 32768
   
    Sponge_init(&spng, 0, 0, 0, 0);
-   Sponge_data(&spng, "$OnionPhone_salt", 16, 0, SP_NORMAL);
+   Sponge_data(&spng, (const BYTE*)"$OnionPhone_salt", 16, 0, SP_NORMAL);
    for(i=0; i<PKDFCOUNT; i++)
-   Sponge_data(&spng, pas, strlen(pas), 0, SP_NORMAL);
+   Sponge_data(&spng, (const BYTE*)pas, strlen(pas), 0, SP_NORMAL);
    Sponge_finalize(&spng, access, 16);
  }
  //******************************************************
@@ -122,7 +122,6 @@
   char str[256];
   unsigned char aukey[64]; //access|nonce|mac|our_mac
   FILE* fl=0;
-  int i;
 
   //save to binary seckey file
   sprintf(str, "%s%s.sec", KEYDIR, name);
@@ -193,9 +192,7 @@ int main(int argc, char **argv)
  char* name=0; //name  of contact/key_file
  char* pass=0; //acess to secret file
  char* book=BOOK; //-B  adrressbook file name
- char* p;
  int i;
- char into=0;
  unsigned char c;
  FILE* F=0;
 
@@ -287,14 +284,14 @@ int main(int argc, char **argv)
   fgets(newname, sizeof(newname), stdin);
   if(newname[0]>32)
   {
-   for(i=0;i<strlen(newname);i++) if(newname[i]<32) newname[i]=0;
+   for(i=0;i<(int)strlen(newname);i++) if(newname[i]<32) newname[i]=0;
    name=newname;
   }
   printf("Type new password or Enter to saving unencrypted:\r\n");
   fgets(newpass, sizeof(newpass), stdin);
   if(newpass[0]>32)
   {
-   for(i=0;i<strlen(newpass);i++) if(newpass[i]<32) newpass[i]=0;
+   for(i=0;i<(int)strlen(newpass);i++) if(newpass[i]<32) newpass[i]=0;
    pass=newpass;
   }
   else pass=0;
@@ -312,7 +309,7 @@ int main(int argc, char **argv)
   //check for seckey with specified name already exist
   sprintf(str, "%s%s.sec", KEYDIR, name);
   F=0;
-  if(F = fopen(str, "rb" ))
+  if((F = fopen(str, "rb" )))
   {
    printf("Specified secret file already exists!\r\n");
    fclose(F);
@@ -320,7 +317,7 @@ int main(int argc, char **argv)
   }
   //check for pubkey with specified name already exist
   sprintf(str, "%s%s", KEYDIR, name);
-  if(F = fopen(str, "rb" ))
+  if((F = fopen(str, "rb" )))
   {
    printf("Specified key file already exists!\r\n");
    fclose(F);
@@ -434,7 +431,7 @@ int main(int argc, char **argv)
    return 0;
   }
   //eliminate \r\n
-  for(i=0;i<strlen(buf);i++)
+  for(i=0;i<(int)strlen(buf);i++)
   if( (buf[i]==0x0D)||(buf[i]==0x0A) ) buf[i]=0;
 
   //open book file
@@ -468,7 +465,7 @@ int main(int argc, char **argv)
   fprintf(F, "%s %s %s%s\n", (char*)key, (char*)secret, buf, str);
   fclose(F);
   //notification
-  for(i=0;i<strlen(buf);i++)
+  for(i=0;i<(int)strlen(buf);i++)
   if( (buf[i]==' ')||(buf[i]==0x0D)||(buf[i]==0x0A) ) buf[i]=0;
   printf("Added key from '%s' as %s", buf+1, (char*)key);
   printf("\r\n");

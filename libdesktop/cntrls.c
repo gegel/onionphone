@@ -172,11 +172,11 @@ int  parseconf(char* param)
    p++; //set pointer to value
    break;
   }
-  close(fpp);
+  fclose(fpp);
   param[0]=0; //clear input string
   if(p) //if parameter found
   {  //truncate value string to first space or end of string
-   for(i=0;i<strlen(p);i++)
+   for(i=0;i<(int)strlen(p);i++)
    if( (p[i]=='\r')||(p[i]=='\n')||(p[i]==' ') ) break;
    p[i]=0;
    strncpy(param, p, 31); //replace input parameter by it's value
@@ -188,7 +188,7 @@ int  parseconf(char* param)
 //parse application command line arguments
 void parsecmdline(int argc, char **argv)
 {
- int i, j;
+ int j;
  char str[256];
  if(argc>1) for(j=1; j<argc; j++) //for each argv
  {
@@ -220,7 +220,6 @@ void doclr(void)
 //process users cmd from menu iteam
 int docmd(char* s)
 {
- int i,j;
  char* p;
  p=strchr(s, ':');   //search command
  //check for validity
@@ -258,7 +257,7 @@ void loadmenu(void)
       fgets(buf, 66, fl); //load next string
       if(strlen(buf)>1) //skip empty strings
       {
-       for(i=0;i<strlen(buf);i++) if(buf[i]<28) buf[i]=0; //truncate to first unprintable char
+       for(i=0;i<(int)strlen(buf);i++) if(buf[i]<28) buf[i]=0; //truncate to first unprintable char
        i=buf[0]-0x30; //menu index (0-9)
        j=buf[1]-0x30; //item index (0-9)
        if((i>=0)&&(i<11)&&(j>=0)&&(j<11)) //cifers
@@ -306,7 +305,7 @@ int doaddr(void)
   {
    fgets(buf, 256, fl); //load next string
    if(buf[0]!='[') continue;
-   for(i=0;i<strlen(buf);i++) if(buf[i]<28) buf[i]=0; //reject to first unprintable
+   for(i=0;i<(int)strlen(buf);i++) if(buf[i]<28) buf[i]=0; //reject to first unprintable
    if( memcmp(buf+1, cmdbuf+2, l) ) continue; //continue if name not matched pattern
    k=2; //flag for OK
    break;
@@ -369,7 +368,7 @@ void showaddr(void)
   buf[0]=0;
   fgets(buf, 256, fl); //load next string
   if(buf[0]!='[') continue;
-  for(i=0;i<strlen(buf);i++) if(buf[i]<28) buf[i]=0; //reject to first unprintable symbol
+  for(i=0;i<(int)strlen(buf);i++) if(buf[i]<28) buf[i]=0; //reject to first unprintable symbol
   if(cmdbuf[2]) //if string not null
   {
    if(!strstr(buf, cmdbuf+2)) continue; //find pattern
@@ -414,7 +413,7 @@ void sendkey(char* keyname)
  do
  { //now bb[0]!=0 then key loaded and process inited
   t=do_key(bb); //key paccket prepared
-  if(t>0) l=do_data(bb, &c); //encrypts
+  if(t>0) l=do_data(bb, (unsigned char*)&c); //encrypts
   if(l>0) do_send(bb, l, c);  //sends to remote
   bb[0]=0;  //next do_key will be generates subsequent packets of this key
  }
@@ -436,7 +435,7 @@ void dochat(void)
   memset(bb, 0, sizeof(bb)); //clear
   bb[0]=TYPE_CHAT|0x80;    //set chat message header
   strcpy((char*)(bb+1), cmdbuf); //message body
-  l=do_data(bb, &c);     //encrypt
+  l=do_data(bb, (unsigned char*)&c);     //encrypt
   if(l>0) do_send(bb, l, c);  //send to remote
   printf("\r<%s\r\n", cmdbuf); //otput to local terminal
  }
@@ -543,8 +542,8 @@ void domenu(int c)
 
  //print item
  doclr(); //clear field
- sprintf((char*)cmdbuf, menuhdr[menu]); //add menu string to buffer
- sprintf((char*)cmdbuf+strlen(cmdbuf), menustr[menu][menuitem]); //add iteam to buffer
+ sprintf((char*)cmdbuf, "%s", menuhdr[menu]); //add menu string to buffer
+ sprintf((char*)cmdbuf+strlen(cmdbuf), "%s", menustr[menu][menuitem]); //add iteam to buffer
  cmdptr=strlen((char*)cmdbuf); //set buffer pointer to end of string
  web_printf((char*)cmdbuf); //add menu string to screen
 }
@@ -640,7 +639,7 @@ int goesc(int cc)
 //process command typed in terminal
 int parsecmd(void)
 {
- int i;
+ int i = 0;
  char str[256];
  char c;
 
@@ -751,7 +750,7 @@ int parsecmd(void)
     else if((i==1)||(i==2)) web_printf(" over UDP");
     else web_printf(" over TCP");
     if(onion_flag>1) web_printf(" (onion verified OK)");
-    if((i&4)&&(i&&8)) web_printf(" Doubling active now");
+    if((i&4)&&(i&8)) web_printf(" Doubling active now");
     if((i&0xC)&&(i&2)) web_printf(" Switched to UDP");
     printf("\r\n");
    }
@@ -764,9 +763,9 @@ int parsecmd(void)
    if(crp_state>2) //if connection established now
    {
     str[0]=1; //syn request must be generates
-    i=do_syn(str);
+    i=do_syn((unsigned char*)str);
     c=str[0]; //udp=tcp
-    if(i>0) if(i>0) do_send(str, 9, c); //send ping  currently used channel
+    if(i>0) if(i>0) do_send((unsigned char*)str, 9, c); //send ping  currently used channel
     web_printf("Ping remote...\r\n");
    }
   }
@@ -813,7 +812,7 @@ int parsecmd(void)
    { //send au1
     str[0]=0;
     i=do_au((unsigned char*)str);
-    if(i>0) i=do_data((unsigned char*)str, &c);
+    if(i>0) i=do_data((unsigned char*)str, (unsigned char*)&c);
     if(i>0) do_send((unsigned char*)str, i, c);
    }
   }
@@ -848,7 +847,7 @@ int parsecmd(void)
    //apply codec from profile
    strcpy(str, "VoiceCodec");
    if(parseconf(str)>0) i=atoi(str);
-   if((i<=0)&&(i>18)) i=7;
+   if((i<=0)||(i>18)) i=7;
    set_encoder(i);
   }
  }                     
@@ -1153,7 +1152,6 @@ int do_char(void)
  do
  {
   c=0;
-  j=0;
 #ifdef _WIN32
   if(kbhit()) //if key was pressed
   {
@@ -1204,7 +1202,7 @@ void setcmd(char* cmdstr)
  }
  else  //websocket mode
  { //truncate to first non-printable symbol 
-  for(i=0;i<strlen(cmdstr);i++) if((cmdstr[i]<32)&&(cmdstr[i]>0)) cmdstr[i]=0;
+  for(i=0;i<(int)strlen(cmdstr);i++) if((cmdstr[i]<32)&&(cmdstr[i]>0)) cmdstr[i]=0;
   strncpy(cmdbuf, cmdstr, 255); //apply incoming string as a command
   cmdbuf[255]=0;
   cmdptr=strlen(cmdbuf);  //length
@@ -1219,7 +1217,7 @@ void web_printf(char* s, ...)
 
     va_start(ap, s);  //parce arguments
     vsprintf(st, s, ap); //printf arg list to array
-    printf(st);  //out to stdout
+    printf("%s", st);  //out to stdout
     sendweb(st); //out to control port
     va_end(ap);  //clear arg list
     return;

@@ -1,3 +1,7 @@
+#pragma once
+
+#ifndef _LIBCRP_H_
+#define _LIBCRP_H_
 
 #include "sponge.h"
 #include "sprng.h"
@@ -5,8 +9,6 @@
 #include "b64.h"
 #include "wordlist.h"
 #include "havege.h"
-
-
 
 //int curve25519_donna(unsigned char *mypublic, const unsigned char *secret, const unsigned char *basepoint);
 //int get_pubkey(unsigned char *mypublic, const unsigned char *secret);
@@ -24,3 +26,6 @@
 //int b64decode( FILE *infile, FILE *outfile );
 //int b64dstr( const char *str, unsigned char* data);
 //int b64( char opt, char *infilename, char *outfilename, int linesize );
+
+#endif /* _LIBCRP_H_ */
+

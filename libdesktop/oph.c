@@ -32,9 +32,11 @@ extern char sound_loop; //flag of sound selftest (from cntrls.c)
 //asynchronosly poll sound input device, network sockets and keyboard input
 int main(int argc, char **argv)
 {
+	(void)argc;
+	(void)argv;
  unsigned char bbuf[540]; //work buffer
- int i,j,k, job=0;
- char c, old_k=0;
+ int i, job=0;
+ char c;
 
  randInit(0, 0); //SPRNG initialization
  loadmenu(); //loading menu items from file
@@ -55,13 +57,13 @@ int main(int argc, char **argv)
   //process sound output
   job=go_snd(0);
   //process sound input
-  i=do_snd((char*)bbuf); //check for sount packet ready
+  i=do_snd(bbuf); //check for sount packet ready
   if(i>1) //if sound packet encoded
   {
    if(sound_loop) go_snd(bbuf); //sound self-test: decode and play packet
    else if(crp_state>2) //or send sound to remote
    {
-    i=do_data(bbuf, &c); //encrypt packet, returns pkt len
+    i=do_data(bbuf, (unsigned char*)&c); //encrypt packet, returns pkt len
     if(i>0) do_send(bbuf, i, c); //send packet
    }
   }
@@ -71,7 +73,7 @@ int main(int argc, char **argv)
   if(i) job+=2;
   if(i>0) i=go_data(bbuf, i); //decrypt pkt, specifies length for udp, returns data len
   if(i>0) i=go_pkt(bbuf, i); //process pkt, return data len of answer
-  if(i>0) i=do_data(bbuf, &c); //encrypt answer, returns pkt len
+  if(i>0) i=do_data(bbuf, (unsigned char*)&c); //encrypt answer, returns pkt len
   if(i>0) do_send(bbuf, i, c); //send answer
 
   //process console input

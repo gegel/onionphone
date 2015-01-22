@@ -61,6 +61,7 @@
 #include "../libcodecs/amr/interf_enc.h"
 #include "../libcodecs/amr/interf_dec.h"
 
+#include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -73,7 +74,6 @@
 
  #include <windows.h>
  #include <time.h>
- #include <math.h>
 #endif
 
 #include "libcrp.h"
@@ -222,7 +222,7 @@ int resampler_quality=3;
 
 ///*
 //-----------------------------------------GSM_HR-------------------------
-static gsmhr *gsmhd=0; //half-rate coder state
+static struct gsmhr *gsmhd=0; //half-rate coder state
 //-----------------------------------------GSM_FR-------------------------
 static gsm gsmha; //encoders state
 static gsm gsmhs; //decoders state 
@@ -267,7 +267,6 @@ OpusDecoder *dec=NULL;
 //returns frame length in samples
 int speex_i(int squal, int svbr, int prepr, int sfpp)
 {
-  int i;
   const int brate[8]={2150, 3950, 5950, 8000, 11000, 15000, 18200, 24600};
  //set speex globals
   spx_vbr=svbr & 1;
@@ -438,7 +437,7 @@ int speex_r(short* spin, short* spout, int inlen,  int outrate)
  if(outrate!=Rs_out_rate) speex_resampler_set_rate(resampler, 8000, outrate); 
  //processing
  res=MAX_RESAMPL_BUF;
- if(resampler) speex_resampler_process_int(resampler, 0, spin, &inlen, spout, &res);
+ if(resampler) speex_resampler_process_int(resampler, 0, spin, (uint32_t*)&inlen, spout, (uint32_t*)&res);
  else res=1;
  return res;
 }
@@ -635,7 +634,6 @@ void lpc_i(void)
 //LPC compress 160 samples to 14 bytes 
 void lpc_e(unsigned char* buf, short* speech)
 {
-        int i;
         lpcparams_t lp;   
 	lpc_analyze(speech, &lp);
         memcpy((char*)buf, &lp, LPCRECSIZE);
@@ -770,7 +768,7 @@ int codec_len(int cdk)
 //returns buffer length in bytes including first type/len byte
 int sp_encode(short* sp, unsigned char* bf)
 {
- int i, l, t, fpp;
+ int i, l, fpp;
  unsigned char dtxcnt=0;
  unsigned char* bp=bf+1; //pointer to encodec data ares
  
@@ -779,7 +777,7 @@ int sp_encode(short* sp, unsigned char* bf)
  if(enc_type==CODEC_AMRV)
  {
   fpp=amrfpp; //sets frame per packets for amr_vbr
-  l=amr_block_size[amrmode]; //set encode block size
+  l=amr_block_size[(int)amrmode]; //set encode block size
   bp[0] = 0x40 | (amrmode<<3) | (amrfpp-3); //first packets byte: flag, mode, fpp
   bp++; //amr data from next byte 
   bf[0]=1; //initialize length byte
@@ -832,7 +830,7 @@ int sp_encode(short* sp, unsigned char* bf)
 	break;
    case CODEC_LPC10: lpc10_e(sp, bp);
 	break;	
-   case CODEC_CELP: celp_encode(sp, bp);
+   case CODEC_CELP: celp_encode(sp, (char*)bp);
 	break;
    //*/
    case CODEC_LPC: lpc_e(bp, sp);
@@ -919,7 +917,7 @@ int sp_decode(short* sp, unsigned char* bf)
  if(cd==CODEC_AMRV)
  {
   amrmd = 0x07&(bf[1]>>3); //amr mode for packet
-  l=amr_block_size[amrmd]; ////encoded frames length for this mode 
+  l=amr_block_size[(int)amrmd]; ////encoded frames length for this mode 
   fpp = 3 + (0x07&bf[1]); //amr frames in packet
   bp++;
  }
@@ -947,7 +945,7 @@ int sp_decode(short* sp, unsigned char* bf)
 	  }
 	  else l=5; //this was last SID, go to next frame
 	 }
-         else l=amr_block_size[amrmd]; //this is speech frame
+         else l=amr_block_size[(int)amrmd]; //this is speech frame
 	}
 	break; 
 
@@ -970,7 +968,7 @@ int sp_decode(short* sp, unsigned char* bf)
 	break;
    case CODEC_LPC10: lpc10_d(bp, spp);
 	break;	
-   case CODEC_CELP: celp_decode(bp, spp);
+   case CODEC_CELP: celp_decode((char*)bp, spp);
 	break;
   //*/
    case CODEC_LPC: lpc_d(spp, bp);
@@ -1077,8 +1075,8 @@ int playjit(void)
    j=(j<<(vad_signal+5))-1; //noise signal level
    if(vad_signal==1) memset(jit_buf, 0, 3200); //silency for signal=1
    else for(i=0;i<1600;i++) jit_buf[i]=(rand()%j); //noise signal
-   i=soundplay(1600, (char*)(jit_buf)); //play and returns number of played samples
-   if(i<chunk) soundplay(1600, (char*)(jit_buf)); //play again if underrun was occured
+   i=soundplay(1600, (unsigned char*)(jit_buf)); //play and returns number of played samples
+   if(i<chunk) soundplay(1600, (unsigned char*)(jit_buf)); //play again if underrun was occured
   }
   rx_flg=0; //clear rx_flag: no plagged incoming users now
   rx_flg1=0; //clear rx_flg1: no PTT off remote signal
@@ -1093,8 +1091,8 @@ int playjit(void)
     i=est_jit; //number of samples of silency will be played
     if(i>JIT_BUF_LEN/2) i=JIT_BUF_LEN/2; //restriction buffer size
     memset(jit_buf1, 0, 2*i); //put silency to alternative buffer
-    i=soundplay(i, (char*)(jit_buf1)); //play and returns number of played samples
-    if(i<chunk) soundplay(min_jitter, (char*)(jit_buf1)); //play again if underrun was occured
+    i=soundplay(i, (unsigned char*)(jit_buf1)); //play and returns number of played samples
+    if(i<chunk) soundplay(min_jitter, (unsigned char*)(jit_buf1)); //play again if underrun was occured
     job+=0x100;
    }
    rx_flg1=0; //clear rx_flag: no plagged incoming users now   
@@ -1103,7 +1101,7 @@ int playjit(void)
  //play samples in jitter buffer
  if(l_jit_buf)
  {
-  i=soundplay(l_jit_buf, (char*)(p_jit_buf)); //returns number of played samples
+  i=soundplay(l_jit_buf, (unsigned char*)(p_jit_buf)); //returns number of played samples
   if(i) job+=0x200;
   if(i<=0) i=0; //must play againbif underrun (PTT mode etc.)
   l_jit_buf-=i; //number of unplayed samples
@@ -1196,7 +1194,10 @@ RateChange(short *src, short *dest, int srcLen, int destRate)
 				count++;
 			}
 			position = position - 1.0;
-			*destShortPtr++ = (destSample/count);
+			if (count == 0)
+				*destShortPtr++ = 0;
+			else
+				*destShortPtr++ = (destSample/count);
 		}
 	}
 	else // Upsample
@@ -1378,7 +1379,6 @@ void go_vad(void)
 //Play ringtone if jitter buffer is empty
 void playring(void)
 {
- int i;
  if(!l_jit_buf)
  {  //fill buffer for beep sygnal
   memset(jit_buf, 0, JIT_BUF_LEN); //silency
@@ -1533,8 +1533,8 @@ int go_snd(unsigned char* pkt)
    if(sdelay<chunk) //if less then one chunk in alsa buffer
    {  
     memset(jit_buf, 0, min_jitter*2); //put silency to jitter buffer
-    i=soundplay(min_jitter, (char*)jit_buf); //play it
-    if(i<chunk) i=soundplay(min_jitter, (char*)jit_buf); //if underrun play again
+    i=soundplay(min_jitter, (unsigned char*)jit_buf); //play it
+    if(i<chunk) soundplay(min_jitter, (unsigned char*)jit_buf); //if underrun play again
     sdelay=getdelay(); //renew number of samples in alsa buffer
     //crate=8100; //set rate a little more then nominal for start collecting samles in jitter buffer
     i=1; //set flag of first packet after inactivity
@@ -1570,7 +1570,7 @@ int go_snd(unsigned char* pkt)
     }
  */
     //length of added udecoded packet in bytes
-    if(0x80&pkt[0]) i=1+frm_ppk[dec_type]*buf_len[dec_type]; else i=1+pkt[0]&0x7F; 
+    if(0x80&pkt[0]) i=1+frm_ppk[dec_type]*buf_len[dec_type]; else i=(1+pkt[0])&0x7F; 
     memcpy(pkt_buf[j], pkt, i); //copy packet to buffer's slot
   }
  }
@@ -1606,7 +1606,7 @@ int do_snd(unsigned char *pkt)
  else
  {
   //feed SPRNG
-  randFeed(raw_buf, 2*RawBufSize);
+  randFeed((const uchar*)raw_buf, 2*RawBufSize);
  }
  //change mode and notify
  if((tx_flag!=etx_flag) && etx_flag) //if active mode was setted while current mode was inactive
@@ -1680,7 +1680,7 @@ void setaudio(void)
 
  strcpy(str, "VoiceCodec");
  if(parseconf(str)>0) i=atoi(str); else i=-1;
- if((i<=0)&&(i>18)) i=7;
+ if((i<=0)||(i>18)) i=7;
  set_encoder(i);
 
  strcpy(str, "Vocoder");

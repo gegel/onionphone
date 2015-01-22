@@ -30,7 +30,7 @@
 #define NATINTERVAL 17  //interval between NAT penentrate packets 2^n microseconds
 #define MAXPKTCNT 300  //packets for measure traffics bitrate
 
-
+#include <limits.h>
 #include <stdio.h>
 
 #ifdef _WIN32
@@ -41,6 +41,7 @@
 #include <stdint.h>
 #include <winsock2.h>
 #include <windows.h>
+#include <ws2tcpip.h>
 #include <htons.h>
 #define ioctl ioctlsocket
 #define close closesocket
@@ -214,7 +215,6 @@ int sock_init(void)
    int ret = 0; //error code
    unsigned long naddrTCP=0; //temporary IP adress
    unsigned short port=0;      //temporary port
-   struct hostent *hh; //for resolving
    
    //Inites WSA for Windows
    #ifdef _WIN32
@@ -247,11 +247,11 @@ int sock_init(void)
   else rc_level=0;  //defaults: onion verification enabling bat dubling not
 
   //reset sockets and flags
-  if(tcp_listener!=INVALID_SOCKET) close(tcp_listener);
-  if(tcp_insock!=INVALID_SOCKET) close(tcp_insock);
-  if(tcp_outsock!=INVALID_SOCKET) close(tcp_outsock);
-  if(udp_insock!=INVALID_SOCKET) close(udp_insock);
-  if(udp_outsock!=INVALID_SOCKET) close(tcp_insock);
+  if(tcp_listener!=(int)INVALID_SOCKET) close(tcp_listener);
+  if(tcp_insock!=(int)INVALID_SOCKET) close(tcp_insock);
+  if(tcp_outsock!=(int)INVALID_SOCKET) close(tcp_outsock);
+  if(udp_insock!=(int)INVALID_SOCKET) close(udp_insock);
+  if(udp_outsock!=(int)INVALID_SOCKET) close(tcp_insock);
 
   tcp_listener=INVALID_SOCKET;
   tcp_insock=INVALID_SOCKET;
@@ -427,6 +427,7 @@ int get_ipif(unsigned int ip, unsigned short port)
  if(port) web_printf(":%d", (int)port);
  printf("\r\n");
  fflush(stdout);
+ return 0;
 }
 
 
@@ -438,14 +439,14 @@ int get_sockstatus(void)
  web_printf("Local IP if is ");
  get_ipif(Our_naddrUDPloc, 0);
  //UDP listener
- if(udp_insock!=INVALID_SOCKET)
+ if(udp_insock!=(int)INVALID_SOCKET)
  {
   sst+=1;
   web_printf("UDP listening IF is ");
   get_ipif(naddrUDPlistener, portUDPlistener);
  }
  //UDP outgoing socket
- if(udp_outsock!=INVALID_SOCKET)
+ if(udp_outsock!=(int)INVALID_SOCKET)
  {
   sst+=2;
   web_printf("UDP socket now bound on port %d\r\n", Our_portUDPint);
@@ -457,14 +458,14 @@ int get_sockstatus(void)
   }
  }
  //TCP listenet
- if(tcp_listener!=INVALID_SOCKET)
+ if(tcp_listener!=(int)INVALID_SOCKET)
  {
   web_printf("TCP listening IF is ");
   get_ipif(naddrTCPlistener, portTCPlistener);
  }
 
- if(tcp_insock!=INVALID_SOCKET) sst+=4;
- if(tcp_outsock!=INVALID_SOCKET) sst+=8;
+ if(tcp_insock!=(int)INVALID_SOCKET) sst+=4;
+ if(tcp_outsock!=(int)INVALID_SOCKET) sst+=8;
  return sst;
 }
 
@@ -474,21 +475,21 @@ int get_sockstatus(void)
 int disconnect(void)
 {
  //terminate udp incoming connection
- if(udp_insock!=INVALID_SOCKET) //if socket exist
+ if(udp_insock!=(int)INVALID_SOCKET) //if socket exist
  {
   if(udp_insock_flag==SOCK_INUSE) //if socket in use
   {
    if(crp_state>2)  //if connection was completely established
    {
     msgbuf[0]=0; //make finalise syn
-    do_syn(msgbuf);   //terminate encrypted connection
-    sendto(udp_insock, msgbuf, 9, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+    do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
+    sendto(udp_insock, msgbuf, 9, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
-    do_inv(msgbuf); //terminate unecrypted
-    sendto(udp_insock, msgbuf, 13, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+    do_inv((unsigned char*)msgbuf); //terminate unecrypted
+    sendto(udp_insock, msgbuf, 13, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
    }
    web_printf("! Incoming UDP connection terminated\r\n");
    fflush(stdout);
@@ -498,21 +499,21 @@ int disconnect(void)
  else udp_insock_flag=SOCK_IDDL; //no socket: set iddle flag
 
  //terminate udp outgoing connection
- if(udp_outsock!=INVALID_SOCKET) //if socket exist
+ if(udp_outsock!=(int)INVALID_SOCKET) //if socket exist
  {
   if(udp_outsock_flag==SOCK_INUSE) //if socket in use
   {
    if(crp_state>2)  //if connection was completely established
    {
     msgbuf[0]=0; //make finalise syn
-    do_syn(msgbuf);   //terminate encrypted connection
-    sendto(udp_outsock, msgbuf, 9, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+    do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
+    sendto(udp_outsock, msgbuf, 9, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
-    do_inv(msgbuf); //terminate unecrypted
-    sendto(udp_outsock, msgbuf, 13, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+    do_inv((unsigned char*)msgbuf); //terminate unecrypted
+    sendto(udp_outsock, msgbuf, 13, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
    }
    web_printf("! Outgoing UDP connection terminated\r\n");
    fflush(stdout);
@@ -523,20 +524,20 @@ int disconnect(void)
  }
 
  //terminate tcp incoming connection
- if(tcp_insock!=INVALID_SOCKET) //if socket exist
+ if(tcp_insock!=(int)INVALID_SOCKET) //if socket exist
  {
   if(tcp_insock_flag==SOCK_INUSE) //if socket in use
   {
    if(crp_state>2)  //if connection was completely established
    {
     msgbuf[0]=0; //make finalise syn
-    do_syn(msgbuf);   //terminate encrypted connection
+    do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
     send(tcp_insock, msgbuf, 9, 0);
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
-    do_inv(msgbuf); //terminate unecrypted
+    do_inv((unsigned char*)msgbuf); //terminate unecrypted
     send(tcp_insock, msgbuf, 13, 0);
    }
    web_printf("! Incoming connection terminated\r\n");
@@ -548,7 +549,7 @@ int disconnect(void)
  }
 
   //terminate tcp outgoing connection
- if(tcp_outsock!=INVALID_SOCKET) //if socket exist
+ if(tcp_outsock!=(int)INVALID_SOCKET) //if socket exist
  {
   if(tcp_outsock_flag==SOCK_WAIT_TOR)
   web_printf("! Failed attempt to connect to Tor\r\n");
@@ -563,13 +564,13 @@ int disconnect(void)
    if(crp_state>2)  //if connection was completely established
    {
     msgbuf[0]=0; //make finalise syn
-    do_syn(msgbuf);   //terminate encrypted connection
+    do_syn((unsigned char*)msgbuf);   //terminate encrypted connection
     send(tcp_outsock, msgbuf, 9, 0);
    }
    else //if connection in agreement stage
    {
     msgbuf[0]=0;
-    do_inv(msgbuf); //terminate unecrypted
+    do_inv((unsigned char*)msgbuf); //terminate unecrypted
     send(tcp_outsock, msgbuf, 13, 0);
    }
    web_printf("! Outgoing connection terminated\r\n");
@@ -633,7 +634,7 @@ void sock_close(char direction)
  //TCP out
  if(!direction)
  {
-  if(tcp_insock!=INVALID_SOCKET)
+  if(tcp_insock!=(int)INVALID_SOCKET)
   {
    close(tcp_outsock);
    tcp_outsock=INVALID_SOCKET;
@@ -644,7 +645,7 @@ void sock_close(char direction)
  //TCP in
  else if(direction==1)
  {
-  if(tcp_outsock!=INVALID_SOCKET)
+  if(tcp_outsock!=(int)INVALID_SOCKET)
   {
    close(tcp_insock);
    tcp_insock=INVALID_SOCKET;
@@ -655,7 +656,7 @@ void sock_close(char direction)
  //UDP out
  else
  {
-  if((tcp_outsock!=INVALID_SOCKET)||(tcp_insock!=INVALID_SOCKET))
+  if((tcp_outsock!=(int)INVALID_SOCKET)||(tcp_insock!=(int)INVALID_SOCKET))
   {
    close(udp_outsock);
    udp_outsock=INVALID_SOCKET;
@@ -759,11 +760,11 @@ int connectudp(char* udpaddr)
   saddrUDPFrom.sin_addr.s_addr=INADDR_NONE;
   naddrTCP=INADDR_NONE;
   //check for udp socket alredy exist, creates new if not 
-  if(udp_outsock==INVALID_SOCKET)
+  if(udp_outsock==(int)INVALID_SOCKET)
   {
    //generate random port
-   randFetch(msgbuf, 2);
-   port=2000+(*((short*)msgbuf));
+   randFetch((uchar*)msgbuf, 2);
+   port=2000+(((short)msgbuf[1] << (CHAR_BIT * sizeof(short) / 2)) | ((short)msgbuf[0]));
    if(port>65530) port/=2;
    //set port of UDP local interface
    Our_portUDPint=port;  //out UDP port in intranet
@@ -829,10 +830,10 @@ int connectudp(char* udpaddr)
    //send initial connection request to remote
    strncpy(msgbuf, udpaddr, 31); //use initial connection command with -Nname specified
    msgbuf[31]=0;
-   i=do_req(msgbuf); //send request
-   if(i>0) i=do_data(msgbuf, &c);
+   i=do_req((unsigned char*)msgbuf); //send request
+   if(i>0) i=do_data((unsigned char*)msgbuf, (unsigned char*)&c);
    //if onion/tcp connection exist: try switch to udp
-   if(i>0) do_send(msgbuf, i, c); //send packet over udp i bytes
+   if(i>0) do_send((unsigned char*)msgbuf, i, c); //send packet over udp i bytes
   }
   settimeout(UDPTIMEOUT); //set time for disconnect
   return 0;
@@ -856,7 +857,7 @@ int connecttcp(char* tcpaddr)
  //Check: remote address must be specified
  if(!tcpaddr[0]) return -4;
  //Check for outgoing tcp exist
- if(tcp_outsock!=INVALID_SOCKET)
+ if(tcp_outsock!=(int)INVALID_SOCKET)
  {
   close(tcp_outsock);
   tcp_outsock=INVALID_SOCKET;
@@ -918,7 +919,7 @@ int connecttcp(char* tcpaddr)
  opt=1;
  ioctl(tcp_outsock, FIONBIO, &opt);
  //Connect to remote host asynchronosly
- connect(tcp_outsock, &saddrTCP, sizeof(saddrTCP));
+ connect(tcp_outsock, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
  //init connection state
  tcp_outsock_flag=SOCK_WAIT_HOST; //set soccket status
  settimeout(TCPTIMEOUT);  //set timeout for waiting connection
@@ -989,14 +990,14 @@ int connecttor(char* toraddr)
   return 0;
  }
  //Make socks5 request in torbuf
- strcpy(torbuf+5, msgbuf); //hostname or IP string
+ strcpy((char*)torbuf+5, msgbuf); //hostname or IP string
  i=4; //IPv4 Len
  torbuf[3]=0x01; //for IPv4 socks request
  //check for adress string is IP, replace string by integer
- if(inet_addr(torbuf+5)!= INADDR_NONE) (*(unsigned int *)(torbuf+4)) = (unsigned int) inet_addr(torbuf+5);
+ if(inet_addr((const char*)torbuf+5)!= INADDR_NONE) (*(unsigned int *)(torbuf+4)) = (unsigned int) inet_addr((const char*)torbuf+5);
  else
  {
-  i=strlen(torbuf+5); //length of hostname string
+  i=strlen((const char*)torbuf+5); //length of hostname string
   torbuf[3]=0x03; //for hostname socks request
  }
  torbuf[4]=i;  //length of hostname or integer IP
@@ -1008,11 +1009,11 @@ int connecttor(char* toraddr)
  torbuflen=i+7; //total length of request packet
 
  //close old socket if exist
- if(tcp_outsock!=INVALID_SOCKET)
+ if(tcp_outsock!=(int)INVALID_SOCKET)
  {
   //Tor not pass socket closing immediately, we must notify other side first
   i=0;
-  send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+  send(tcp_outsock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
   close(tcp_outsock);  //now closing socket
   tcp_outsock=INVALID_SOCKET;
   tcp_outsock_flag=0;
@@ -1042,7 +1043,7 @@ int connecttor(char* toraddr)
  saddrTCP.sin_port = htons(portTor);
  saddrTCP.sin_addr.s_addr=naddrTor;
  //Connect to Tor interface asynchronosly
- connect(tcp_outsock, &saddrTCP, sizeof(saddrTCP));
+ connect(tcp_outsock, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
  //set socket status wor waiting connection to tor interface
  tcp_outsock_flag=SOCK_WAIT_TOR;
  if(!onion_flag) onion_flag=1;
@@ -1074,14 +1075,14 @@ void reset_dbl(void)
  web_printf("! Doubling not permitted, set interval first\r\n");
  else if(!our_onion[0])
  web_printf("! Our onion adress is not specified in config file!\r\n");
- else if((tcp_outsock_flag!=SOCK_INUSE)||(tcp_outsock==INVALID_SOCKET))
+ else if((tcp_outsock_flag!=SOCK_INUSE)||(tcp_outsock==(int)INVALID_SOCKET))
  {
   web_printf("! Impossible: outgoing connection inactive now\r\n");
   web_printf("Ask the remote party to perform this command\r\n");
  }
  else
  {
-  if(tcp_insock!=INVALID_SOCKET)
+  if(tcp_insock!=(int)INVALID_SOCKET)
   {
    close(tcp_insock);
    tcp_insock=INVALID_SOCKET;
@@ -1096,11 +1097,11 @@ void reset_dbl(void)
   memset(bb, 0, sizeof(bb));
   bb[0]=TYPE_CHAT|0x80; //chat header
   sprintf((char*)(bb+1), "-W%s", our_onion); //represent our onion
-  l=do_data(bb, &c); //encrypt
+  l=do_data(bb, (unsigned char*)&c); //encrypt
   if(l>0) do_send(bb, l, c);  //send packet
   //now send SYN req over outgoing socket if it is in work
   bb[0]=1; //syn request must be generates
-  if(0<do_syn(bb)) send(tcp_outsock, bb, 9, 0);
+  if(0<do_syn(bb)) send(tcp_outsock, (const char*)bb, 9, 0);
  }
 }
 //*****************************************************************************
@@ -1117,7 +1118,7 @@ void init_dbl(void)
  web_printf("! Doubling not permitted, set interval first\r\n");
  else if(!their_onion[0])
  web_printf("! Our onion adress not received yet!\r\n");
- else if((tcp_insock_flag!=SOCK_INUSE)||(tcp_insock==INVALID_SOCKET))
+ else if((tcp_insock_flag!=SOCK_INUSE)||(tcp_insock==(int)INVALID_SOCKET))
  {
   web_printf("! Impossible: incoming connection inactive now\r\n");
   web_printf("Ask the remote party to perform this command\r\n");
@@ -1130,7 +1131,7 @@ void init_dbl(void)
   rc_in=0;
   rc_out=0;
   msgbuf[0]=1; //syn request must be generates
-  if(0<do_syn(msgbuf)) send(tcp_insock, msgbuf, 9, 0);
+  if(0<do_syn((unsigned char*)msgbuf)) send(tcp_insock, msgbuf, 9, 0);
  }
 }
 
@@ -1150,7 +1151,7 @@ void reconecttor(void)
   rc_in=0;
   rc_out=0;
   msgbuf[0]=1; //syn request must be generates
-  if(0<do_syn(msgbuf)) send(tcp_insock, msgbuf, 9, 0);
+  if(0<do_syn((unsigned char*)msgbuf)) send(tcp_insock, msgbuf, 9, 0);
  }
 }
 
@@ -1166,10 +1167,10 @@ int tcpaccept(void)
  unsigned long opt=1;
  //struct linger ling;
 
- if(tcp_listener==INVALID_SOCKET) return 0;
+ if(tcp_listener==(int)INVALID_SOCKET) return 0;
  ll = sizeof(saddrTCP);
  //try accept incoming asynchronosly
- sTemp  = accept(tcp_listener, (struct sockaddr *) &saddrTCP, &ll);
+ sTemp  = accept(tcp_listener, (struct sockaddr *) &saddrTCP, (socklen_t*)&ll);
  if(sTemp<=0) return -1; //no incoming connections accepted
  if(saddrTCP.sin_addr.s_addr==0x0100007F) //if incoming from localhost (Tor)
  {
@@ -1196,13 +1197,13 @@ int tcpaccept(void)
 
 //check for connections already exist
 ll=0; //busy flag
-if(tcp_insock!=INVALID_SOCKET) ll=1; //another incoming exist: we are busy
-if((tcp_outsock!=INVALID_SOCKET) && (!onion_flag)) ll=1; //outgoing exist: we are busy except onion doubling
+if(tcp_insock!=(int)INVALID_SOCKET) ll=1; //another incoming exist: we are busy
+if((tcp_outsock!=(int)INVALID_SOCKET) && (!onion_flag)) ll=1; //outgoing exist: we are busy except onion doubling
 if(onion_flag && (!oflag)) ll=1; //busy for external connect during onion seans
 if(ll) //send busy notification and close
  {
   char buf[13];
-  buf[0]=0x80|TYPE_INV;
+  buf[0]=(char)(0x80|TYPE_INV);
   memset(buf+1,0, 12); //zeroed invite for busy notification
   if(13!=send(sTemp, (char*)(&ll), 13, 0)) perror("Sending Busy");//send busy nitification
 
@@ -1216,7 +1217,7 @@ if(ll) //send busy notification and close
  }
 
  //set socket mode (ready for doubling, other inuse)
- if(tcp_outsock!=INVALID_SOCKET) tcp_insock_flag=SOCK_READY;
+ if(tcp_outsock!=(int)INVALID_SOCKET) tcp_insock_flag=SOCK_READY;
  else
  {
   tcp_insock_flag=SOCK_INUSE;
@@ -1246,25 +1247,25 @@ int do_send(unsigned char* pkt, int len, char c)
 
  int i=0;
  //check for udp out_sock inuse (outgoing UDP or switch from onion)
- if((udp_outsock!=INVALID_SOCKET)&&(udp_outsock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
+ if((udp_outsock!=(int)INVALID_SOCKET)&&(udp_outsock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
  {
   pkt[0]=c; //set udp header and send udp
-  sendto(udp_outsock, pkt, len, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+  sendto(udp_outsock, (const char*)pkt, len, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
   bytes_sended+=(len+28);
   pkt_counter++;
   return 0; //this is incoming UDP direct, no other connection can be active at time
  }
  //check for tcp sockets in use (both can be)
- if((tcp_outsock!=INVALID_SOCKET)&&(tcp_outsock_flag==SOCK_INUSE))
+ if((tcp_outsock!=(int)INVALID_SOCKET)&&(tcp_outsock_flag==SOCK_INUSE))
  {
-  send(tcp_outsock, pkt, len, 0);
+  send(tcp_outsock, (const char*)pkt, len, 0);
   bytes_sended+=(len+40);
   pkt_counter++;
   i=1;
  }
- if((tcp_insock!=INVALID_SOCKET)&&(tcp_insock_flag==SOCK_INUSE))
+ if((tcp_insock!=(int)INVALID_SOCKET)&&(tcp_insock_flag==SOCK_INUSE))
  {
-  send(tcp_insock, pkt, len, 0);
+  send(tcp_insock, (const char*)pkt, len, 0);
   bytes_sended+=(len+40);
   pkt_counter++;
   i=1;
@@ -1272,10 +1273,10 @@ int do_send(unsigned char* pkt, int len, char c)
  if(i) return 0;
 
  //else ckeck for udp in socket (only one can be while incoming UDP direct)
- if((udp_insock!=INVALID_SOCKET)&&(udp_insock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
+ if((udp_insock!=(int)INVALID_SOCKET)&&(udp_insock_flag==SOCK_INUSE)&&(saddrUDPTo.sin_port))
  {
   pkt[0]=c; //set udp header and send udp
-  sendto(udp_insock, pkt, len, 0, &saddrUDPTo, sizeof(saddrUDPTo));
+  sendto(udp_insock, (const char*)pkt, len, 0, (const struct sockaddr*)&saddrUDPTo, sizeof(saddrUDPTo));
   bytes_sended+=(len+28);
   pkt_counter++;
  }
@@ -1292,7 +1293,7 @@ int readudpin(unsigned char* pkt)
  int l=sizeof(saddrTCP); //addr structure size
 
  //try read socket asynchronosly
- i=recvfrom(udp_insock, pkt, MAXTCPSIZE, 0, &saddrTCP, &l);
+ i=recvfrom(udp_insock, (char*)pkt, MAXTCPSIZE, 0, (struct sockaddr*)&saddrTCP, (socklen_t*)&l);
  if(i==SOCKET_ERROR) //error/no data
  {
   i=getsockerr();  //get error code
@@ -1333,9 +1334,9 @@ int readudpin(unsigned char* pkt)
 //-----------------------------------
 
  //some data received
- if( (udp_outsock!=INVALID_SOCKET)||
-     (tcp_insock!=INVALID_SOCKET)||
-     (tcp_outsock!=INVALID_SOCKET) )
+ if( (udp_outsock!=(int)INVALID_SOCKET)||
+     (tcp_insock!=(int)INVALID_SOCKET)||
+     (tcp_outsock!=(int)INVALID_SOCKET) )
  {
   b=1; //if any other socket exist set busy flag
  }
@@ -1357,7 +1358,7 @@ int readudpin(unsigned char* pkt)
  {
   pkt[0]=TYPE_INV|0x80; //zeroed invite
   memset(pkt+1, 0, 12);
-  sendto(udp_insock, pkt, 13, 0, &saddrTCP, sizeof(saddrTCP));
+  sendto(udp_insock, (const char*)pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   return -1; //no data
  }
 
@@ -1379,7 +1380,7 @@ int readudpin(unsigned char* pkt)
  if((i==9)&&(crp_state>2))
  {
 
-  if(0<go_syn(pkt)) sendto(udp_insock, pkt, 9, 0, &saddrTCP, sizeof(saddrTCP));
+  if(0<go_syn(pkt)) sendto(udp_insock, (const char*)pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   else web_printf(" ping on UDP incoming\r\n");
   return -1;
  }
@@ -1401,7 +1402,7 @@ int readudpout(unsigned char* pkt)
 
 //===========================================
  //try read socket
- i=recvfrom(udp_outsock, pkt, MAXTCPSIZE, 0, &saddrTCP, &l);
+ i=recvfrom(udp_outsock, (char*)pkt, MAXTCPSIZE, 0, (struct sockaddr*)&saddrTCP, (socklen_t*)&l);
  if(i==SOCKET_ERROR) //error/no data
  {
   i=getsockerr();  //get error code
@@ -1423,8 +1424,8 @@ int readudpout(unsigned char* pkt)
 
 //==============================================
  //check for exist tcp sockets:
- if( (tcp_insock!=INVALID_SOCKET)||
-     (tcp_outsock!=INVALID_SOCKET) )
+ if( (tcp_insock!=(int)INVALID_SOCKET)||
+     (tcp_outsock!=(int)INVALID_SOCKET) )
  {  //this is swith from tcp to udp
 //------------------------------------------
   //check for connection already established
@@ -1432,7 +1433,7 @@ int readudpout(unsigned char* pkt)
   {
    pkt[0]=TYPE_INV|0x80; //send zeroed invite
    memset(pkt+1, 0, 12);
-   sendto(udp_outsock, pkt, 13, 0, &saddrTCP, sizeof(saddrTCP));
+   sendto(udp_outsock, (const char*)pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
    return 0;
   }
 
@@ -1450,7 +1451,7 @@ int readudpout(unsigned char* pkt)
     i=1+strlen((char*)(pkt+1)); //-S111.111.111.111:11111
     memset(pkt+i, 0, 256-i); //zeroed rest string
     i=lenbytype(TYPE_CHAT);
-    if(i>0) i=do_data(pkt, &c); //encrypt
+    if(i>0) i=do_data(pkt, (unsigned char*)&c); //encrypt
     if(i>0) do_send(pkt, i, c); //send packet
     return 0;
    }
@@ -1467,7 +1468,7 @@ int readudpout(unsigned char* pkt)
      //fix senders address as remote address for answering
      memcpy(&saddrUDPTo, &saddrTCP, sizeof(saddrUDPTo));
      //send answer over UDP for notify himself address:port for remote
-     sendto(udp_outsock, pkt, 9, 0, &saddrTCP, sizeof(saddrTCP));
+     sendto(udp_outsock, (const char*)pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
      pkt[0]=1; //make syn request for fixing timestamp
      do_syn(pkt);
      u_cnt=0; //terminate NAT travelsal procedure
@@ -1479,7 +1480,7 @@ int readudpout(unsigned char* pkt)
    } //if(u_cnt)
    else
    {  //!u_cnt: send SYN to answer
-    if(0<go_syn(pkt)) sendto(udp_outsock, pkt, 9, 0, &saddrTCP, sizeof(saddrTCP));
+    if(0<go_syn(pkt)) sendto(udp_outsock, (const char*)pkt, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
     else web_printf(" ping on UDP outgoing\r\n");
    } //!u_cnt
    return 0;
@@ -1496,7 +1497,7 @@ int readudpout(unsigned char* pkt)
  {  //this is a packet from another sender then was specified on connect
   pkt[0]=TYPE_INV|0x80; //send zeroed invite back: busy
   memset(pkt+1, 0, 12);
-  sendto(udp_outsock, pkt, 13, 0, &saddrTCP, sizeof(saddrTCP));
+  sendto(udp_outsock, (const char*)pkt, 13, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   return -1;
  }
  bytes_received+=(i+28);
@@ -1510,12 +1511,11 @@ int readudpout(unsigned char* pkt)
 int readtcpout(unsigned char* pkt)
 {
  int i; //data length or error code
- char c;
  //check socket status, read all data if socket not ready
- if((!tcp_outsock_flag)||(tcp_outsock==INVALID_SOCKET)) return 0; //invalid socket
+ if((!tcp_outsock_flag)||(tcp_outsock==(int)INVALID_SOCKET)) return 0; //invalid socket
  else if(tcp_outsock_flag<SOCK_READY) //socket not ready: read all avaliable data
  {
-  i=recv(tcp_outsock, br_out, MAXTCPSIZE, 0); //try read socket
+  i=recv(tcp_outsock, (char*)br_out, MAXTCPSIZE, 0); //try read socket
 
   if(!i)  //no data but recv event
   {  //socket remotely closed (like eof)
@@ -1545,7 +1545,7 @@ int readtcpout(unsigned char* pkt)
     tr_out=0; //init bytes counter
     pr_out=0; //init bytes pointer
     //send initial connection crypto request to remote
-    i=do_req(msgbuf); //make and send request
+    i=do_req((unsigned char*)msgbuf); //make and send request
     if(i>0)
     {
      i=send(tcp_outsock, msgbuf, i+5, 0);
@@ -1563,7 +1563,7 @@ int readtcpout(unsigned char* pkt)
    {
     tcp_outsock_flag=SOCK_WAIT_HELLO; //wait hello from Tor
     //send socks5 hello
-    i=send(tcp_outsock, torbuf, 3, 0);
+    i=send(tcp_outsock, (const char*)torbuf, 3, 0);
     if(i<=0) d_flg=SOCK_WAIT_TOR;
     else d_flg=0;
    }
@@ -1577,7 +1577,7 @@ int readtcpout(unsigned char* pkt)
    //check for socks5 Hello pattern
    if( (i<2) || (i>9) || (br_out[0]!=5) || br_out[1] ) return 0;
    tcp_outsock_flag=SOCK_WAIT_HS; //wait connection to specified Hidden Service
-   i=send(tcp_outsock, torbuf, torbuflen, 0); //send sock5 HS-request to Tor
+   i=send(tcp_outsock, (const char*)torbuf, torbuflen, 0); //send sock5 HS-request to Tor
    if(i>0) settimeout(TORTIMEOUT);
    return 0;
   }
@@ -1585,13 +1585,13 @@ int readtcpout(unsigned char* pkt)
   if(tcp_outsock_flag==SOCK_WAIT_HS) //if we are waiting connection to HS
   { //check for socks5 connection compleet pattern
    if((i<10)||(br_out[0]!=5)||(br_out[1])) return 0;
-   if(tcp_insock==INVALID_SOCKET) //this is initil connection, send req
+   if(tcp_insock==(int)INVALID_SOCKET) //this is initil connection, send req
    {
     //send initial connection crypto request to remote
     tr_out=0; //init bytes counter
     pr_out=0; //init bytes pointer
     tcp_outsock_flag=SOCK_INUSE;
-    i=do_req(msgbuf); //make and send request
+    i=do_req((unsigned char*)msgbuf); //make and send request
     if(i>0) send(tcp_outsock, msgbuf, i+5, 0);
     else disconnect(); //contact not in addressbook
    }
@@ -1602,13 +1602,13 @@ int readtcpout(unsigned char* pkt)
     pr_out=0; //init bytes pointer
     tcp_outsock_flag=SOCK_READY; //wait for answer invite
     msgbuf[0]=1; //non-zero invite must be generates
-    i=do_inv(msgbuf); //generate answer invite
+    i=do_inv((unsigned char*)msgbuf); //generate answer invite
     if(i>0) send(tcp_outsock, msgbuf, 13, 0); //send it to remote over Tor
     else //key not agree
     {
      //Tor not pass socket closing immediately, we must notify other side first
      i=0;
-     send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+     send(tcp_outsock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
      web_printf("! No key agreement!\r\n");
      sock_close(0);
     }
@@ -1621,7 +1621,7 @@ int readtcpout(unsigned char* pkt)
  //socket ready now: read one byte first (header) specifies length
  if(!tr_out) //no data in buffer: new packet estimates
  {
-  i=recv(tcp_outsock, br_out, 1, 0); //read first byte
+  i=recv(tcp_outsock, (char*)br_out, 1, 0); //read first byte
   if(!i) //socket remotely closed (like eof)
   {
    web_printf("! TCP outgoing connection closed remotely\r\n");
@@ -1658,7 +1658,7 @@ int readtcpout(unsigned char* pkt)
  } //if(!tr_out)
 
   //try to read rest of packets bytes
-  i=recv(tcp_outsock, br_out+pr_out, tr_out, 0); //read up to all expected bytes of packet
+  i=recv(tcp_outsock, (char*)(br_out+pr_out), tr_out, 0); //read up to all expected bytes of packet
   if(!i) //socket remotely closed (like eof)
   {
    web_printf("! TCP outgoing connection closed remotely\r\n");
@@ -1691,7 +1691,7 @@ int readtcpout(unsigned char* pkt)
  //check for SYN there (crp_state>2)
  if((i==9)&&(crp_state>2))
  {
-  if(0<go_syn(br_out)) send(tcp_outsock, br_out, 9, 0);
+  if(0<go_syn(br_out)) send(tcp_outsock, (const char*)br_out, 9, 0);
   else web_printf(" ping on TCP outgoing\r\n");
   return 0;
  }
@@ -1728,7 +1728,7 @@ int readtcpout(unsigned char* pkt)
    {
     //Tor not pass socket closing immediately, we must notify other side first
     i=0;
-    send(tcp_outsock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+    send(tcp_outsock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
     web_printf("! Connection closed because doubling is not permitted in config\r\n");
     sock_close(0);
    }
@@ -1755,12 +1755,12 @@ int readtcpin(unsigned char* pkt)
  int i; //data length or error code
 
  //check socket status, read all data if socket not ready
- if((tcp_insock_flag<SOCK_READY)||(tcp_insock==INVALID_SOCKET)) return 0; //invalid socket
+ if((tcp_insock_flag<SOCK_READY)||(tcp_insock==(int)INVALID_SOCKET)) return 0; //invalid socket
 
  //socket ready: read one byte first (header) specifies length
  if(!tr_in) //no data in buffer: new packet estimates
  {
-  i=recv(tcp_insock, br_in, 1, 0); //read first byte
+  i=recv(tcp_insock, (char*)br_in, 1, 0); //read first byte
   if(!i) //socket remotely closed (like eof)
   {
    web_printf("! TCP incoming connection closed remotely\r\n");
@@ -1796,7 +1796,7 @@ int readtcpin(unsigned char* pkt)
 
   //try to read rest of packets bytes
   
-  i=recv(tcp_insock, br_in+pr_in, tr_in, 0); //read up to all expected bytes of packet
+  i=recv(tcp_insock, (char*)(br_in+pr_in), tr_in, 0); //read up to all expected bytes of packet
   if(!i) //socket remotely closed (like eof)
   {
    sock_close(1);
@@ -1828,7 +1828,7 @@ int readtcpin(unsigned char* pkt)
  //check for SYN there (crp_state>2)
  if((i==9)&&(crp_state>2))
  {
-  if(0<go_syn(br_in)) send(tcp_insock, br_in, 9, 0);
+  if(0<go_syn(br_in)) send(tcp_insock, (const char*)br_in, 9, 0);
   else web_printf(" ping on TCP incoming\r\n");
   return 0;
  }
@@ -1846,13 +1846,13 @@ int readtcpin(unsigned char* pkt)
   {
    //send invite to answer
    msgbuf[0]=1; //non-zero invite must be generates
-   i=do_inv(msgbuf); //generate answer invite
+   i=do_inv((unsigned char*)msgbuf); //generate answer invite
    if(i>0) send(tcp_insock, msgbuf, 13, 0); //send it to remote over Tor
    else //key not agree
    {
     //Tor not pass socket closing immediately, we must notify other side first
     i=0;
-    send(tcp_insock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+    send(tcp_insock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
     sock_close(1);
     return 0;
    }
@@ -1868,7 +1868,7 @@ int readtcpin(unsigned char* pkt)
    {
     //Tor not pass socket closing immediately, we must notify other side first
     i=0;
-    send(tcp_insock, &i, 1, 0); //send 0 for close socket on remote side during change doubling
+    send(tcp_insock, (const char*)&i, 1, 0); //send 0 for close socket on remote side during change doubling
     sock_close(1);
     web_printf("! Connecting closed because doubling is not permitted in config\r\n");
    }
@@ -1891,7 +1891,7 @@ int readtcpin(unsigned char* pkt)
 //socket polling and reading wrapper
 int do_read(unsigned char* pkt)
 {
- int i;
+ int i = 0;
  struct timeval time1;
 
  //------------------------------------------------------
@@ -1911,7 +1911,7 @@ int do_read(unsigned char* pkt)
       else if(d_flg==SOCK_WAIT_TOR) //Duble HELLO for connection to Tor SOCKS5
       {
        d_flg=0;
-       i=send(tcp_outsock, torbuf, 3, 0);
+       i=send(tcp_outsock, (const char*)torbuf, 3, 0);
        if(i==3) settimeout(DBLTIMEOUT);
        return 0;
       }
@@ -1966,11 +1966,11 @@ int do_read(unsigned char* pkt)
     }
 
     //make and send SYN packet for NAT traversal
-    if((saddrTCP.sin_port)&&(saddrTCP.sin_addr.s_addr!=INADDR_NONE)&&(udp_outsock!=INVALID_SOCKET))
+    if((saddrTCP.sin_port)&&(saddrTCP.sin_addr.s_addr!=INADDR_NONE)&&(udp_outsock!=(int)INVALID_SOCKET))
     {
      msgbuf[0]=1; //syn request must be generates
-     i=do_syn(msgbuf); //send UDP over our NAT to remote NAT
-     if(i>0) i=sendto(udp_outsock, msgbuf, 9, 0, &saddrTCP, sizeof(saddrTCP));
+     i=do_syn((unsigned char*)msgbuf); //send UDP over our NAT to remote NAT
+     if(i>0) sendto(udp_outsock, msgbuf, 9, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
     }
     u_cnt--; //decrement packets to send
     //exhausted: unsuccessful 
@@ -2040,7 +2040,7 @@ int do_read(unsigned char* pkt)
   memset(bb, 0, sizeof(bb));
   bb[0]=TYPE_CHAT|0x80; //chat header
   sprintf((char*)(bb+1), "-W%s", our_onion); //represent our onion
-  l=do_data(bb, &c); //encrypt
+  l=do_data(bb, (unsigned char*)&c); //encrypt
   if(l>0) do_send(bb, l, c);  //send packet
   //decrease counter for next measurement
   rc_cnt=rc_level/2;
@@ -2048,7 +2048,7 @@ int do_read(unsigned char* pkt)
   if(tcp_outsock_flag==SOCK_INUSE)
   {
    bb[0]=1; //syn request must be generates
-   if(0<do_syn(bb)) send(tcp_outsock, bb, 9, 0);
+   if(0<do_syn(bb)) send(tcp_outsock, (const char*)bb, 9, 0);
   }
  }  //restrict minimal counter value if outgoing too slow
      //only other part must check this and send reconection invite for us
@@ -2056,13 +2056,13 @@ int do_read(unsigned char* pkt)
 
  //------------------------------------------------------
  //check for udp sockets exist and poll
- if(udp_outsock!=INVALID_SOCKET)
+ if(udp_outsock!=(int)INVALID_SOCKET)
  {
   i=readudpout(pkt);
   if(i>0) return i;
  }
  //-------------------------------------------------------
- if(udp_insock!=INVALID_SOCKET) //this is also udp listener
+ if(udp_insock!=(int)INVALID_SOCKET) //this is also udp listener
  {
   i=readudpin(pkt);
   if(i>0) return i;
@@ -2072,21 +2072,21 @@ int do_read(unsigned char* pkt)
  if(tcp_listener) tcpaccept();
 //--------------------------------------------------------
  //check for exist and poll tcp sockets
- if(tcp_outsock!=INVALID_SOCKET)
+ if(tcp_outsock!=(int)INVALID_SOCKET)
  {
   i=readtcpout(pkt);
   if(i>0) return i;
  }
 //----------------------------------------------------------
- if(tcp_insock!=INVALID_SOCKET)
+ if(tcp_insock!=(int)INVALID_SOCKET)
  {
   i=readtcpin(pkt);
   if(i>0) return i;
  }
 
  //int do_read(unsigned char* pkt)
- if(web_listener!=INVALID_SOCKET) webaccept();
- if(web_sock!=INVALID_SOCKET) readweb();
+ if(web_listener!=(int)INVALID_SOCKET) webaccept();
+ if(web_sock!=(int)INVALID_SOCKET) readweb();
 
  return 0;
 }
@@ -2120,7 +2120,7 @@ void checkdouble(void)
 void do_stun(char* cmd)
 {
 
- if(udp_insock==INVALID_SOCKET)
+ if(udp_insock==(int)INVALID_SOCKET)
  {
   web_printf("! Unavaliable: UDP listener disabled by config!\r\n");
   return;
@@ -2178,7 +2178,7 @@ void do_stun(char* cmd)
    saddrTCP.sin_port = htons(portSTUN); //port of used STUN server
    saddrTCP.sin_addr.s_addr=naddrSTUN; //IP adress of used STUN server
    //send STUN request
-   sendto(udp_insock, msgbuf, 28, 0, &saddrTCP, sizeof(saddrTCP));
+   sendto(udp_insock, msgbuf, 28, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   } //if(portSTUN && (naddrSTUN!=INADDR_NONE))
 }
 
@@ -2215,7 +2215,7 @@ void do_nat(char* cmd)
    web_printf("! STUN server is not specified!\r\n");
    return;
   }
-  else if(msgbuf!='0') //check for STUN disabled
+  else if(msgbuf[0]!='0') //check for STUN disabled
   {
    //determines STUN IP and port from string
    portSTUN=fndport(msgbuf);  //check for port speecified
@@ -2242,9 +2242,9 @@ void do_nat(char* cmd)
    } //if(naddrTCP==INADDR_NONE)
   } //if(msgbuf!='0')
   //creates outgoing UDP socket if it is not created before
-  if(udp_outsock==INVALID_SOCKET) connectudp("-U");
+  if(udp_outsock==(int)INVALID_SOCKET) connectudp("-U");
   //check for udp socket is ready
-  if((udp_outsock==INVALID_SOCKET)||(udp_outsock_flag!=SOCK_READY)) return;
+  if((udp_outsock==(int)INVALID_SOCKET)||(udp_outsock_flag!=SOCK_READY)) return;
 
   //send stun request over it
   if(portSTUN && (naddrSTUN!=INADDR_NONE))
@@ -2262,7 +2262,7 @@ void do_nat(char* cmd)
    saddrTCP.sin_port = htons(portSTUN); //port of used STUN server
    saddrTCP.sin_addr.s_addr=naddrSTUN; //IP adress of used STUN server
    //send STUN request
-   sendto(udp_outsock, msgbuf, 28, 0, &saddrTCP, sizeof(saddrTCP));
+   sendto(udp_outsock, msgbuf, 28, 0, (const struct sockaddr*)&saddrTCP, sizeof(saddrTCP));
   }
 
   //make chat packet contains string -Uudpaddr:udpport
@@ -2270,7 +2270,7 @@ void do_nat(char* cmd)
   (*(unsigned char*)msgbuf)=TYPE_CHAT|0x80; //chat header
   saddrTCP.sin_addr.s_addr=Our_naddrUDPint; //our local UDP interfaces IP address
   sprintf((char*)(msgbuf+1), "-U%s:%d", inet_ntoa(saddrTCP.sin_addr), Our_portUDPint);
-  i=do_data((unsigned char*)msgbuf, &c); //encrypt answer, returns pkt len
+  i=do_data((unsigned char*)msgbuf, (unsigned char*)&c); //encrypt answer, returns pkt len
   if(i>0) do_send((unsigned char*)msgbuf, i, c); //send answer
 
   //set number of NAT penentrates packets to send
@@ -2339,10 +2339,10 @@ void stopudp(void)
   //we must synchronize counter by first TCP SYN packet after
   //self-synchronized udp packets and not use UDP after this
   msgbuf[0]=1; //syn request must be generates
-  i=do_syn(msgbuf);   //synchronize in_counter first
-  if(i>0) i=do_data(msgbuf, &c);
+  i=do_syn((unsigned char*)msgbuf);   //synchronize in_counter first
+  if(i>0) i=do_data((unsigned char*)msgbuf, (unsigned char*)&c);
   //send first TCP after UDP: this is a SYN
-  if(i>0) do_send(msgbuf, i, c); 
+  if(i>0) do_send((unsigned char*)msgbuf, i, c); 
   web_printf("    Stop UDP");
  }
 }
@@ -2362,7 +2362,7 @@ unsigned long get_local_if(void)
  
  if(our_ip==INADDR_NONE)
  {
-   struct sockaddr_in *paddr;
+   struct sockaddr_in paddr;
 #ifdef _WIN32
  //look for local interface
    struct hostent *hh;
@@ -2375,8 +2375,8 @@ unsigned long get_local_if(void)
      i=0;
      while(i<1) //check for mingw bag!!! bcb compiler OK!
      {
-      paddr->sin_addr.s_addr=*(unsigned long*)hh->h_addr_list[i++];
-      our_ip=paddr->sin_addr.s_addr; //for inet_ntoa only
+      paddr.sin_addr.s_addr=*(unsigned long*)hh->h_addr_list[i++];
+      our_ip=paddr.sin_addr.s_addr; //for inet_ntoa only
       saddrTCP.sin_addr.s_addr=our_ip;
       web_printf("Local interface: %s\r\n", inet_ntoa(saddrTCP.sin_addr) ); //notify
      }     
@@ -2392,9 +2392,9 @@ unsigned long get_local_if(void)
     {
      if(tmp->ifa_addr && tmp->ifa_addr->sa_family==AF_INET)
      {
-      paddr=(struct sockaddr_in *)tmp->ifa_addr;
-      our_ip=paddr->sin_addr.s_addr;
-      web_printf("%s: %s\r\n", tmp->ifa_name, inet_ntoa(paddr->sin_addr));
+      paddr=*((struct sockaddr_in *)tmp->ifa_addr);
+      our_ip=paddr.sin_addr.s_addr;
+      web_printf("%s: %s\r\n", tmp->ifa_name, inet_ntoa(paddr.sin_addr));
      }
      tmp=tmp->ifa_next;   
     }
@@ -2415,10 +2415,10 @@ int webaccept(void)
  unsigned long opt=1;
  //struct linger ling;
 
- if(web_listener==INVALID_SOCKET) return 0;
+ if(web_listener==(int)INVALID_SOCKET) return 0;
  ll = sizeof(saddrTCP);
  //try accept incoming asynchronosly
- sTemp  = accept(web_listener, (struct sockaddr *) &saddrTCP, &ll);
+ sTemp  = accept(web_listener, (struct sockaddr *) &saddrTCP, (socklen_t*)&ll);
  if(sTemp<=0) return -1; //no incoming connections accepted
  if(saddrTCP.sin_addr.s_addr!=0x0100007F) //if incoming not from localhost (Tor)
  {
@@ -2441,7 +2441,7 @@ int webaccept(void)
  ioctl(sTemp, FIONBIO, &opt);
 
  //close old control connection
- if(web_sock!=INVALID_SOCKET)
+ if(web_sock!=(int)INVALID_SOCKET)
  {
   close(web_sock);
   printf("Existed control closed\r\n");
@@ -2463,7 +2463,7 @@ int readweb(void)
  int l; //data length or error code
  char* p=0;
  //check socket status, read all data if socket not ready
- if(web_sock==INVALID_SOCKET) return 0; //invalid socket
+ if(web_sock==(int)INVALID_SOCKET) return 0; //invalid socket
 
   l=recv(web_sock, webmsgbuf, sizeof(webmsgbuf)-1, 0); //read all bytes
   if(!l) //socket remotely closed (like eof)
@@ -2523,7 +2523,7 @@ int readweb(void)
    i=0x7F&webmsgbuf[1];  //data length for short packet
    if(i>125) //this is a long packet
    {
-    i=webmsgbuf[3]<<8+webmsgbuf[4]; //data length for long packet
+    i=webmsgbuf[3]<<(8+webmsgbuf[4]); //data length for long packet
     p+=2; //skip 2 byte length
    }
    if(0x80&webmsgbuf[1]) //check for mask
@@ -2543,7 +2543,7 @@ int readweb(void)
    }
    else if(((unsigned char)(webmsgbuf[0])==0x89)&&(i<126)) //check for ping packet
    {  //only short ping precessed
-    webmsgbuf[0]=0x8A; //set pong type
+    webmsgbuf[0]=(char)0x8A; //set pong type
     webmsgbuf[1]=0x80+i; //set data length
     for(j=0;j<i;j++) webmsgbuf[2+j]=p[j]; //copy data from ping
     send(web_sock, webmsgbuf, i+2, 0); //send pong to answer
@@ -2563,16 +2563,16 @@ int sendweb(char* str)
 {
  int l;
  //check for socket exist
- if(web_sock==INVALID_SOCKET) return -1;
+ if(web_sock==(int)INVALID_SOCKET) return -1;
  //check max data length
  strncpy(webmsgbuf, str, 511);
  webmsgbuf[511]=0;
  l=strlen(webmsgbuf);
- if(l>(sizeof(webmsgbuf)-5)) return -2;
+ if(l>((int)sizeof(webmsgbuf)-5)) return -2;
  //websock protocol
  if(web_sock_flag==SOCK_READY)
  {
-  webmsgbuf[0]=0x81; //header for final (one frame) text data packet
+  webmsgbuf[0]=(char)0x81; //header for final (one frame) text data packet
   if(l<126) //short packet
   {
    webmsgbuf[1]=l; //7 bits length

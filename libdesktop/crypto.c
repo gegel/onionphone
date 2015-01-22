@@ -26,23 +26,13 @@
  #include <windows.h>
  #include <time.h>
 
-//for Windows emulation of gettimeofday
-#ifndef _TIMEZONE_DEFINED /* also in sys/time.h */
-#define _TIMEZONE_DEFINED
-struct timezone
-{
-  int  tz_minuteswest; //minutes W of Greenwich
-  int  tz_dsttime;     //type of dst correction 
-};
-#endif /* _TIMEZONE_DEFINED */
-
 int gettimeofday(struct timeval *tv, struct timezone *tz)
 {
+  (void)tz;
   FILETIME ft;
   const __int64 DELTA_EPOCH_IN_MICROSECS= 11644473600000000;
   unsigned __int64 tmpres = 0;
   unsigned __int64 tmpres_h = 0;
-  static int tzflag;
 
   if (NULL != tv)
   {
@@ -70,6 +60,7 @@ int gettimeofday(struct timeval *tv, struct timezone *tz)
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 
 #include "libcrp.h"
 #include "tcp.h"
@@ -243,16 +234,16 @@ void psleep(int paus)
    if(strlen(str)<2) return -1;
    c=option[0]; //option's char
    option[0]=0; //clear output
-   for(i=0;i<(strlen(str)-1);i++) //look for option
+   for(i=0;i<(int)(strlen(str)-1);i++) //look for option
    {
     if(str[i]!='-') continue; //must be as -Nname
     if(str[i+1]!=c) continue;
-    p=str+i+2;  //pointer to option data
+    p=(char*)(str+i+2);  //pointer to option data
    }
    if(!p) return -1; //p points to last option's data
    strncpy(option, p, 31); //copy to output
    option[31]=0;
-   for(i=0;i<strlen(option);i++) //truncate to first space
+   for(i=0;i<(int)strlen(option);i++) //truncate to first space
    {
     if(option[i]==' ')
     {
@@ -273,7 +264,7 @@ void psleep(int paus)
   keyname[0]=0;
   j=0;
 //search for [, collect chars up to ] or spase
-  for(i=0;i<strlen(str);i++)
+  for(i=0;i<(int)strlen(str);i++)
   {
    if((str[i]==']')||(str[i]==' ')) //we are out of block now
    {
@@ -306,7 +297,7 @@ void psleep(int paus)
   nickname[0]=0;
   j=0;
   //search for #, collect chars up to spase
-  for(i=0;i<strlen(str);i++)
+  for(i=0;i<(int)strlen(str);i++)
   {
    if(str[i]==' ') //we are out of block now
    {
@@ -393,7 +384,7 @@ void psleep(int paus)
   fclose(fl);
   if(str[0]!='#') return 0;
   //truncate to first \r or \n
-  for(i=0;i<strlen(str);i++)
+  for(i=0;i<(int)strlen(str);i++)
   {
    if( (str[i]=='\r')||(str[i]=='\n') )
    {
@@ -432,7 +423,7 @@ void psleep(int paus)
   }
   fclose(fl);
   if(!res[0]) return 0; //return  0 if contact not found
-  for(i=0; i<strlen(res); i++)
+  for(i=0; i<(int)strlen(res); i++)
   {
    if( (res[i]=='\r')||(res[i]=='\n') )
    {
@@ -462,10 +453,10 @@ void psleep(int paus)
   {
    Sponge_init(&spng, 0, 0, 0, 0);
    //absorb salt
-   Sponge_data(&spng, "$OnionPhone_salt", 16, 0, SP_NORMAL);
+   Sponge_data(&spng, (const BYTE*)"$OnionPhone_salt", 16, 0, SP_NORMAL);
    //absorb password string many times
    for(i=0; i<PKDFCOUNT; i++)
-   Sponge_data(&spng, pas, strlen(pas), 0, SP_NORMAL);
+   Sponge_data(&spng, (const BYTE*)pas, strlen(pas), 0, SP_NORMAL);
    Sponge_finalize(&spng, keybody, 16); //squize key
    web_printf("Key access applied\r\n");
   }
@@ -507,7 +498,7 @@ void psleep(int paus)
    FILE* fl=0;
    int i;
 
-   if(!seckey) seckey=tmpkey; //check mode - decrypt locally onle
+   if(!seckey) seckey=(unsigned char*)tmpkey; //check mode - decrypt locally onle
 
    sprintf(str, "%s%s.sec", KEYDIR, name); //add path
    if(!(fl = fopen(str, "rb" ))) return 0; //open specified keyfile
@@ -518,7 +509,12 @@ void psleep(int paus)
     seckey[i]=getc(fl);
     if(feof(fl)) break;
    }
-   if(i<32) return 0;  //key not compleet
+   if(i<32)
+   {
+	 if (fl)
+	    fclose(fl);
+	 return 0;  //key not compleet
+   }
 
    //try load nonce+mac byte-by-byte
    for(i=0; i<32; i++) //load seckey byte-by-byte
@@ -526,8 +522,8 @@ void psleep(int paus)
     aukey[i+16]=getc(fl);
     if(feof(fl)) break;
    }
-   if(i&&(i<32)) return 0; //au-data existed but not compleet
    fclose(fl);
+   if(i&&(i<32)) return 0; //au-data existed but not compleet
 
    if(i) //if keyfile length more then 32 bytes (encrypted format)
    {  //process as encrypted secret key
@@ -538,34 +534,34 @@ void psleep(int paus)
     i=get_opt(command_str, str);
 
     //try access specified for default key
-    memcpy(aukey, key_access, 16);  //use default access
+    memcpy((void*)aukey, key_access, 16);  //use default access
     //computes mac
     Sponge_init(&spng, 0, 0, 0, 0);
     Sponge_data(&spng, seckey, 32, 0, SP_NORMAL); //absorb secret key body
-    Sponge_data(&spng, aukey, 32, 0, SP_NORMAL); //absorb access|nonce
-    Sponge_finalize(&spng, aukey+48, 16); //our mac
+    Sponge_data(&spng, (const BYTE*)aukey, 32, 0, SP_NORMAL); //absorb access|nonce
+    Sponge_finalize(&spng, (BYTE*)aukey+48, 16); //our mac
 
     //check MAC and try access specified in command line
-    if((i>0)&&(memcmp(aukey+32, aukey+48, 16)))
+    if((i>0)&&(memcmp((const void*)(aukey+32), (const void*)(aukey+48), 16)))
     {
-     set_access(str, aukey);  //computes temporary access to key
+     set_access(str, (unsigned char*)aukey);  //computes temporary access to key
      //computes mac
      Sponge_init(&spng, 0, 0, 0, 0);
      Sponge_data(&spng, seckey, 32, 0, SP_NORMAL); //absorb secret key body
-     Sponge_data(&spng, aukey, 32, 0, SP_NORMAL); //absorb access|nonce
-     Sponge_finalize(&spng, aukey+48, 16); //our mac
+     Sponge_data(&spng, (const BYTE*)aukey, 32, 0, SP_NORMAL); //absorb access|nonce
+     Sponge_finalize(&spng, (BYTE*)aukey+48, 16); //our mac
     }
     //check MAC
-    if(memcmp(aukey+32, aukey+48, 16))
+    if(memcmp((const void*)(aukey+32), (const void*)(aukey+48), 16))
     {
      web_printf("! Wrong access to our secret key!\r\n");
      return 0;
     }
 
     //decrypt secret key's body
-    Sponge_init(&spng, aukey, 32, 0, 0); //absorb access|nonce
+    Sponge_init(&spng, (const BYTE*)aukey, 32, 0, 0); //absorb access|nonce
     Sponge_data(&spng, seckey, 32, seckey, SP_NOABS); //decrypt secret key in duplex mode
-    xmemset(aukey, 0, 64);
+    xmemset((void*)aukey, 0, 64);
     Sponge_finalize(&spng, 0, 0);
    }
    if(seckey==tmpkey) xmemset(seckey, 0, 32);
@@ -580,6 +576,7 @@ void psleep(int paus)
  // Dn =? H(IDn | P^b | P^q)
  int search_bookstr(const char* book, char* ourname, const unsigned char* buf, char* res)
  {
+	 (void)buf;
    int i;
    FILE* fl=0;
    unsigned char our_secret[32];
@@ -660,10 +657,12 @@ void psleep(int paus)
      }
     }
    }
+   if (fl)
+	fclose(fl);
    if(!(iskeys&4)) return 0; //if no one contact from book matched returns 0
 
   //current contact matched
-   for(i=0; i<strlen(res); i++)
+   for(i=0; i<(int)strlen(res); i++)
    {
     if( (res[i]=='\r')||(res[i]=='\n') ) //truncate contact's string
     {
@@ -732,13 +731,11 @@ void psleep(int paus)
 
   int i;
   unsigned char* buf=pkt+1; //pointer to outputted data area (skip type byte)
-  char* p;
   char str[256];
 
   char contact[64]; //name of requested contact
   char bookname[64]; //adressbook file
   char bookstr[256]; //contacts string from adressbook
-  char keyname[64];  //their public key used for connection
   char ourname[64];  //own name used for contact
 
   //init state
@@ -955,10 +952,7 @@ void psleep(int paus)
   //PUBX=buf+16 : encryption DH-key(32 bytes)
   //NONCE=buf+48 : nonce (32 bytes)
 
-  int i, l;
   unsigned char* buf=pkt+1; //pointer to outputted data area (skip type byte)
-  char* p;
-  char str[256];
 
   //check for state
   if(crp_state==0) //acceptor side (B)
@@ -1046,7 +1040,6 @@ void psleep(int paus)
    pkt[0]=(TYPE_ANS | 0x80);
    crp_state=1; //set state 1: originator wait for ID
    settimeout(RINGTIME); //set reset timeout
-   i=lenbytype(TYPE_ANS);
    return (lenbytype(TYPE_ANS));
 
    //output=ANS:  PREF[16], PUBX[32], NONCE[32]  (80 bytes)
@@ -1462,7 +1455,7 @@ void psleep(int paus)
    web_printf("Incoming connection rejected\r\n");
   }
   else web_printf("Incoming connection accepted\r\n");
-  i=do_data(answer, &c); //encrypt answer, returns pkt len
+  i=do_data(answer, (unsigned char*)&c); //encrypt answer, returns pkt len
   if(i>0) do_send(answer, i, c); //send answer
   answer[0]=0;
 
@@ -1604,13 +1597,13 @@ void psleep(int paus)
    crp_state=3; //originator copmpleet IKE
    web_printf("Outgoing connection is ready\r\n");
    //key revealing
-   strcpy(pkt, "Key_reveal");
-   parseconf(pkt);
+   strcpy((char*)pkt, "Key_reveal");
+   parseconf((char*)pkt);
    if(pkt[0]=='1')
    {
     memcpy(buf, aux_key, 16); //Reveal aux_key
     pkt[0]=(TYPE_ACK | 0x80);
-    i=do_data(pkt, &c); //process it
+    i=do_data(pkt, (unsigned char*)&c); //process it
     if(i>0) do_send(pkt, i, c); //send it
     web_printf("MAC key revealed\r\n");
    }
@@ -1619,7 +1612,7 @@ void psleep(int paus)
    //init password identification (by common preshared passphrase)
    pkt[0]=0;  //use passphrase from password[32]
    i=do_au(pkt); //prepare au request if password specified
-   if(i>0) i=do_data(pkt, &c); //process it
+   if(i>0) i=do_data(pkt, (unsigned char*)&c); //process it
    if(i>0) do_send(pkt, i, c); //send it
 
    //init onion verification
@@ -1655,6 +1648,7 @@ void psleep(int paus)
    disconnect();
    return 0; //check for state sweetable for ans
   }
+ return 0;
  }
 //*****************************************************************************
 
@@ -1691,7 +1685,7 @@ void psleep(int paus)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
-  Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL);
+  Sponge_data(&spng, (const BYTE*)password, strlen(password)-2, 0, SP_NORMAL);
   Sponge_finalize(&spng, buf, 18);
   pkt[0]=(TYPE_AUREQ | 0x80);
   return (lenbytype(TYPE_AUREQ)); //16
@@ -1732,7 +1726,7 @@ void psleep(int paus)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
-  Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
+  Sponge_data(&spng, (const BYTE*)password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
   Sponge_finalize(&spng, work, 18);
   if(memcmp(buf, work, 18))
   {
@@ -1747,15 +1741,15 @@ void psleep(int paus)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
-  Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
+  Sponge_data(&spng, (const BYTE*)password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
   Sponge_finalize(&spng, buf, 18);
 
   //computes second receiver's autentificator AU2r=H(org+16|s|pass|p)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
-  Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL);   //without last two chars
-  Sponge_data(&spng, password+strlen(password)-1, 1, 0, SP_NORMAL); //add last char
+  Sponge_data(&spng, (const BYTE*)password, strlen(password)-2, 0, SP_NORMAL);   //without last two chars
+  Sponge_data(&spng, (const BYTE*)password+strlen(password)-1, 1, 0, SP_NORMAL); //add last char
   Sponge_finalize(&spng, buf+18, 6); //
 
   pkt[0]=(TYPE_AUANS | 0x80);
@@ -1794,7 +1788,7 @@ void psleep(int paus)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
-  Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
+  Sponge_data(&spng, (const BYTE*)password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
   Sponge_finalize(&spng, work, 18);
   if(memcmp(buf, work, 18))
   {
@@ -1807,7 +1801,7 @@ void psleep(int paus)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
-  Sponge_data(&spng, password, strlen(password)-1, 0, SP_NORMAL); //without last char
+  Sponge_data(&spng, (const BYTE*)password, strlen(password)-1, 0, SP_NORMAL); //without last char
   Sponge_finalize(&spng, work, 6);
   if(memcmp(buf+18, work, 6)) web_printf("! Authentication UNDER PRESSING!\r\n");
   else web_printf("Authentication OK\r\n");
@@ -1820,8 +1814,8 @@ void psleep(int paus)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
-  Sponge_data(&spng, password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
-  Sponge_data(&spng, password+strlen(password)-1, 1, 0, SP_NORMAL); //add last char
+  Sponge_data(&spng, (const BYTE*)password, strlen(password)-2, 0, SP_NORMAL); //without last two chars
+  Sponge_data(&spng, (const BYTE*)password+strlen(password)-1, 1, 0, SP_NORMAL); //add last char
   Sponge_finalize(&spng, buf, 6);
 
   pkt[0]=(TYPE_AUACK | 0x80);
@@ -1858,7 +1852,7 @@ void psleep(int paus)
   Sponge_init(&spng, 0, 0, 0, 0);
   Sponge_data(&spng, &org, 1, 0, SP_NORMAL);
   Sponge_data(&spng, session_key, 16, 0, SP_NORMAL);
-  Sponge_data(&spng, password, strlen(password)-1, 0, SP_NORMAL); //without last char
+  Sponge_data(&spng, (const BYTE*)password, strlen(password)-1, 0, SP_NORMAL); //without last char
   Sponge_finalize(&spng, work, 6);
   if(memcmp(buf, work, 6)) web_printf("! Authentication UNDER PRESSING!\r\n");
   else web_printf("Authentication OK\r\n");
@@ -1879,11 +1873,9 @@ void psleep(int paus)
   //check for option defines
   if(pkt[1]=='-') //invites
   {
-   char str[256];
-
    if((pkt[2]=='U')||(pkt[2]=='S')) //TCP<>UDP invite
    {
-    setaddr(pkt);//check for TCP->UDP invite with internal adress
+    setaddr((char*)pkt);//check for TCP->UDP invite with internal adress
    }
    else if(pkt[2]=='O')
    {
@@ -1905,9 +1897,9 @@ void psleep(int paus)
     {
      //their onion address received: reconnect outgoing connection
      //copy it to their_onion (if less then 31 bytes)
-     if(strlen(pkt+3)<31)
+     if(strlen((const char*)pkt+3)<31)
      {
-         strncpy(their_onion, pkt+3, 31);
+         strncpy(their_onion, (const char*)pkt+3, 31);
          their_onion[31]=0;
      }
 
@@ -1928,7 +1920,6 @@ void psleep(int paus)
  //returns length for sending in bytes
  int do_data(unsigned char* pkt, unsigned char* udp)
  {
-  unsigned char au_key[16];
   unsigned char* buf=pkt+1;
   int len=0;
   unsigned char c=0;
@@ -2086,7 +2077,7 @@ void psleep(int paus)
   //decrypt 5 first bits for melpe
   if(type==TYPE_MELPE)
   {
-   Sponge_data(&spng, 0, 1, &c, SP_NORMAL); //squeezing extra byte
+   Sponge_data(&spng, 0, 1, (BYTE*)&c, SP_NORMAL); //squeezing extra byte
    c&=0x1F;
    pkt[0]^=c;
   }
@@ -2110,7 +2101,6 @@ void psleep(int paus)
  int do_key(unsigned char* buf)
  {
   int i, len;
-  char* p;
   char str[256];
   char str1[64];
 
@@ -2221,7 +2211,7 @@ void psleep(int paus)
    while(!feof(F1)) //process file byte-by-byte
    {
     c = getc(F1);  //next char from keyfile
-    if(!feof(F1)) Sponge_data(&spng, &c, 1, 0, SP_NORMAL);  //absorbing all file data
+    if(!feof(F1)) Sponge_data(&spng, (const BYTE*)&c, 1, 0, SP_NORMAL);  //absorbing all file data
    }
    Sponge_finalize(&spng, keyid, 16); //computes hash (key ID)
    fclose(F1); //close keyfile
@@ -2326,7 +2316,6 @@ void psleep(int paus)
  int go_syn(unsigned char* pkt)
  {
   //received: CTR, MAC (4+4 bytes)
-  unsigned char mac[4];
   struct timeval time1;
   int t;
 
