@@ -43,6 +43,8 @@
 #include <windows.h>
 #include <ws2tcpip.h>
 #include <htons.h>
+#include <time.h>
+#include <sys/time.h>
 #define ioctl ioctlsocket
 #define close closesocket
 #define EWOULDBLOCK WSAEWOULDBLOCK  //no data for assync polling

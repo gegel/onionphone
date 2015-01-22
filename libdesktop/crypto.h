@@ -26,19 +26,6 @@
 #define MYNAME "myself"   //default name of own key
 #define MACLEN 4   //length of MAC field in bytes (32 bits)
 
-#ifdef _WIN32
-#include <time.h>
-//for Windows emulation of gettimeofday
-#ifndef _TIMEZONE_DEFINED /* also in sys/time.h */
-#define _TIMEZONE_DEFINED
-struct timezone
-{
-  int  tz_minuteswest; //minutes W of Greenwich
-  int  tz_dsttime;     //type of dst correction
-};
-#endif /* _TIMEZONE_DEFINED */
-#endif /* _WIN32 */
-
 //Packets types set
 typedef enum{
         TYPE_UNKNOWN=0, //not defined
@@ -130,10 +117,6 @@ typedef enum{
  int go_syn(unsigned char* pkt); //process incoming synchro packet
  //packets wrapper
  int go_pkt(unsigned char* pkt, int len);
- //timestamp
- #ifdef _WIN32
- int gettimeofday(struct timeval *tv, struct timezone *tz);
- #endif
 
 #endif /* _CRYPTO_H_ */
 
