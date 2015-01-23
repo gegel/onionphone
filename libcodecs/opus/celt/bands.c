@@ -373,7 +373,7 @@ void anti_collapse(const CELTMode * m, celt_norm * X_,
 					for (j = 0; j < N0; j++) {
 						seed = celt_lcg_rand(seed);
 						X[(j << LM) + k] =
-						    (seed & 0x8000 ? r : -r);
+						    ((seed & 0x8000) ? r : -r);
 					}
 					renormalize = 1;
 				}
@@ -1094,8 +1094,8 @@ static unsigned quant_partition(struct band_ctx *ctx, celt_norm * X,
 							    QCONST16(1.0f / 256,
 								     10);
 							tmp =
-							    (ctx->
-							     seed) & 0x8000 ?
+							    ((ctx->
+							     seed) & 0x8000) ?
 							    tmp : -tmp;
 							X[j] = lowband[j] + tmp;
 						}
