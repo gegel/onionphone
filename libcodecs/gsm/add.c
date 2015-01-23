@@ -151,9 +151,9 @@ int16_t gsm_norm P1((a), int32_t a)
 		a = ~a;
 	}
 
-	return a & 0xffff0000 ? (a & 0xff000000 ? -1 + bitoff[0xFF & (a >> 24)]
+	return (a & 0xffff0000) ? ((a & 0xff000000) ? -1 + bitoff[0xFF & (a >> 24)]
 				 : 7 + bitoff[0xFF & (a >> 16)])
-	    : (a & 0xff00 ? 15 + bitoff[0xFF & (a >> 8)]
+	    : ((a & 0xff00) ? 15 + bitoff[0xFF & (a >> 8)]
 	       : 23 + bitoff[0xFF & a]);
 }
 
