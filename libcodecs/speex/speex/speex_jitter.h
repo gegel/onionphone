@@ -54,6 +54,7 @@ extern "C" {
 
 /** Generic adaptive jitter buffer state */
 	typedef struct JitterBuffer_ JitterBuffer;
+	typedef void (*jitter_buffer_callback_t)(void*);
 
 /** Definition of an incoming packet */
 	typedef struct _JitterBufferPacket JitterBufferPacket;
@@ -195,6 +196,7 @@ extern "C" {
  * @param ptr Data exchanged to-from function
  * @return 0 if no error, -1 if request in unknown
 */
+	int jitter_buffer_callback_ctl(JitterBuffer * jitter, int request, jitter_buffer_callback_t ptr);
 	int jitter_buffer_ctl(JitterBuffer * jitter, int request, void *ptr);
 
 	int jitter_buffer_update_delay(JitterBuffer * jitter,

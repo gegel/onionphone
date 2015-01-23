@@ -144,7 +144,7 @@ struct JitterBuffer_ {
 							       /**< Packets stored in the buffer */
 	uint32_t arrival[SPEEX_JITTER_MAX_BUFFER_SIZE];    /**< Packet arrival time (0 means it was late, even though it's a valid timestamp) */
 
-	void (*destroy) (void *);			       /**< Callback for destroying a packet */
+	jitter_buffer_callback_t destroy;       /**< Callback for destroying a packet */
 
 	int32_t delay_step;				       /**< Size of the steps when adjusting buffering (timestamp units) */
 	int32_t concealment_size;			       /**< Size of the packet loss concealment "units" */
@@ -793,6 +793,21 @@ void jitter_buffer_remaining_span(JitterBuffer * jitter, uint32_t rem)
 	jitter->next_stop = jitter->pointer_timestamp - rem;
 }
 
+/* Separate ctl for callbacks to conform C standard */
+int jitter_buffer_callback_ctl(JitterBuffer * jitter, int request, jitter_buffer_callback_t ptr)
+{
+	switch (request) {
+	case JITTER_BUFFER_SET_DESTROY_CALLBACK:
+		jitter->destroy = ptr;
+		break;
+	default:
+		speex_warning_int("Unknown jitter_buffer_ctl request: ",
+				  request);
+		return -1;
+	}
+	return 0;
+}
+
 /* Used like the ioctl function to control the jitter buffer parameters */
 int jitter_buffer_ctl(JitterBuffer * jitter, int request, void *ptr)
 {
@@ -814,9 +829,6 @@ int jitter_buffer_ctl(JitterBuffer * jitter, int request, void *ptr)
 			}
 		}
 		*(int32_t *) ptr = count;
-		break;
-	case JITTER_BUFFER_SET_DESTROY_CALLBACK:
-		jitter->destroy = (void (*)(void *))ptr;
 		break;
 	case JITTER_BUFFER_GET_DESTROY_CALLBACK:
 		*(void (**)(void *))ptr = jitter->destroy;
