@@ -73,7 +73,12 @@
     seckey[i]=getc(fl);
     if(feof(fl)) break;
    }
-   if(i<32) return 0;  //key not compleet
+   if(i<32)
+   {
+	   if (fl)
+		   fclose(fl);
+	   return 0;  //key not compleet
+   }
 
    //try load nonce+mac byte-by-byte
    for(i=0; i<32; i++) //load seckey byte-by-byte
@@ -81,8 +86,9 @@
     aukey[i+16]=getc(fl);
     if(feof(fl)) break;
    }
-   if(i&&(i<32)) return 0; //au-data existed but not compleet
    fclose(fl);
+   if(i&&(i<32)) 
+	   return 0; //au-data existed but not compleet
 
    if(i) //process encrypted secret key
    {
@@ -448,6 +454,7 @@ int main(int argc, char **argv)
    if(strstr(str, (char*)key))
    {
     printf("Contact name already exists in adressbook!\r\n");
+    fclose(F);
     return 0;
    }
   }
