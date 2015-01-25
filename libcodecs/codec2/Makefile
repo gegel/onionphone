@@ -23,7 +23,6 @@ OBJ = codebook.o \
 	codebookvqanssi.o \
 	codebookvq.o \
 	codec2.o \
-	dump.o \
 	interp.o \
 	kiss_fft.o \
 	lpc.o \

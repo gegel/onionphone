@@ -35,7 +35,6 @@
 #include <ophtools.h>
 
 #include "defines.h"
-#include "dump.h"
 #include "quantise.h"
 #include "lpc.h"
 #include "lsp.h"
@@ -331,10 +330,9 @@ int check_lsp_order(float lsp[], int order)
 \*---------------------------------------------------------------------------*/
 
 void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, COMP Pw[], float ak[],
-		     int order, int dump, float beta, float gamma,
+		     int order, float beta, float gamma,
 		     int bass_boost, float E)
 {
-	(void)dump;
 	int i;
 	COMP x[FFT_ENC];	/* input to FFTs                */
 	COMP Ww[FFT_ENC];	/* weighting spectrum           */
@@ -385,11 +383,6 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, COMP Pw[], float ak[],
 
 	PROFILE_SAMPLE_AND_LOG(tr, tww, "        R");
 
-#ifdef DUMP
-	if (dump)
-		dump_Rw(Rw);
-#endif
-
 	/* create post filter mag spectrum and apply ------------------ */
 
 	/* measure energy before post filtering */
@@ -399,11 +392,6 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, COMP Pw[], float ak[],
 		e_before += Pw[i].real;
 
 	/* apply post filter and measure energy  */
-
-#ifdef DUMP
-	if (dump)
-		dump_Pwb(Pw);
-#endif
 
 	e_after = 1E-4;
 	for (i = 0; i < FFT_ENC / 2; i++) {
@@ -445,7 +433,6 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 	       int order, MODEL * model,	/* sinusoidal model parameters for this frame */
 	       float E,		/* energy term */
 	       float *snr,	/* signal to noise ratio for this frame in dB */
-	       int dump,	/* true to dump sample to dump file */
 	       int sim_pf,	/* true to simulate a post filter */
 	       int pf,		/* true to LPC post filter */
 	       int bass_boost,	/* enable LPC filter 0-1khz 3dB boost */
@@ -491,15 +478,10 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 	PROFILE_SAMPLE_AND_LOG(tpw, tfft, "      Pw");
 
 	if (pf)
-		lpc_post_filter(fft_fwd_cfg, Pw, ak, order, dump, beta, gamma,
+		lpc_post_filter(fft_fwd_cfg, Pw, ak, order, beta, gamma,
 				bass_boost, E);
 
 	PROFILE_SAMPLE_AND_LOG(tpf, tpw, "      LPC post filter");
-
-#ifdef DUMP
-	if (dump)
-		dump_Pw(Pw);
-#endif
 
 	/* Determine magnitudes from P(w) ---------------------------------------- */
 

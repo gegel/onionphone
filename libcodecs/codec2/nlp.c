@@ -29,7 +29,6 @@
 
 #include "defines.h"
 #include "nlp.h"
-#include "dump.h"
 #include "kiss_fft.h"
 #undef PROFILE
 #include "machdep.h"
@@ -54,8 +53,6 @@
 #define F0_MAX      500
 #define CNLP        0.3		/* post processor constant              */
 #define NLP_NTAP 48		/* Decimation LPF order */
-
-//#undef DUMP
 
 /*---------------------------------------------------------------------------*\
                                                                             
@@ -292,9 +289,6 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 		fw[i].real = nlp->sq[i * DEC] * nlp->w[i];
 	}
 	PROFILE_SAMPLE_AND_LOG(window, filter, "      window");
-#ifdef DUMP
-	dump_dec(Fw);
-#endif
 
 	kiss_fft(nlp->fft_cfg, (kiss_fft_cpx *) fw, (kiss_fft_cpx *) Fw);
 	PROFILE_SAMPLE_AND_LOG(fft, window, "      fft");
@@ -303,10 +297,6 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 		Fw[i].real = Fw[i].real * Fw[i].real + Fw[i].imag * Fw[i].imag;
 
 	PROFILE_SAMPLE_AND_LOG(magsq, fft, "      mag sq");
-#ifdef DUMP
-	dump_sq(nlp->sq);
-	dump_Fw(Fw);
-#endif
 
 	/* find global peak */
 
@@ -449,10 +439,7 @@ float post_process_mbe(COMP Fw[], int pmin, int pmax, float gmax, COMP Sw[],
 	float f0, best_f0;	/* fundamental frequency */
 	float e, e_min;		/* MBE cost function */
 	int i;
-#ifdef DUMP
-	float e_hz[F0_MAX];
-#endif
-#if !defined(NDEBUG) || defined(DUMP)
+#if !defined(NDEBUG)
 	int bin;
 #endif
 	float f0_min, f0_max;
@@ -464,10 +451,6 @@ float post_process_mbe(COMP Fw[], int pmin, int pmax, float gmax, COMP Sw[],
 	/* Now look for local maxima.  Each local maxima is a candidate
 	   that we test using the MBE pitch estimation algotithm */
 
-#ifdef DUMP
-	for (i = 0; i < F0_MAX; i++)
-		e_hz[i] = -1;
-#endif
 	e_min = 1E32;
 	best_f0 = 50;
 	for (i = PE_FFT_SIZE * DEC / pmax; i <= PE_FFT_SIZE * DEC / pmin; i++) {
@@ -491,12 +474,9 @@ float post_process_mbe(COMP Fw[], int pmin, int pmax, float gmax, COMP Sw[],
 
 				for (f0 = f0_start; f0 <= f0_end; f0 += 2.5) {
 					e = test_candidate_mbe(Sw, W, f0);
-#if !defined(NDEBUG) || defined(DUMP)
+#if !defined(NDEBUG)
 					bin = floorf(f0);
 					assert((bin > 0) && (bin < F0_MAX));
-#endif
-#ifdef DUMP
-					e_hz[bin] = e;
 #endif
 					if (e < e_min) {
 						e_min = e;
@@ -521,22 +501,15 @@ float post_process_mbe(COMP Fw[], int pmin, int pmax, float gmax, COMP Sw[],
 
 	for (f0 = f0_start; f0 <= f0_end; f0 += 2.5) {
 		e = test_candidate_mbe(Sw, W, f0);
-#if !defined(NDEBUG) || defined(DUMP)
+#if !defined(NDEBUG)
 		bin = floorf(f0);
 		assert((bin > 0) && (bin < F0_MAX));
-#endif
-#ifdef DUMP
-		e_hz[bin] = e;
 #endif
 		if (e < e_min) {
 			e_min = e;
 			best_f0 = f0;
 		}
 	}
-
-#ifdef DUMP
-	dump_e(e_hz);
-#endif
 
 	return best_f0;
 }

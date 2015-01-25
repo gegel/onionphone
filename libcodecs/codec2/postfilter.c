@@ -36,7 +36,6 @@
 
 #include "defines.h"
 #include "comp.h"
-#include "dump.h"
 #include "sine.h"
 #include "postfilter.h"
 
@@ -135,8 +134,4 @@ void codec2_postfilter(MODEL * model, float *bg_est)
 				    CODEC2_RAND_MAX;
 				uv++;
 			}
-#ifdef DUMP
-	dump_bg(e, *bg_est, 100.0 * uv / model->L);
-#endif
-
 }

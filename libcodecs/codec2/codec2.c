@@ -37,7 +37,6 @@
 #include "defines.h"
 #include "sine.h"
 #include "nlp.h"
-#include "dump.h"
 #include "lpc.h"
 #include "quantise.h"
 #include "phase.h"
@@ -406,7 +405,7 @@ void codec2_decode_3200(struct CODEC2 *c2, short speech[],
 	for (i = 0; i < 2; i++) {
 		codec2_lsp_to_lpc(&lsps[i][0], &ak[i][0], LPC_ORD);
 		aks_to_M2(c2->fft_fwd_cfg, &ak[i][0], LPC_ORD, &model[i], e[i],
-			  &snr, 0, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
+			  &snr, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
 			  c2->gamma, Aw);
 		apply_lpc_correction(&model[i]);
 		synthesise_one_frame(c2, &speech[N * i], &model[i], Aw);
@@ -549,7 +548,7 @@ void codec2_decode_2400(struct CODEC2 *c2, short speech[],
 	for (i = 0; i < 2; i++) {
 		codec2_lsp_to_lpc(&lsps[i][0], &ak[i][0], LPC_ORD);
 		aks_to_M2(c2->fft_fwd_cfg, &ak[i][0], LPC_ORD, &model[i], e[i],
-			  &snr, 0, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
+			  &snr, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
 			  c2->gamma, Aw);
 		apply_lpc_correction(&model[i]);
 		synthesise_one_frame(c2, &speech[N * i], &model[i], Aw);
@@ -734,7 +733,7 @@ void codec2_decode_1600(struct CODEC2 *c2, short speech[],
 	for (i = 0; i < 4; i++) {
 		codec2_lsp_to_lpc(&lsps[i][0], &ak[i][0], LPC_ORD);
 		aks_to_M2(c2->fft_fwd_cfg, &ak[i][0], LPC_ORD, &model[i], e[i],
-			  &snr, 0, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
+			  &snr, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
 			  c2->gamma, Aw);
 		apply_lpc_correction(&model[i]);
 		synthesise_one_frame(c2, &speech[N * i], &model[i], Aw);
@@ -906,7 +905,7 @@ void codec2_decode_1400(struct CODEC2 *c2, short speech[],
 	for (i = 0; i < 4; i++) {
 		codec2_lsp_to_lpc(&lsps[i][0], &ak[i][0], LPC_ORD);
 		aks_to_M2(c2->fft_fwd_cfg, &ak[i][0], LPC_ORD, &model[i], e[i],
-			  &snr, 0, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
+			  &snr, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
 			  c2->gamma, Aw);
 		apply_lpc_correction(&model[i]);
 		synthesise_one_frame(c2, &speech[N * i], &model[i], Aw);
@@ -1094,16 +1093,12 @@ void codec2_decode_1300(struct CODEC2 *c2, short speech[],
 	for (i = 0; i < 4; i++) {
 		codec2_lsp_to_lpc(&lsps[i][0], &ak[i][0], LPC_ORD);
 		aks_to_M2(c2->fft_fwd_cfg, &ak[i][0], LPC_ORD, &model[i], e[i],
-			  &snr, 0, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
+			  &snr, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
 			  c2->gamma, Aw);
 		apply_lpc_correction(&model[i]);
 		synthesise_one_frame(c2, &speech[N * i], &model[i], Aw);
 	}
 	PROFILE_SAMPLE_AND_LOG2(recover_start, "    recover");
-#ifdef DUMP
-	dump_lsp_(&lsps[3][0]);
-	dump_ak_(&ak[3][0], LPC_ORD);
-#endif
 
 	/* update memories for next frame ---------------------------- */
 
@@ -1275,7 +1270,7 @@ void codec2_decode_1200(struct CODEC2 *c2, short speech[],
 	for (i = 0; i < 4; i++) {
 		codec2_lsp_to_lpc(&lsps[i][0], &ak[i][0], LPC_ORD);
 		aks_to_M2(c2->fft_fwd_cfg, &ak[i][0], LPC_ORD, &model[i], e[i],
-			  &snr, 0, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
+			  &snr, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
 			  c2->gamma, Aw);
 		apply_lpc_correction(&model[i]);
 		synthesise_one_frame(c2, &speech[N * i], &model[i], Aw);
@@ -1425,7 +1420,7 @@ void codec2_decode_450(struct CODEC2 *c2, short speech[],
 	for (i = 0; i < 4; i++) {
 		codec2_lsp_to_lpc(&lsps[i][0], &ak[i][0], LPC_ORD);
 		aks_to_M2(c2->fft_fwd_cfg, &ak[i][0], LPC_ORD, &model[i], e[i],
-			  &snr, 0, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
+			  &snr, 0, c2->lpc_pf, c2->bass_boost, c2->beta,
 			  c2->gamma, Aw);
 		apply_lpc_correction(&model[i]);
 		synthesise_one_frame(c2, &speech[N * i], &model[i], Aw);
@@ -1454,10 +1449,6 @@ void synthesise_one_frame(struct CODEC2 *c2, short speech[], MODEL * model,
 {
 	int i;
 	PROFILE_VAR(phase_start, pf_start, synth_start);
-
-#ifdef DUMP
-	dump_quantised_model(model);
-#endif
 
 	PROFILE_SAMPLE(phase_start);
 
@@ -1535,9 +1526,6 @@ void analyse_one_frame(struct CODEC2 *c2, MODEL * model, short speech[])
 	est_voicing_mbe(model, Sw, c2->W, Sw_, Ew);
 	c2->prev_Wo_enc = model->Wo;
 	PROFILE_SAMPLE_AND_LOG2(estamps, "    est_voicing");
-#ifdef DUMP
-	dump_model(model);
-#endif
 }
 
 /*---------------------------------------------------------------------------*\

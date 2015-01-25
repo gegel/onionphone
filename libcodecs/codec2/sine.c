@@ -368,7 +368,6 @@ void estimate_amplitudes(MODEL * model, COMP Sw[], COMP W[], int est_phase)
 \*---------------------------------------------------------------------------*/
 
 float est_voicing_mbe(MODEL * model, COMP Sw[], COMP W[], COMP Sw_[],	/* DFT of all voiced synthesised signal  */
-		      /* useful for debugging/dump file        */
 		      COMP Ew[])
 {				/* DFT of error                          */
 	int i, l, al, bl, m;	/* loop variables */
