@@ -28,16 +28,16 @@
 */
 
 #define LPC_MAX_N 512		/* maximum no. of samples in frame */
+#define PI 3.141592654		/* mathematical constant */
 
 #define ALPHA 1.0
 #define BETA  0.94
 
 #include <assert.h>
 #include <math.h>
+#include <ophtools.h>
 #include "defines.h"
 #include "lpc.h"
-#include <ophmconsts.h>
-#include <ophtools.h>
 
 /*---------------------------------------------------------------------------*\
                                                                          
@@ -153,28 +153,26 @@ void levinson_durbin(float R[],	/* order+1 autocorrelation coeff */
 		     int order	/* order of the LPC analysis */
     )
 {
-	float E[LPC_MAX + 1];
-	float k[LPC_MAX + 1];
-	float a[LPC_MAX + 1][LPC_MAX + 1];
-	float sum;
+	float a[order + 1][order + 1];
+	float sum, e, k;
 	int i, j;		/* loop variables */
 
-	E[0] = R[0];		/* Equation 38a, Makhoul */
+	e = R[0];		/* Equation 38a, Makhoul */
 
 	for (i = 1; i <= order; i++) {
 		sum = 0.0;
 		for (j = 1; j <= i - 1; j++)
 			sum += a[i - 1][j] * R[i - j];
-		k[i] = -1.0 * (R[i] + sum) / E[i - 1];	/* Equation 38b, Makhoul */
-		if (fabsf(k[i]) > 1.0)
-			k[i] = 0.0;
+		k = -1.0 * (R[i] + sum) / e;	/* Equation 38b, Makhoul */
+		if (fabsf(k) > 1.0)
+			k = 0.0;
 
-		a[i][i] = k[i];
+		a[i][i] = k;
 
 		for (j = 1; j <= i - 1; j++)
-			a[i][j] = a[i - 1][j] + k[i] * a[i - 1][i - j];	/* Equation 38c, Makhoul */
+			a[i][j] = a[i - 1][j] + k * a[i - 1][i - j];	/* Equation 38c, Makhoul */
 
-		E[i] = (1 - k[i] * k[i]) * E[i - 1];	/* Equation 38d, Makhoul */
+		e *= (1 - k * k);	/* Equation 38d, Makhoul */
 	}
 
 	for (i = 1; i <= order; i++)
@@ -263,13 +261,12 @@ void find_aks(float Sn[],	/* Nsam samples with order sample memory */
     )
 {
 	float Wn[LPC_MAX_N];	/* windowed frame of Nsam speech samples */
-	float R[LPC_MAX + 1];	/* order+1 autocorrelation values of Sn[] */
+	float R[order + 1];	/* order+1 autocorrelation values of Sn[] */
 	int i;
 
 	memzero(Wn, LPC_MAX_N * sizeof(float));
-	memzero(R, (LPC_MAX + 1) * sizeof(float));
+	memzero(R, (order + 1) * sizeof(float));
 
-	assert(order < LPC_MAX);
 	assert(Nsam < LPC_MAX_N);
 
 	hanning_window(Sn, Wn, Nsam);

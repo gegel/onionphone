@@ -13,35 +13,27 @@ EXTRADEFS =
 GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
 CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
-OBJ = ampexp.o \
-      codebook.o \
-      codebookd.o \
-      codebookdt.o \
-      codebookge.o \
-      codebookjnd.o \
-      codebookjvm.o \
-      codebookres.o \
-      codebookvq.o \
-      codebookvqanssi.o \
-      codec2.o \
-      dump.o \
-      fdmdv.o \
-      fifo.o \
-      globals.o \
-      glottal.o \
-      golay23.o \
-      interp.o \
-      kiss_fft.o \
-      lpc.o \
-      lsp.o \
-      nlp.o \
-      octave.o \
-      pack.o \
-      phase.o \
-      phaseexp.o \
-      postfilter.o \
-      quantise.o \
-      sine.o
+OBJ = codebook.o \
+	codebookd.o \
+	codebookdt.o \
+	codebookge.o \
+	codebookjnd.o \
+	codebookjvm.o \
+	codebookres.o \
+	codebookvqanssi.o \
+	codebookvq.o \
+	codec2.o \
+	dump.o \
+	interp.o \
+	kiss_fft.o \
+	lpc.o \
+	lsp.o \
+	nlp.o \
+	pack.o \
+	phase.o \
+	postfilter.o \
+	quantise.o \
+	sine.o
 
 INCADD ?= -I. -I../../common/inc
 

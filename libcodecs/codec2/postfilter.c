@@ -56,7 +56,7 @@
 
 /*---------------------------------------------------------------------------*\
 
-  postfilter()
+  codec2_postfilter()
 
   The post filter is designed to help with speech corrupted by
   background noise.  The zero phase model tends to make speech with
@@ -100,7 +100,7 @@
   
 \*---------------------------------------------------------------------------*/
 
-void postfilterc(MODEL * model, float *bg_est)
+void codec2_postfilter(MODEL * model, float *bg_est)
 {
 	int m, uv;
 	float e, thresh;

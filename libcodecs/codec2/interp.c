@@ -89,7 +89,7 @@ void interpolate(MODEL * interp,	/* interpolated model params                   
 		w = l * interp->Wo;
 		log_amp =
 		    (sample_log_amp(prev, w) + sample_log_amp(next, w)) / 2.0;
-		interp->A[l] = pow(10.0, log_amp);
+		interp->A[l] = powf(10.0, log_amp);
 	}
 }
 
@@ -128,6 +128,8 @@ float sample_log_amp(MODEL * model, float w)
 
 	return log_amp;
 }
+
+#ifdef NOT_NEEDED
 
 /*---------------------------------------------------------------------------*\
 
@@ -197,11 +199,12 @@ void interpolate_lsp(kiss_fft_cfg fft_fwd_cfg, MODEL * interp,	/* interpolated m
 
 	/* convert back to amplitudes */
 
-	lsp_to_lpcc(lsps_interp, ak_interp, LPC_ORD);
+	lsp_to_lpc(lsps_interp, ak_interp, LPC_ORD);
 	aks_to_M2(fft_fwd_cfg, ak_interp, LPC_ORD, interp, e, &snr, 0, 0, 1, 1,
 		  LPCPF_BETA, LPCPF_GAMMA);
 	//printf("  interp: ak[1]: %f A[1] %f\n", ak_interp[1], interp->A[1]);
 }
+#endif
 
 /*---------------------------------------------------------------------------*\
 

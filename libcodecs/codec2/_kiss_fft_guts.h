@@ -125,16 +125,16 @@ struct kiss_fft_state {
     }while(0)
 
 #ifdef FIXED_POINT
-#define KISS_FFT_COS(phase)  floor(.5+SAMP_MAX * cos (phase))
-#define KISS_FFT_SIN(phase)  floor(.5+SAMP_MAX * sin (phase))
+#define KISS_FFT_COS(phase)  floorf(.5+SAMP_MAX * cosf (phase))
+#define KISS_FFT_SIN(phase)  floorf(.5+SAMP_MAX * sinf (phase))
 #define HALF_OF(x) ((x)>>1)
 #elif defined(USE_SIMD)
-#define KISS_FFT_COS(phase) _mm_set1_ps( cos(phase) )
-#define KISS_FFT_SIN(phase) _mm_set1_ps( sin(phase) )
+#define KISS_FFT_COS(phase) _mm_set1_ps( cosf(phase) )
+#define KISS_FFT_SIN(phase) _mm_set1_ps( sinf(phase) )
 #define HALF_OF(x) ((x)*_mm_set1_ps(.5))
 #else
-#define KISS_FFT_COS(phase) (kiss_fft_scalar) cos(phase)
-#define KISS_FFT_SIN(phase) (kiss_fft_scalar) sin(phase)
+#define KISS_FFT_COS(phase) (kiss_fft_scalar) cosf(phase)
+#define KISS_FFT_SIN(phase) (kiss_fft_scalar) sinf(phase)
 #define HALF_OF(x) ((x)*.5)
 #endif
 
@@ -147,4 +147,3 @@ struct kiss_fft_state {
 /* a debugging function */
 #define pcpx(c)\
     fprintf(stderr,"%g + %gi\n",(double)((c)->r),(double)((c)->i) )
-

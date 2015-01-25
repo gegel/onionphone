@@ -31,7 +31,7 @@
 #include "nlp.h"
 #include "dump.h"
 #include "kiss_fft.h"
-#undef TIMER
+#undef PROFILE
 #include "machdep.h"
 
 #include <assert.h>
@@ -226,10 +226,8 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 	  COMP W[],		/* Freq domain window */
 	  float *prev_Wo)
 {
-#ifndef POST_PROCESS_MBE
 	(void)Sw;
 	(void)W;
-#endif
 	NLP *nlp;
 	float notch;		/* current notch filter output    */
 	COMP fw[PE_FFT_SIZE];	/* DFT of squared signal (input)  */
@@ -240,14 +238,14 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 #endif
 	int m, i, j;
 	float best_f0;
-	TIMER_VAR(start, tnotch, filter, peakpick, window, fft, magsq,
-		  shiftmem);
+	PROFILE_VAR(start, tnotch, filter, peakpick, window, fft, magsq,
+		    shiftmem);
 
 	assert(nlp_state != NULL);
 	nlp = (NLP *) nlp_state;
 	m = nlp->m;
 
-	TIMER_SAMPLE(start);
+	PROFILE_SAMPLE(start);
 
 	/* Square, notch filter at DC, and LP filter vector */
 
@@ -269,7 +267,7 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 						   exactly sure why. */
 	}
 
-	TIMER_SAMPLE_AND_LOG(tnotch, start, "      square and notch");
+	PROFILE_SAMPLE_AND_LOG(tnotch, start, "      square and notch");
 
 	for (i = m - n; i < m; i++) {	/* FIR filter vector */
 
@@ -282,7 +280,7 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 			nlp->sq[i] += nlp->mem_fir[j] * nlp_fir[j];
 	}
 
-	TIMER_SAMPLE_AND_LOG(filter, tnotch, "      filter");
+	PROFILE_SAMPLE_AND_LOG(filter, tnotch, "      filter");
 
 	/* Decimate and DFT */
 
@@ -293,18 +291,18 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 	for (i = 0; i < m / DEC; i++) {
 		fw[i].real = nlp->sq[i * DEC] * nlp->w[i];
 	}
-	TIMER_SAMPLE_AND_LOG(window, filter, "      window");
+	PROFILE_SAMPLE_AND_LOG(window, filter, "      window");
 #ifdef DUMP
 	dump_dec(Fw);
 #endif
 
 	kiss_fft(nlp->fft_cfg, (kiss_fft_cpx *) fw, (kiss_fft_cpx *) Fw);
-	TIMER_SAMPLE_AND_LOG(fft, window, "      fft");
+	PROFILE_SAMPLE_AND_LOG(fft, window, "      fft");
 
 	for (i = 0; i < PE_FFT_SIZE; i++)
 		Fw[i].real = Fw[i].real * Fw[i].real + Fw[i].imag * Fw[i].imag;
 
-	TIMER_SAMPLE_AND_LOG(magsq, fft, "      mag sq");
+	PROFILE_SAMPLE_AND_LOG(magsq, fft, "      mag sq");
 #ifdef DUMP
 	dump_sq(nlp->sq);
 	dump_Fw(Fw);
@@ -325,7 +323,7 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 		}
 	}
 
-	TIMER_SAMPLE_AND_LOG(peakpick, magsq, "      peak pick");
+	PROFILE_SAMPLE_AND_LOG(peakpick, magsq, "      peak pick");
 
 	//#define POST_PROCESS_MBE
 #ifdef POST_PROCESS_MBE
@@ -335,7 +333,7 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 	    post_process_sub_multiples(Fw, pmin, pmax, gmax, gmax_bin, prev_Wo);
 #endif
 
-	TIMER_SAMPLE_AND_LOG(shiftmem, peakpick, "      post process");
+	PROFILE_SAMPLE_AND_LOG(shiftmem, peakpick, "      post process");
 
 	/* Shift samples in buffer to make room for new samples */
 
@@ -346,9 +344,9 @@ float nlp(void *nlp_state, float Sn[],	/* input speech vector */
 
 	*pitch = (float)SAMPLE_RATE / best_f0;
 
-	TIMER_SAMPLE_AND_LOG2(shiftmem, "      shift mem");
+	PROFILE_SAMPLE_AND_LOG2(shiftmem, "      shift mem");
 
-	TIMER_SAMPLE_AND_LOG2(start, "      nlp int");
+	PROFILE_SAMPLE_AND_LOG2(start, "      nlp int");
 
 	return (best_f0);
 }
@@ -379,7 +377,6 @@ float post_process_sub_multiples(COMP Fw[],
 				 float *prev_Wo)
 {
 	(void)pmin;
-
 	int min_bin, cmax_bin;
 	int mult;
 	float thresh, best_f0;
@@ -495,7 +492,7 @@ float post_process_mbe(COMP Fw[], int pmin, int pmax, float gmax, COMP Sw[],
 				for (f0 = f0_start; f0 <= f0_end; f0 += 2.5) {
 					e = test_candidate_mbe(Sw, W, f0);
 #if !defined(NDEBUG) || defined(DUMP)
-					bin = floor(f0);
+					bin = floorf(f0);
 					assert((bin > 0) && (bin < F0_MAX));
 #endif
 #ifdef DUMP
@@ -525,7 +522,7 @@ float post_process_mbe(COMP Fw[], int pmin, int pmax, float gmax, COMP Sw[],
 	for (f0 = f0_start; f0 <= f0_end; f0 += 2.5) {
 		e = test_candidate_mbe(Sw, W, f0);
 #if !defined(NDEBUG) || defined(DUMP)
-		bin = floor(f0);
+		bin = floorf(f0);
 		assert((bin > 0) && (bin < F0_MAX));
 #endif
 #ifdef DUMP
@@ -566,7 +563,7 @@ float test_candidate_mbe(COMP Sw[], COMP W[], float f0)
 	float Wo;		/* current "test" fundamental freq. */
 	int L;
 
-	L = floor((SAMPLE_RATE / 2.0) / f0);
+	L = floorf((SAMPLE_RATE / 2.0) / f0);
 	Wo = f0 * (2 * PI / SAMPLE_RATE);
 
 	error = 0.0;
@@ -577,8 +574,8 @@ float test_candidate_mbe(COMP Sw[], COMP W[], float f0)
 		Am.real = 0.0;
 		Am.imag = 0.0;
 		den = 0.0;
-		al = ceil((l - 0.5) * Wo * FFT_ENC / TWO_PI);
-		bl = ceil((l + 0.5) * Wo * FFT_ENC / TWO_PI);
+		al = ceilf((l - 0.5) * Wo * FFT_ENC / TWO_PI);
+		bl = ceilf((l + 0.5) * Wo * FFT_ENC / TWO_PI);
 
 		/* Estimate amplitude of harmonic assuming harmonic is totally voiced */
 

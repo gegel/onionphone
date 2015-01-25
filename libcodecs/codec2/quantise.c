@@ -40,7 +40,7 @@
 #include "lpc.h"
 #include "lsp.h"
 #include "kiss_fft.h"
-#undef TIMER
+#undef PROFILE
 #include "machdep.h"
 
 #define LSP_DELTA1 0.01		/* grid spacing for LSP root searches */
@@ -150,15 +150,13 @@ long quantise(const float *cb, float vec[], float w[], int k, int m, float *se)
 void encode_lspds_scalar(int indexes[], float lsp[], int order)
 {
 	int i, k, m;
-	float lsp_hz[LPC_MAX];
-	float lsp__hz[LPC_MAX];
-	float dlsp[LPC_MAX];
-	float dlsp_[LPC_MAX];
-	float wt[LPC_MAX];
+	float lsp_hz[order];
+	float lsp__hz[order];
+	float dlsp[order];
+	float dlsp_[order];
+	float wt[order];
 	const float *cb;
 	float se;
-
-	assert(order == LPC_ORD);
 
 	for (i = 0; i < order; i++) {
 		wt[i] = 1.0;
@@ -201,11 +199,9 @@ void encode_lspds_scalar(int indexes[], float lsp[], int order)
 void decode_lspds_scalar(float lsp_[], int indexes[], int order)
 {
 	int i, k;
-	float lsp__hz[LPC_MAX];
-	float dlsp_[LPC_MAX];
+	float lsp__hz[order];
+	float dlsp_[order];
 	const float *cb;
-
-	assert(order == LPC_ORD);
 
 	for (i = 0; i < order; i++) {
 
@@ -237,12 +233,12 @@ void decode_lspds_scalar(float lsp_[], int indexes[], int order)
 void lspvq_quantise(float lsp[], float lsp_[], int order)
 {
 	int i, k, m, ncb, nlsp;
-	float wt[LPC_ORD], lsp_hz[LPC_ORD];
+	float wt[order], lsp_hz[order];
 	const float *cb;
 	float se;
 	int index;
 
-	for (i = 0; i < LPC_ORD; i++) {
+	for (i = 0; i < order; i++) {
 		wt[i] = 1.0;
 		lsp_hz[i] = 4000.0 * lsp[i] / PI;
 	}
@@ -277,7 +273,7 @@ void lspvq_quantise(float lsp[], float lsp_[], int order)
 	m = lsp_cbjnd[ncb].m;
 	cb = lsp_cbjnd[ncb].cb;
 	index = quantise(cb, &lsp_hz[nlsp], &wt[nlsp], k, m, &se);
-	for (i = 4; i < LPC_ORD; i++) {
+	for (i = 4; i < order; i++) {
 		lsp_[i] = cb[index * k + i - 4] * (PI / 4000.0);
 		//printf("%4.f (%4.f) ", lsp_hz[i], cb[index*k+i-4]);
 	}
@@ -294,18 +290,18 @@ void lspvq_quantise(float lsp[], float lsp_[], int order)
 void lspjnd_quantise(float lsps[], float lsps_[], int order)
 {
 	int i, k, m;
-	float wt[LPC_ORD], lsps_hz[LPC_ORD];
+	float wt[order], lsps_hz[order];
 	const float *cb;
 	float se = 0.0;
 	int index;
 
-	for (i = 0; i < LPC_ORD; i++) {
+	for (i = 0; i < order; i++) {
 		wt[i] = 1.0;
 	}
 
 	/* convert to Hz */
 
-	for (i = 0; i < LPC_ORD; i++) {
+	for (i = 0; i < order; i++) {
 		lsps_hz[i] = lsps[i] * (4000.0 / PI);
 		lsps_[i] = lsps[i];
 	}
@@ -328,7 +324,7 @@ void lspjnd_quantise(float lsps[], float lsps_[], int order)
 	index = quantise(cb, &lsps_hz[4], &wt[4], k, m, &se);
 	//printf("k = %d m = %d c[0] %f cb[k] %f\n", k,m,cb[0],cb[k]);
 	//printf("index = %4d: ", index);
-	for (i = 4; i < LPC_ORD; i++) {
+	for (i = 4; i < order; i++) {
 		lsps_[i] = cb[index * k + i - 4] * (PI / 4000.0);
 		//printf("%4.f (%4.f) ", lsps_hz[i], cb[index*k+i-4]);
 	}
@@ -415,6 +411,7 @@ void compute_weights(const float *x, float *w, int ndim)
 	//w[1]*=2;
 }
 
+#ifdef __EXPERIMENTAL__
 /* LSP weight calculation ported from m-file function kindly submitted
    by Anssi, OH3GDD */
 
@@ -444,9 +441,10 @@ void compute_weights_anssi_mode2(const float *x, float *w, int ndim)
 		else
 			w[i] = 1.0 / (0.01 + d[i]);
 
-		w[i] = pow(w[i] + 0.3, 0.66);
+		w[i] = powf(w[i] + 0.3, 0.66);
 	}
 }
+#endif
 
 int find_nearest(const float *codebook, int nb_entries, float *x, int ndim)
 {
@@ -495,44 +493,44 @@ int find_nearest_weighted(const float *codebook, int nb_entries, float *x,
 	return nearest;
 }
 
-void lspjvm_quantise(float *x, float *xq, int ndim)
+void lspjvm_quantise(float *x, float *xq, int order)
 {
 	int i, n1, n2, n3;
-	float err[LPC_ORD], err2[LPC_ORD], err3[LPC_ORD];
-	float w[LPC_ORD], w2[LPC_ORD], w3[LPC_ORD];
+	float err[order], err2[order], err3[order];
+	float w[order], w2[order], w3[order];
 	const float *codebook1 = lsp_cbjvm[0].cb;
 	const float *codebook2 = lsp_cbjvm[1].cb;
 	const float *codebook3 = lsp_cbjvm[2].cb;
 
-	memzero(err, LPC_ORD * sizeof(float));
+	memzero(err, order * sizeof(float));
 
 	w[0] = MIN(x[0], x[1] - x[0]);
-	for (i = 1; i < ndim - 1; i++)
+	for (i = 1; i < order - 1; i++)
 		w[i] = MIN(x[i] - x[i - 1], x[i + 1] - x[i]);
-	w[ndim - 1] = MIN(x[ndim - 1] - x[ndim - 2], PI - x[ndim - 1]);
+	w[order - 1] = MIN(x[order - 1] - x[order - 2], PI - x[order - 1]);
 
-	compute_weights(x, w, ndim);
+	compute_weights(x, w, order);
 
-	n1 = find_nearest(codebook1, lsp_cbjvm[0].m, x, ndim);
+	n1 = find_nearest(codebook1, lsp_cbjvm[0].m, x, order);
 
-	for (i = 0; i < ndim; i++) {
-		xq[i] = codebook1[ndim * n1 + i];
+	for (i = 0; i < order; i++) {
+		xq[i] = codebook1[order * n1 + i];
 		err[i] = x[i] - xq[i];
 	}
-	for (i = 0; i < ndim / 2; i++) {
+	for (i = 0; i < order / 2; i++) {
 		err2[i] = err[2 * i];
 		err3[i] = err[2 * i + 1];
 		w2[i] = w[2 * i];
 		w3[i] = w[2 * i + 1];
 	}
 	n2 = find_nearest_weighted(codebook2, lsp_cbjvm[1].m, err2, w2,
-				   ndim / 2);
+				   order / 2);
 	n3 = find_nearest_weighted(codebook3, lsp_cbjvm[2].m, err3, w3,
-				   ndim / 2);
+				   order / 2);
 
-	for (i = 0; i < ndim / 2; i++) {
-		xq[2 * i] += codebook2[ndim * n2 / 2 + i];
-		xq[2 * i + 1] += codebook3[ndim * n3 / 2 + i];
+	for (i = 0; i < order / 2; i++) {
+		xq[2 * i] += codebook2[order * n2 / 2 + i];
+		xq[2 * i + 1] += codebook3[order * n3 / 2 + i];
 	}
 }
 
@@ -646,7 +644,7 @@ static void mbest_search(const float *cb,	/* VQ codebook to search         */
 		e = 0.0;
 		for (i = 0; i < k; i++) {
 			diff = cb[j * k + i] - vec[i];
-			e += pow(diff * w[i], 2.0);
+			e += powf(diff * w[i], 2.0);
 		}
 		index[0] = j;
 		mbest_insert(mbest, index, e);
@@ -742,13 +740,13 @@ void lspanssi_quantise(float *x, float *xq, int ndim, int mbest_entries)
 }
 #endif
 
-int check_lsp_order(float lsp[], int lpc_order)
+int check_lsp_order(float lsp[], int order)
 {
 	int i;
 	float tmp;
 	int swaps = 0;
 
-	for (i = 1; i < lpc_order; i++)
+	for (i = 1; i < order; i++)
 		if (lsp[i] < lsp[i - 1]) {
 			//fprintf(stderr, "swap %d\n",i);
 			swaps++;
@@ -761,11 +759,11 @@ int check_lsp_order(float lsp[], int lpc_order)
 	return swaps;
 }
 
-void force_min_lsp_dist(float lsp[], int lpc_order)
+void force_min_lsp_dist(float lsp[], int order)
 {
 	int i;
 
-	for (i = 1; i < lpc_order; i++)
+	for (i = 1; i < order; i++)
 		if ((lsp[i] - lsp[i - 1]) < 0.01) {
 			lsp[i] += 0.01;
 		}
@@ -783,7 +781,7 @@ void force_min_lsp_dist(float lsp[], int lpc_order)
    of this text is on the MBE vocoder, and this is a freq domain
    adaptation of post filtering commonly used in CELP.
 
-   I used the Octave simulation lpcpf.m to get an understaing of the
+   I used the Octave simulation lpcpf.m to get an understanding of the
    algorithm.
 
    Requires two more FFTs which is significantly more MIPs.  However
@@ -800,52 +798,22 @@ void force_min_lsp_dist(float lsp[], int lpc_order)
 
 \*---------------------------------------------------------------------------*/
 
-void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
-		     float ak[], int order, int dump, float beta, float gamma,
-		     int bass_boost)
+void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, COMP Pw[], float ak[],
+		     int order, int dump, float beta, float gamma,
+		     int bass_boost, float E)
 {
-	(void)model;
-#ifndef DUMP
 	(void)dump;
-#endif
-
 	int i;
 	COMP x[FFT_ENC];	/* input to FFTs                */
-	COMP Aw[FFT_ENC];	/* LPC analysis filter spectrum */
 	COMP Ww[FFT_ENC];	/* weighting spectrum           */
 	float Rw[FFT_ENC];	/* R = WA                       */
 	float e_before, e_after, gain;
-	float Pfw[FFT_ENC];	/* Post filter mag spectrum     */
+	float Pfw;
 	float max_Rw, min_Rw;
 	float coeff;
-	TIMER_VAR(tstart, tfft1, taw, tfft2, tww, tr);
+	PROFILE_VAR(tstart, tfft1, taw, tfft2, tww, tr);
 
-	TIMER_SAMPLE(tstart);
-
-	/* Determine LPC inverse filter spectrum 1/A(exp(jw)) ----------- */
-
-	/* we actually want the synthesis filter A(exp(jw)) but the
-	   inverse (analysis) filter is easier to find as it's FIR, we
-	   just use the inverse of 1/A to get the synthesis filter
-	   A(exp(jw)) */
-
-	for (i = 0; i < FFT_ENC; i++) {
-		x[i].real = 0.0;
-		x[i].imag = 0.0;
-	}
-
-	for (i = 0; i <= order; i++)
-		x[i].real = ak[i];
-	kiss_fft(fft_fwd_cfg, (kiss_fft_cpx *) x, (kiss_fft_cpx *) Aw);
-
-	TIMER_SAMPLE_AND_LOG(tfft1, tstart, "        fft1");
-
-	for (i = 0; i < FFT_ENC / 2; i++) {
-		Aw[i].real =
-		    1.0 / (Aw[i].real * Aw[i].real + Aw[i].imag * Aw[i].imag);
-	}
-
-	TIMER_SAMPLE_AND_LOG(taw, tfft1, "        Aw");
+	PROFILE_SAMPLE(tstart);
 
 	/* Determine weighting filter spectrum W(exp(jw)) --------------- */
 
@@ -862,20 +830,20 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
 	}
 	kiss_fft(fft_fwd_cfg, (kiss_fft_cpx *) x, (kiss_fft_cpx *) Ww);
 
-	TIMER_SAMPLE_AND_LOG(tfft2, taw, "        fft2");
+	PROFILE_SAMPLE_AND_LOG(tfft2, taw, "        fft2");
 
 	for (i = 0; i < FFT_ENC / 2; i++) {
 		Ww[i].real = Ww[i].real * Ww[i].real + Ww[i].imag * Ww[i].imag;
 	}
 
-	TIMER_SAMPLE_AND_LOG(tww, tfft2, "        Ww");
+	PROFILE_SAMPLE_AND_LOG(tww, tfft2, "        Ww");
 
 	/* Determined combined filter R = WA --------------------------- */
 
 	max_Rw = 0.0;
 	min_Rw = 1E32;
 	for (i = 0; i < FFT_ENC / 2; i++) {
-		Rw[i] = sqrtf(Ww[i].real * Aw[i].real);
+		Rw[i] = sqrtf(Ww[i].real * Pw[i].real);
 		if (Rw[i] > max_Rw)
 			max_Rw = Rw[i];
 		if (Rw[i] < min_Rw)
@@ -883,7 +851,7 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
 
 	}
 
-	TIMER_SAMPLE_AND_LOG(tr, tww, "        R");
+	PROFILE_SAMPLE_AND_LOG(tr, tww, "        R");
 
 #ifdef DUMP
 	if (dump)
@@ -907,14 +875,15 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
 
 	e_after = 1E-4;
 	for (i = 0; i < FFT_ENC / 2; i++) {
-		Pfw[i] = powf(Rw[i], beta);
-		Pw[i].real *= Pfw[i] * Pfw[i];
+		Pfw = powf(Rw[i], beta);
+		Pw[i].real *= Pfw * Pfw;
 		e_after += Pw[i].real;
 	}
 	gain = e_before / e_after;
 
-	/* apply gain factor to normalise energy */
+	/* apply gain factor to normalise energy, and LPC Energy */
 
+	gain *= E;
 	for (i = 0; i < FFT_ENC / 2; i++) {
 		Pw[i].real *= gain;
 	}
@@ -927,7 +896,7 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
 		}
 	}
 
-	TIMER_SAMPLE_AND_LOG2(tr, "        filt");
+	PROFILE_SAMPLE_AND_LOG2(tr, "        filt");
 }
 
 /*---------------------------------------------------------------------------*\
@@ -948,10 +917,11 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 	       int sim_pf,	/* true to simulate a post filter */
 	       int pf,		/* true to LPC post filter */
 	       int bass_boost,	/* enable LPC filter 0-1khz 3dB boost */
-	       float beta, float gamma	/* LPC post filter parameters */
+	       float beta, float gamma,	/* LPC post filter parameters */
+	       COMP Aw[]	/* output power spectrum */
     )
 {
-	COMP pw[FFT_ENC];	/* input to FFT for power spectrum */
+	COMP a[FFT_ENC];	/* input to FFT for power spectrum */
 	COMP Pw[FFT_ENC];	/* output power spectrum */
 	int i, m;		/* loop variables */
 	int am, bm;		/* limits of current band */
@@ -959,38 +929,40 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 	float Em;		/* energy in band */
 	float Am;		/* spectral amplitude sample */
 	float signal, noise;
-	TIMER_VAR(tstart, tfft, tpw, tpf);
+	PROFILE_VAR(tstart, tfft, tpw, tpf);
 
-	TIMER_SAMPLE(tstart);
+	PROFILE_SAMPLE(tstart);
 
 	r = TWO_PI / (FFT_ENC);
 
 	/* Determine DFT of A(exp(jw)) -------------------------------------------- */
 
 	for (i = 0; i < FFT_ENC; i++) {
-		pw[i].real = 0.0;
-		pw[i].imag = 0.0;
+		a[i].real = 0.0;
+		a[i].imag = 0.0;
+		Pw[i].real = 0.0;
+		Pw[i].imag = 0.0;
 	}
 
 	for (i = 0; i <= order; i++)
-		pw[i].real = ak[i];
-	kiss_fft(fft_fwd_cfg, (kiss_fft_cpx *) pw, (kiss_fft_cpx *) Pw);
+		a[i].real = ak[i];
+	kiss_fft(fft_fwd_cfg, (kiss_fft_cpx *) a, (kiss_fft_cpx *) Aw);
 
-	TIMER_SAMPLE_AND_LOG(tfft, tstart, "      fft");
+	PROFILE_SAMPLE_AND_LOG(tfft, tstart, "      fft");
 
 	/* Determine power spectrum P(w) = E/(A(exp(jw))^2 ------------------------ */
 
 	for (i = 0; i < FFT_ENC / 2; i++)
 		Pw[i].real =
-		    E / (Pw[i].real * Pw[i].real + Pw[i].imag * Pw[i].imag);
+		    1.0 / (Aw[i].real * Aw[i].real + Aw[i].imag * Aw[i].imag);
 
-	TIMER_SAMPLE_AND_LOG(tpw, tfft, "      Pw");
+	PROFILE_SAMPLE_AND_LOG(tpw, tfft, "      Pw");
 
 	if (pf)
-		lpc_post_filter(fft_fwd_cfg, model, Pw, ak, order, dump, beta,
-				gamma, bass_boost);
+		lpc_post_filter(fft_fwd_cfg, Pw, ak, order, dump, beta, gamma,
+				bass_boost, E);
 
-	TIMER_SAMPLE_AND_LOG(tpf, tpw, "      LPC post filter");
+	PROFILE_SAMPLE_AND_LOG(tpf, tpw, "      LPC post filter");
 
 #ifdef DUMP
 	if (dump)
@@ -1036,7 +1008,7 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 	}
 	*snr = 10.0 * log10f(signal / noise);
 
-	TIMER_SAMPLE_AND_LOG2(tpf, "      rec");
+	PROFILE_SAMPLE_AND_LOG2(tpf, "      rec");
 }
 
 /*---------------------------------------------------------------------------*\
@@ -1049,19 +1021,19 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 
 \*---------------------------------------------------------------------------*/
 
-int encode_Wo(float Wo)
+int encode_Wo(float Wo, int bits)
 {
-	int index;
+	int index, Wo_levels = 1 << bits;
 	float Wo_min = TWO_PI / P_MAX;
 	float Wo_max = TWO_PI / P_MIN;
 	float norm;
 
 	norm = (Wo - Wo_min) / (Wo_max - Wo_min);
-	index = floorf(WO_LEVELS * norm + 0.5);
+	index = floorf(Wo_levels * norm + 0.5);
 	if (index < 0)
 		index = 0;
-	if (index > (WO_LEVELS - 1))
-		index = WO_LEVELS - 1;
+	if (index > (Wo_levels - 1))
+		index = Wo_levels - 1;
 
 	return index;
 }
@@ -1076,17 +1048,70 @@ int encode_Wo(float Wo)
 
 \*---------------------------------------------------------------------------*/
 
-float decode_Wo(int index)
+float decode_Wo(int index, int bits)
 {
 	float Wo_min = TWO_PI / P_MAX;
 	float Wo_max = TWO_PI / P_MIN;
 	float step;
 	float Wo;
+	int Wo_levels = 1 << bits;
 
-	step = (Wo_max - Wo_min) / WO_LEVELS;
+	step = (Wo_max - Wo_min) / Wo_levels;
 	Wo = Wo_min + step * (index);
 
 	return Wo;
+}
+
+/*---------------------------------------------------------------------------*\
+                                                       
+  FUNCTION....: encode_log_Wo()	     
+  AUTHOR......: David Rowe			      
+  DATE CREATED: 22/8/2010 
+
+  Encodes Wo in the log domain using a WO_LEVELS quantiser.
+
+\*---------------------------------------------------------------------------*/
+
+int encode_log_Wo(float Wo, int bits)
+{
+	int index, Wo_levels = 1 << bits;
+	float Wo_min = TWO_PI / P_MAX;
+	float Wo_max = TWO_PI / P_MIN;
+	float norm;
+
+	norm =
+	    (log10f(Wo) - log10f(Wo_min)) / (log10f(Wo_max) - log10f(Wo_min));
+	index = floorf(Wo_levels * norm + 0.5);
+	if (index < 0)
+		index = 0;
+	if (index > (Wo_levels - 1))
+		index = Wo_levels - 1;
+
+	return index;
+}
+
+/*---------------------------------------------------------------------------*\
+                                                       
+  FUNCTION....: decode_log_Wo()	     
+  AUTHOR......: David Rowe			      
+  DATE CREATED: 22/8/2010 
+
+  Decodes Wo using a WO_LEVELS quantiser in the log domain.
+
+\*---------------------------------------------------------------------------*/
+
+float decode_log_Wo(int index, int bits)
+{
+	float Wo_min = TWO_PI / P_MAX;
+	float Wo_max = TWO_PI / P_MIN;
+	float step;
+	float Wo;
+	int Wo_levels = 1 << bits;
+
+	step = (log10f(Wo_max) - log10f(Wo_min)) / Wo_levels;
+	Wo = log10f(Wo_min) + step * (index);
+
+	return powf(10, Wo);
 }
 
 /*---------------------------------------------------------------------------*\
@@ -1107,7 +1132,7 @@ int encode_Wo_dt(float Wo, float prev_Wo)
 	float norm;
 
 	norm = (Wo - prev_Wo) / (Wo_max - Wo_min);
-	index = floor(WO_LEVELS * norm + 0.5);
+	index = floorf(WO_LEVELS * norm + 0.5);
 	//printf("ENC index: %d ", index);
 
 	/* hard limit */
@@ -1188,7 +1213,7 @@ float speech_to_uq_lsps(float lsp[],
 {
 	int i, roots;
 	float Wn[M];
-	float R[LPC_MAX + 1];
+	float R[order + 1];
 	float e, E;
 
 	e = 0.0;
@@ -1220,7 +1245,7 @@ float speech_to_uq_lsps(float lsp[],
 	for (i = 0; i <= order; i++)
 		ak[i] *= powf(0.994, (float)i);
 
-	roots = lpc_to_lspc(ak, order, lsp, 5, LSP_DELTA1);
+	roots = codec2_lpc_to_lsp(ak, order, lsp, 5, LSP_DELTA1);
 	if (roots != order) {
 		/* if root finding fails use some benign LSP values instead */
 		for (i = 0; i < order; i++)
@@ -1244,13 +1269,13 @@ float speech_to_uq_lsps(float lsp[],
 void encode_lsps_scalar(int indexes[], float lsp[], int order)
 {
 	int i, k, m;
-	float wt[2];
-	float lsp_hz[LPC_MAX];
+	float wt[1];
+	float lsp_hz[order];
 	const float *cb;
 	float se = 0;
 
-	memzero(wt, 2 * sizeof(float));
-	memzero(lsp_hz, LPC_MAX * sizeof(float));
+	memzero(wt, 1 * sizeof(float));
+	memzero(lsp_hz, order * sizeof(float));
 
 	/* convert from radians to Hz so we can use human readable
 	   frequencies */
@@ -1283,7 +1308,7 @@ void encode_lsps_scalar(int indexes[], float lsp[], int order)
 void decode_lsps_scalar(float lsp[], int indexes[], int order)
 {
 	int i, k;
-	float lsp_hz[LPC_MAX];
+	float lsp_hz[order];
 	const float *cb;
 
 	for (i = 0; i < order; i++) {
@@ -1316,15 +1341,15 @@ void decode_lsps_scalar(float lsp[], int indexes[], int order)
 void encode_lsps_diff_freq_vq(int indexes[], float lsp[], int order)
 {
 	int i, k, m;
-	float lsp_hz[LPC_MAX];
-	float lsp__hz[LPC_MAX];
-	float dlsp[LPC_MAX];
-	float dlsp_[LPC_MAX];
-	float wt[LPC_MAX];
+	float lsp_hz[order];
+	float lsp__hz[order];
+	float dlsp[order];
+	float dlsp_[order];
+	float wt[order];
 	const float *cb;
 	float se;
 
-	for (i = 0; i < LPC_ORD; i++) {
+	for (i = 0; i < order; i++) {
 		wt[i] = 1.0;
 	}
 
@@ -1377,8 +1402,8 @@ void encode_lsps_diff_freq_vq(int indexes[], float lsp[], int order)
 void decode_lsps_diff_freq_vq(float lsp_[], int indexes[], int order)
 {
 	int i, k;
-	float dlsp_[LPC_MAX];
-	float lsp__hz[LPC_MAX];
+	float dlsp_[order];
+	float lsp__hz[order];
 	const float *cb;
 
 	/* scalar LSP differences */
@@ -1420,7 +1445,7 @@ void encode_lsps_diff_time(int indexes[],
 			   float lsps[], float lsps__prev[], int order)
 {
 	int i, k, m;
-	float lsps_dt[LPC_ORD];
+	float lsps_dt[order];
 	float wt[LPC_MAX];
 	const float *cb;
 	float se;
@@ -1428,7 +1453,7 @@ void encode_lsps_diff_time(int indexes[],
 	/* Determine difference in time and convert from radians to Hz so
 	   we can use human readable frequencies */
 
-	for (i = 0; i < LPC_ORD; i++) {
+	for (i = 0; i < order; i++) {
 		lsps_dt[i] = (4000 / PI) * (lsps[i] - lsps__prev[i]);
 	}
 
@@ -1483,42 +1508,40 @@ void decode_lsps_diff_time(float lsps_[],
 
 \*---------------------------------------------------------------------------*/
 
-void encode_lsps_vq(int *indexes, float *x, float *xq, int ndim)
+void encode_lsps_vq(int *indexes, float *x, float *xq, int order)
 {
 	int i, n1, n2, n3;
-	float err[LPC_ORD], err2[LPC_ORD], err3[LPC_ORD];
-	float w[LPC_ORD], w2[LPC_ORD], w3[LPC_ORD];
+	float err[order], err2[order], err3[order];
+	float w[order], w2[order], w3[order];
 	const float *codebook1 = lsp_cbjvm[0].cb;
 	const float *codebook2 = lsp_cbjvm[1].cb;
 	const float *codebook3 = lsp_cbjvm[2].cb;
 
-	memzero(err, LPC_ORD * sizeof(float));
-
-	assert(ndim <= LPC_ORD);
+	memzero(err, order * sizeof(float));
 
 	w[0] = MIN(x[0], x[1] - x[0]);
-	for (i = 1; i < ndim - 1; i++)
+	for (i = 1; i < order - 1; i++)
 		w[i] = MIN(x[i] - x[i - 1], x[i + 1] - x[i]);
-	w[ndim - 1] = MIN(x[ndim - 1] - x[ndim - 2], PI - x[ndim - 1]);
+	w[order - 1] = MIN(x[order - 1] - x[order - 2], PI - x[order - 1]);
 
-	compute_weights(x, w, ndim);
+	compute_weights(x, w, order);
 
-	n1 = find_nearest(codebook1, lsp_cbjvm[0].m, x, ndim);
+	n1 = find_nearest(codebook1, lsp_cbjvm[0].m, x, order);
 
-	for (i = 0; i < ndim; i++) {
-		xq[i] = codebook1[ndim * n1 + i];
+	for (i = 0; i < order; i++) {
+		xq[i] = codebook1[order * n1 + i];
 		err[i] = x[i] - xq[i];
 	}
-	for (i = 0; i < ndim / 2; i++) {
+	for (i = 0; i < order / 2; i++) {
 		err2[i] = err[2 * i];
 		err3[i] = err[2 * i + 1];
 		w2[i] = w[2 * i];
 		w3[i] = w[2 * i + 1];
 	}
 	n2 = find_nearest_weighted(codebook2, lsp_cbjvm[1].m, err2, w2,
-				   ndim / 2);
+				   order / 2);
 	n3 = find_nearest_weighted(codebook3, lsp_cbjvm[2].m, err3, w3,
-				   ndim / 2);
+				   order / 2);
 
 	indexes[0] = n1;
 	indexes[1] = n2;
@@ -1533,7 +1556,7 @@ void encode_lsps_vq(int *indexes, float *x, float *xq, int ndim)
 
 \*---------------------------------------------------------------------------*/
 
-void decode_lsps_vq(int *indexes, float *xq, int ndim)
+void decode_lsps_vq(int *indexes, float *xq, int order, int stages)
 {
 	int i, n1, n2, n3;
 	const float *codebook1 = lsp_cbjvm[0].cb;
@@ -1544,13 +1567,17 @@ void decode_lsps_vq(int *indexes, float *xq, int ndim)
 	n2 = indexes[1];
 	n3 = indexes[2];
 
-	for (i = 0; i < ndim; i++) {
-		xq[i] = codebook1[ndim * n1 + i];
+	for (i = 0; i < order; i++) {
+		xq[i] = codebook1[order * n1 + i];
 	}
-	for (i = 0; i < ndim / 2; i++) {
-		xq[2 * i] += codebook2[ndim * n2 / 2 + i];
-		xq[2 * i + 1] += codebook3[ndim * n3 / 2 + i];
+
+	if (stages != 1) {
+		for (i = 0; i < order / 2; i++) {
+			xq[2 * i] += codebook2[order * n2 / 2 + i];
+			xq[2 * i + 1] += codebook3[order * n3 / 2 + i];
+		}
 	}
+
 }
 
 /*---------------------------------------------------------------------------*\
@@ -1710,20 +1737,20 @@ void apply_lpc_correction(MODEL * model)
 
 \*---------------------------------------------------------------------------*/
 
-int encode_energy(float e)
+int encode_energy(float e, int bits)
 {
-	int index;
+	int index, e_levels = 1 << bits;
 	float e_min = E_MIN_DB;
 	float e_max = E_MAX_DB;
 	float norm;
 
 	e = 10.0 * log10f(e);
 	norm = (e - e_min) / (e_max - e_min);
-	index = floorf(E_LEVELS * norm + 0.5);
+	index = floorf(e_levels * norm + 0.5);
 	if (index < 0)
 		index = 0;
-	if (index > (E_LEVELS - 1))
-		index = E_LEVELS - 1;
+	if (index > (e_levels - 1))
+		index = e_levels - 1;
 
 	return index;
 }
@@ -1738,14 +1765,15 @@ int encode_energy(float e)
 
 \*---------------------------------------------------------------------------*/
 
-float decode_energy(int index)
+float decode_energy(int index, int bits)
 {
 	float e_min = E_MIN_DB;
 	float e_max = E_MAX_DB;
 	float step;
 	float e;
+	int e_levels = 1 << bits;
 
-	step = (e_max - e_min) / E_LEVELS;
+	step = (e_max - e_min) / e_levels;
 	e = e_min + step * (index);
 	e = powf(10.0, e / 10.0);
 
@@ -1774,7 +1802,7 @@ float decode_amplitudes(kiss_fft_cfg fft_fwd_cfg,
 
 	decode_lsps_scalar(lsps, lsp_indexes, LPC_ORD);
 	bw_expand_lsps(lsps, LPC_ORD);
-	lsp_to_lpcc(lsps, ak, LPC_ORD);
+	lsp_to_lpc(lsps, ak, LPC_ORD);
 	*e = decode_energy(energy_index);
 	aks_to_M2(ak, LPC_ORD, model, *e, &snr, 1, 0, 0, 1);
 	apply_lpc_correction(model);
@@ -1785,10 +1813,8 @@ float decode_amplitudes(kiss_fft_cfg fft_fwd_cfg,
 
 static float ge_coeff[2] = { 0.8, 0.9 };
 
-void compute_weights2(const float *x, const float *xp, float *w, int ndim)
+void compute_weights2(const float *x, const float *xp, float *w)
 {
-	(void)ndim;
-
 	w[0] = 30;
 	w[1] = 1;
 	if (x[1] < 0) {
@@ -1862,7 +1888,7 @@ void quantise_WoE(MODEL * model, float *e, float xq[])
 	x[0] = log10f((model->Wo / PI) * 4000.0 / 50.0) / log10f(2);
 	x[1] = 10.0 * log10f(1e-4 + *e);
 
-	compute_weights2(x, xq, w, ndim);
+	compute_weights2(x, xq, w);
 	for (i = 0; i < ndim; i++)
 		err[i] = x[i] - ge_coeff[i] * xq[i];
 	n1 = find_nearest_weighted(codebook1, nb_entries, err, w, ndim);
@@ -1923,7 +1949,7 @@ int encode_WoE(MODEL * model, float e, float xq[])
 	x[0] = log10f((model->Wo / PI) * 4000.0 / 50.0) / log10f(2);
 	x[1] = 10.0 * log10f(1e-4 + e);
 
-	compute_weights2(x, xq, w, ndim);
+	compute_weights2(x, xq, w);
 	for (i = 0; i < ndim; i++)
 		err[i] = x[i] - ge_coeff[i] * xq[i];
 	n1 = find_nearest_weighted(codebook1, nb_entries, err, w, ndim);

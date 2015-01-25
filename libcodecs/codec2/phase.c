@@ -41,65 +41,6 @@
 
 /*---------------------------------------------------------------------------*\
 
-  aks_to_H()
-
-  Samples the complex LPC synthesis filter spectrum at the harmonic
-  frequencies.
-
-\*---------------------------------------------------------------------------*/
-
-void aks_to_H(kiss_fft_cfg fft_fwd_cfg, MODEL * model,	/* model parameters */
-	      float aks[],	/* LPC's */
-	      float G,		/* energy term */
-	      COMP H[],		/* complex LPC spectral samples */
-	      int order)
-{
-	COMP pw[FFT_ENC];	/* power spectrum (input) */
-	COMP Pw[FFT_ENC];	/* power spectrum (output) */
-	int i, m;		/* loop variables */
-	int am, bm;		/* limits of current band */
-	float r;		/* no. rads/bin */
-	float Em;		/* energy in band */
-	float Am;		/* spectral amplitude sample */
-	int b;			/* centre bin of harmonic */
-	float phi_;		/* phase of LPC spectra */
-
-	r = TWO_PI / (FFT_ENC);
-
-	/* Determine DFT of A(exp(jw)) ------------------------------------------ */
-
-	for (i = 0; i < FFT_ENC; i++) {
-		pw[i].real = 0.0;
-		pw[i].imag = 0.0;
-	}
-
-	for (i = 0; i <= order; i++)
-		pw[i].real = aks[i];
-
-	kiss_fft(fft_fwd_cfg, (kiss_fft_cpx *) pw, (kiss_fft_cpx *) Pw);
-
-	/* Sample magnitude and phase at harmonics */
-
-	for (m = 1; m <= model->L; m++) {
-		am = (int)((m - 0.5) * model->Wo / r + 0.5);
-		bm = (int)((m + 0.5) * model->Wo / r + 0.5);
-		b = (int)(m * model->Wo / r + 0.5);
-
-		Em = 0.0;
-		for (i = am; i < bm; i++)
-			Em +=
-			    G / (Pw[i].real * Pw[i].real +
-				 Pw[i].imag * Pw[i].imag);
-		Am = sqrtf(fabsf(Em / (bm - am)));
-
-		phi_ = -atan2f(Pw[b].imag, Pw[b].real);
-		H[m].real = Am * cosf(phi_);
-		H[m].imag = Am * sinf(phi_);
-	}
-}
-
-/*---------------------------------------------------------------------------*\
-
    phase_synth_zero_order()
 
    Synthesises phases based on SNR and a rule based approach.  No phase 
@@ -188,18 +129,27 @@ void aks_to_H(kiss_fft_cfg fft_fwd_cfg, MODEL * model,	/* model parameters */
 
 \*---------------------------------------------------------------------------*/
 
-void phase_synth_zero_order(kiss_fft_cfg fft_fwd_cfg, MODEL * model, float aks[], float *ex_phase,	/* excitation phase of fundamental */
-			    int order)
+void phase_synth_zero_order(kiss_fft_cfg fft_fwd_cfg, MODEL * model, float *ex_phase,	/* excitation phase of fundamental */
+			    COMP A[]
+    )
 {
-	int m;
-	float new_phi;
+	(void)fft_fwd_cfg;
+	int m, b;
+	float phi_, new_phi, r;
 	COMP Ex[MAX_AMP + 1];	/* excitation samples */
 	COMP A_[MAX_AMP + 1];	/* synthesised harmonic samples */
 	COMP H[MAX_AMP + 1];	/* LPC freq domain samples */
-	float G;
 
-	G = 1.0;
-	aks_to_H(fft_fwd_cfg, model, aks, G, H, order);
+	r = TWO_PI / (FFT_ENC);
+
+	/* Sample phase at harmonics */
+
+	for (m = 1; m <= model->L; m++) {
+		b = (int)(m * model->Wo / r + 0.5);
+		phi_ = -atan2f(A[b].imag, A[b].real);
+		H[m].real = cosf(phi_);
+		H[m].imag = sinf(phi_);
+	}
 
 	/* 
 	   Update excitation fundamental phase track, this sets the position

@@ -95,6 +95,12 @@ extern "C" {
 	void kiss_fft(kiss_fft_cfg cfg, const kiss_fft_cpx * fin,
 		      kiss_fft_cpx * fout);
 
+/*
+ A more generic version of the above function. It reads its input from every Nth sample.
+ * */
+	void kiss_fft_stride(kiss_fft_cfg cfg, const kiss_fft_cpx * fin,
+			     kiss_fft_cpx * fout, int fin_stride);
+
 /* If kiss_fft_alloc allocated a buffer, it is one contiguous 
    buffer and can be simply free()d when no longer needed*/
 #define kiss_fft_free free

@@ -333,7 +333,7 @@ void kf_factor(int n, int *facbuf)
 {
 	int p = 4;
 	double floor_sqrt;
-	floor_sqrt = floor(sqrt((double)n));
+	floor_sqrt = floorf(sqrtf((double)n));
 
 	/*factor out powers of 4, powers of 2, then any remaining primes */
 	do {
@@ -398,8 +398,8 @@ kiss_fft_cfg kiss_fft_alloc(int nfft, int inverse_fft, void *mem,
 	return st;
 }
 
-static void kiss_fft_stride(kiss_fft_cfg st, const kiss_fft_cpx * fin,
-			    kiss_fft_cpx * fout, int in_stride)
+void kiss_fft_stride(kiss_fft_cfg st, const kiss_fft_cpx * fin,
+		     kiss_fft_cpx * fout, int in_stride)
 {
 	if (fin == fout) {
 		//NOTE: this is not really an in-place FFT algorithm.
