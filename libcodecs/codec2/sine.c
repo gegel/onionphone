@@ -171,26 +171,6 @@ void make_analysis_window(kiss_fft_cfg fft_fwd_cfg, float w[], COMP W[])
 
 /*---------------------------------------------------------------------------*\
                                                        
-  FUNCTION....: hpf	     
-  AUTHOR......: David Rowe			      
-  DATE CREATED: 16 Nov 2010
-
-  High pass filter with a -3dB point of about 160Hz.
-
-    y(n) = -HPF_BETA*y(n-1) + x(n) - x(n-1)
- 
-\*---------------------------------------------------------------------------*/
-
-float hpf(float x, float states[])
-{
-	states[0] = -HPF_BETA * states[0] + x - states[1];
-	states[1] = x;
-
-	return states[0];
-}
-
-/*---------------------------------------------------------------------------*\
-                                                       
   FUNCTION....: dft_speech	     
   AUTHOR......: David Rowe			      
   DATE CREATED: 27/5/94 

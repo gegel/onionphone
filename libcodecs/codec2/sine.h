@@ -35,7 +35,6 @@
 #include "kiss_fft.h"
 
 void make_analysis_window(kiss_fft_cfg fft_fwd_cfg, float w[], COMP W[]);
-float hpf(float x, float states[]);
 void dft_speech(kiss_fft_cfg fft_fwd_cfg, COMP Sw[], float Sn[], float w[]);
 void two_stage_pitch_refinement(MODEL * model, COMP Sw[]);
 void estimate_amplitudes(MODEL * model, COMP Sw[], COMP W[], int est_phase);

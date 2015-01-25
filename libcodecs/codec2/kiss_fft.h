@@ -105,21 +105,6 @@ extern "C" {
    buffer and can be simply free()d when no longer needed*/
 #define kiss_fft_free free
 
-/*
- Cleans up some memory that gets managed internally. Not necessary to call, but it might clean up 
- your compiler output to call this before you exit.
-*/
-	void kiss_fft_cleanup(void);
-
-/*
- * Returns the smallest integer k, such that k>=n and k has only "fast" factors (2,3,5)
- */
-	int kiss_fft_next_fast_size(int n);
-
-/* for real ffts, we need an even size */
-#define kiss_fftr_next_fast_size_real(n) \
-        (kiss_fft_next_fast_size( ((n)+1)>>1)<<1)
-
 #ifdef __cplusplus
 }
 #endif
