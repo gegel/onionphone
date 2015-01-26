@@ -75,15 +75,11 @@ extern int16_t g723_shl(int16_t var1, int16_t var2);	/* Short shift left,    1 *
 //extern int32_t L_g723_shl(int32_t L_var1, int16_t var2); /* Long shift left,     2 */
 extern int16_t round_(int32_t L_var1);	/* Round,               1 */
 extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
-//extern int16_t shr_r(int16_t var1, int16_t var2);/* Shift right with round, 2 */
-//extern int16_t g723_mac_r(int32_t L_var3, int16_t var1, int16_t var2);
-//extern int16_t g723_msu_r(int32_t L_var3, int16_t var1, int16_t var2);
 extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
 extern int16_t g723_add(int16_t var1, int16_t var2);	/* Short add,           1 */
 extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
 extern int16_t g723_extract_h(int32_t L_var1);	/* Extract high,        1 */
 extern int16_t g723_shr(int16_t var1, int16_t var2);	/* Short shift right,   1 */
-//extern int16_t shr_r(int16_t var1, int16_t var2);/* Shift right with round, 2 */
 extern int32_t L_g723_negate(int32_t L_var1);	/* Long negate,     2 */
 extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
 extern int32_t g723_L_abs(int32_t L_var1);	/* Long abs,              3 */

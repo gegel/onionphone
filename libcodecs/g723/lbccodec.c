@@ -41,10 +41,6 @@ extern void Init_Cod_Cng(void);
 extern void Init_Dec_Cng(void);
 extern int Coder(int16_t * DataBuff, char *Vout);
 extern int Decod(int16_t * DataBuff, char *Vinp, int16_t Crc);
-extern void Write_lbc(int16_t * Dpnt, int Len, FILE * Fp);
-extern void Read_lbc(int16_t * Dpnt, int Len, FILE * Fp);
-extern void Line_Wr(char *, FILE *);
-extern int Line_Rd(char *, FILE *);
 extern void reset_max_time(void);
 
 unsigned int before = 0;

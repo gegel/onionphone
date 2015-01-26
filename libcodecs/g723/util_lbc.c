@@ -10,7 +10,6 @@
 **
 **  I/O functions:
 **
-**      Read_lbc()
 **      Write_lbc()
 **
 **  High-pass filtering:
@@ -62,8 +61,6 @@ extern int32_t L_mls(int32_t, int16_t);	/* Wght ?? */
 extern int32_t L_g723_add(int32_t L_var1, int32_t L_var2);	/* Long add,        2 */
 extern int16_t round_(int32_t L_var1);	/* Round,               1 */
 extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
-extern int16_t g723_mac_r(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac with rounding, */
-extern int16_t g723_msu_r(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu with rounding, */
 extern int16_t g723_shr(int16_t var1, int16_t var2);	/* Short shift right,   1 */
 extern int32_t L_g723_shr(int32_t L_var1, int16_t var2);	/* Long shift right,    2 */
 extern int16_t g723_abs_s(int16_t var1);	/* Short abs,           1 */
@@ -79,135 +76,6 @@ extern int16_t div_l(int32_t, int16_t);
 extern int32_t g723_L_deposit_h(int16_t var1);	/* 16 bit var1 -> MSB,     2 */
 extern int32_t g723_L_msu(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu,    1 */
 extern int32_t g723_L_deposit_l(int16_t var1);	/* 16 bit var1 -> LSB,     2 */
-/*
-**
-** Function:        Read_lbc()
-**
-** Description:     Read in a file
-**
-** Links to text:   Sections 2.2 & 4
-**
-** Arguments:
-**
-**  int16_t *Dpnt
-**  int     Len
-**  FILE *Fp
-**
-** Outputs:
-**
-**  int16_t *Dpnt
-**
-** Return value:    None
-**
-*/
-void Read_lbc(int16_t * Dpnt, int Len, FILE * Fp)
-{
-	int i;
-
-	for (i = 0; i < Len; i++)
-		Dpnt[i] = (int16_t) 0;
-
-	fread((char *)Dpnt, sizeof(int16_t), Len, Fp);
-
-	return;
-}
-
-/*
-**
-** Function:        Write_lbc()
-**
-** Description:     Write a file
-**
-** Links to text:   Section
-**
-** Arguments:
-**
-**  int16_t *Dpnt
-**  int     Len
-**  FILE *Fp
-**
-** Outputs:         None
-**
-** Return value:    None
-**
-*/
-void Write_lbc(int16_t * Dpnt, int Len, FILE * Fp)
-{
-	fwrite((char *)Dpnt, sizeof(int16_t), Len, Fp);
-}
-
-void Line_Wr(char *Line, FILE * Fp)
-{
-	int16_t Info;
-	int Size;
-
-	Info = Line[0] & (int16_t) 0x0003;
-
-	/* Check frame type and rate informations */
-	switch (Info) {
-
-	case 0x0002:{		/* SID frame */
-			Size = 4;
-			break;
-		}
-
-	case 0x0003:{		/* untransmitted silence frame */
-			Size = 1;
-			break;
-		}
-
-	case 0x0001:{		/* active frame, low rate */
-			Size = 20;
-			break;
-		}
-
-	default:{		/* active frame, high rate */
-			Size = 24;
-		}
-	}
-	fwrite(Line, Size, 1, Fp);
-}
-
-int Line_Rd(char *Line, FILE * Fp)
-{
-	int16_t Info;
-	int Size;
-
-	if (fread(Line, 1, 1, Fp) != 1)
-		return (-1);
-
-	Info = Line[0] & (int16_t) 0x0003;
-
-	/* Check frame type and rate informations */
-	switch (Info) {
-
-		/* Active frame, high rate */
-	case 0:{
-			Size = 23;
-			break;
-		}
-
-		/* Active frame, low rate */
-	case 1:{
-			Size = 19;
-			break;
-		}
-
-		/* Sid Frame */
-	case 2:{
-			Size = 3;
-			break;
-		}
-
-		/* untransmitted */
-	default:{
-			return (0);
-		}
-	}
-	fread(&Line[1], Size, 1, Fp);
-	return (0);
-}
-
 /*
 **
 ** Function:        Rem_Dc()
