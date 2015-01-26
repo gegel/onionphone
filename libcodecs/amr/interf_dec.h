@@ -33,18 +33,6 @@
  * Function prototypes
  */
 /*
- * Conversion from packed bitstream to endoded parameters
- * Decoding parameters to speech
- */
-void Decoder_Interface_Decode(void *st,
-#ifndef ETSI
-			      unsigned char *bits,
-#else
-			      short *bits,
-#endif
-			      short *synth, int bfi);
-
-/*
  * Reserve and init. memory
  */
 void *Decoder_Interface_init(void);
@@ -54,7 +42,6 @@ void *Decoder_Interface_init(void);
  */
 void Decoder_Interface_exit(void *state);
 
-void AMR475_decode(void *st, uint8_t * serial, int16_t * synth, int bfi);
 void AMR_decode(void *st, uint8_t mode, uint8_t * serial, int16_t * synth,
 		int bfi);
 #endif /* _interf_dec_h_ */

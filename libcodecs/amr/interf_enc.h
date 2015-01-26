@@ -36,18 +36,6 @@
  * Function prototypes
  */
 /*
- * Encodes one frame of speech
- * Returns packed octets
- */
-int Encoder_Interface_Encode(void *st, enum Mode mode, short *speech,
-#ifndef ETSI
-			     unsigned char *serial,	/* max size 31 bytes */
-#else
-			     short *serial,	/* size 500 bytes */
-#endif
-			     int forceSpeech);	/* use speech mode */
-
-/*
  * Reserve and init. memory
  */
 void *Encoder_Interface_init(int dtx);
@@ -57,7 +45,6 @@ void *Encoder_Interface_init(int dtx);
  */
 void Encoder_Interface_exit(void *state);
 
-int AMR475_encode(void *st, int16_t * speech, uint8_t * serial, int force_speech);
 int AMR_encode(void *st, uint8_t mode, int16_t * speech, uint8_t * serial,
 	       int force_speech);
 #endif /* _interf_enc_h_ */
