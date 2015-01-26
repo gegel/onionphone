@@ -61,30 +61,6 @@ void speex_bits_init(SpeexBits * bits)
 	speex_bits_reset(bits);
 }
 
-void speex_bits_init_buffer(SpeexBits * bits, void *buff, int buf_size)
-{
-	bits->chars = (char *)buff;
-	bits->buf_size = buf_size;
-
-	bits->owner = 0;
-
-	speex_bits_reset(bits);
-}
-
-void speex_bits_set_bit_buffer(SpeexBits * bits, void *buff, int buf_size)
-{
-	bits->chars = (char *)buff;
-	bits->buf_size = buf_size;
-
-	bits->owner = 0;
-
-	bits->nbBits = buf_size << LOG2_BITS_PER_CHAR;
-	bits->charPtr = 0;
-	bits->bitPtr = 0;
-	bits->overflow = 0;
-
-}
-
 void speex_bits_destroy(SpeexBits * bits)
 {
 	if (bits->owner)
@@ -97,13 +73,6 @@ void speex_bits_reset(SpeexBits * bits)
 	/* We only need to clear the first byte now */
 	bits->chars[0] = 0;
 	bits->nbBits = 0;
-	bits->charPtr = 0;
-	bits->bitPtr = 0;
-	bits->overflow = 0;
-}
-
-void speex_bits_rewind(SpeexBits * bits)
-{
 	bits->charPtr = 0;
 	bits->bitPtr = 0;
 	bits->overflow = 0;
@@ -146,56 +115,6 @@ void speex_bits_read_from(SpeexBits * bits, char *chars, int len)
 	bits->overflow = 0;
 }
 
-static void speex_bits_flush(SpeexBits * bits)
-{
-	int nchars = ((bits->nbBits + BITS_PER_CHAR - 1) >> LOG2_BITS_PER_CHAR);
-	if (bits->charPtr > 0)
-		SPEEX_MOVE(bits->chars, &bits->chars[bits->charPtr],
-			   nchars - bits->charPtr);
-	bits->nbBits -= bits->charPtr << LOG2_BITS_PER_CHAR;
-	bits->charPtr = 0;
-}
-
-void speex_bits_read_whole_bytes(SpeexBits * bits, char *chars, int nbytes)
-{
-	int i, pos;
-	int nchars = nbytes / BYTES_PER_CHAR;
-
-	if (((bits->nbBits + BITS_PER_CHAR - 1) >> LOG2_BITS_PER_CHAR) +
-	    nchars > bits->buf_size) {
-		/* Packet is larger than allocated buffer */
-		if (bits->owner) {
-			char *tmp =
-			    (char *)realloc(bits->chars,
-						  (bits->
-						   nbBits >> LOG2_BITS_PER_CHAR)
-						  + nchars + 1);
-			if (tmp) {
-				bits->buf_size =
-				    (bits->nbBits >> LOG2_BITS_PER_CHAR) +
-				    nchars + 1;
-				bits->chars = tmp;
-			} else {
-				nchars =
-				    bits->buf_size -
-				    (bits->nbBits >> LOG2_BITS_PER_CHAR) - 1;
-				speex_warning
-				    ("Could not resize input buffer: truncating oversize input");
-			}
-		} else {
-			speex_warning
-			    ("Do not own input buffer: truncating oversize input");
-			nchars = bits->buf_size;
-		}
-	}
-
-	speex_bits_flush(bits);
-	pos = bits->nbBits >> LOG2_BITS_PER_CHAR;
-	for (i = 0; i < nchars; i++)
-		bits->chars[pos + i] = HTOLS(chars[i]);
-	bits->nbBits += nchars << LOG2_BITS_PER_CHAR;
-}
-
 int speex_bits_write(SpeexBits * bits, char *chars, int max_nbytes)
 {
 	int i;
@@ -218,24 +137,6 @@ int speex_bits_write(SpeexBits * bits, char *chars, int max_nbytes)
 
 	for (i = 0; i < max_nchars; i++)
 		chars[i] = HTOLS(bits->chars[i]);
-	return max_nchars * BYTES_PER_CHAR;
-}
-
-int speex_bits_write_whole_bytes(SpeexBits * bits, char *chars, int max_nbytes)
-{
-	int max_nchars = max_nbytes / BYTES_PER_CHAR;
-	int i;
-	if (max_nchars > ((bits->nbBits) >> LOG2_BITS_PER_CHAR))
-		max_nchars = ((bits->nbBits) >> LOG2_BITS_PER_CHAR);
-	for (i = 0; i < max_nchars; i++)
-		chars[i] = HTOLS(bits->chars[i]);
-
-	if (bits->bitPtr > 0)
-		bits->chars[0] = bits->chars[max_nchars];
-	else
-		bits->chars[0] = 0;
-	bits->charPtr = 0;
-	bits->nbBits &= (BITS_PER_CHAR - 1);
 	return max_nchars * BYTES_PER_CHAR;
 }
 
@@ -281,19 +182,6 @@ void speex_bits_pack(SpeexBits * bits, int data, int nbBits)
 	}
 }
 
-int speex_bits_unpack_signed(SpeexBits * bits, int nbBits)
-{
-	unsigned int d = speex_bits_unpack_unsigned(bits, nbBits);
-
-	assert(nbBits >= 1);
-
-	/* If number is negative */
-	if (d >> (nbBits - 1)) {
-		d |= (-1) << nbBits;
-	}
-	return d;
-}
-
 unsigned int speex_bits_unpack_unsigned(SpeexBits * bits, int nbBits)
 {
 	unsigned int d = 0;
@@ -311,34 +199,6 @@ unsigned int speex_bits_unpack_unsigned(SpeexBits * bits, int nbBits)
 		if (bits->bitPtr == BITS_PER_CHAR) {
 			bits->bitPtr = 0;
 			bits->charPtr++;
-		}
-		nbBits--;
-	}
-	return d;
-}
-
-unsigned int speex_bits_peek_unsigned(SpeexBits * bits, int nbBits)
-{
-	unsigned int d = 0;
-	int bitPtr, charPtr;
-	char *chars;
-
-	if ((bits->charPtr << LOG2_BITS_PER_CHAR) + bits->bitPtr + nbBits >
-	    bits->nbBits)
-		bits->overflow = 1;
-	if (bits->overflow)
-		return 0;
-
-	bitPtr = bits->bitPtr;
-	charPtr = bits->charPtr;
-	chars = bits->chars;
-	while (nbBits) {
-		d <<= 1;
-		d |= (chars[charPtr] >> (BITS_PER_CHAR - 1 - bitPtr)) & 1;
-		bitPtr++;
-		if (bitPtr == BITS_PER_CHAR) {
-			bitPtr = 0;
-			charPtr++;
 		}
 		nbBits--;
 	}
@@ -374,11 +234,6 @@ int speex_bits_remaining(SpeexBits * bits)
 	else
 		return bits->nbBits - ((bits->charPtr << LOG2_BITS_PER_CHAR) +
 				       bits->bitPtr);
-}
-
-int speex_bits_nbytes(SpeexBits * bits)
-{
-	return ((bits->nbBits + BITS_PER_CHAR - 1) >> LOG2_BITS_PER_CHAR);
 }
 
 void speex_bits_insert_terminator(SpeexBits * bits)

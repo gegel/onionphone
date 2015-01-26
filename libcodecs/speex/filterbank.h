@@ -60,9 +60,4 @@ void filterbank_compute_bank32(FilterBank * bank, spx_word32_t * ps,
 void filterbank_compute_psd16(FilterBank * bank, spx_word16_t * mel,
 			      spx_word16_t * psd);
 
-#ifndef FIXED_POINT
-void filterbank_compute_bank(FilterBank * bank, float *psd, float *mel);
-void filterbank_compute_psd(FilterBank * bank, float *mel, float *psd);
-#endif
-
 #endif

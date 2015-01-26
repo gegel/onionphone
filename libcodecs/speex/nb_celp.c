@@ -1246,8 +1246,6 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 					submode =
 					    speex_bits_unpack_unsigned(bits,
 								       SB_SUBMODE_BITS);
-					/*advance = submode;
-					   speex_mode_query(&speex_wb_mode, SPEEX_SUBMODE_BITS_PER_FRAME, &advance); */
 					advance = wb_skip_table[submode];
 					if (advance < 0) {
 						speex_notify
@@ -1265,8 +1263,6 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 						submode =
 						    speex_bits_unpack_unsigned
 						    (bits, SB_SUBMODE_BITS);
-						/*advance = submode;
-						   speex_mode_query(&speex_wb_mode, SPEEX_SUBMODE_BITS_PER_FRAME, &advance); */
 						advance =
 						    wb_skip_table[submode];
 						if (advance < 0) {

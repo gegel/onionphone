@@ -1226,47 +1226,6 @@ int speex_preprocess_run(SpeexPreprocessState * st, int16_t * x)
 	}
 }
 
-void speex_preprocess_estimate_update(SpeexPreprocessState * st,
-				      int16_t * x)
-{
-	int i;
-	int N = st->ps_size;
-	int N3 = 2 * N - st->frame_size;
-	int M;
-	spx_word32_t *ps = st->ps;
-
-	M = st->nbands;
-	st->min_count++;
-
-	preprocess_analysis(st, x);
-
-	update_noise_prob(st);
-
-	for (i = 1; i < N - 1; i++) {
-		if (!st->update_prob[i]
-		    || st->ps[i] < PSHR32(st->noise[i], NOISE_SHIFT)) {
-			st->noise[i] =
-			    MULT16_32_Q15(QCONST16(.95f, 15),
-					  st->noise[i]) +
-			    MULT16_32_Q15(QCONST16(.05f, 15),
-					  SHL32(st->ps[i], NOISE_SHIFT));
-		}
-	}
-
-	for (i = 0; i < N3; i++)
-		st->outbuf[i] =
-		    MULT16_16_Q15(x[st->frame_size - N3 + i],
-				  st->window[st->frame_size + i]);
-
-	/* Save old power spectrum */
-	for (i = 0; i < N + M; i++)
-		st->old_ps[i] = ps[i];
-
-	for (i = 0; i < N; i++)
-		st->reverb_estimate[i] =
-		    MULT16_32_Q15(st->reverb_decay, st->reverb_estimate[i]);
-}
-
 int speex_preprocess_ctl(SpeexPreprocessState * state, int request, void *ptr)
 {
 	int i;

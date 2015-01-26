@@ -82,13 +82,6 @@ extern "C" {
 	int speex_preprocess(SpeexPreprocessState * st, int16_t * x,
 			     int32_t * echo);
 
-/** Update preprocessor state, but do not compute the output
- * @param st Preprocessor state
- * @param x Audio sample vector (in only). Must be same size as specified in speex_preprocess_state_init().
-*/
-	void speex_preprocess_estimate_update(SpeexPreprocessState * st,
-					      int16_t * x);
-
 /** Used like the ioctl function to control the preprocessor parameters 
  * @param st Preprocessor state
  * @param request ioctl-type request (one of the SPEEX_PREPROCESS_* macros)

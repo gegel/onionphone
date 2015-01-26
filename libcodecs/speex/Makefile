@@ -14,7 +14,6 @@ GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
 CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = bits.o \
-      buffer.o \
       cb_search.o \
       exc_10_16_table.o \
       exc_10_32_table.o \
@@ -30,7 +29,6 @@ OBJ = bits.o \
       hexc_10_32_table.o \
       hexc_table.o \
       high_lsp_tables.o \
-      jitter.o \
       kiss_fft.o \
       kiss_fftr.o \
       lpc.o \
@@ -48,8 +46,6 @@ OBJ = bits.o \
       smallft.o \
       speex.o \
       speex_callbacks.o \
-      speex_header.o \
-      stereo.o \
       vbr.o \
       vq.o \
       window.o

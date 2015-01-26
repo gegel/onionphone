@@ -278,13 +278,3 @@ const SpeexMode speex_uwb_mode = {
 	&sb_decoder_ctl,
 };
 
-/* We have defined speex_lib_get_mode() as a macro in speex.h */
-#undef speex_lib_get_mode
-
-const SpeexMode *speex_lib_get_mode(int mode)
-{
-	if (mode < 0 || mode >= SPEEX_NB_MODES)
-		return NULL;
-
-	return speex_mode_list[mode];
-}
