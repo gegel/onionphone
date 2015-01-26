@@ -30,6 +30,6 @@
 #ifndef __POSTFILTER__
 #define __POSTFILTER__
 
-void postfilterc(MODEL * model, float *bg_est);
+void codec2_postfilter(MODEL * model, float *bg_est);
 
 #endif

@@ -95,24 +95,15 @@ extern "C" {
 	void kiss_fft(kiss_fft_cfg cfg, const kiss_fft_cpx * fin,
 		      kiss_fft_cpx * fout);
 
+/*
+ A more generic version of the above function. It reads its input from every Nth sample.
+ * */
+	void kiss_fft_stride(kiss_fft_cfg cfg, const kiss_fft_cpx * fin,
+			     kiss_fft_cpx * fout, int fin_stride);
+
 /* If kiss_fft_alloc allocated a buffer, it is one contiguous 
    buffer and can be simply free()d when no longer needed*/
 #define kiss_fft_free free
-
-/*
- Cleans up some memory that gets managed internally. Not necessary to call, but it might clean up 
- your compiler output to call this before you exit.
-*/
-	void kiss_fft_cleanup(void);
-
-/*
- * Returns the smallest integer k, such that k>=n and k has only "fast" factors (2,3,5)
- */
-	int kiss_fft_next_fast_size(int n);
-
-/* for real ffts, we need an even size */
-#define kiss_fftr_next_fast_size_real(n) \
-        (kiss_fft_next_fast_size( ((n)+1)>>1)<<1)
 
 #ifdef __cplusplus
 }

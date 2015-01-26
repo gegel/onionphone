@@ -35,12 +35,11 @@
 #include <ophtools.h>
 
 #include "defines.h"
-#include "dump.h"
 #include "quantise.h"
 #include "lpc.h"
 #include "lsp.h"
 #include "kiss_fft.h"
-#undef TIMER
+#undef PROFILE
 #include "machdep.h"
 
 #define LSP_DELTA1 0.01		/* grid spacing for LSP root searches */
@@ -69,13 +68,6 @@ int lspd_bits(int i)
 {
 	return lsp_cbd[i].log2m;
 }
-
-#ifdef __EXPERIMENTAL__
-int lspdt_bits(int i)
-{
-	return lsp_cbdt[i].log2m;
-}
-#endif
 
 int lsp_pred_vq_bits(int i)
 {
@@ -150,15 +142,13 @@ long quantise(const float *cb, float vec[], float w[], int k, int m, float *se)
 void encode_lspds_scalar(int indexes[], float lsp[], int order)
 {
 	int i, k, m;
-	float lsp_hz[LPC_MAX];
-	float lsp__hz[LPC_MAX];
-	float dlsp[LPC_MAX];
-	float dlsp_[LPC_MAX];
-	float wt[LPC_MAX];
+	float lsp_hz[order];
+	float lsp__hz[order];
+	float dlsp[order];
+	float dlsp_[order];
+	float wt[order];
 	const float *cb;
 	float se;
-
-	assert(order == LPC_ORD);
 
 	for (i = 0; i < order; i++) {
 		wt[i] = 1.0;
@@ -201,11 +191,9 @@ void encode_lspds_scalar(int indexes[], float lsp[], int order)
 void decode_lspds_scalar(float lsp_[], int indexes[], int order)
 {
 	int i, k;
-	float lsp__hz[LPC_MAX];
-	float dlsp_[LPC_MAX];
+	float lsp__hz[order];
+	float dlsp_[order];
 	const float *cb;
-
-	assert(order == LPC_ORD);
 
 	for (i = 0; i < order; i++) {
 
@@ -226,176 +214,7 @@ void decode_lspds_scalar(float lsp_[], int indexes[], int order)
 }
 
 #ifdef __EXPERIMENTAL__
-/*---------------------------------------------------------------------------*\
-									      
-  lspvq_quantise
-
-  Vector LSP quantiser.
-
-\*---------------------------------------------------------------------------*/
-
-void lspvq_quantise(float lsp[], float lsp_[], int order)
-{
-	int i, k, m, ncb, nlsp;
-	float wt[LPC_ORD], lsp_hz[LPC_ORD];
-	const float *cb;
-	float se;
-	int index;
-
-	for (i = 0; i < LPC_ORD; i++) {
-		wt[i] = 1.0;
-		lsp_hz[i] = 4000.0 * lsp[i] / PI;
-	}
-
-	/* scalar quantise LSPs 1,2,3,4 */
-
-	/* simple uniform scalar quantisers */
-
-	for (i = 0; i < 4; i++) {
-		k = lsp_cb[i].k;
-		m = lsp_cb[i].m;
-		cb = lsp_cb[i].cb;
-		index = quantise(cb, &lsp_hz[i], wt, k, m, &se);
-		lsp_[i] = cb[index * k] * PI / 4000.0;
-	}
-
-	//#define WGHT
-#ifdef WGHT
-	for (i = 4; i < 9; i++) {
-		wt[i] =
-		    1.0 / (lsp[i] - lsp[i - 1]) + 1.0 / (lsp[i + 1] - lsp[i]);
-		//printf("wt[%d] = %f\n", i, wt[i]);
-	}
-	wt[9] = 1.0 / (lsp[i] - lsp[i - 1]);
-#endif
-
-	/* VQ LSPs 5,6,7,8,9,10 */
-
-	ncb = 4;
-	nlsp = 4;
-	k = lsp_cbjnd[ncb].k;
-	m = lsp_cbjnd[ncb].m;
-	cb = lsp_cbjnd[ncb].cb;
-	index = quantise(cb, &lsp_hz[nlsp], &wt[nlsp], k, m, &se);
-	for (i = 4; i < LPC_ORD; i++) {
-		lsp_[i] = cb[index * k + i - 4] * (PI / 4000.0);
-		//printf("%4.f (%4.f) ", lsp_hz[i], cb[index*k+i-4]);
-	}
-}
-
-/*---------------------------------------------------------------------------*\
-									      
-  lspjnd_quantise
-
-  Experimental JND LSP quantiser.
-
-\*---------------------------------------------------------------------------*/
-
-void lspjnd_quantise(float lsps[], float lsps_[], int order)
-{
-	int i, k, m;
-	float wt[LPC_ORD], lsps_hz[LPC_ORD];
-	const float *cb;
-	float se = 0.0;
-	int index;
-
-	for (i = 0; i < LPC_ORD; i++) {
-		wt[i] = 1.0;
-	}
-
-	/* convert to Hz */
-
-	for (i = 0; i < LPC_ORD; i++) {
-		lsps_hz[i] = lsps[i] * (4000.0 / PI);
-		lsps_[i] = lsps[i];
-	}
-
-	/* simple uniform scalar quantisers */
-
-	for (i = 0; i < 4; i++) {
-		k = lsp_cbjnd[i].k;
-		m = lsp_cbjnd[i].m;
-		cb = lsp_cbjnd[i].cb;
-		index = quantise(cb, &lsps_hz[i], wt, k, m, &se);
-		lsps_[i] = cb[index * k] * (PI / 4000.0);
-	}
-
-	/* VQ LSPs 5,6,7,8,9,10 */
-
-	k = lsp_cbjnd[4].k;
-	m = lsp_cbjnd[4].m;
-	cb = lsp_cbjnd[4].cb;
-	index = quantise(cb, &lsps_hz[4], &wt[4], k, m, &se);
-	//printf("k = %d m = %d c[0] %f cb[k] %f\n", k,m,cb[0],cb[k]);
-	//printf("index = %4d: ", index);
-	for (i = 4; i < LPC_ORD; i++) {
-		lsps_[i] = cb[index * k + i - 4] * (PI / 4000.0);
-		//printf("%4.f (%4.f) ", lsps_hz[i], cb[index*k+i-4]);
-	}
-	//printf("\n");
-}
-
 void compute_weights(const float *x, float *w, int ndim);
-
-/*---------------------------------------------------------------------------*\
-									      
-  lspdt_quantise
-
-  LSP difference in time quantiser.  Split VQ, encoding LSPs 1-4 with
-  one VQ, and LSPs 5-10 with a second.  Update of previous lsp memory
-  is done outside of this function to handle dT between 10 or 20ms
-  frames.
-
-  mode        action
-  ------------------
-
-  LSPDT_ALL   VQ LSPs 1-4 and 5-10
-  LSPDT_LOW   Just VQ LSPs 1-4, for LSPs 5-10 just copy previous
-  LSPDT_HIGH  Just VQ LSPs 5-10, for LSPs 1-4 just copy previous
-
-\*---------------------------------------------------------------------------*/
-
-void lspdt_quantise(float lsps[], float lsps_[], float lsps__prev[], int mode)
-{
-	int i;
-#ifdef TRY_LSPDT_VQ
-	float wt[LPC_ORD];
-	float lsps_dt[LPC_ORD];
-	int k, m;
-	int index;
-	const float *cb;
-	float se = 0.0;
-#endif				// TRY_LSPDT_VQ
-
-	//compute_weights(lsps, wt, LPC_ORD);
-#ifdef TRY_LSPDT_VQ
-	for (i = 0; i < LPC_ORD; i++) {
-		wt[i] = 1.0;
-	}
-#endif
-
-	//compute_weights(lsps, wt, LPC_ORD );
-
-	for (i = 0; i < LPC_ORD; i++) {
-#ifdef TRY_LSPDT_VQ
-		lsps_dt[i] = lsps[i] - lsps__prev[i];
-#endif
-		lsps_[i] = lsps__prev[i];
-	}
-
-	//#define TRY_LSPDT_VQ
-#ifdef TRY_LSPDT_VQ
-	/* this actually improves speech a bit, but 40ms updates works surprsingly well.... */
-	k = lsp_cbdt[0].k;
-	m = lsp_cbdt[0].m;
-	cb = lsp_cbdt[0].cb;
-	index = quantise(cb, lsps_dt, wt, k, m, &se);
-	for (i = 0; i < LPC_ORD; i++) {
-		lsps_[i] += cb[index * k + i];
-	}
-#endif
-
-}
 #endif
 
 #define MIN(a,b) ((a)<(b)?(a):(b))
@@ -413,39 +232,6 @@ void compute_weights(const float *x, float *w, int ndim)
 		w[i] = 1. / (.01 + w[i]);
 	//w[0]*=3;
 	//w[1]*=2;
-}
-
-/* LSP weight calculation ported from m-file function kindly submitted
-   by Anssi, OH3GDD */
-
-void compute_weights_anssi_mode2(const float *x, float *w, int ndim)
-{
-	int i;
-	float d[LPC_ORD];
-
-	assert(ndim == LPC_ORD);
-
-	for (i = 0; i < LPC_ORD; i++)
-		d[i] = 1.0;
-
-	d[0] = x[1];
-	for (i = 1; i < LPC_ORD - 1; i++)
-		d[i] = x[i + 1] - x[i - 1];
-	d[LPC_ORD - 1] = PI - x[8];
-	for (i = 0; i < LPC_ORD; i++) {
-		if (x[i] < ((400.0 / 4000.0) * PI))
-			w[i] = 5.0 / (0.01 + d[i]);
-		else if (x[i] < ((700.0 / 4000.0) * PI))
-			w[i] = 4.0 / (0.01 + d[i]);
-		else if (x[i] < ((1200.0 / 4000.0) * PI))
-			w[i] = 3.0 / (0.01 + d[i]);
-		else if (x[i] < ((2000.0 / 4000.0) * PI))
-			w[i] = 2.0 / (0.01 + d[i]);
-		else
-			w[i] = 1.0 / (0.01 + d[i]);
-
-		w[i] = pow(w[i] + 0.3, 0.66);
-	}
 }
 
 int find_nearest(const float *codebook, int nb_entries, float *x, int ndim)
@@ -495,260 +281,13 @@ int find_nearest_weighted(const float *codebook, int nb_entries, float *x,
 	return nearest;
 }
 
-void lspjvm_quantise(float *x, float *xq, int ndim)
-{
-	int i, n1, n2, n3;
-	float err[LPC_ORD], err2[LPC_ORD], err3[LPC_ORD];
-	float w[LPC_ORD], w2[LPC_ORD], w3[LPC_ORD];
-	const float *codebook1 = lsp_cbjvm[0].cb;
-	const float *codebook2 = lsp_cbjvm[1].cb;
-	const float *codebook3 = lsp_cbjvm[2].cb;
-
-	memzero(err, LPC_ORD * sizeof(float));
-
-	w[0] = MIN(x[0], x[1] - x[0]);
-	for (i = 1; i < ndim - 1; i++)
-		w[i] = MIN(x[i] - x[i - 1], x[i + 1] - x[i]);
-	w[ndim - 1] = MIN(x[ndim - 1] - x[ndim - 2], PI - x[ndim - 1]);
-
-	compute_weights(x, w, ndim);
-
-	n1 = find_nearest(codebook1, lsp_cbjvm[0].m, x, ndim);
-
-	for (i = 0; i < ndim; i++) {
-		xq[i] = codebook1[ndim * n1 + i];
-		err[i] = x[i] - xq[i];
-	}
-	for (i = 0; i < ndim / 2; i++) {
-		err2[i] = err[2 * i];
-		err3[i] = err[2 * i + 1];
-		w2[i] = w[2 * i];
-		w3[i] = w[2 * i + 1];
-	}
-	n2 = find_nearest_weighted(codebook2, lsp_cbjvm[1].m, err2, w2,
-				   ndim / 2);
-	n3 = find_nearest_weighted(codebook3, lsp_cbjvm[2].m, err3, w3,
-				   ndim / 2);
-
-	for (i = 0; i < ndim / 2; i++) {
-		xq[2 * i] += codebook2[ndim * n2 / 2 + i];
-		xq[2 * i + 1] += codebook3[ndim * n3 / 2 + i];
-	}
-}
-
-#ifdef __EXPERIMENTAL__
-
-#define MBEST_STAGES 4
-
-struct MBEST_LIST {
-	int index[MBEST_STAGES];	/* index of each stage that lead us to this error */
-	float error;
-};
-
-struct MBEST {
-	int entries;		/* number of entries in mbest list   */
-	struct MBEST_LIST *list;
-};
-
-static struct MBEST *mbest_create(int entries)
-{
-	int i, j;
-	struct MBEST *mbest;
-
-	assert(entries > 0);
-	mbest = (struct MBEST *)malloc(sizeof(struct MBEST));
-	assert(mbest != NULL);
-
-	mbest->entries = entries;
-	mbest->list =
-	    (struct MBEST_LIST *)malloc(entries * sizeof(struct MBEST_LIST));
-	assert(mbest->list != NULL);
-
-	for (i = 0; i < mbest->entries; i++) {
-		for (j = 0; j < MBEST_STAGES; j++)
-			mbest->list[i].index[j] = 0;
-		mbest->list[i].error = 1E32;
-	}
-
-	return mbest;
-}
-
-static void mbest_destroy(struct MBEST *mbest)
-{
-	assert(mbest != NULL);
-	free(mbest->list);
-	free(mbest);
-}
-
-/*---------------------------------------------------------------------------*\
-
-  mbest_insert
-
-  Insert the results of a vector to codebook entry comparison. The
-  list is ordered in order or error, so those entries with the
-  smallest error will be first on the list.
-
-\*---------------------------------------------------------------------------*/
-
-static void mbest_insert(struct MBEST *mbest, int index[], float error)
-{
-	int i, j, found;
-	struct MBEST_LIST *list = mbest->list;
-	int entries = mbest->entries;
-
-	found = 0;
-	for (i = 0; i < entries && !found; i++)
-		if (error < list[i].error) {
-			found = 1;
-			for (j = entries - 1; j > i; j--)
-				list[j] = list[j - 1];
-			for (j = 0; j < MBEST_STAGES; j++)
-				list[i].index[j] = index[j];
-			list[i].error = error;
-		}
-}
-
-static void mbest_print(char title[], struct MBEST *mbest)
-{
-	int i, j;
-
-	printf("%s\n", title);
-	for (i = 0; i < mbest->entries; i++) {
-		for (j = 0; j < MBEST_STAGES; j++)
-			printf("  %4d ", mbest->list[i].index[j]);
-		printf(" %f\n", mbest->list[i].error);
-	}
-}
-
-/*---------------------------------------------------------------------------*\
-
-  mbest_search
-
-  Searches vec[] to a codebbook of vectors, and maintains a list of the mbest
-  closest matches.
-
-\*---------------------------------------------------------------------------*/
-
-static void mbest_search(const float *cb,	/* VQ codebook to search         */
-			 float vec[],	/* target vector                 */
-			 float w[],	/* weighting vector              */
-			 int k,	/* dimension of vector           */
-			 int m,	/* number on entries in codebook */
-			 struct MBEST *mbest,	/* list of closest matches       */
-			 int index[]	/* indexes that lead us here     */
-    )
-{
-	float e;
-	int i, j;
-	float diff;
-
-	for (j = 0; j < m; j++) {
-		e = 0.0;
-		for (i = 0; i < k; i++) {
-			diff = cb[j * k + i] - vec[i];
-			e += pow(diff * w[i], 2.0);
-		}
-		index[0] = j;
-		mbest_insert(mbest, index, e);
-	}
-}
-
-/* 3 stage VQ LSP quantiser.  Design and guidance kindly submitted by Anssi, OH3GDD */
-
-void lspanssi_quantise(float *x, float *xq, int ndim, int mbest_entries)
-{
-	int i, j, n1, n2, n3, n4;
-	float w[LPC_ORD];
-	const float *codebook1 = lsp_cbvqanssi[0].cb;
-	const float *codebook2 = lsp_cbvqanssi[1].cb;
-	const float *codebook3 = lsp_cbvqanssi[2].cb;
-	const float *codebook4 = lsp_cbvqanssi[3].cb;
-	struct MBEST *mbest_stage1, *mbest_stage2, *mbest_stage3, *mbest_stage4;
-	float target[LPC_ORD];
-	int index[MBEST_STAGES];
-
-	mbest_stage1 = mbest_create(mbest_entries);
-	mbest_stage2 = mbest_create(mbest_entries);
-	mbest_stage3 = mbest_create(mbest_entries);
-	mbest_stage4 = mbest_create(mbest_entries);
-	for (i = 0; i < MBEST_STAGES; i++)
-		index[i] = 0;
-
-	compute_weights_anssi_mode2(x, w, ndim);
-
-#ifdef DUMP
-	dump_weights(w, ndim);
-#endif
-
-	/* Stage 1 */
-
-	mbest_search(codebook1, x, w, ndim, lsp_cbvqanssi[0].m, mbest_stage1,
-		     index);
-	mbest_print("Stage 1:", mbest_stage1);
-
-	/* Stage 2 */
-
-	for (j = 0; j < mbest_entries; j++) {
-		index[1] = n1 = mbest_stage1->list[j].index[0];
-		for (i = 0; i < ndim; i++)
-			target[i] = x[i] - codebook1[ndim * n1 + i];
-		mbest_search(codebook2, target, w, ndim, lsp_cbvqanssi[1].m,
-			     mbest_stage2, index);
-	}
-	mbest_print("Stage 2:", mbest_stage2);
-
-	/* Stage 3 */
-
-	for (j = 0; j < mbest_entries; j++) {
-		index[2] = n1 = mbest_stage2->list[j].index[1];
-		index[1] = n2 = mbest_stage2->list[j].index[0];
-		for (i = 0; i < ndim; i++)
-			target[i] =
-			    x[i] - codebook1[ndim * n1 + i] -
-			    codebook2[ndim * n2 + i];
-		mbest_search(codebook3, target, w, ndim, lsp_cbvqanssi[2].m,
-			     mbest_stage3, index);
-	}
-	mbest_print("Stage 3:", mbest_stage3);
-
-	/* Stage 4 */
-
-	for (j = 0; j < mbest_entries; j++) {
-		index[3] = n1 = mbest_stage3->list[j].index[2];
-		index[2] = n2 = mbest_stage3->list[j].index[1];
-		index[1] = n3 = mbest_stage3->list[j].index[0];
-		for (i = 0; i < ndim; i++)
-			target[i] =
-			    x[i] - codebook1[ndim * n1 + i] -
-			    codebook2[ndim * n2 + i] - codebook3[ndim * n3 + i];
-		mbest_search(codebook4, target, w, ndim, lsp_cbvqanssi[3].m,
-			     mbest_stage4, index);
-	}
-	mbest_print("Stage 4:", mbest_stage4);
-
-	n1 = mbest_stage4->list[0].index[3];
-	n2 = mbest_stage4->list[0].index[2];
-	n3 = mbest_stage4->list[0].index[1];
-	n4 = mbest_stage4->list[0].index[0];
-	for (i = 0; i < ndim; i++)
-		xq[i] =
-		    codebook1[ndim * n1 + i] + codebook2[ndim * n2 + i] +
-		    codebook3[ndim * n3 + i] + codebook4[ndim * n4 + i];
-
-	mbest_destroy(mbest_stage1);
-	mbest_destroy(mbest_stage2);
-	mbest_destroy(mbest_stage3);
-	mbest_destroy(mbest_stage4);
-}
-#endif
-
-int check_lsp_order(float lsp[], int lpc_order)
+int check_lsp_order(float lsp[], int order)
 {
 	int i;
 	float tmp;
 	int swaps = 0;
 
-	for (i = 1; i < lpc_order; i++)
+	for (i = 1; i < order; i++)
 		if (lsp[i] < lsp[i - 1]) {
 			//fprintf(stderr, "swap %d\n",i);
 			swaps++;
@@ -759,16 +298,6 @@ int check_lsp_order(float lsp[], int lpc_order)
 		}
 
 	return swaps;
-}
-
-void force_min_lsp_dist(float lsp[], int lpc_order)
-{
-	int i;
-
-	for (i = 1; i < lpc_order; i++)
-		if ((lsp[i] - lsp[i - 1]) < 0.01) {
-			lsp[i] += 0.01;
-		}
 }
 
 /*---------------------------------------------------------------------------*\
@@ -783,7 +312,7 @@ void force_min_lsp_dist(float lsp[], int lpc_order)
    of this text is on the MBE vocoder, and this is a freq domain
    adaptation of post filtering commonly used in CELP.
 
-   I used the Octave simulation lpcpf.m to get an understaing of the
+   I used the Octave simulation lpcpf.m to get an understanding of the
    algorithm.
 
    Requires two more FFTs which is significantly more MIPs.  However
@@ -800,52 +329,21 @@ void force_min_lsp_dist(float lsp[], int lpc_order)
 
 \*---------------------------------------------------------------------------*/
 
-void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
-		     float ak[], int order, int dump, float beta, float gamma,
-		     int bass_boost)
+void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, COMP Pw[], float ak[],
+		     int order, float beta, float gamma,
+		     int bass_boost, float E)
 {
-	(void)model;
-#ifndef DUMP
-	(void)dump;
-#endif
-
 	int i;
 	COMP x[FFT_ENC];	/* input to FFTs                */
-	COMP Aw[FFT_ENC];	/* LPC analysis filter spectrum */
 	COMP Ww[FFT_ENC];	/* weighting spectrum           */
 	float Rw[FFT_ENC];	/* R = WA                       */
 	float e_before, e_after, gain;
-	float Pfw[FFT_ENC];	/* Post filter mag spectrum     */
+	float Pfw;
 	float max_Rw, min_Rw;
 	float coeff;
-	TIMER_VAR(tstart, tfft1, taw, tfft2, tww, tr);
+	PROFILE_VAR(tstart, tfft1, taw, tfft2, tww, tr);
 
-	TIMER_SAMPLE(tstart);
-
-	/* Determine LPC inverse filter spectrum 1/A(exp(jw)) ----------- */
-
-	/* we actually want the synthesis filter A(exp(jw)) but the
-	   inverse (analysis) filter is easier to find as it's FIR, we
-	   just use the inverse of 1/A to get the synthesis filter
-	   A(exp(jw)) */
-
-	for (i = 0; i < FFT_ENC; i++) {
-		x[i].real = 0.0;
-		x[i].imag = 0.0;
-	}
-
-	for (i = 0; i <= order; i++)
-		x[i].real = ak[i];
-	kiss_fft(fft_fwd_cfg, (kiss_fft_cpx *) x, (kiss_fft_cpx *) Aw);
-
-	TIMER_SAMPLE_AND_LOG(tfft1, tstart, "        fft1");
-
-	for (i = 0; i < FFT_ENC / 2; i++) {
-		Aw[i].real =
-		    1.0 / (Aw[i].real * Aw[i].real + Aw[i].imag * Aw[i].imag);
-	}
-
-	TIMER_SAMPLE_AND_LOG(taw, tfft1, "        Aw");
+	PROFILE_SAMPLE(tstart);
 
 	/* Determine weighting filter spectrum W(exp(jw)) --------------- */
 
@@ -862,20 +360,20 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
 	}
 	kiss_fft(fft_fwd_cfg, (kiss_fft_cpx *) x, (kiss_fft_cpx *) Ww);
 
-	TIMER_SAMPLE_AND_LOG(tfft2, taw, "        fft2");
+	PROFILE_SAMPLE_AND_LOG(tfft2, taw, "        fft2");
 
 	for (i = 0; i < FFT_ENC / 2; i++) {
 		Ww[i].real = Ww[i].real * Ww[i].real + Ww[i].imag * Ww[i].imag;
 	}
 
-	TIMER_SAMPLE_AND_LOG(tww, tfft2, "        Ww");
+	PROFILE_SAMPLE_AND_LOG(tww, tfft2, "        Ww");
 
 	/* Determined combined filter R = WA --------------------------- */
 
 	max_Rw = 0.0;
 	min_Rw = 1E32;
 	for (i = 0; i < FFT_ENC / 2; i++) {
-		Rw[i] = sqrtf(Ww[i].real * Aw[i].real);
+		Rw[i] = sqrtf(Ww[i].real * Pw[i].real);
 		if (Rw[i] > max_Rw)
 			max_Rw = Rw[i];
 		if (Rw[i] < min_Rw)
@@ -883,12 +381,7 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
 
 	}
 
-	TIMER_SAMPLE_AND_LOG(tr, tww, "        R");
-
-#ifdef DUMP
-	if (dump)
-		dump_Rw(Rw);
-#endif
+	PROFILE_SAMPLE_AND_LOG(tr, tww, "        R");
 
 	/* create post filter mag spectrum and apply ------------------ */
 
@@ -900,21 +393,17 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
 
 	/* apply post filter and measure energy  */
 
-#ifdef DUMP
-	if (dump)
-		dump_Pwb(Pw);
-#endif
-
 	e_after = 1E-4;
 	for (i = 0; i < FFT_ENC / 2; i++) {
-		Pfw[i] = powf(Rw[i], beta);
-		Pw[i].real *= Pfw[i] * Pfw[i];
+		Pfw = powf(Rw[i], beta);
+		Pw[i].real *= Pfw * Pfw;
 		e_after += Pw[i].real;
 	}
 	gain = e_before / e_after;
 
-	/* apply gain factor to normalise energy */
+	/* apply gain factor to normalise energy, and LPC Energy */
 
+	gain *= E;
 	for (i = 0; i < FFT_ENC / 2; i++) {
 		Pw[i].real *= gain;
 	}
@@ -927,7 +416,7 @@ void lpc_post_filter(kiss_fft_cfg fft_fwd_cfg, MODEL * model, COMP Pw[],
 		}
 	}
 
-	TIMER_SAMPLE_AND_LOG2(tr, "        filt");
+	PROFILE_SAMPLE_AND_LOG2(tr, "        filt");
 }
 
 /*---------------------------------------------------------------------------*\
@@ -944,14 +433,14 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 	       int order, MODEL * model,	/* sinusoidal model parameters for this frame */
 	       float E,		/* energy term */
 	       float *snr,	/* signal to noise ratio for this frame in dB */
-	       int dump,	/* true to dump sample to dump file */
 	       int sim_pf,	/* true to simulate a post filter */
 	       int pf,		/* true to LPC post filter */
 	       int bass_boost,	/* enable LPC filter 0-1khz 3dB boost */
-	       float beta, float gamma	/* LPC post filter parameters */
+	       float beta, float gamma,	/* LPC post filter parameters */
+	       COMP Aw[]	/* output power spectrum */
     )
 {
-	COMP pw[FFT_ENC];	/* input to FFT for power spectrum */
+	COMP a[FFT_ENC];	/* input to FFT for power spectrum */
 	COMP Pw[FFT_ENC];	/* output power spectrum */
 	int i, m;		/* loop variables */
 	int am, bm;		/* limits of current band */
@@ -959,43 +448,40 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 	float Em;		/* energy in band */
 	float Am;		/* spectral amplitude sample */
 	float signal, noise;
-	TIMER_VAR(tstart, tfft, tpw, tpf);
+	PROFILE_VAR(tstart, tfft, tpw, tpf);
 
-	TIMER_SAMPLE(tstart);
+	PROFILE_SAMPLE(tstart);
 
 	r = TWO_PI / (FFT_ENC);
 
 	/* Determine DFT of A(exp(jw)) -------------------------------------------- */
 
 	for (i = 0; i < FFT_ENC; i++) {
-		pw[i].real = 0.0;
-		pw[i].imag = 0.0;
+		a[i].real = 0.0;
+		a[i].imag = 0.0;
+		Pw[i].real = 0.0;
+		Pw[i].imag = 0.0;
 	}
 
 	for (i = 0; i <= order; i++)
-		pw[i].real = ak[i];
-	kiss_fft(fft_fwd_cfg, (kiss_fft_cpx *) pw, (kiss_fft_cpx *) Pw);
+		a[i].real = ak[i];
+	kiss_fft(fft_fwd_cfg, (kiss_fft_cpx *) a, (kiss_fft_cpx *) Aw);
 
-	TIMER_SAMPLE_AND_LOG(tfft, tstart, "      fft");
+	PROFILE_SAMPLE_AND_LOG(tfft, tstart, "      fft");
 
 	/* Determine power spectrum P(w) = E/(A(exp(jw))^2 ------------------------ */
 
 	for (i = 0; i < FFT_ENC / 2; i++)
 		Pw[i].real =
-		    E / (Pw[i].real * Pw[i].real + Pw[i].imag * Pw[i].imag);
+		    1.0 / (Aw[i].real * Aw[i].real + Aw[i].imag * Aw[i].imag);
 
-	TIMER_SAMPLE_AND_LOG(tpw, tfft, "      Pw");
+	PROFILE_SAMPLE_AND_LOG(tpw, tfft, "      Pw");
 
 	if (pf)
-		lpc_post_filter(fft_fwd_cfg, model, Pw, ak, order, dump, beta,
-				gamma, bass_boost);
+		lpc_post_filter(fft_fwd_cfg, Pw, ak, order, beta, gamma,
+				bass_boost, E);
 
-	TIMER_SAMPLE_AND_LOG(tpf, tpw, "      LPC post filter");
-
-#ifdef DUMP
-	if (dump)
-		dump_Pw(Pw);
-#endif
+	PROFILE_SAMPLE_AND_LOG(tpf, tpw, "      LPC post filter");
 
 	/* Determine magnitudes from P(w) ---------------------------------------- */
 
@@ -1036,7 +522,7 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 	}
 	*snr = 10.0 * log10f(signal / noise);
 
-	TIMER_SAMPLE_AND_LOG2(tpf, "      rec");
+	PROFILE_SAMPLE_AND_LOG2(tpf, "      rec");
 }
 
 /*---------------------------------------------------------------------------*\
@@ -1049,19 +535,19 @@ void aks_to_M2(kiss_fft_cfg fft_fwd_cfg, float ak[],	/* LPC's */
 
 \*---------------------------------------------------------------------------*/
 
-int encode_Wo(float Wo)
+int encode_Wo(float Wo, int bits)
 {
-	int index;
+	int index, Wo_levels = 1 << bits;
 	float Wo_min = TWO_PI / P_MAX;
 	float Wo_max = TWO_PI / P_MIN;
 	float norm;
 
 	norm = (Wo - Wo_min) / (Wo_max - Wo_min);
-	index = floorf(WO_LEVELS * norm + 0.5);
+	index = floorf(Wo_levels * norm + 0.5);
 	if (index < 0)
 		index = 0;
-	if (index > (WO_LEVELS - 1))
-		index = WO_LEVELS - 1;
+	if (index > (Wo_levels - 1))
+		index = Wo_levels - 1;
 
 	return index;
 }
@@ -1076,14 +562,15 @@ int encode_Wo(float Wo)
 
 \*---------------------------------------------------------------------------*/
 
-float decode_Wo(int index)
+float decode_Wo(int index, int bits)
 {
 	float Wo_min = TWO_PI / P_MAX;
 	float Wo_max = TWO_PI / P_MIN;
 	float step;
 	float Wo;
+	int Wo_levels = 1 << bits;
 
-	step = (Wo_max - Wo_min) / WO_LEVELS;
+	step = (Wo_max - Wo_min) / Wo_levels;
 	Wo = Wo_min + step * (index);
 
 	return Wo;
@@ -1091,84 +578,54 @@ float decode_Wo(int index)
 
 /*---------------------------------------------------------------------------*\
                                                        
-  FUNCTION....: encode_Wo_dt()	     
+  FUNCTION....: encode_log_Wo()	     
   AUTHOR......: David Rowe			      
-  DATE CREATED: 6 Nov 2011 
+  DATE CREATED: 22/8/2010 
 
-  Encodes Wo difference from last frame.
+  Encodes Wo in the log domain using a WO_LEVELS quantiser.
 
 \*---------------------------------------------------------------------------*/
 
-int encode_Wo_dt(float Wo, float prev_Wo)
+int encode_log_Wo(float Wo, int bits)
 {
-	int index, mask, max_index, min_index;
+	int index, Wo_levels = 1 << bits;
 	float Wo_min = TWO_PI / P_MAX;
 	float Wo_max = TWO_PI / P_MIN;
 	float norm;
 
-	norm = (Wo - prev_Wo) / (Wo_max - Wo_min);
-	index = floor(WO_LEVELS * norm + 0.5);
-	//printf("ENC index: %d ", index);
-
-	/* hard limit */
-
-	max_index = (1 << (WO_DT_BITS - 1)) - 1;
-	min_index = -(max_index + 1);
-	if (index > max_index)
-		index = max_index;
-	if (index < min_index)
-		index = min_index;
-	//printf("max_index: %d  min_index: %d hard index: %d ",
-	//     max_index,  min_index, index);
-
-	/* mask so that only LSB WO_DT_BITS remain, bit WO_DT_BITS is the sign bit */
-
-	mask = ((1 << WO_DT_BITS) - 1);
-	index &= mask;
-	//printf("mask: 0x%x index: 0x%x\n", mask, index);
+	norm =
+	    (log10f(Wo) - log10f(Wo_min)) / (log10f(Wo_max) - log10f(Wo_min));
+	index = floorf(Wo_levels * norm + 0.5);
+	if (index < 0)
+		index = 0;
+	if (index > (Wo_levels - 1))
+		index = Wo_levels - 1;
 
 	return index;
 }
 
 /*---------------------------------------------------------------------------*\
                                                        
-  FUNCTION....: decode_Wo_dt()	     
+  FUNCTION....: decode_log_Wo()	     
   AUTHOR......: David Rowe			      
-  DATE CREATED: 6 Nov 2011 
+  DATE CREATED: 22/8/2010 
 
-  Decodes Wo using WO_DT_BITS difference from last frame.
+  Decodes Wo using a WO_LEVELS quantiser in the log domain.
 
 \*---------------------------------------------------------------------------*/
 
-float decode_Wo_dt(int index, float prev_Wo)
+float decode_log_Wo(int index, int bits)
 {
 	float Wo_min = TWO_PI / P_MAX;
 	float Wo_max = TWO_PI / P_MIN;
 	float step;
 	float Wo;
-	int mask;
+	int Wo_levels = 1 << bits;
 
-	/* sign extend index */
+	step = (log10f(Wo_max) - log10f(Wo_min)) / Wo_levels;
+	Wo = log10f(Wo_min) + step * (index);
 
-	//printf("DEC index: %d ");
-	if (index & (1 << (WO_DT_BITS - 1))) {
-		mask = ~((1 << WO_DT_BITS) - 1);
-		index |= mask;
-	}
-	//printf("DEC mask: 0x%x  index: %d \n", mask, index);
-
-	step = (Wo_max - Wo_min) / WO_LEVELS;
-	Wo = prev_Wo + step * (index);
-
-	/* bit errors can make us go out of range leading to all sorts of
-	   probs like seg faults */
-
-	if (Wo > Wo_max)
-		Wo = Wo_max;
-	if (Wo < Wo_min)
-		Wo = Wo_min;
-
-	return Wo;
+	return powf(10, Wo);
 }
 
 /*---------------------------------------------------------------------------*\
@@ -1188,7 +645,7 @@ float speech_to_uq_lsps(float lsp[],
 {
 	int i, roots;
 	float Wn[M];
-	float R[LPC_MAX + 1];
+	float R[order + 1];
 	float e, E;
 
 	e = 0.0;
@@ -1220,7 +677,7 @@ float speech_to_uq_lsps(float lsp[],
 	for (i = 0; i <= order; i++)
 		ak[i] *= powf(0.994, (float)i);
 
-	roots = lpc_to_lspc(ak, order, lsp, 5, LSP_DELTA1);
+	roots = codec2_lpc_to_lsp(ak, order, lsp, 5, LSP_DELTA1);
 	if (roots != order) {
 		/* if root finding fails use some benign LSP values instead */
 		for (i = 0; i < order; i++)
@@ -1244,13 +701,13 @@ float speech_to_uq_lsps(float lsp[],
 void encode_lsps_scalar(int indexes[], float lsp[], int order)
 {
 	int i, k, m;
-	float wt[2];
-	float lsp_hz[LPC_MAX];
+	float wt[1];
+	float lsp_hz[order];
 	const float *cb;
 	float se = 0;
 
-	memzero(wt, 2 * sizeof(float));
-	memzero(lsp_hz, LPC_MAX * sizeof(float));
+	memzero(wt, 1 * sizeof(float));
+	memzero(lsp_hz, order * sizeof(float));
 
 	/* convert from radians to Hz so we can use human readable
 	   frequencies */
@@ -1283,7 +740,7 @@ void encode_lsps_scalar(int indexes[], float lsp[], int order)
 void decode_lsps_scalar(float lsp[], int indexes[], int order)
 {
 	int i, k;
-	float lsp_hz[LPC_MAX];
+	float lsp_hz[order];
 	const float *cb;
 
 	for (i = 0; i < order; i++) {
@@ -1298,181 +755,6 @@ void decode_lsps_scalar(float lsp[], int indexes[], int order)
 		lsp[i] = (PI / 4000.0) * lsp_hz[i];
 }
 
-#ifdef __EXPERIMENTAL__
-
-/*---------------------------------------------------------------------------*\
-                                                       
-  FUNCTION....: encode_lsps_diff_freq_vq()	     
-  AUTHOR......: David Rowe			      
-  DATE CREATED: 15 November 2011
-
-  Twenty-five bit LSP quantiser.  LSPs 1-4 are quantised with scalar
-  LSP differences (in frequency, i.e difference from the previous
-  LSP).  LSPs 5-10 are quantised with a VQ trained generated using
-  vqtrainjnd.c
-
-\*---------------------------------------------------------------------------*/
-
-void encode_lsps_diff_freq_vq(int indexes[], float lsp[], int order)
-{
-	int i, k, m;
-	float lsp_hz[LPC_MAX];
-	float lsp__hz[LPC_MAX];
-	float dlsp[LPC_MAX];
-	float dlsp_[LPC_MAX];
-	float wt[LPC_MAX];
-	const float *cb;
-	float se;
-
-	for (i = 0; i < LPC_ORD; i++) {
-		wt[i] = 1.0;
-	}
-
-	/* convert from radians to Hz so we can use human readable
-	   frequencies */
-
-	for (i = 0; i < order; i++)
-		lsp_hz[i] = (4000.0 / PI) * lsp[i];
-
-	/* scalar quantisers for LSP differences 1..4 */
-
-	wt[0] = 1.0;
-	for (i = 0; i < 4; i++) {
-		if (i)
-			dlsp[i] = lsp_hz[i] - lsp__hz[i - 1];
-		else
-			dlsp[0] = lsp_hz[0];
-
-		k = lsp_cbd[i].k;
-		m = lsp_cbd[i].m;
-		cb = lsp_cbd[i].cb;
-		indexes[i] = quantise(cb, &dlsp[i], wt, k, m, &se);
-		dlsp_[i] = cb[indexes[i] * k];
-
-		if (i)
-			lsp__hz[i] = lsp__hz[i - 1] + dlsp_[i];
-		else
-			lsp__hz[0] = dlsp_[0];
-	}
-
-	/* VQ LSPs 5,6,7,8,9,10 */
-
-	k = lsp_cbjnd[4].k;
-	m = lsp_cbjnd[4].m;
-	cb = lsp_cbjnd[4].cb;
-	indexes[4] = quantise(cb, &lsp_hz[4], &wt[4], k, m, &se);
-}
-
-/*---------------------------------------------------------------------------*\
-                                                       
-  FUNCTION....: decode_lsps_diff_freq_vq()	     
-  AUTHOR......: David Rowe			      
-  DATE CREATED: 15 Nov 2011
-
-  From a vector of quantised LSP indexes, returns the quantised
-  (floating point) LSPs.
-
-\*---------------------------------------------------------------------------*/
-
-void decode_lsps_diff_freq_vq(float lsp_[], int indexes[], int order)
-{
-	int i, k;
-	float dlsp_[LPC_MAX];
-	float lsp__hz[LPC_MAX];
-	const float *cb;
-
-	/* scalar LSP differences */
-
-	for (i = 0; i < 4; i++) {
-		cb = lsp_cbd[i].cb;
-		dlsp_[i] = cb[indexes[i]];
-		if (i)
-			lsp__hz[i] = lsp__hz[i - 1] + dlsp_[i];
-		else
-			lsp__hz[0] = dlsp_[0];
-	}
-
-	/* VQ */
-
-	k = lsp_cbjnd[4].k;
-	cb = lsp_cbjnd[4].cb;
-	for (i = 4; i < order; i++)
-		lsp__hz[i] = cb[indexes[4] * k + i - 4];
-
-	/* convert back to radians */
-
-	for (i = 0; i < order; i++)
-		lsp_[i] = (PI / 4000.0) * lsp__hz[i];
-}
-
-/*---------------------------------------------------------------------------*\
-                                                       
-  FUNCTION....: encode_lsps_diff_time()	     
-  AUTHOR......: David Rowe			      
-  DATE CREATED: 12 Sep 2012
-
-  Encode difference from preious frames's LSPs using
-  3,3,2,2,2,2,1,1,1,1 scalar quantisers (18 bits total).
-
-\*---------------------------------------------------------------------------*/
-
-void encode_lsps_diff_time(int indexes[],
-			   float lsps[], float lsps__prev[], int order)
-{
-	int i, k, m;
-	float lsps_dt[LPC_ORD];
-	float wt[LPC_MAX];
-	const float *cb;
-	float se;
-
-	/* Determine difference in time and convert from radians to Hz so
-	   we can use human readable frequencies */
-
-	for (i = 0; i < LPC_ORD; i++) {
-		lsps_dt[i] = (4000 / PI) * (lsps[i] - lsps__prev[i]);
-	}
-
-	/* scalar quantisers */
-
-	wt[0] = 1.0;
-	for (i = 0; i < order; i++) {
-		k = lsp_cbdt[i].k;
-		m = lsp_cbdt[i].m;
-		cb = lsp_cbdt[i].cb;
-		indexes[i] = quantise(cb, &lsps_dt[i], wt, k, m, &se);
-	}
-
-}
-
-/*---------------------------------------------------------------------------*\
-                                                       
-  FUNCTION....: decode_lsps_diff_time()	     
-  AUTHOR......: David Rowe			      
-  DATE CREATED: 15 Nov 2011
-
-  From a quantised LSP indexes, returns the quantised
-  (floating point) LSPs.
-
-\*---------------------------------------------------------------------------*/
-
-void decode_lsps_diff_time(float lsps_[],
-			   int indexes[], float lsps__prev[], int order)
-{
-	int i, k;
-	const float *cb;
-
-	for (i = 0; i < order; i++)
-		lsps_[i] = lsps__prev[i];
-
-	for (i = 0; i < order; i++) {
-		k = lsp_cbdt[i].k;
-		cb = lsp_cbdt[i].cb;
-		lsps_[i] += (PI / 4000.0) * cb[indexes[i] * k];
-	}
-
-}
-#endif
-
 /*---------------------------------------------------------------------------*\
                                                        
   FUNCTION....: encode_lsps_vq()	     
@@ -1483,42 +765,40 @@ void decode_lsps_diff_time(float lsps_[],
 
 \*---------------------------------------------------------------------------*/
 
-void encode_lsps_vq(int *indexes, float *x, float *xq, int ndim)
+void encode_lsps_vq(int *indexes, float *x, float *xq, int order)
 {
 	int i, n1, n2, n3;
-	float err[LPC_ORD], err2[LPC_ORD], err3[LPC_ORD];
-	float w[LPC_ORD], w2[LPC_ORD], w3[LPC_ORD];
+	float err[order], err2[order], err3[order];
+	float w[order], w2[order], w3[order];
 	const float *codebook1 = lsp_cbjvm[0].cb;
 	const float *codebook2 = lsp_cbjvm[1].cb;
 	const float *codebook3 = lsp_cbjvm[2].cb;
 
-	memzero(err, LPC_ORD * sizeof(float));
-
-	assert(ndim <= LPC_ORD);
+	memzero(err, order * sizeof(float));
 
 	w[0] = MIN(x[0], x[1] - x[0]);
-	for (i = 1; i < ndim - 1; i++)
+	for (i = 1; i < order - 1; i++)
 		w[i] = MIN(x[i] - x[i - 1], x[i + 1] - x[i]);
-	w[ndim - 1] = MIN(x[ndim - 1] - x[ndim - 2], PI - x[ndim - 1]);
+	w[order - 1] = MIN(x[order - 1] - x[order - 2], PI - x[order - 1]);
 
-	compute_weights(x, w, ndim);
+	compute_weights(x, w, order);
 
-	n1 = find_nearest(codebook1, lsp_cbjvm[0].m, x, ndim);
+	n1 = find_nearest(codebook1, lsp_cbjvm[0].m, x, order);
 
-	for (i = 0; i < ndim; i++) {
-		xq[i] = codebook1[ndim * n1 + i];
+	for (i = 0; i < order; i++) {
+		xq[i] = codebook1[order * n1 + i];
 		err[i] = x[i] - xq[i];
 	}
-	for (i = 0; i < ndim / 2; i++) {
+	for (i = 0; i < order / 2; i++) {
 		err2[i] = err[2 * i];
 		err3[i] = err[2 * i + 1];
 		w2[i] = w[2 * i];
 		w3[i] = w[2 * i + 1];
 	}
 	n2 = find_nearest_weighted(codebook2, lsp_cbjvm[1].m, err2, w2,
-				   ndim / 2);
+				   order / 2);
 	n3 = find_nearest_weighted(codebook3, lsp_cbjvm[2].m, err3, w3,
-				   ndim / 2);
+				   order / 2);
 
 	indexes[0] = n1;
 	indexes[1] = n2;
@@ -1533,7 +813,7 @@ void encode_lsps_vq(int *indexes, float *x, float *xq, int ndim)
 
 \*---------------------------------------------------------------------------*/
 
-void decode_lsps_vq(int *indexes, float *xq, int ndim)
+void decode_lsps_vq(int *indexes, float *xq, int order, int stages)
 {
 	int i, n1, n2, n3;
 	const float *codebook1 = lsp_cbjvm[0].cb;
@@ -1544,13 +824,17 @@ void decode_lsps_vq(int *indexes, float *xq, int ndim)
 	n2 = indexes[1];
 	n3 = indexes[2];
 
-	for (i = 0; i < ndim; i++) {
-		xq[i] = codebook1[ndim * n1 + i];
+	for (i = 0; i < order; i++) {
+		xq[i] = codebook1[order * n1 + i];
 	}
-	for (i = 0; i < ndim / 2; i++) {
-		xq[2 * i] += codebook2[ndim * n2 / 2 + i];
-		xq[2 * i + 1] += codebook3[ndim * n3 / 2 + i];
+
+	if (stages != 1) {
+		for (i = 0; i < order / 2; i++) {
+			xq[2 * i] += codebook2[order * n2 / 2 + i];
+			xq[2 * i + 1] += codebook3[order * n3 / 2 + i];
+		}
 	}
+
 }
 
 /*---------------------------------------------------------------------------*\
@@ -1589,99 +873,6 @@ void bw_expand_lsps(float lsp[], int order, float min_sep_low,
 	}
 }
 
-void bw_expand_lsps2(float lsp[], int order)
-{
-	int i;
-
-	for (i = 1; i < 4; i++) {
-
-		if ((lsp[i] - lsp[i - 1]) < 100.0 * (PI / 4000.0))
-			lsp[i] = lsp[i - 1] + 100.0 * (PI / 4000.0);
-
-	}
-
-	/* As quantiser gaps increased, larger BW expansion was required
-	   to prevent twinkly noises.  This may need more experiment for
-	   different quanstisers.
-	 */
-
-	for (i = 4; i < order; i++) {
-		if (lsp[i] - lsp[i - 1] < 200.0 * (PI / 4000.0))
-			lsp[i] = lsp[i - 1] + 200.0 * (PI / 4000.0);
-	}
-}
-
-/*---------------------------------------------------------------------------*\
-                                                       
-  FUNCTION....: locate_lsps_jnd_steps()	     
-  AUTHOR......: David Rowe			      
-  DATE CREATED: 27/10/2011 
-
-  Applies a form of Bandwidth Expansion (BW) to a vector of LSPs.
-  Listening tests have determined that "quantising" the position of
-  each LSP to the non-linear steps below introduces a "just noticable
-  difference" in the synthesised speech.
-
-  This operation can be used before quantisation to limit the input
-  data to the quantiser to a number of discrete steps.
-
-  This operation can also be used during quantisation as a form of
-  hysteresis in the calculation of quantiser error.  For example if
-  the quantiser target of lsp1 is 500 Hz, candidate vectors with lsp1
-  of 515 and 495 Hz sound effectively the same.
-
-\*---------------------------------------------------------------------------*/
-
-void locate_lsps_jnd_steps(float lsps[], int order)
-{
-	int i;
-	float lsp_hz, step;
-
-	assert(order == 10);
-
-	/* quantise to 25Hz steps */
-
-	step = 25;
-	for (i = 0; i < 2; i++) {
-		lsp_hz = lsps[i] * 4000.0 / PI;
-		lsp_hz = floorf(lsp_hz / step + 0.5) * step;
-		lsps[i] = lsp_hz * PI / 4000.0;
-		if (i) {
-			if (lsps[i] == lsps[i - 1])
-				lsps[i] += step * PI / 4000.0;
-
-		}
-	}
-
-	/* quantise to 50Hz steps */
-
-	step = 50;
-	for (i = 2; i < 4; i++) {
-		lsp_hz = lsps[i] * 4000.0 / PI;
-		lsp_hz = floorf(lsp_hz / step + 0.5) * step;
-		lsps[i] = lsp_hz * PI / 4000.0;
-		if (i) {
-			if (lsps[i] == lsps[i - 1])
-				lsps[i] += step * PI / 4000.0;
-
-		}
-	}
-
-	/* quantise to 100Hz steps */
-
-	step = 100;
-	for (i = 4; i < 10; i++) {
-		lsp_hz = lsps[i] * 4000.0 / PI;
-		lsp_hz = floorf(lsp_hz / step + 0.5) * step;
-		lsps[i] = lsp_hz * PI / 4000.0;
-		if (i) {
-			if (lsps[i] == lsps[i - 1])
-				lsps[i] += step * PI / 4000.0;
-
-		}
-	}
-}
-
 /*---------------------------------------------------------------------------*\
                                                        
   FUNCTION....: apply_lpc_correction()	     
@@ -1710,20 +901,20 @@ void apply_lpc_correction(MODEL * model)
 
 \*---------------------------------------------------------------------------*/
 
-int encode_energy(float e)
+int encode_energy(float e, int bits)
 {
-	int index;
+	int index, e_levels = 1 << bits;
 	float e_min = E_MIN_DB;
 	float e_max = E_MAX_DB;
 	float norm;
 
 	e = 10.0 * log10f(e);
 	norm = (e - e_min) / (e_max - e_min);
-	index = floorf(E_LEVELS * norm + 0.5);
+	index = floorf(e_levels * norm + 0.5);
 	if (index < 0)
 		index = 0;
-	if (index > (E_LEVELS - 1))
-		index = E_LEVELS - 1;
+	if (index > (e_levels - 1))
+		index = e_levels - 1;
 
 	return index;
 }
@@ -1738,57 +929,25 @@ int encode_energy(float e)
 
 \*---------------------------------------------------------------------------*/
 
-float decode_energy(int index)
+float decode_energy(int index, int bits)
 {
 	float e_min = E_MIN_DB;
 	float e_max = E_MAX_DB;
 	float step;
 	float e;
+	int e_levels = 1 << bits;
 
-	step = (e_max - e_min) / E_LEVELS;
+	step = (e_max - e_min) / e_levels;
 	e = e_min + step * (index);
 	e = powf(10.0, e / 10.0);
 
 	return e;
 }
 
-#ifdef NOT_USED
-/*---------------------------------------------------------------------------*\
-                                                       
-  FUNCTION....: decode_amplitudes()	     
-  AUTHOR......: David Rowe			      
-  DATE CREATED: 22/8/2010 
-
-  Given the amplitude quantiser indexes recovers the harmonic
-  amplitudes.
-
-\*---------------------------------------------------------------------------*/
-
-float decode_amplitudes(kiss_fft_cfg fft_fwd_cfg,
-			MODEL * model,
-			float ak[],
-			int lsp_indexes[],
-			int energy_index, float lsps[], float *e)
-{
-	float snr;
-
-	decode_lsps_scalar(lsps, lsp_indexes, LPC_ORD);
-	bw_expand_lsps(lsps, LPC_ORD);
-	lsp_to_lpcc(lsps, ak, LPC_ORD);
-	*e = decode_energy(energy_index);
-	aks_to_M2(ak, LPC_ORD, model, *e, &snr, 1, 0, 0, 1);
-	apply_lpc_correction(model);
-
-	return snr;
-}
-#endif
-
 static float ge_coeff[2] = { 0.8, 0.9 };
 
-void compute_weights2(const float *x, const float *xp, float *w, int ndim)
+void compute_weights2(const float *x, const float *xp, float *w)
 {
-	(void)ndim;
-
 	w[0] = 30;
 	w[1] = 1;
 	if (x[1] < 0) {
@@ -1825,76 +984,6 @@ void compute_weights2(const float *x, const float *xp, float *w, int ndim)
 
 /*---------------------------------------------------------------------------*\
                                                        
-  FUNCTION....: quantise_WoE()	     
-  AUTHOR......: Jean-Marc Valin & David Rowe			      
-  DATE CREATED: 29 Feb 2012
-
-  Experimental joint Wo and LPC energy vector quantiser developed by
-  Jean-Marc Valin.  Exploits correlations between the difference in
-  the log pitch and log energy from frame to frame.  For example
-  both the pitch and energy tend to only change by small amounts
-  during voiced speech, however it is important that these changes be
-  coded carefully.  During unvoiced speech they both change a lot but
-  the ear is less sensitve to errors so coarser quantisation is OK.
-
-  The ear is sensitive to log energy and loq pitch so we quantise in
-  these domains.  That way the error measure used to quantise the
-  values is close to way the ear senses errors.
-  
-  See http://jmspeex.livejournal.com/10446.html
-
-\*---------------------------------------------------------------------------*/
-
-void quantise_WoE(MODEL * model, float *e, float xq[])
-{
-	int i, n1;
-	float x[2];
-	float err[2];
-	float w[2];
-	const float *codebook1 = ge_cb[0].cb;
-	int nb_entries = ge_cb[0].m;
-	int ndim = ge_cb[0].k;
-	float Wo_min = TWO_PI / P_MAX;
-	float Wo_max = TWO_PI / P_MIN;
-
-	assert(ndim == sizeof(x) / sizeof(x[0]));
-
-	x[0] = log10f((model->Wo / PI) * 4000.0 / 50.0) / log10f(2);
-	x[1] = 10.0 * log10f(1e-4 + *e);
-
-	compute_weights2(x, xq, w, ndim);
-	for (i = 0; i < ndim; i++)
-		err[i] = x[i] - ge_coeff[i] * xq[i];
-	n1 = find_nearest_weighted(codebook1, nb_entries, err, w, ndim);
-
-	for (i = 0; i < ndim; i++) {
-		xq[i] = ge_coeff[i] * xq[i] + codebook1[ndim * n1 + i];
-		err[i] -= codebook1[ndim * n1 + i];
-	}
-
-	/*
-	   x = log2(4000*Wo/(PI*50));
-	   2^x = 4000*Wo/(PI*50)
-	   Wo = (2^x)*(PI*50)/4000;
-	 */
-
-	model->Wo = powf(2.0, xq[0]) * (PI * 50.0) / 4000.0;
-
-	/* bit errors can make us go out of range leading to all sorts of
-	   probs like seg faults */
-
-	if (model->Wo > Wo_max)
-		model->Wo = Wo_max;
-	if (model->Wo < Wo_min)
-		model->Wo = Wo_min;
-
-	model->L = PI / model->Wo;	/* if we quantise Wo re-compute L */
-
-	*e = powf(10.0, xq[1] / 10.0);
-}
-
-/*---------------------------------------------------------------------------*\
-                                                       
   FUNCTION....: encode_WoE()	     
   AUTHOR......: Jean-Marc Valin & David Rowe			      
   DATE CREATED: 11 May 2012
@@ -1923,7 +1012,7 @@ int encode_WoE(MODEL * model, float e, float xq[])
 	x[0] = log10f((model->Wo / PI) * 4000.0 / 50.0) / log10f(2);
 	x[1] = 10.0 * log10f(1e-4 + e);
 
-	compute_weights2(x, xq, w, ndim);
+	compute_weights2(x, xq, w);
 	for (i = 0; i < ndim; i++)
 		err[i] = x[i] - ge_coeff[i] * xq[i];
 	n1 = find_nearest_weighted(codebook1, nb_entries, err, w, ndim);

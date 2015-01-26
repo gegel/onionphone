@@ -54,6 +54,7 @@ extern "C" {
 #define CODEC2_MODE_1400 3
 #define CODEC2_MODE_1300 4
 #define CODEC2_MODE_1200 5
+#define CODEC2_MODE_450  6
 
 	struct CODEC2;
 
@@ -69,26 +70,8 @@ extern "C" {
 						   short speech_out[],
 						   const unsigned char *bits,
 						   float ber_est);
-	int CODEC2_WIN32SUPPORT codec2_samples_per_frame(struct CODEC2
-							 *codec2_state);
 	int CODEC2_WIN32SUPPORT codec2_bits_per_frame(struct CODEC2
 						      *codec2_state);
-
-	void CODEC2_WIN32SUPPORT codec2_set_lpc_post_filter(struct CODEC2
-							    *codec2_state,
-							    int enable,
-							    int bass_boost,
-							    float beta,
-							    float gamma);
-	int CODEC2_WIN32SUPPORT codec2_get_spare_bit_index(struct CODEC2
-							   *codec2_state);
-	int CODEC2_WIN32SUPPORT codec2_rebuild_spare_bit(struct CODEC2
-							 *codec2_state,
-							 int unpacked_bits[]);
-	void CODEC2_WIN32SUPPORT codec2_set_natural_or_gray(struct CODEC2
-							    *codec2_state,
-							    int gray);
-
 #endif
 
 #ifdef __cplusplus

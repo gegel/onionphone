@@ -333,7 +333,7 @@ void kf_factor(int n, int *facbuf)
 {
 	int p = 4;
 	double floor_sqrt;
-	floor_sqrt = floor(sqrt((double)n));
+	floor_sqrt = floorf(sqrtf((double)n));
 
 	/*factor out powers of 4, powers of 2, then any remaining primes */
 	do {
@@ -398,8 +398,8 @@ kiss_fft_cfg kiss_fft_alloc(int nfft, int inverse_fft, void *mem,
 	return st;
 }
 
-static void kiss_fft_stride(kiss_fft_cfg st, const kiss_fft_cpx * fin,
-			    kiss_fft_cpx * fout, int in_stride)
+void kiss_fft_stride(kiss_fft_cfg st, const kiss_fft_cpx * fin,
+		     kiss_fft_cpx * fout, int in_stride)
 {
 	if (fin == fout) {
 		//NOTE: this is not really an in-place FFT algorithm.
@@ -417,24 +417,3 @@ void kiss_fft(kiss_fft_cfg cfg, const kiss_fft_cpx * fin, kiss_fft_cpx * fout)
 	kiss_fft_stride(cfg, fin, fout, 1);
 }
 
-void kiss_fft_cleanup(void)
-{
-	// nothing needed any more
-}
-
-int kiss_fft_next_fast_size(int n)
-{
-	while (1) {
-		int m = n;
-		while ((m % 2) == 0)
-			m /= 2;
-		while ((m % 3) == 0)
-			m /= 3;
-		while ((m % 5) == 0)
-			m /= 5;
-		if (m <= 1)
-			break;	/* n is completely factorable by twos, threes, and fives */
-		n++;
-	}
-	return n;
-}

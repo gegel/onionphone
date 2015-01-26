@@ -32,7 +32,7 @@
 #ifndef __LSP__
 #define __LSP__
 
-int lpc_to_lspc(float *a, int lpcrdr, float *freq, int nb, float delta);
-void lsp_to_lpcc(float *freq, float *ak, unsigned int lpcrdr);
+int codec2_lpc_to_lsp(float *a, int lpcrdr, float *freq, int nb, float delta);
+void codec2_lsp_to_lpc(float *freq, float *ak, unsigned int lpcrdr);
 
 #endif

@@ -171,26 +171,6 @@ void make_analysis_window(kiss_fft_cfg fft_fwd_cfg, float w[], COMP W[])
 
 /*---------------------------------------------------------------------------*\
                                                        
-  FUNCTION....: hpf	     
-  AUTHOR......: David Rowe			      
-  DATE CREATED: 16 Nov 2010
-
-  High pass filter with a -3dB point of about 160Hz.
-
-    y(n) = -HPF_BETA*y(n-1) + x(n) - x(n-1)
- 
-\*---------------------------------------------------------------------------*/
-
-float hpf(float x, float states[])
-{
-	states[0] += -HPF_BETA * states[0] + x - states[1];
-	states[1] = x;
-
-	return states[0];
-}
-
-/*---------------------------------------------------------------------------*\
-                                                       
   FUNCTION....: dft_speech	     
   AUTHOR......: David Rowe			      
   DATE CREATED: 27/5/94 
@@ -262,7 +242,7 @@ void two_stage_pitch_refinement(MODEL * model, COMP Sw[])
 	if (model->Wo > TWO_PI / P_MIN)
 		model->Wo = TWO_PI / P_MIN;
 
-	model->L = floor(PI / model->Wo);
+	model->L = floorf(PI / model->Wo);
 }
 
 /*---------------------------------------------------------------------------*\
@@ -371,7 +351,7 @@ void estimate_amplitudes(MODEL * model, COMP Sw[], COMP W[], int est_phase)
 			/* Estimate phase of harmonic, this is expensive in CPU for
 			   embedded devicesso we make it an option */
 
-			model->phi[m] = atan2(Sw[b].imag, Sw[b].real);
+			model->phi[m] = atan2f(Sw[b].imag, Sw[b].real);
 		}
 	}
 }
@@ -388,12 +368,8 @@ void estimate_amplitudes(MODEL * model, COMP Sw[], COMP W[], int est_phase)
 \*---------------------------------------------------------------------------*/
 
 float est_voicing_mbe(MODEL * model, COMP Sw[], COMP W[], COMP Sw_[],	/* DFT of all voiced synthesised signal  */
-		      /* useful for debugging/dump file        */
-		      COMP Ew[],	/* DFT of error                          */
-		      float prev_Wo)
-{
-	(void)prev_Wo;
-
+		      COMP Ew[])
+{				/* DFT of error                          */
 	int i, l, al, bl, m;	/* loop variables */
 	COMP Am;		/* amplitude sample for this band */
 	int offset;		/* centers Hw[] about current harmonic */
@@ -424,8 +400,8 @@ float est_voicing_mbe(MODEL * model, COMP Sw[], COMP W[], COMP Sw_[],	/* DFT of 
 		Am.real = 0.0;
 		Am.imag = 0.0;
 		den = 0.0;
-		al = ceil((l - 0.5) * Wo * FFT_ENC / TWO_PI);
-		bl = ceil((l + 0.5) * Wo * FFT_ENC / TWO_PI);
+		al = ceilf((l - 0.5) * Wo * FFT_ENC / TWO_PI);
+		bl = ceilf((l + 0.5) * Wo * FFT_ENC / TWO_PI);
 
 		/* Estimate amplitude of harmonic assuming harmonic is totally voiced */
 
@@ -615,13 +591,13 @@ void synthesise(kiss_fft_cfg fft_inv_cfg, float Sn_[],	/* time domain synthesise
 	for (l = 1; l <= model->L; l++) {
 		for (i = 0, j = -N + 1; i < N - 1; i++, j++) {
 			Sw_[FFT_DEC - N + 1 + i].real +=
-			    2.0 * model->A[l] * cos(j * model->Wo * l +
-						    model->phi[l]);
+			    2.0 * model->A[l] * cosf(j * model->Wo * l +
+						     model->phi[l]);
 		}
 		for (i = N - 1, j = 0; i < 2 * N; i++, j++)
 			Sw_[j].real +=
-			    2.0 * model->A[l] * cos(j * model->Wo * l +
-						    model->phi[l]);
+			    2.0 * model->A[l] * cosf(j * model->Wo * l +
+						     model->phi[l]);
 	}
 #endif
 
