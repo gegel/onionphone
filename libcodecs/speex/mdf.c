@@ -111,15 +111,8 @@ static const spx_float_t VAR_BACKTRACK = { 16384, -12 };
 
 #else
 
-static const spx_float_t MIN_LEAK = .005f;
-
-/* Constants for the two-path filter */
-static const spx_float_t VAR1_SMOOTH = .36f;
-static const spx_float_t VAR2_SMOOTH = .7225f;
-static const spx_float_t VAR1_UPDATE = .5f;
-static const spx_float_t VAR2_UPDATE = .25f;
-static const spx_float_t VAR_BACKTRACK = 4.f;
 #define TOP16(x) (x)
+
 #endif
 
 #define PLAYBACK_DELAY 2
