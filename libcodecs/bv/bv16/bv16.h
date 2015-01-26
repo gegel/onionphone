@@ -36,4 +36,3 @@ void Reset_BV16_Decoder(struct BV16_Decoder_State *ds);
 void BV16_Decode(struct BV16_Bit_Stream *bs,
 		 struct BV16_Decoder_State *ds, int16_t * xq);
 
-void BV16_PLC(struct BV16_Decoder_State *ds, int16_t * x);
