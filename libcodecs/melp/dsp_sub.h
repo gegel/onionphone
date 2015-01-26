@@ -43,5 +43,3 @@ int unmf_pack_code(unsigned int **p_ch_beg, int *p_ch_bit, int *p_code,
 void mf_window(float input[], float mf_win_cof[], float output[], int npts);
 void mf_zerflt(float input[], float coeff[], float output[], int order,
 	       int npts);
-int mf_readbl(float input[], FILE * fp_in, int size);
-void mf_writebl(float output[], FILE * fp_out, int size);
