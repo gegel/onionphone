@@ -12,9 +12,7 @@
 
 /*
  * This file contains implementations of the functions
- * WebRtcSpl_VectorBitShiftW16()
  * WebRtcSpl_VectorBitShiftW32()
- * WebRtcSpl_VectorBitShiftW32ToW16()
  * WebRtcSpl_ScaleVector()
  * WebRtcSpl_ScaleVectorWithSat()
  * WebRtcSpl_ScaleAndAddVectors()
@@ -22,24 +20,6 @@
  */
 
 #include "signal_processing_library.h"
-
-void WebRtcSpl_VectorBitShiftW16(int16_t * res,
-				 int16_t length,
-				 const int16_t * in,
-				 int16_t right_shifts)
-{
-	int i;
-
-	if (right_shifts > 0) {
-		for (i = length; i > 0; i--) {
-			(*res++) = ((*in++) >> right_shifts);
-		}
-	} else {
-		for (i = length; i > 0; i--) {
-			(*res++) = ((*in++) << (-right_shifts));
-		}
-	}
-}
 
 void WebRtcSpl_VectorBitShiftW32(int32_t * out_vector,
 				 int16_t vector_length,
@@ -55,25 +35,6 @@ void WebRtcSpl_VectorBitShiftW32(int32_t * out_vector,
 	} else {
 		for (i = vector_length; i > 0; i--) {
 			(*out_vector++) = ((*in_vector++) << (-right_shifts));
-		}
-	}
-}
-
-void WebRtcSpl_VectorBitShiftW32ToW16(int16_t * res,
-				      int16_t length,
-				      const int32_t * in,
-				      int16_t right_shifts)
-{
-	int i;
-
-	if (right_shifts >= 0) {
-		for (i = length; i > 0; i--) {
-			(*res++) = (int16_t) ((*in++) >> right_shifts);
-		}
-	} else {
-		int16_t left_shifts = -right_shifts;
-		for (i = length; i > 0; i--) {
-			(*res++) = (int16_t) ((*in++) << left_shifts);
 		}
 	}
 }
@@ -146,31 +107,3 @@ void WebRtcSpl_ScaleAndAddVectors(const int16_t * in1,
 	}
 }
 
-#if !(defined(WEBRTC_ANDROID) && defined(WEBRTC_ARCH_ARM_NEON))
-int WebRtcSpl_ScaleAndAddVectorsWithRound(const int16_t * in_vector1,
-					  int16_t in_vector1_scale,
-					  const int16_t * in_vector2,
-					  int16_t in_vector2_scale,
-					  int right_shifts,
-					  int16_t * out_vector, int length)
-{
-	int i = 0;
-	int round_value = (1 << right_shifts) >> 1;
-
-	if (in_vector1 == NULL || in_vector2 == NULL || out_vector == NULL ||
-	    length <= 0 || right_shifts < 0) {
-		return -1;
-	}
-
-	for (i = 0; i < length; i++) {
-		out_vector[i] =
-		    (int16_t) ((WEBRTC_SPL_MUL_16_16
-				(in_vector1[i], in_vector1_scale)
-				+ WEBRTC_SPL_MUL_16_16(in_vector2[i],
-						       in_vector2_scale)
-				+ round_value) >> right_shifts);
-	}
-
-	return 0;
-}
-#endif

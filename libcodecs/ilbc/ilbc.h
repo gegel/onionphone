@@ -141,45 +141,6 @@ extern "C" {
 	} iLBC_Dec_Inst_t;
 
 
-  /****************************************************************************
-   * WebRtcIlbcfix_XxxAssign(...)
-   *
-   * These functions assigns the encoder/decoder instance to the specified
-   * memory location
-   *
-   * Input:
-   *      - XXX_xxxinst       : Pointer to created instance that should be
-   *                            assigned
-   *      - ILBCXXX_inst_Addr : Pointer to the desired memory space
-   *      - size              : The size that this structure occupies (in int16_t)
-   *
-   * Return value             :  0 - Ok
-   *                            -1 - Error
-   */
-
-	int16_t WebRtcIlbcfix_EncoderAssign(iLBC_Enc_Inst_t **
-						  iLBC_encinst,
-						  int16_t *
-						  ILBCENC_inst_Addr,
-						  int16_t * size);
-	int16_t WebRtcIlbcfix_DecoderAssign(iLBC_Dec_Inst_t **
-						  iLBC_decinst,
-						  int16_t *
-						  ILBCDEC_inst_Addr,
-						  int16_t * size);
-
-  /****************************************************************************
-   * WebRtcIlbcfix_XxxAssign(...)
-   *
-   * These functions create a instance to the specified structure
-   *
-   * Input:
-   *      - XXX_inst          : Pointer to created instance that should be created
-   *
-   * Return value             :  0 - Ok
-   *                            -1 - Error
-   */
-
 	int16_t WebRtcIlbcfix_EncoderCreate(iLBC_Enc_Inst_t **
 						  iLBC_encinst);
 	int16_t WebRtcIlbcfix_DecoderCreate(iLBC_Dec_Inst_t **
@@ -259,10 +220,6 @@ extern "C" {
 
 	int16_t WebRtcIlbcfix_DecoderInit(iLBC_Dec_Inst_t * iLBCdec_inst,
 						int16_t frameLen);
-	int16_t WebRtcIlbcfix_DecoderInit20Ms(iLBC_Dec_Inst_t *
-						    iLBCdec_inst);
-	int16_t WebRtcIlbcfix_Decoderinit30Ms(iLBC_Dec_Inst_t *
-						    iLBCdec_inst);
 
   /****************************************************************************
    * WebRtcIlbcfix_Decode(...)
@@ -289,73 +246,8 @@ extern "C" {
 					   int16_t len,
 					   int16_t * decoded,
 					   int16_t * speechType);
-	int16_t WebRtcIlbcfix_Decode20Ms(iLBC_Dec_Inst_t * iLBCdec_inst,
-					       const int16_t * encoded,
-					       int16_t len,
-					       int16_t * decoded,
-					       int16_t * speechType);
-	int16_t WebRtcIlbcfix_Decode30Ms(iLBC_Dec_Inst_t * iLBCdec_inst,
-					       const int16_t * encoded,
-					       int16_t len,
-					       int16_t * decoded,
-					       int16_t * speechType);
 
-  /****************************************************************************
-   * WebRtcIlbcfix_DecodePlc(...)
-   *
-   * This function conducts PLC for iLBC frame(s). Output speech length
-   * will be a multiple of 160 or 240 samples.
-   *
-   * Input:
-   *      - iLBCdec_inst      : iLBC instance, i.e. the user that should perform
-   *                            a PLC
-   *      - noOfLostFrames    : Number of PLC frames to produce
-   *
-   * Output:
-   *      - decoded           : The "decoded" vector
-   *
-   * Return value             : >0 - Samples in decoded PLC vector
-   *                            -1 - Error
-   */
-
-	int16_t WebRtcIlbcfix_DecodePlc(iLBC_Dec_Inst_t * iLBCdec_inst,
-					      int16_t * decoded,
-					      int16_t noOfLostFrames);
-
-  /****************************************************************************
-   * WebRtcIlbcfix_NetEqPlc(...)
-   *
-   * This function updates the decoder when a packet loss has occured, but it
-   * does not produce any PLC data. Function can be used if another PLC method
-   * is used (i.e NetEq).
-   *
-   * Input:
-   *      - iLBCdec_inst      : iLBC instance that should be updated
-   *      - noOfLostFrames    : Number of lost frames
-   *
-   * Output:
-   *      - decoded           : The "decoded" vector (nothing in this case)
-   *
-   * Return value             : >0 - Samples in decoded PLC vector
-   *                            -1 - Error
-   */
-
-	int16_t WebRtcIlbcfix_NetEqPlc(iLBC_Dec_Inst_t * iLBCdec_inst,
-					     int16_t * decoded,
-					     int16_t noOfLostFrames);
-
-  /****************************************************************************
-   * WebRtcIlbcfix_version(...)
-   *
-   * This function returns the version number of iLBC
-   *
-   * Output:
-   *      - version           : Version number of iLBC (maximum 20 char)
-   */
-
-	void WebRtcIlbcfix_version(char *version);
-
-  /****************************************************************************
+      /****************************************************************************
    * Compatibility with the library code from RFC3951.
    *
    */

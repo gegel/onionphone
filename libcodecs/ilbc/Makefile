@@ -16,7 +16,6 @@ CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 OBJ = abs_quant.o \
       abs_quant_loop.o \
       augmented_cb_corr.o \
-      auto_corr_to_refl_coef.o \
       auto_correlation.o \
       bw_expand.o \
       cb_construct.o \
@@ -28,7 +27,6 @@ OBJ = abs_quant.o \
       cb_update_best_index.o \
       chebyshev.o \
       comp_corr.o \
-      complex_fft.o \
       constants.o \
       copy_set_operations.o \
       create_augmented_vec.o \
@@ -41,12 +39,10 @@ OBJ = abs_quant.o \
       dot_product_with_scale.o \
       downsample_fast.o \
       encode.o \
-      energy.o \
       energy_inverse.o \
       enh_upsample.o \
       enhancer.o \
       enhancer_interface.o \
-      filter_ar.o \
       filter_ar_fast_q12.o \
       filter_ma_fast_q12.o \
       filtered_cb_vecs.o \
@@ -54,9 +50,7 @@ OBJ = abs_quant.o \
       gain_dequant.o \
       gain_quant.o \
       get_cd_vec.o \
-      get_hanning_window.o \
       get_lsp_poly.o \
-      get_scaling_square.o \
       get_sync_seq.o \
       hp_input.o \
       hp_output.o \
@@ -70,7 +64,6 @@ OBJ = abs_quant.o \
       interpolate_samples.o \
       levinson_durbin.o \
       lpc_encode.o \
-      lpc_to_refl_coef.o \
       lsf_check.o \
       lsf_interpolate_to_poly_dec.o \
       lsf_interpolate_to_poly_enc.o \
@@ -83,14 +76,7 @@ OBJ = abs_quant.o \
       pack_bits.o \
       poly_to_lsf.o \
       poly_to_lsp.o \
-      randomization_functions.o \
       refiner.o \
-      refl_coef_to_lpc.o \
-      resample.o \
-      resample_48khz.o \
-      resample_by_2.o \
-      resample_by_2_internal.o \
-      resample_fractional.o \
       simple_interpolate_lsf.o \
       simple_lpc_analysis.o \
       simple_lsf_dequant.o \
@@ -98,12 +84,8 @@ OBJ = abs_quant.o \
       smooth.o \
       smooth_out_data.o \
       sort_sq.o \
-      spl_sqrt.o \
       spl_sqrt_floor.o \
-      spl_version.o \
       split_vq.o \
-      splitting_filter.o \
-      sqrt_of_one_minus_x_squared.o \
       state_construct.o \
       state_search.o \
       swap_bytes.o \
