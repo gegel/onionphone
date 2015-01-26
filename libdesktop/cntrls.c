@@ -1146,7 +1146,7 @@ int gochar(int c)
 int do_char(void)
 {
  char c;
- int j;
+ int j = 0;
  
  //get char from raw terminal
  do
