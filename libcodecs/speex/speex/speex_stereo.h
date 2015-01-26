@@ -67,14 +67,8 @@ extern "C" {
 /** Deprecated. Use speex_stereo_state_init() instead. */
 #define SPEEX_STEREO_STATE_INIT {1,.5,1,1,0,0}
 
-/** Initialise/create a stereo stereo state */
-	SpeexStereoState *speex_stereo_state_init();
-
 /** Reset/re-initialise an already allocated stereo state */
 	void speex_stereo_state_reset(SpeexStereoState * stereo);
-
-/** Destroy a stereo stereo state */
-	void speex_stereo_state_destroy(SpeexStereoState * stereo);
 
 /** Transforms a stereo frame into a mono frame and stores intensity stereo info in 'bits' */
 	void speex_encode_stereo(float *data, int frame_size, SpeexBits * bits);
@@ -90,10 +84,6 @@ extern "C" {
 /** Transforms a mono frame into a stereo frame using intensity stereo info */
 	void speex_decode_stereo_int(int16_t * data, int frame_size,
 				     SpeexStereoState * stereo);
-
-/** Callback handler for intensity stereo info */
-	int speex_std_stereo_request_handler(SpeexBits * bits, void *state,
-					     void *data);
 
 #ifdef __cplusplus
 }

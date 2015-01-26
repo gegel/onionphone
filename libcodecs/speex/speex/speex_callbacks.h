@@ -104,36 +104,9 @@ extern "C" {
 	int speex_inband_handler(SpeexBits * bits,
 				 SpeexCallback * callback_list, void *state);
 
-/** Standard handler for mode request (change mode, no questions asked) */
-	int speex_std_mode_request_handler(SpeexBits * bits, void *state,
-					   void *data);
-
-/** Standard handler for high mode request (change high mode, no questions asked) */
-	int speex_std_high_mode_request_handler(SpeexBits * bits, void *state,
-						void *data);
-
-/** Standard handler for in-band characters (write to stderr) */
-	int speex_std_char_handler(SpeexBits * bits, void *state, void *data);
-
 /** Default handler for user-defined requests: in this case, just ignore */
 	int speex_default_user_handler(SpeexBits * bits, void *state,
 				       void *data);
-
-/** Standard handler for low mode request (change low mode, no questions asked) */
-	int speex_std_low_mode_request_handler(SpeexBits * bits, void *state,
-					       void *data);
-
-/** Standard handler for VBR request (Set VBR, no questions asked) */
-	int speex_std_vbr_request_handler(SpeexBits * bits, void *state,
-					  void *data);
-
-/** Standard handler for enhancer request (Turn enhancer on/off, no questions asked) */
-	int speex_std_enh_request_handler(SpeexBits * bits, void *state,
-					  void *data);
-
-/** Standard handler for VBR quality request (Set VBR quality, no questions asked) */
-	int speex_std_vbr_quality_request_handler(SpeexBits * bits, void *state,
-						  void *data);
 
 #ifdef __cplusplus
 }

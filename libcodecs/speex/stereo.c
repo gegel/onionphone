@@ -78,13 +78,6 @@ static const spx_word16_t balance_bounds[31] =
 #define COMPATIBILITY_HACK(s)
 #endif
 
-SpeexStereoState *speex_stereo_state_init()
-{
-	SpeexStereoState *stereo = calloc(1, sizeof(SpeexStereoState));
-	speex_stereo_state_reset(stereo);
-	return stereo;
-}
-
 void speex_stereo_state_reset(SpeexStereoState * _stereo)
 {
 	RealSpeexStereoState *stereo = (RealSpeexStereoState *) _stereo;
@@ -103,11 +96,6 @@ void speex_stereo_state_reset(SpeexStereoState * _stereo)
 	stereo->reserved1 = 0;
 	stereo->reserved2 = 0;
 #endif
-}
-
-void speex_stereo_state_destroy(SpeexStereoState * stereo)
-{
-	free(stereo);
 }
 
 #ifndef DISABLE_FLOAT_API
@@ -305,28 +293,3 @@ void speex_decode_stereo_int(int16_t * data, int frame_size,
 	}
 }
 
-int speex_std_stereo_request_handler(SpeexBits * bits, void *state, void *data)
-{
-	(void)state;
-
-	RealSpeexStereoState *stereo;
-	spx_word16_t sign = 1, dexp;
-	int tmp;
-
-	stereo = (RealSpeexStereoState *) data;
-
-	COMPATIBILITY_HACK(stereo);
-
-	if (speex_bits_unpack_unsigned(bits, 1))
-		sign = -1;
-	dexp = speex_bits_unpack_unsigned(bits, 5);
-#ifndef FIXED_POINT
-	stereo->balance = exp(sign * .25 * dexp);
-#else
-	stereo->balance = spx_exp(MULT16_16(sign, SHL16(dexp, 9)));
-#endif
-	tmp = speex_bits_unpack_unsigned(bits, 2);
-	stereo->e_ratio = e_ratio_quant[tmp];
-
-	return 0;
-}
