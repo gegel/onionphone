@@ -40,33 +40,6 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "SKP_Silk_SigProc_FIX.h"
 
-/* Variable order MA filter */
-void SKP_Silk_MA(const int16_t * in,	/* I:   input signal                                */
-		 const int16_t * B,	/* I:   MA coefficients, Q13 [order+1]              */
-		 int32_t * S,	/* I/O: state vector [order]                        */
-		 int16_t * out,	/* O:   output signal                               */
-		 const int32_t len,	/* I:   signal length                               */
-		 const int32_t order	/* I:   filter order                                */
-    )
-{
-	int k, d, in16;
-	int32_t out32;
-
-	for (k = 0; k < len; k++) {
-		in16 = in[k];
-		out32 = SKP_SMLABB(S[0], in16, B[0]);
-		out32 = SKP_RSHIFT_ROUND(out32, 13);
-
-		for (d = 1; d < order; d++) {
-			S[d - 1] = SKP_SMLABB(S[d], in16, B[d]);
-		}
-		S[order - 1] = SKP_SMULBB(in16, B[order]);
-
-		/* Limit */
-		out[k] = (int16_t) SKP_SAT16(out32);
-	}
-}
-
 /* Variable order MA prediction error filter */
 void SKP_Silk_MA_Prediction(const int16_t * in,	/* I:   Input signal                                */
 			    const int16_t * B,	/* I:   MA prediction coefficients, Q12 [order]     */

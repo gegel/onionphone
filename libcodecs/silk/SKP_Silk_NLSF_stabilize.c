@@ -149,17 +149,3 @@ void SKP_Silk_NLSF_stabilize(int *NLSF_Q15,	/* I/O:  Unstable/stabilized normali
 	}
 }
 
-/* NLSF stabilizer, over multiple input column data vectors */
-void SKP_Silk_NLSF_stabilize_multi(int *NLSF_Q15,	/* I/O:  Unstable/stabilized normalized LSF vectors in Q15 [LxN]                 */
-				   const int *NDeltaMin_Q15,	/* I:    Normalized delta min vector in Q15, NDeltaMin_Q15[L] must be >= 1 [L+1] */
-				   const int N,	/* I:    Number of input vectors to be stabilized                                */
-				   const int L	/* I:    NLSF vector dimension                                                   */
-    )
-{
-	int n;
-
-	/* loop over input data */
-	for (n = 0; n < N; n++) {
-		SKP_Silk_NLSF_stabilize(&NLSF_Q15[n * L], NDeltaMin_Q15, L);
-	}
-}
