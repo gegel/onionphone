@@ -162,7 +162,8 @@ int lpc10_invert(int32_t * order, float *phi, float *psi, float *rc)
 		rc[j] = psi[j];
 		i__2 = j - 1;
 		for (k = 1; k <= i__2; ++k) {
-			rc[j] -= rc[k] * v[j + k * 10 - 11];
+			if (j + k * 10 - 11 < 100)
+				rc[j] -= rc[k] * v[j + k * 10 - 11];
 		}
 		v[j + j * 10 - 11] = 1.f / v[j + j * 10 - 11];
 		rc[j] *= v[j + j * 10 - 11];
