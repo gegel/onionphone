@@ -98,64 +98,6 @@ int16_t *v_add(int16_t vec1[], const int16_t vec2[], int16_t n)
 
 /***************************************************************************
  *
- *	 FUNCTION NAME: L_v_add
- *
- *	 PURPOSE:
- *
- *	   Perform the addition of the two 32 bit input vector with
- *	   saturation.
- *
- *	 INPUTS:
- *
- *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
- *					   values fall in the range
- *					   0x8000 0000 <= L_vec1 <= 0x7fff ffff.
- *
- *	   L_vec2		   32 bit long signed integer (int32_t) vector whose
- *					   values falls in the range
- *					   0x8000 0000 <= L_vec2 <= 0x7fff ffff.
- *
- *	   n			   size of input vectors.
- *
- *	 OUTPUTS:
- *
- *	   none
- *
- *	 RETURN VALUE:
- *
- *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
- *					   values fall in the range
- *					   0x8000 0000 <= L_vec1[] <= 0x7fff ffff.
- *
- *	 IMPLEMENTATION:
- *
- *	   Perform the addition of the two 32 bit input vectors with
- *	   saturation.
- *
- *	   L_vec1 = L_vec1 + L_vec2
- *
- *	   L_vec1[] is set to 0x7fff ffff if the operation results in an
- *	   overflow.  L_vec1[] is set to 0x8000 0000 if the operation results
- *	   in an underflow.
- *
- *	 KEYWORDS: add, addition
- *
- *************************************************************************/
-
-int32_t *L_v_add(int32_t L_vec1[], int32_t L_vec2[], int16_t n)
-{
-	register int16_t i;
-
-	for (i = 0; i < n; i++) {
-		*L_vec1 = melpe_L_add(*L_vec1, *L_vec2);
-		L_vec1++;
-		L_vec2++;
-	}
-	return (L_vec1 - n);
-}
-
-/***************************************************************************
- *
  *	 FUNCTION NAME: v_equ
  *
  *	 PURPOSE:
@@ -306,75 +248,6 @@ int32_t *L_v_equ(int32_t L_vec1[], int32_t L_vec2[], int16_t n)
 
 /***************************************************************************
  *
- *	 FUNCTION NAME: v_inner
- *
- *	 PURPOSE:
- *
- *	   Compute the inner product of two 16 bit input vectors
- *	   with saturation and truncation.	Output is a 16 bit number.
- *
- *	 INPUTS:
- *
- *	   vec1 		   16 bit short signed integer (int16_t) whose value
- *					   falls in the range 0xffff 8000 <= vec1 <= 0x0000 7fff.
- *
- *	   vec2 		   16 bit short signed integer (int16_t) whose value
- *					   falls in the range 0xffff 8000 <= vec2 <= 0x0000 7fff.
- *
- *	   n			   size of input vectors
- *
- *	   qvec1		   Q value of vec1
- *
- *	   qvec2		   Q value of vec2
- *
- *	   qout 		   Q value of output
- *
- *	 OUTPUTS:
- *
- *	   none
- *
- *	 RETURN VALUE:
- *
- *	   innerprod	   16 bit short signed integer (int16_t) whose value
- *					   falls in the range
- *					   0xffff 8000 <= innerprod <= 0x0000 7fff.
- *
- *	 IMPLEMENTATION:
- *
- *	   Compute the inner product of the two 16 bit input vectors.
- *	   The output is a 16 bit number.
- *
- *	 KEYWORDS: inner product
- *
- *************************************************************************/
-
-int16_t v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
-		  int16_t qvec1, int16_t qvec2, int16_t qout)
-{
-	register int16_t i;
-	int16_t innerprod;
-	int32_t L_temp;
-
-	L_temp = 0;
-	for (i = 0; i < n; i++) {
-		L_temp = melpe_L_mac(L_temp, *vec1, *vec2);
-		vec1++;
-		vec2++;
-	}
-
-	/* (qvec1 + qvec2 + 1) is the Q value from L_mult(vec1[i], vec2[i]), and  */
-	/* also that for L_temp.  To make it Q qout, L_shl() it by                */
-	/* (qout - (qvec1 + qvec2 + 1)).  To return only a int16_t, use         */
-	/* extract_h() after L_shl() by 16.                                       */
-
-	innerprod = melpe_extract_h(melpe_L_shl(L_temp,
-				    (int16_t) (qout - ((qvec1 + qvec2 + 1) -
-							 16))));
-	return (innerprod);
-}
-
-/***************************************************************************
- *
  *	 FUNCTION NAME: L_v_inner
  *
  *	 PURPOSE:
@@ -435,64 +308,6 @@ int32_t L_v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
 	shift = melpe_sub(qout, melpe_add(melpe_add(qvec1, qvec2), 1));
 	L_innerprod = melpe_L_shl(L_temp, shift);
 	return (L_innerprod);
-}
-
-/***************************************************************************
- *
- *	 FUNCTION NAME: v_magsq
- *
- *	 PURPOSE:
- *
- *	   Compute the sum of square magnitude of a 16 bit input vector
- *	   with saturation and truncation.	Output is a 16 bit number.
- *
- *	 INPUTS:
- *
- *	   vec1 		   16 bit short signed integer (int16_t) whose value
- *					   falls in the range 0xffff 8000 <= vec1 <= 0x0000 7fff.
- *
- *	   n			   size of input vectors
- *
- *	   qvec1		   Q value of vec1
- *
- *	   qout 		   Q value of output
- *
- *	 OUTPUTS:
- *
- *	   none
- *
- *	 RETURN VALUE:
- *
- *	   magsq		   16 bit short signed integer (int16_t) whose value
- *					   falls in the range
- *					   0xffff 8000 <= magsq <= 0x0000 7fff.
- *
- *	 IMPLEMENTATION:
- *
- *	   Compute the sum of square magnitude of a 16 bit input vector.
- *	   The output is a 16 bit number.
- *
- *	 KEYWORDS: square magnitude
- *
- *************************************************************************/
-
-int16_t v_magsq(int16_t vec1[], int16_t n, int16_t qvec1,
-		  int16_t qout)
-{
-	register int16_t i;
-	int16_t shift;
-	int16_t magsq;
-	int32_t L_temp;
-
-	L_temp = 0;
-	for (i = 0; i < n; i++) {
-		L_temp = melpe_L_mac(L_temp, *vec1, *vec1);
-		vec1++;
-	}
-	/* qout - ((2*qvec1 + 1) - 16) */
-	shift = melpe_sub(qout, melpe_sub(melpe_add(melpe_shl(qvec1, 1), 1), 16));
-	magsq = melpe_extract_h(melpe_L_shl(L_temp, shift));
-	return (magsq);
 }
 
 /***************************************************************************
@@ -758,53 +573,6 @@ int16_t *v_zap(int16_t vec1[], int16_t n)
 		vec1++;
 	}
 	return (vec1 - n);
-}
-
-/***************************************************************************
- *
- *	 FUNCTION NAME: L_v_zap
- *
- *	 PURPOSE:
- *
- *	   Set the elements of a 32 bit input vector to zero.
- *
- *	 INPUTS:
- *
- *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
- *					   values fall in the range
- *					   0x8000 0000 <= vec1 <= 0x7fff ffff.
- *
- *	   n			   size of L_vec1.
- *
- *	 OUTPUTS:
- *
- *	   none
- *
- *	 RETURN VALUE:
- *
- *	   L_vec1		   32 bit long signed integer (int32_t) vector whose
- *					   values are equal to 0x0000 0000.
- *
- *	 IMPLEMENTATION:
- *
- *	   Set the elements of 32 bit input vector to zero.
- *
- *	   L_vec1 = 0
- *
- *	 KEYWORDS: zap, clear, reset
- *
- *************************************************************************/
-
-int32_t *L_v_zap(int32_t L_vec1[], int16_t n)
-{
-	register int16_t i;
-
-	for (i = 0; i < n; i++) {
-		*L_vec1 = 0;
-		L_vec1++;
-	}
-
-	return (L_vec1 - n);
 }
 
 int16_t *v_get(int16_t n)

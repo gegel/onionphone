@@ -41,8 +41,6 @@ Secretariat fax: +33 493 65 47 16.
 
 int16_t *v_add(int16_t vec1[], const int16_t vec2[], int16_t n);
 
-int32_t *L_v_add(int32_t L_vec1[], int32_t L_vec2[], int16_t n);
-
 int16_t *v_equ(int16_t vec1[], const int16_t v2[], int16_t n);
 
 int16_t *v_equ_shr(int16_t vec1[], int16_t vec2[], int16_t scale,
@@ -50,14 +48,8 @@ int16_t *v_equ_shr(int16_t vec1[], int16_t vec2[], int16_t scale,
 
 int32_t *L_v_equ(int32_t L_vec1[], int32_t L_vec2[], int16_t n);
 
-int16_t v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
-		  int16_t qvec1, int16_t qvec2, int16_t qout);
-
 int32_t L_v_inner(int16_t vec1[], int16_t vec2[], int16_t n,
 		   int16_t qvec1, int16_t qvec2, int16_t qout);
-
-int16_t v_magsq(int16_t vec1[], int16_t n, int16_t qvec1,
-		  int16_t qout);
 
 int32_t L_v_magsq(int16_t vec1[], int16_t n, int16_t qvec1,
 		   int16_t qout);
@@ -70,8 +62,6 @@ int16_t *v_scale_shl(int16_t vec1[], int16_t scale, int16_t n,
 int16_t *v_sub(int16_t vec1[], const int16_t vec2[], int16_t n);
 
 int16_t *v_zap(int16_t vec1[], int16_t n);
-
-int32_t *L_v_zap(int32_t L_vec1[], int16_t n);
 
 int16_t *v_get(int16_t n);
 

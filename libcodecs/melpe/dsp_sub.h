@@ -66,8 +66,6 @@ void rand_num(int16_t output[], int16_t amplitude, int16_t npts);
 
 int16_t rand_minstdgen();
 
-int16_t readbl(int16_t input[], FILE * fp_in, int16_t size);
-
 BOOLEAN unpack_code(unsigned char **ptr_ch_begin, int16_t * ptr_ch_bit,
 		    int16_t * code, int16_t numbits, int16_t wsize,
 		    uint16_t erase_mask);
@@ -77,11 +75,6 @@ void window(int16_t input[], const int16_t win_coeff[],
 
 void window_Q(int16_t input[], int16_t win_coeff[], int16_t output[],
 	      int16_t npts, int16_t Qin);
-
-void writebl(int16_t output[], FILE * fp_out, int16_t size);
-
-void polflt(int16_t input[], int16_t coeff[], int16_t output[],
-	    int16_t order, int16_t npts);
 
 void zerflt(int16_t input[], const int16_t coeff[], int16_t output[],
 	    int16_t order, int16_t npts);

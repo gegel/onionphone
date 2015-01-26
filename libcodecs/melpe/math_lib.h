@@ -65,6 +65,4 @@ int16_t sqrt_Q15(int16_t x);
 
 int16_t add_shr(int16_t Var1, int16_t Var2);
 
-int16_t sub_shr(int16_t Var1, int16_t Var2);
-
 #endif
