@@ -62,40 +62,6 @@ int16_t random_g729c(int16_t * seed)
 
 }
 
-/*-----------------------------------------------------------*
-* fwrite16 - writes a float array as a Short to a a file    *
-*-----------------------------------------------------------*/
-void fwrite16(float * data,	/* input: inputdata */
-	      int length,	/* input: length of data array */
-	      FILE * fp		/* input: file pointer */
-    )
-{
-	int i;
-	int16_t sp16[L_FRAME];
-	float temp;
-
-	if (length > L_FRAME) {
-		printf("error in fwrite16\n");
-		exit(16);
-	}
-
-	for (i = 0; i < length; i++) {
-		/* round and convert to int  */
-		temp = data[i];
-		if (temp >= (float) 0.0)
-			temp += (float) 0.5;
-		else
-			temp -= (float) 0.5;
-		if (temp > (float) 32767.0)
-			temp = (float) 32767.0;
-		if (temp < (float) - 32768.0)
-			temp = (float) - 32768.0;
-		sp16[i] = (int16_t) temp;
-	}
-	fwrite(sp16, sizeof(int16_t), length, fp);
-	return;
-}
-
 /*****************************************************************************/
 /* Functions used by VAD.C                                                   */
 /*****************************************************************************/
