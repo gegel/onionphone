@@ -11,7 +11,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 void w_Copy(int16_t x[],		/* (i)   : input vector   */
 	    int16_t y[],		/* (o)   : output vector  */

@@ -18,7 +18,6 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
 #include "sig_proc.h"
 #include "cnst.h"
 

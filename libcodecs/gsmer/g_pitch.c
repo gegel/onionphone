@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
+
 #include "sig_proc.h"
 
 int16_t w_G_pitch(int16_t xn[],	/* (i)   : Pitch target.                           */

@@ -60,7 +60,7 @@
 #include "basic_op.h"
 #include "cnst.h"
 #include "sig_proc.h"
-#include "count.h"
+
 #include "dtx.h"
 
 /* Inverse values of DTX hangover period and DTX hangover period + 1 */

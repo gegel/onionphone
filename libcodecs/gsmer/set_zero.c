@@ -10,7 +10,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 void w_Set_w_zero(int16_t x[],	/* (o)    : vector to clear     */
 		  int16_t L	/* (i)    : length of vector    */

@@ -23,7 +23,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 #include "sig_proc.h"
 
 #define M   10			/* LP order */

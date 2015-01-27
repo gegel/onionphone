@@ -15,7 +15,7 @@
 #include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
+
 #include "sig_proc.h"
 
 #include "gains_tb.h"

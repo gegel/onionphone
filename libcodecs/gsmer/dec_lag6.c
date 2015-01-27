@@ -20,7 +20,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 /* Old integer lag */
 

@@ -20,7 +20,7 @@
 #include <stdint.h>
 #include "basic_op.h"
 #include "sig_proc.h"
-#include "count.h"
+
 #include "codec.h"
 #include "cnst.h"
 

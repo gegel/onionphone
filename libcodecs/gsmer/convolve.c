@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 void w_Convolve(int16_t x[],	/* (i)     : input vector                           */
 		int16_t h[],	/* (i)     : impulse response                       */

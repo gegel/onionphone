@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 #include "cnst.h"
 
 int16_t w_G_code(int16_t xn2[],	/* in    : target vector                   */

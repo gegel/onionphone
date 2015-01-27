@@ -31,10 +31,9 @@
 
 #include "basic_op.h"
 #include "sig_proc.h"
-#include "count.h"
+
 #include "codec.h"
 #include "cnst.h"
-#include "n_stack.h"
 #include "e_homing.h"
 #include "d_homing.h"
 #include "dtx.h"

@@ -46,7 +46,7 @@
 #include "cnst.h"
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
+
 #include "vad.h"
 
 /* Constants of VAD hangover w_addition */

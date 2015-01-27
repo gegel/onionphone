@@ -35,29 +35,19 @@ int32_t w_L_mac(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac,  1  */
 int32_t w_L_msu(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu,  1  */
 int32_t w_w_L_macNs(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac without
 								   sat, 1   */
-int32_t w_w_L_msuNs(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu without
-								   sat, 1   */
 int32_t L_w_add(int32_t L_var1, int32_t L_var2);	/* Long w_add,        2 */
 int32_t w_L_w_sub(int32_t L_var1, int32_t L_var2);	/* Long w_sub,        2 */
 int32_t L_w_add_c(int32_t L_var1, int32_t L_var2);	/* Long w_add with c, 2 */
-int32_t w_w_L_w_sub_c(int32_t L_var1, int32_t L_var2);	/* Long w_sub with c, 2 */
 int32_t w_L_w_negate(int32_t L_var1);	/* Long w_negate,     2 */
 int16_t w_w_mult_r(int16_t var1, int16_t var2);	/* Mult with w_round, 2 */
 int32_t w_L_w_shl(int32_t L_var1, int16_t var2);	/* Long shift left, 2 */
 int32_t w_L_w_shr(int32_t L_var1, int16_t var2);	/* Long shift right, 2 */
-int16_t w_w_shr_r(int16_t var1, int16_t var2);	/* Shift right with
-						   w_round, 2           */
-int16_t w_mac_r(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac with
-								   w_rounding,2 */
-int16_t w_msu_r(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu with
-								   w_rounding,2 */
 int32_t w_L_deposit_h(int16_t var1);	/* 16 bit var1 -> MSB,     2 */
 int32_t w_L_deposit_l(int16_t var1);	/* 16 bit var1 -> LSB,     2 */
 
 int32_t w_w_L_w_w_shr_r(int32_t L_var1, int16_t var2);	/* Long shift right with
 							   w_round,  3             */
 int32_t w_L_abs(int32_t L_var1);	/* Long abs,              3  */
-int32_t w_L_sat(int32_t L_var1);	/* Long saturation,       4  */
 int16_t w_norm_s(int16_t var1);	/* Short norm,           15  */
 int16_t w_div_s(int16_t var1, int16_t var2);	/* Short division,       18  */
 int16_t w_norm_l(int32_t L_var1);	/* Long norm,            30  */

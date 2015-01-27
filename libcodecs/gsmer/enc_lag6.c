@@ -40,7 +40,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 int16_t w_Enc_lag6(int16_t T0,	/* input : Pitch delay                  */
 			 int16_t * T0_frac,	/* in/out: Fractional pitch delay       */

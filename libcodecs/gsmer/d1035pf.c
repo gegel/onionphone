@@ -13,7 +13,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 #define L_CODE    40		/* codevector length */
 #define NB_PULSE  10		/* number of pulses  */

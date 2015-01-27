@@ -22,7 +22,6 @@ OBJ = agc.o \
       cod_12k2.o \
       convolve.o \
       copy.o \
-      count.o \
       d1035pf.o \
       d_gains.o \
       d_homing.o \
@@ -43,7 +42,6 @@ OBJ = agc.o \
       log2.o \
       lsp_az.o \
       lsp_lsf.o \
-      n_proc.o \
       oper_32b.o \
       pitch_f6.o \
       pitch_ol.o \
