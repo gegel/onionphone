@@ -82,8 +82,6 @@ int get_mono_channel(const ChannelLayout * layout, int stream_id, int prev);
 
 typedef void (*downmix_func) (const void *, opus_val32 *, int, int, int, int,
 			      int);
-void downmix_float(const void *_x, opus_val32 * sub, int subframe, int offset,
-		   int c1, int c2, int C);
 void downmix_int(const void *_x, opus_val32 * sub, int subframe, int offset,
 		 int c1, int c2, int C);
 

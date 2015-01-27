@@ -477,21 +477,6 @@ static uint32_t L_mpyu(uint16_t var1, uint16_t var2)
 }
 
 /* ========================================================================== */
-/* This function reads a block of input data.  It returns the actual number   */
-/*    of samples read.  Zeros are filled into input[] if there are not suffi- */
-/*    cient data samples.                                                     */
-/* ========================================================================== */
-int16_t readbl(int16_t input[], FILE * fp_in, int16_t size)
-{
-	int16_t length;
-
-	length = (int16_t) fread(input, sizeof(int16_t), size, fp_in);
-	v_zap(&(input[length]), (int16_t) (size - length));
-
-	return (length);
-}
-
-/* ========================================================================== */
 /* This function unpacks bits of "code" from channel.  It returns 1 if an     */
 /*    erasure is encountered, or 0 otherwise.  "numbits" bits of "code" */
 /*    is used and they are packed into the array pointed by "ptr_ch_begin".   */
@@ -572,37 +557,6 @@ void window_Q(int16_t input[], int16_t win_coeff[], int16_t output[],
 	for (i = 0; i < npts; i++) {
 		output[i] =
 		    melpe_extract_h(melpe_L_shl(melpe_L_mult(win_coeff[i], input[i]), shift));
-	}
-}
-
-/* ============================================ */
-/* This function writes a block of output data. */
-/* ============================================ */
-void writebl(int16_t output[], FILE * fp_out, int16_t size)
-{
-	fwrite(output, sizeof(int16_t), size, fp_out);
-}
-
-/* Subroutine polflt(): all pole (IIR) filter.                                */
-/*   Note: The filter coefficients (Q13) represent the denominator only, and  */
-/*         the leading coefficient is assumed to be 1.  The output array can  */
-/*         overlay the input.                                                 */
-/* Q value:                                                                   */
-/*   input[], output[]: Q0, coeff[]: Q12                                      */
-
-void polflt(int16_t input[], int16_t coeff[], int16_t output[],
-	    int16_t order, int16_t npts)
-{
-	register int16_t i, j;
-	int32_t accum;		/* Q12 */
-
-	for (i = 0; i < npts; i++) {
-		accum = melpe_L_shl(melpe_L_deposit_l(input[i]), 12);
-		for (j = 1; j <= order; j++)
-			accum = melpe_L_msu(accum, output[i - j], coeff[j]);
-		/* r_ound off output */
-		accum = melpe_L_shl(accum, 3);
-		output[i] = melpe_r_ound(accum);
 	}
 }
 

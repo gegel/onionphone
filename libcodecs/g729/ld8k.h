@@ -217,7 +217,6 @@ float levinson(float * r, float * a, float * r_c);
 void az_lsp(float a[], float lsp[], float old_lsp[]);
 void qua_lsp(float lsp[], float lsp_q[], int ana[]);
 
-void lsf_lsp(float * lsf, float * lsp, int m);
 void lsp_lsf(float * lsp, float * lsf, int m);
 void int_lpc(float lsp_old[], float lsp_new[], float lsf_int[],
 	     float lsf_new[], float A_t[]);
@@ -313,7 +312,6 @@ int test_err(int t0, int t0_frac);
 /*--------------------------------------------------------------------------*
  * Prototypes for auxiliary functions                                       *
  *--------------------------------------------------------------------------*/
-void fwrite16(float * data, int length, FILE * fp);
 int16_t random_g729(void);
 void set_zero(float x[], int l);
 void copy(float x[], float y[], int L);

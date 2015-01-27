@@ -12,7 +12,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 void w_Reorder_lsf(int16_t * lsf,	/* (i/o)     : vector of LSFs   (range: 0<=val<=0.5) */
 		   int16_t min_dist,	/* (i)       : minimum required distance             */

@@ -14,7 +14,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 /* m = LPC order == 10 */
 #define m 10

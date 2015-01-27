@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 #include "pow2.tab"		/* Table for w_Pow2() */
 

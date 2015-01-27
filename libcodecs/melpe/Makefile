@@ -39,7 +39,6 @@ OBJ = classify.o \
       postfilt.o \
       qnt12.o \
       qnt12_cb.o \
-      transcode.o \
       vq_lib.o
 
 INCADD ?= -I. -I../../common/inc

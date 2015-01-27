@@ -301,10 +301,3 @@ int opus_packet_parse_impl(const unsigned char *data, int32_t len,
 	return count;
 }
 
-int opus_packet_parse(const unsigned char *data, int32_t len,
-		      unsigned char *out_toc, const unsigned char *frames[48],
-		      int16_t size[48], int *payload_offset)
-{
-	return opus_packet_parse_impl(data, len, 0, out_toc,
-				      frames, size, payload_offset, NULL);
-}

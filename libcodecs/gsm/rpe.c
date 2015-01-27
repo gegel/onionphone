@@ -14,14 +14,14 @@
 #include "private.h"
 
 #include "gsm.h"
-#include "proto.h"
+
 
 /*  4.2.13 .. 4.2.17  RPE ENCODING SECTION
  */
 
 /* 4.2.13 */
 
-static void Weighting_filter P2((e, x), register int16_t * e,	/* signal [-5..0.39.44] IN  */
+static void Weighting_filter(register int16_t * e,	/* signal [-5..0.39.44] IN  */
 				int16_t * x	/* signal [0..39]       OUT */
     )
 /*
@@ -112,7 +112,7 @@ static void Weighting_filter P2((e, x), register int16_t * e,	/* signal [-5..0.3
 
 /* 4.2.14 */
 
-static void RPE_grid_selection P3((x, xM, Mc_out), int16_t * x,	/* [0..39]              IN  */
+static void RPE_grid_selection(int16_t * x,	/* [0..39]              IN  */
 				  int16_t * xM,	/* [0..12]              OUT */
 				  int16_t * Mc_out	/*                      OUT */
     )
@@ -244,7 +244,7 @@ static void RPE_grid_selection P3((x, xM, Mc_out), int16_t * x,	/* [0..39]      
 
 /* 4.12.15 */
 
-static void APCM_quantization_xmaxc_to_exp_mant P3((xmaxc, exp_out, mant_out), int16_t xmaxc,	/* IN   */
+static void APCM_quantization_xmaxc_to_exp_mant(int16_t xmaxc,	/* IN   */
 						   int16_t * exp_out,	/* OUT  */
 						   int16_t * mant_out)
 {				/* OUT  */
@@ -276,7 +276,7 @@ static void APCM_quantization_xmaxc_to_exp_mant P3((xmaxc, exp_out, mant_out), i
 	*mant_out = mant;
 }
 
-static void APCM_quantization P5((xM, xMc, mant_out, exp_out, xmaxc_out), int16_t * xM,	/* [0..12]              IN      */
+static void APCM_quantization(int16_t * xM,	/* [0..12]              IN      */
 				 int16_t * xMc,	/* [0..12]              OUT     */
 				 int16_t * mant_out,	/*                      OUT     */
 				 int16_t * exp_out,	/*                      OUT     */
@@ -367,7 +367,7 @@ static void APCM_quantization P5((xM, xMc, mant_out, exp_out, xmaxc_out), int16_
 
 /* 4.2.16 */
 
-static void APCM_inverse_quantization P4((xMc, mant, exp, xMp), register int16_t * xMc,	/* [0..12]                      IN      */
+static void APCM_inverse_quantization(register int16_t * xMc,	/* [0..12]                      IN      */
 					 int16_t mant,
 					 int16_t exp, register int16_t * xMp)
 {				/* [0..12]                        OUT     */
@@ -405,7 +405,7 @@ static void APCM_inverse_quantization P4((xMc, mant, exp, xMp), register int16_t
 
 /* 4.2.17 */
 
-static void RPE_grid_positioning P3((Mc, xMp, ep), int16_t Mc,	/* grid position        IN      */
+static void RPE_grid_positioning(int16_t Mc,	/* grid position        IN      */
 				    register int16_t * xMp,	/* [0..12]              IN      */
 				    register int16_t * ep	/* [0..39]              OUT     */
     )
@@ -455,22 +455,7 @@ static void RPE_grid_positioning P3((Mc, xMp, ep), int16_t Mc,	/* grid position 
  *  array dp[-120..-41] is updated.
  */
 
-#if 0				/* Has been inlined in code.c */
-void Gsm_Update_of_reconstructed_short_time_residual_signal P3((dpp, ep, dp), int16_t * dpp,	/* [0...39]     IN      */
-							       int16_t * ep,	/* [0...39]     IN      */
-							       int16_t * dp)
-{				/* [-120...-1]  IN/OUT    */
-	int k;
-
-	for (k = 0; k <= 79; k++)
-		dp[-120 + k] = dp[-80 + k];
-
-	for (k = 0; k <= 39; k++)
-		dp[-40 + k] = gsm_add(ep[k], dpp[k]);
-}
-#endif				/* Has been inlined in code.c */
-
-void Gsm_RPE_Encoding P5((S, e, xmaxc, Mc, xMc), struct gsm_state *S, int16_t * e,	/* -5..-1][0..39][40..44        IN/OUT  */
+void Gsm_RPE_Encoding(struct gsm_state *S, int16_t * e,	/* -5..-1][0..39][40..44        IN/OUT  */
 			 int16_t * xmaxc,	/*                              OUT */
 			 int16_t * Mc,	/*                              OUT */
 			 int16_t * xMc)
@@ -490,7 +475,7 @@ void Gsm_RPE_Encoding P5((S, e, xmaxc, Mc, xMc), struct gsm_state *S, int16_t * 
 
 }
 
-void Gsm_RPE_Decoding P5((S, xmaxcr, Mcr, xMcr, erp), struct gsm_state *S, int16_t xmaxcr, int16_t Mcr, int16_t * xMcr,	/* [0..12], 3 bits             IN      */
+void Gsm_RPE_Decoding(struct gsm_state *S, int16_t xmaxcr, int16_t Mcr, int16_t * xMcr,	/* [0..12], 3 bits             IN      */
 			 int16_t * erp	/* [0..39]                     OUT     */
     )
 {

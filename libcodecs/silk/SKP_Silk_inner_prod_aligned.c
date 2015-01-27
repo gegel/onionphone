@@ -55,19 +55,6 @@ int32_t SKP_Silk_inner_prod_aligned(const int16_t * const inVec1,	/*    I input 
 	return sum;
 }
 
-int64_t SKP_Silk_inner_prod_aligned_64(const int32_t * inVec1,	/*    I input vector 1    */
-				       const int32_t * inVec2,	/*    I input vector 2    */
-				       const int len	/*    I vector lengths    */
-    )
-{
-	int i;
-	int64_t sum = 0;
-	for (i = 0; i < len; i++) {
-		sum = SKP_SMLAL(sum, inVec1[i], inVec2[i]);
-	}
-	return sum;
-}
-
 int64_t SKP_Silk_inner_prod16_aligned_64(const int16_t * inVec1,	/*    I input vector 1    */
 					 const int16_t * inVec2,	/*    I input vector 2    */
 					 const int len	/*    I vector lengths    */
@@ -81,15 +68,3 @@ int64_t SKP_Silk_inner_prod16_aligned_64(const int16_t * inVec1,	/*    I input v
 	return sum;
 }
 
-int32_t SKP_Silk_inner_prod16_aligned_sat(const int16_t * const inVec1,	/*    I input vector 1  */
-					  const int16_t * const inVec2,	/*    I input vector 2  */
-					  const int len	/*    I vector lengths  */
-    )
-{
-	int i;
-	int32_t sum = 0;
-	for (i = 0; i < len; i++) {
-		sum = SKP_ADD_SAT32(sum, SKP_SMULBB(inVec1[i], inVec2[i]));
-	}
-	return sum;
-}

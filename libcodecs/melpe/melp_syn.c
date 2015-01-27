@@ -66,7 +66,6 @@ Secretariat fax: +33 493 65 47 16.
 #define X1_732_Q14			28377	/* 1.732 * (1 << 14) */
 #define X12_Q8				3072	/* 12.0 * (1 << 8) */
 #define X30_Q8				7680	/* 30.0 * (1 << 8) */
-#define TIME_DOMAIN_SYN		FALSE
 #define TILT_ORD			1
 #define SCALEOVER			10
 #define INV_SCALEOVER_Q18	26214	/* ((1.0/SCALEOVER)*(1 << 18)) */
@@ -408,43 +407,8 @@ static void melp_syn(struct melp_param *par, int16_t sp_out[])
 		interp_array(prev_par.fs_mag, par->fs_mag, &fs_real[1], intfact,
 			     NUM_HARM);
 
-#if TIME_DOMAIN_SYN
-
-		/* Use inverse DFT for pulse excitation */
-		idft_real(fs_real, &sigbuf[BEGIN], length);	/* sigbuf in Q15 */
-
-		/* Delay overall signal by PDEL samples (circular shift) */
-		/* use fs_real as a scratch buffer */
-
-		v_equ(fs_real, &sigbuf[BEGIN], length);
-		v_equ(&sigbuf[BEGIN + PDEL], fs_real, length - PDEL);
-		v_equ(&sigbuf[BEGIN], &fs_real[length - PDEL], PDEL);
-
-		/* Scale by pulse gain */
-		v_scale(&sigbuf[BEGIN], pulse_gain, length);	/* sigbuf in Q0 */
-
-		/* Filter and scale pulse excitation */
-		v_equ(&sigbuf[BEGIN - MIX_ORD], pulse_del, MIX_ORD);
-		v_equ(pulse_del, &sigbuf[length + BEGIN - MIX_ORD], MIX_ORD);
-		zerflt_Q(&sigbuf[BEGIN], pulse_cof, &sigbuf[BEGIN], MIX_ORD,
-			 length, 14);
-
-		temp1 = shr(mult(X1_732_Q14, syn_gain), 3);	/* Q0 */
-		/* Get scaled noise excitation */
-		rand_num(&sig2[BEGIN], temp1, length);	/* sig2 in Q0 */
-
-		/* Filter noise excitation */
-		v_equ(&sig2[BEGIN - MIX_ORD], noise_del, MIX_ORD);
-		v_equ(noise_del, &sig2[length + BEGIN - MIX_ORD], MIX_ORD);
-		zerflt_Q(&sig2[BEGIN], noise_cof, &sig2[BEGIN], MIX_ORD, length,
-			 14);
-		/* Add two excitation signals (mixed excitation) */
-		v_add(&sigbuf[BEGIN], &sig2[BEGIN], length);	/* sigbuf in Q0 */
-
-#else
 		harm_syn_pitch(fs_real, &sigbuf[BEGIN], fc, length);
 		v_scale(&sigbuf[BEGIN], pulse_gain, length);	/* sigbuf[] is Q0 */
-#endif
 
 		/* Adaptive spectral enhancement */
 		v_equ(&sigbuf[BEGIN - LPC_ORD], ase_del, LPC_ORD);

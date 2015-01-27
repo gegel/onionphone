@@ -39,6 +39,4 @@ Secretariat fax: +33 493 65 47 16.
 void find_harm(int16_t input[], int16_t fsmag[], int16_t pitch,
 	       int16_t num_harm, int16_t length);
 
-void idft_real(int16_t real[], int16_t signal[], int16_t length);
-
 #endif

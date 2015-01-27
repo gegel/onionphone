@@ -77,41 +77,21 @@ int16_t bv_extract_l(int32_t L_var1);	/* Extract low,         1   */
 int16_t intround(int32_t L_var1);	/* Round,               1   */
 int32_t bv_L_mac(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac,  1  */
 int32_t bv_L_msu(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu,  1  */
-int32_t bv_bv_L_macNs(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac without
-								   sat, 1   */
-int32_t bv_bv_L_msuNs(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu without
-								   sat, 1   */
 int32_t L_bv_add(int32_t L_var1, int32_t L_var2);	/* Long bv_add,        1 */
 int32_t L_bv_sub(int32_t L_var1, int32_t L_var2);	/* Long bv_sub,        1 */
-int32_t L_bv_add_c(int32_t L_var1, int32_t L_var2);	/* Long bv_add with c, 2 */
-int32_t L_bv_sub_c(int32_t L_var1, int32_t L_var2);	/* Long bv_sub with c, 2 */
 int32_t L_bv_negate(int32_t L_var1);	/* Long bv_negate,     1 */
 int16_t bv_bv_mult_r(int16_t var1, int16_t var2);	/* Mult with round, 1 */
 int32_t L_bv_shl(int32_t L_var1, int16_t var2);	/* Long shift left, 1 */
 int32_t L_bv_shr(int32_t L_var1, int16_t var2);	/* Long shift right, 1 */
-int16_t bv_bv_shr_r(int16_t var1, int16_t var2);	/* Shift right with
-						   round, 2           */
-int16_t bv_mac_r(int32_t L_var3, int16_t var1, int16_t var2);	/* Mac with
-								   rounding, 1 */
-int16_t bv_msu_r(int32_t L_var3, int16_t var1, int16_t var2);	/* Msu with
-								   rounding, 1 */
 int32_t bv_L_deposit_h(int16_t var1);	/* 16 bit var1 -> MSB,     1 */
 int32_t bv_L_deposit_l(int16_t var1);	/* 16 bit var1 -> LSB,     1 */
 
 int32_t L_bv_bv_shr_r(int32_t L_var1, int16_t var2);	/* Long shift right with
 							   round,             3  */
 int32_t bv_L_abs(int32_t L_var1);	/* Long abs,              1  */
-int32_t bv_L_sat(int32_t L_var1);	/* Long saturation,       4  */
 int16_t bv_norm_s(int16_t var1);	/* Short norm,            1  */
 int16_t bv_div_s(int16_t var1, int16_t var2);	/* Short division,       18  */
 int16_t bv_norm_l(int32_t L_var1);	/* Long norm,             1  */
-
-/*
- * Additional G.723.1 operators
-*/
-int32_t bv_L_mls(int32_t, int16_t);	/* Weight FFS; currently assigned 5 */
-int16_t bv_div_l(int32_t, int16_t);	/* Weight FFS; currently assigned 32 */
-int16_t i_bv_mult(int16_t a, int16_t b);	/* Weight FFS; currently assigned 3 */
 
 /*
  *  New shiftless operators, not used in G.729/G.723.1

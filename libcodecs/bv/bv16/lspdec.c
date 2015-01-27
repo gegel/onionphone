@@ -113,35 +113,3 @@ void lspdec(int16_t * lspq,	/* Q15 */
 
 }
 
-void lspdecplc(int16_t * lspq,	/* Q15 */
-	       int16_t * lsppm)
-{				/* Q15 */
-	int32_t a0;
-	int16_t elsp[LPCO];
-	int16_t *fp1, *fp2;
-	int16_t i, k;
-
-	/* Calculate estimated (ma-predicted) lsp vector */
-	fp1 = lspp;		/* Q14 */
-	fp2 = lsppm;		/* Q15 */
-	for (i = 0; i < LPCO; i++) {
-		a0 = 0;
-		for (k = 0; k < LSPPORDER; k++) {
-			a0 = bv_L_mac(a0, *fp1++, *fp2++);
-		}
-		elsp[i] = intround(L_bv_shl(a0, 1));	/* Q15 */
-	}
-
-	/* Update lsp ma predictor memory */
-	i = LPCO * LSPPORDER - 1;
-	fp1 = &lsppm[i];
-	fp2 = &lsppm[i - 1];
-	for (i = LPCO - 1; i >= 0; i--) {
-		for (k = LSPPORDER; k > 1; k--) {
-			*fp1-- = *fp2--;
-		}
-		*fp1-- = bv_sub(bv_sub(lspq[i], lspmean[i]), elsp[i]);
-		fp2--;
-	}
-
-}

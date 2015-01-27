@@ -38,7 +38,7 @@
 #include <stdint.h>
 #include "basic_op.h"
 #include "oper_32b.h"
-#include "count.h"
+
 
 /* Lpc order == 10 */
 

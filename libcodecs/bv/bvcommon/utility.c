@@ -28,12 +28,6 @@
 
 #include <stdint.h>
 
-void UW8copy(uint8_t * y, uint8_t * x, int size)
-{
-	while ((size--) > 0)
-		*y++ = *x++;
-}
-
 void W16copy(int16_t * y, int16_t * x, int size)
 {
 	while ((size--) > 0)
@@ -46,8 +40,3 @@ void W16zero(int16_t * x, int size)
 		*x++ = 0;
 }
 
-void W32copy(int32_t * y, int32_t * x, int size)
-{
-	while ((size--) > 0)
-		*y++ = *x++;
-}

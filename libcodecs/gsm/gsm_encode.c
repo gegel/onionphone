@@ -10,9 +10,9 @@
 
 #include "private.h"
 #include "gsm.h"
-#include "proto.h"
 
-void gsm_encode P3((s, source, c), gsm s, gsm_signal * source, gsm_byte * c)
+
+void gsm_encode(gsm s, gsm_signal * source, gsm_byte * c)
 {
 	int16_t LARc[8], Nc[4], Mc[4], bc[4], xmaxc[4], xmc[13 * 4];
 

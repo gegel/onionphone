@@ -81,14 +81,9 @@ int32_t gaindec(int32_t * lgq,	/* Q25 */
 	       int32_t level,	/* Q25 */
 	       int16_t * nggalgc, int32_t * lg_el);
 
-void gainplc(int32_t E, int16_t * lgeqm, int32_t * lgqm);
-
 void lspdec(int16_t * lspq,	/* Q15 */
 	    int16_t * lspidx, int16_t * lsppm,	/* Q15 */
 	    int16_t * lspqlast);
-
-void lspdecplc(int16_t * lspq,	/* Q15 */
-	       int16_t * lsppm);	/* Q15 */
 
 int16_t coarsepitch(int16_t * xw,	/* (i) Q1 weighted low-band signal frame */
 		   struct BV16_Encoder_State *c);	/* (i/o) coder state */

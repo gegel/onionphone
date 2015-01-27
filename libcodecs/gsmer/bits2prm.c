@@ -34,7 +34,6 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
 
 /* Local function */
 

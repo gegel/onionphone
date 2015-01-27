@@ -145,26 +145,6 @@ OPUS_CUSTOM_NOSTATIC int opus_custom_encoder_get_size(const CELTMode * mode,
 	return size;
 }
 
-#ifdef CUSTOM_MODES
-CELTEncoder *opus_custom_encoder_create(const CELTMode * mode, int channels,
-					int *error)
-{
-	int ret;
-	CELTEncoder *st =
-	    (CELTEncoder *)
-	    opus_alloc(opus_custom_encoder_get_size(mode, channels));
-	/* init will handle the NULL case */
-	ret = opus_custom_encoder_init(st, mode, channels);
-	if (ret != OPUS_OK) {
-		opus_custom_encoder_destroy(st);
-		st = NULL;
-	}
-	if (error)
-		*error = ret;
-	return st;
-}
-#endif				/* CUSTOM_MODES */
-
 static int opus_custom_encoder_init_arch(CELTEncoder * st,
 					 const CELTMode * mode, int channels,
 					 int arch)
@@ -202,15 +182,6 @@ static int opus_custom_encoder_init_arch(CELTEncoder * st,
 	return OPUS_OK;
 }
 
-#ifdef CUSTOM_MODES
-int opus_custom_encoder_init(CELTEncoder * st, const CELTMode * mode,
-			     int channels)
-{
-	return opus_custom_encoder_init_arch(st, mode, channels,
-					     opus_select_arch());
-}
-#endif
-
 int celt_encoder_init(CELTEncoder * st, int32_t sampling_rate, int channels,
 		      int arch)
 {
@@ -224,13 +195,6 @@ int celt_encoder_init(CELTEncoder * st, int32_t sampling_rate, int channels,
 	st->upsample = resampling_factor(sampling_rate);
 	return OPUS_OK;
 }
-
-#ifdef CUSTOM_MODES
-void opus_custom_encoder_destroy(CELTEncoder * st)
-{
-	opus_free(st);
-}
-#endif				/* CUSTOM_MODES */
 
 static int transient_analysis(const opus_val32 * OPUS_RESTRICT in, int len,
 			      int C, opus_val16 * tf_estimate, int *tf_chan)
@@ -2270,86 +2234,6 @@ int celt_encode_with_ec(CELTEncoder * OPUS_RESTRICT st, const opus_val16 * pcm,
 	else
 		return nbCompressedBytes;
 }
-
-#ifdef CUSTOM_MODES
-
-#ifdef FIXED_POINT
-int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const int16_t * pcm,
-		       int frame_size, unsigned char *compressed,
-		       int nbCompressedBytes)
-{
-	return celt_encode_with_ec(st, pcm, frame_size, compressed,
-				   nbCompressedBytes, NULL);
-}
-
-#ifndef DISABLE_FLOAT_API
-int opus_custom_encode_float(CELTEncoder * OPUS_RESTRICT st, const float *pcm,
-			     int frame_size, unsigned char *compressed,
-			     int nbCompressedBytes)
-{
-	int j, ret, C, N;
-
-	if (pcm == NULL)
-		return OPUS_BAD_ARG;
-
-	C = st->channels;
-	N = frame_size;
-	int16_t in[C * N];
-
-	for (j = 0; j < C * N; j++)
-		in[j] = FLOAT2INT16(pcm[j]);
-
-	ret =
-	    celt_encode_with_ec(st, in, frame_size, compressed,
-				nbCompressedBytes, NULL);
-#ifdef RESYNTH
-	for (j = 0; j < C * N; j++)
-		((float *)pcm)[j] = in[j] * (1.f / 32768.f);
-#endif
-
-	return ret;
-}
-#endif				/* DISABLE_FLOAT_API */
-#else
-
-int opus_custom_encode(CELTEncoder * OPUS_RESTRICT st, const int16_t * pcm,
-		       int frame_size, unsigned char *compressed,
-		       int nbCompressedBytes)
-{
-	int j, ret, C, N;
-
-	if (pcm == NULL)
-		return OPUS_BAD_ARG;
-
-	C = st->channels;
-	N = frame_size;
-	celt_sig in[C * N];
-	for (j = 0; j < C * N; j++) {
-		in[j] = SCALEOUT(pcm[j]);
-	}
-
-	ret =
-	    celt_encode_with_ec(st, in, frame_size, compressed,
-				nbCompressedBytes, NULL);
-#ifdef RESYNTH
-	for (j = 0; j < C * N; j++)
-		((int16_t *) pcm)[j] = FLOAT2INT16(in[j]);
-#endif
-
-	return ret;
-}
-
-int opus_custom_encode_float(CELTEncoder * OPUS_RESTRICT st, const float *pcm,
-			     int frame_size, unsigned char *compressed,
-			     int nbCompressedBytes)
-{
-	return celt_encode_with_ec(st, pcm, frame_size, compressed,
-				   nbCompressedBytes, NULL);
-}
-
-#endif
-
-#endif				/* CUSTOM_MODES */
 
 int opus_custom_encoder_ctl(CELTEncoder * OPUS_RESTRICT st, int request, ...)
 {

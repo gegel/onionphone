@@ -26,32 +26,6 @@
 #include "decode.h"
 #include <stdlib.h>
 
-int16_t WebRtcIlbcfix_EncoderAssign(iLBC_Enc_Inst_t ** iLBC_encinst,
-					  int16_t * ILBCENC_inst_Addr,
-					  int16_t * size)
-{
-	*iLBC_encinst = (iLBC_Enc_Inst_t *) ILBCENC_inst_Addr;
-	*size = sizeof(iLBC_Enc_Inst_t) / sizeof(int16_t);
-	if (*iLBC_encinst != NULL) {
-		return (0);
-	} else {
-		return (-1);
-	}
-}
-
-int16_t WebRtcIlbcfix_DecoderAssign(iLBC_Dec_Inst_t ** iLBC_decinst,
-					  int16_t * ILBCDEC_inst_Addr,
-					  int16_t * size)
-{
-	*iLBC_decinst = (iLBC_Dec_Inst_t *) ILBCDEC_inst_Addr;
-	*size = sizeof(iLBC_Dec_Inst_t) / sizeof(int16_t);
-	if (*iLBC_decinst != NULL) {
-		return (0);
-	} else {
-		return (-1);
-	}
-}
-
 int16_t WebRtcIlbcfix_EncoderCreate(iLBC_Enc_Inst_t ** iLBC_encinst)
 {
 	*iLBC_encinst = (iLBC_Enc_Inst_t *) malloc(sizeof(iLBC_Enc_Inst_t));
@@ -146,18 +120,6 @@ int16_t WebRtcIlbcfix_DecoderInit(iLBC_Dec_Inst_t * iLBCdec_inst,
 	}
 }
 
-int16_t WebRtcIlbcfix_DecoderInit20Ms(iLBC_Dec_Inst_t * iLBCdec_inst)
-{
-	WebRtcIlbcfix_InitDecode((iLBC_Dec_Inst_t *) iLBCdec_inst, 20, 1);
-	return (0);
-}
-
-int16_t WebRtcIlbcfix_Decoderinit30Ms(iLBC_Dec_Inst_t * iLBCdec_inst)
-{
-	WebRtcIlbcfix_InitDecode((iLBC_Dec_Inst_t *) iLBCdec_inst, 30, 1);
-	return (0);
-}
-
 int16_t WebRtcIlbcfix_Decode(iLBC_Dec_Inst_t * iLBCdec_inst,
 				   const int16_t * encoded,
 				   int16_t len,
@@ -216,99 +178,3 @@ int16_t WebRtcIlbcfix_Decode(iLBC_Dec_Inst_t * iLBCdec_inst,
 	return (i * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->blockl);
 }
 
-int16_t WebRtcIlbcfix_Decode20Ms(iLBC_Dec_Inst_t * iLBCdec_inst,
-				       const int16_t * encoded,
-				       int16_t len,
-				       int16_t * decoded,
-				       int16_t * speechType)
-{
-	int i = 0;
-	if ((len == ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_bytes) ||
-	    (len == 2 * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_bytes) ||
-	    (len == 3 * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_bytes)) {
-		/* ok, do nothing */
-	} else {
-		return (-1);
-	}
-
-	while ((i * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_bytes) < len) {
-		WebRtcIlbcfix_DecodeImpl(&decoded
-					 [i *
-					  ((iLBC_Dec_Inst_t *) iLBCdec_inst)->
-					  blockl],
-					 (const uint16_t *)&encoded[i *
-									  ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_words], (iLBC_Dec_Inst_t *) iLBCdec_inst, 1);
-		i++;
-	}
-	/* iLBC does not support VAD/CNG yet */
-	*speechType = 1;
-	return (i * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->blockl);
-}
-
-int16_t WebRtcIlbcfix_Decode30Ms(iLBC_Dec_Inst_t * iLBCdec_inst,
-				       const int16_t * encoded,
-				       int16_t len,
-				       int16_t * decoded,
-				       int16_t * speechType)
-{
-	int i = 0;
-	if ((len == ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_bytes) ||
-	    (len == 2 * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_bytes) ||
-	    (len == 3 * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_bytes)) {
-		/* ok, do nothing */
-	} else {
-		return (-1);
-	}
-
-	while ((i * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_bytes) < len) {
-		WebRtcIlbcfix_DecodeImpl(&decoded
-					 [i *
-					  ((iLBC_Dec_Inst_t *) iLBCdec_inst)->
-					  blockl],
-					 (const uint16_t *)&encoded[i *
-									  ((iLBC_Dec_Inst_t *) iLBCdec_inst)->no_of_words], (iLBC_Dec_Inst_t *) iLBCdec_inst, 1);
-		i++;
-	}
-	/* iLBC does not support VAD/CNG yet */
-	*speechType = 1;
-	return (i * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->blockl);
-}
-
-int16_t WebRtcIlbcfix_DecodePlc(iLBC_Dec_Inst_t * iLBCdec_inst,
-				      int16_t * decoded,
-				      int16_t noOfLostFrames)
-{
-	int i;
-	uint16_t dummy = 0;
-
-	for (i = 0; i < noOfLostFrames; i++) {
-		/* call decoder */
-		WebRtcIlbcfix_DecodeImpl(&decoded
-					 [i *
-					  ((iLBC_Dec_Inst_t *) iLBCdec_inst)->
-					  blockl], &dummy,
-					 (iLBC_Dec_Inst_t *) iLBCdec_inst, 0);
-	}
-	return (noOfLostFrames * ((iLBC_Dec_Inst_t *) iLBCdec_inst)->blockl);
-}
-
-int16_t WebRtcIlbcfix_NetEqPlc(iLBC_Dec_Inst_t * iLBCdec_inst,
-				     int16_t * decoded,
-				     int16_t noOfLostFrames)
-{
-
-	/* Two input parameters not used, but needed for function pointers in NetEQ */
-	(void)(decoded = NULL);
-	(void)noOfLostFrames;
-
-	WebRtcSpl_MemSetW16(((iLBC_Dec_Inst_t *) iLBCdec_inst)->enh_buf, 0,
-			    ENH_BUFL);
-	((iLBC_Dec_Inst_t *) iLBCdec_inst)->prev_enh_pl = 2;
-
-	return (0);
-}
-
-void WebRtcIlbcfix_version(char *version)
-{
-	strcpy((char *)version, "1.1.1");
-}

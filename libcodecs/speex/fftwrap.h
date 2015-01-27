@@ -51,10 +51,4 @@ void spx_fft(void *table, spx_word16_t * in, spx_word16_t * out);
 /** Backward (half-complex to real) transform */
 void spx_ifft(void *table, spx_word16_t * in, spx_word16_t * out);
 
-/** Forward (real to half-complex) transform of float data */
-void spx_fft_float(void *table, float *in, float *out);
-
-/** Backward (half-complex to real) transform of float data */
-void spx_ifft_float(void *table, float *in, float *out);
-
 #endif

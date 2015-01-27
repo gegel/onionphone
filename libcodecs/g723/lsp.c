@@ -68,8 +68,6 @@ extern int16_t BandExpTable[LpcOrder];
 
 extern int16_t g723_mult_r(int16_t var1, int16_t var2);	/* Mult with round,     2 */
 extern int16_t round_(int32_t L_var1);	/* Round,               1 */
-extern int16_t g723_mac_r(int32_t L_var3, int16_t var1, int16_t var2);
-//extern int16_t g723_msu_r(int32_t L_var3, int16_t var1, int16_t var2);
 extern int32_t L_mls(int32_t, int16_t);	/* Wght ?? */
 extern int32_t L_g723_mult(int16_t var1, int16_t var2);	/* Long mult,           1 */
 extern int16_t g723_negate(int16_t var1);	/* Short negate,        1 */

@@ -377,7 +377,6 @@ void PhDisp(float x[],		/* input : excitation signal                */
 /*--------------------------------------------------------------------------*
  * Prototypes for auxiliary functions                                       *
  *--------------------------------------------------------------------------*/
-void fwrite16(float * data, int length, FILE * fp);
 int16_t random_g729c(int16_t * seed);
 void dvsub(float * in1, float * in2, float * out, int16_t npts);
 float dvdot(float * in1, float * in2, int16_t npts);

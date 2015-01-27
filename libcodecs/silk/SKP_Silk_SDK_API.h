@@ -113,32 +113,6 @@ extern "C" {
 				int16_t * nSamplesOut	/* I/O: Number of samples (vector/decoded)              */
 	    );
 
-/***************************************************************/
-/* Find Low Bit Rate Redundancy (LBRR) information in a packet */
-/***************************************************************/
-	void SKP_Silk_SDK_search_for_LBRR(void *decState,	/* I:   Decoder state, to select bitstream version only */
-					  const uint8_t * inData,	/* I:   Encoded input vector                            */
-					  const int16_t nBytesIn,	/* I:   Number of input Bytes                           */
-					  int lost_offset,	/* I:   Offset from lost packet                         */
-					  uint8_t * LBRRData,	/* O:   LBRR payload                                    */
-					  int16_t * nLBRRBytes	/* O:   Number of LBRR Bytes                            */
-	    );
-
-/************************************/
-/* Get type of content for a packet */
-/************************************/
-	void SKP_Silk_SDK_get_TOC(void *decState,	/* I:   Decoder state, to select bitstream version only */
-				  const uint8_t * inData,	/* I:   Encoded input vector                            */
-				  const int16_t nBytesIn,	/* I:   Number of input bytes                           */
-				  SKP_Silk_TOC_struct * Silk_TOC	/* O:   Type of content                                 */
-	    );
-
-/**************************/
-/* Get the version number */
-/**************************/
-/* Return a pointer to string specifying the version */
-	const char *SKP_Silk_SDK_get_version();
-
 #ifdef __cplusplus
 }
 #endif

@@ -50,42 +50,13 @@ extern int errno;
 #define SIGHANDLER_T	void	/* what does a signal handler return? */
 #endif
 
-#ifdef	HAS_STRING_H
 #include	<string.h>
-#else
-#	ifdef HAS_STRINGS_H
-#	include <strings.h>
-#	else
-#		include "proto.h"
-
-extern int strlen P((char *));
-extern char *strcpy P((char *, char *));
-extern char *strcat P((char *, char *));
-extern char *strrchr P((char *, int));
-
-#		include "unproto.h"
-#	endif
-#endif
-
-#ifdef	HAS_STDLIB_H
 #include	<stdlib.h>
-#else
-#	include "proto.h"
-#	ifdef	HAS_MALLOC_H
-#	include <malloc.h>
-#	else
-extern char *malloc P((unsigned));
-#	endif
-extern int exit P((int));
-#	include "unproto.h"
-#endif
 
 /*
  *	This suffix is tacked onto/removed from filenames
  *	similar to the way freeze and compress do it.
  */
 #define	SUFFIX_TOASTED		".gsm"
-
-#include	"proto.h"
 
 #endif				/* TOAST_H */

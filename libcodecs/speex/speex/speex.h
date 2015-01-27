@@ -302,17 +302,6 @@ extern "C" {
 /** Uses an existing encoder state to encode one frame of speech pointed to by
     "in". The encoded bit-stream is saved in "bits".
  @param state Encoder state
- @param in Frame that will be encoded with a +-2^15 range. This data MAY be 
-        overwritten by the encoder and should be considered uninitialised 
-        after the call.
- @param bits Bit-stream where the data will be written
- @return 0 if frame needs not be transmitted (DTX only), 1 otherwise
- */
-	int speex_encode(void *state, float *in, SpeexBits * bits);
-
-/** Uses an existing encoder state to encode one frame of speech pointed to by
-    "in". The encoded bit-stream is saved in "bits".
- @param state Encoder state
  @param in Frame that will be encoded with a +-2^15 range
  @param bits Bit-stream where the data will be written
  @return 0 if frame needs not be transmitted (DTX only), 1 otherwise
@@ -352,16 +341,6 @@ extern "C" {
  * @param out Where to write the decoded frame
  * @return return status (0 for no error, -1 for end of stream, -2 corrupt stream)
  */
-	int speex_decode(void *state, SpeexBits * bits, float *out);
-
-/** Uses an existing decoder state to decode one frame of speech from
- * bit-stream bits. The output speech is saved written to out.
- *
- * @param state Decoder state
- * @param bits Bit-stream from which to decode the frame (NULL if the packet was lost)
- * @param out Where to write the decoded frame
- * @return return status (0 for no error, -1 for end of stream, -2 corrupt stream)
- */
 	int speex_decode_int(void *state, SpeexBits * bits, int16_t * out);
 
 /** Used like the ioctl function to control the encoder parameters
@@ -381,13 +360,6 @@ extern "C" {
  * @return 0 if no error, -1 if request in unknown, -2 for invalid parameter
  */
 	int speex_mode_query(const SpeexMode * mode, int request, void *ptr);
-
-/** Functions for controlling the behavior of libspeex
- * @param request ioctl-type request (one of the SPEEX_LIB_* macros)
- * @param ptr Data exchanged to-from function
- * @return 0 if no error, -1 if request in unknown, -2 for invalid parameter
- */
-	int speex_lib_ctl(int request, void *ptr);
 
 /** Default narrowband mode */
 	extern const SpeexMode speex_nb_mode;

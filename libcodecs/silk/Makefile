@@ -91,7 +91,6 @@ OBJ = SKP_Silk_A2NLSF.o \
       SKP_Silk_quant_LTP_gains_FIX.o \
       SKP_Silk_range_coder.o \
       SKP_Silk_regularize_correlations_FIX.o \
-      SKP_Silk_resample_1_2.o \
       SKP_Silk_resample_1_2_coarse.o \
       SKP_Silk_resample_1_2_coarsest.o \
       SKP_Silk_resample_1_3.o \

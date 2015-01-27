@@ -18,7 +18,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 #include "lsp_lsf.tab"		/* Look-up w_table for transformations */
 

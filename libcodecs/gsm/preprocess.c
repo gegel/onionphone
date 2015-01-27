@@ -14,7 +14,6 @@
 #include "private.h"
 
 #include	"gsm.h"
-#include 	"proto.h"
 
 /*	4.2.0 .. 4.2.3	PREPROCESSING SECTION
  *  
@@ -32,7 +31,7 @@
  *	     S.S.v.v.v.v.v.v.v.v.v.v.v.v.0.0
  */
 
-void Gsm_Preprocess P3((S, s, so), struct gsm_state *S, int16_t * s, int16_t * so)
+void Gsm_Preprocess(struct gsm_state *S, int16_t * s, int16_t * so)
 {				/* [0..159]       IN/OUT  */
 
 	int16_t z1 = S->z1;

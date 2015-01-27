@@ -689,24 +689,6 @@ extern "C" {
 
 /**@}*/
 
-/** @defgroup opus_libinfo Opus library information functions
-  * @{
-  */
-
-/** Converts an opus error code into a human readable string.
-  *
-  * @param[in] error <tt>int</tt>: Error number
-  * @returns Error string
-  */
-	OPUS_EXPORT const char *opus_strerror(int error);
-
-/** Gets the libopus version string.
-  *
-  * @returns Version string
-  */
-	OPUS_EXPORT const char *opus_get_version_string(void);
-/**@}*/
-
 #ifdef __cplusplus
 }
 #endif

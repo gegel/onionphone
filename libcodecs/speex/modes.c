@@ -349,11 +349,6 @@ const SpeexMode speex_nb_mode = {
 	&nb_decoder_ctl,
 };
 
-int speex_mode_query(const SpeexMode * mode, int request, void *ptr)
-{
-	return mode->query(mode->mode, request, ptr);
-}
-
 #ifdef FIXED_DEBUG
 long long spx_mips = 0;
 #endif

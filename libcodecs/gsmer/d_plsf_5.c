@@ -17,7 +17,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 #include "sig_proc.h"
 
 #include "q_plsf_5.tab"		/* Codebooks of LSF w_prediction residual */

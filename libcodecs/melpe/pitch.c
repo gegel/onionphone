@@ -44,8 +44,6 @@ static void ivfilt(int16_t ivbuf[], int16_t lpbuf[], int16_t len);
 static void corPeak(int16_t inbuf[], pitTrackParam * pitTrack,
 		    classParam * classStat);
 
-void minCostIndex(int16_t * costBuf, int16_t * index1, int16_t * index2);
-
 /****************************************************************************
 **
 ** Function:		pitchAuto()
@@ -455,49 +453,6 @@ int16_t multiCheck(int16_t f1, int16_t f2)
 		f2_multiple = melpe_sub(f2_multiple, f2);
 
 	return (ratio(f1, f2_multiple));
-}
-
-/******************************************************************
-**
-** Function:	minCostIndex
-**
-** Description: find first two largest local maxs
-**
-** Input:
-**		int16_t *costBuf	------	the cost buffer Q5
-**		int16_t *index1	------	the index of the largest peak
-**		int16_t *index2	------	the index of the second largest peak
-**
-** Return: None
-**
-********************************************************************/
-void minCostIndex(int16_t * costBuf, int16_t * index1, int16_t * index2)
-{
-	register int16_t i;
-	int16_t co;
-
-	*index1 = 0;		/* largest weight */
-	co = costBuf[0];
-	for (i = 1; i < NODE; i++) {
-		if (costBuf[i] < co) {
-			co = costBuf[i];
-			*index1 = i;
-		}
-	}
-
-	if (*index1 == 0)
-		*index2 = 1;	/* second largest weight */
-	else
-		*index2 = 0;
-	co = costBuf[*index2];
-	for (i = (int16_t) (*index2 + 1); i < NODE; i++) {
-		if (*index1 == i)
-			continue;
-		if (costBuf[i] < co) {
-			co = costBuf[i];
-			*index2 = i;
-		}
-	}
 }
 
 /******************************************************************

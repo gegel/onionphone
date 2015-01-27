@@ -17,7 +17,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 #define UP_SAMP      6
 #define L_INTERPOL   10

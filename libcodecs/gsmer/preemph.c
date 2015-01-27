@@ -8,7 +8,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 int16_t w_mem_pre;
 

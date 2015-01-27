@@ -514,27 +514,6 @@ extern "C" {
   */
 	OPUS_EXPORT void opus_decoder_destroy(OpusDecoder * st);
 
-/** Parse an opus packet into one or more frames.
-  * Opus_decode will perform this operation internally so most applications do
-  * not need to use this function.
-  * This function does not copy the frames, the returned pointers are pointers into
-  * the input packet.
-  * @param [in] data <tt>char*</tt>: Opus packet to be parsed
-  * @param [in] len <tt>int32_t</tt>: size of data
-  * @param [out] out_toc <tt>char*</tt>: TOC pointer
-  * @param [out] frames <tt>char*[48]</tt> encapsulated frames
-  * @param [out] size <tt>int16_t[48]</tt> sizes of the encapsulated frames
-  * @param [out] payload_offset <tt>int*</tt>: returns the position of the payload within the packet (in bytes)
-  * @returns number of frames
-  */
-	OPUS_EXPORT int opus_packet_parse(const unsigned char *data,
-					  int32_t len,
-					  unsigned char *out_toc,
-					  const unsigned char *frames[48],
-					  int16_t size[48],
-					  int *payload_offset)
-	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(4);
-
 /** Gets the bandwidth of an Opus packet.
   * @param [in] data <tt>char*</tt>: Opus packet
   * @retval OPUS_BANDWIDTH_NARROWBAND Narrowband (4kHz bandpass)
@@ -588,41 +567,6 @@ extern "C" {
 									  int32_t
 									  len)
 	    OPUS_ARG_NONNULL(1);
-
-/** Gets the number of samples of an Opus packet.
-  * @param [in] packet <tt>char*</tt>: Opus packet
-  * @param [in] len <tt>int32_t</tt>: Length of packet
-  * @param [in] Fs <tt>int32_t</tt>: Sampling rate in Hz.
-  *                                     This must be a multiple of 400, or
-  *                                     inaccurate results will be returned.
-  * @returns Number of samples
-  * @retval OPUS_BAD_ARG Insufficient data was passed to the function
-  * @retval OPUS_INVALID_PACKET The compressed data passed is corrupted or of an unsupported type
-  */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int opus_packet_get_nb_samples(const
-									   unsigned
-									   char
-									   packet
-									   [],
-									   int32_t
-									   len,
-									   int32_t
-									   Fs)
-	    OPUS_ARG_NONNULL(1);
-
-/** Gets the number of samples of an Opus packet.
-  * @param [in] dec <tt>OpusDecoder*</tt>: Decoder state
-  * @param [in] packet <tt>char*</tt>: Opus packet
-  * @param [in] len <tt>int32_t</tt>: Length of packet
-  * @returns Number of samples
-  * @retval OPUS_BAD_ARG Insufficient data was passed to the function
-  * @retval OPUS_INVALID_PACKET The compressed data passed is corrupted or of an unsupported type
-  */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
-	    opus_decoder_get_nb_samples(const OpusDecoder * dec,
-					const unsigned char packet[],
-					int32_t len) OPUS_ARG_NONNULL(1)
-	    OPUS_ARG_NONNULL(2);
 
 /** Applies soft-clipping to bring a float signal within the [-1,1] range. If
   * the signal is already in that range, nothing is done. If there are values
@@ -781,12 +725,6 @@ extern "C" {
 
 	typedef struct OpusRepacketizer OpusRepacketizer;
 
-/** Gets the size of an <code>OpusRepacketizer</code> structure.
-  * @returns The size in bytes.
-  */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
-	    opus_repacketizer_get_size(void);
-
 /** (Re)initializes a previously allocated repacketizer state.
   * The state must be at least the size returned by opus_repacketizer_get_size().
   * This can be used for applications which use their own allocator instead of
@@ -807,18 +745,6 @@ extern "C" {
 	OPUS_EXPORT OpusRepacketizer *opus_repacketizer_init(OpusRepacketizer *
 							     rp)
 	    OPUS_ARG_NONNULL(1);
-
-/** Allocates memory and initializes the new repacketizer with
- * opus_repacketizer_init().
-  */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT OpusRepacketizer
-	    *opus_repacketizer_create(void);
-
-/** Frees an <code>OpusRepacketizer</code> allocated by
-  * opus_repacketizer_create().
-  * @param[in] rp <tt>OpusRepacketizer*</tt>: State to be freed.
-  */
-	OPUS_EXPORT void opus_repacketizer_destroy(OpusRepacketizer * rp);
 
 /** Add a packet to the current repacketizer state.
   * This packet must match the configuration of any packets already submitted
@@ -872,90 +798,6 @@ extern "C" {
 					      int32_t len)
 	    OPUS_ARG_NONNULL(1) OPUS_ARG_NONNULL(2);
 
-/** Construct a new packet from data previously submitted to the repacketizer
-  * state via opus_repacketizer_cat().
-  * @param rp <tt>OpusRepacketizer*</tt>: The repacketizer state from which to
-  *                                       construct the new packet.
-  * @param begin <tt>int</tt>: The index of the first frame in the current
-  *                            repacketizer state to include in the output.
-  * @param end <tt>int</tt>: One past the index of the last frame in the
-  *                          current repacketizer state to include in the
-  *                          output.
-  * @param[out] data <tt>const unsigned char*</tt>: The buffer in which to
-  *                                                 store the output packet.
-  * @param maxlen <tt>int32_t</tt>: The maximum number of bytes to store in
-  *                                    the output buffer. In order to guarantee
-  *                                    success, this should be at least
-  *                                    <code>1276</code> for a single frame,
-  *                                    or for multiple frames,
-  *                                    <code>1277*(end-begin)</code>.
-  *                                    However, <code>1*(end-begin)</code> plus
-  *                                    the size of all packet data submitted to
-  *                                    the repacketizer since the last call to
-  *                                    opus_repacketizer_init() or
-  *                                    opus_repacketizer_create() is also
-  *                                    sufficient, and possibly much smaller.
-  * @returns The total size of the output packet on success, or an error code
-  *          on failure.
-  * @retval #OPUS_BAD_ARG <code>[begin,end)</code> was an invalid range of
-  *                       frames (begin < 0, begin >= end, or end >
-  *                       opus_repacketizer_get_nb_frames()).
-  * @retval #OPUS_BUFFER_TOO_SMALL \a maxlen was insufficient to contain the
-  *                                complete output packet.
-  */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int32_t
-	    opus_repacketizer_out_range(OpusRepacketizer * rp, int begin,
-					int end, unsigned char *data,
-					int32_t maxlen) OPUS_ARG_NONNULL(1)
-	    OPUS_ARG_NONNULL(4);
-
-/** Return the total number of frames contained in packet data submitted to
-  * the repacketizer state so far via opus_repacketizer_cat() since the last
-  * call to opus_repacketizer_init() or opus_repacketizer_create().
-  * This defines the valid range of packets that can be extracted with
-  * opus_repacketizer_out_range() or opus_repacketizer_out().
-  * @param rp <tt>OpusRepacketizer*</tt>: The repacketizer state containing the
-  *                                       frames.
-  * @returns The total number of frames contained in the packet data submitted
-  *          to the repacketizer state.
-  */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int
-	    opus_repacketizer_get_nb_frames(OpusRepacketizer *
-					    rp) OPUS_ARG_NONNULL(1);
-
-/** Construct a new packet from data previously submitted to the repacketizer
-  * state via opus_repacketizer_cat().
-  * This is a convenience routine that returns all the data submitted so far
-  * in a single packet.
-  * It is equivalent to calling
-  * @code
-  * opus_repacketizer_out_range(rp, 0, opus_repacketizer_get_nb_frames(rp),
-  *                             data, maxlen)
-  * @endcode
-  * @param rp <tt>OpusRepacketizer*</tt>: The repacketizer state from which to
-  *                                       construct the new packet.
-  * @param[out] data <tt>const unsigned char*</tt>: The buffer in which to
-  *                                                 store the output packet.
-  * @param maxlen <tt>int32_t</tt>: The maximum number of bytes to store in
-  *                                    the output buffer. In order to guarantee
-  *                                    success, this should be at least
-  *                                    <code>1277*opus_repacketizer_get_nb_frames(rp)</code>.
-  *                                    However,
-  *                                    <code>1*opus_repacketizer_get_nb_frames(rp)</code>
-  *                                    plus the size of all packet data
-  *                                    submitted to the repacketizer since the
-  *                                    last call to opus_repacketizer_init() or
-  *                                    opus_repacketizer_create() is also
-  *                                    sufficient, and possibly much smaller.
-  * @returns The total size of the output packet on success, or an error code
-  *          on failure.
-  * @retval #OPUS_BUFFER_TOO_SMALL \a maxlen was insufficient to contain the
-  *                                complete output packet.
-  */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int32_t
-	    opus_repacketizer_out(OpusRepacketizer * rp, unsigned char *data,
-				  int32_t maxlen) OPUS_ARG_NONNULL(1);
-
 /** Pads a given Opus packet to a larger size (possibly changing the TOC sequence).
   * @param[in,out] data <tt>const unsigned char*</tt>: The buffer containing the
   *                                                   packet to pad.
@@ -970,56 +812,6 @@ extern "C" {
   */
 	OPUS_EXPORT int opus_packet_pad(unsigned char *data, int32_t len,
 					int32_t new_len);
-
-/** Remove all padding from a given Opus packet and rewrite the TOC sequence to
-  * minimize space usage.
-  * @param[in,out] data <tt>const unsigned char*</tt>: The buffer containing the
-  *                                                   packet to strip.
-  * @param len <tt>int32_t</tt>: The size of the packet.
-  *                                 This must be at least 1.
-  * @returns The new size of the output packet on success, or an error code
-  *          on failure.
-  * @retval #OPUS_BAD_ARG \a len was less than 1.
-  * @retval #OPUS_INVALID_PACKET \a data did not contain a valid Opus packet.
-  */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int32_t
-	    opus_packet_unpad(unsigned char *data, int32_t len);
-
-/** Pads a given Opus multi-stream packet to a larger size (possibly changing the TOC sequence).
-  * @param[in,out] data <tt>const unsigned char*</tt>: The buffer containing the
-  *                                                   packet to pad.
-  * @param len <tt>int32_t</tt>: The size of the packet.
-  *                                 This must be at least 1.
-  * @param new_len <tt>int32_t</tt>: The desired size of the packet after padding.
-  *                                 This must be at least 1.
-  * @param nb_streams <tt>int32_t</tt>: The number of streams (not channels) in the packet.
-  *                                 This must be at least as large as len.
-  * @returns an error code
-  * @retval #OPUS_OK \a on success.
-  * @retval #OPUS_BAD_ARG \a len was less than 1.
-  * @retval #OPUS_INVALID_PACKET \a data did not contain a valid Opus packet.
-  */
-	OPUS_EXPORT int opus_multistream_packet_pad(unsigned char *data,
-						    int32_t len,
-						    int32_t new_len,
-						    int nb_streams);
-
-/** Remove all padding from a given Opus multi-stream packet and rewrite the TOC sequence to
-  * minimize space usage.
-  * @param[in,out] data <tt>const unsigned char*</tt>: The buffer containing the
-  *                                                   packet to strip.
-  * @param len <tt>int32_t</tt>: The size of the packet.
-  *                                 This must be at least 1.
-  * @param nb_streams <tt>int32_t</tt>: The number of streams (not channels) in the packet.
-  *                                 This must be at least 1.
-  * @returns The new size of the output packet on success, or an error code
-  *          on failure.
-  * @retval #OPUS_BAD_ARG \a len was less than 1 or new_len was less than len.
-  * @retval #OPUS_INVALID_PACKET \a data did not contain a valid Opus packet.
-  */
-	OPUS_EXPORT OPUS_WARN_UNUSED_RESULT int32_t
-	    opus_multistream_packet_unpad(unsigned char *data, int32_t len,
-					  int nb_streams);
 
 /**@}*/
 

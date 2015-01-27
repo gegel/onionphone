@@ -14,20 +14,17 @@ GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
 CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 OBJ = bitpack.o \
-      bv.o \
       coarptch.o \
       decoder.o \
       encoder.o \
       excdec.o \
       excquan.o \
       fineptch.o \
-      g192.o \
       gaindec.o \
       gainquan.o \
       levelest.o \
       lspdec.o \
       lspquan.o \
-      plc.o \
       postfilt.o \
       preproc.o \
       ptquan.o \

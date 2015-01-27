@@ -73,20 +73,6 @@ static void get_lsp_pol(float lsp[],	/* input : line spectral freq. (cosine doma
 }
 
 /*----------------------------------------------------------------------------
-* lsf_lsp - convert from lsf[0..M-1 to lsp[0..M-1]
-*----------------------------------------------------------------------------
-*/
-void lsf_lsp(float lsf[],	/* input :  lsf */
-	     float lsp[M],	/* output: lsp */
-	     int m)
-{
-	int i;
-	for (i = 0; i < m; i++)
-		lsp[i] = (float) cos((double)lsf[i]);
-	return;
-}
-
-/*----------------------------------------------------------------------------
 * lsp_lsf - convert from lsp[0..M-1 to lsf[0..M-1]
 *----------------------------------------------------------------------------
 */

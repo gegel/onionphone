@@ -289,34 +289,6 @@ void mf_rand_num(float output[], float amplitude, int npts)
 }
 
 /*								*/
-/*	Subroutine READBL: read block of input data		*/
-/*								*/
-#define MAXSIZE 1024
-int mf_readbl(float input[], FILE * fp_in, int size)
-{
-	int i, length;
-	SPEECH int_sp[MAXSIZE];	/*  integer input array                */
-
-#ifdef PRINT
-	if (size > MAXSIZE) {
-		printf("****ERROR: read block size too large **** \n");
-		exit(1);
-	}
-#endif
-
-	length = fread(int_sp, sizeof(SPEECH), size, fp_in);
-	for (i = 0; i < length; i++)
-		input[i] = int_sp[i];
-	for (i = length; i < size; i++)
-		input[i] = 0.0;
-
-	return length;
-
-}
-
-#undef MAXSIZE
-
-/*								*/
 /*	Subroutine UNPACK_CODE: Unpack bit code from channel.	*/
 /*      Return 1 if erasure, otherwise 0.                       */
 /*								*/
@@ -366,41 +338,6 @@ void mf_window(float input[], float mf_win_cof[], float output[], int npts)
 		output[i] = mf_win_cof[i] * input[i];
 
 }
-
-/*								*/
-/*	Subroutine WRITEBL: write block of output data		*/
-/*								*/
-#define MAXSIZE 1024
-#define SIGMAX 32767
-
-void mf_writebl(float output[], FILE * fp_out, int size)
-{
-	int i;
-	SPEECH int_sp[MAXSIZE];	/*  integer input array                */
-	float temp;
-
-#ifdef PRINT
-	if (size > MAXSIZE) {
-		printf("****ERROR: write block size too large **** \n");
-		exit(1);
-	}
-#endif
-
-	for (i = 0; i < size; i++) {
-		temp = output[i];
-		/* clamp to +- SIGMAX */
-		if (temp > SIGMAX)
-			temp = SIGMAX;
-		if (temp < -SIGMAX)
-			temp = -SIGMAX;
-		int_sp[i] = temp;
-
-	}
-	fwrite(int_sp, sizeof(SPEECH), size, fp_out);
-
-}
-
-#undef MAXSIZE
 
 /*								*/
 /*	Subroutine mf_zerflt: all zero (FIR) filter.		*/

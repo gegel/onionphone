@@ -46,14 +46,6 @@ extern "C" {
 /*                    SIGNAL PROCESSING FUNCTIONS                   */
 /********************************************************************/
 
-/* downsample by a factor 2 */
-	void SKP_Silk_resample_1_2(const int16_t * in,	/* I:   16 kHz signal [2*len]    */
-				   int32_t * S,	/* I/O: State vector [6]         */
-				   int16_t * out,	/* O:   8 kHz signal [len]       */
-				   int32_t * scratch,	/* I:   Scratch memory [4*len]   */
-				   const int32_t len	/* I:   Number of OUTPUT samples */
-	    );
-
 /*! 
  * downsample by a factor 2, coarser (good for resampling audio) 
  */
@@ -429,12 +421,6 @@ extern "C" {
 						const int K	/* I:    Number of correctly sorted positions    */
 	    );
 
-	void SKP_Silk_insertion_sort_decreasing(int *a,	/* I/O:  Unsorted / Sorted vector                */
-						int *index,	/* O:    Index vector for the sorted elements    */
-						const int L,	/* I:    Vector length                           */
-						const int K	/* I:    Number of correctly sorted positions    */
-	    );
-
 	void SKP_Silk_insertion_sort_decreasing_int16(int16_t * a,	/* I/O:  Unsorted / Sorted vector                */
 						      int *index,	/* O:    Index vector for the sorted elements    */
 						      const int L,	/* I:    Vector length                           */
@@ -449,13 +435,6 @@ extern "C" {
 	void SKP_Silk_NLSF_stabilize(int *NLSF_Q15,	/* I/O:  Unstable/stabilized normalized LSF vector in Q15 [L]                    */
 				     const int *NDeltaMin_Q15,	/* I:    Normalized delta min vector in Q15, NDeltaMin_Q15[L] must be >= 1 [L+1] */
 				     const int L	/* I:    Number of NLSF parameters in the input vector                           */
-	    );
-
-/* NLSF stabilizer, over multiple input column data vectors */
-	void SKP_Silk_NLSF_stabilize_multi(int *NLSF_Q15,	/* I/O:  Unstable/stabilized normalized LSF vectors in Q15 [LxN]                 */
-					   const int *NDeltaMin_Q15,	/* I:    Normalized delta min vector in Q15, NDeltaMin_Q15[L] must be >= 1 [L+1] */
-					   const int N,	/* I:    Number of input vectors to be stabilized                                */
-					   const int L	/* I:    NLSF vector dimension                                                   */
 	    );
 
 /* Laroia low complexity NLSF weights */
@@ -475,24 +454,9 @@ extern "C" {
 				    const int D	/* I   order                                                           */
 	    );
 
-/* Multiply a vector by a constant */
-	void SKP_Silk_scale_vector16_Q14(int16_t * data1, int gain_Q14,	/* Gain in Q14 */
-					 int dataSize);
-
 /* Copy and multiply a vector by a constant */
 	void SKP_Silk_scale_copy_vector16(int16_t * data_out, const int16_t * data_in, int32_t gain_Q16,	/* I:   gain in Q16   */
 					  const int dataSize	/* I:   length        */
-	    );
-
-	void SKP_Silk_scale_vector32_16_Q14(int32_t * data1,	/* I/O: Q0/Q0         */
-					    int gain_Q14,	/* I:   Q14           */
-					    int dataSize	/* I:   length        */
-	    );
-
-/* Multiply a vector by a constant, does not saturate output data */
-	void SKP_Silk_scale_vector32_Q16(int32_t * data1,	/* I/O: Q0/Q0         */
-					 int32_t gain_Q16,	/* I:   gain in Q16 ( int16_t_MIN <= gain_Q16 <= int16_t_MAX + 65536 ) */
-					 const int dataSize	/* I:   length        */
 	    );
 
 /* Some for the LTP related function requires Q26 to work.*/
@@ -510,16 +474,6 @@ extern "C" {
 	int32_t SKP_Silk_inner_prod_aligned(const int16_t * const inVec1,	/* I   input vector 1    */
 					    const int16_t * const inVec2,	/* I   input vector 2    */
 					    const int len	/* I   vector lengths    */
-	    );
-
-	int32_t SKP_Silk_inner_prod16_aligned_sat(const int16_t * const inVec1,	/* I   input vector 1  */
-						  const int16_t * const inVec2,	/* I   input vector 2  */
-						  const int len	/* I   vector lengths  */
-	    );
-
-	int64_t SKP_Silk_inner_prod_aligned_64(const int32_t * inVec1,	/* I   input vector 1    */
-					       const int32_t * inVec2,	/* I   input vector 2    */
-					       const int len	/* I   vector lengths    */
 	    );
 
 	int64_t SKP_Silk_inner_prod16_aligned_64(const int16_t * inVec1,	/* I   input vector 1    */

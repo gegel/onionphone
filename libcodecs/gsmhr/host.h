@@ -18,14 +18,4 @@ void fillBitAlloc(int iVoicing, int iR0, int *piVqIndeces,
 		  int *piGsp0s, int16_t swVadFlag,
 		  int16_t swSP, int16_t * pswBAlloc);
 
-int hostEncoderInterface(FILE * pfileInSpeech, int iNumToRead,
-			 int16_t pswSamplesRead[]);
-
-int readDecfile(FILE * infile, int16_t pswSpeechPara[]);
-
-void speechDecoderHostInterface(int16_t pswDecodedSpeechFrame[],
-				FILE * fpfileSpeechOut);
-
-int writeEncfile(int16_t pswOutBit[], FILE * fpfileEnc);
-
 #endif

@@ -24,7 +24,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 #include "inv_sqrt.tab"		/* Table for inv_sqrt() */
 

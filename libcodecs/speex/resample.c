@@ -1155,69 +1155,11 @@ int speex_resampler_process_int(SpeexResamplerState * st,
 	return RESAMPLER_ERR_SUCCESS;
 }
 
-int speex_resampler_process_interleaved_float(SpeexResamplerState * st,
-					      const float *in,
-					      uint32_t * in_len, float *out,
-					      uint32_t * out_len)
-{
-	uint32_t i;
-	int istride_save, ostride_save;
-	uint32_t bak_len = *out_len;
-	istride_save = st->in_stride;
-	ostride_save = st->out_stride;
-	st->in_stride = st->out_stride = st->nb_channels;
-	for (i = 0; i < st->nb_channels; i++) {
-		*out_len = bak_len;
-		if (in != NULL)
-			speex_resampler_process_float(st, i, in + i, in_len,
-						      out + i, out_len);
-		else
-			speex_resampler_process_float(st, i, NULL, in_len,
-						      out + i, out_len);
-	}
-	st->in_stride = istride_save;
-	st->out_stride = ostride_save;
-	return RESAMPLER_ERR_SUCCESS;
-}
-
-int speex_resampler_process_interleaved_int(SpeexResamplerState * st,
-					    const int16_t * in,
-					    uint32_t * in_len,
-					    int16_t * out,
-					    uint32_t * out_len)
-{
-	uint32_t i;
-	int istride_save, ostride_save;
-	uint32_t bak_len = *out_len;
-	istride_save = st->in_stride;
-	ostride_save = st->out_stride;
-	st->in_stride = st->out_stride = st->nb_channels;
-	for (i = 0; i < st->nb_channels; i++) {
-		*out_len = bak_len;
-		if (in != NULL)
-			speex_resampler_process_int(st, i, in + i, in_len,
-						    out + i, out_len);
-		else
-			speex_resampler_process_int(st, i, NULL, in_len,
-						    out + i, out_len);
-	}
-	st->in_stride = istride_save;
-	st->out_stride = ostride_save;
-	return RESAMPLER_ERR_SUCCESS;
-}
-
 int speex_resampler_set_rate(SpeexResamplerState * st, uint32_t in_rate,
 			     uint32_t out_rate)
 {
 	return speex_resampler_set_rate_frac(st, in_rate, out_rate, in_rate,
 					     out_rate);
-}
-
-void speex_resampler_get_rate(SpeexResamplerState * st, uint32_t * in_rate,
-			      uint32_t * out_rate)
-{
-	*in_rate = st->in_rate;
-	*out_rate = st->out_rate;
 }
 
 int speex_resampler_set_rate_frac(SpeexResamplerState * st,
@@ -1260,14 +1202,6 @@ int speex_resampler_set_rate_frac(SpeexResamplerState * st,
 	return RESAMPLER_ERR_SUCCESS;
 }
 
-void speex_resampler_get_ratio(SpeexResamplerState * st,
-			       uint32_t * ratio_num,
-			       uint32_t * ratio_den)
-{
-	*ratio_num = st->num_rate;
-	*ratio_den = st->den_rate;
-}
-
 int speex_resampler_set_quality(SpeexResamplerState * st, int quality)
 {
 	if (quality > 10 || quality < 0)
@@ -1280,77 +1214,3 @@ int speex_resampler_set_quality(SpeexResamplerState * st, int quality)
 	return RESAMPLER_ERR_SUCCESS;
 }
 
-void speex_resampler_get_quality(SpeexResamplerState * st, int *quality)
-{
-	*quality = st->quality;
-}
-
-void speex_resampler_set_input_stride(SpeexResamplerState * st,
-				      uint32_t stride)
-{
-	st->in_stride = stride;
-}
-
-void speex_resampler_get_input_stride(SpeexResamplerState * st,
-				      uint32_t * stride)
-{
-	*stride = st->in_stride;
-}
-
-void speex_resampler_set_output_stride(SpeexResamplerState * st,
-				       uint32_t stride)
-{
-	st->out_stride = stride;
-}
-
-void speex_resampler_get_output_stride(SpeexResamplerState * st,
-				       uint32_t * stride)
-{
-	*stride = st->out_stride;
-}
-
-int speex_resampler_get_input_latency(SpeexResamplerState * st)
-{
-	return st->filt_len / 2;
-}
-
-int speex_resampler_get_output_latency(SpeexResamplerState * st)
-{
-	return ((st->filt_len / 2) * st->den_rate +
-		(st->num_rate >> 1)) / st->num_rate;
-}
-
-int speex_resampler_skip_zeros(SpeexResamplerState * st)
-{
-	uint32_t i;
-	for (i = 0; i < st->nb_channels; i++)
-		st->last_sample[i] = st->filt_len / 2;
-	return RESAMPLER_ERR_SUCCESS;
-}
-
-int speex_resampler_reset_mem(SpeexResamplerState * st)
-{
-	uint32_t i;
-	for (i = 0; i < st->nb_channels * (st->filt_len - 1); i++)
-		st->mem[i] = 0;
-	return RESAMPLER_ERR_SUCCESS;
-}
-
-const char *speex_resampler_strerror(int err)
-{
-	switch (err) {
-	case RESAMPLER_ERR_SUCCESS:
-		return "Success.";
-	case RESAMPLER_ERR_ALLOC_FAILED:
-		return "Memory allocation failed.";
-	case RESAMPLER_ERR_BAD_STATE:
-		return "Bad resampler state.";
-	case RESAMPLER_ERR_INVALID_ARG:
-		return "Invalid argument.";
-	case RESAMPLER_ERR_PTR_OVERLAP:
-		return "Input and output buffers overlap.";
-	default:
-		return
-		    "Unknown error. Bad error code or strange version mismatch.";
-	}
-}

@@ -12,13 +12,12 @@
 
 #include	"private.h"
 #include	"gsm.h"
-#include	"proto.h"
 
 /*
  *  4.3 FIXED POINT IMPLEMENTATION OF THE RPE-LTP DECODER
  */
 
-static void Postprocessing P2((S, s), struct gsm_state *S, register int16_t * s)
+static void Postprocessing(struct gsm_state *S, register int16_t * s)
 {
 	register int k;
 	register int16_t msr = S->msr;
@@ -33,7 +32,7 @@ static void Postprocessing P2((S, s), struct gsm_state *S, register int16_t * s)
 	S->msr = msr;
 }
 
-void Gsm_Decoder P8((S, LARcr, Ncr, bcr, Mcr, xmaxcr, xMcr, s), struct gsm_state *S, int16_t * LARcr,	/* [0..7]               IN      */
+void Gsm_Decoder(struct gsm_state *S, int16_t * LARcr,	/* [0..7]               IN      */
 		    int16_t * Ncr,	/* [0..3]               IN      */
 		    int16_t * bcr,	/* [0..3]               IN      */
 		    int16_t * Mcr,	/* [0..3]               IN      */

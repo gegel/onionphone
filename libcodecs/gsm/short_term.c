@@ -14,7 +14,7 @@
 #include "private.h"
 
 #include "gsm.h"
-#include "proto.h"
+
 
 /*
  *  SHORT TERM ANALYSIS FILTERING SECTION
@@ -22,7 +22,7 @@
 
 /* 4.2.8 */
 
-static void Decoding_of_the_coded_Log_Area_Ratios P2((LARc, LARpp), int16_t * LARc,	/* coded log area ratio [0..7]  IN      */
+static void Decoding_of_the_coded_Log_Area_Ratios(int16_t * LARc,	/* coded log area ratio [0..7]  IN      */
 						     int16_t * LARpp)
 {				/* out: decoded ..                        */
 	register int16_t temp1;
@@ -89,7 +89,7 @@ static void Decoding_of_the_coded_Log_Area_Ratios P2((LARc, LARpp), int16_t * LA
  * (Initial value: LARpp(j-1)[1..8] = 0.)
  */
 
-static void Coefficients_0_12 P3((LARpp_j_1, LARpp_j, LARp),
+static void Coefficients_0_12(
 				 register int16_t * LARpp_j_1,
 				 register int16_t * LARpp_j, register int16_t * LARp)
 {
@@ -102,7 +102,7 @@ static void Coefficients_0_12 P3((LARpp_j_1, LARpp_j, LARp),
 	}
 }
 
-static void Coefficients_13_26 P3((LARpp_j_1, LARpp_j, LARp),
+static void Coefficients_13_26(
 				  register int16_t * LARpp_j_1,
 				  register int16_t * LARpp_j, register int16_t * LARp)
 {
@@ -113,7 +113,7 @@ static void Coefficients_13_26 P3((LARpp_j_1, LARpp_j, LARp),
 	}
 }
 
-static void Coefficients_27_39 P3((LARpp_j_1, LARpp_j, LARp),
+static void Coefficients_27_39(
 				  register int16_t * LARpp_j_1,
 				  register int16_t * LARpp_j, register int16_t * LARp)
 {
@@ -126,7 +126,7 @@ static void Coefficients_27_39 P3((LARpp_j_1, LARpp_j, LARp),
 	}
 }
 
-static void Coefficients_40_159 P2((LARpp_j, LARp),
+static void Coefficients_40_159(
 				   register int16_t * LARpp_j,
 				   register int16_t * LARp)
 {
@@ -138,7 +138,7 @@ static void Coefficients_40_159 P2((LARpp_j, LARp),
 
 /* 4.2.9.2 */
 
-static void LARp_to_rp P1((LARp), register int16_t * LARp)
+static void LARp_to_rp(register int16_t * LARp)
 {				/* [0..7] IN/OUT  */
 	/*
 	 *  The input of this procedure is the interpolated LARp[0..7] array.
@@ -175,7 +175,7 @@ static void LARp_to_rp P1((LARp), register int16_t * LARp)
 }
 
 /* 4.2.10 */
-static void Short_term_analysis_filtering P4((S, rp, k_n, s), struct gsm_state *S, register int16_t * rp,	/* [0..7]       IN      */
+static void Short_term_analysis_filtering(struct gsm_state *S, register int16_t * rp,	/* [0..7]       IN      */
 					     register int k_n,	/*   k_end - k_start    */
 					     register int16_t * s	/* [0..n-1]     IN/OUT  */
     )
@@ -218,7 +218,7 @@ static void Short_term_analysis_filtering P4((S, rp, k_n, s), struct gsm_state *
 
 #if defined(USE_FLOAT_MUL) && defined(FAST)
 
-static void Fast_Short_term_analysis_filtering P4((S, rp, k_n, s), struct gsm_state *S, register int16_t * rp,	/* [0..7]       IN      */
+static void Fast_Short_term_analysis_filtering(struct gsm_state *S, register int16_t * rp,	/* [0..7]       IN      */
 						  register int k_n,	/*   k_end - k_start    */
 						  register int16_t * s	/* [0..n-1]     IN/OUT  */
     )
@@ -253,7 +253,7 @@ static void Fast_Short_term_analysis_filtering P4((S, rp, k_n, s), struct gsm_st
 }
 #endif				/* ! (defined (USE_FLOAT_MUL) && defined (FAST)) */
 
-static void Short_term_synthesis_filtering P5((S, rrp, k, wt, sr), struct gsm_state *S, register int16_t * rrp,	/* [0..7]       IN      */
+static void Short_term_synthesis_filtering(struct gsm_state *S, register int16_t * rrp,	/* [0..7]       IN      */
 					      register int k,	/* k_end - k_start      */
 					      register int16_t * wt,	/* [0..k-1]     IN      */
 					      register int16_t * sr	/* [0..k-1]     OUT     */
@@ -294,7 +294,7 @@ static void Short_term_synthesis_filtering P5((S, rrp, k, wt, sr), struct gsm_st
 
 #if defined(FAST) && defined(USE_FLOAT_MUL)
 
-static void Fast_Short_term_synthesis_filtering P5((S, rrp, k, wt, sr), struct gsm_state *S, register int16_t * rrp,	/* [0..7]       IN      */
+static void Fast_Short_term_synthesis_filtering(struct gsm_state *S, register int16_t * rrp,	/* [0..7]       IN      */
 						   register int k,	/* k_end - k_start      */
 						   register int16_t * wt,	/* [0..k-1]     IN      */
 						   register int16_t * sr	/* [0..k-1]     OUT     */
@@ -334,7 +334,7 @@ static void Fast_Short_term_synthesis_filtering P5((S, rrp, k, wt, sr), struct g
 
 #endif				/* defined(FAST) && defined(USE_FLOAT_MUL) */
 
-void Gsm_Short_Term_Analysis_Filter P3((S, LARc, s), struct gsm_state *S, int16_t * LARc,	/* coded log area ratio [0..7]  IN      */
+void Gsm_Short_Term_Analysis_Filter(struct gsm_state *S, int16_t * LARc,	/* coded log area ratio [0..7]  IN      */
 				       int16_t * s	/* signal [0..159]              IN/OUT  */
     )
 {
@@ -372,7 +372,7 @@ void Gsm_Short_Term_Analysis_Filter P3((S, LARc, s), struct gsm_state *S, int16_
 	FILTER(S, LARp, 120, s + 40);
 }
 
-void Gsm_Short_Term_Synthesis_Filter P4((S, LARcr, wt, s), struct gsm_state *S, int16_t * LARcr,	/* received log area ratios [0..7] IN  */
+void Gsm_Short_Term_Synthesis_Filter(struct gsm_state *S, int16_t * LARcr,	/* received log area ratios [0..7] IN  */
 					int16_t * wt,	/* received d [0..159]             IN  */
 					int16_t * s	/* signal   s [0..159]            OUT  */
     )

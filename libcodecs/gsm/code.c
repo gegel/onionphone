@@ -19,13 +19,12 @@ extern char *memcpy P((char *, char *, int));
 
 #include	"private.h"
 #include	"gsm.h"
-#include	"proto.h"
 
 /* 
  *  4.2 FIXED POINT IMPLEMENTATION OF THE RPE-LTP CODER 
  */
 
-void Gsm_Coder P8((S, s, LARc, Nc, bc, Mc, xmaxc, xMc), struct gsm_state *S, int16_t * s,	/* [0..159] samples                     IN      */
+void Gsm_Coder(struct gsm_state *S, int16_t * s,	/* [0..159] samples                     IN      */
 /*
  * The RPE-LTD coder works on a frame by frame basis.  The length of
  * the frame is equal to 160 samples.  Some computations are done

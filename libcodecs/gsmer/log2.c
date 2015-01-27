@@ -22,7 +22,7 @@
 
 #include <stdint.h>
 #include "basic_op.h"
-#include "count.h"
+
 
 #include "log2.tab"		/* Table for w_Log2() */
 

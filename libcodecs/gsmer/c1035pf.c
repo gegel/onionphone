@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include "basic_op.h"
 #include "sig_proc.h"
-#include "count.h"
+
 
 #define L_CODE    40
 #define NB_TRACK  5

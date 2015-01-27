@@ -127,10 +127,6 @@
 *
 *	cbsearch
 *
-* CALLS
-*
-*	gainencode2
-*
 ***************************************************************************
 *
 * REFERENCES
@@ -301,12 +297,6 @@ static float cgain(const float ex[], int l, int first, int len, float *match)
 	}
 	cgain = cor / eng;
 	*match = cor * cgain;
-
-	/* *Joint (closed-loop) quantization of gain and match (index):        */
-	/* *(Beware that the match score can be negative!)                     */
-
-	/*  cgain = gainencode2(cor, eng, &i);                                 */
-	/*  *match = cgain * (2.0 * cor - cgain * eng);                        */
 
 	return cgain;
 }
