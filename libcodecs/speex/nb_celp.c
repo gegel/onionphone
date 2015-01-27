@@ -66,11 +66,11 @@
 /* Default size for the encoder and decoder stack (can be changed at compile time).
    This does not apply when using variable-size arrays or alloca. */
 #ifndef NB_ENC_STACK
-#define NB_ENC_STACK (8000*sizeof(spx_sig_t))
+#define NB_ENC_STACK (8000*sizeof(char))
 #endif
 
 #ifndef NB_DEC_STACK
-#define NB_DEC_STACK (4000*sizeof(spx_sig_t))
+#define NB_DEC_STACK (4000*sizeof(char))
 #endif
 
 #ifdef FIXED_POINT

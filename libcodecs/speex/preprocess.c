@@ -1366,7 +1366,7 @@ int speex_preprocess_ctl(SpeexPreprocessState * state, int request, void *ptr)
 		st->echo_state = (SpeexEchoState *) ptr;
 		break;
 	case SPEEX_PREPROCESS_GET_ECHO_STATE:
-		ptr = (void *)st->echo_state;
+		*((void **) ptr) = (void *)st->echo_state;
 		break;
 #ifndef FIXED_POINT
 	case SPEEX_PREPROCESS_GET_AGC_LOUDNESS:
