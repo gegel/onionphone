@@ -14,7 +14,7 @@
 #include "private.h"
 
 #include "gsm.h"
-#include "proto.h"
+
 
 #undef	P
 
@@ -24,7 +24,7 @@
 
 /* 4.2.4 */
 
-static void Autocorrelation P2((s, L_ACF), int16_t * s,	/* [0..159]     IN/OUT  */
+static void Autocorrelation(int16_t * s,	/* [0..159]     IN/OUT  */
 			       int32_t * L_ACF)
 {				/* [0..8] OUT     */
 	/*
@@ -180,7 +180,7 @@ static void Autocorrelation P2((s, L_ACF), int16_t * s,	/* [0..159]     IN/OUT  
 
 #if defined(USE_FLOAT_MUL) && defined(FAST)
 
-static void Fast_Autocorrelation P2((s, L_ACF), int16_t * s,	/* [0..159]     IN/OUT  */
+static void Fast_Autocorrelation(int16_t * s,	/* [0..159]     IN/OUT  */
 				    int32_t * L_ACF)
 {				/* [0..8] OUT     */
 	register int k, i;
@@ -209,7 +209,7 @@ static void Fast_Autocorrelation P2((s, L_ACF), int16_t * s,	/* [0..159]     IN/
 
 /* 4.2.5 */
 
-static void Reflection_coefficients P2((L_ACF, r), int32_t * L_ACF,	/* 0...8        IN      */
+static void Reflection_coefficients(int32_t * L_ACF,	/* 0...8        IN      */
 				       register int16_t * r	/* 0...7        OUT     */
     )
 {
@@ -283,7 +283,7 @@ static void Reflection_coefficients P2((L_ACF, r), int32_t * L_ACF,	/* 0...8    
 
 /* 4.2.6 */
 
-static void Transformation_to_Log_Area_Ratios P1((r), register int16_t * r	/* 0..7    IN/OUT */
+static void Transformation_to_Log_Area_Ratios(register int16_t * r	/* 0..7    IN/OUT */
     )
 /*
  *  The following scaling for r[..] and LAR[..] has been used:
@@ -322,7 +322,7 @@ static void Transformation_to_Log_Area_Ratios P1((r), register int16_t * r	/* 0.
 
 /* 4.2.7 */
 
-static void Quantization_and_coding P1((LAR), register int16_t * LAR	/* [0..7]       IN/OUT  */
+static void Quantization_and_coding(register int16_t * LAR	/* [0..7]       IN/OUT  */
     )
 {
 	register int16_t temp;
@@ -363,7 +363,7 @@ static void Quantization_and_coding P1((LAR), register int16_t * LAR	/* [0..7]  
 	(void)ltmp;
 }
 
-void Gsm_LPC_Analysis P3((S, s, LARc), struct gsm_state *S, int16_t * s,	/* 0..159 signals       IN/OUT  */
+void Gsm_LPC_Analysis(struct gsm_state *S, int16_t * s,	/* 0..159 signals       IN/OUT  */
 			 int16_t * LARc)
 {				/* 0..7   LARc's  OUT     */
 #if !defined(USE_FLOAT_MUL) && !defined(FAST)

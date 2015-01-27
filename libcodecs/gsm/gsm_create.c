@@ -17,9 +17,9 @@
 
 #include "gsm.h"
 #include "private.h"
-#include "proto.h"
 
-gsm gsm_create P0()
+
+gsm gsm_create()
 {
 	gsm r;
 

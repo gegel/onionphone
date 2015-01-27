@@ -17,24 +17,23 @@
 
 #include	"private.h"
 #include	"gsm.h"
-#include	"proto.h"
 
 #define	saturate(x) 	\
 	((x) < MIN_WORD ? MIN_WORD : (x) > MAX_WORD ? MAX_WORD: (x))
 
-int16_t gsm_add P2((a, b), int16_t a, int16_t b)
+int16_t gsm_add(int16_t a, int16_t b)
 {
 	int32_t sum = a + b;
 	return saturate(sum);
 }
 
-int16_t gsm_sub P2((a, b), int16_t a, int16_t b)
+int16_t gsm_sub(int16_t a, int16_t b)
 {
 	int32_t diff = a - b;
 	return saturate(diff);
 }
 
-int16_t gsm_mult P2((a, b), int16_t a, int16_t b)
+int16_t gsm_mult(int16_t a, int16_t b)
 {
 	if (a == MIN_WORD && b == MIN_WORD)
 		return MAX_WORD;
@@ -42,7 +41,7 @@ int16_t gsm_mult P2((a, b), int16_t a, int16_t b)
 		return SASR((int32_t) a * (int32_t) b, 15);
 }
 
-int16_t gsm_mult_r P2((a, b), int16_t a, int16_t b)
+int16_t gsm_mult_r(int16_t a, int16_t b)
 {
 	if (b == MIN_WORD && a == MIN_WORD)
 		return MAX_WORD;
@@ -53,18 +52,18 @@ int16_t gsm_mult_r P2((a, b), int16_t a, int16_t b)
 	}
 }
 
-int16_t gsm_abs P1((a), int16_t a)
+int16_t gsm_abs(int16_t a)
 {
 	return a < 0 ? (a == MIN_WORD ? MAX_WORD : -a) : a;
 }
 
-int32_t gsm_L_mult P2((a, b), int16_t a, int16_t b)
+int32_t gsm_L_mult(int16_t a, int16_t b)
 {
 	assert(a != MIN_WORD || b != MIN_WORD);
 	return ((int32_t) a * (int32_t) b) << 1;
 }
 
-int32_t gsm_L_add P2((a, b), int32_t a, int32_t b)
+int32_t gsm_L_add(int32_t a, int32_t b)
 {
 	if (a < 0) {
 		if (b >= 0)
@@ -83,7 +82,7 @@ int32_t gsm_L_add P2((a, b), int32_t a, int32_t b)
 	}
 }
 
-int32_t gsm_L_sub P2((a, b), int32_t a, int32_t b)
+int32_t gsm_L_sub(int32_t a, int32_t b)
 {
 	if (a >= 0) {
 		if (b >= 0)
@@ -123,7 +122,7 @@ static unsigned char bitoff[256] = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
 };
 
-int16_t gsm_norm P1((a), int32_t a)
+int16_t gsm_norm(int32_t a)
 /*
  * the number of left shifts needed to normalize the 32 bit
  * variable L_var1 for positive values on the interval
@@ -157,7 +156,7 @@ int16_t gsm_norm P1((a), int32_t a)
 	       : 23 + bitoff[0xFF & a]);
 }
 
-int32_t gsm_L_asl P2((a, n), int32_t a, int n)
+int32_t gsm_L_asl(int32_t a, int n)
 {
 	if (n >= 32)
 		return 0;
@@ -168,7 +167,7 @@ int32_t gsm_L_asl P2((a, n), int32_t a, int n)
 	return a << n;
 }
 
-int16_t gsm_asl P2((a, n), int16_t a, int n)
+int16_t gsm_asl(int16_t a, int n)
 {
 	if (n >= 16)
 		return 0;
@@ -179,7 +178,7 @@ int16_t gsm_asl P2((a, n), int16_t a, int n)
 	return a << n;
 }
 
-int32_t gsm_L_asr P2((a, n), int32_t a, int n)
+int32_t gsm_L_asr(int32_t a, int n)
 {
 	if (n >= 32)
 		return -(a < 0);
@@ -198,7 +197,7 @@ int32_t gsm_L_asr P2((a, n), int32_t a, int n)
 #	endif
 }
 
-int16_t gsm_asr P2((a, n), int16_t a, int n)
+int16_t gsm_asr(int16_t a, int n)
 {
 	if (n >= 16)
 		return -(a < 0);
@@ -226,7 +225,7 @@ int16_t gsm_asr P2((a, n), int16_t a, int n)
  *	  >= num > 0
  */
 
-int16_t gsm_div P2((num, denum), int16_t num, int16_t denum)
+int16_t gsm_div(int16_t num, int16_t denum)
 {
 	int32_t L_num = num;
 	int32_t L_denum = denum;

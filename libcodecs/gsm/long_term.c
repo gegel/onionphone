@@ -14,7 +14,7 @@
 #include "private.h"
 
 #include "gsm.h"
-#include "proto.h"
+
 
 #ifdef	USE_TABLE_MUL
 
@@ -68,7 +68,7 @@ init_umul_table()
 
 #ifndef  USE_FLOAT_MUL
 
-static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), register int16_t * d,	/* [0..39]      IN      */
+static void Calculation_of_the_LTP_parameters(register int16_t * d,	/* [0..39]      IN      */
 						 register int16_t * dp,	/* [-120..-1]   IN      */
 						 int16_t * bc_out,	/*              OUT     */
 						 int16_t * Nc_out	/*              OUT     */
@@ -231,7 +231,7 @@ static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), regist
 
 #else				/* USE_FLOAT_MUL */
 
-static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), register int16_t * d,	/* [0..39]      IN      */
+static void Calculation_of_the_LTP_parameters(register int16_t * d,	/* [0..39]      IN      */
 						 register int16_t * dp,	/* [-120..-1]   IN      */
 						 int16_t * bc_out,	/*              OUT     */
 						 int16_t * Nc_out	/*              OUT     */
@@ -459,7 +459,7 @@ static void Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), regist
 
 #ifdef	FAST
 
-static void Fast_Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), register int16_t * d,	/* [0..39]      IN      */
+static void Fast_Calculation_of_the_LTP_parameters(register int16_t * d,	/* [0..39]      IN      */
 						      register int16_t * dp,	/* [-120..-1]   IN      */
 						      int16_t * bc_out,	/*              OUT     */
 						      int16_t * Nc_out	/*              OUT     */
@@ -639,7 +639,7 @@ static void Fast_Calculation_of_the_LTP_parameters P4((d, dp, bc_out, Nc_out), r
 
 /* 4.2.12 */
 
-static void Long_term_analysis_filtering P6((bc, Nc, dp, d, dpp, e), int16_t bc,	/*                                      IN  */
+static void Long_term_analysis_filtering(int16_t bc,	/*                                      IN  */
 					    int16_t Nc,	/*                                      IN  */
 					    register int16_t * dp,	/* previous d   [-120..-1]              IN  */
 					    register int16_t * d,	/* d            [0..39]                 IN  */
@@ -679,7 +679,7 @@ static void Long_term_analysis_filtering P6((bc, Nc, dp, d, dpp, e), int16_t bc,
 	}
 }
 
-void Gsm_Long_Term_Predictor P7((S, d, dp, e, dpp, Nc, bc),	/* 4x for 160 samples */
+void Gsm_Long_Term_Predictor(/* 4x for 160 samples */
 				struct gsm_state *S, int16_t * d,	/* [0..39]   residual signal    IN      */
 				int16_t * dp,	/* [-120..-1] d'                IN      */
 				int16_t * e,	/* [0..39]                      OUT     */
@@ -709,7 +709,7 @@ void Gsm_Long_Term_Predictor P7((S, d, dp, e, dpp, Nc, bc),	/* 4x for 160 sample
 }
 
 /* 4.3.2 */
-void Gsm_Long_Term_Synthesis_Filtering P5((S, Ncr, bcr, erp, drp), struct gsm_state *S, int16_t Ncr, int16_t bcr, register int16_t * erp,	/* [0..39]                IN */
+void Gsm_Long_Term_Synthesis_Filtering(struct gsm_state *S, int16_t Ncr, int16_t bcr, register int16_t * erp,	/* [0..39]                IN */
 					  register int16_t * drp	/* [-120..-1] IN, [0..40] OUT */
     )
 /*
