@@ -72,11 +72,11 @@
 #endif
 
 #include "arch.h"
-#include "speex/speex_echo.h"
 #include "fftwrap.h"
 #include "pseudofloat.h"
 #include "math_approx.h"
 #include "os_support.h"
+#include "speex/speex_types.h"
 #include <ophmconsts.h>
 
 #ifdef FIXED_POINT
@@ -118,19 +118,6 @@ static const spx_float_t VAR_BACKTRACK = { 16384, -12 };
 #define PLAYBACK_DELAY 2
 
 void speex_echo_get_residual(SpeexEchoState * st, spx_word32_t * Yout, int len);
-
-/** Speex echo cancellation state. */
-struct SpeexEchoState_ {
-	int frame_size;	     /**< Number of samples processed each time */
-	int window_size;
-	spx_word16_t leak_estimate;
-
-	spx_word16_t *y;	/* scratch */
-	spx_word16_t *last_y;
-	spx_word16_t *Y;	/* scratch */
-	spx_word16_t *window;
-	void *fft_table;
-};
 
 /** Compute power spectrum of a half-complex (packed) vector */
 static inline void power_spectrum(const spx_word16_t * X, spx_word32_t * ps,
