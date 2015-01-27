@@ -37,29 +37,10 @@
 #include "opus_private.h"
 #include "os_support.h"
 
-int opus_repacketizer_get_size(void)
-{
-	return sizeof(OpusRepacketizer);
-}
-
 OpusRepacketizer *opus_repacketizer_init(OpusRepacketizer * rp)
 {
 	rp->nb_frames = 0;
 	return rp;
-}
-
-OpusRepacketizer *opus_repacketizer_create(void)
-{
-	OpusRepacketizer *rp;
-	rp = (OpusRepacketizer *) opus_alloc(opus_repacketizer_get_size());
-	if (rp == NULL)
-		return NULL;
-	return opus_repacketizer_init(rp);
-}
-
-void opus_repacketizer_destroy(OpusRepacketizer * rp)
-{
-	opus_free(rp);
 }
 
 static int opus_repacketizer_cat_impl(OpusRepacketizer * rp,
@@ -102,11 +83,6 @@ int opus_repacketizer_cat(OpusRepacketizer * rp, const unsigned char *data,
 			  int32_t len)
 {
 	return opus_repacketizer_cat_impl(rp, data, len, 0);
-}
-
-int opus_repacketizer_get_nb_frames(OpusRepacketizer * rp)
-{
-	return rp->nb_frames;
 }
 
 int32_t opus_repacketizer_out_range_impl(OpusRepacketizer * rp, int begin,
@@ -225,21 +201,6 @@ int32_t opus_repacketizer_out_range_impl(OpusRepacketizer * rp, int begin,
 	return tot_size;
 }
 
-int32_t opus_repacketizer_out_range(OpusRepacketizer * rp, int begin,
-				       int end, unsigned char *data,
-				       int32_t maxlen)
-{
-	return opus_repacketizer_out_range_impl(rp, begin, end, data, maxlen, 0,
-						0);
-}
-
-int32_t opus_repacketizer_out(OpusRepacketizer * rp, unsigned char *data,
-				 int32_t maxlen)
-{
-	return opus_repacketizer_out_range_impl(rp, 0, rp->nb_frames, data,
-						maxlen, 0, 0);
-}
-
 int opus_packet_pad(unsigned char *data, int32_t len, int32_t new_len)
 {
 	OpusRepacketizer rp;
@@ -263,96 +224,3 @@ int opus_packet_pad(unsigned char *data, int32_t len, int32_t new_len)
 		return ret;
 }
 
-int32_t opus_packet_unpad(unsigned char *data, int32_t len)
-{
-	OpusRepacketizer rp;
-	int32_t ret;
-	if (len < 1)
-		return OPUS_BAD_ARG;
-	opus_repacketizer_init(&rp);
-	ret = opus_repacketizer_cat(&rp, data, len);
-	if (ret < 0)
-		return ret;
-	ret =
-	    opus_repacketizer_out_range_impl(&rp, 0, rp.nb_frames, data, len, 0,
-					     0);
-	assert(ret > 0 && ret <= len);
-	return ret;
-}
-
-int opus_multistream_packet_pad(unsigned char *data, int32_t len,
-				int32_t new_len, int nb_streams)
-{
-	int s;
-	int count;
-	unsigned char toc;
-	int16_t size[48];
-	int32_t packet_offset;
-	int32_t amount;
-
-	if (len < 1)
-		return OPUS_BAD_ARG;
-	if (len == new_len)
-		return OPUS_OK;
-	else if (len > new_len)
-		return OPUS_BAD_ARG;
-	amount = new_len - len;
-	/* Seek to last stream */
-	for (s = 0; s < nb_streams - 1; s++) {
-		if (len <= 0)
-			return OPUS_INVALID_PACKET;
-		count = opus_packet_parse_impl(data, len, 1, &toc, NULL,
-					       size, NULL, &packet_offset);
-		if (count < 0)
-			return count;
-		data += packet_offset;
-		len -= packet_offset;
-	}
-	return opus_packet_pad(data, len, len + amount);
-}
-
-int32_t opus_multistream_packet_unpad(unsigned char *data, int32_t len,
-					 int nb_streams)
-{
-	int s;
-	unsigned char toc;
-	int16_t size[48];
-	int32_t packet_offset;
-	OpusRepacketizer rp;
-	unsigned char *dst;
-	int32_t dst_len;
-
-	if (len < 1)
-		return OPUS_BAD_ARG;
-	dst = data;
-	dst_len = 0;
-	/* Unpad all frames */
-	for (s = 0; s < nb_streams; s++) {
-		int32_t ret;
-		int self_delimited = s != nb_streams - 1;
-		if (len <= 0)
-			return OPUS_INVALID_PACKET;
-		opus_repacketizer_init(&rp);
-		ret =
-		    opus_packet_parse_impl(data, len, self_delimited, &toc,
-					   NULL, size, NULL, &packet_offset);
-		if (ret < 0)
-			return ret;
-		ret =
-		    opus_repacketizer_cat_impl(&rp, data, packet_offset,
-					       self_delimited);
-		if (ret < 0)
-			return ret;
-		ret =
-		    opus_repacketizer_out_range_impl(&rp, 0, rp.nb_frames, dst,
-						     len, self_delimited, 0);
-		if (ret < 0)
-			return ret;
-		else
-			dst_len += ret;
-		dst += ret;
-		data += packet_offset;
-		len -= packet_offset;
-	}
-	return dst_len;
-}

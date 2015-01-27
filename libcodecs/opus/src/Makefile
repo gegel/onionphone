@@ -19,9 +19,6 @@ CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 OBJ = opus.o \
       opus_decoder.o \
       opus_encoder.o \
-      opus_multistream.o \
-      opus_multistream_encoder.o \
-      opus_multistream_decoder.o \
       repacketizer.o \
       analysis.o \
       mlp.o \

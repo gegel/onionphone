@@ -716,32 +716,6 @@ int opus_decode(OpusDecoder * st, const unsigned char *data,
 				  NULL, 0);
 }
 
-#ifndef DISABLE_FLOAT_API
-int opus_decode_float(OpusDecoder * st, const unsigned char *data,
-		      int32_t len, float *pcm, int frame_size,
-		      int decode_fec)
-{
-
-	int ret, i;
-
-	if (frame_size <= 0) {
-
-		return OPUS_BAD_ARG;
-	}
-	int16_t out[frame_size * st->channels];
-
-	ret =
-	    opus_decode_native(st, data, len, out, frame_size, decode_fec, 0,
-			       NULL, 0);
-	if (ret > 0) {
-		for (i = 0; i < ret * st->channels; i++)
-			pcm[i] = (1.f / 32768.f) * (out[i]);
-	}
-
-	return ret;
-}
-#endif
-
 #else
 int opus_decode(OpusDecoder * st, const unsigned char *data,
 		int32_t len, int16_t * pcm, int frame_size,
@@ -767,17 +741,6 @@ int opus_decode(OpusDecoder * st, const unsigned char *data,
 
 	return ret;
 }
-
-int opus_decode_float(OpusDecoder * st, const unsigned char *data,
-		      int32_t len, opus_val16 * pcm, int frame_size,
-		      int decode_fec)
-{
-	if (frame_size <= 0)
-		return OPUS_BAD_ARG;
-	return opus_decode_native(st, data, len, pcm, frame_size, decode_fec, 0,
-				  NULL, 0);
-}
-
 #endif
 
 int opus_decoder_ctl(OpusDecoder * st, int request, ...)
@@ -946,25 +909,3 @@ int opus_packet_get_nb_frames(const unsigned char packet[], int32_t len)
 		return packet[1] & 0x3F;
 }
 
-int opus_packet_get_nb_samples(const unsigned char packet[], int32_t len,
-			       int32_t Fs)
-{
-	int samples;
-	int count = opus_packet_get_nb_frames(packet, len);
-
-	if (count < 0)
-		return count;
-
-	samples = count * opus_packet_get_samples_per_frame(packet, Fs);
-	/* Can't have more than 120 ms */
-	if (samples * 25 > Fs * 3)
-		return OPUS_INVALID_PACKET;
-	else
-		return samples;
-}
-
-int opus_decoder_get_nb_samples(const OpusDecoder * dec,
-				const unsigned char packet[], int32_t len)
-{
-	return opus_packet_get_nb_samples(packet, len, dec->Fs);
-}

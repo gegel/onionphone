@@ -114,25 +114,6 @@ OPUS_CUSTOM_NOSTATIC int opus_custom_decoder_get_size(const CELTMode * mode,
 	return size;
 }
 
-#ifdef CUSTOM_MODES
-CELTDecoder *opus_custom_decoder_create(const CELTMode * mode, int channels,
-					int *error)
-{
-	int ret;
-	CELTDecoder *st =
-	    (CELTDecoder *)
-	    opus_alloc(opus_custom_decoder_get_size(mode, channels));
-	ret = opus_custom_decoder_init(st, mode, channels);
-	if (ret != OPUS_OK) {
-		opus_custom_decoder_destroy(st);
-		st = NULL;
-	}
-	if (error)
-		*error = ret;
-	return st;
-}
-#endif				/* CUSTOM_MODES */
-
 int celt_decoder_init(CELTDecoder * st, int32_t sampling_rate, int channels)
 {
 	int ret;
@@ -177,13 +158,6 @@ OPUS_CUSTOM_NOSTATIC int opus_custom_decoder_init(CELTDecoder * st,
 
 	return OPUS_OK;
 }
-
-#ifdef CUSTOM_MODES
-void opus_custom_decoder_destroy(CELTDecoder * st)
-{
-	opus_free(st);
-}
-#endif				/* CUSTOM_MODES */
 
 static inline opus_val16 SIG2WORD16(celt_sig x)
 {
@@ -1081,73 +1055,6 @@ int celt_decode_with_ec(CELTDecoder * OPUS_RESTRICT st,
 		st->error = 1;
 	return frame_size / st->downsample;
 }
-
-#ifdef CUSTOM_MODES
-
-#ifdef FIXED_POINT
-int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st,
-		       const unsigned char *data, int len,
-		       int16_t * OPUS_RESTRICT pcm, int frame_size)
-{
-	return celt_decode_with_ec(st, data, len, pcm, frame_size, NULL);
-}
-
-#ifndef DISABLE_FLOAT_API
-int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st,
-			     const unsigned char *data, int len,
-			     float *OPUS_RESTRICT pcm, int frame_size)
-{
-	int j, ret, C, N;
-
-	if (pcm == NULL)
-		return OPUS_BAD_ARG;
-
-	C = st->channels;
-	N = frame_size;
-
-	int16_t out[C * N];
-	ret = celt_decode_with_ec(st, data, len, out, frame_size, NULL);
-	if (ret > 0)
-		for (j = 0; j < C * ret; j++)
-			pcm[j] = out[j] * (1.f / 32768.f);
-
-	return ret;
-}
-#endif				/* DISABLE_FLOAT_API */
-
-#else
-
-int opus_custom_decode_float(CELTDecoder * OPUS_RESTRICT st,
-			     const unsigned char *data, int len,
-			     float *OPUS_RESTRICT pcm, int frame_size)
-{
-	return celt_decode_with_ec(st, data, len, pcm, frame_size, NULL);
-}
-
-int opus_custom_decode(CELTDecoder * OPUS_RESTRICT st,
-		       const unsigned char *data, int len,
-		       int16_t * OPUS_RESTRICT pcm, int frame_size)
-{
-	int j, ret, C, N;
-
-	if (pcm == NULL)
-		return OPUS_BAD_ARG;
-
-	C = st->channels;
-	N = frame_size;
-	celt_sig out[C * N];
-
-	ret = celt_decode_with_ec(st, data, len, out, frame_size, NULL);
-
-	if (ret > 0)
-		for (j = 0; j < C * ret; j++)
-			pcm[j] = FLOAT2INT16(out[j]);
-
-	return ret;
-}
-
-#endif
-#endif				/* CUSTOM_MODES */
 
 int opus_custom_decoder_ctl(CELTDecoder * OPUS_RESTRICT st, int request, ...)
 {
