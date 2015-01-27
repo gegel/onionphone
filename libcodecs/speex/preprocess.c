@@ -63,12 +63,12 @@
 #include <math.h>
 #include <ophmconsts.h>
 #include "speex/speex_preprocess.h"
-#include "speex/speex_echo.h"
 #include "arch.h"
 #include "fftwrap.h"
 #include "filterbank.h"
 #include "math_approx.h"
 #include "os_support.h"
+#include "speex/speex_types.h"
 
 #define LOUDNESS_EXP 5.f
 #define AMP_SCALE .001f
