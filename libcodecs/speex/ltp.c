@@ -196,6 +196,9 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 	spx_word16_t *ener16;
 	spx_word32_t energy[end - start + 2];
 	spx_word32_t corr[end - start + 1];
+
+	memzero(corr, (end - start + 1) * sizeof(spx_word32_t));
+
 	corr16 = corr;
 	ener16 = energy;
 #endif

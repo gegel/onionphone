@@ -934,11 +934,11 @@ SpeexResamplerState *speex_resampler_init_frac(uint32_t nb_channels,
 
 	/* Per channel data */
 	st->last_sample =
-	    (int32_t *) calloc(1, nb_channels * sizeof(int));
+	    (int32_t *) calloc(1, nb_channels * sizeof(int32_t));
 	st->magic_samples =
-	    (uint32_t *) calloc(1, nb_channels * sizeof(int));
+	    (uint32_t *) calloc(1, nb_channels * sizeof(uint32_t));
 	st->samp_frac_num =
-	    (uint32_t *) calloc(1, nb_channels * sizeof(int));
+	    (uint32_t *) calloc(1, nb_channels * sizeof(uint32_t));
 	for (i = 0; i < nb_channels; i++) {
 		st->last_sample[i] = 0;
 		st->magic_samples[i] = 0;
