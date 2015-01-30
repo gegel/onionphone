@@ -35,6 +35,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "bfin.h"
+
 #define OVERRIDE_SPEEX_AUTOCORR
 void _spx_autocorr(const spx_word16_t * x,	/*  in: [0...n-1] samples x   */
 		   spx_word16_t * ac,	/* out: [0...lag-1] ac values */
@@ -96,7 +98,8 @@ void _spx_autocorr(const spx_word16_t * x,	/*  in: [0...n-1] samples x   */
 			     "m"(ac32top), "m"(N_lag), "m"(lag_1), "m"(nshift)
 			     :"A0", "A1", "P0", "P1", "P2", "P3", "P4", "R0",
 			     "R1", "R2", "R3", "R4", "I0", "I1", "L0", "L1",
-			     "B0", "B1", "memory");
+			     "B0", "B1", "memory",
+			     "ASTAT" BFIN_HWLOOP0_REGS BFIN_HWLOOP1_REGS);
 	d = 0;
 	for (j = 0; j < n; j++) {
 		d = ADD32(d, SHR32(MULT16_16(x[j], x[j]), shift));

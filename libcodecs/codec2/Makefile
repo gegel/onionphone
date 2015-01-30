@@ -24,7 +24,6 @@ OBJ = codebook.o \
 	codebookvq.o \
 	codec2.o \
 	interp.o \
-	kiss_fft.o \
 	lpc.o \
 	lsp.o \
 	nlp.o \
@@ -34,7 +33,7 @@ OBJ = codebook.o \
 	quantise.o \
 	sine.o
 
-INCADD ?= -I. -I../../common/inc
+INCADD ?= -I. -I../../common/inc -I../../common/kiss_fft
 
 all: build
 

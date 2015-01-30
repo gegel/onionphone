@@ -37,11 +37,11 @@
 #endif
 
 #include "filters.h"
+#include "stack_alloc.h"
 #include "arch.h"
 #include "math_approx.h"
 #include "ltp.h"
 #include <math.h>
-#include <ophtools.h>
 
 #ifdef _USE_SSE
 #include "filters_sse.h"
@@ -139,6 +139,7 @@ void signal_mul(const spx_sig_t * x, spx_sig_t * y, spx_word32_t scale, int len)
 	}
 }
 
+#ifndef DISABLE_ENCODER
 void signal_div(const spx_word16_t * x, spx_word16_t * y, spx_word32_t scale,
 		int len)
 {
@@ -170,8 +171,9 @@ void signal_div(const spx_word16_t * x, spx_word16_t * y, spx_word32_t scale,
 		}
 	}
 }
+#endif				/* DISABLE_ENCODER */
 
-#else
+#else				/* FIXED_POINT */
 
 void signal_mul(const spx_sig_t * x, spx_sig_t * y, spx_word32_t scale, int len)
 {
@@ -180,6 +182,7 @@ void signal_mul(const spx_sig_t * x, spx_sig_t * y, spx_word32_t scale, int len)
 		y[i] = scale * x[i];
 }
 
+#ifndef DISABLE_ENCODER
 void signal_div(const spx_sig_t * x, spx_sig_t * y, spx_word32_t scale, int len)
 {
 	int i;
@@ -187,10 +190,13 @@ void signal_div(const spx_sig_t * x, spx_sig_t * y, spx_word32_t scale, int len)
 	for (i = 0; i < len; i++)
 		y[i] = scale_1 * x[i];
 }
-#endif
+#endif				/* DISABLE_ENCODER */
+
+#endif				/* !FIXED_POINT */
 
 #ifdef FIXED_POINT
 
+#if !defined (DISABLE_WIDEBAND) && !defined (DISABLE_ENCODER)
 spx_word16_t compute_rms(const spx_sig_t * x, int len)
 {
 	int i;
@@ -232,6 +238,7 @@ spx_word16_t compute_rms(const spx_sig_t * x, int len)
 		       (EXTEND32(spx_sqrt(DIV32(sum, len))), (sig_shift + 3)),
 		       SIG_SHIFT));
 }
+#endif				/* !defined (DISABLE_WIDEBAND) && !defined (DISABLE_ENCODER) */
 
 spx_word16_t compute_rms16(const spx_word16_t * x, int len)
 {
@@ -338,13 +345,15 @@ spx_word16_t compute_rms16(const spx_word16_t * x, int len)
 }
 #endif
 
-#ifndef OVERRIDE_FILTER_MEM16
+#ifdef MERGE_FILTERS
+const spx_word16_t zeros[10] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+#endif				/* MERGE_FILTERS */
+
+#if !defined(OVERRIDE_FILTER_MEM16) && !defined(DISABLE_ENCODER)
 void filter_mem16(const spx_word16_t * x, const spx_coef_t * num,
 		  const spx_coef_t * den, spx_word16_t * y, int N, int ord,
 		  spx_mem_t * mem, char *stack)
 {
-	(void)stack;
-
 	int i, j;
 	spx_word16_t xi, yi, nyi;
 	for (i = 0; i < N; i++) {
@@ -365,14 +374,12 @@ void filter_mem16(const spx_word16_t * x, const spx_coef_t * num,
 		y[i] = yi;
 	}
 }
-#endif
+#endif				/* !defined(OVERRIDE_FILTER_MEM16) && !defined(DISABLE_ENCODER) */
 
 #ifndef OVERRIDE_IIR_MEM16
 void iir_mem16(const spx_word16_t * x, const spx_coef_t * den, spx_word16_t * y,
 	       int N, int ord, spx_mem_t * mem, char *stack)
 {
-	(void)stack;
-
 	int i, j;
 	spx_word16_t yi, nyi;
 
@@ -391,12 +398,10 @@ void iir_mem16(const spx_word16_t * x, const spx_coef_t * den, spx_word16_t * y,
 }
 #endif
 
-#ifndef OVERRIDE_FIR_MEM16
+#if !defined(OVERRIDE_FIR_MEM16) && !defined(DISABLE_ENCODER)
 void fir_mem16(const spx_word16_t * x, const spx_coef_t * num, spx_word16_t * y,
 	       int N, int ord, spx_mem_t * mem, char *stack)
 {
-	(void)stack;
-
 	int i, j;
 	spx_word16_t xi, yi;
 
@@ -413,17 +418,16 @@ void fir_mem16(const spx_word16_t * x, const spx_coef_t * num, spx_word16_t * y,
 		y[i] = yi;
 	}
 }
-#endif
+#endif				/* !defined(OVERRIDE_FIR_MEM16) && !defined(DISABLE_ENCODER) */
 
+#ifndef DISABLE_ENCODER
 void syn_percep_zero16(const spx_word16_t * xx, const spx_coef_t * ak,
 		       const spx_coef_t * awk1, const spx_coef_t * awk2,
 		       spx_word16_t * y, int N, int ord, char *stack)
 {
 	int i;
-	spx_mem_t mem[ord];
-
-	memzero(mem, ord * sizeof(spx_mem_t));
-
+	VARDECL(spx_mem_t * mem);
+	ALLOC(mem, ord, spx_mem_t);
 	for (i = 0; i < ord; i++)
 		mem[i] = 0;
 	iir_mem16(xx, ak, y, N, ord, mem, stack);
@@ -437,10 +441,8 @@ void residue_percep_zero16(const spx_word16_t * xx, const spx_coef_t * ak,
 			   spx_word16_t * y, int N, int ord, char *stack)
 {
 	int i;
-	spx_mem_t mem[ord];
-
-	memzero(mem, ord * sizeof(spx_mem_t));
-
+	VARDECL(spx_mem_t * mem);
+	ALLOC(mem, ord, spx_mem_t);
 	for (i = 0; i < ord; i++)
 		mem[i] = 0;
 	filter_mem16(xx, ak, awk1, y, N, ord, mem, stack);
@@ -448,21 +450,19 @@ void residue_percep_zero16(const spx_word16_t * xx, const spx_coef_t * ak,
 		mem[i] = 0;
 	fir_mem16(y, awk2, y, N, ord, mem, stack);
 }
+#endif				/* DISABLE_ENCODER */
 
-#ifndef OVERRIDE_COMPUTE_IMPULSE_RESPONSE
+#if !defined(OVERRIDE_COMPUTE_IMPULSE_RESPONSE) && !defined(DISABLE_ENCODER)
 void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 			      const spx_coef_t * awk2, spx_word16_t * y, int N,
 			      int ord, char *stack)
 {
-	(void)stack;
-
 	int i, j;
 	spx_word16_t y1, ny1i, ny2i;
-	spx_mem_t mem1[ord];
-	spx_mem_t mem2[ord];
-
-	memzero(mem1, ord * sizeof(spx_mem_t));
-	memzero(mem2, ord * sizeof(spx_mem_t));
+	VARDECL(spx_mem_t * mem1);
+	VARDECL(spx_mem_t * mem2);
+	ALLOC(mem1, ord, spx_mem_t);
+	ALLOC(mem2, ord, spx_mem_t);
 
 	y[0] = LPC_SCALING;
 	for (i = 0; i < ord; i++)
@@ -487,24 +487,21 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 		mem2[ord - 1] = MULT16_16(ak[ord - 1], ny2i);
 	}
 }
-#endif
+#endif				/* !defined(OVERRIDE_COMPUTE_IMPULSE_RESPONSE) && !defined(DISABLE_ENCODER) */
 
+#ifndef DISABLE_WIDEBAND
 /* Decomposes a signal into low-band and high-band using a QMF */
 void qmf_decomp(const spx_word16_t * xx, const spx_word16_t * aa,
 		spx_word16_t * y1, spx_word16_t * y2, int N, int M,
 		spx_word16_t * mem, char *stack)
 {
-	(void)stack;
-
 	int i, j, k, M2;
+	VARDECL(spx_word16_t * a);
+	VARDECL(spx_word16_t * x);
 	spx_word16_t *x2;
 
-	spx_word16_t a[M];
-	spx_word16_t x[N + M - 1];
-
-	memzero(a, M * sizeof(spx_word16_t));
-	memzero(x, (N + M - 1) * sizeof(spx_word16_t));
-
+	ALLOC(a, M, spx_word16_t);
+	ALLOC(x, N + M - 1, spx_word16_t);
 	x2 = x + M - 1;
 	M2 = M >> 1;
 	for (i = 0; i < M; i++)
@@ -545,18 +542,15 @@ void qmf_synth(const spx_word16_t * x1, const spx_word16_t * x2,
       all odd x[i] are zero -- well, actually they are left out of the array now
       N and M are multiples of 4 */
 {
-	(void)stack;
-
 	int i, j;
 	int M2, N2;
+	VARDECL(spx_word16_t * xx1);
+	VARDECL(spx_word16_t * xx2);
 
 	M2 = M >> 1;
 	N2 = N >> 1;
-	spx_word16_t xx1[M2 + N2];
-	spx_word16_t xx2[M2 + N2];
-
-	memzero(xx1, (M2 + N2) * sizeof(spx_word16_t));
-	memzero(xx2, (M2 + N2) * sizeof(spx_word16_t));
+	ALLOC(xx1, M2 + N2, spx_word16_t);
+	ALLOC(xx2, M2 + N2, spx_word16_t);
 
 	for (i = 0; i < N2; i++)
 		xx1[i] = x1[N2 - 1 - i];
@@ -633,6 +627,9 @@ void qmf_synth(const spx_word16_t * x1, const spx_word16_t * x2,
 	for (i = 0; i < M2; i++)
 		mem2[2 * i + 1] = xx2[i];
 }
+#endif				/* DISABLE_WIDEBAND */
+
+#ifndef DISABLE_DECODER
 
 #ifdef FIXED_POINT
 #if 0
@@ -669,10 +666,10 @@ const float shift_filt[3][7] =
 #endif
 #endif
 
-int interp_pitch(spx_word16_t * exc,	/*decoded excitation */
-		 spx_word16_t * interp,	/*decoded excitation */
-		 int pitch,	/*pitch period */
-		 int len)
+static int interp_pitch(spx_word16_t * exc,	/*decoded excitation */
+			spx_word16_t * interp,	/*decoded excitation */
+			int pitch,	/*pitch period */
+			int len)
 {
 	int i, j, k;
 	spx_word32_t corr[4][7];
@@ -735,12 +732,8 @@ void multicomb(spx_word16_t * exc,	/*decoded excitation */
 	       int max_pitch, spx_word16_t comb_gain,	/*gain of comb filter */
 	       char *stack)
 {
-	(void)stack;
-
-	(void)ak;
-	(void)p;
-
 	int i;
+	VARDECL(spx_word16_t * iexc);
 	spx_word16_t old_ener, new_ener;
 	int corr_pitch;
 
@@ -782,7 +775,7 @@ void multicomb(spx_word16_t * exc,	/*decoded excitation */
 	corr_pitch = pitch;
 #endif
 
-	spx_word16_t iexc[2 * nsf];
+	ALLOC(iexc, 2 * nsf, spx_word16_t);
 
 	interp_pitch(exc, iexc, corr_pitch, 80);
 	if (corr_pitch > max_pitch)
@@ -900,3 +893,5 @@ void multicomb(spx_word16_t * exc,	/*decoded excitation */
 	}
 #endif
 }
+
+#endif				/* DISABLE_DECODER */

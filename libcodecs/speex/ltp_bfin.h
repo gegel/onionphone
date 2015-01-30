@@ -35,6 +35,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "bfin.h"
+
 #define OVERRIDE_INNER_PROD
 spx_word32_t inner_prod(const spx_word16_t * x, const spx_word16_t * y, int len)
 {
@@ -57,7 +59,7 @@ spx_word32_t inner_prod(const spx_word16_t * x, const spx_word16_t * y, int len)
 			     "R0 = A0;\n\t" "%0 = R0;\n\t":"=m"(sum)
 			     :"m"(x), "m"(y), "d"(len - 1)
 			     :"P0", "P1", "P2", "R0", "R1", "A0", "I0", "I1",
-			     "L0", "L1", "R3");
+			     "L0", "L1", "R3", "ASTAT" BFIN_HWLOOP0_REGS);
 	return sum;
 }
 
@@ -97,7 +99,8 @@ void pitch_xcorr(const spx_word16_t * _x, const spx_word16_t * _y,
 			     "m"(len), "m"(nb_pitch)
 			     :"A0", "A1", "P0", "P1", "P2", "P3", "P4", "R0",
 			     "R1", "R2", "R3", "I0", "I1", "L0", "L1", "B0",
-			     "B1", "memory");
+			     "B1", "memory",
+			     "ASTAT" BFIN_HWLOOP0_REGS BFIN_HWLOOP1_REGS);
 }
 
 #define OVERRIDE_COMPUTE_PITCH_ERROR
@@ -128,7 +131,7 @@ static inline spx_word32_t compute_pitch_error(spx_word16_t * C,
 	     "R1.L = %4.L*%4.L (IS);\n\t"
 	     "A0 -= R1.L*R0.L (IS);\n\t" "%0 = A0;\n\t":"=&D"(sum), "=a"(C)
 	     :"d"(g[0]), "d"(g[1]), "d"(g[2]), "d"(pitch_control), "1"(C)
-	     :"R0", "R1", "R2", "A0");
+	     :"R0", "R1", "R2", "A0", "ASTAT");
 	return sum;
 }
 
@@ -138,12 +141,16 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 			   int *pitch, spx_word16_t * gain, int N, char *stack)
 {
 	int i, j, k;
+	VARDECL(spx_word32_t * best_score);
+	VARDECL(spx_word32_t * best_ener);
 	spx_word32_t e0;
+	VARDECL(spx_word32_t * corr);
+	VARDECL(spx_word32_t * energy);
 
-	spx_word32_t best_score[N];
-	spx_word32_t best_ener[N];
-	spx_word32_t corr[end - start + 1];
-	spx_word32_t energy[end - start + 2];
+	ALLOC(best_score, N, spx_word32_t);
+	ALLOC(best_ener, N, spx_word32_t);
+	ALLOC(corr, end - start + 1, spx_word32_t);
+	ALLOC(energy, end - start + 2, spx_word32_t);
 
 	for (i = 0; i < N; i++) {
 		best_score[i] = -1;
@@ -175,18 +182,17 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 	     "          R2 = MAX(R1,R3);\n\t"
 	     "eu2:      [P0++] = R2;\n\t"::"d"(energy), "d"(&sw[-start - 1]),
 	     "d"(&sw[-start + len - 1]), "a"(end - start)
-	     :"P0", "I1", "I2", "R0", "R1", "R2", "R3"
-#if (__GNUC__ == 4)
-	     , "LC1"
-#endif
-	    );
+	     :"P0", "I1", "I2", "R0", "R1", "R2", "R3",
+	     "ASTAT" BFIN_HWLOOP1_REGS);
 
 	pitch_xcorr(sw, sw - end, corr, len, end - start + 1, stack);
 
 	/* FIXME: Fixed-point and floating-point code should be merged */
 	{
-		spx_word16_t corr16[end - start + 1];
-		spx_word16_t ener16[end - start + 1];
+		VARDECL(spx_word16_t * corr16);
+		VARDECL(spx_word16_t * ener16);
+		ALLOC(corr16, end - start + 1, spx_word16_t);
+		ALLOC(ener16, end - start + 1, spx_word16_t);
 		/* Normalize to 180 so we can square it and it still fits in 16 bits */
 		normalize16(corr, corr16, 180, end - start + 1);
 		normalize16(energy, ener16, 180, end - start + 1);
@@ -215,11 +221,8 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 					     :"a"(corr16), "a"(ener16),
 					     "a"(end + 1 - start), "d"(start)
 					     :"P0", "P1", "I0", "I1", "R0",
-					     "R1", "R2", "R3", "R4", "R5"
-#if (__GNUC__ == 4)
-					     , "LC1"
-#endif
-			    );
+					     "R1", "R2", "R3", "R4", "R5",
+					     "ASTAT", "CC" BFIN_HWLOOP1_REGS);
 
 		} else {
 			for (i = start; i <= end; i++) {
@@ -367,11 +370,7 @@ static int pitch_gain_search_3tap_vq(const signed char *gain_cdbk,
 			     :"a"(gain_cdbk), "a"(C16), "a"(gain_cdbk_size),
 			     "a"(max_gain), "b"(-VERY_LARGE32)
 			     :"R0", "R1", "R2", "R3", "R4", "P0", "P1", "I1",
-			     "L1", "A0", "B0"
-#if (__GNUC__ == 4)
-			     , "LC1"
-#endif
-	    );
+			     "L1", "A0", "B0", "CC", "ASTAT" BFIN_HWLOOP1_REGS);
 
 	return best_cdbk;
 }

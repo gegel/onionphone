@@ -39,7 +39,6 @@
 #define SB_CELP_H
 
 #include "modes.h"
-#include "speex/speex_bits.h"
 #include "nb_celp.h"
 
 /**Structure representing the full state of the sub-band encoder*/
@@ -59,7 +58,7 @@ typedef struct SBEncState {
 
 	char *stack;		  /**< Temporary allocation stack */
 	spx_word16_t *high;	     /**< High-band signal (buffer) */
-	spx_word16_t *h0_mem, *h1_mem;
+	spx_word16_t *h0_mem;
 
 	const spx_word16_t *window;
 				  /**< LPC analysis window */
@@ -78,9 +77,9 @@ typedef struct SBEncState {
 #ifndef DISABLE_VBR
 	float vbr_quality;	  /**< Quality setting for VBR encoding */
 	int vbr_enabled;	  /**< 1 for enabling VBR, 0 otherwise */
-	int32_t vbr_max;	  /**< Max bit-rate allowed in VBR mode (total) */
-	int32_t vbr_max_high; /**< Max bit-rate allowed in VBR mode for the high-band */
-	int32_t abr_enabled;  /**< ABR setting (in bps), 0 if off */
+	spx_int32_t vbr_max;	  /**< Max bit-rate allowed in VBR mode (total) */
+	spx_int32_t vbr_max_high; /**< Max bit-rate allowed in VBR mode for the high-band */
+	spx_int32_t abr_enabled;  /**< ABR setting (in bps), 0 if off */
 	float abr_drift;
 	float abr_drift2;
 	float abr_count;
@@ -93,7 +92,7 @@ typedef struct SBEncState {
 	int submodeID;
 	int submodeSelect;
 	int complexity;
-	int32_t sampling_rate;
+	spx_int32_t sampling_rate;
 
 } SBEncState;
 
@@ -107,7 +106,7 @@ typedef struct SBDecState {
 	int nbSubframes;
 	int lpcSize;
 	int first;
-	int32_t sampling_rate;
+	spx_int32_t sampling_rate;
 	int lpc_enh_enabled;
 
 	char *stack;
@@ -123,7 +122,7 @@ typedef struct SBDecState {
 	spx_word16_t *innov_save; /** If non-NULL, innovation is copied here */
 
 	spx_word16_t last_ener;
-	int32_t seed;
+	spx_int32_t seed;
 
 	int encode_submode;
 	const SpeexSubmode *const *submodes;

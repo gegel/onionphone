@@ -40,11 +40,13 @@ void vq_nbest(spx_word16_t * _in, const __m128 * codebook, int len, int entries,
 	      char *stack)
 {
 	int i, j, k, used;
+	VARDECL(float *dist);
+	VARDECL(__m128 * in);
 	__m128 half;
 	used = 0;
-	float dist[entries];
+	ALLOC(dist, entries, float);
 	half = _mm_set_ps1(.5f);
-	__m128 in[len];
+	ALLOC(in, len, __m128);
 	for (i = 0; i < len; i++)
 		in[i] = _mm_set_ps1(_in[i]);
 	for (i = 0; i < entries >> 2; i++) {
@@ -74,11 +76,13 @@ void vq_nbest_sign(spx_word16_t * _in, const __m128 * codebook, int len,
 		   spx_word32_t * best_dist, char *stack)
 {
 	int i, j, k, used;
+	VARDECL(float *dist);
+	VARDECL(__m128 * in);
 	__m128 half;
 	used = 0;
-	float dist[entries];
+	ALLOC(dist, entries, float);
 	half = _mm_set_ps1(.5f);
-	__m128 in[len];
+	ALLOC(in, len, __m128);
 	for (i = 0; i < len; i++)
 		in[i] = _mm_set_ps1(_in[i]);
 	for (i = 0; i < entries >> 2; i++) {

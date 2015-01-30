@@ -21,7 +21,7 @@ OBJ = audio.o \
       sha1.o \
       tcp.o
 
-INCADD ?= -I. -I../common/crp -I../common/inc -I../common/helpers
+INCADD ?= -I. -I../common/crp -I../common/inc -I../common/helpers -I../common/kiss_fft
 
 all: build
 

@@ -55,8 +55,8 @@
 #include "../libcodecs/bv/bv16/bitpack.h"
 //*/
 #include "../libcodecs/speex/speex/speex.h"
-#include "../libcodecs/speex/speex/speex_preprocess.h"
-#include "../libcodecs/speex/speex/speex_resampler.h"
+#include "../common/libspeexdsp/speex/speex_preprocess.h"
+#include "../common/libspeexdsp/speex/speex_resampler.h"
 
 #include "../libcodecs/amr/interf_enc.h"
 #include "../libcodecs/amr/interf_dec.h"

@@ -31,14 +31,13 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <ophtools.h>
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
 
 #include "cb_search.h"
 #include "filters.h"
+#include "stack_alloc.h"
 #include "vq.h"
 #include "arch.h"
 #include "math_approx.h"
@@ -52,6 +51,8 @@
 #include "cb_search_bfin.h"
 #endif
 
+#ifndef DISABLE_ENCODER
+
 #ifndef OVERRIDE_COMPUTE_WEIGHTED_CODEBOOK
 static void compute_weighted_codebook(const signed char *shape_cb,
 				      const spx_word16_t * r,
@@ -59,11 +60,9 @@ static void compute_weighted_codebook(const signed char *shape_cb,
 				      spx_word32_t * E, int shape_cb_size,
 				      int subvect_size, char *stack)
 {
-	(void)resp2;
-	(void)stack;
-
 	int i, j, k;
-	spx_word16_t shape[subvect_size];
+	VARDECL(spx_word16_t * shape);
+	ALLOC(shape, subvect_size, spx_word16_t);
 	for (i = 0; i < shape_cb_size; i++) {
 		spx_word16_t *res;
 
@@ -117,10 +116,16 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 					  char *stack, int update_target)
 {
 	int i, j, m, q;
+	VARDECL(spx_word16_t * resp);
 #ifdef _USE_SSE
+	VARDECL(__m128 * resp2);
+	VARDECL(__m128 * E);
 #else
 	spx_word16_t *resp2;
+	VARDECL(spx_word32_t * E);
 #endif
+	VARDECL(spx_word16_t * t);
+	VARDECL(spx_sig_t * e);
 	const signed char *shape_cb;
 	int shape_cb_size, subvect_size, nb_subvect;
 	const split_cb_params *params;
@@ -134,18 +139,16 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 	shape_cb_size = 1 << params->shape_bits;
 	shape_cb = params->shape_cb;
 	have_sign = params->have_sign;
-	spx_word16_t resp[shape_cb_size * subvect_size];
+	ALLOC(resp, shape_cb_size * subvect_size, spx_word16_t);
 #ifdef _USE_SSE
-	__m128 resp2[(shape_cb_size * subvect_size) >> 2];
-	__m128 E[shape_cb_size >> 2];
+	ALLOC(resp2, (shape_cb_size * subvect_size) >> 2, __m128);
+	ALLOC(E, shape_cb_size >> 2, __m128);
 #else
 	resp2 = resp;
-	spx_word32_t E[shape_cb_size];
+	ALLOC(E, shape_cb_size, spx_word32_t);
 #endif
-	spx_word16_t t[nsf];
-	spx_sig_t e[nsf];
-
-	memzero(e, nsf * sizeof(spx_sig_t));
+	ALLOC(t, nsf, spx_word16_t);
+	ALLOC(e, nsf, spx_sig_t);
 
 	/* FIXME: Do we still need to copy the target? */
 	SPEEX_COPY(t, target, nsf);
@@ -156,10 +159,12 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 	for (i = 0; i < nb_subvect; i++) {
 		spx_word16_t *x = t + subvect_size * i;
 		/*Find new n-best based on previous n-best j */
+#ifndef DISABLE_WIDEBAND
 		if (have_sign)
 			vq_nbest_sign(x, resp2, subvect_size, shape_cb_size, E,
 				      1, &best_index, &best_dist, stack);
 		else
+#endif				/* DISABLE_WIDEBAND */
 			vq_nbest(x, resp2, subvect_size, shape_cb_size, E, 1,
 				 &best_index, &best_dist, stack);
 
@@ -241,7 +246,8 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 
 	/* Update target: only update target if necessary */
 	if (update_target) {
-		spx_word16_t r2[nsf];
+		VARDECL(spx_word16_t * r2);
+		ALLOC(r2, nsf, spx_word16_t);
 		for (j = 0; j < nsf; j++)
 			r2[j] = EXTRACT16(PSHR32(e[j], 6));
 		syn_percep_zero16(r2, ak, awk1, awk2, r2, nsf, p, stack);
@@ -263,15 +269,34 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 				char *stack, int complexity, int update_target)
 {
 	int i, j, k, m, n, q;
+	VARDECL(spx_word16_t * resp);
 #ifdef _USE_SSE
+	VARDECL(__m128 * resp2);
+	VARDECL(__m128 * E);
 #else
 	spx_word16_t *resp2;
+	VARDECL(spx_word32_t * E);
 #endif
+	VARDECL(spx_word16_t * t);
+	VARDECL(spx_sig_t * e);
+	VARDECL(spx_word16_t * tmp);
+	VARDECL(spx_word32_t * ndist);
+	VARDECL(spx_word32_t * odist);
+	VARDECL(int *itmp);
+	VARDECL(spx_word16_t ** ot2);
+	VARDECL(spx_word16_t ** nt2);
 	spx_word16_t **ot, **nt;
+	VARDECL(int **nind);
+	VARDECL(int **oind);
+	VARDECL(int *ind);
 	const signed char *shape_cb;
 	int shape_cb_size, subvect_size, nb_subvect;
 	const split_cb_params *params;
-	int N;
+	int N = 2;
+	VARDECL(int *best_index);
+	VARDECL(spx_word32_t * best_dist);
+	VARDECL(int *best_nind);
+	VARDECL(int *best_ntarget);
 	int have_sign;
 	N = complexity;
 	if (N > 10)
@@ -286,10 +311,10 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 					      update_target);
 		return;
 	}
-	spx_word16_t * ot2[N];
-	spx_word16_t * nt2[N];
-	int * oind[N];
-	int * nind[N];
+	ALLOC(ot2, N, spx_word16_t *);
+	ALLOC(nt2, N, spx_word16_t *);
+	ALLOC(oind, N, int *);
+	ALLOC(nind, N, int *);
 
 	params = (const split_cb_params *)par;
 	subvect_size = params->subvect_size;
@@ -297,37 +322,33 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 	shape_cb_size = 1 << params->shape_bits;
 	shape_cb = params->shape_cb;
 	have_sign = params->have_sign;
-	spx_word16_t resp[shape_cb_size * subvect_size];
+	ALLOC(resp, shape_cb_size * subvect_size, spx_word16_t);
 #ifdef _USE_SSE
-	__m128 resp2[(shape_cb_size * subvect_size) >> 2];
-	__m128 E[shape_cb_size >> 2];
+	ALLOC(resp2, (shape_cb_size * subvect_size) >> 2, __m128);
+	ALLOC(E, shape_cb_size >> 2, __m128);
 #else
 	resp2 = resp;
-	spx_word32_t E[shape_cb_size];
+	ALLOC(E, shape_cb_size, spx_word32_t);
 #endif
-	spx_word16_t t[nsf];
-	spx_sig_t e[nsf];
-	int ind[nb_subvect];
+	ALLOC(t, nsf, spx_word16_t);
+	ALLOC(e, nsf, spx_sig_t);
+	ALLOC(ind, nb_subvect, int);
 
-	memzero(e, nsf * sizeof(spx_sig_t));
-
-	spx_word16_t tmp[2 * N * nsf];
-	memzero(tmp, 2 * N * nsf * sizeof(spx_word16_t));
+	ALLOC(tmp, 2 * N * nsf, spx_word16_t);
 	for (i = 0; i < N; i++) {
 		ot2[i] = tmp + 2 * i * nsf;
 		nt2[i] = tmp + (2 * i + 1) * nsf;
 	}
 	ot = ot2;
 	nt = nt2;
-	int best_index[N];
-	spx_word32_t best_dist[N];
-	int best_nind[N];
-	int best_ntarget[N];
-	spx_word32_t ndist[N];
-	spx_word32_t odist[N];
+	ALLOC(best_index, N, int);
+	ALLOC(best_dist, N, spx_word32_t);
+	ALLOC(best_nind, N, int);
+	ALLOC(best_ntarget, N, int);
+	ALLOC(ndist, N, spx_word32_t);
+	ALLOC(odist, N, spx_word32_t);
 
-	int itmp[2 * N * nb_subvect];
-	memzero(itmp, 2 * N * nb_subvect * sizeof(int));
+	ALLOC(itmp, 2 * N * nb_subvect, int);
 	for (i = 0; i < N; i++) {
 		nind[i] = itmp + 2 * i * nb_subvect;
 		oind[i] = itmp + (2 * i + 1) * nb_subvect;
@@ -367,11 +388,13 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 			tener *= .5;
 #endif
 			/*Find new n-best based on previous n-best j */
+#ifndef DISABLE_WIDEBAND
 			if (have_sign)
 				vq_nbest_sign(x, resp2, subvect_size,
 					      shape_cb_size, E, N, best_index,
 					      best_dist, stack);
 			else
+#endif				/* DISABLE_WIDEBAND */
 				vq_nbest(x, resp2, subvect_size, shape_cb_size,
 					 E, N, best_index, best_dist, stack);
 
@@ -502,7 +525,8 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 
 	/* Update target: only update target if necessary */
 	if (update_target) {
-		spx_word16_t r2[nsf];
+		VARDECL(spx_word16_t * r2);
+		ALLOC(r2, nsf, spx_word16_t);
 		for (j = 0; j < nsf; j++)
 			r2[j] = EXTRACT16(PSHR32(e[j], 6));
 		syn_percep_zero16(r2, ak, awk1, awk2, r2, nsf, p, stack);
@@ -510,30 +534,31 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 			target[j] = SUB16(target[j], PSHR16(r2[j], 2));
 	}
 }
+#endif				/* DISABLE_ENCODER */
 
+#ifndef DISABLE_DECODER
 void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
 				 int nsf,	/* number of samples in subframe */
 				 SpeexBits * bits,
-				 char *stack, int32_t * seed)
+				 char *stack, spx_int32_t * seed)
 {
-	(void)nsf;
-	(void)seed;
-	(void)stack;
-
 	int i, j;
+	VARDECL(int *ind);
+	VARDECL(int *signs);
 	const signed char *shape_cb;
-	int subvect_size, nb_subvect;
+	int shape_cb_size, subvect_size, nb_subvect;
 	const split_cb_params *params;
 	int have_sign;
 
 	params = (const split_cb_params *)par;
 	subvect_size = params->subvect_size;
 	nb_subvect = params->nb_subvect;
+	shape_cb_size = 1 << params->shape_bits;
 	shape_cb = params->shape_cb;
 	have_sign = params->have_sign;
 
-	int ind[nb_subvect];
-	int signs[nb_subvect];
+	ALLOC(ind, nb_subvect, int);
+	ALLOC(signs, nb_subvect, int);
 
 	/* Decode codewords and gains */
 	for (i = 0; i < nb_subvect; i++) {
@@ -571,7 +596,9 @@ void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overla
 #endif
 	}
 }
+#endif				/* DISABLE_DECODER */
 
+#ifndef DISABLE_ENCODER
 void noise_codebook_quant(spx_word16_t target[],	/* target vector */
 			  spx_coef_t ak[],	/* LPCs for this subframe */
 			  spx_coef_t awk1[],	/* Weighted LPCs for this subframe */
@@ -584,31 +611,25 @@ void noise_codebook_quant(spx_word16_t target[],	/* target vector */
 			  SpeexBits * bits,
 			  char *stack, int complexity, int update_target)
 {
-	(void)par;
-	(void)r;
-	(void)bits;
-	(void)complexity;
-	(void)update_target;
-
 	int i;
-	spx_word16_t tmp[nsf];
+	VARDECL(spx_word16_t * tmp);
+	ALLOC(tmp, nsf, spx_word16_t);
 	residue_percep_zero16(target, ak, awk1, awk2, tmp, nsf, p, stack);
 
 	for (i = 0; i < nsf; i++)
 		exc[i] += SHL32(EXTEND32(tmp[i]), 8);
 	SPEEX_MEMSET(target, 0, nsf);
 }
+#endif				/* DISABLE_ENCODER */
 
+#ifndef DISABLE_DECODER
 void noise_codebook_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
 			    int nsf,	/* number of samples in subframe */
-			    SpeexBits * bits, char *stack, int32_t * seed)
+			    SpeexBits * bits, char *stack, spx_int32_t * seed)
 {
-	(void)par;
-	(void)bits;
-	(void)stack;
-
 	int i;
 	/* FIXME: This is bad, but I don't think the function ever gets called anyway */
 	for (i = 0; i < nsf; i++)
 		exc[i] = SHL32(EXTEND32(speex_rand(1, seed)), SIG_SHIFT);
 }
+#endif				/* DISABLE_DECODER */

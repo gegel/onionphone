@@ -35,13 +35,12 @@
 #include "config.h"
 #endif
 
-#include <assert.h>
 #include <math.h>
-#include <ophmconsts.h>
 #include "sb_celp.h"
 #include "filters.h"
 #include "lpc.h"
 #include "lsp.h"
+#include "stack_alloc.h"
 #include "cb_search.h"
 #include "quant_lsp.h"
 #include "vq.h"
@@ -64,53 +63,7 @@
 #define SB_DEC_STACK (6000*sizeof(spx_sig_t))
 #endif
 
-#ifdef DISABLE_WIDEBAND
-void *sb_encoder_init(const SpeexMode * m)
-{
-	speex_fatal("Wideband and Ultra-wideband are disabled");
-	return NULL;
-}
-
-void sb_encoder_destroy(void *state)
-{
-	speex_fatal("Wideband and Ultra-wideband are disabled");
-}
-
-int sb_encode(void *state, void *vin, SpeexBits * bits)
-{
-	speex_fatal("Wideband and Ultra-wideband are disabled");
-	return -2;
-}
-
-void *sb_decoder_init(const SpeexMode * m)
-{
-	speex_fatal("Wideband and Ultra-wideband are disabled");
-	return NULL;
-}
-
-void sb_decoder_destroy(void *state)
-{
-	speex_fatal("Wideband and Ultra-wideband are disabled");
-}
-
-int sb_decode(void *state, SpeexBits * bits, void *vout)
-{
-	speex_fatal("Wideband and Ultra-wideband are disabled");
-	return -2;
-}
-
-int sb_encoder_ctl(void *state, int request, void *ptr)
-{
-	speex_fatal("Wideband and Ultra-wideband are disabled");
-	return -2;
-}
-
-int sb_decoder_ctl(void *state, int request, void *ptr)
-{
-	speex_fatal("Wideband and Ultra-wideband are disabled");
-	return -2;
-}
-#else
+#ifndef DISABLE_WIDEBAND
 
 #define sqr(x) ((x)*(x))
 
@@ -203,14 +156,15 @@ static const float h0[64] = {
 extern const spx_word16_t lag_window[];
 extern const spx_word16_t lpc_window[];
 
+#ifndef DISABLE_ENCODER
 void *sb_encoder_init(const SpeexMode * m)
 {
 	int i;
-	int32_t tmp;
+	spx_int32_t tmp;
 	SBEncState *st;
 	const SpeexSBMode *mode;
 
-	st = (SBEncState *) calloc(1, sizeof(SBEncState));
+	st = (SBEncState *) speex_alloc(sizeof(SBEncState));
 	if (!st)
 		return NULL;
 	st->mode = m;
@@ -220,7 +174,7 @@ void *sb_encoder_init(const SpeexMode * m)
 #if defined(VAR_ARRAYS) || defined (USE_ALLOCA)
 	st->stack = NULL;
 #else
-	/*st->stack = (char*)calloc(1, SB_ENC_STACK); */
+	/*st->stack = (char*)speex_alloc_scratch(SB_ENC_STACK); */
 	speex_encoder_ctl(st->st_low, SPEEX_GET_STACK, &st->stack);
 #endif
 
@@ -246,38 +200,36 @@ void *sb_encoder_init(const SpeexMode * m)
 	st->first = 1;
 
 	st->high =
-	    (spx_word16_t *) calloc(1, (st->windowSize - st->frame_size) *
+	    (spx_word16_t *) speex_alloc((st->windowSize - st->frame_size) *
 					 sizeof(spx_word16_t));
 
 	st->h0_mem =
-	    (spx_word16_t *) calloc(1, (QMF_ORDER) * sizeof(spx_word16_t));
-	st->h1_mem =
-	    (spx_word16_t *) calloc(1, (QMF_ORDER) * sizeof(spx_word16_t));
+	    (spx_word16_t *) speex_alloc((QMF_ORDER) * sizeof(spx_word16_t));
 
 	st->window = lpc_window;
 
 	st->lagWindow = lag_window;
 
 	st->old_lsp =
-	    (spx_lsp_t *) calloc(1, st->lpcSize * sizeof(spx_lsp_t));
+	    (spx_lsp_t *) speex_alloc(st->lpcSize * sizeof(spx_lsp_t));
 	st->old_qlsp =
-	    (spx_lsp_t *) calloc(1, st->lpcSize * sizeof(spx_lsp_t));
+	    (spx_lsp_t *) speex_alloc(st->lpcSize * sizeof(spx_lsp_t));
 	st->interp_qlpc =
-	    (spx_coef_t *) calloc(1, st->lpcSize * sizeof(spx_coef_t));
+	    (spx_coef_t *) speex_alloc(st->lpcSize * sizeof(spx_coef_t));
 	st->pi_gain =
-	    (spx_word32_t *) calloc(1, (st->nbSubframes) *
+	    (spx_word32_t *) speex_alloc((st->nbSubframes) *
 					 sizeof(spx_word32_t));
 	st->exc_rms =
-	    (spx_word16_t *) calloc(1, (st->nbSubframes) *
+	    (spx_word16_t *) speex_alloc((st->nbSubframes) *
 					 sizeof(spx_word16_t));
 	st->innov_rms_save = NULL;
 
 	st->mem_sp =
-	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
 	st->mem_sp2 =
-	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
 	st->mem_sw =
-	    (spx_mem_t *) calloc(1, (st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) speex_alloc((st->lpcSize) * sizeof(spx_mem_t));
 
 	for (i = 0; i < st->lpcSize; i++)
 		st->old_lsp[i] =
@@ -310,25 +262,293 @@ void sb_encoder_destroy(void *state)
 
 	speex_encoder_destroy(st->st_low);
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	/*free(st->stack); */
+	/*speex_free_scratch(st->stack); */
 #endif
 
-	free(st->high);
+	speex_free(st->high);
 
-	free(st->h0_mem);
-	free(st->h1_mem);
+	speex_free(st->h0_mem);
 
-	free(st->old_lsp);
-	free(st->old_qlsp);
-	free(st->interp_qlpc);
-	free(st->pi_gain);
-	free(st->exc_rms);
+	speex_free(st->old_lsp);
+	speex_free(st->old_qlsp);
+	speex_free(st->interp_qlpc);
+	speex_free(st->pi_gain);
+	speex_free(st->exc_rms);
 
-	free(st->mem_sp);
-	free(st->mem_sp2);
-	free(st->mem_sw);
+	speex_free(st->mem_sp);
+	speex_free(st->mem_sp2);
+	speex_free(st->mem_sw);
 
-	free(st);
+	speex_free(st);
+}
+
+int sb_encoder_ctl(void *state, int request, void *ptr)
+{
+	SBEncState *st;
+	st = (SBEncState *) state;
+	switch (request) {
+	case SPEEX_GET_FRAME_SIZE:
+		(*(spx_int32_t *) ptr) = st->full_frame_size;
+		break;
+	case SPEEX_SET_HIGH_MODE:
+		st->submodeSelect = st->submodeID = (*(spx_int32_t *) ptr);
+		break;
+	case SPEEX_SET_LOW_MODE:
+		speex_encoder_ctl(st->st_low, SPEEX_SET_LOW_MODE, ptr);
+		break;
+	case SPEEX_SET_DTX:
+		speex_encoder_ctl(st->st_low, SPEEX_SET_DTX, ptr);
+		break;
+	case SPEEX_GET_DTX:
+		speex_encoder_ctl(st->st_low, SPEEX_GET_DTX, ptr);
+		break;
+	case SPEEX_GET_LOW_MODE:
+		speex_encoder_ctl(st->st_low, SPEEX_GET_LOW_MODE, ptr);
+		break;
+	case SPEEX_SET_MODE:
+		speex_encoder_ctl(st, SPEEX_SET_QUALITY, ptr);
+		break;
+#ifndef DISABLE_VBR
+	case SPEEX_SET_VBR:
+		st->vbr_enabled = (*(spx_int32_t *) ptr);
+		speex_encoder_ctl(st->st_low, SPEEX_SET_VBR, ptr);
+		break;
+	case SPEEX_GET_VBR:
+		(*(spx_int32_t *) ptr) = st->vbr_enabled;
+		break;
+	case SPEEX_SET_VAD:
+		st->vad_enabled = (*(spx_int32_t *) ptr);
+		speex_encoder_ctl(st->st_low, SPEEX_SET_VAD, ptr);
+		break;
+	case SPEEX_GET_VAD:
+		(*(spx_int32_t *) ptr) = st->vad_enabled;
+		break;
+#endif				/* #ifndef DISABLE_VBR */
+#if !defined(DISABLE_VBR) && !defined(DISABLE_FLOAT_API)
+	case SPEEX_SET_VBR_QUALITY:
+		{
+			spx_int32_t q;
+			float qual = (*(float *)ptr) + .6;
+			st->vbr_quality = (*(float *)ptr);
+			if (qual > 10)
+				qual = 10;
+			q = (int)floor(.5 + *(float *)ptr);
+			if (q > 10)
+				q = 10;
+			speex_encoder_ctl(st->st_low, SPEEX_SET_VBR_QUALITY,
+					  &qual);
+			speex_encoder_ctl(state, SPEEX_SET_QUALITY, &q);
+			break;
+		}
+	case SPEEX_GET_VBR_QUALITY:
+		(*(float *)ptr) = st->vbr_quality;
+		break;
+#endif				/* #if !defined(DISABLE_VBR) && !defined(DISABLE_FLOAT_API) */
+#ifndef DISABLE_VBR
+	case SPEEX_SET_ABR:
+		st->abr_enabled = (*(spx_int32_t *) ptr);
+		st->vbr_enabled = st->abr_enabled != 0;
+		speex_encoder_ctl(st->st_low, SPEEX_SET_VBR, &st->vbr_enabled);
+		if (st->vbr_enabled) {
+			spx_int32_t i = 10, rate, target;
+			float vbr_qual;
+			target = (*(spx_int32_t *) ptr);
+			while (i >= 0) {
+				speex_encoder_ctl(st, SPEEX_SET_QUALITY, &i);
+				speex_encoder_ctl(st, SPEEX_GET_BITRATE, &rate);
+				if (rate <= target)
+					break;
+				i--;
+			}
+			vbr_qual = i;
+			if (vbr_qual < 0)
+				vbr_qual = 0;
+			speex_encoder_ctl(st, SPEEX_SET_VBR_QUALITY, &vbr_qual);
+			st->abr_count = 0;
+			st->abr_drift = 0;
+			st->abr_drift2 = 0;
+		}
+
+		break;
+	case SPEEX_GET_ABR:
+		(*(spx_int32_t *) ptr) = st->abr_enabled;
+		break;
+#endif				/* #ifndef DISABLE_VBR */
+
+	case SPEEX_SET_QUALITY:
+		{
+			spx_int32_t nb_qual;
+			int quality = (*(spx_int32_t *) ptr);
+			if (quality < 0)
+				quality = 0;
+			if (quality > 10)
+				quality = 10;
+			st->submodeSelect = st->submodeID =
+			    ((const SpeexSBMode *)(st->mode->mode))->
+			    quality_map[quality];
+			nb_qual =
+			    ((const SpeexSBMode *)(st->mode->mode))->
+			    low_quality_map[quality];
+			speex_encoder_ctl(st->st_low, SPEEX_SET_MODE, &nb_qual);
+		}
+		break;
+	case SPEEX_SET_COMPLEXITY:
+		speex_encoder_ctl(st->st_low, SPEEX_SET_COMPLEXITY, ptr);
+		st->complexity = (*(spx_int32_t *) ptr);
+		if (st->complexity < 1)
+			st->complexity = 1;
+		break;
+	case SPEEX_GET_COMPLEXITY:
+		(*(spx_int32_t *) ptr) = st->complexity;
+		break;
+	case SPEEX_SET_BITRATE:
+		{
+			spx_int32_t i = 10;
+			spx_int32_t rate, target;
+			target = (*(spx_int32_t *) ptr);
+			while (i >= 0) {
+				speex_encoder_ctl(st, SPEEX_SET_QUALITY, &i);
+				speex_encoder_ctl(st, SPEEX_GET_BITRATE, &rate);
+				if (rate <= target)
+					break;
+				i--;
+			}
+		}
+		break;
+	case SPEEX_GET_BITRATE:
+		speex_encoder_ctl(st->st_low, request, ptr);
+		/*fprintf (stderr, "before: %d\n", (*(int*)ptr)); */
+		if (st->submodes[st->submodeID])
+			(*(spx_int32_t *) ptr) +=
+			    st->sampling_rate * SUBMODE(bits_per_frame) /
+			    st->full_frame_size;
+		else
+			(*(spx_int32_t *) ptr) +=
+			    st->sampling_rate * (SB_SUBMODE_BITS +
+						 1) / st->full_frame_size;
+		/*fprintf (stderr, "after: %d\n", (*(int*)ptr)); */
+		break;
+	case SPEEX_SET_SAMPLING_RATE:
+		{
+			spx_int32_t tmp = (*(spx_int32_t *) ptr);
+			st->sampling_rate = tmp;
+			tmp >>= 1;
+			speex_encoder_ctl(st->st_low, SPEEX_SET_SAMPLING_RATE,
+					  &tmp);
+		}
+		break;
+	case SPEEX_GET_SAMPLING_RATE:
+		(*(spx_int32_t *) ptr) = st->sampling_rate;
+		break;
+	case SPEEX_RESET_STATE:
+		{
+			int i;
+			st->first = 1;
+			for (i = 0; i < st->lpcSize; i++)
+				st->old_lsp[i] =
+				    DIV32(MULT16_16
+					  (QCONST16(3.1415927f, LSP_SHIFT),
+					   i + 1), st->lpcSize + 1);
+			for (i = 0; i < st->lpcSize; i++)
+				st->mem_sw[i] = st->mem_sp[i] = st->mem_sp2[i] =
+				    0;
+			for (i = 0; i < QMF_ORDER; i++)
+				st->h0_mem[i] = 0;
+		}
+		break;
+	case SPEEX_SET_SUBMODE_ENCODING:
+		st->encode_submode = (*(spx_int32_t *) ptr);
+		speex_encoder_ctl(st->st_low, SPEEX_SET_SUBMODE_ENCODING, ptr);
+		break;
+	case SPEEX_GET_SUBMODE_ENCODING:
+		(*(spx_int32_t *) ptr) = st->encode_submode;
+		break;
+	case SPEEX_GET_LOOKAHEAD:
+		speex_encoder_ctl(st->st_low, SPEEX_GET_LOOKAHEAD, ptr);
+		(*(spx_int32_t *) ptr) =
+		    2 * (*(spx_int32_t *) ptr) + QMF_ORDER - 1;
+		break;
+	case SPEEX_SET_PLC_TUNING:
+		speex_encoder_ctl(st->st_low, SPEEX_SET_PLC_TUNING, ptr);
+		break;
+	case SPEEX_GET_PLC_TUNING:
+		speex_encoder_ctl(st->st_low, SPEEX_GET_PLC_TUNING, ptr);
+		break;
+#ifndef DISABLE_VBR
+	case SPEEX_SET_VBR_MAX_BITRATE:
+		{
+			st->vbr_max = (*(spx_int32_t *) ptr);
+			if (SPEEX_SET_VBR_MAX_BITRATE < 1) {
+				speex_encoder_ctl(st->st_low,
+						  SPEEX_SET_VBR_MAX_BITRATE,
+						  &st->vbr_max);
+				st->vbr_max_high = 17600;
+			} else {
+				spx_int32_t low_rate;
+				if (st->vbr_max >= 42200) {
+					st->vbr_max_high = 17600;
+				} else if (st->vbr_max >= 27800) {
+					st->vbr_max_high = 9600;
+				} else if (st->vbr_max > 20600) {
+					st->vbr_max_high = 5600;
+				} else {
+					st->vbr_max_high = 1800;
+				}
+				if (st->subframeSize == 80)
+					st->vbr_max_high = 1800;
+				low_rate = st->vbr_max - st->vbr_max_high;
+				speex_encoder_ctl(st->st_low,
+						  SPEEX_SET_VBR_MAX_BITRATE,
+						  &low_rate);
+			}
+		}
+		break;
+	case SPEEX_GET_VBR_MAX_BITRATE:
+		(*(spx_int32_t *) ptr) = st->vbr_max;
+		break;
+#endif				/* #ifndef DISABLE_VBR */
+	case SPEEX_SET_HIGHPASS:
+		speex_encoder_ctl(st->st_low, SPEEX_SET_HIGHPASS, ptr);
+		break;
+	case SPEEX_GET_HIGHPASS:
+		speex_encoder_ctl(st->st_low, SPEEX_GET_HIGHPASS, ptr);
+		break;
+
+		/* This is all internal stuff past this point */
+	case SPEEX_GET_PI_GAIN:
+		{
+			int i;
+			spx_word32_t *g = (spx_word32_t *) ptr;
+			for (i = 0; i < st->nbSubframes; i++)
+				g[i] = st->pi_gain[i];
+		}
+		break;
+	case SPEEX_GET_EXC:
+		{
+			int i;
+			for (i = 0; i < st->nbSubframes; i++)
+				((spx_word16_t *) ptr)[i] = st->exc_rms[i];
+		}
+		break;
+#ifndef DISABLE_VBR
+	case SPEEX_GET_RELATIVE_QUALITY:
+		(*(float *)ptr) = st->relative_quality;
+		break;
+#endif				/* #ifndef DISABLE_VBR */
+	case SPEEX_SET_INNOVATION_SAVE:
+		st->innov_rms_save = (spx_word16_t *) ptr;
+		break;
+	case SPEEX_SET_WIDEBAND:
+		speex_encoder_ctl(st->st_low, SPEEX_SET_WIDEBAND, ptr);
+		break;
+	case SPEEX_GET_STACK:
+		*((char **)ptr) = st->stack;
+		break;
+	default:
+		speex_warning_int("Unknown nb_ctl request: ", request);
+		return -1;
+	}
+	return 0;
 }
 
 int sb_encode(void *state, void *vin, SpeexBits * bits)
@@ -336,12 +556,27 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 	SBEncState *st;
 	int i, roots, sub;
 	char *stack;
+	VARDECL(spx_mem_t * mem);
+	VARDECL(spx_sig_t * innov);
+	VARDECL(spx_word16_t * target);
+	VARDECL(spx_word16_t * syn_resp);
+	VARDECL(spx_word32_t * low_pi_gain);
 	spx_word16_t *low;
 	spx_word16_t *high;
+	VARDECL(spx_word16_t * low_exc_rms);
+	VARDECL(spx_word16_t * low_innov_rms);
 	const SpeexSBMode *mode;
-	int32_t dtx;
+	spx_int32_t dtx;
 	spx_word16_t *in = (spx_word16_t *) vin;
 	spx_word16_t e_low = 0, e_high = 0;
+	VARDECL(spx_coef_t * lpc);
+	VARDECL(spx_coef_t * interp_lpc);
+	VARDECL(spx_coef_t * bw_lpc1);
+	VARDECL(spx_coef_t * bw_lpc2);
+	VARDECL(spx_lsp_t * lsp);
+	VARDECL(spx_lsp_t * qlsp);
+	VARDECL(spx_lsp_t * interp_lsp);
+	VARDECL(spx_lsp_t * interp_qlsp);
 
 	st = (SBEncState *) state;
 	stack = st->stack;
@@ -363,7 +598,7 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 	}
 #endif				/* #ifndef DISABLE_VBR */
 
-	spx_word16_t low_innov_rms[st->nbSubframes];
+	ALLOC(low_innov_rms, st->nbSubframes, spx_word16_t);
 	speex_encoder_ctl(st->st_low, SPEEX_SET_INNOVATION_SAVE, low_innov_rms);
 	/* Encode the narrowband part */
 	speex_encode_native(st->st_low, low, bits);
@@ -373,8 +608,8 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 	SPEEX_COPY(st->high, &high[st->frame_size],
 		   st->windowSize - st->frame_size);
 
-	spx_word32_t low_pi_gain[st->nbSubframes];
-	spx_word16_t low_exc_rms[st->nbSubframes];
+	ALLOC(low_pi_gain, st->nbSubframes, spx_word32_t);
+	ALLOC(low_exc_rms, st->nbSubframes, spx_word16_t);
 	speex_encoder_ctl(st->st_low, SPEEX_GET_PI_GAIN, low_pi_gain);
 	speex_encoder_ctl(st->st_low, SPEEX_GET_EXC, low_exc_rms);
 
@@ -385,19 +620,21 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 	else
 		dtx = 0;
 
-	spx_coef_t lpc[st->lpcSize];
-	spx_coef_t interp_lpc[st->lpcSize];
-	spx_coef_t bw_lpc1[st->lpcSize];
-	spx_coef_t bw_lpc2[st->lpcSize];
+	ALLOC(lpc, st->lpcSize, spx_coef_t);
+	ALLOC(interp_lpc, st->lpcSize, spx_coef_t);
+	ALLOC(bw_lpc1, st->lpcSize, spx_coef_t);
+	ALLOC(bw_lpc2, st->lpcSize, spx_coef_t);
 
-	spx_lsp_t lsp[st->lpcSize];
-	spx_lsp_t qlsp[st->lpcSize];
-	spx_lsp_t interp_lsp[st->lpcSize];
-	spx_lsp_t interp_qlsp[st->lpcSize];
+	ALLOC(lsp, st->lpcSize, spx_lsp_t);
+	ALLOC(qlsp, st->lpcSize, spx_lsp_t);
+	ALLOC(interp_lsp, st->lpcSize, spx_lsp_t);
+	ALLOC(interp_qlsp, st->lpcSize, spx_lsp_t);
 
 	{
-		spx_word16_t autocorr[st->lpcSize + 1];
-		spx_word16_t w_sig[st->windowSize];
+		VARDECL(spx_word16_t * autocorr);
+		VARDECL(spx_word16_t * w_sig);
+		ALLOC(autocorr, st->lpcSize + 1, spx_word16_t);
+		ALLOC(w_sig, st->windowSize, spx_word16_t);
 		/* Window for analysis */
 		/* FIXME: This is a kludge */
 		if (st->subframeSize == 80) {
@@ -473,7 +710,7 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 			ratio = 2;
 		/*if (ratio>-2) */
 		if (st->vbr_enabled) {
-			int32_t modeid;
+			spx_int32_t modeid;
 			modeid = mode->nb_modes - 1;
 			st->relative_quality += 1.0 * (ratio + 2);
 			if (st->relative_quality < -1)
@@ -501,7 +738,7 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 			}
 			speex_encoder_ctl(state, SPEEX_SET_HIGH_MODE, &modeid);
 			if (st->abr_enabled) {
-				int32_t bitrate;
+				spx_int32_t bitrate;
 				speex_encoder_ctl(state, SPEEX_GET_BITRATE,
 						  &bitrate);
 				st->abr_drift += (bitrate - st->abr_enabled);
@@ -564,12 +801,15 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 			st->old_qlsp[i] = qlsp[i];
 	}
 
-	spx_mem_t mem[st->lpcSize];
-	spx_word16_t syn_resp[st->subframeSize];
-	spx_sig_t innov[st->subframeSize];
-	spx_word16_t target[st->subframeSize];
+	ALLOC(mem, st->lpcSize, spx_mem_t);
+	ALLOC(syn_resp, st->subframeSize, spx_word16_t);
+	ALLOC(innov, st->subframeSize, spx_sig_t);
+	ALLOC(target, st->subframeSize, spx_word16_t);
 
 	for (sub = 0; sub < st->nbSubframes; sub++) {
+		VARDECL(spx_word16_t * exc);
+		VARDECL(spx_word16_t * res);
+		VARDECL(spx_word16_t * sw);
 		spx_word16_t *sp;
 		spx_word16_t filter_ratio;	/*Q7 */
 		int offset;
@@ -578,18 +818,15 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 
 		offset = st->subframeSize * sub;
 		sp = high + offset;
-		spx_word16_t exc[st->subframeSize];
-		spx_word16_t res[st->subframeSize];
-		spx_word16_t sw[st->subframeSize];
+		ALLOC(exc, st->subframeSize, spx_word16_t);
+		ALLOC(res, st->subframeSize, spx_word16_t);
+		ALLOC(sw, st->subframeSize, spx_word16_t);
 
 		/* LSP interpolation (quantized and unquantized) */
 		lsp_interpolate(st->old_lsp, lsp, interp_lsp, st->lpcSize, sub,
-				st->nbSubframes);
+				st->nbSubframes, LSP_MARGIN);
 		lsp_interpolate(st->old_qlsp, qlsp, interp_qlsp, st->lpcSize,
-				sub, st->nbSubframes);
-
-		lsp_enforce_margin(interp_lsp, st->lpcSize, LSP_MARGIN);
-		lsp_enforce_margin(interp_qlsp, st->lpcSize, LSP_MARGIN);
+				sub, st->nbSubframes, LSP_MARGIN);
 
 		lsp_to_lpc(interp_lsp, interp_lpc, st->lpcSize, stack);
 		lsp_to_lpc(interp_qlsp, st->interp_qlpc, st->lpcSize, stack);
@@ -638,7 +875,7 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 				char *tmp_stack = stack;
 				float *tmp_sig;
 				float g2;
-				spx_sig_t tmp_sig[st->subframeSize];
+				ALLOC(tmp_sig, st->subframeSize, spx_sig_t);
 				for (i = 0; i < st->lpcSize; i++)
 					mem[i] = st->mem_sp[i];
 				iir_mem2(st->low_innov + offset,
@@ -748,7 +985,8 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 
 			if (SUBMODE(double_codebook)) {
 				char *tmp_stack = stack;
-				spx_sig_t innov2[st->subframeSize];
+				VARDECL(spx_sig_t * innov2);
+				ALLOC(innov2, st->subframeSize, spx_sig_t);
 				SPEEX_MEMSET(innov2, 0, st->subframeSize);
 				for (i = 0; i < st->subframeSize; i++)
 					target[i] =
@@ -810,12 +1048,15 @@ int sb_encode(void *state, void *vin, SpeexBits * bits)
 	return 1;
 }
 
+#endif				/* DISABLE_ENCODER */
+
+#ifndef DISABLE_DECODER
 void *sb_decoder_init(const SpeexMode * m)
 {
-	int32_t tmp;
+	spx_int32_t tmp;
 	SBDecState *st;
 	const SpeexSBMode *mode;
-	st = (SBDecState *) calloc(1, sizeof(SBDecState));
+	st = (SBDecState *) speex_alloc(sizeof(SBDecState));
 	if (!st)
 		return NULL;
 	st->mode = m;
@@ -826,7 +1067,7 @@ void *sb_decoder_init(const SpeexMode * m)
 #if defined(VAR_ARRAYS) || defined (USE_ALLOCA)
 	st->stack = NULL;
 #else
-	/*st->stack = (char*)calloc(1, SB_DEC_STACK); */
+	/*st->stack = (char*)speex_alloc_scratch(SB_DEC_STACK); */
 	speex_decoder_ctl(st->st_low, SPEEX_GET_STACK, &st->stack);
 #endif
 
@@ -847,27 +1088,27 @@ void *sb_decoder_init(const SpeexMode * m)
 	st->first = 1;
 
 	st->g0_mem =
-	    (spx_word16_t *) calloc(1, (QMF_ORDER) * sizeof(spx_word16_t));
+	    (spx_word16_t *) speex_alloc((QMF_ORDER) * sizeof(spx_word16_t));
 	st->g1_mem =
-	    (spx_word16_t *) calloc(1, (QMF_ORDER) * sizeof(spx_word16_t));
+	    (spx_word16_t *) speex_alloc((QMF_ORDER) * sizeof(spx_word16_t));
 
 	st->excBuf =
-	    (spx_word16_t *) calloc(1, (st->subframeSize) *
+	    (spx_word16_t *) speex_alloc((st->subframeSize) *
 					 sizeof(spx_word16_t));
 
 	st->old_qlsp =
-	    (spx_lsp_t *) calloc(1, (st->lpcSize) * sizeof(spx_lsp_t));
+	    (spx_lsp_t *) speex_alloc((st->lpcSize) * sizeof(spx_lsp_t));
 	st->interp_qlpc =
-	    (spx_coef_t *) calloc(1, st->lpcSize * sizeof(spx_coef_t));
+	    (spx_coef_t *) speex_alloc(st->lpcSize * sizeof(spx_coef_t));
 
 	st->pi_gain =
-	    (spx_word32_t *) calloc(1, (st->nbSubframes) *
+	    (spx_word32_t *) speex_alloc((st->nbSubframes) *
 					 sizeof(spx_word32_t));
 	st->exc_rms =
-	    (spx_word16_t *) calloc(1, (st->nbSubframes) *
+	    (spx_word16_t *) speex_alloc((st->nbSubframes) *
 					 sizeof(spx_word16_t));
 	st->mem_sp =
-	    (spx_mem_t *) calloc(1, (2 * st->lpcSize) * sizeof(spx_mem_t));
+	    (spx_mem_t *) speex_alloc((2 * st->lpcSize) * sizeof(spx_mem_t));
 
 	st->innov_save = NULL;
 
@@ -886,19 +1127,154 @@ void sb_decoder_destroy(void *state)
 	st = (SBDecState *) state;
 	speex_decoder_destroy(st->st_low);
 #if !(defined(VAR_ARRAYS) || defined (USE_ALLOCA))
-	/*free(st->stack); */
+	/*speex_free_scratch(st->stack); */
 #endif
 
-	free(st->g0_mem);
-	free(st->g1_mem);
-	free(st->excBuf);
-	free(st->old_qlsp);
-	free(st->interp_qlpc);
-	free(st->pi_gain);
-	free(st->exc_rms);
-	free(st->mem_sp);
+	speex_free(st->g0_mem);
+	speex_free(st->g1_mem);
+	speex_free(st->excBuf);
+	speex_free(st->old_qlsp);
+	speex_free(st->interp_qlpc);
+	speex_free(st->pi_gain);
+	speex_free(st->exc_rms);
+	speex_free(st->mem_sp);
 
-	free(state);
+	speex_free(state);
+}
+
+int sb_decoder_ctl(void *state, int request, void *ptr)
+{
+	SBDecState *st;
+	st = (SBDecState *) state;
+	switch (request) {
+	case SPEEX_SET_HIGH_MODE:
+		st->submodeID = (*(spx_int32_t *) ptr);
+		break;
+	case SPEEX_SET_LOW_MODE:
+		speex_decoder_ctl(st->st_low, SPEEX_SET_LOW_MODE, ptr);
+		break;
+	case SPEEX_GET_LOW_MODE:
+		speex_decoder_ctl(st->st_low, SPEEX_GET_LOW_MODE, ptr);
+		break;
+	case SPEEX_GET_FRAME_SIZE:
+		(*(spx_int32_t *) ptr) = st->full_frame_size;
+		break;
+	case SPEEX_SET_ENH:
+		speex_decoder_ctl(st->st_low, request, ptr);
+		st->lpc_enh_enabled = *((spx_int32_t *) ptr);
+		break;
+	case SPEEX_GET_ENH:
+		*((spx_int32_t *) ptr) = st->lpc_enh_enabled;
+		break;
+	case SPEEX_SET_MODE:
+	case SPEEX_SET_QUALITY:
+		{
+			spx_int32_t nb_qual;
+			int quality = (*(spx_int32_t *) ptr);
+			if (quality < 0)
+				quality = 0;
+			if (quality > 10)
+				quality = 10;
+			st->submodeID =
+			    ((const SpeexSBMode *)(st->mode->mode))->
+			    quality_map[quality];
+			nb_qual =
+			    ((const SpeexSBMode *)(st->mode->mode))->
+			    low_quality_map[quality];
+			speex_decoder_ctl(st->st_low, SPEEX_SET_MODE, &nb_qual);
+		}
+		break;
+	case SPEEX_GET_BITRATE:
+		speex_decoder_ctl(st->st_low, request, ptr);
+		if (st->submodes[st->submodeID])
+			(*(spx_int32_t *) ptr) +=
+			    st->sampling_rate * SUBMODE(bits_per_frame) /
+			    st->full_frame_size;
+		else
+			(*(spx_int32_t *) ptr) +=
+			    st->sampling_rate * (SB_SUBMODE_BITS +
+						 1) / st->full_frame_size;
+		break;
+	case SPEEX_SET_SAMPLING_RATE:
+		{
+			spx_int32_t tmp = (*(spx_int32_t *) ptr);
+			st->sampling_rate = tmp;
+			tmp >>= 1;
+			speex_decoder_ctl(st->st_low, SPEEX_SET_SAMPLING_RATE,
+					  &tmp);
+		}
+		break;
+	case SPEEX_GET_SAMPLING_RATE:
+		(*(spx_int32_t *) ptr) = st->sampling_rate;
+		break;
+	case SPEEX_SET_HANDLER:
+		speex_decoder_ctl(st->st_low, SPEEX_SET_HANDLER, ptr);
+		break;
+	case SPEEX_SET_USER_HANDLER:
+		speex_decoder_ctl(st->st_low, SPEEX_SET_USER_HANDLER, ptr);
+		break;
+	case SPEEX_RESET_STATE:
+		{
+			int i;
+			for (i = 0; i < 2 * st->lpcSize; i++)
+				st->mem_sp[i] = 0;
+			for (i = 0; i < QMF_ORDER; i++)
+				st->g0_mem[i] = st->g1_mem[i] = 0;
+			st->last_ener = 0;
+		}
+		break;
+	case SPEEX_SET_SUBMODE_ENCODING:
+		st->encode_submode = (*(spx_int32_t *) ptr);
+		speex_decoder_ctl(st->st_low, SPEEX_SET_SUBMODE_ENCODING, ptr);
+		break;
+	case SPEEX_GET_SUBMODE_ENCODING:
+		(*(spx_int32_t *) ptr) = st->encode_submode;
+		break;
+	case SPEEX_GET_LOOKAHEAD:
+		speex_decoder_ctl(st->st_low, SPEEX_GET_LOOKAHEAD, ptr);
+		(*(spx_int32_t *) ptr) = 2 * (*(spx_int32_t *) ptr);
+		break;
+	case SPEEX_SET_HIGHPASS:
+		speex_decoder_ctl(st->st_low, SPEEX_SET_HIGHPASS, ptr);
+		break;
+	case SPEEX_GET_HIGHPASS:
+		speex_decoder_ctl(st->st_low, SPEEX_GET_HIGHPASS, ptr);
+		break;
+	case SPEEX_GET_ACTIVITY:
+		speex_decoder_ctl(st->st_low, SPEEX_GET_ACTIVITY, ptr);
+		break;
+	case SPEEX_GET_PI_GAIN:
+		{
+			int i;
+			spx_word32_t *g = (spx_word32_t *) ptr;
+			for (i = 0; i < st->nbSubframes; i++)
+				g[i] = st->pi_gain[i];
+		}
+		break;
+	case SPEEX_GET_EXC:
+		{
+			int i;
+			for (i = 0; i < st->nbSubframes; i++)
+				((spx_word16_t *) ptr)[i] = st->exc_rms[i];
+		}
+		break;
+	case SPEEX_GET_DTX_STATUS:
+		speex_decoder_ctl(st->st_low, SPEEX_GET_DTX_STATUS, ptr);
+		break;
+	case SPEEX_SET_INNOVATION_SAVE:
+		st->innov_save = (spx_word16_t *) ptr;
+		break;
+	case SPEEX_SET_WIDEBAND:
+		speex_decoder_ctl(st->st_low, SPEEX_SET_WIDEBAND, ptr);
+		break;
+	case SPEEX_GET_STACK:
+		*((char **)ptr) = st->stack;
+		break;
+	default:
+		speex_warning_int("Unknown nb_ctl request: ", request);
+		return -1;
+	}
+	return 0;
 }
 
 static void sb_decode_lost(SBDecState * st, spx_word16_t * out, int dtx,
@@ -944,7 +1320,12 @@ int sb_decode(void *state, SpeexBits * bits, void *vout)
 	int wideband;
 	int ret;
 	char *stack;
-	int32_t dtx;
+	VARDECL(spx_word32_t * low_pi_gain);
+	VARDECL(spx_word16_t * low_exc_rms);
+	VARDECL(spx_coef_t * ak);
+	VARDECL(spx_lsp_t * qlsp);
+	VARDECL(spx_lsp_t * interp_qlsp);
+	spx_int32_t dtx;
 	const SpeexSBMode *mode;
 	spx_word16_t *out = (spx_word16_t *) vout;
 	spx_word16_t *low_innov_alias;
@@ -981,6 +1362,7 @@ int sb_decode(void *state, SpeexBits * bits, void *vout)
 			wideband = 0;
 		if (wideband) {
 			/*Regular wideband frame, read the submode */
+			wideband = speex_bits_unpack_unsigned(bits, 1);
 			st->submodeID =
 			    speex_bits_unpack_unsigned(bits, SB_SUBMODE_BITS);
 		} else {
@@ -1019,13 +1401,13 @@ int sb_decode(void *state, SpeexBits * bits, void *vout)
 
 	}
 
-	spx_word32_t low_pi_gain[st->nbSubframes];
-	spx_word16_t low_exc_rms[st->nbSubframes];
+	ALLOC(low_pi_gain, st->nbSubframes, spx_word32_t);
+	ALLOC(low_exc_rms, st->nbSubframes, spx_word16_t);
 	speex_decoder_ctl(st->st_low, SPEEX_GET_PI_GAIN, low_pi_gain);
 	speex_decoder_ctl(st->st_low, SPEEX_GET_EXC, low_exc_rms);
 
-	spx_lsp_t qlsp[st->lpcSize];
-	spx_lsp_t interp_qlsp[st->lpcSize];
+	ALLOC(qlsp, st->lpcSize, spx_lsp_t);
+	ALLOC(interp_qlsp, st->lpcSize, spx_lsp_t);
 	SUBMODE(lsp_unquant) (qlsp, st->lpcSize, bits);
 
 	if (st->first) {
@@ -1033,9 +1415,10 @@ int sb_decode(void *state, SpeexBits * bits, void *vout)
 			st->old_qlsp[i] = qlsp[i];
 	}
 
-	spx_coef_t ak[st->lpcSize];
+	ALLOC(ak, st->lpcSize, spx_coef_t);
 
 	for (sub = 0; sub < st->nbSubframes; sub++) {
+		VARDECL(spx_word32_t * exc);
 		spx_word16_t *innov_save = NULL;
 		spx_word16_t *sp;
 		spx_word16_t filter_ratio;
@@ -1045,17 +1428,16 @@ int sb_decode(void *state, SpeexBits * bits, void *vout)
 
 		offset = st->subframeSize * sub;
 		sp = out + st->frame_size + offset;
-		spx_word32_t exc[st->subframeSize];
+		ALLOC(exc, st->subframeSize, spx_word32_t);
 		/* Pointer for saving innovation */
-		assert(st->innov_save);
-		innov_save = st->innov_save + 2 * offset;
-		SPEEX_MEMSET(innov_save, 0, 2 * st->subframeSize);
+		if (st->innov_save) {
+			innov_save = st->innov_save + 2 * offset;
+			SPEEX_MEMSET(innov_save, 0, 2 * st->subframeSize);
+		}
 
 		/* LSP interpolation */
 		lsp_interpolate(st->old_qlsp, qlsp, interp_qlsp, st->lpcSize,
-				sub, st->nbSubframes);
-
-		lsp_enforce_margin(interp_qlsp, st->lpcSize, LSP_MARGIN);
+				sub, st->nbSubframes, LSP_MARGIN);
 
 		/* LSP to LPC */
 		lsp_to_lpc(interp_qlsp, ak, st->lpcSize, stack);
@@ -1132,7 +1514,8 @@ int sb_decode(void *state, SpeexBits * bits, void *vout)
 
 			if (SUBMODE(double_codebook)) {
 				char *tmp_stack = stack;
-				spx_sig_t innov2[st->subframeSize];
+				VARDECL(spx_sig_t * innov2);
+				ALLOC(innov2, st->subframeSize, spx_sig_t);
 				SPEEX_MEMSET(innov2, 0, st->subframeSize);
 				SUBMODE(innovation_unquant) (innov2,
 							     SUBMODE
@@ -1180,409 +1563,6 @@ int sb_decode(void *state, SpeexBits * bits, void *vout)
 
 	return 0;
 }
-
-int sb_encoder_ctl(void *state, int request, void *ptr)
-{
-	SBEncState *st;
-	st = (SBEncState *) state;
-	switch (request) {
-	case SPEEX_GET_FRAME_SIZE:
-		(*(int32_t *) ptr) = st->full_frame_size;
-		break;
-	case SPEEX_SET_HIGH_MODE:
-		st->submodeSelect = st->submodeID = (*(int32_t *) ptr);
-		break;
-	case SPEEX_SET_LOW_MODE:
-		speex_encoder_ctl(st->st_low, SPEEX_SET_LOW_MODE, ptr);
-		break;
-	case SPEEX_SET_DTX:
-		speex_encoder_ctl(st->st_low, SPEEX_SET_DTX, ptr);
-		break;
-	case SPEEX_GET_DTX:
-		speex_encoder_ctl(st->st_low, SPEEX_GET_DTX, ptr);
-		break;
-	case SPEEX_GET_LOW_MODE:
-		speex_encoder_ctl(st->st_low, SPEEX_GET_LOW_MODE, ptr);
-		break;
-	case SPEEX_SET_MODE:
-		speex_encoder_ctl(st, SPEEX_SET_QUALITY, ptr);
-		break;
-#ifndef DISABLE_VBR
-	case SPEEX_SET_VBR:
-		st->vbr_enabled = (*(int32_t *) ptr);
-		speex_encoder_ctl(st->st_low, SPEEX_SET_VBR, ptr);
-		break;
-	case SPEEX_GET_VBR:
-		(*(int32_t *) ptr) = st->vbr_enabled;
-		break;
-	case SPEEX_SET_VAD:
-		st->vad_enabled = (*(int32_t *) ptr);
-		speex_encoder_ctl(st->st_low, SPEEX_SET_VAD, ptr);
-		break;
-	case SPEEX_GET_VAD:
-		(*(int32_t *) ptr) = st->vad_enabled;
-		break;
-#endif				/* #ifndef DISABLE_VBR */
-#if !defined(DISABLE_VBR) && !defined(DISABLE_FLOAT_API)
-	case SPEEX_SET_VBR_QUALITY:
-		{
-			int32_t q;
-			float qual = (*(float *)ptr) + .6;
-			st->vbr_quality = (*(float *)ptr);
-			if (qual > 10)
-				qual = 10;
-			q = (int)floor(.5 + *(float *)ptr);
-			if (q > 10)
-				q = 10;
-			speex_encoder_ctl(st->st_low, SPEEX_SET_VBR_QUALITY,
-					  &qual);
-			speex_encoder_ctl(state, SPEEX_SET_QUALITY, &q);
-			break;
-		}
-	case SPEEX_GET_VBR_QUALITY:
-		(*(float *)ptr) = st->vbr_quality;
-		break;
-#endif				/* #if !defined(DISABLE_VBR) && !defined(DISABLE_FLOAT_API) */
-#ifndef DISABLE_VBR
-	case SPEEX_SET_ABR:
-		st->abr_enabled = (*(int32_t *) ptr);
-		st->vbr_enabled = st->abr_enabled != 0;
-		speex_encoder_ctl(st->st_low, SPEEX_SET_VBR, &st->vbr_enabled);
-		if (st->vbr_enabled) {
-			int32_t i = 10, rate, target;
-			float vbr_qual;
-			target = (*(int32_t *) ptr);
-			while (i >= 0) {
-				speex_encoder_ctl(st, SPEEX_SET_QUALITY, &i);
-				speex_encoder_ctl(st, SPEEX_GET_BITRATE, &rate);
-				if (rate <= target)
-					break;
-				i--;
-			}
-			vbr_qual = i;
-			if (vbr_qual < 0)
-				vbr_qual = 0;
-			speex_encoder_ctl(st, SPEEX_SET_VBR_QUALITY, &vbr_qual);
-			st->abr_count = 0;
-			st->abr_drift = 0;
-			st->abr_drift2 = 0;
-		}
-
-		break;
-	case SPEEX_GET_ABR:
-		(*(int32_t *) ptr) = st->abr_enabled;
-		break;
-#endif				/* #ifndef DISABLE_VBR */
-
-	case SPEEX_SET_QUALITY:
-		{
-			int32_t nb_qual;
-			int quality = (*(int32_t *) ptr);
-			if (quality < 0)
-				quality = 0;
-			if (quality > 10)
-				quality = 10;
-			st->submodeSelect = st->submodeID =
-			    ((const SpeexSBMode *)(st->mode->mode))->
-			    quality_map[quality];
-			nb_qual =
-			    ((const SpeexSBMode *)(st->mode->mode))->
-			    low_quality_map[quality];
-			speex_encoder_ctl(st->st_low, SPEEX_SET_MODE, &nb_qual);
-		}
-		break;
-	case SPEEX_SET_COMPLEXITY:
-		speex_encoder_ctl(st->st_low, SPEEX_SET_COMPLEXITY, ptr);
-		st->complexity = (*(int32_t *) ptr);
-		if (st->complexity < 1)
-			st->complexity = 1;
-		break;
-	case SPEEX_GET_COMPLEXITY:
-		(*(int32_t *) ptr) = st->complexity;
-		break;
-	case SPEEX_SET_BITRATE:
-		{
-			int32_t i = 10;
-			int32_t rate, target;
-			target = (*(int32_t *) ptr);
-			while (i >= 0) {
-				speex_encoder_ctl(st, SPEEX_SET_QUALITY, &i);
-				speex_encoder_ctl(st, SPEEX_GET_BITRATE, &rate);
-				if (rate <= target)
-					break;
-				i--;
-			}
-		}
-		break;
-	case SPEEX_GET_BITRATE:
-		speex_encoder_ctl(st->st_low, request, ptr);
-		/*fprintf (stderr, "before: %d\n", (*(int*)ptr)); */
-		if (st->submodes[st->submodeID])
-			(*(int32_t *) ptr) +=
-			    st->sampling_rate * SUBMODE(bits_per_frame) /
-			    st->full_frame_size;
-		else
-			(*(int32_t *) ptr) +=
-			    st->sampling_rate * (SB_SUBMODE_BITS +
-						 1) / st->full_frame_size;
-		/*fprintf (stderr, "after: %d\n", (*(int*)ptr)); */
-		break;
-	case SPEEX_SET_SAMPLING_RATE:
-		{
-			int32_t tmp = (*(int32_t *) ptr);
-			st->sampling_rate = tmp;
-			tmp >>= 1;
-			speex_encoder_ctl(st->st_low, SPEEX_SET_SAMPLING_RATE,
-					  &tmp);
-		}
-		break;
-	case SPEEX_GET_SAMPLING_RATE:
-		(*(int32_t *) ptr) = st->sampling_rate;
-		break;
-	case SPEEX_RESET_STATE:
-		{
-			int i;
-			st->first = 1;
-			for (i = 0; i < st->lpcSize; i++)
-				st->old_lsp[i] =
-				    DIV32(MULT16_16
-					  (QCONST16(3.1415927f, LSP_SHIFT),
-					   i + 1), st->lpcSize + 1);
-			for (i = 0; i < st->lpcSize; i++)
-				st->mem_sw[i] = st->mem_sp[i] = st->mem_sp2[i] =
-				    0;
-			for (i = 0; i < QMF_ORDER; i++)
-				st->h0_mem[i] = st->h1_mem[i] = 0;
-		}
-		break;
-	case SPEEX_SET_SUBMODE_ENCODING:
-		st->encode_submode = (*(int32_t *) ptr);
-		speex_encoder_ctl(st->st_low, SPEEX_SET_SUBMODE_ENCODING, ptr);
-		break;
-	case SPEEX_GET_SUBMODE_ENCODING:
-		(*(int32_t *) ptr) = st->encode_submode;
-		break;
-	case SPEEX_GET_LOOKAHEAD:
-		speex_encoder_ctl(st->st_low, SPEEX_GET_LOOKAHEAD, ptr);
-		(*(int32_t *) ptr) =
-		    2 * (*(int32_t *) ptr) + QMF_ORDER - 1;
-		break;
-	case SPEEX_SET_PLC_TUNING:
-		speex_encoder_ctl(st->st_low, SPEEX_SET_PLC_TUNING, ptr);
-		break;
-	case SPEEX_GET_PLC_TUNING:
-		speex_encoder_ctl(st->st_low, SPEEX_GET_PLC_TUNING, ptr);
-		break;
-#ifndef DISABLE_VBR
-	case SPEEX_SET_VBR_MAX_BITRATE:
-		{
-			st->vbr_max = (*(int32_t *) ptr);
-			if (SPEEX_SET_VBR_MAX_BITRATE < 1) {
-				speex_encoder_ctl(st->st_low,
-						  SPEEX_SET_VBR_MAX_BITRATE,
-						  &st->vbr_max);
-				st->vbr_max_high = 17600;
-			} else {
-				int32_t low_rate;
-				if (st->vbr_max >= 42200) {
-					st->vbr_max_high = 17600;
-				} else if (st->vbr_max >= 27800) {
-					st->vbr_max_high = 9600;
-				} else if (st->vbr_max > 20600) {
-					st->vbr_max_high = 5600;
-				} else {
-					st->vbr_max_high = 1800;
-				}
-				if (st->subframeSize == 80)
-					st->vbr_max_high = 1800;
-				low_rate = st->vbr_max - st->vbr_max_high;
-				speex_encoder_ctl(st->st_low,
-						  SPEEX_SET_VBR_MAX_BITRATE,
-						  &low_rate);
-			}
-		}
-		break;
-	case SPEEX_GET_VBR_MAX_BITRATE:
-		(*(int32_t *) ptr) = st->vbr_max;
-		break;
-#endif				/* #ifndef DISABLE_VBR */
-	case SPEEX_SET_HIGHPASS:
-		speex_encoder_ctl(st->st_low, SPEEX_SET_HIGHPASS, ptr);
-		break;
-	case SPEEX_GET_HIGHPASS:
-		speex_encoder_ctl(st->st_low, SPEEX_GET_HIGHPASS, ptr);
-		break;
-
-		/* This is all internal stuff past this point */
-	case SPEEX_GET_PI_GAIN:
-		{
-			int i;
-			spx_word32_t *g = (spx_word32_t *) ptr;
-			for (i = 0; i < st->nbSubframes; i++)
-				g[i] = st->pi_gain[i];
-		}
-		break;
-	case SPEEX_GET_EXC:
-		{
-			int i;
-			for (i = 0; i < st->nbSubframes; i++)
-				((spx_word16_t *) ptr)[i] = st->exc_rms[i];
-		}
-		break;
-#ifndef DISABLE_VBR
-	case SPEEX_GET_RELATIVE_QUALITY:
-		(*(float *)ptr) = st->relative_quality;
-		break;
-#endif				/* #ifndef DISABLE_VBR */
-	case SPEEX_SET_INNOVATION_SAVE:
-		st->innov_rms_save = (spx_word16_t *) ptr;
-		break;
-	case SPEEX_SET_WIDEBAND:
-		speex_encoder_ctl(st->st_low, SPEEX_SET_WIDEBAND, ptr);
-		break;
-	case SPEEX_GET_STACK:
-		*((char **)ptr) = st->stack;
-		break;
-	default:
-		speex_warning_int("Unknown nb_ctl request: ", request);
-		return -1;
-	}
-	return 0;
-}
-
-int sb_decoder_ctl(void *state, int request, void *ptr)
-{
-	SBDecState *st;
-	st = (SBDecState *) state;
-	switch (request) {
-	case SPEEX_SET_HIGH_MODE:
-		st->submodeID = (*(int32_t *) ptr);
-		break;
-	case SPEEX_SET_LOW_MODE:
-		speex_decoder_ctl(st->st_low, SPEEX_SET_LOW_MODE, ptr);
-		break;
-	case SPEEX_GET_LOW_MODE:
-		speex_decoder_ctl(st->st_low, SPEEX_GET_LOW_MODE, ptr);
-		break;
-	case SPEEX_GET_FRAME_SIZE:
-		(*(int32_t *) ptr) = st->full_frame_size;
-		break;
-	case SPEEX_SET_ENH:
-		speex_decoder_ctl(st->st_low, request, ptr);
-		st->lpc_enh_enabled = *((int32_t *) ptr);
-		break;
-	case SPEEX_GET_ENH:
-		*((int32_t *) ptr) = st->lpc_enh_enabled;
-		break;
-	case SPEEX_SET_MODE:
-	case SPEEX_SET_QUALITY:
-		{
-			int32_t nb_qual;
-			int quality = (*(int32_t *) ptr);
-			if (quality < 0)
-				quality = 0;
-			if (quality > 10)
-				quality = 10;
-			st->submodeID =
-			    ((const SpeexSBMode *)(st->mode->mode))->
-			    quality_map[quality];
-			nb_qual =
-			    ((const SpeexSBMode *)(st->mode->mode))->
-			    low_quality_map[quality];
-			speex_decoder_ctl(st->st_low, SPEEX_SET_MODE, &nb_qual);
-		}
-		break;
-	case SPEEX_GET_BITRATE:
-		speex_decoder_ctl(st->st_low, request, ptr);
-		if (st->submodes[st->submodeID])
-			(*(int32_t *) ptr) +=
-			    st->sampling_rate * SUBMODE(bits_per_frame) /
-			    st->full_frame_size;
-		else
-			(*(int32_t *) ptr) +=
-			    st->sampling_rate * (SB_SUBMODE_BITS +
-						 1) / st->full_frame_size;
-		break;
-	case SPEEX_SET_SAMPLING_RATE:
-		{
-			int32_t tmp = (*(int32_t *) ptr);
-			st->sampling_rate = tmp;
-			tmp >>= 1;
-			speex_decoder_ctl(st->st_low, SPEEX_SET_SAMPLING_RATE,
-					  &tmp);
-		}
-		break;
-	case SPEEX_GET_SAMPLING_RATE:
-		(*(int32_t *) ptr) = st->sampling_rate;
-		break;
-	case SPEEX_SET_HANDLER:
-		speex_decoder_ctl(st->st_low, SPEEX_SET_HANDLER, ptr);
-		break;
-	case SPEEX_SET_USER_HANDLER:
-		speex_decoder_ctl(st->st_low, SPEEX_SET_USER_HANDLER, ptr);
-		break;
-	case SPEEX_RESET_STATE:
-		{
-			int i;
-			for (i = 0; i < 2 * st->lpcSize; i++)
-				st->mem_sp[i] = 0;
-			for (i = 0; i < QMF_ORDER; i++)
-				st->g0_mem[i] = st->g1_mem[i] = 0;
-			st->last_ener = 0;
-		}
-		break;
-	case SPEEX_SET_SUBMODE_ENCODING:
-		st->encode_submode = (*(int32_t *) ptr);
-		speex_decoder_ctl(st->st_low, SPEEX_SET_SUBMODE_ENCODING, ptr);
-		break;
-	case SPEEX_GET_SUBMODE_ENCODING:
-		(*(int32_t *) ptr) = st->encode_submode;
-		break;
-	case SPEEX_GET_LOOKAHEAD:
-		speex_decoder_ctl(st->st_low, SPEEX_GET_LOOKAHEAD, ptr);
-		(*(int32_t *) ptr) = 2 * (*(int32_t *) ptr);
-		break;
-	case SPEEX_SET_HIGHPASS:
-		speex_decoder_ctl(st->st_low, SPEEX_SET_HIGHPASS, ptr);
-		break;
-	case SPEEX_GET_HIGHPASS:
-		speex_decoder_ctl(st->st_low, SPEEX_GET_HIGHPASS, ptr);
-		break;
-	case SPEEX_GET_ACTIVITY:
-		speex_decoder_ctl(st->st_low, SPEEX_GET_ACTIVITY, ptr);
-		break;
-	case SPEEX_GET_PI_GAIN:
-		{
-			int i;
-			spx_word32_t *g = (spx_word32_t *) ptr;
-			for (i = 0; i < st->nbSubframes; i++)
-				g[i] = st->pi_gain[i];
-		}
-		break;
-	case SPEEX_GET_EXC:
-		{
-			int i;
-			for (i = 0; i < st->nbSubframes; i++)
-				((spx_word16_t *) ptr)[i] = st->exc_rms[i];
-		}
-		break;
-	case SPEEX_GET_DTX_STATUS:
-		speex_decoder_ctl(st->st_low, SPEEX_GET_DTX_STATUS, ptr);
-		break;
-	case SPEEX_SET_INNOVATION_SAVE:
-		st->innov_save = (spx_word16_t *) ptr;
-		break;
-	case SPEEX_SET_WIDEBAND:
-		speex_decoder_ctl(st->st_low, SPEEX_SET_WIDEBAND, ptr);
-		break;
-	case SPEEX_GET_STACK:
-		*((char **)ptr) = st->stack;
-		break;
-	default:
-		speex_warning_int("Unknown nb_ctl request: ", request);
-		return -1;
-	}
-	return 0;
-}
+#endif				/* DISABLE_DECODER */
 
 #endif

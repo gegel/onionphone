@@ -34,6 +34,8 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "bfin.h"
+
 #define OVERRIDE_NORMALIZE16
 int normalize16(const spx_sig_t * x, spx_word16_t * y, spx_sig_t max_scale,
 		int len)
@@ -42,7 +44,7 @@ int normalize16(const spx_sig_t * x, spx_word16_t * y, spx_sig_t max_scale,
 	int sig_shift;
  __asm__("%0 = 0;\n\t" "I0 = %1;\n\t" "L0 = 0;\n\t" "R1 = [I0++];\n\t" "LOOP norm_max%= LC0 = %2;\n\t" "LOOP_BEGIN norm_max%=;\n\t" "R2 = ABS R1 || R1 = [I0++];\n\t" "%0 = MAX(%0, R2);\n\t" "LOOP_END norm_max%=;\n\t":"=&d"(max_val)
  :		"a"(x), "a"(len)
- :		"R1", "R2");
+ :		"R1", "R2", "ASTAT" BFIN_HWLOOP0_REGS);
 
 	sig_shift = 0;
 	while (max_val > max_scale) {
@@ -62,7 +64,8 @@ int normalize16(const spx_sig_t * x, spx_word16_t * y, spx_sig_t max_scale,
 	     "LOOP_END norm_shift%=;\n\t"
 	     "R1 = ASHIFT R0 by %2.L;\n\t"
 	     "W[P1++] = R1;\n\t"::"a"(x), "a"(y), "d"(-sig_shift), "a"(len - 1)
-	     :"I0", "L0", "P1", "R0", "R1", "memory");
+	     :"I0", "L0", "P1", "R0", "R1", "memory",
+	     "ASTAT" BFIN_HWLOOP0_REGS);
 	return sig_shift;
 }
 
@@ -71,12 +74,14 @@ void filter_mem16(const spx_word16_t * _x, const spx_coef_t * num,
 		  const spx_coef_t * den, spx_word16_t * _y, int N, int ord,
 		  spx_mem_t * mem, char *stack)
 {
+	VARDECL(spx_word32_t * xy2);
+	VARDECL(spx_word32_t * numden_a);
 	spx_word32_t *xy;
 	spx_word16_t *numden;
 	int i;
 
-	spx_word32_t xy2[(N + 1)];
-	spx_word32_t numden_a[(2 * ord + 2)];
+	ALLOC(xy2, (N + 1), spx_word32_t);
+	ALLOC(numden_a, (2 * ord + 2), spx_word32_t);
 	xy = xy2 + 1;
 	numden = (spx_word16_t *) numden_a;
 
@@ -143,7 +148,9 @@ void filter_mem16(const spx_word16_t * _x, const spx_coef_t * num,
 				    "m"(numden), "m"(N), "m"(ord), "m"(mem)
 				    :"A0", "A1", "R0", "R1", "R2", "R3", "R4",
 				    "R5", "P0", "P1", "P2", "P3", "P4", "B0",
-				    "I0", "I2", "L0", "L2", "M0", "memory");
+				    "I0", "I2", "L0", "L2", "M0", "memory",
+				    "ASTAT" BFIN_HWLOOP0_REGS
+				    BFIN_HWLOOP1_REGS);
 
 }
 
@@ -151,9 +158,10 @@ void filter_mem16(const spx_word16_t * _x, const spx_coef_t * num,
 void iir_mem16(const spx_word16_t * _x, const spx_coef_t * den,
 	       spx_word16_t * _y, int N, int ord, spx_mem_t * mem, char *stack)
 {
+	VARDECL(spx_word16_t * y);
 	spx_word16_t *yy;
 
-	spx_word16_t y[(N + 2)];
+	ALLOC(y, (N + 2), spx_word16_t);
 	yy = y + 2;
 
 	__asm__ __volatile__(
@@ -254,7 +262,9 @@ void iir_mem16(const spx_word16_t * _x, const spx_coef_t * den,
 				    "m"(den), "m"(N), "m"(ord), "m"(mem)
 				    :"A0", "A1", "R0", "R1", "R2", "R3", "R4",
 				    "R5", "P0", "P1", "P2", "P3", "P4", "B1",
-				    "I1", "I3", "L1", "L3", "memory");
+				    "I1", "I3", "L1", "L3", "memory",
+				    "ASTAT" BFIN_HWLOOP0_REGS
+				    BFIN_HWLOOP1_REGS);
 
 }
 
@@ -277,7 +287,8 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 			      int ord, char *stack)
 {
 	int i;
-	spx_word16_t ytmp[N];
+	VARDECL(spx_word16_t * ytmp);
+	ALLOC(ytmp, N, spx_word16_t);
 	spx_word16_t *ytmp2 = ytmp;
 	y[0] = LPC_SCALING;
 	for (i = 0; i < ord; i++)
@@ -332,7 +343,7 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 	     "W[%1] = R1.L;\n\t" "LOOP_END samples%=;\n\t":"=a"(ytmp2), "=a"(y)
 	     :"a"(awk2), "a"(ak), "d"(ord), "m"(N), "0"(ytmp2), "1"(y)
 	     :"A0", "A1", "R0", "R1", "R2", "R3", "I0", "I1", "I2", "I3", "L0",
-	     "L1", "L2", "L3", "A0", "A1");
+	     "L1", "L2", "L3", "ASTAT" BFIN_HWLOOP0_REGS BFIN_HWLOOP1_REGS);
 }
 
 #if 0				/* Equivalent C function for filter_mem2 and compute_impulse_response */
@@ -343,7 +354,8 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 			      int ord, char *stack)
 {
 	int i, j;
-	spx_word16_t ytmp[N];
+	VARDECL(spx_word16_t * ytmp);
+	ALLOC(ytmp, N, spx_word16_t);
 
 	y[0] = LPC_SCALING;
 	for (i = 0; i < ord; i++)

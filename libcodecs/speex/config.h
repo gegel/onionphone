@@ -45,10 +45,6 @@
 #define HAVE_GETOPT_LONG 1
 /* Define to 1 if you have the <inttypes.h> header file. */
 #define HAVE_INTTYPES_H 1
-/* Define to 1 if you have the `m' library (-lm). */
-#define HAVE_LIBM 1
-/* Define to 1 if you have the `winmm' library (-lwinmm). */
-/* #undef HAVE_LIBWINMM */
 /* Define to 1 if you have the <memory.h> header file. */
 #define HAVE_MEMORY_H 1
 /* Define to 1 if you have the <stdint.h> header file. */
@@ -69,29 +65,40 @@
 #define HAVE_SYS_TYPES_H 1
 /* Define to 1 if you have the <unistd.h> header file. */
 #define HAVE_UNISTD_H 1
-/* Define to the sub-directory in which libtool stores uninstalled libraries.
-   */
+/* Define to the sub-directory where libtool stores uninstalled libraries. */
 #define LT_OBJDIR ".libs/"
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT ""
+#define PACKAGE_BUGREPORT "speex-dev@xiph.org"
 /* Define to the full name of this package. */
-#define PACKAGE_NAME ""
+#define PACKAGE_NAME "speex"
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING ""
+#define PACKAGE_STRING "speex 1.2rc2"
 /* Define to the one symbol short name of this package. */
-#define PACKAGE_TARNAME ""
+#define PACKAGE_TARNAME "speex"
 /* Define to the home page for this package. */
 #define PACKAGE_URL ""
 /* Define to the version of this package. */
-#define PACKAGE_VERSION ""
+#define PACKAGE_VERSION "1.2rc2"
 /* The size of `int', as computed by sizeof. */
 #define SIZEOF_INT 4
+/* The size of `int16_t', as computed by sizeof. */
+#define SIZEOF_INT16_T 2
+/* The size of `int32_t', as computed by sizeof. */
+#define SIZEOF_INT32_T 4
 /* The size of `long', as computed by sizeof. */
-#define SIZEOF_LONG 4
+#define SIZEOF_LONG 8
 /* The size of `short', as computed by sizeof. */
 #define SIZEOF_SHORT 2
+/* The size of `uint16_t', as computed by sizeof. */
+#define SIZEOF_UINT16_T 2
+/* The size of `uint32_t', as computed by sizeof. */
+#define SIZEOF_UINT32_T 4
+/* The size of `u_int16_t', as computed by sizeof. */
+#define SIZEOF_U_INT16_T 2
+/* The size of `u_int32_t', as computed by sizeof. */
+#define SIZEOF_U_INT32_T 4
 /* Version extra */
-#define SPEEX_EXTRA_VERSION "-git"
+#define SPEEX_EXTRA_VERSION ""
 /* Version major */
 #define SPEEX_MAJOR_VERSION 1
 /* Version micro */
@@ -99,7 +106,7 @@
 /* Version minor */
 #define SPEEX_MINOR_VERSION 1
 /* Complete version string */
-#define SPEEX_VERSION "1.2rc1"
+#define SPEEX_VERSION "1.2rc2"
 /* Define to 1 if you have the ANSI C header files. */
 #define STDC_HEADERS 1
 /* Enable support for TI C55X DSP */
@@ -110,8 +117,16 @@
 /* #undef USE_GPL_FFTW3 */
 /* Use Intel Math Kernel Library for FFT */
 /* #undef USE_INTEL_MKL */
+/* Use KISS Fast Fourier Transform */
+/* #undef USE_KISS_FFT */
+/* Use FFT from OggVorbis */
+#define USE_SMALLFT /**/
+/* Use SpeexDSP library */
+#define USE_SPEEXDSP /**/
 /* Use C99 variable-size arrays */
 #define VAR_ARRAYS /**/
+/* Enable support for the Vorbis psy model */
+/* #undef VORBIS_PSYCHO */
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
 #if defined AC_APPLE_UNIVERSAL_BUILD
@@ -124,7 +139,7 @@
 #endif
 #endif
 /* Enable SSE support */
-/* #undef _USE_SSE */
+/* #define _USE_SSE */
 /* Define to empty if `const' does not conform to ANSI C. */
 /* #undef const */
 /* Define to `__inline__' or `__inline' if that's what the C compiler

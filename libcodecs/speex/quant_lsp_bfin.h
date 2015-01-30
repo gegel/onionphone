@@ -38,6 +38,8 @@
 #define OVERRIDE_LSP_QUANT
 #ifdef OVERRIDE_LSP_QUANT
 
+#include "bfin.h"
+
 /*
   Note http://gcc.gnu.org/onlinedocs/gcc/Machine-Constraints.html
   well tell you all the magic resgister constraints used below
@@ -72,7 +74,8 @@ static int lsp_quant(spx_word16_t * x,
 			     (best_dist), "=&d"(best_id)
 			     :"a"(x), "b"(cdbk), "a"(nbVec), "a"(nbDim)
 			     :"I0", "P2", "R0", "R1", "R2", "R3", "R5", "L0",
-			     "B0", "A0");
+			     "B0", "A0", "CC",
+			     "ASTAT" BFIN_HWLOOP0_REGS BFIN_HWLOOP1_REGS);
 
 	for (j = 0; j < nbDim; j++) {
 		x[j] =
@@ -128,7 +131,8 @@ static int lsp_weight_quant(spx_word16_t * x,
 			     :"a"(x), "a"(weight), "b"(cdbk), "a"(nbVec),
 			     "a"(nbDim)
 			     :"I0", "I1", "P2", "R0", "R1", "R2", "R3", "R5",
-			     "A1", "L0", "L1", "B0", "B1");
+			     "A1", "L0", "L1", "B0", "B1", "CC",
+			     "ASTAT" BFIN_HWLOOP0_REGS BFIN_HWLOOP1_REGS);
 
 	for (j = 0; j < nbDim; j++) {
 		x[j] =
