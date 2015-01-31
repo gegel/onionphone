@@ -21,9 +21,6 @@
 /* Disable VBR and VAD from the codec */
 /* #undef DISABLE_VBR */
 
-/* Enable valgrind extra checks */
-/* #undef ENABLE_VALGRIND */
-
 /* Symbol visibility prefix */
 #define EXPORT __attribute__((visibility("default")))
 
@@ -123,8 +120,6 @@
 #define USE_SMALLFT /**/
 /* Use SpeexDSP library */
 #define USE_SPEEXDSP /**/
-/* Use C99 variable-size arrays */
-#define VAR_ARRAYS /**/
 /* Enable support for the Vorbis psy model */
 /* #undef VORBIS_PSYCHO */
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most

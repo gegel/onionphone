@@ -315,6 +315,7 @@ EXPORT void speex_decode_stereo_int(spx_int16_t * data, int frame_size,
 EXPORT int speex_std_stereo_request_handler(SpeexBits * bits, void *state,
 					    void *data)
 {
+	(void)state;
 	RealSpeexStereoState *stereo;
 	spx_word16_t sign = 1, dexp;
 	int tmp;

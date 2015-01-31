@@ -141,16 +141,12 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 			   int *pitch, spx_word16_t * gain, int N, char *stack)
 {
 	int i, j, k;
-	VARDECL(spx_word32_t * best_score);
-	VARDECL(spx_word32_t * best_ener);
 	spx_word32_t e0;
-	VARDECL(spx_word32_t * corr);
-	VARDECL(spx_word32_t * energy);
 
-	ALLOC(best_score, N, spx_word32_t);
-	ALLOC(best_ener, N, spx_word32_t);
-	ALLOC(corr, end - start + 1, spx_word32_t);
-	ALLOC(energy, end - start + 2, spx_word32_t);
+spx_word32_t best_score[N];
+spx_word32_t best_ener[N];
+spx_word32_t corr[end - start + 1];
+spx_word32_t energy[end - start + 2];
 
 	for (i = 0; i < N; i++) {
 		best_score[i] = -1;
@@ -189,10 +185,8 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 
 	/* FIXME: Fixed-point and floating-point code should be merged */
 	{
-		VARDECL(spx_word16_t * corr16);
-		VARDECL(spx_word16_t * ener16);
-		ALLOC(corr16, end - start + 1, spx_word16_t);
-		ALLOC(ener16, end - start + 1, spx_word16_t);
+spx_word16_t corr16[end - start + 1];
+spx_word16_t ener16[end - start + 1];
 		/* Normalize to 180 so we can square it and it still fits in 16 bits */
 		normalize16(corr, corr16, 180, end - start + 1);
 		normalize16(energy, ener16, 180, end - start + 1);

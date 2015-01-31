@@ -87,7 +87,6 @@ Heavily modified by Jean-Marc Valin (c) 2002-2006 (fixed-point,
 
 #include <math.h>
 #include "lsp.h"
-#include "stack_alloc.h"
 #include "math_approx.h"
 
 #ifndef M_PI
@@ -177,6 +176,7 @@ static inline spx_word32_t cheb_poly_eva(spx_word16_t * coef,	/* P or Q coefs in
 static float cheb_poly_eva(spx_word32_t * coef, spx_word16_t x, int m,
 			   char *stack)
 {
+	(void)stack;
 	int k;
 	float b0, b1, tmp;
 
@@ -225,11 +225,7 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 {
 	spx_word16_t temp_xr, xl, xr, xm = 0;
 	spx_word32_t psuml, psumr, psumm, temp_psumr /*,temp_qsumr */ ;
-	int i, j, m, flag, k;
-	VARDECL(spx_word32_t * Q);	/* ptrs for memory allocation           */
-	VARDECL(spx_word32_t * P);
-	VARDECL(spx_word16_t * Q16);	/* ptrs for memory allocation           */
-	VARDECL(spx_word16_t * P16);
+	int i, j, m, k;
 	spx_word32_t *px;	/* ptrs of respective P'(z) & Q'(z)     */
 	spx_word32_t *qx;
 	spx_word32_t *p;
@@ -237,13 +233,11 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 	spx_word16_t *pt;	/* ptr used for cheb_poly_eval()
 				   whether P' or Q'                     */
 	int roots = 0;		/* DR 8/2/94: number of roots found     */
-	flag = 1;		/*  program is searching for a root when,
-				   1 else has found one                         */
 	m = lpcrdr / 2;		/* order of P'(z) & Q'(z) polynomials   */
 
 	/* Allocate memory space for polynomials */
-	ALLOC(Q, (m + 1), spx_word32_t);
-	ALLOC(P, (m + 1), spx_word32_t);
+spx_word32_t Q[(m + 1)];
+spx_word32_t P[(m + 1)];
 
 	/* determine P'(z)'s and Q'(z)'s coefficients where
 	   P'(z) = P(z)/(1 + z^(-1)) and Q'(z) = Q(z)/(1-z^(-1)) */
@@ -302,8 +296,8 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 	/* now that we have computed P and Q convert to 16 bits to
 	   speed up cheb_poly_eval */
 
-	ALLOC(P16, m + 1, spx_word16_t);
-	ALLOC(Q16, m + 1, spx_word16_t);
+spx_word16_t P16[m + 1];
+spx_word16_t Q16[m + 1];
 
 	for (i = 0; i < m + 1; i++) {
 		P16[i] = P[i];
@@ -323,7 +317,6 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 			pt = P16;
 
 		psuml = cheb_poly_eva(pt, xl, m, stack);	/* evals poly. at xl    */
-		flag = 1;
 		while (xr >= -FREQ_SCALE) {
 			spx_word16_t dd;
 			/* Modified by JMV to provide smaller steps around x=+-1 */
@@ -411,11 +404,6 @@ void lsp_to_lpc(const spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr,
 	int i, j;
 	spx_word32_t xout1, xout2, xin;
 	spx_word32_t mult, a;
-	VARDECL(spx_word16_t * freqn);
-	VARDECL(spx_word32_t ** xp);
-	VARDECL(spx_word32_t * xpmem);
-	VARDECL(spx_word32_t ** xq);
-	VARDECL(spx_word32_t * xqmem);
 	int m = lpcrdr >> 1;
 
 	/* 
@@ -442,11 +430,11 @@ void lsp_to_lpc(const spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr,
 	   outputs samples are non-zero (it's an FIR filter).
 	 */
 
-	ALLOC(xp, (m + 1), spx_word32_t *);
-	ALLOC(xpmem, (m + 1) * (lpcrdr + 1 + 2), spx_word32_t);
+spx_word32_t * xp[(m + 1)];
+spx_word32_t xpmem[(m + 1) * (lpcrdr + 1 + 2)];
 
-	ALLOC(xq, (m + 1), spx_word32_t *);
-	ALLOC(xqmem, (m + 1) * (lpcrdr + 1 + 2), spx_word32_t);
+spx_word32_t * xq[(m + 1)];
+spx_word32_t xqmem[(m + 1) * (lpcrdr + 1 + 2)];
 
 	for (i = 0; i <= m; i++) {
 		xp[i] = xpmem + i * (lpcrdr + 1 + 2);
@@ -455,7 +443,7 @@ void lsp_to_lpc(const spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr,
 
 	/* work out 2cos terms in Q14 */
 
-	ALLOC(freqn, lpcrdr, spx_word16_t);
+spx_word16_t freqn[lpcrdr];
 	for (i = 0; i < lpcrdr; i++)
 		freqn[i] = ANGLE2X(freq[i]);
 
@@ -532,14 +520,13 @@ void lsp_to_lpc(const spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr,
 /*  float *ak 		array of LPC coefficients 			*/
 /*  int lpcrdr  	order of LPC coefficients 			*/
 {
+	(void)stack;
 	int i, j;
 	float xout1, xout2, xin1, xin2;
-	VARDECL(float *Wp);
 	float *pw, *n1, *n2, *n3, *n4 = NULL;
-	VARDECL(float *x_freq);
 	int m = lpcrdr >> 1;
 
-	ALLOC(Wp, 4 * m + 2, float);
+float Wp[4 * m + 2];
 	pw = Wp;
 
 	/* initialise contents of array */
@@ -554,7 +541,7 @@ void lsp_to_lpc(const spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr,
 	xin1 = 1.0;
 	xin2 = 1.0;
 
-	ALLOC(x_freq, lpcrdr, float);
+float x_freq[lpcrdr];
 	for (i = 0; i < lpcrdr; i++)
 		x_freq[i] = ANGLE2X(freq[i]);
 

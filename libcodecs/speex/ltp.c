@@ -37,8 +37,9 @@
 #endif
 
 #include <math.h>
+#include <ophtools.h>
+
 #include "ltp.h"
-#include "stack_alloc.h"
 #include "filters.h"
 #include "math_approx.h"
 #include "os_support.h"
@@ -142,6 +143,7 @@ static void pitch_xcorr(const spx_word16_t * _x, const spx_word16_t * _y,
 static void pitch_xcorr(const spx_word16_t * _x, const spx_word16_t * _y,
 			spx_word32_t * corr, int len, int nb_pitch, char *stack)
 {
+	(void)stack;
 	int i;
 	for (i = 0; i < nb_pitch; i++) {
 		/* Compute correlation */
@@ -176,35 +178,29 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 			   int *pitch, spx_word16_t * gain, int N, char *stack)
 {
 	int i, j, k;
-	VARDECL(spx_word32_t * best_score);
-	VARDECL(spx_word32_t * best_ener);
 	spx_word32_t e0;
-	VARDECL(spx_word32_t * corr);
 #ifdef FIXED_POINT
 	/* In fixed-point, we need only one (temporary) array of 32-bit values and two (corr16, ener16) 
 	   arrays for (normalized) 16-bit values */
-	VARDECL(spx_word16_t * corr16);
-	VARDECL(spx_word16_t * ener16);
 	spx_word32_t *energy;
 	int cshift = 0, eshift = 0;
 	int scaledown = 0;
-	ALLOC(corr16, end - start + 1, spx_word16_t);
-	ALLOC(ener16, end - start + 1, spx_word16_t);
-	ALLOC(corr, end - start + 1, spx_word32_t);
+spx_word16_t corr16[end - start + 1];
+spx_word16_t ener16[end - start + 1];
+spx_word32_t corr[end - start + 1];
 	energy = corr;
 #else
 	/* In floating-point, we need to float arrays and no normalized copies */
-	VARDECL(spx_word32_t * energy);
 	spx_word16_t *corr16;
 	spx_word16_t *ener16;
-	ALLOC(energy, end - start + 2, spx_word32_t);
-	ALLOC(corr, end - start + 1, spx_word32_t);
+spx_word32_t energy[end - start + 2];
+spx_word32_t corr[end - start + 1];
 	corr16 = corr;
 	ener16 = energy;
 #endif
 
-	ALLOC(best_score, N, spx_word32_t);
-	ALLOC(best_ener, N, spx_word32_t);
+spx_word32_t best_score[N];
+spx_word32_t best_ener[N];
 	for (i = 0; i < N; i++) {
 		best_score[i] = -1;
 		best_ener[i] = 0;
@@ -363,9 +359,11 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 					   spx_word32_t cumul_gain,
 					   int scaledown)
 {
+	(void)bits;
+#ifndef FIXED_POINT
+	(void)scaledown;
+#endif
 	int i, j;
-	VARDECL(spx_word16_t * tmp1);
-	VARDECL(spx_word16_t * e);
 	spx_word16_t *x[3];
 	spx_word32_t corr[3];
 	spx_word32_t A[3][3];
@@ -374,8 +372,8 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 	spx_word16_t max_gain = 128;
 	int best_cdbk = 0;
 
-	ALLOC(tmp1, 3 * nsf, spx_word16_t);
-	ALLOC(e, nsf, spx_word16_t);
+spx_word16_t tmp1[3 * nsf];
+spx_word16_t e[nsf];
 
 	if (cumul_gain > 262144)
 		max_gain = 31;
@@ -389,9 +387,8 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 
 	{
 		int bound;
-		VARDECL(spx_mem_t * mm);
 		int pp = pitch - 1;
-		ALLOC(mm, p, spx_mem_t);
+spx_mem_t mm[p];
 		bound = nsf;
 		if (nsf - pp > 0)
 			bound = pp;
@@ -499,7 +496,7 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 		*cdbk_index = best_cdbk;
 	}
 
-	SPEEX_MEMSET(exc, 0, nsf);
+memzero(exc, nsf);
 	for (i = 0; i < 3; i++) {
 		int j;
 		int tmp1, tmp3;
@@ -551,11 +548,9 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 		      int cdbk_offset,
 		      int plc_tuning, spx_word32_t * cumul_gain)
 {
+	(void)pitch_coef;
 	int i;
 	int cdbk_index, pitch = 0, best_gain_index = 0;
-	VARDECL(spx_sig_t * best_exc);
-	VARDECL(spx_word16_t * new_target);
-	VARDECL(spx_word16_t * best_target);
 	int best_pitch = 0;
 	spx_word32_t err, best_err = -1;
 	int N;
@@ -564,7 +559,6 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 	int gain_cdbk_size;
 	int scaledown = 0;
 
-	VARDECL(int *nbest);
 
 	params = (const ltp_params *)par;
 	gain_cdbk_size = 1 << params->gain_bits;
@@ -576,13 +570,13 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 	if (N < 1)
 		N = 1;
 
-	ALLOC(nbest, N, int);
+int nbest[N];
 	params = (const ltp_params *)par;
 
 	if (end < start) {
 		speex_bits_pack(bits, 0, params->pitch_bits);
 		speex_bits_pack(bits, 0, params->gain_bits);
-		SPEEX_MEMSET(exc, 0, nsf);
+memzero(exc, nsf);
 		return start;
 	}
 #ifdef FIXED_POINT
@@ -608,13 +602,13 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 	else
 		nbest[0] = start;
 
-	ALLOC(best_exc, nsf, spx_sig_t);
-	ALLOC(new_target, nsf, spx_word16_t);
-	ALLOC(best_target, nsf, spx_word16_t);
+spx_sig_t best_exc[nsf];
+spx_word16_t new_target[nsf];
+spx_word16_t best_target[nsf];
 
 	for (i = 0; i < N; i++) {
 		pitch = nbest[i];
-		SPEEX_MEMSET(exc, 0, nsf);
+memzero(exc, nsf);
 		err =
 		    pitch_gain_search_3tap(target, ak, awk1, awk2, exc,
 					   gain_cdbk, gain_cdbk_size, pitch, p,
@@ -673,6 +667,9 @@ void pitch_unquant_3tap(spx_word16_t exc[],	/* Input excitation */
 			int subframe_offset,
 			spx_word16_t last_pitch_gain, int cdbk_offset)
 {
+	(void)end;
+	(void)pitch_coef;
+	(void)stack;
 	int i;
 	int pitch;
 	int gain_index;
@@ -736,7 +733,7 @@ void pitch_unquant_3tap(spx_word16_t exc[],	/* Input excitation */
 	gain[0] = SHL16(gain[0], 7);
 	gain[1] = SHL16(gain[1], 7);
 	gain[2] = SHL16(gain[2], 7);
-	SPEEX_MEMSET(exc_out, 0, nsf);
+memzero(exc_out, nsf);
 	for (i = 0; i < 3; i++) {
 		int j;
 		int tmp1, tmp3;
@@ -780,9 +777,17 @@ int forced_pitch_quant(spx_word16_t target[],	/* Target vector */
 		       int cdbk_offset,
 		       int plc_tuning, spx_word32_t * cumul_gain)
 {
+	(void)sw;
+	(void)par;
+	(void)end;
+	(void)bits;
+	(void)r;
+	(void)complexity;
+	(void)cdbk_offset;
+	(void)plc_tuning;
+	(void)cumul_gain;
 	int i;
-	VARDECL(spx_word16_t * res);
-	ALLOC(res, nsf, spx_word16_t);
+spx_word16_t res[nsf];
 #ifdef FIXED_POINT
 	if (pitch_coef > 63)
 		pitch_coef = 63;
@@ -824,6 +829,14 @@ void forced_pitch_unquant(spx_word16_t exc[],	/* Input excitation */
 			  int subframe_offset,
 			  spx_word16_t last_pitch_gain, int cdbk_offset)
 {
+	(void)end;
+	(void)par;
+	(void)bits;
+	(void)stack;
+	(void)count_lost;
+	(void)subframe_offset;
+	(void)last_pitch_gain;
+	(void)cdbk_offset;
 	int i;
 #ifdef FIXED_POINT
 	if (pitch_coef > 63)

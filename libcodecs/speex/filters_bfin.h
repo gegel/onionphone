@@ -74,14 +74,12 @@ void filter_mem16(const spx_word16_t * _x, const spx_coef_t * num,
 		  const spx_coef_t * den, spx_word16_t * _y, int N, int ord,
 		  spx_mem_t * mem, char *stack)
 {
-	VARDECL(spx_word32_t * xy2);
-	VARDECL(spx_word32_t * numden_a);
 	spx_word32_t *xy;
 	spx_word16_t *numden;
 	int i;
 
-	ALLOC(xy2, (N + 1), spx_word32_t);
-	ALLOC(numden_a, (2 * ord + 2), spx_word32_t);
+spx_word32_t xy2[(N + 1)];
+spx_word32_t numden_a[(2 * ord + 2)];
 	xy = xy2 + 1;
 	numden = (spx_word16_t *) numden_a;
 
@@ -158,10 +156,9 @@ void filter_mem16(const spx_word16_t * _x, const spx_coef_t * num,
 void iir_mem16(const spx_word16_t * _x, const spx_coef_t * den,
 	       spx_word16_t * _y, int N, int ord, spx_mem_t * mem, char *stack)
 {
-	VARDECL(spx_word16_t * y);
 	spx_word16_t *yy;
 
-	ALLOC(y, (N + 2), spx_word16_t);
+spx_word16_t y[(N + 2)];
 	yy = y + 2;
 
 	__asm__ __volatile__(
@@ -287,8 +284,7 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 			      int ord, char *stack)
 {
 	int i;
-	VARDECL(spx_word16_t * ytmp);
-	ALLOC(ytmp, N, spx_word16_t);
+spx_word16_t ytmp[N];
 	spx_word16_t *ytmp2 = ytmp;
 	y[0] = LPC_SCALING;
 	for (i = 0; i < ord; i++)
@@ -354,8 +350,7 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 			      int ord, char *stack)
 {
 	int i, j;
-	VARDECL(spx_word16_t * ytmp);
-	ALLOC(ytmp, N, spx_word16_t);
+spx_word16_t ytmp[N];
 
 	y[0] = LPC_SCALING;
 	for (i = 0; i < ord; i++)
