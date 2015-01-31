@@ -272,7 +272,7 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 	const signed char *shape_cb;
 	int shape_cb_size, subvect_size, nb_subvect;
 	const split_cb_params *params;
-	int N = 2;
+	int N;
 	int have_sign;
 	N = complexity;
 	if (N > 10)
@@ -311,6 +311,7 @@ spx_sig_t e[nsf];
 int ind[nb_subvect];
 
 spx_word16_t tmp[2 * N * nsf];
+	memzero(tmp, (2 * N * nsf) * sizeof(spx_word16_t));
 	for (i = 0; i < N; i++) {
 		ot2[i] = tmp + 2 * i * nsf;
 		nt2[i] = tmp + (2 * i + 1) * nsf;
@@ -325,6 +326,7 @@ spx_word32_t ndist[N];
 spx_word32_t odist[N];
 
 int itmp[2 * N * nb_subvect];
+	memzero(itmp, (2 * N * nb_subvect) * sizeof(int));
 	for (i = 0; i < N; i++) {
 		nind[i] = itmp + 2 * i * nb_subvect;
 		oind[i] = itmp + (2 * i + 1) * nb_subvect;

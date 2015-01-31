@@ -1455,10 +1455,9 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 				if (wideband) {	/* Skip wideband block (for compatibility) */
 					int submode;
 					int advance;
-					advance = submode =
+					submode =
 					    speex_bits_unpack_unsigned(bits,
 								       SB_SUBMODE_BITS);
-					/*speex_mode_query(&speex_wb_mode, SPEEX_SUBMODE_BITS_PER_FRAME, &advance); */
 					advance = wb_skip_table[submode];
 					if (advance < 0) {
 						speex_notify
@@ -1473,10 +1472,9 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 					wideband =
 					    speex_bits_unpack_unsigned(bits, 1);
 					if (wideband) {
-						advance = submode =
+						submode =
 						    speex_bits_unpack_unsigned
 						    (bits, SB_SUBMODE_BITS);
-						/*speex_mode_query(&speex_wb_mode, SPEEX_SUBMODE_BITS_PER_FRAME, &advance); */
 						advance =
 						    wb_skip_table[submode];
 						if (advance < 0) {
