@@ -85,7 +85,9 @@ Heavily modified by Jean-Marc Valin (c) 2002-2006 (fixed-point,
 #include "config.h"
 #endif
 
+#include <assert.h>
 #include <math.h>
+#include <ophtools.h>
 #include "lsp.h"
 #include "math_approx.h"
 
@@ -290,9 +292,6 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 	}
 #endif
 
-	px = P;			/* re-initialise ptrs                   */
-	qx = Q;
-
 	/* now that we have computed P and Q convert to 16 bits to
 	   speed up cheb_poly_eval */
 
@@ -350,7 +349,6 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 			if (SIGN_CHANGE(psumr, psuml)) {
 				roots++;
 
-				psumm = psuml;
 				for (k = 0; k <= nb; k++) {
 #ifdef FIXED_POINT
 					xm = ADD16(PSHR16(xl, 1), PSHR16(xr, 1));	/* bisect the interval  */
@@ -363,7 +361,6 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 						psuml = psumm;
 						xl = xm;
 					} else {
-						psumr = psumm;
 						xr = xm;
 					}
 				}
@@ -526,7 +523,11 @@ void lsp_to_lpc(const spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr,
 	float *pw, *n1, *n2, *n3, *n4 = NULL;
 	int m = lpcrdr >> 1;
 
+	assert(m > 0);
+
 	float Wp[4 * m + 2];
+	memzero(Wp, (4 * m + 2) * sizeof(float));
+
 	pw = Wp;
 
 	/* initialise contents of array */
@@ -542,6 +543,7 @@ void lsp_to_lpc(const spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr,
 	xin2 = 1.0;
 
 	float x_freq[lpcrdr];
+	memzero(x_freq, lpcrdr * sizeof(float));
 	for (i = 0; i < lpcrdr; i++)
 		x_freq[i] = ANGLE2X(freq[i]);
 
