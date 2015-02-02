@@ -236,8 +236,8 @@ int lpc_to_lsp(spx_coef_t * a, int lpcrdr, spx_lsp_t * freq, int nb,
 	m = lpcrdr / 2;		/* order of P'(z) & Q'(z) polynomials   */
 
 	/* Allocate memory space for polynomials */
-spx_word32_t Q[(m + 1)];
-spx_word32_t P[(m + 1)];
+	spx_word32_t Q[(m + 1)];
+	spx_word32_t P[(m + 1)];
 
 	/* determine P'(z)'s and Q'(z)'s coefficients where
 	   P'(z) = P(z)/(1 + z^(-1)) and Q'(z) = Q(z)/(1-z^(-1)) */
@@ -296,8 +296,8 @@ spx_word32_t P[(m + 1)];
 	/* now that we have computed P and Q convert to 16 bits to
 	   speed up cheb_poly_eval */
 
-spx_word16_t P16[m + 1];
-spx_word16_t Q16[m + 1];
+	spx_word16_t P16[m + 1];
+	spx_word16_t Q16[m + 1];
 
 	for (i = 0; i < m + 1; i++) {
 		P16[i] = P[i];
@@ -430,11 +430,11 @@ void lsp_to_lpc(const spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr,
 	   outputs samples are non-zero (it's an FIR filter).
 	 */
 
-spx_word32_t * xp[(m + 1)];
-spx_word32_t xpmem[(m + 1) * (lpcrdr + 1 + 2)];
+	spx_word32_t *xp[(m + 1)];
+	spx_word32_t xpmem[(m + 1) * (lpcrdr + 1 + 2)];
 
-spx_word32_t * xq[(m + 1)];
-spx_word32_t xqmem[(m + 1) * (lpcrdr + 1 + 2)];
+	spx_word32_t *xq[(m + 1)];
+	spx_word32_t xqmem[(m + 1) * (lpcrdr + 1 + 2)];
 
 	for (i = 0; i <= m; i++) {
 		xp[i] = xpmem + i * (lpcrdr + 1 + 2);
@@ -443,7 +443,7 @@ spx_word32_t xqmem[(m + 1) * (lpcrdr + 1 + 2)];
 
 	/* work out 2cos terms in Q14 */
 
-spx_word16_t freqn[lpcrdr];
+	spx_word16_t freqn[lpcrdr];
 	for (i = 0; i < lpcrdr; i++)
 		freqn[i] = ANGLE2X(freq[i]);
 
@@ -526,7 +526,7 @@ void lsp_to_lpc(const spx_lsp_t * freq, spx_coef_t * ak, int lpcrdr,
 	float *pw, *n1, *n2, *n3, *n4 = NULL;
 	int m = lpcrdr >> 1;
 
-float Wp[4 * m + 2];
+	float Wp[4 * m + 2];
 	pw = Wp;
 
 	/* initialise contents of array */
@@ -541,7 +541,7 @@ float Wp[4 * m + 2];
 	xin1 = 1.0;
 	xin2 = 1.0;
 
-float x_freq[lpcrdr];
+	float x_freq[lpcrdr];
 	for (i = 0; i < lpcrdr; i++)
 		x_freq[i] = ANGLE2X(freq[i]);
 

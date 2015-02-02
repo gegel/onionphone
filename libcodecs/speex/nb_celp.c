@@ -74,8 +74,11 @@
 #ifdef FIXED_POINT
 static const spx_word32_t ol_gain_table[32] =
     { 18900, 25150, 33468, 44536, 59265, 78865, 104946, 139653, 185838, 247297,
-329081, 437913, 582736, 775454, 1031906, 1373169, 1827293, 2431601, 3235761, 4305867, 5729870, 7624808,
-10146425, 13501971, 17967238, 23909222, 31816294, 42338330, 56340132, 74972501, 99766822, 132760927 };
+	329081, 437913, 582736, 775454, 1031906, 1373169, 1827293, 2431601,
+	    3235761, 4305867, 5729870, 7624808,
+	10146425, 13501971, 17967238, 23909222, 31816294, 42338330, 56340132,
+	    74972501, 99766822, 132760927
+};
 static const spx_word16_t exc_gain_quant_scal3_bound[7] =
     { 1841, 3883, 6051, 8062, 10444, 13580, 18560 };
 static const spx_word16_t exc_gain_quant_scal3[8] =
@@ -91,10 +94,13 @@ static const spx_word16_t exc_gain_quant_scal1[2] = { 11546, 17224 };
 
 static const float exc_gain_quant_scal3_bound[7] =
     { 0.112338f, 0.236980f, 0.369316f, 0.492054f, 0.637471f, 0.828874f,
-1.132784f };
+	1.132784f
+};
+
 static const float exc_gain_quant_scal3[8] =
     { 0.061130f, 0.163546f, 0.310413f, 0.428220f, 0.555887f, 0.719055f,
-0.938694f, 1.326874f };
+	0.938694f, 1.326874f
+};
 static const float exc_gain_quant_scal1_bound[1] = { 0.87798f };
 static const float exc_gain_quant_scal1[2] = { 0.70469f, 1.05127f };
 
@@ -282,8 +288,8 @@ int nb_encoder_ctl(void *state, int request, void *ptr)
 			if (quality > 10)
 				quality = 10;
 			st->submodeSelect = st->submodeID =
-			    ((const SpeexNBMode *)(st->mode->mode))->
-			    quality_map[quality];
+			    ((const SpeexNBMode *)(st->mode->
+						   mode))->quality_map[quality];
 		}
 		break;
 	case SPEEX_SET_COMPLEXITY:
@@ -431,15 +437,15 @@ int nb_encode(void *state, void *vin, SpeexBits * bits)
 	st = (EncState *) state;
 	stack = st->stack;
 
-spx_coef_t lpc[NB_ORDER];
-spx_coef_t bw_lpc1[NB_ORDER];
-spx_coef_t bw_lpc2[NB_ORDER];
-spx_lsp_t lsp[NB_ORDER];
-spx_lsp_t qlsp[NB_ORDER];
-spx_lsp_t interp_lsp[NB_ORDER];
-spx_lsp_t interp_qlsp[NB_ORDER];
-spx_coef_t interp_lpc[NB_ORDER];
-spx_coef_t interp_qlpc[NB_ORDER];
+	spx_coef_t lpc[NB_ORDER];
+	spx_coef_t bw_lpc1[NB_ORDER];
+	spx_coef_t bw_lpc2[NB_ORDER];
+	spx_lsp_t lsp[NB_ORDER];
+	spx_lsp_t qlsp[NB_ORDER];
+	spx_lsp_t interp_lsp[NB_ORDER];
+	spx_lsp_t interp_qlsp[NB_ORDER];
+	spx_coef_t interp_lpc[NB_ORDER];
+	spx_coef_t interp_qlpc[NB_ORDER];
 
 	st->exc = st->excBuf + NB_PITCH_END + 2;
 	st->sw = st->swBuf + NB_PITCH_END + 2;
@@ -449,13 +455,13 @@ spx_coef_t interp_qlpc[NB_ORDER];
 
 	if (st->highpass_enabled)
 		highpass(in, in, NB_FRAME_SIZE,
-			 (st->
-			  isWideband ? HIGHPASS_WIDEBAND : HIGHPASS_NARROWBAND)
+			 (st->isWideband ? HIGHPASS_WIDEBAND :
+			  HIGHPASS_NARROWBAND)
 			 | HIGHPASS_INPUT, st->mem_hp);
 
 	{
-spx_word16_t w_sig[NB_WINDOW_SIZE];
-spx_word16_t autocorr[NB_ORDER + 1];
+		spx_word16_t w_sig[NB_WINDOW_SIZE];
+		spx_word16_t autocorr[NB_ORDER + 1];
 		/* Window for analysis */
 		for (i = 0; i < NB_WINDOW_SIZE - NB_FRAME_SIZE; i++)
 			w_sig[i] = MULT16_16_Q15(st->winBuf[i], st->window[i]);
@@ -689,8 +695,7 @@ spx_word16_t autocorr[NB_ORDER + 1];
 				st->abr_drift += (bitrate - st->abr_enabled);
 				st->abr_drift2 =
 				    .95 * st->abr_drift2 + .05 * (bitrate -
-								  st->
-								  abr_enabled);
+								  st->abr_enabled);
 				st->abr_count += 1.0;
 			}
 
@@ -813,11 +818,11 @@ spx_word16_t autocorr[NB_ORDER + 1];
 	}
 
 	/* Target signal */
-spx_word16_t target[NB_SUBFRAME_SIZE];
-spx_sig_t innov[NB_SUBFRAME_SIZE];
-spx_word32_t exc32[NB_SUBFRAME_SIZE];
-spx_word16_t syn_resp[NB_SUBFRAME_SIZE];
-spx_mem_t mem[NB_ORDER];
+	spx_word16_t target[NB_SUBFRAME_SIZE];
+	spx_sig_t innov[NB_SUBFRAME_SIZE];
+	spx_word32_t exc32[NB_SUBFRAME_SIZE];
+	spx_word16_t syn_resp[NB_SUBFRAME_SIZE];
+	spx_mem_t mem[NB_ORDER];
 
 	/* Loop on sub-frames */
 	for (sub = 0; sub < NB_NB_SUBFRAMES; sub++) {
@@ -905,7 +910,9 @@ spx_mem_t mem[NB_ORDER];
 			mem[i] = SHL32(st->mem_sw[i], 1);
 		filter10(exc, st->bw_lpc1, st->bw_lpc2, exc, response_bound,
 			 mem, stack);
-		memzero(&exc[response_bound], NB_SUBFRAME_SIZE - response_bound);
+		memzero(&exc[response_bound],
+			(NB_SUBFRAME_SIZE -
+			 response_bound) * sizeof(spx_word16_t));
 #else
 		iir_mem16(exc, interp_qlpc, exc, NB_SUBFRAME_SIZE, NB_ORDER,
 			  mem, stack);
@@ -981,7 +988,7 @@ spx_mem_t mem[NB_ORDER];
 			st->pitch[sub] = pitch;
 		}
 		/* Quantization of innovation */
-memzero(innov, NB_SUBFRAME_SIZE);
+		memzero(innov, (NB_SUBFRAME_SIZE) * sizeof(spx_sig_t));
 
 		/* FIXME: Make sure this is safe from overflows (so far so good) */
 		for (i = 0; i < NB_SUBFRAME_SIZE; i++)
@@ -1052,8 +1059,9 @@ memzero(innov, NB_SUBFRAME_SIZE);
 			/* In some (rare) modes, we do a second search (more bits) to reduce noise even more */
 			if (SUBMODE(double_codebook)) {
 				char *tmp_stack = stack;
-spx_sig_t innov2[NB_SUBFRAME_SIZE];
-memzero(innov2, NB_SUBFRAME_SIZE);
+				spx_sig_t innov2[NB_SUBFRAME_SIZE];
+				memzero(innov2,
+					(NB_SUBFRAME_SIZE) * sizeof(spx_sig_t));
 				for (i = 0; i < NB_SUBFRAME_SIZE; i++)
 					target[i] =
 					    MULT16_16_P13(QCONST16(2.2f, 13),
@@ -1159,7 +1167,8 @@ void *nb_decoder_init(const SpeexMode * m)
 
 	st->lpc_enh_enabled = 1;
 
-memzero(st->excBuf, NB_FRAME_SIZE + NB_PITCH_END);
+	memzero(st->excBuf,
+		(NB_FRAME_SIZE + NB_PITCH_END) * sizeof(spx_word16_t));
 
 	st->last_pitch = 40;
 	st->count_lost = 0;
@@ -1504,19 +1513,15 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 				if (m == 15) {	/* We found a terminator */
 					return -1;
 				} else if (m == 14) {	/* Speex in-band request */
-					int ret =
-					    speex_inband_handler(bits,
-								 st->
-								 speex_callbacks,
-								 state);
+					int ret = speex_inband_handler(bits,
+								       st->speex_callbacks,
+								       state);
 					if (ret)
 						return ret;
 				} else if (m == 13) {	/* User in-band request */
 					int ret =
 					    st->user_callback.func(bits, state,
-								   st->
-								   user_callback.
-								   data);
+								   st->user_callback.data);
 					if (ret)
 						return ret;
 				} else if (m > 8) {	/* Invalid mode */
@@ -1539,7 +1544,7 @@ int nb_decode(void *state, SpeexBits * bits, void *vout)
 
 	/* If null mode (no transmission), just set a couple things to zero */
 	if (st->submodes[st->submodeID] == NULL) {
-spx_coef_t lpc[NB_ORDER];
+		spx_coef_t lpc[NB_ORDER];
 		bw_lpc(QCONST16(0.93f, 15), st->interp_qlpc, lpc, NB_ORDER);
 		{
 			spx_word16_t innov_gain = 0;
@@ -1559,7 +1564,7 @@ spx_coef_t lpc[NB_ORDER];
 		return 0;
 	}
 
-spx_lsp_t qlsp[NB_ORDER];
+	spx_lsp_t qlsp[NB_ORDER];
 
 	/* Unquantize LSPs */
 	SUBMODE(lsp_unquant) (qlsp, NB_ORDER, bits);
@@ -1612,9 +1617,9 @@ spx_lsp_t qlsp[NB_ORDER];
 #endif
 	}
 
-spx_coef_t ak[NB_ORDER];
-spx_sig_t innov[NB_SUBFRAME_SIZE];
-spx_word32_t exc32[NB_SUBFRAME_SIZE];
+	spx_coef_t ak[NB_ORDER];
+	spx_sig_t innov[NB_SUBFRAME_SIZE];
+	spx_word32_t exc32[NB_SUBFRAME_SIZE];
 
 	if (st->submodeID == 1) {
 		int extra;
@@ -1643,7 +1648,7 @@ spx_word32_t exc32[NB_SUBFRAME_SIZE];
 			innov_save = st->innov_save + offset;
 
 		/* Reset excitation */
-memzero(exc, NB_SUBFRAME_SIZE);
+		memzero(exc, (NB_SUBFRAME_SIZE) * sizeof(spx_word16_t));
 
 		/*Adaptive codebook contribution */
 		speex_assert(SUBMODE(ltp_unquant));
@@ -1720,7 +1725,7 @@ memzero(exc, NB_SUBFRAME_SIZE);
 			int q_energy;
 			spx_word32_t ener;
 
-memzero(innov, NB_SUBFRAME_SIZE);
+			memzero(innov, (NB_SUBFRAME_SIZE) * sizeof(spx_sig_t));
 
 			/* Decode sub-frame gain correction */
 			if (SUBMODE(have_subframe_gain) == 3) {
@@ -1755,7 +1760,9 @@ memzero(innov, NB_SUBFRAME_SIZE);
 				if (SUBMODE(double_codebook)) {
 					char *tmp_stack = stack;
 					spx_sig_t innov2[NB_SUBFRAME_SIZE];
-					memzero(innov2, NB_SUBFRAME_SIZE);
+					memzero(innov2,
+						(NB_SUBFRAME_SIZE) *
+						sizeof(spx_sig_t));
 					SUBMODE(innovation_unquant) (innov2,
 								     SUBMODE
 								     (innovation_params),
@@ -1801,7 +1808,9 @@ memzero(innov, NB_SUBFRAME_SIZE);
 				if (g > GAIN_SCALING)
 					g = GAIN_SCALING;
 
-memzero(exc, NB_SUBFRAME_SIZE);
+				memzero(exc,
+					(NB_SUBFRAME_SIZE) *
+					sizeof(spx_word16_t));
 				while (st->voc_offset < NB_SUBFRAME_SIZE) {
 					/* exc[st->voc_offset]= g*sqrt(2*ol_pitch)*ol_gain;
 					   Not quite sure why we need the factor of two in the sqrt */
@@ -1864,7 +1873,7 @@ memzero(exc, NB_SUBFRAME_SIZE);
 		}
 	}
 
-spx_lsp_t interp_qlsp[NB_ORDER];
+	spx_lsp_t interp_qlsp[NB_ORDER];
 
 	if (st->lpc_enh_enabled && SUBMODE(comb_gain) > 0 && !st->count_lost) {
 		multicomb(st->exc - NB_SUBFRAME_SIZE, out, st->interp_qlpc,
@@ -1939,8 +1948,8 @@ spx_lsp_t interp_qlsp[NB_ORDER];
 
 	if (st->highpass_enabled)
 		highpass(out, out, NB_FRAME_SIZE,
-			 (st->
-			  isWideband ? HIGHPASS_WIDEBAND : HIGHPASS_NARROWBAND)
+			 (st->isWideband ? HIGHPASS_WIDEBAND :
+			  HIGHPASS_NARROWBAND)
 			 | HIGHPASS_OUTPUT, st->mem_hp);
 	/*for (i=0;i<NB_FRAME_SIZE;i++)
 	   printf ("%d\n", (int)st->frame[i]); */

@@ -185,22 +185,22 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 	spx_word32_t *energy;
 	int cshift = 0, eshift = 0;
 	int scaledown = 0;
-spx_word16_t corr16[end - start + 1];
-spx_word16_t ener16[end - start + 1];
-spx_word32_t corr[end - start + 1];
+	spx_word16_t corr16[end - start + 1];
+	spx_word16_t ener16[end - start + 1];
+	spx_word32_t corr[end - start + 1];
 	energy = corr;
 #else
 	/* In floating-point, we need to float arrays and no normalized copies */
 	spx_word16_t *corr16;
 	spx_word16_t *ener16;
-spx_word32_t energy[end - start + 2];
-spx_word32_t corr[end - start + 1];
+	spx_word32_t energy[end - start + 2];
+	spx_word32_t corr[end - start + 1];
 	corr16 = corr;
 	ener16 = energy;
 #endif
 
-spx_word32_t best_score[N];
-spx_word32_t best_ener[N];
+	spx_word32_t best_score[N];
+	spx_word32_t best_ener[N];
 	for (i = 0; i < N; i++) {
 		best_score[i] = -1;
 		best_ener[i] = 0;
@@ -372,8 +372,8 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 	spx_word16_t max_gain = 128;
 	int best_cdbk = 0;
 
-spx_word16_t tmp1[3 * nsf];
-spx_word16_t e[nsf];
+	spx_word16_t tmp1[3 * nsf];
+	spx_word16_t e[nsf];
 
 	if (cumul_gain > 262144)
 		max_gain = 31;
@@ -388,7 +388,7 @@ spx_word16_t e[nsf];
 	{
 		int bound;
 		int pp = pitch - 1;
-spx_mem_t mm[p];
+		spx_mem_t mm[p];
 		bound = nsf;
 		if (nsf - pp > 0)
 			bound = pp;
@@ -496,7 +496,7 @@ spx_mem_t mm[p];
 		*cdbk_index = best_cdbk;
 	}
 
-memzero(exc, nsf);
+	memzero(exc, (nsf) * sizeof(spx_sig_t));
 	for (i = 0; i < 3; i++) {
 		int j;
 		int tmp1, tmp3;
@@ -517,11 +517,9 @@ memzero(exc, nsf);
 				     exc2[j - pp - pitch]);
 	}
 	for (i = 0; i < nsf; i++) {
-		spx_word32_t tmp =
-		    ADD32(ADD32
-			  (MULT16_16(gain[0], x[2][i]),
-			   MULT16_16(gain[1], x[1][i])),
-			  MULT16_16(gain[2], x[0][i]));
+		spx_word32_t tmp = ADD32(ADD32(MULT16_16(gain[0], x[2][i]),
+					       MULT16_16(gain[1], x[1][i])),
+					 MULT16_16(gain[2], x[0][i]));
 		new_target[i] = SUB16(new_target[i], EXTRACT16(PSHR32(tmp, 6)));
 	}
 	err = inner_prod(new_target, new_target, nsf);
@@ -559,7 +557,6 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 	int gain_cdbk_size;
 	int scaledown = 0;
 
-
 	params = (const ltp_params *)par;
 	gain_cdbk_size = 1 << params->gain_bits;
 	gain_cdbk = params->gain_cdbk + 4 * gain_cdbk_size * cdbk_offset;
@@ -570,13 +567,13 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 	if (N < 1)
 		N = 1;
 
-int nbest[N];
+	int nbest[N];
 	params = (const ltp_params *)par;
 
 	if (end < start) {
 		speex_bits_pack(bits, 0, params->pitch_bits);
 		speex_bits_pack(bits, 0, params->gain_bits);
-memzero(exc, nsf);
+		memzero(exc, (nsf) * sizeof(spx_sig_t));
 		return start;
 	}
 #ifdef FIXED_POINT
@@ -602,13 +599,13 @@ memzero(exc, nsf);
 	else
 		nbest[0] = start;
 
-spx_sig_t best_exc[nsf];
-spx_word16_t new_target[nsf];
-spx_word16_t best_target[nsf];
+	spx_sig_t best_exc[nsf];
+	spx_word16_t new_target[nsf];
+	spx_word16_t best_target[nsf];
 
 	for (i = 0; i < N; i++) {
 		pitch = nbest[i];
-memzero(exc, nsf);
+		memzero(exc, (nsf) * sizeof(spx_sig_t));
 		err =
 		    pitch_gain_search_3tap(target, ak, awk1, awk2, exc,
 					   gain_cdbk, gain_cdbk_size, pitch, p,
@@ -733,7 +730,7 @@ void pitch_unquant_3tap(spx_word16_t exc[],	/* Input excitation */
 	gain[0] = SHL16(gain[0], 7);
 	gain[1] = SHL16(gain[1], 7);
 	gain[2] = SHL16(gain[2], 7);
-memzero(exc_out, nsf);
+	memzero(exc_out, (nsf) * sizeof(spx_word32_t));
 	for (i = 0; i < 3; i++) {
 		int j;
 		int tmp1, tmp3;
@@ -787,7 +784,7 @@ int forced_pitch_quant(spx_word16_t target[],	/* Target vector */
 	(void)plc_tuning;
 	(void)cumul_gain;
 	int i;
-spx_word16_t res[nsf];
+	spx_word16_t res[nsf];
 #ifdef FIXED_POINT
 	if (pitch_coef > 63)
 		pitch_coef = 63;

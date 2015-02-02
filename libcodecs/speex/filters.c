@@ -88,22 +88,26 @@ void highpass(const spx_word16_t * x, spx_word16_t * y, int len, int filtID,
 							       15328}, {16384,
 									-32313,
 									15947},
-	    {16384, -22446, 6537} };
+	{16384, -22446, 6537}
+	};
 	const spx_word16_t Zcoef[5][3] =
 	    { {15672, -31344, 15672}, {15802, -31601, 15802}, {15847, -31694,
 							       15847}, {16162,
 									-32322,
 									16162},
-	    {14418, -28836, 14418} };
+	{14418, -28836, 14418}
+	};
 #else
 	const spx_word16_t Pcoef[5][3] =
 	    { {1.00000f, -1.91120f, 0.91498f}, {1.00000f, -1.92683f, 0.93071f},
-	    {1.00000f, -1.93338f, 0.93553f}, {1.00000f, -1.97226f, 0.97332f},
-	    {1.00000f, -1.37000f, 0.39900f} };
+	{1.00000f, -1.93338f, 0.93553f}, {1.00000f, -1.97226f, 0.97332f},
+	{1.00000f, -1.37000f, 0.39900f}
+	};
 	const spx_word16_t Zcoef[5][3] =
 	    { {0.95654f, -1.91309f, 0.95654f}, {0.96446f, -1.92879f, 0.96446f},
-	    {0.96723f, -1.93445f, 0.96723f}, {0.98645f, -1.97277f, 0.98645f},
-	    {0.88000f, -1.76000f, 0.88000f} };
+	{0.96723f, -1.93445f, 0.96723f}, {0.98645f, -1.97277f, 0.98645f},
+	{0.88000f, -1.76000f, 0.88000f}
+	};
 #endif
 	const spx_word16_t *den, *num;
 	if (filtID > 4)
@@ -428,7 +432,7 @@ void syn_percep_zero16(const spx_word16_t * xx, const spx_coef_t * ak,
 		       spx_word16_t * y, int N, int ord, char *stack)
 {
 	int i;
-spx_mem_t mem[ord];
+	spx_mem_t mem[ord];
 	for (i = 0; i < ord; i++)
 		mem[i] = 0;
 	iir_mem16(xx, ak, y, N, ord, mem, stack);
@@ -442,7 +446,7 @@ void residue_percep_zero16(const spx_word16_t * xx, const spx_coef_t * ak,
 			   spx_word16_t * y, int N, int ord, char *stack)
 {
 	int i;
-spx_mem_t mem[ord];
+	spx_mem_t mem[ord];
 	for (i = 0; i < ord; i++)
 		mem[i] = 0;
 	filter_mem16(xx, ak, awk1, y, N, ord, mem, stack);
@@ -460,8 +464,8 @@ void compute_impulse_response(const spx_coef_t * ak, const spx_coef_t * awk1,
 	(void)stack;
 	int i, j;
 	spx_word16_t y1, ny1i, ny2i;
-spx_mem_t mem1[ord];
-spx_mem_t mem2[ord];
+	spx_mem_t mem1[ord];
+	spx_mem_t mem2[ord];
 
 	y[0] = LPC_SCALING;
 	for (i = 0; i < ord; i++)
@@ -498,8 +502,8 @@ void qmf_decomp(const spx_word16_t * xx, const spx_word16_t * aa,
 	int i, j, k, M2;
 	spx_word16_t *x2;
 
-spx_word16_t a[M];
-spx_word16_t x[N + M - 1];
+	spx_word16_t a[M];
+	spx_word16_t x[N + M - 1];
 	x2 = x + M - 1;
 	M2 = M >> 1;
 	for (i = 0; i < M; i++)
@@ -546,8 +550,8 @@ void qmf_synth(const spx_word16_t * x1, const spx_word16_t * x2,
 
 	M2 = M >> 1;
 	N2 = N >> 1;
-spx_word16_t xx1[M2 + N2];
-spx_word16_t xx2[M2 + N2];
+	spx_word16_t xx1[M2 + N2];
+	spx_word16_t xx2[M2 + N2];
 
 	for (i = 0; i < N2; i++)
 		xx1[i] = x1[N2 - 1 - i];
@@ -774,7 +778,7 @@ void multicomb(spx_word16_t * exc,	/*decoded excitation */
 	corr_pitch = pitch;
 #endif
 
-spx_word16_t iexc[2 * nsf];
+	spx_word16_t iexc[2 * nsf];
 
 	interp_pitch(exc, iexc, corr_pitch, 80);
 	if (corr_pitch > max_pitch)

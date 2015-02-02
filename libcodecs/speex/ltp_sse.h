@@ -68,8 +68,8 @@ void pitch_xcorr(const float *_x, const float *_y, float *corr, int len,
 	int N, L;
 	N = len >> 2;
 	L = nb_pitch >> 2;
-__m128 x[N];
-__m128 y[N + L];
+	__m128 x[N];
+	__m128 y[N + L];
 	for (i = 0; i < N; i++)
 		x[i] = _mm_loadu_ps(_x + (i << 2));
 	for (offset = 0; offset < 4; offset++) {

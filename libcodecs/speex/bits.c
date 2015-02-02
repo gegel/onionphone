@@ -166,11 +166,10 @@ EXPORT void speex_bits_read_whole_bytes(SpeexBits * bits, const char *chars,
 	    nchars > bits->buf_size) {
 		/* Packet is larger than allocated buffer */
 		if (bits->owner) {
-			char *tmp =
-			    (char *)speex_realloc(bits->chars,
-						  (bits->
-						   nbBits >> LOG2_BITS_PER_CHAR)
-						  + nchars + 1);
+			char *tmp = (char *)speex_realloc(bits->chars,
+							  (bits->nbBits >>
+							   LOG2_BITS_PER_CHAR)
+							  + nchars + 1);
 			if (tmp) {
 				bits->buf_size =
 				    (bits->nbBits >> LOG2_BITS_PER_CHAR) +
@@ -303,9 +302,8 @@ EXPORT unsigned int speex_bits_unpack_unsigned(SpeexBits * bits, int nbBits)
 		return 0;
 	while (nbBits) {
 		d <<= 1;
-		d |= (bits->
-		      chars[bits->charPtr] >> (BITS_PER_CHAR - 1 -
-					       bits->bitPtr)) & 1;
+		d |= (bits->chars[bits->charPtr] >> (BITS_PER_CHAR - 1 -
+						     bits->bitPtr)) & 1;
 		bits->bitPtr++;
 		if (bits->bitPtr == BITS_PER_CHAR) {
 			bits->bitPtr = 0;
@@ -351,8 +349,8 @@ EXPORT int speex_bits_peek(SpeexBits * bits)
 		bits->overflow = 1;
 	if (bits->overflow)
 		return 0;
-	return (bits->
-		chars[bits->charPtr] >> (BITS_PER_CHAR - 1 - bits->bitPtr)) & 1;
+	return (bits->chars[bits->charPtr] >>
+		(BITS_PER_CHAR - 1 - bits->bitPtr)) & 1;
 }
 
 EXPORT void speex_bits_advance(SpeexBits * bits, int n)

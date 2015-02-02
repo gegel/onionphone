@@ -64,7 +64,7 @@ static void compute_weighted_codebook(const signed char *shape_cb,
 	(void)resp2;
 	(void)stack;
 	int i, j, k;
-spx_word16_t shape[subvect_size];
+	spx_word16_t shape[subvect_size];
 	for (i = 0; i < shape_cb_size; i++) {
 		spx_word16_t *res;
 
@@ -135,16 +135,16 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 	shape_cb_size = 1 << params->shape_bits;
 	shape_cb = params->shape_cb;
 	have_sign = params->have_sign;
-spx_word16_t resp[shape_cb_size * subvect_size];
+	spx_word16_t resp[shape_cb_size * subvect_size];
 #ifdef _USE_SSE
-__m128 resp2[(shape_cb_size * subvect_size) >> 2];
-__m128 E[shape_cb_size >> 2];
+	__m128 resp2[(shape_cb_size * subvect_size) >> 2];
+	__m128 E[shape_cb_size >> 2];
 #else
 	resp2 = resp;
-spx_word32_t E[shape_cb_size];
+	spx_word32_t E[shape_cb_size];
 #endif
-spx_word16_t t[nsf];
-spx_sig_t e[nsf];
+	spx_word16_t t[nsf];
+	spx_sig_t e[nsf];
 
 	/* FIXME: Do we still need to copy the target? */
 	SPEEX_COPY(t, target, nsf);
@@ -242,7 +242,7 @@ spx_sig_t e[nsf];
 
 	/* Update target: only update target if necessary */
 	if (update_target) {
-spx_word16_t r2[nsf];
+		spx_word16_t r2[nsf];
 		for (j = 0; j < nsf; j++)
 			r2[j] = EXTRACT16(PSHR32(e[j], 6));
 		syn_percep_zero16(r2, ak, awk1, awk2, r2, nsf, p, stack);
@@ -287,10 +287,10 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 					      update_target);
 		return;
 	}
-spx_word16_t * ot2[N];
-spx_word16_t * nt2[N];
-int * oind[N];
-int * nind[N];
+	spx_word16_t *ot2[N];
+	spx_word16_t *nt2[N];
+	int *oind[N];
+	int *nind[N];
 
 	params = (const split_cb_params *)par;
 	subvect_size = params->subvect_size;
@@ -298,19 +298,19 @@ int * nind[N];
 	shape_cb_size = 1 << params->shape_bits;
 	shape_cb = params->shape_cb;
 	have_sign = params->have_sign;
-spx_word16_t resp[shape_cb_size * subvect_size];
+	spx_word16_t resp[shape_cb_size * subvect_size];
 #ifdef _USE_SSE
-__m128 resp2[(shape_cb_size * subvect_size) >> 2];
-__m128 E[shape_cb_size >> 2];
+	__m128 resp2[(shape_cb_size * subvect_size) >> 2];
+	__m128 E[shape_cb_size >> 2];
 #else
 	resp2 = resp;
-spx_word32_t E[shape_cb_size];
+	spx_word32_t E[shape_cb_size];
 #endif
-spx_word16_t t[nsf];
-spx_sig_t e[nsf];
-int ind[nb_subvect];
+	spx_word16_t t[nsf];
+	spx_sig_t e[nsf];
+	int ind[nb_subvect];
 
-spx_word16_t tmp[2 * N * nsf];
+	spx_word16_t tmp[2 * N * nsf];
 	memzero(tmp, (2 * N * nsf) * sizeof(spx_word16_t));
 	for (i = 0; i < N; i++) {
 		ot2[i] = tmp + 2 * i * nsf;
@@ -318,14 +318,14 @@ spx_word16_t tmp[2 * N * nsf];
 	}
 	ot = ot2;
 	nt = nt2;
-int best_index[N];
-spx_word32_t best_dist[N];
-int best_nind[N];
-int best_ntarget[N];
-spx_word32_t ndist[N];
-spx_word32_t odist[N];
+	int best_index[N];
+	spx_word32_t best_dist[N];
+	int best_nind[N];
+	int best_ntarget[N];
+	spx_word32_t ndist[N];
+	spx_word32_t odist[N];
 
-int itmp[2 * N * nb_subvect];
+	int itmp[2 * N * nb_subvect];
 	memzero(itmp, (2 * N * nb_subvect) * sizeof(int));
 	for (i = 0; i < N; i++) {
 		nind[i] = itmp + 2 * i * nb_subvect;
@@ -503,7 +503,7 @@ int itmp[2 * N * nb_subvect];
 
 	/* Update target: only update target if necessary */
 	if (update_target) {
-spx_word16_t r2[nsf];
+		spx_word16_t r2[nsf];
 		for (j = 0; j < nsf; j++)
 			r2[j] = EXTRACT16(PSHR32(e[j], 6));
 		syn_percep_zero16(r2, ak, awk1, awk2, r2, nsf, p, stack);
@@ -534,8 +534,8 @@ void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overla
 	shape_cb = params->shape_cb;
 	have_sign = params->have_sign;
 
-int ind[nb_subvect];
-int signs[nb_subvect];
+	int ind[nb_subvect];
+	int signs[nb_subvect];
 
 	/* Decode codewords and gains */
 	for (i = 0; i < nb_subvect; i++) {
@@ -594,12 +594,12 @@ void noise_codebook_quant(spx_word16_t target[],	/* target vector */
 	(void)complexity;
 	(void)update_target;
 	int i;
-spx_word16_t tmp[nsf];
+	spx_word16_t tmp[nsf];
 	residue_percep_zero16(target, ak, awk1, awk2, tmp, nsf, p, stack);
 
 	for (i = 0; i < nsf; i++)
 		exc[i] += SHL32(EXTEND32(tmp[i]), 8);
-memzero(target, nsf);
+	memzero(target, (nsf) * sizeof(spx_word16_t));
 }
 #endif				/* DISABLE_ENCODER */
 
