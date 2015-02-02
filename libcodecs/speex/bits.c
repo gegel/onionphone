@@ -38,6 +38,8 @@
 #include "config.h"
 #endif
 
+#include <assert.h>
+
 #include "speex/speex_bits.h"
 #include "arch.h"
 #include "os_support.h"
@@ -284,6 +286,7 @@ EXPORT void speex_bits_pack(SpeexBits * bits, int data, int nbBits)
 
 EXPORT int speex_bits_unpack_signed(SpeexBits * bits, int nbBits)
 {
+	assert(nbBits > 0);
 	unsigned int d = speex_bits_unpack_unsigned(bits, nbBits);
 	/* If number is negative */
 	if (d >> (nbBits - 1)) {

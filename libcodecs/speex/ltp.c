@@ -189,12 +189,17 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 	spx_word16_t ener16[end - start + 1];
 	spx_word32_t corr[end - start + 1];
 	energy = corr;
+
+	memzero(corr16, (end - start + 1) * sizeof(spx_word16_t));
 #else
 	/* In floating-point, we need to float arrays and no normalized copies */
 	spx_word16_t *corr16;
 	spx_word16_t *ener16;
 	spx_word32_t energy[end - start + 2];
 	spx_word32_t corr[end - start + 1];
+
+	memzero(corr, (end - start + 1) * sizeof(spx_word32_t));
+
 	corr16 = corr;
 	ener16 = energy;
 #endif
@@ -568,6 +573,7 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 		N = 1;
 
 	int nbest[N];
+	memzero(nbest, N * sizeof(int));
 	params = (const ltp_params *)par;
 
 	if (end < start) {

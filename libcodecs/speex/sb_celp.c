@@ -35,6 +35,7 @@
 #include "config.h"
 #endif
 
+#include <assert.h>
 #include <math.h>
 #include <ophtools.h>
 
@@ -1387,11 +1388,10 @@ int sb_decode(void *state, SpeexBits * bits, void *vout)
 		sp = out + st->frame_size + offset;
 		spx_word32_t exc[st->subframeSize];
 		/* Pointer for saving innovation */
-		if (st->innov_save) {
-			innov_save = st->innov_save + 2 * offset;
-			memzero(innov_save,
-				(2 * st->subframeSize) * sizeof(spx_word16_t));
-		}
+		assert(st->innov_save);
+		innov_save = st->innov_save + 2 * offset;
+		memzero(innov_save,
+			(2 * st->subframeSize) * sizeof(spx_word16_t));
 
 		/* LSP interpolation */
 		lsp_interpolate(st->old_qlsp, qlsp, interp_qlsp, st->lpcSize,
