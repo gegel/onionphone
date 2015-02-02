@@ -143,10 +143,10 @@ void open_loop_nbest_pitch(spx_word16_t * sw, int start, int end, int len,
 	int i, j, k;
 	spx_word32_t e0;
 
-spx_word32_t best_score[N];
-spx_word32_t best_ener[N];
-spx_word32_t corr[end - start + 1];
-spx_word32_t energy[end - start + 2];
+	spx_word32_t best_score[N];
+	spx_word32_t best_ener[N];
+	spx_word32_t corr[end - start + 1];
+	spx_word32_t energy[end - start + 2];
 
 	for (i = 0; i < N; i++) {
 		best_score[i] = -1;
@@ -185,8 +185,8 @@ spx_word32_t energy[end - start + 2];
 
 	/* FIXME: Fixed-point and floating-point code should be merged */
 	{
-spx_word16_t corr16[end - start + 1];
-spx_word16_t ener16[end - start + 1];
+		spx_word16_t corr16[end - start + 1];
+		spx_word16_t ener16[end - start + 1];
 		/* Normalize to 180 so we can square it and it still fits in 16 bits */
 		normalize16(corr, corr16, 180, end - start + 1);
 		normalize16(energy, ener16, 180, end - start + 1);
@@ -308,13 +308,13 @@ static int pitch_gain_search_3tap_vq(const signed char *gain_cdbk,
 			     "        %0 = 0;\n\t"	/* %0: best_sum         */
 			     "        %1 = 0;\n\t"	/* %1: best_cbdk        */
 			     "        P1 = 0;\n\t"	/* P1: loop counter     */
-			      "        LSETUP (pgs1, pgs2) LC1 = %4;\n\t" "pgs1:     R2  = B [P0++] (X);\n\t"	/* R2: g[0]             */
+			     "        LSETUP (pgs1, pgs2) LC1 = %4;\n\t" "pgs1:     R2  = B [P0++] (X);\n\t"	/* R2: g[0]             */
 			     "          R3  = B [P0++] (X);\n\t"	/* R3: g[1]             */
 			     "          R4  = B [P0++] (X);\n\t"	/* R4: g[2]             */
 			     "          R2 += 32;\n\t" "          R3 += 32;\n\t" "          R4 += 32;\n\t" "          R4.H = 64;\n\t"	/* R4.H: pitch_control    */
-			      "          R0  = B [P0++] (X);\n\t" "          B0  = R0;\n\t"	/* BO: gain_sum         */
+			     "          R0  = B [P0++] (X);\n\t" "          B0  = R0;\n\t"	/* BO: gain_sum         */
 			     /* compute_pitch_error() ------------------------------- */
-			      "          I1 = %3;\n\t"	/* I1: ptr to C         */
+			     "          I1 = %3;\n\t"	/* I1: ptr to C         */
 			     "          A0 = 0;\n\t"
 			     "          R0.L = W[I1++];\n\t"
 			     "          R1.L = R2.L*R4.H (IS);\n\t"
