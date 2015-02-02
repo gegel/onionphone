@@ -50,14 +50,14 @@
 
 const float vbr_nb_thresh[9][11] = {
 	{-1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f, -1.0f},	/*   CNG   */
-	{4.0f, 2.5f, 2.0f, 1.2f, 0.5f, 0.0f, -0.5f, -0.7f, -0.8f, -0.9f, -1.0f},	/*  2 kbps */
-	{10.0f, 6.5f, 5.2f, 4.5f, 3.9f, 3.5f, 3.0f, 2.5f, 2.3f, 1.8f, 1.0f},	/*  6 kbps */
-	{11.0f, 8.8f, 7.5f, 6.5f, 5.0f, 3.9f, 3.9f, 3.9f, 3.5f, 3.0f, 1.0f},	/*  8 kbps */
-	{11.0f, 11.0f, 9.9f, 8.5f, 7.0f, 6.0f, 4.5f, 4.0f, 4.0f, 4.0f, 2.0f},	/* 11 kbps */
-	{11.0f, 11.0f, 11.0f, 11.0f, 9.5f, 8.5f, 8.0f, 7.0f, 6.0f, 5.0f, 3.0f},	/* 15 kbps */
-	{11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 9.5f, 8.5f, 7.0f, 6.0f, 5.0f},	/* 18 kbps */
-	{11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 9.8f, 9.5f, 7.5f},	/* 24 kbps */
-	{7.0f, 4.5f, 3.7f, 3.0f, 2.5f, 2.0f, 1.8f, 1.5f, 1.0f, 0.0f, 0.0f}	/*  4 kbps */
+	{4.0f, 2.5f, 2.0f, 1.2f, 0.5f, -0.25f, -0.5f, -0.7f, -0.8f, -0.9f, -1.0f},	/*  2 kbps */
+	{10.0f, 6.5f, 5.2f, 4.5f, 3.9f, 3.7f, 3.0f, 2.5f, 2.3f, 1.8f, 1.0f},	/*  6 kbps */
+	{11.0f, 8.8f, 7.5f, 6.5f, 5.0f, 4.2f, 3.9f, 3.9f, 3.5f, 3.0f, 1.0f},	/*  8 kbps */
+	{11.0f, 11.0f, 9.9f, 8.5f, 7.0f, 5.25f, 4.5f, 4.0f, 4.0f, 4.0f, 2.0f},	/* 11 kbps */
+	{11.0f, 11.0f, 11.0f, 11.0f, 9.5f, 9.25f, 8.0f, 7.0f, 5.0f, 4.0f, 3.0f},	/* 15 kbps */
+	{11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 9.5f, 8.5f, 6.2f, 5.2f, 5.0f},	/* 18 kbps */
+	{11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 11.0f, 10.0f, 9.8f, 7.5f},	/* 24 kbps */
+	{7.0f, 4.5f, 3.7f, 3.0f, 2.5f, 1.0f, 1.8f, 1.5f, 1.0f, 0.0f, 0.0f}	/*  4 kbps */
 };
 
 const float vbr_hb_thresh[5][11] = {
@@ -77,10 +77,9 @@ void vbr_init(VBRState * vbr)
 {
 	int i;
 
-	vbr->average_energy = 0;
+	vbr->average_energy = 1600000;
 	vbr->last_energy = 1;
 	vbr->accum_sum = 0;
-	vbr->energy_alpha = .1;
 	vbr->soft_pitch = 0;
 	vbr->last_pitch_coef = 0;
 	vbr->last_quality = 0;
@@ -123,11 +122,9 @@ float vbr_analysis(VBRState * vbr, spx_word16_t * sig, int len, int pitch,
 		   float pitch_coef)
 {
 	(void)pitch;
-
 	int i;
 	float ener = 0, ener1 = 0, ener2 = 0;
 	float qual = 7;
-	/* int va; */
 	float log_energy;
 	float non_st = 0;
 	float voicing;
@@ -148,9 +145,7 @@ float vbr_analysis(VBRState * vbr, spx_word16_t * sig, int len, int pitch,
 		non_st = 1;
 
 	voicing = 3 * (pitch_coef - .4) * fabs(pitch_coef - .4);
-	vbr->average_energy =
-	    (1 - vbr->energy_alpha) * vbr->average_energy +
-	    vbr->energy_alpha * ener;
+	vbr->average_energy = 0.9 * vbr->average_energy + .1 * ener;
 	vbr->noise_level = vbr->noise_accum / vbr->noise_accum_count;
 	pow_ener = pow(ener, NOISE_POW);
 	if (vbr->noise_accum_count < .06 && ener > MIN_ENERGY)
@@ -163,7 +158,6 @@ float vbr_analysis(VBRState * vbr, spx_word16_t * sig, int len, int pitch,
 		&& pow_ener < 1.2 * vbr->noise_level)
 	    || (voicing < 0 && non_st < .05)) {
 		float tmp;
-		/* va = 0; */
 		vbr->consec_noise++;
 		if (pow_ener > 3 * vbr->noise_level)
 			tmp = 3 * vbr->noise_level;
@@ -175,7 +169,6 @@ float vbr_analysis(VBRState * vbr, spx_word16_t * sig, int len, int pitch,
 			    .95 * vbr->noise_accum_count + .05;
 		}
 	} else {
-		/* va = 1; */
 		vbr->consec_noise = 0;
 	}
 
@@ -209,14 +202,14 @@ float vbr_analysis(VBRState * vbr, spx_word16_t * sig, int len, int pitch,
 		if (short_diff > 0) {
 			if (short_diff > 5)
 				short_diff = 5;
-			qual += .5 * short_diff;
+			qual += 1 * short_diff;
 		}
 		/* Checking for energy increases */
 		if (ener2 > 1.6 * ener1)
 			qual += .5;
 	}
 	vbr->last_energy = ener;
-	vbr->soft_pitch = .6 * vbr->soft_pitch + .4 * pitch_coef;
+	vbr->soft_pitch = .8 * vbr->soft_pitch + .2 * pitch_coef;
 	qual += 2.2 * ((pitch_coef - .4) + (vbr->soft_pitch - .4));
 
 	if (qual < vbr->last_quality)
@@ -242,19 +235,17 @@ float vbr_analysis(VBRState * vbr, spx_word16_t * sig, int len, int pitch,
 	if (qual < 0)
 		qual = 0;
 
-	if (ener < 60000) {
+	if (ener < 1600000) {
 		if (vbr->consec_noise > 2)
 			qual -= 0.5 * (log(3.0 + vbr->consec_noise) - log(3));
 		if (ener < 10000 && vbr->consec_noise > 2)
 			qual -= 0.5 * (log(3.0 + vbr->consec_noise) - log(3));
 		if (qual < 0)
 			qual = 0;
-		qual += .3 * log(.0001 + ener / 60000.0);
+		qual += .3 * log(.0001 + ener / 1600000.0);
 	}
 	if (qual < -1)
 		qual = -1;
-
-	/*printf ("%f %f %f %f %d\n", qual, voicing, non_st, pow_ener/(.01+vbr->noise_level), va); */
 
 	vbr->last_pitch_coef = pitch_coef;
 	vbr->last_quality = qual;
@@ -262,8 +253,6 @@ float vbr_analysis(VBRState * vbr, spx_word16_t * sig, int len, int pitch,
 	for (i = VBR_MEMORY_SIZE - 1; i > 0; i--)
 		vbr->last_log_energy[i] = vbr->last_log_energy[i - 1];
 	vbr->last_log_energy[0] = log_energy;
-
-	/*printf ("VBR: %f %f %f %d %f\n", (float)(log_energy-log(vbr->average_energy+MIN_ENERGY)), non_st, voicing, va, vbr->noise_level); */
 
 	return qual;
 }

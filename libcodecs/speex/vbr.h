@@ -38,6 +38,8 @@
 #ifndef VBR_H
 #define VBR_H
 
+#include <defs.h>
+
 #include "arch.h"
 
 #define VBR_MEMORY_SIZE 5
@@ -48,7 +50,6 @@ extern const float vbr_uhb_thresh[2][11];
 
 /** VBR state. */
 typedef struct VBRState {
-	float energy_alpha;
 	float average_energy;
 	float last_energy;
 	float last_log_energy[VBR_MEMORY_SIZE];

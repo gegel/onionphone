@@ -48,22 +48,22 @@
 
 #define MAX_IN_SAMPLES 640
 
-void *speex_encoder_init(const SpeexMode * mode)
+EXPORT void *speex_encoder_init(const SpeexMode * mode)
 {
 	return mode->enc_init(mode);
 }
 
-void *speex_decoder_init(const SpeexMode * mode)
+EXPORT void *speex_decoder_init(const SpeexMode * mode)
 {
 	return mode->dec_init(mode);
 }
 
-void speex_encoder_destroy(void *state)
+EXPORT void speex_encoder_destroy(void *state)
 {
 	(*((SpeexMode **) state))->enc_destroy(state);
 }
 
-void speex_decoder_destroy(void *state)
+EXPORT void speex_decoder_destroy(void *state)
 {
 	(*((SpeexMode **) state))->dec_destroy(state);
 }
@@ -80,14 +80,47 @@ int speex_decode_native(void *state, SpeexBits * bits, spx_word16_t * out)
 
 #ifdef FIXED_POINT
 
-int speex_encode_int(void *state, int16_t * in, SpeexBits * bits)
+#ifndef DISABLE_FLOAT_API
+EXPORT int speex_encode(void *state, float *in, SpeexBits * bits)
+{
+	int i;
+	spx_int32_t N;
+	spx_int16_t short_in[MAX_IN_SAMPLES];
+	speex_encoder_ctl(state, SPEEX_GET_FRAME_SIZE, &N);
+	for (i = 0; i < N; i++) {
+		if (in[i] > 32767.f)
+			short_in[i] = 32767;
+		else if (in[i] < -32768.f)
+			short_in[i] = -32768;
+		else
+			short_in[i] = (spx_int16_t) floor(.5 + in[i]);
+	}
+	return (*((SpeexMode **) state))->enc(state, short_in, bits);
+}
+#endif				/* #ifndef DISABLE_FLOAT_API */
+
+EXPORT int speex_encode_int(void *state, spx_int16_t * in, SpeexBits * bits)
 {
 	SpeexMode *mode;
 	mode = *(SpeexMode **) state;
 	return (mode)->enc(state, in, bits);
 }
 
-int speex_decode_int(void *state, SpeexBits * bits, int16_t * out)
+#ifndef DISABLE_FLOAT_API
+EXPORT int speex_decode(void *state, SpeexBits * bits, float *out)
+{
+	int i, ret;
+	spx_int32_t N;
+	spx_int16_t short_out[MAX_IN_SAMPLES];
+	speex_decoder_ctl(state, SPEEX_GET_FRAME_SIZE, &N);
+	ret = (*((SpeexMode **) state))->dec(state, bits, short_out);
+	for (i = 0; i < N; i++)
+		out[i] = short_out[i];
+	return ret;
+}
+#endif				/* #ifndef DISABLE_FLOAT_API */
+
+EXPORT int speex_decode_int(void *state, SpeexBits * bits, spx_int16_t * out)
 {
 	SpeexMode *mode = *(SpeexMode **) state;
 	return (mode)->dec(state, bits, out);
@@ -95,10 +128,15 @@ int speex_decode_int(void *state, SpeexBits * bits, int16_t * out)
 
 #else
 
-int speex_encode_int(void *state, int16_t * in, SpeexBits * bits)
+EXPORT int speex_encode(void *state, float *in, SpeexBits * bits)
+{
+	return (*((SpeexMode **) state))->enc(state, in, bits);
+}
+
+EXPORT int speex_encode_int(void *state, spx_int16_t * in, SpeexBits * bits)
 {
 	int i;
-	int32_t N;
+	spx_int32_t N;
 	float float_in[MAX_IN_SAMPLES];
 	speex_encoder_ctl(state, SPEEX_GET_FRAME_SIZE, &N);
 	for (i = 0; i < N; i++)
@@ -106,32 +144,39 @@ int speex_encode_int(void *state, int16_t * in, SpeexBits * bits)
 	return (*((SpeexMode **) state))->enc(state, float_in, bits);
 }
 
-int speex_decode_int(void *state, SpeexBits * bits, int16_t * out)
+EXPORT int speex_decode(void *state, SpeexBits * bits, float *out)
+{
+	return (*((SpeexMode **) state))->dec(state, bits, out);
+}
+
+EXPORT int speex_decode_int(void *state, SpeexBits * bits, spx_int16_t * out)
 {
 	int i;
-	int32_t N;
+	spx_int32_t N;
 	float float_out[MAX_IN_SAMPLES];
 	int ret;
 	speex_decoder_ctl(state, SPEEX_GET_FRAME_SIZE, &N);
 	ret = (*((SpeexMode **) state))->dec(state, bits, float_out);
-	for (i = 0; i < N; i++) {
-		if (float_out[i] > 32767.f)
-			out[i] = 32767;
-		else if (float_out[i] < -32768.f)
-			out[i] = -32768;
-		else
-			out[i] = (int16_t) floor(.5 + float_out[i]);
+	if (ret == 0) {
+		for (i = 0; i < N; i++) {
+			if (float_out[i] > 32767.f)
+				out[i] = 32767;
+			else if (float_out[i] < -32768.f)
+				out[i] = -32768;
+			else
+				out[i] = (spx_int16_t) floor(.5 + float_out[i]);
+		}
 	}
 	return ret;
 }
 #endif
 
-int speex_encoder_ctl(void *state, int request, void *ptr)
+EXPORT int speex_encoder_ctl(void *state, int request, void *ptr)
 {
 	return (*((SpeexMode **) state))->enc_ctl(state, request, ptr);
 }
 
-int speex_decoder_ctl(void *state, int request, void *ptr)
+EXPORT int speex_decoder_ctl(void *state, int request, void *ptr)
 {
 	return (*((SpeexMode **) state))->dec_ctl(state, request, ptr);
 }
@@ -160,3 +205,35 @@ int nb_mode_query(const void *mode, int request, void *ptr)
 	return 0;
 }
 
+EXPORT int speex_lib_ctl(int request, void *ptr)
+{
+	switch (request) {
+	case SPEEX_LIB_GET_MAJOR_VERSION:
+		*((int *)ptr) = SPEEX_MAJOR_VERSION;
+		break;
+	case SPEEX_LIB_GET_MINOR_VERSION:
+		*((int *)ptr) = SPEEX_MINOR_VERSION;
+		break;
+	case SPEEX_LIB_GET_MICRO_VERSION:
+		*((int *)ptr) = SPEEX_MICRO_VERSION;
+		break;
+	case SPEEX_LIB_GET_EXTRA_VERSION:
+		*((const char **)ptr) = SPEEX_EXTRA_VERSION;
+		break;
+	case SPEEX_LIB_GET_VERSION_STRING:
+		*((const char **)ptr) = SPEEX_VERSION;
+		break;
+		/*case SPEEX_LIB_SET_ALLOC_FUNC:
+		   break;
+		   case SPEEX_LIB_GET_ALLOC_FUNC:
+		   break;
+		   case SPEEX_LIB_SET_FREE_FUNC:
+		   break;
+		   case SPEEX_LIB_GET_FREE_FUNC:
+		   break; */
+	default:
+		speex_warning_int("Unknown wb_mode_query request: ", request);
+		return -1;
+	}
+	return 0;
+}

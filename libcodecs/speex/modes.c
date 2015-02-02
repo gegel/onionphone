@@ -52,6 +52,34 @@
 #define NULL 0
 #endif
 
+#ifdef DISABLE_ENCODER
+#define nb_encoder_init NULL
+#define nb_encoder_destroy NULL
+#define nb_encode NULL
+#define nb_encoder_ctl NULL
+
+#define split_cb_search_shape_sign NULL
+#define noise_codebook_quant NULL
+#define pitch_search_3tap NULL
+#define forced_pitch_quant NULL
+#define lsp_quant_nb NULL
+#define lsp_quant_lbr NULL
+#endif				/* DISABLE_ENCODER */
+
+#ifdef DISABLE_DECODER
+#define nb_decoder_init NULL
+#define nb_decoder_destroy NULL
+#define nb_decode NULL
+#define nb_decoder_ctl NULL
+
+#define noise_codebook_unquant NULL
+#define split_cb_shape_sign_unquant NULL
+#define lsp_unquant_nb NULL
+#define lsp_unquant_lbr NULL
+#define pitch_unquant_3tap NULL
+#define forced_pitch_unquant NULL
+#endif				/* DISABLE_DECODER */
+
 /* Extern declarations for all codebooks we use here */
 extern const signed char gain_cdbk_nb[];
 extern const signed char gain_cdbk_lbr[];
@@ -266,7 +294,7 @@ static const SpeexSubmode nb_submode5 = {
 	split_cb_search_shape_sign,
 	split_cb_shape_sign_unquant,
 	&split_cb_nb,
-	QCONST16(.3, 15),
+	QCONST16(.25, 15),
 	300
 };
 
@@ -287,7 +315,7 @@ static const SpeexSubmode nb_submode6 = {
 	split_cb_search_shape_sign,
 	split_cb_shape_sign_unquant,
 	&split_cb_sb,
-	QCONST16(.2, 15),
+	QCONST16(.15, 15),
 	364
 };
 
@@ -308,22 +336,19 @@ static const SpeexSubmode nb_submode7 = {
 	split_cb_search_shape_sign,
 	split_cb_shape_sign_unquant,
 	&split_cb_nb,
-	QCONST16(.1, 15),
+	QCONST16(.05, 15),
 	492
 };
 
 /* Default mode for narrowband */
 static const SpeexNBMode nb_mode = {
-	160,			/*frameSize */
-	40,			/*subframeSize */
-	10,			/*lpcSize */
-	17,			/*pitchStart */
-	144,			/*pitchEnd */
-#ifdef FIXED_POINT
-	29491, 19661,		/* gamma1, gamma2 */
-#else
-	0.9, 0.6,		/* gamma1, gamma2 */
-#endif
+	NB_FRAME_SIZE,		/*frameSize */
+	NB_SUBFRAME_SIZE,	/*subframeSize */
+	NB_ORDER,		/*lpcSize */
+	NB_PITCH_START,		/*pitchStart */
+	NB_PITCH_END,		/*pitchEnd */
+	QCONST16(0.92, 15),	/* gamma1 */
+	QCONST16(0.6, 15),	/* gamma2 */
 	QCONST16(.0002, 15),	/*lpc_floor */
 	{NULL, &nb_submode1, &nb_submode2, &nb_submode3, &nb_submode4,
 	 &nb_submode5, &nb_submode6, &nb_submode7,
@@ -333,21 +358,26 @@ static const SpeexNBMode nb_mode = {
 };
 
 /* Default mode for narrowband */
-const SpeexMode speex_nb_mode = {
+EXPORT const SpeexMode speex_nb_mode = {
 	&nb_mode,
 	nb_mode_query,
 	"narrowband",
 	0,
 	4,
-	&nb_encoder_init,
-	&nb_encoder_destroy,
-	&nb_encode,
-	&nb_decoder_init,
-	&nb_decoder_destroy,
-	&nb_decode,
-	&nb_encoder_ctl,
-	&nb_decoder_ctl,
+	nb_encoder_init,
+	nb_encoder_destroy,
+	nb_encode,
+	nb_decoder_init,
+	nb_decoder_destroy,
+	nb_decode,
+	nb_encoder_ctl,
+	nb_decoder_ctl,
 };
+
+EXPORT int speex_mode_query(const SpeexMode * mode, int request, void *ptr)
+{
+	return mode->query(mode->mode, request, ptr);
+}
 
 #ifdef FIXED_DEBUG
 long long spx_mips = 0;

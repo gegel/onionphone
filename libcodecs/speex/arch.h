@@ -40,9 +40,9 @@
 #ifndef SPEEX_VERSION
 #define SPEEX_MAJOR_VERSION 1	      /**< Major Speex version. */
 #define SPEEX_MINOR_VERSION 1	      /**< Minor Speex version. */
-#define SPEEX_MICRO_VERSION 15	      /**< Micro Speex version. */
+#define SPEEX_MICRO_VERSION 16	      /**< Micro Speex version. */
 #define SPEEX_EXTRA_VERSION ""	      /**< Extra Speex version. */
-#define SPEEX_VERSION "speex-1.2beta3"	/**< Speex version string. */
+#define SPEEX_VERSION "speex-1.2rc2"  /**< Speex version string. */
 #endif
 
 /* A couple test to catch stupid option combinations */
@@ -75,10 +75,6 @@
 
 #endif
 
-#ifndef OUTSIDE_SPEEX
-#include <stdint.h>
-#endif
-
 #define ABS(x) ((x) < 0 ? (-(x)) : (x))	     /**< Absolute integer value. */
 #define ABS16(x) ((x) < 0 ? (-(x)) : (x))    /**< Absolute 16-bit value.  */
 #define MIN16(a,b) ((a) < (b) ? (a) : (b))   /**< Maximum 16-bit value.   */
@@ -88,13 +84,6 @@
 #define MAX32(a,b) ((a) > (b) ? (a) : (b))   /**< Maximum 32-bit value.   */
 
 #ifdef FIXED_POINT
-
-typedef int16_t spx_word16_t;
-typedef int32_t spx_word32_t;
-typedef spx_word32_t spx_mem_t;
-typedef spx_word16_t spx_coef_t;
-typedef spx_word16_t spx_lsp_t;
-typedef spx_word32_t spx_sig_t;
 
 #define Q15ONE 32767
 
@@ -115,10 +104,6 @@ typedef spx_word32_t spx_sig_t;
 #define VERY_LARGE16 ((spx_word16_t)32767)
 #define Q15_ONE ((spx_word16_t)32767)
 
-#ifdef FIXED_DEBUG
-#include "fixed_debug.h"
-#else
-
 #include "fixed_generic.h"
 
 #ifdef ARM5E_ASM
@@ -129,16 +114,7 @@ typedef spx_word32_t spx_sig_t;
 #include "fixed_bfin.h"
 #endif
 
-#endif
-
 #else
-
-typedef float spx_mem_t;
-typedef float spx_coef_t;
-typedef float spx_lsp_t;
-typedef float spx_sig_t;
-typedef float spx_word16_t;
-typedef float spx_word32_t;
 
 #define Q15ONE 1.0f
 #define LPC_SCALING  1.f
@@ -223,10 +199,6 @@ typedef float spx_word32_t;
 #define BITS_PER_CHAR 8
 #define LOG2_BITS_PER_CHAR 3
 
-#endif
-
-#ifdef FIXED_DEBUG
-extern long long spx_mips;
 #endif
 
 #endif

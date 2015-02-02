@@ -37,6 +37,8 @@
 #ifndef CB_SEARCH_H
 #define CB_SEARCH_H
 
+#include <defs.h>
+
 #include "speex/speex_bits.h"
 #include "arch.h"
 
@@ -64,7 +66,7 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
 				 int nsf,	/* number of samples in subframe */
 				 SpeexBits * bits,
-				 char *stack, int32_t * seed);
+				 char *stack, spx_int32_t * seed);
 
 void noise_codebook_quant(spx_word16_t target[],	/* target vector */
 			  spx_coef_t ak[],	/* LPCs for this subframe */
@@ -80,6 +82,6 @@ void noise_codebook_quant(spx_word16_t target[],	/* target vector */
 
 void noise_codebook_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
 			    int nsf,	/* number of samples in subframe */
-			    SpeexBits * bits, char *stack, int32_t * seed);
+			    SpeexBits * bits, char *stack, spx_int32_t * seed);
 
 #endif

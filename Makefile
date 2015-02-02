@@ -1,12 +1,12 @@
 export GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
 
-COMMONAPPS = common/crp common/helpers
+COMMONAPPS = common/crp
 
 ADDKEYAPPS = libaddkey
 
 CODECSAPPS = libcodecs
 
-OPHAPPS = libdesktop
+OPHAPPS = libdesktop common/helpers common/libspeexdsp common/kiss_fft
 
 ifdef SYSTEMROOT
 LDADD = -lm -lcomctl32 -lwinmm -lws2_32

@@ -38,9 +38,9 @@
 
 #include <math.h>
 #include <ophtools.h>
+
 #include "ltp.h"
 #include "filters.h"
-#include "speex/speex_bits.h"
 #include "math_approx.h"
 #include "os_support.h"
 
@@ -74,10 +74,12 @@ spx_word32_t inner_prod(const spx_word16_t * x, const spx_word16_t * y, int len)
 }
 #endif
 
+#ifndef DISABLE_ENCODER
+
 #ifndef OVERRIDE_PITCH_XCORR
 #if 0				/* HINT: Enable this for machines with enough registers (i.e. not x86) */
-void pitch_xcorr(const spx_word16_t * _x, const spx_word16_t * _y,
-		 spx_word32_t * corr, int len, int nb_pitch, char *stack)
+static void pitch_xcorr(const spx_word16_t * _x, const spx_word16_t * _y,
+			spx_word32_t * corr, int len, int nb_pitch, char *stack)
 {
 	int i, j;
 	for (i = 0; i < nb_pitch; i += 4) {
@@ -138,11 +140,10 @@ void pitch_xcorr(const spx_word16_t * _x, const spx_word16_t * _y,
 
 }
 #else
-void pitch_xcorr(const spx_word16_t * _x, const spx_word16_t * _y,
-		 spx_word32_t * corr, int len, int nb_pitch, char *stack)
+static void pitch_xcorr(const spx_word16_t * _x, const spx_word16_t * _y,
+			spx_word32_t * corr, int len, int nb_pitch, char *stack)
 {
 	(void)stack;
-
 	int i;
 	for (i = 0; i < nb_pitch; i++) {
 		/* Compute correlation */
@@ -364,8 +365,9 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 					   int scaledown)
 {
 	(void)bits;
+#ifndef FIXED_POINT
 	(void)scaledown;
-
+#endif
 	int i, j;
 	spx_word16_t *x[3];
 	spx_word32_t corr[3];
@@ -389,16 +391,21 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 		new_target[j] = target[j];
 
 	{
+		int bound;
 		int pp = pitch - 1;
 		spx_mem_t mm[p];
-		for (j = 0; j < nsf; j++) {
-			if (j - pp < 0)
-				e[j] = exc2[j - pp];
-			else if (j - pp - pitch < 0)
-				e[j] = exc2[j - pp - pitch];
-			else
-				e[j] = 0;
-		}
+		bound = nsf;
+		if (nsf - pp > 0)
+			bound = pp;
+		for (j = 0; j < bound; j++)
+			e[j] = exc2[j - pp];
+		bound = nsf;
+		if (nsf - pp - pitch > 0)
+			bound = pp + pitch;
+		for (; j < bound; j++)
+			e[j] = exc2[j - pp - pitch];
+		for (; j < nsf; j++)
+			e[j] = 0;
 #ifdef FIXED_POINT
 		/* Scale target and excitation down if needed (avoiding overflow) */
 		if (scaledown) {
@@ -413,7 +420,7 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 		iir_mem16(e, ak, e, nsf, p, mm, stack);
 		for (j = 0; j < p; j++)
 			mm[j] = 0;
-		filter_mem16(e, awk1, awk2, e, nsf, p, mm, stack);
+		filter10(e, awk1, awk2, e, nsf, mm, stack);
 		for (j = 0; j < nsf; j++)
 			x[2][j] = e[j];
 	}
@@ -494,7 +501,7 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 		*cdbk_index = best_cdbk;
 	}
 
-	SPEEX_MEMSET(exc, 0, nsf);
+	memzero(exc, (nsf) * sizeof(spx_sig_t));
 	for (i = 0; i < 3; i++) {
 		int j;
 		int tmp1, tmp3;
@@ -515,11 +522,9 @@ static spx_word32_t pitch_gain_search_3tap(const spx_word16_t target[],	/* Targe
 				     exc2[j - pp - pitch]);
 	}
 	for (i = 0; i < nsf; i++) {
-		spx_word32_t tmp =
-		    ADD32(ADD32
-			  (MULT16_16(gain[0], x[2][i]),
-			   MULT16_16(gain[1], x[1][i])),
-			  MULT16_16(gain[2], x[0][i]));
+		spx_word32_t tmp = ADD32(ADD32(MULT16_16(gain[0], x[2][i]),
+					       MULT16_16(gain[1], x[1][i])),
+					 MULT16_16(gain[2], x[0][i]));
 		new_target[i] = SUB16(new_target[i], EXTRACT16(PSHR32(tmp, 6)));
 	}
 	err = inner_prod(new_target, new_target, nsf);
@@ -547,7 +552,6 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 		      int plc_tuning, spx_word32_t * cumul_gain)
 {
 	(void)pitch_coef;
-
 	int i;
 	int cdbk_index, pitch = 0, best_gain_index = 0;
 	int best_pitch = 0;
@@ -557,7 +561,6 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 	const signed char *gain_cdbk;
 	int gain_cdbk_size;
 	int scaledown = 0;
-
 
 	params = (const ltp_params *)par;
 	gain_cdbk_size = 1 << params->gain_bits;
@@ -576,7 +579,7 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 	if (end < start) {
 		speex_bits_pack(bits, 0, params->pitch_bits);
 		speex_bits_pack(bits, 0, params->gain_bits);
-		SPEEX_MEMSET(exc, 0, nsf);
+		memzero(exc, (nsf) * sizeof(spx_sig_t));
 		return start;
 	}
 #ifdef FIXED_POINT
@@ -587,7 +590,7 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 			break;
 		}
 	}
-	for (i = -end; i < nsf; i++) {
+	for (i = -end; i < 0; i++) {
 		if (ABS16(exc2[i]) > 16383) {
 			scaledown = 1;
 			break;
@@ -608,7 +611,7 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 
 	for (i = 0; i < N; i++) {
 		pitch = nbest[i];
-		SPEEX_MEMSET(exc, 0, nsf);
+		memzero(exc, (nsf) * sizeof(spx_sig_t));
 		err =
 		    pitch_gain_search_3tap(target, ak, awk1, awk2, exc,
 					   gain_cdbk, gain_cdbk_size, pitch, p,
@@ -650,7 +653,9 @@ int pitch_search_3tap(spx_word16_t target[],	/* Target vector */
 #endif
 	return pitch;
 }
+#endif				/* DISABLE_ENCODER */
 
+#ifndef DISABLE_DECODER
 void pitch_unquant_3tap(spx_word16_t exc[],	/* Input excitation */
 			spx_word32_t exc_out[],	/* Output excitation */
 			int start,	/* Smallest pitch value allowed */
@@ -668,7 +673,6 @@ void pitch_unquant_3tap(spx_word16_t exc[],	/* Input excitation */
 	(void)end;
 	(void)pitch_coef;
 	(void)stack;
-
 	int i;
 	int pitch;
 	int gain_index;
@@ -732,7 +736,7 @@ void pitch_unquant_3tap(spx_word16_t exc[],	/* Input excitation */
 	gain[0] = SHL16(gain[0], 7);
 	gain[1] = SHL16(gain[1], 7);
 	gain[2] = SHL16(gain[2], 7);
-	SPEEX_MEMSET(exc_out, 0, nsf);
+	memzero(exc_out, (nsf) * sizeof(spx_word32_t));
 	for (i = 0; i < 3; i++) {
 		int j;
 		int tmp1, tmp3;
@@ -754,7 +758,9 @@ void pitch_unquant_3tap(spx_word16_t exc[],	/* Input excitation */
 	/*for (i=0;i<nsf;i++)
 	   exc[i]=PSHR32(exc32[i],13); */
 }
+#endif				/* DISABLE_DECODER */
 
+#ifndef DISABLE_ENCODER
 /** Forced pitch delay and gain */
 int forced_pitch_quant(spx_word16_t target[],	/* Target vector */
 		       spx_word16_t * sw, spx_coef_t ak[],	/* LPCs for this subframe */
@@ -783,7 +789,6 @@ int forced_pitch_quant(spx_word16_t target[],	/* Target vector */
 	(void)cdbk_offset;
 	(void)plc_tuning;
 	(void)cumul_gain;
-
 	int i;
 	spx_word16_t res[nsf];
 #ifdef FIXED_POINT
@@ -809,7 +814,9 @@ int forced_pitch_quant(spx_word16_t target[],	/* Target vector */
 			       32700));
 	return start;
 }
+#endif				/* DISABLE_ENCODER */
 
+#ifndef DISABLE_DECODER
 /** Unquantize forced pitch delay and gain */
 void forced_pitch_unquant(spx_word16_t exc[],	/* Input excitation */
 			  spx_word32_t exc_out[],	/* Output excitation */
@@ -833,7 +840,6 @@ void forced_pitch_unquant(spx_word16_t exc[],	/* Input excitation */
 	(void)subframe_offset;
 	(void)last_pitch_gain;
 	(void)cdbk_offset;
-
 	int i;
 #ifdef FIXED_POINT
 	if (pitch_coef > 63)
@@ -850,3 +856,4 @@ void forced_pitch_unquant(spx_word16_t exc[],	/* Input excitation */
 	gain_val[0] = gain_val[2] = 0;
 	gain_val[1] = pitch_coef;
 }
+#endif				/* DISABLE_DECODER */

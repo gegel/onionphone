@@ -37,6 +37,8 @@
 #ifndef LPC_H
 #define LPC_H
 
+#include <defs.h>
+
 #include "arch.h"
 
 void _spx_autocorr(const spx_word16_t * x,	/*  in: [0...n-1] samples x   */

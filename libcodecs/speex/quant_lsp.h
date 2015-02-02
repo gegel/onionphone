@@ -37,6 +37,8 @@
 #ifndef QUANT_LSP_H
 #define QUANT_LSP_H
 
+#include <defs.h>
+
 #include "speex/speex_bits.h"
 #include "arch.h"
 

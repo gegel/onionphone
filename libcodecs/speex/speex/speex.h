@@ -9,18 +9,18 @@
    Redistribution and use in source and binary forms, with or without
    modification, are permitted provided that the following conditions
    are met:
-   
+
    - Redistributions of source code must retain the above copyright
    notice, this list of conditions and the following disclaimer.
-   
+
    - Redistributions in binary form must reproduce the above copyright
    notice, this list of conditions and the following disclaimer in the
    documentation and/or other materials provided with the distribution.
-   
+
    - Neither the name of the Xiph.org Foundation nor the names of its
    contributors may be used to endorse or promote products derived from
    this software without specific prior written permission.
-   
+
    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
    ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
    LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
@@ -42,8 +42,9 @@
  *  @{
  */
 
+#include <defs.h>
+
 #include "speex_bits.h"
-#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -139,7 +140,8 @@ extern "C" {
 #define SPEEX_GET_SUBMODE_ENCODING 37
 
 /*#define SPEEX_SET_LOOKAHEAD 38*/
-/** Returns the lookahead used by Speex */
+/** Returns the lookahead used by Speex separately for an encoder and a decoder.
+ *  Sum encoder and decoder lookahead values to get the total codec lookahead. */
 #define SPEEX_GET_LOOKAHEAD 39
 
 /** Sets tuning for packet-loss concealment (expected loss rate) */
@@ -285,19 +287,30 @@ extern "C" {
 	} SpeexMode;
 
 /**
- * Returns a handle to a newly created Speex encoder state structure. For now, 
- * the "mode" argument can be &nb_mode or &wb_mode . In the future, more modes 
- * may be added. Note that for now if you have more than one channels to 
+ * Returns a handle to a newly created Speex encoder state structure. For now,
+ * the "mode" argument can be &nb_mode or &wb_mode . In the future, more modes
+ * may be added. Note that for now if you have more than one channels to
  * encode, you need one state per channel.
  *
- * @param mode The mode to use (either speex_nb_mode or speex_wb.mode) 
+ * @param mode The mode to use (either speex_nb_mode or speex_wb.mode)
  * @return A newly created encoder state or NULL if state allocation fails
  */
 	void *speex_encoder_init(const SpeexMode * mode);
 
-/** Frees all resources associated to an existing Speex encoder state. 
+/** Frees all resources associated to an existing Speex encoder state.
  * @param state Encoder state to be destroyed */
 	void speex_encoder_destroy(void *state);
+
+/** Uses an existing encoder state to encode one frame of speech pointed to by
+    "in". The encoded bit-stream is saved in "bits".
+ @param state Encoder state
+ @param in Frame that will be encoded with a +-2^15 range. This data MAY be
+        overwritten by the encoder and should be considered uninitialised
+        after the call.
+ @param bits Bit-stream where the data will be written
+ @return 0 if frame needs not be transmitted (DTX only), 1 otherwise
+ */
+	int speex_encode(void *state, float *in, SpeexBits * bits);
 
 /** Uses an existing encoder state to encode one frame of speech pointed to by
     "in". The encoded bit-stream is saved in "bits".
@@ -306,7 +319,7 @@ extern "C" {
  @param bits Bit-stream where the data will be written
  @return 0 if frame needs not be transmitted (DTX only), 1 otherwise
  */
-	int speex_encode_int(void *state, int16_t * in, SpeexBits * bits);
+	int speex_encode_int(void *state, spx_int16_t * in, SpeexBits * bits);
 
 /** Used like the ioctl function to control the encoder parameters
  *
@@ -317,7 +330,7 @@ extern "C" {
  */
 	int speex_encoder_ctl(void *state, int request, void *ptr);
 
-/** Returns a handle to a newly created decoder state structure. For now, 
+/** Returns a handle to a newly created decoder state structure. For now,
  * the mode argument can be &nb_mode or &wb_mode . In the future, more modes
  * may be added.  Note that for now if you have more than one channels to
  * decode, you need one state per channel.
@@ -341,7 +354,17 @@ extern "C" {
  * @param out Where to write the decoded frame
  * @return return status (0 for no error, -1 for end of stream, -2 corrupt stream)
  */
-	int speex_decode_int(void *state, SpeexBits * bits, int16_t * out);
+	int speex_decode(void *state, SpeexBits * bits, float *out);
+
+/** Uses an existing decoder state to decode one frame of speech from
+ * bit-stream bits. The output speech is saved written to out.
+ *
+ * @param state Decoder state
+ * @param bits Bit-stream from which to decode the frame (NULL if the packet was lost)
+ * @param out Where to write the decoded frame
+ * @return return status (0 for no error, -1 for end of stream, -2 corrupt stream)
+ */
+	int speex_decode_int(void *state, SpeexBits * bits, spx_int16_t * out);
 
 /** Used like the ioctl function to control the encoder parameters
  *
@@ -360,6 +383,13 @@ extern "C" {
  * @return 0 if no error, -1 if request in unknown, -2 for invalid parameter
  */
 	int speex_mode_query(const SpeexMode * mode, int request, void *ptr);
+
+/** Functions for controlling the behavior of libspeex
+ * @param request ioctl-type request (one of the SPEEX_LIB_* macros)
+ * @param ptr Data exchanged to-from function
+ * @return 0 if no error, -1 if request in unknown, -2 for invalid parameter
+ */
+	int speex_lib_ctl(int request, void *ptr);
 
 /** Default narrowband mode */
 	extern const SpeexMode speex_nb_mode;

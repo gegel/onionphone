@@ -180,7 +180,7 @@ void nlp_destroy(void *nlp_state)
 	assert(nlp_state != NULL);
 	nlp = (NLP *) nlp_state;
 
-	KISS_FFT_FREE(nlp->fft_cfg);
+	free(nlp->fft_cfg);
 	free(nlp_state);
 }
 

@@ -176,8 +176,8 @@ void CODEC2_WIN32SUPPORT codec2_destroy(struct CODEC2 *c2)
 {
 	assert(c2 != NULL);
 	nlp_destroy(c2->nlp);
-	KISS_FFT_FREE(c2->fft_fwd_cfg);
-	KISS_FFT_FREE(c2->fft_inv_cfg);
+	free(c2->fft_fwd_cfg);
+	free(c2->fft_inv_cfg);
 	free(c2);
 }
 

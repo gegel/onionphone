@@ -31,11 +31,11 @@
    SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include <ophtools.h>
-
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+
+#include <ophtools.h>
 
 #include "cb_search.h"
 #include "filters.h"
@@ -52,6 +52,8 @@
 #include "cb_search_bfin.h"
 #endif
 
+#ifndef DISABLE_ENCODER
+
 #ifndef OVERRIDE_COMPUTE_WEIGHTED_CODEBOOK
 static void compute_weighted_codebook(const signed char *shape_cb,
 				      const spx_word16_t * r,
@@ -61,7 +63,6 @@ static void compute_weighted_codebook(const signed char *shape_cb,
 {
 	(void)resp2;
 	(void)stack;
-
 	int i, j, k;
 	spx_word16_t shape[subvect_size];
 	for (i = 0; i < shape_cb_size; i++) {
@@ -156,10 +157,12 @@ static void split_cb_search_shape_sign_N1(spx_word16_t target[],	/* target vecto
 	for (i = 0; i < nb_subvect; i++) {
 		spx_word16_t *x = t + subvect_size * i;
 		/*Find new n-best based on previous n-best j */
+#ifndef DISABLE_WIDEBAND
 		if (have_sign)
 			vq_nbest_sign(x, resp2, subvect_size, shape_cb_size, E,
 				      1, &best_index, &best_dist, stack);
 		else
+#endif				/* DISABLE_WIDEBAND */
 			vq_nbest(x, resp2, subvect_size, shape_cb_size, E, 1,
 				 &best_index, &best_dist, stack);
 
@@ -286,10 +289,10 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 					      update_target);
 		return;
 	}
-	spx_word16_t * ot2[N];
-	spx_word16_t * nt2[N];
-	int * oind[N];
-	int * nind[N];
+	spx_word16_t *ot2[N];
+	spx_word16_t *nt2[N];
+	int *oind[N];
+	int *nind[N];
 
 	params = (const split_cb_params *)par;
 	subvect_size = params->subvect_size;
@@ -312,7 +315,7 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 	memzero(e, nsf * sizeof(spx_sig_t));
 
 	spx_word16_t tmp[2 * N * nsf];
-	memzero(tmp, 2 * N * nsf * sizeof(spx_word16_t));
+	memzero(tmp, (2 * N * nsf) * sizeof(spx_word16_t));
 	for (i = 0; i < N; i++) {
 		ot2[i] = tmp + 2 * i * nsf;
 		nt2[i] = tmp + (2 * i + 1) * nsf;
@@ -327,7 +330,7 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 	spx_word32_t odist[N];
 
 	int itmp[2 * N * nb_subvect];
-	memzero(itmp, 2 * N * nb_subvect * sizeof(int));
+	memzero(itmp, (2 * N * nb_subvect) * sizeof(int));
 	for (i = 0; i < N; i++) {
 		nind[i] = itmp + 2 * i * nb_subvect;
 		oind[i] = itmp + (2 * i + 1) * nb_subvect;
@@ -367,11 +370,13 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 			tener *= .5;
 #endif
 			/*Find new n-best based on previous n-best j */
+#ifndef DISABLE_WIDEBAND
 			if (have_sign)
 				vq_nbest_sign(x, resp2, subvect_size,
 					      shape_cb_size, E, N, best_index,
 					      best_dist, stack);
 			else
+#endif				/* DISABLE_WIDEBAND */
 				vq_nbest(x, resp2, subvect_size, shape_cb_size,
 					 E, N, best_index, best_dist, stack);
 
@@ -510,16 +515,17 @@ void split_cb_search_shape_sign(spx_word16_t target[],	/* target vector */
 			target[j] = SUB16(target[j], PSHR16(r2[j], 2));
 	}
 }
+#endif				/* DISABLE_ENCODER */
 
+#ifndef DISABLE_DECODER
 void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
 				 int nsf,	/* number of samples in subframe */
 				 SpeexBits * bits,
-				 char *stack, int32_t * seed)
+				 char *stack, spx_int32_t * seed)
 {
 	(void)nsf;
-	(void)seed;
 	(void)stack;
-
+	(void)seed;
 	int i, j;
 	const signed char *shape_cb;
 	int subvect_size, nb_subvect;
@@ -571,7 +577,9 @@ void split_cb_shape_sign_unquant(spx_sig_t * exc, const void *par,	/* non-overla
 #endif
 	}
 }
+#endif				/* DISABLE_DECODER */
 
+#ifndef DISABLE_ENCODER
 void noise_codebook_quant(spx_word16_t target[],	/* target vector */
 			  spx_coef_t ak[],	/* LPCs for this subframe */
 			  spx_coef_t awk1[],	/* Weighted LPCs for this subframe */
@@ -589,26 +597,27 @@ void noise_codebook_quant(spx_word16_t target[],	/* target vector */
 	(void)bits;
 	(void)complexity;
 	(void)update_target;
-
 	int i;
 	spx_word16_t tmp[nsf];
 	residue_percep_zero16(target, ak, awk1, awk2, tmp, nsf, p, stack);
 
 	for (i = 0; i < nsf; i++)
 		exc[i] += SHL32(EXTEND32(tmp[i]), 8);
-	SPEEX_MEMSET(target, 0, nsf);
+	memzero(target, (nsf) * sizeof(spx_word16_t));
 }
+#endif				/* DISABLE_ENCODER */
 
+#ifndef DISABLE_DECODER
 void noise_codebook_unquant(spx_sig_t * exc, const void *par,	/* non-overlapping codebook */
 			    int nsf,	/* number of samples in subframe */
-			    SpeexBits * bits, char *stack, int32_t * seed)
+			    SpeexBits * bits, char *stack, spx_int32_t * seed)
 {
 	(void)par;
 	(void)bits;
 	(void)stack;
-
 	int i;
 	/* FIXME: This is bad, but I don't think the function ever gets called anyway */
 	for (i = 0; i < nsf; i++)
 		exc[i] = SHL32(EXTEND32(speex_rand(1, seed)), SIG_SHIFT);
 }
+#endif				/* DISABLE_DECODER */

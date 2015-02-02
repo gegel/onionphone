@@ -37,6 +37,8 @@
 #ifndef FILTERS_H
 #define FILTERS_H
 
+#include <defs.h>
+
 #include "arch.h"
 
 spx_word16_t compute_rms(const spx_sig_t * x, int len);
@@ -72,10 +74,21 @@ void qmf_synth(const spx_word16_t * x1, const spx_word16_t * x2,
 void filter_mem16(const spx_word16_t * x, const spx_coef_t * num,
 		  const spx_coef_t * den, spx_word16_t * y, int N, int ord,
 		  spx_mem_t * mem, char *stack);
+
+#ifdef MERGE_FILTERS
+
+#define OVERRIDE_IIR_MEM16
+#define OVERRIDE_FIR_MEM16
+extern const spx_word16_t zeros[];
+#define iir_mem16(x, den, y, N, ord, mem, stack) filter_mem16(x, zeros, den, y,  N, ord, mem, stack)
+#define fir_mem16(x, num, y, N, ord, mem, stack) filter_mem16(x, num, zeros, y,  N, ord, mem, stack)
+
+#else				/* MERGE_FILTERS */
 void iir_mem16(const spx_word16_t * x, const spx_coef_t * den, spx_word16_t * y,
 	       int N, int ord, spx_mem_t * mem, char *stack);
 void fir_mem16(const spx_word16_t * x, const spx_coef_t * num, spx_word16_t * y,
 	       int N, int ord, spx_mem_t * mem, char *stack);
+#endif				/* MERGE_FILTERS */
 
 /* Apply bandwidth expansion on LPC coef */
 void bw_lpc(spx_word16_t, const spx_coef_t * lpc_in, spx_coef_t * lpc_out,
@@ -103,5 +116,7 @@ void multicomb(spx_word16_t * exc,	/*decoded excitation */
 	       int max_pitch,	/*pitch gain (3-tap) */
 	       spx_word16_t comb_gain,	/*gain of comb filter */
 	       char *stack);
+
+#define filter10(x, num, den, y, N, mem, stack) filter_mem16(x, num, den, y, N, 10, mem, stack)
 
 #endif
