@@ -1,58 +1,10 @@
-BLOB = builtin.o
-CC ?= cc
-LD ?= ld
-
-# NORMAL DEBUG
-MODE ?= NORMAL
-MODE_NORMAL ?= -O3 -ffast-math -funroll-loops
-MODE_DEBUG ?= -O0 -g -ggdb
-
 # FIXED FLOAT
 ARITHMETICS ?= FIXED
 
 # -DHAVE_CONFIG_H -DFIXED_POINT
 EXTRADEFS = -DHAVE_CONFIG_H -D$(ARITHMETICS)_POINT
+INCADD = -I. -I../include -I../../../common/inc
 
-GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
-CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
-
-OBJ = bands.o \
-      celt.o \
-      celt_encoder.o \
-      celt_decoder.o \
-      cwrs.o \
-      entcode.o \
-      entdec.o \
-      entenc.o \
-      kiss_fft.o \
-      laplace.o \
-      mathops.o \
-      mdct.o \
-      modes.o \
-      pitch.o \
-      celt_lpc.o \
-      quant_bands.o \
-      rate.o \
-      vq.o 
-
-INCADD ?= -I. -I../include -I../../../common/inc
-
-all: build
-
-build: $(BLOB)
-
-$(BLOB): $(OBJ)
-	$(LD) -r $(OBJ) -o $(BLOB)
-
-%.o: %.c
-	$(CC) $(CFLAGS) $(INCADD) -c $<
-
-clean:
-	rm -f $(OBJ) $(BLOB)
-
-test:
-	cppcheck --enable=all .
-	scan-build $(MAKE)
-
-.PHONY: all clean test
+include ../../../Makefile-common.inc
+include ../../../Makefile-leaf.inc
 

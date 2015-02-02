@@ -1,40 +1,14 @@
-BLOB = builtin.o
-
-APPS = celt silk_common src
+LEAFS = celt silk_common src
 
 # FIXED FLOAT
 export ARITHMETICS=FIXED
 
 ifeq ($(ARITHMETICS),FIXED)
-	APPS += silk_fixed
+	LEAFS += silk_fixed
 else
-	APPS += silk_float
+	LEAFS += silk_float
 endif
 
-LD ?= ld
+include ../../Makefile-common.inc
+include ../../Makefile-spine.inc
 
-BUILDDIRS = $(APPS:%=build-%)
-CLEANDIRS = $(APPS:%=clean-%)
-TESTDIRS = $(APPS:%=test-%)
-
-all: $(BUILDDIRS)
-	$(LD) -r $(APPS:%=%/builtin.o) -o $(BLOB)
-
-$(APPS): $(BUILDDIRS)
-$(BUILDDIRS):
-	$(MAKE) -C $(@:build-%=%)
-
-clean: $(CLEANDIRS)
-	rm -f $(BLOB)
-$(CLEANDIRS): 
-	$(MAKE) -C $(@:clean-%=%) clean
-
-test: $(TESTDIRS)
-$(TESTDIRS): 
-	$(MAKE) -C $(@:test-%=%) test
-
-.PHONY: subdirs $(APPS)
-.PHONY: subdirs $(BUILDDIRS)
-.PHONY: subdirs $(CLEANDIRS)
-.PHONY: subdirs $(TESTDIRS)
-.PHONY: all clean test

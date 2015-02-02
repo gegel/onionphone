@@ -26,8 +26,8 @@
  #include <basetsd.h>
  #include <stdint.h>
  #include <fixedint.h>
- #include "audio_wave.c"
+ #include "audio_wave.c.inc"
 #else
- #include "audio_alsa.c"
+ #include "audio_alsa.c.inc"
 #endif 
  
