@@ -599,7 +599,7 @@ spx_word16_t tmp[nsf];
 
 	for (i = 0; i < nsf; i++)
 		exc[i] += SHL32(EXTEND32(tmp[i]), 8);
-memzero(target, nsf);
+memzero(target, (nsf) * sizeof(spx_word16_t));
 }
 #endif				/* DISABLE_ENCODER */
 

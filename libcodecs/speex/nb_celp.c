@@ -905,7 +905,7 @@ spx_mem_t mem[NB_ORDER];
 			mem[i] = SHL32(st->mem_sw[i], 1);
 		filter10(exc, st->bw_lpc1, st->bw_lpc2, exc, response_bound,
 			 mem, stack);
-		memzero(&exc[response_bound], NB_SUBFRAME_SIZE - response_bound);
+		memzero(&exc[response_bound], (NB_SUBFRAME_SIZE - response_bound) * sizeof(spx_word16_t));
 #else
 		iir_mem16(exc, interp_qlpc, exc, NB_SUBFRAME_SIZE, NB_ORDER,
 			  mem, stack);
@@ -981,7 +981,7 @@ spx_mem_t mem[NB_ORDER];
 			st->pitch[sub] = pitch;
 		}
 		/* Quantization of innovation */
-memzero(innov, NB_SUBFRAME_SIZE);
+memzero(innov, (NB_SUBFRAME_SIZE) * sizeof(spx_sig_t));
 
 		/* FIXME: Make sure this is safe from overflows (so far so good) */
 		for (i = 0; i < NB_SUBFRAME_SIZE; i++)
@@ -1053,7 +1053,7 @@ memzero(innov, NB_SUBFRAME_SIZE);
 			if (SUBMODE(double_codebook)) {
 				char *tmp_stack = stack;
 spx_sig_t innov2[NB_SUBFRAME_SIZE];
-memzero(innov2, NB_SUBFRAME_SIZE);
+memzero(innov2, (NB_SUBFRAME_SIZE) * sizeof(spx_sig_t));
 				for (i = 0; i < NB_SUBFRAME_SIZE; i++)
 					target[i] =
 					    MULT16_16_P13(QCONST16(2.2f, 13),
@@ -1159,7 +1159,7 @@ void *nb_decoder_init(const SpeexMode * m)
 
 	st->lpc_enh_enabled = 1;
 
-memzero(st->excBuf, NB_FRAME_SIZE + NB_PITCH_END);
+memzero(st->excBuf, (NB_FRAME_SIZE + NB_PITCH_END) * sizeof(spx_word16_t));
 
 	st->last_pitch = 40;
 	st->count_lost = 0;
@@ -1643,7 +1643,7 @@ spx_word32_t exc32[NB_SUBFRAME_SIZE];
 			innov_save = st->innov_save + offset;
 
 		/* Reset excitation */
-memzero(exc, NB_SUBFRAME_SIZE);
+memzero(exc, (NB_SUBFRAME_SIZE) * sizeof(spx_word16_t));
 
 		/*Adaptive codebook contribution */
 		speex_assert(SUBMODE(ltp_unquant));
@@ -1720,7 +1720,7 @@ memzero(exc, NB_SUBFRAME_SIZE);
 			int q_energy;
 			spx_word32_t ener;
 
-memzero(innov, NB_SUBFRAME_SIZE);
+memzero(innov, (NB_SUBFRAME_SIZE) * sizeof(spx_sig_t));
 
 			/* Decode sub-frame gain correction */
 			if (SUBMODE(have_subframe_gain) == 3) {
@@ -1755,7 +1755,7 @@ memzero(innov, NB_SUBFRAME_SIZE);
 				if (SUBMODE(double_codebook)) {
 					char *tmp_stack = stack;
 					spx_sig_t innov2[NB_SUBFRAME_SIZE];
-					memzero(innov2, NB_SUBFRAME_SIZE);
+					memzero(innov2, (NB_SUBFRAME_SIZE) * sizeof(spx_sig_t));
 					SUBMODE(innovation_unquant) (innov2,
 								     SUBMODE
 								     (innovation_params),
@@ -1801,7 +1801,7 @@ memzero(innov, NB_SUBFRAME_SIZE);
 				if (g > GAIN_SCALING)
 					g = GAIN_SCALING;
 
-memzero(exc, NB_SUBFRAME_SIZE);
+memzero(exc, (NB_SUBFRAME_SIZE) * sizeof(spx_word16_t));
 				while (st->voc_offset < NB_SUBFRAME_SIZE) {
 					/* exc[st->voc_offset]= g*sqrt(2*ol_pitch)*ol_gain;
 					   Not quite sure why we need the factor of two in the sqrt */

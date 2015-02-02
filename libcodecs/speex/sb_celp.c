@@ -938,7 +938,7 @@ spx_sig_t tmp_sig[st->subframeSize];
 			signal_div(target, target, scale, st->subframeSize);
 
 			/* Reset excitation */
-memzero(innov, st->subframeSize);
+memzero(innov, (st->subframeSize) * sizeof(spx_sig_t));
 
 			/*print_vec(target, st->subframeSize, "\ntarget"); */
 			SUBMODE(innovation_quant) (target, st->interp_qlpc,
@@ -956,7 +956,7 @@ memzero(innov, st->subframeSize);
 			if (SUBMODE(double_codebook)) {
 				char *tmp_stack = stack;
 spx_sig_t innov2[st->subframeSize];
-memzero(innov2, st->subframeSize);
+memzero(innov2, (st->subframeSize) * sizeof(spx_sig_t));
 				for (i = 0; i < st->subframeSize; i++)
 					target[i] =
 					    MULT16_16_P13(QCONST16(2.5f, 13),
@@ -1384,7 +1384,7 @@ spx_word32_t exc[st->subframeSize];
 		/* Pointer for saving innovation */
 		if (st->innov_save) {
 			innov_save = st->innov_save + 2 * offset;
-memzero(innov_save, 2 * st->subframeSize);
+memzero(innov_save, (2 * st->subframeSize) * sizeof(spx_word16_t));
 		}
 
 		/* LSP interpolation */
@@ -1414,7 +1414,7 @@ memzero(innov_save, 2 * st->subframeSize);
 		filter_ratio = (rl + .01) / (rh + .01);
 #endif
 
-memzero(exc, st->subframeSize);
+memzero(exc, (st->subframeSize) * sizeof(spx_word32_t));
 		if (!SUBMODE(innovation_unquant)) {
 			spx_word32_t g;
 			int quant;
@@ -1467,7 +1467,7 @@ memzero(exc, st->subframeSize);
 			if (SUBMODE(double_codebook)) {
 				char *tmp_stack = stack;
 spx_sig_t innov2[st->subframeSize];
-memzero(innov2, st->subframeSize);
+memzero(innov2, (st->subframeSize) * sizeof(spx_sig_t));
 				SUBMODE(innovation_unquant) (innov2,
 							     SUBMODE
 							     (innovation_params),

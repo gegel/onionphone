@@ -496,7 +496,7 @@ spx_mem_t mm[p];
 		*cdbk_index = best_cdbk;
 	}
 
-memzero(exc, nsf);
+memzero(exc, (nsf) * sizeof(spx_sig_t));
 	for (i = 0; i < 3; i++) {
 		int j;
 		int tmp1, tmp3;
@@ -576,7 +576,7 @@ int nbest[N];
 	if (end < start) {
 		speex_bits_pack(bits, 0, params->pitch_bits);
 		speex_bits_pack(bits, 0, params->gain_bits);
-memzero(exc, nsf);
+memzero(exc, (nsf) * sizeof(spx_sig_t));
 		return start;
 	}
 #ifdef FIXED_POINT
@@ -608,7 +608,7 @@ spx_word16_t best_target[nsf];
 
 	for (i = 0; i < N; i++) {
 		pitch = nbest[i];
-memzero(exc, nsf);
+memzero(exc, (nsf) * sizeof(spx_sig_t));
 		err =
 		    pitch_gain_search_3tap(target, ak, awk1, awk2, exc,
 					   gain_cdbk, gain_cdbk_size, pitch, p,
@@ -733,7 +733,7 @@ void pitch_unquant_3tap(spx_word16_t exc[],	/* Input excitation */
 	gain[0] = SHL16(gain[0], 7);
 	gain[1] = SHL16(gain[1], 7);
 	gain[2] = SHL16(gain[2], 7);
-memzero(exc_out, nsf);
+memzero(exc_out, (nsf) * sizeof(spx_word32_t));
 	for (i = 0; i < 3; i++) {
 		int j;
 		int tmp1, tmp3;
