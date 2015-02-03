@@ -64,8 +64,8 @@
 //of packets for each packet type
 short pktlen[32]={
 
-//      UNKN    MELPE   CD21    LPC10   MELP    CD22    CELP    AMR
-        -1,     50,     56,     77,     63,     72,     108,    -1,
+//      CD45    MELPE   CD21    LPC10   MELP    CD22    CELP    AMR
+        18,     50,     56,     77,     63,     72,     108,    -1,
 
 //      LPC     GSMHR   G723    G729    GSMEFR  GSMFR   ILBC    BV16
         126,    112,    96,     110,    124,    99,     100,    80,

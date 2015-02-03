@@ -715,8 +715,8 @@ int parsecmd(void)
   }
   else if(cmdbuf[2]=='I')
   {
-   set_encoder(0);
-   get_decoder(0);
+   set_encoder(-1);
+   get_decoder(-1);
    if(vox_level) web_printf("VOX level is %d%\r\n", vox_level);
    else web_printf("VOX uses SPEEX VAD detector\r\n");
    web_printf("3tone signal level is %d%\r\n", vad_level*10/128);
@@ -834,11 +834,11 @@ int parsecmd(void)
   if(cmdbuf[2])
   {
    i=atoi(cmdbuf+2);
-   if((i>0)&&(i<19)) set_encoder(i);
-   else if(cmdbuf[2]=='I') get_decoder(0);
+   if((i>=0)&&(i<19)) set_encoder(i);
+   else if(cmdbuf[2]=='I') get_decoder(-1);
    else
    {
-    i=set_encoder(0);
+    i=set_encoder(-1);
     web_printf("Coder number is %d. Avaliable are 1-18\r\n", i);
    }
   }
@@ -847,7 +847,7 @@ int parsecmd(void)
    //apply codec from profile
    strcpy(str, "VoiceCodec");
    if(parseconf(str)>0) i=atoi(str);
-   if((i<=0)||(i>18)) i=7;
+   if((i<0)||(i>18)) i=7;
    set_encoder(i);
   }
  }                     
