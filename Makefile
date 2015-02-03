@@ -1,9 +1,11 @@
 include Makefile-common.inc
 
 TARGETS = addkey oph
+FAST_TARGETS = oph
 
 addkey_DEPS = common/crp libaddkey
 oph_DEPS = common/crp common/helpers common/libspeexdsp common/kiss_fft libcodecs libdesktop
+oph_FAST_DEPS = common/crp common/helpers common/libspeexdsp common/kiss_fft libdesktop
 
 addkey_LDADD =
 oph_LDADD = -lm
@@ -44,4 +46,13 @@ clean:
 
 test:
 	$(foreach i,$(TARGETS),$(MAKE) $(i).target-test;)
+
+%.fast-target-build:
+	$(foreach i,$($(@:%.fast-target-build=%)_FAST_DEPS),$(MAKE) -C $(i);)
+	$(CC) $(GENERIC_CFLAGS) $(foreach i,$($(@:%.fast-target-build=%)_DEPS),$(i)/builtin.o) $($(@:%.fast-target-build=%)_LDADD) -o $(@:%.fast-target-build=%)$($(@:%.fast-target-build=%)_EXEADD)
+
+fast:
+	$(foreach i,$(FAST_TARGETS),$(MAKE) $(i).fast-target-build;)
+
+.PHONY: fast
 
