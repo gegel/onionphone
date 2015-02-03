@@ -1,11 +1,8 @@
-CC ?= cc
-
 # NORMAL DEBUG
 MODE ?= NORMAL
 MODE_NORMAL ?= -O3 -ffast-math -funroll-loops
 MODE_DEBUG ?= -O0 -g -ggdb
 
-GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
 CFLAGS = $(GENERIC_CFLAGS) $(MODE_$(MODE)) $(EXTRADEFS)
 
 SRCS = $(wildcard *.c)

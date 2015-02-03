@@ -1,12 +1,22 @@
-export GENERIC_CFLAGS ?= -std=c99 -Wall -Wextra -pedantic
+include Makefile-common.inc
 
-COMMONAPPS = common/crp
+TARGETS = addkey oph
 
-ADDKEYAPPS = libaddkey
+addkey_DEPS = common/crp libaddkey
+oph_DEPS = common/crp common/helpers common/libspeexdsp common/kiss_fft libcodecs libdesktop
 
-CODECSAPPS = libcodecs
+addkey_LDADD =
+oph_LDADD = -lm
+ifdef SYSTEMROOT
+oph_LDADD += -lcomctl32 -lwinmm -lws2_32
+else
+oph_LDADD += -lasound
+endif
 
-OPHAPPS = libdesktop common/helpers common/libspeexdsp common/kiss_fft
+ifdef SYSTEMROOT
+addkey_EXEADD = .exe
+oph_EXEADD = .exe
+endif
 
 ifdef SYSTEMROOT
 LDADD = -lm -lcomctl32 -lwinmm -lws2_32
@@ -15,77 +25,23 @@ else
 LDADD = -lm -lasound
 endif
 
-COMMONBUILDDIRS = $(COMMONAPPS:%=build-%)
-ADDKEYBUILDDIRS = $(ADDKEYAPPS:%=build-%)
-CODECSBUILDDIRS = $(CODECSAPPS:%=build-%)
-OPHBUILDDIRS = $(OPHAPPS:%=build-%)
-COMMONCLEANDIRS = $(COMMONAPPS:%=clean-%)
-ADDKEYCLEANDIRS = $(ADDKEYAPPS:%=clean-%)
-CODECSCLEANDIRS = $(CODECSAPPS:%=clean-%)
-OPHCLEANDIRS = $(OPHAPPS:%=clean-%)
-COMMONTESTDIRS = $(COMMONAPPS:%=test-%)
-ADDKEYTESTDIRS = $(ADDKEYAPPS:%=test-%)
-CODECSTESTDIRS = $(CODECSAPPS:%=test-%)
-OPHTESTDIRS = $(OPHAPPS:%=test-%)
+%.target-build:
+	$(foreach i,$($(@:%.target-build=%)_DEPS),$(MAKE) -C $(i);)
+	$(CC) $(GENERIC_CFLAGS) $(foreach i,$($(@:%.target-build=%)_DEPS),$(i)/builtin.o) $($(@:%.target-build=%)_LDADD) -o $(@:%.target-build=%)$($(@:%.target-build=%)_EXEADD)
 
-all: $(COMMONBUILDDIRS) $(ADDKEYBUILDDIRS) $(CODECSBUILDDIRS) $(OPHBUILDDIRS)
-	$(CC) $(GENERIC_CFLAGS) $(COMMONAPPS:%=%/builtin.o) $(ADDKEYAPPS:%=%/builtin.o) -o addkey$(EXEADD)
-	$(CC) $(GENERIC_CFLAGS) $(COMMONAPPS:%=%/builtin.o) $(CODECSAPPS:%=%/builtin.o) $(OPHAPPS:%=%/builtin.o) $(LDADD) -o oph$(EXEADD)
+%.target-clean:
+	$(foreach i,$($(@:%.target-clean=%)_DEPS),$(MAKE) -C $(i) clean;)
 
-fast: $(OPHBUILDDIRS)
-	$(CC) $(GENERIC_CFLAGS) $(COMMONAPPS:%=%/builtin.o) $(CODECSAPPS:%=%/builtin.o) $(OPHAPPS:%=%/builtin.o) $(LDADD) -o oph$(EXEADD)
+%.target-test:
+	$(foreach i,$($(@:%.target-test=%)_DEPS),$(MAKE) -C $(i) test;)
 
-$(COMMONAPPS): $(COMMONBUILDDIRS)
-$(ADDKEYAPPS): $(ADDKEYBUILDDIRS)
-$(CODECSAPPS): $(CODECSBUILDDIRS)
-$(OPHAPPS): $(OPHBUILDDIRS)
-$(COMMONBUILDDIRS):
-	$(MAKE) -C $(@:build-%=%)
-$(ADDKEYBUILDDIRS):
-	$(MAKE) -C $(@:build-%=%)
-$(CODECSBUILDDIRS):
-	$(MAKE) -C $(@:build-%=%)
-$(OPHBUILDDIRS):
-	$(MAKE) -C $(@:build-%=%)
+all:
+	$(foreach i,$(TARGETS),$(MAKE) $(i).target-build;)
 
-clean: $(COMMONCLEANDIRS) $(ADDKEYCLEANDIRS) $(CODECSCLEANDIRS) $(OPHCLEANDIRS)
-$(COMMONCLEANDIRS): 
-	$(MAKE) -C $(@:clean-%=%) clean
-$(ADDKEYCLEANDIRS): 
-	$(MAKE) -C $(@:clean-%=%) clean
-	rm -f addkey
-	rm -f addkey$(EXEADD)
-$(CODECSCLEANDIRS): 
-	$(MAKE) -C $(@:clean-%=%) clean
-$(OPHCLEANDIRS): 
-	$(MAKE) -C $(@:clean-%=%) clean
-	rm -f oph$
-	rm -f oph$(EXEADD)
+clean:
+	$(foreach i,$(TARGETS),$(MAKE) $(i).target-clean;)
+	$(foreach i,$(TARGETS),rm -f $(i)$($(i)_EXEADD);)
 
-test: $(COMMONTESTDIRS) $(ADDKEYTESTDIRS) $(CODECSCLEANDIRS) $(OPHTESTDIRS)
-$(COMMONTESTDIRS): 
-	$(MAKE) -C $(@:test-%=%) test
-$(ADDKEYTESTDIRS): 
-	$(MAKE) -C $(@:test-%=%) test
-$(CODECSTESTDIRS): 
-	$(MAKE) -C $(@:test-%=%) test
-$(OPHTESTDIRS): 
-	$(MAKE) -C $(@:test-%=%) test
+test:
+	$(foreach i,$(TARGETS),$(MAKE) $(i).target-test;)
 
-.PHONY: subdirs $(COMMONAPPS)
-.PHONY: subdirs $(ADDKEYAPPS)
-.PHONY: subdirs $(CODECSAPPS)
-.PHONY: subdirs $(OPHAPPS)
-.PHONY: subdirs $(COMMONBUILDDIRS)
-.PHONY: subdirs $(ADDKEYBUILDDIRS)
-.PHONY: subdirs $(CODECSBUILDDIRS)
-.PHONY: subdirs $(OPHBUILDDIRS)
-.PHONY: subdirs $(COMMONCLEANDIRS)
-.PHONY: subdirs $(ADDKEYCLEANDIRS)
-.PHONY: subdirs $(CODECSCLEANDIRS)
-.PHONY: subdirs $(OPHCLEANDIRS)
-.PHONY: subdirs $(COMMONTESTDIRS)
-.PHONY: subdirs $(ADDKEYTESTDIRS)
-.PHONY: subdirs $(CODECSTESTDIRS)
-.PHONY: subdirs $(OPHTESTDIRS)
-.PHONY: all fast clean test
