@@ -28,7 +28,7 @@
 
 //Packets types set
 typedef enum{
-        TYPE_UNKNOWN=0, //not defined
+        TYPE_CODEC45=0, //not defined
         TYPE_MELPE,     //speech data cbr
         TYPE_CODEC21,
         TYPE_LPC10,
@@ -63,7 +63,9 @@ typedef enum{
         TYPE_AUANS,     //passphrase autenthication  24
         TYPE_AUACK,     //under pressing notifocation 6
 
-        TYPE_VBR        //31: general for speach vbr codecs
+        TYPE_VBR,        //31: general for speach vbr codecs
+
+        TYPE_UNKNOWN    //32: not detected
         }TypeSet;
 
  //time tools

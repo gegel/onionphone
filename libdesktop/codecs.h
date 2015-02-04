@@ -23,8 +23,8 @@
 
 //Set of audio codecs
 typedef enum{
-	CODEC_CNF=0,
-	//LowBitrate
+    //LowBitrate
+    CODEC_CODEC24=0, //450 bps, 1280samp->9 bytes, 2 fpp(320mS)->18bytes
 	CODEC_MELPE, //1: 1200bps, 540samp->10 bytes, 5 fpp(337.5mS)->50bytes
 	CODEC_CODEC21, //2: 1400bps, 320samp->7bytes, 8 fpp(320mS)->56bytes	
 	CODEC_LPC10, //3: 2400bps, 180samp->7bytes, 11 fpp(247,5mS)->77bytes

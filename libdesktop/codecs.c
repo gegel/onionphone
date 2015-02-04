@@ -87,13 +87,13 @@
 #define RAWBUFLEN 240 //samples in raw buffer for preprocessing
 //=============================Constants================================
 //Codec's names by type
-const char* cd_name[]={ "NONE","MELPE", "CODEC2_1","LPC10","MELP","CODEC2_2",
+const char* cd_name[]={ "CODEC2_4","MELPE", "CODEC2_1","LPC10","MELP","CODEC2_2",
 		"CELP",	"AMR","LPC","GSM_HR","G723","G729","GSM_EFR","GSM_FR",
 		"ILBC","BV16","OPUS","SILK","SPEEX"}; 
 //Codec's speech frame length (in 8 KHz short PCM samples)
 const int frm_len[24]={
-//		MELPE	CODEC21	LPC10	MELP	CODEC22	CELP	AMR0	LPC	
-	0,	540,	320,	180,	180,	160,	240,	160,	160,
+//	CODEC45	MELPE	CODEC21	LPC10	MELP	CODEC22	CELP	AMR0	LPC
+    320,	540,	320,	180,	180,	160,	240,	160,	160,
 //	GSMH	G723	G729	GSME	GSM	ILBC	BV16		
 	160,	240,	80,	160,	160,	240,	40,	
 //	OPUS	SILK	SPEEX   AMRV
@@ -101,8 +101,8 @@ const int frm_len[24]={
 };
 //Length of compressed frame in bytes
 const int buf_len[40]={
-//		MELPE	CODEC21	LPC10	MELP	CODEC22	CELP	AMR0	LPC
-	0,	10,	7,	7,	7,	8,	18,	12,	14,	
+//	CODEC45 MELPE	CODEC21	LPC10	MELP	CODEC22	CELP	AMR0	LPC
+    2,	10,	7,	7,	7,	8,	18,	12,	14,
 //	GSMH	G723	G729	GSME	GSM	ILBC	BV16
 	14,	24,	10,	31,	33,	50,	10,
 //	OPUS	SILK	SPEEX   AMRV
@@ -110,8 +110,8 @@ const int buf_len[40]={
 };
 //Frames per packet
 const int frm_ppk[40]={
-//		MELPE	CODEC21	LPC10	MELP	CODEC22	CELP	AMR0	LPC
-	0,	5,	8,	11,	9,	9,	6,	10,	9,
+//	CODEC45	MELPE	CODEC21	LPC10	MELP	CODEC22	CELP	AMR0	LPC
+    8,	5,	8,	11,	9,	9,	6,	10,	9,
 //	GSMH	G723	G729	GSME	GSM	ILBC	BV16	
 	8,	4,	11,	4,	3,	2,	8,
 //	OPUS	SILK	SPEEX   AMRV
@@ -254,8 +254,9 @@ struct BV16_Encoder_State estate;
 struct BV16_Decoder_State dstate;
 struct BV16_Bit_Stream bs;
 //------------------------------------------CODEC2------------------------
-struct CODEC2 *cd21;
-struct CODEC2 *cd22;
+struct CODEC2 *cd21; //1400 bps
+struct CODEC2 *cd22; //3200 bps
+struct CODEC2 *cd45; //450 bps
 //------------------------------------------OPUS--------------------------
 OpusEncoder *enc=NULL;
 OpusDecoder *dec=NULL;
@@ -736,7 +737,7 @@ int codec_type(unsigned char* bf)
 {
  //check first byte for general codec type: bit7=1 for CBR and bit7=0 for VBR
  if(bf[0]>=192) return(CODEC_MELPE);	//MELPE: 11 + up to 6_extra_data_bits
- if(bf[0]>128) return(bf[0]&0x0F); //other CBR CODECS: use codec type from byte 0
+ if(bf[0]>=128) return(bf[0]&0x0F); //other CBR CODECS: use codec type from byte 0
  
 //VBR CODECS: first byte is: bit7=0 and 7 bits is total data length,
 // checks second byte for VBR codec type:
@@ -787,8 +788,8 @@ int sp_encode(short* sp, unsigned char* bf)
   fpp=frm_ppk[enc_type]; //frames per packet for other cbr codecs
   l=buf_len[enc_type]; //encoded frames fixed length for cbr or 0 for vbr
  }
- 
-//process frames
+
+ //process frames
  for(i=0; i<fpp; i++) 
  {
   //encode one frame
@@ -810,8 +811,19 @@ int sp_encode(short* sp, unsigned char* bf)
 	}
 	break;
 
-
    //constant bitrate
+   case CODEC_CODEC24:
+    { //encode 320*8 samples to 18*8 bits blocks
+      //each block is 2 bytes (16 bits)< and extra bits 6 and 17
+      //places in common storages: bf[17] and bf[18] respectively
+      bf[18]>>=1; //shift existed extra bits 17
+      dtxcnt=bf[17]>>1; //shift and temporary store extra bits 16
+      codec2_encode(cd45, bp, sp); //encode frame 320 samples to 18 bits
+      bf[18]|=(bp[2]&0x80); //add extra bit 17 to common storage
+      bf[17]=dtxcnt|((bp[2]<<1)&0x80); //add extra bit 16 to common storage
+    }               //next will move spp to 320 and bp to 2 (16 bits of block)
+    break;
+
    case CODEC_MELPE: 
 	{
 	 melpe_a(bp, sp); //result is 81 bits in 11 bytes
@@ -886,8 +898,6 @@ int sp_encode(short* sp, unsigned char* bf)
 	}
    	break;
 
-
-
   } //switch(cd)
   
   bp+=l; //add output data length to data pointer
@@ -906,7 +916,7 @@ int sp_encode(short* sp, unsigned char* bf)
 int sp_decode(short* sp, unsigned char* bf)
 {
  int i, l, m, fpp;
- char amrmd=0; //default mode for amc codec
+ unsigned char amrmd=0; //default mode for amc codec
  unsigned char* bp=bf+1; //pointer to codecs block (skip header byte)
  short* spr=sp; //pointer to ouputted speech block
  int cd=0; //codec type
@@ -950,11 +960,26 @@ int sp_decode(short* sp, unsigned char* bf)
 	break; 
 
  //constant bitrate codecs:
+   case CODEC_CODEC24:
+    { //packets contain 8 blocks 18 bits each
+      //16 bits of each block groups in 2 bytes (bf[1]:bf[15])
+      //bits 16 and 17 of blocks are in bf[17] and bf[18] respectively
+      //bp points to 2 bytes of block
+      amrmd=bp[2]; //temporary store first byte of next block
+      bp[2]=((bf[17]<<6)&0x40); //add extra bit 16
+      bp[2]|=(bf[18]<<7); //add extra bit 17
+      codec2_decode(cd45, spp, bp); //decode 18 bits
+      bp[2]=amrmd; //restore first byte of next block
+      bf[18]>>=1; //shift extra bits 17 for next block
+      bf[17]>>=1; //shift extra bits 16 for next block
+    } //bp will be moved to 2 for next block
+    break;
+
    case CODEC_MELPE: 
 	{
 	 unsigned char t=bp[10]; //store first byte of next frame
 	 bp[10]=(bf[0]>>5)&1; //extract last bit of frame, place to last byte as bit 0
-         melpe_s(spp, bp); //decode 81bits in 11 bytes
+     melpe_s(spp, bp); //decode 81bits in 11 bytes
 	 bp[10]=t; //restore first byte of next frame
 	 bf[0]<<=1; //roll frames last bits coneiner (byte 0 of packet)
 	}
@@ -1238,6 +1263,7 @@ RateChange(short *src, short *dest, int srcLen, int destRate)
 void sp_init(void)
 {
  ///*
+ cd45=codec2_create(CODEC2_MODE_450);
  cd21=codec2_create(CODEC2_MODE_1400);
  cd22=codec2_create(CODEC2_MODE_3200);
  //*/
@@ -1276,6 +1302,7 @@ void sp_fine(void)
  ///*
  gsm_fin();
  gsmhr_fin();
+ codec2_destroy(cd45);
  codec2_destroy(cd21);
  codec2_destroy(cd22);
  //*/
@@ -1293,7 +1320,7 @@ void sp_fine(void)
 //set encoder type
 int set_encoder(int cd)
 {
- if((cd>0)&&(cd<19))
+ if((cd>=0)&&(cd<19))
  {
   enc_type=cd; //set internal encoder
   snd_need=codec_len(enc_type); //samples needed for compleet packet
@@ -1306,7 +1333,7 @@ int set_encoder(int cd)
 //*****************************************************************************
 int get_decoder(int cd)
 {
- if(!cd) cd=dec_type;
+ if(cd<0) cd=dec_type;
  web_printf("Last decoder=%s\r\n", cd_name[cd]);
  if(vad_t) web_printf("VAD detector enabled now\r\n");
  web_printf("Voice transmission ");
@@ -1680,7 +1707,7 @@ void setaudio(void)
 
  strcpy(str, "VoiceCodec");
  if(parseconf(str)>0) i=atoi(str); else i=-1;
- if((i<=0)||(i>18)) i=7;
+ if((i<0)||(i>18)) i=7;
  set_encoder(i);
 
  strcpy(str, "Vocoder");
