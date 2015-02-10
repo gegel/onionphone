@@ -5,7 +5,7 @@ INCADD ?= -I. -I../common/crp -I../common/inc -I../common/helpers -I../common/ki
 include ../Makefile-common.inc
 include ../Makefile-leaf.inc
 
-audio.o: audio.c audio_wave.c audio_alsa.c
+audio.o: audio.c audio_wave.c.inc audio_alsa.c.inc
 
 audio.c: audio.h
 
